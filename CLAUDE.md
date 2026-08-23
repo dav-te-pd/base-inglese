@@ -12,8 +12,11 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 3. **Nessun valore modificabile scritto fisso nel codice** — soglie numeriche, tempi, liste, percentuali. Tutto questo vive in `window.APP_CONFIG`, definito in cima a `index.html` (prima di CSS e resto dello script). Aggiungere un nuovo parametro tunabile significa aggiungere una chiave lì, non un numero sparso nel codice. `APP_CONFIG` è pensato come base dati per il futuro pannello Admin.
 
-4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni, uno per episodio, forniti separatamente.
-   *Stato attuale: l'Episodio 1 (`EPISODES.episode1` in `index.html`) è ancora definito inline e non rispetta ancora questa regola — è debito da correre quando verrà introdotto il primo file di dati esterno o un nuovo episodio. Non replicare questo pattern per contenuti nuovi.*
+4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni.
+   - **Un unico file per episodio** (es. `episodio1-inglese.json`), mai spezzettato in file separati per modulo. Dialogo e vocabolario sono condivisi tra più moduli (Speak Easy, Voice Coach, Quick Match, Scrittura, Dialogo Completo, Test) e devono restare un'unica fonte di verità: ogni modulo legge la propria sezione dallo stesso file episodio, non ne duplica il contenuto in un file suo.
+   - **Le tabelle di personalizzazione** (nomi, città, paesi — oggi `APP_CONFIG.people` / `APP_CONFIG.places`) restano invece separate dai file episodio, e condivise tra tutti gli episodi e tutte le lingue. Un file episodio vi fa riferimento (es. "usa la tabella nomi-papà"), non le duplica al suo interno.
+
+   *Stato attuale: `data/episode1-repeat-aloud.json` è oggi un file per singolo MODULO (solo Repeat Aloud), non ancora il file unico per episodio richiesto da questa regola — è debito da correre quando verranno aggiunti gli altri moduli dell'Episodio 1 (Speak Easy, Voice Coach, Quick Match, Scrittura, Dialogo Completo, Test): a quel punto il contenuto va consolidato in un unico file episodio (es. `episodio1-inglese.json`), da cui ogni modulo legge la propria sezione. Non creare un nuovo file dati per ogni nuovo modulo che verrà aggiunto.*
 
 5. **Mantenere la tipografia e lo stile del design system esistente**: Source Serif 4 (titoli/frase d'esercizio), Inter (testo/UI), IBM Plex Mono (badge/etichette); componenti `.btn-primary` / `.btn-secondary` / `.card` / `.panel` / `.badge` già definiti — riusarli invece di crearne varianti nuove per la stessa funzione.
 
