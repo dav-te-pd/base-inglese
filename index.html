@@ -23,6 +23,9 @@
       // Hard cap on one recording, in ms. Kept generous so a long phrase
       // (like Episode 1's) has time to finish before we force a stop.
       micMaxRecordingMs: 20000,
+      // Playback speed choices offered next to a listen button, as a
+      // multiplier of normal rate (1 = 100%). Order here is render order.
+      rateOptions: [1, 0.75, 0.5],
       preferredVoiceNames: [
         'Google US English',
         'Samantha',
@@ -160,7 +163,7 @@
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   /* ============================================================
      DESIGN TOKENS — 5 selectable palettes + fixed semantic colors
@@ -751,6 +754,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 12px;
+    flex-wrap: wrap;
   }
 
   .repeat-item-english {
@@ -759,10 +763,57 @@
     font-size: 1.1rem;
   }
 
+  .repeat-item-audio {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
   .repeat-listen-btn.speaking { border-color: var(--accent); color: var(--accent); }
+
+  .rate-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .rate-btn {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    opacity: 0.75;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+  }
+
+  .rate-btn:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+
+  .rate-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .rate-btn.speaking {
+    opacity: 1;
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--card));
+  }
 
   .repeat-item-italian { font-size: 0.92rem; opacity: 0.8; }
   .repeat-item-tip { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+
+  #repeat-aloud-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
 
   .general-rule {
     padding: 16px 18px;
@@ -772,11 +823,12 @@
   .general-rule-label {
     display: block;
     font-family: var(--font-mono);
-    font-size: 0.7rem;
-    letter-spacing: 0.08em;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    opacity: 0.6;
-    margin-bottom: 6px;
+    color: var(--accent);
+    margin-bottom: 8px;
   }
 
   .warning {
@@ -866,8 +918,6 @@
           </header>
 
           <div class="module-list" id="module-list"></div>
-
-          <button type="button" class="edit-custom-link" id="map-practice-sentence">🗣️ Pratica la frase intera</button>
         </div>
       </div>
     </section>
@@ -1392,7 +1442,6 @@
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
-  document.getElementById('map-practice-sentence').addEventListener('click', startPronunciationExercise);
 
   document.getElementById('start-episode').addEventListener('click', openEpisodeMap);
 
@@ -1425,22 +1474,33 @@
       });
   }
 
+  function renderRateButtons(itemId) {
+    return CONFIG.speech.rateOptions.map(function (rate) {
+      var pct = Math.round(rate * 100) + '%';
+      return '<button type="button" class="rate-btn" data-say="' + itemId + '" data-rate="' + rate +
+        '" aria-label="Ascolta a velocità ' + pct + '">' + pct + '</button>';
+    }).join('');
+  }
+
   function renderRepeatAloud(data) {
+    var ruleHtml = data.generalRule
+      ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
+      : '';
     var itemsHtml = data.items.map(function (item) {
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
         '<span class="repeat-item-english">' + item.english + '</span>' +
+        '<div class="repeat-item-audio">' +
         '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">🔊</button>' +
+        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(item.id) + '</div>' +
+        '</div>' +
         '</div>' +
         '<span class="repeat-item-italian">' + item.italian + '</span>' +
         '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
         '</div>';
     }).join('');
-    var ruleHtml = data.generalRule
-      ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
-      : '';
     document.getElementById('repeat-aloud-body').innerHTML =
-      '<div class="repeat-list">' + itemsHtml + '</div>' + ruleHtml;
+      ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
   }
 
   function openRepeatAloud(module) {
@@ -1464,7 +1524,8 @@
     var data = repeatAloudDataCache[currentRepeatAloudModule.dataFile];
     var item = data && data.items.find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
-    toggleSpeak(item.english, btn);
+    var rateAttr = btn.getAttribute('data-rate');
+    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
@@ -1670,10 +1731,11 @@
   }
 
   // Shared text-to-speech helper: used by the full-sentence speak button
-  // and by every Repeat Aloud item's listen button. Clicking the button
-  // that is currently playing stops it; clicking a different one while
-  // something else is playing interrupts that and starts the new one.
-  function toggleSpeak(text, btn) {
+  // and by every Repeat Aloud item's listen/rate buttons. Clicking the
+  // button that is currently playing stops it; clicking a different one
+  // while something else is playing interrupts that and starts the new
+  // one. rate is optional; omit it to use the app's tuned default.
+  function toggleSpeak(text, btn, rate) {
     if (!synth) return;
     var wasSpeaking = btn.classList.contains('speaking');
     if (synth.speaking) synth.cancel();
@@ -1682,7 +1744,7 @@
     utterance.lang = CONFIG.speech.synthesisLang;
     var voice = pickVoice();
     if (voice) utterance.voice = voice;
-    utterance.rate = CONFIG.speech.synthesisRate;
+    utterance.rate = (rate === undefined || rate === null) ? CONFIG.speech.synthesisRate : rate;
     utterance.onstart = function () { btn.classList.add('speaking'); };
     utterance.onend = function () { btn.classList.remove('speaking'); };
     utterance.onerror = function () { btn.classList.remove('speaking'); };
