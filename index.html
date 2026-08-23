@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Speech Recognition Test</title>
+<style>
+  :root {
+    --bg: #0f1220;
+    --card: #1a1e33;
+    --text: #eef0fb;
+    --muted: #9aa0c3;
+    --accent: #6c8dff;
+    --green: #35d07f;
+    --yellow: #f4c542;
+    --red: #ff5d5d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at top, #1c2140, #0a0c18 70%);
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text);
+    padding: 24px;
+  }
+  .card {
+    width: 100%;
+    max-width: 640px;
+    background: var(--card);
+    border-radius: 18px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+  h1 {
+    font-size: 1.3rem;
+    margin: 0 0 6px;
+    text-align: center;
+  }
+  p.subtitle {
+    color: var(--muted);
+    text-align: center;
+    margin: 0 0 28px;
+    font-size: 0.92rem;
+  }
+  .phrase {
+    font-size: 1.4rem;
+    line-height: 2.1;
+    text-align: center;
+    padding: 20px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    margin-bottom: 28px;
+  }
+  .phrase span {
+    display: inline-block;
+    padding: 2px 6px;
+    margin: 2px;
+    border-radius: 6px;
+    transition: background 0.25s, color 0.25s;
+    color: var(--text);
+  }
+  .phrase span.correct { background: rgba(53,208,127,0.18); color: var(--green); }
+  .phrase span.similar { background: rgba(244,197,66,0.18); color: var(--yellow); }
+  .phrase span.wrong   { background: rgba(255,93,93,0.18); color: var(--red); }
+
+  .controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  #mic-btn {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, var(--accent), #4a63cc);
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(108,141,255,0.35);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  #mic-btn:hover { transform: scale(1.05); }
+  #mic-btn:active { transform: scale(0.96); }
+  #mic-btn.listening {
+    background: linear-gradient(135deg, var(--red), #c73f3f);
+    animation: pulse 1.3s infinite;
+  }
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0 rgba(255,93,93,0.5); }
+    70%  { box-shadow: 0 0 0 18px rgba(255,93,93,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,93,93,0); }
+  }
+  #status {
+    color: var(--muted);
+    font-size: 0.9rem;
+    min-height: 1.2em;
+    text-align: center;
+  }
+  #transcript {
+    margin-top: 18px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    font-size: 0.92rem;
+    color: var(--muted);
+    min-height: 1.4em;
+    text-align: center;
+  }
+  #transcript strong { color: var(--text); }
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-top: 22px;
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+  .dot.correct { background: var(--green); }
+  .dot.similar { background: var(--yellow); }
+  .dot.wrong { background: var(--red); }
+  .warning {
+    background: rgba(255,93,93,0.12);
+    border: 1px solid rgba(255,93,93,0.4);
+    color: #ffb3b3;
+    padding: 12px 16px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    text-align: center;
+    margin-top: 18px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Prova la tua pronuncia</h1>
+    <p class="subtitle">Premi il microfono e leggi ad alta voce la frase qui sotto</p>
+
+    <div class="phrase" id="phrase"></div>
+
+    <div class="controls">
+      <button id="mic-btn" title="Avvia riconoscimento vocale">🎤</button>
+      <div id="status">Premi il microfono per iniziare</div>
+    </div>
+
+    <div id="transcript"></div>
+
+    <div class="legend">
+      <span><i class="dot correct"></i> corretta</span>
+      <span><i class="dot similar"></i> simile</span>
+      <span><i class="dot wrong"></i> sbagliata / mancante</span>
+    </div>
+
+    <div class="warning" id="warning">
+      Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
+      Prova con Google Chrome su desktop o Android.
+    </div>
+  </div>
+
+<script>
+(function () {
+  const TARGET_PHRASE = "Hello, I'm Giancarlo. I'm from Mondovì, Italy.";
+
+  const phraseEl = document.getElementById('phrase');
+  const micBtn = document.getElementById('mic-btn');
+  const statusEl = document.getElementById('status');
+  const transcriptEl = document.getElementById('transcript');
+  const warningEl = document.getElementById('warning');
+
+  function normalize(word) {
+    return word
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, function (c) {
+        // keep diacritics for display but comparison uses stripped form separately
+        return c;
+      });
+  }
+
+  function stripForCompare(word) {
+    return word
+      .toLowerCase()
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
+      .replace(/[^a-z']/g, '');
+  }
+
+  function tokenize(text) {
+    return text.trim().split(/\s+/).filter(Boolean);
+  }
+
+  const targetWords = tokenize(TARGET_PHRASE);
+
+  // render initial neutral phrase
+  function renderInitial() {
+    phraseEl.innerHTML = targetWords
+      .map(function (w) { return '<span id="w-' + Math.random().toString(36).slice(2) + '">' + w + '</span>'; })
+      .join(' ');
+  }
+
+  function levenshtein(a, b) {
+    const m = a.length, n = b.length;
+    if (m === 0) return n;
+    if (n === 0) return m;
+    const dp = new Array(n + 1);
+    for (let j = 0; j <= n; j++) dp[j] = j;
+    for (let i = 1; i <= m; i++) {
+      let prev = dp[0];
+      dp[0] = i;
+      for (let j = 1; j <= n; j++) {
+        const tmp = dp[j];
+        dp[j] = Math.min(
+          dp[j] + 1,
+          dp[j - 1] + 1,
+          prev + (a[i - 1] === b[j - 1] ? 0 : 1)
+        );
+        prev = tmp;
+      }
+    }
+    return dp[n];
+  }
+
+  function similarity(a, b) {
+    if (!a.length && !b.length) return 1;
+    const dist = levenshtein(a, b);
+    const maxLen = Math.max(a.length, b.length);
+    return maxLen === 0 ? 1 : 1 - dist / maxLen;
+  }
+
+  // Global alignment (Needleman-Wunsch style) between target words and recognized words,
+  // scored by word similarity, so extra/missing/reordered words don't derail the whole comparison.
+  function alignWords(target, recognized) {
+    const n = target.length, m = recognized.length;
+    const GAP = -0.6;
+    const score = [];
+    const traceback = [];
+    for (let i = 0; i <= n; i++) {
+      score.push(new Array(m + 1).fill(0));
+      traceback.push(new Array(m + 1).fill(null));
+    }
+    for (let i = 1; i <= n; i++) { score[i][0] = score[i - 1][0] + GAP; traceback[i][0] = 'up'; }
+    for (let j = 1; j <= m; j++) { score[0][j] = score[0][j - 1] + GAP; traceback[0][j] = 'left'; }
+
+    const tNorm = target.map(stripForCompare);
+    const rNorm = recognized.map(stripForCompare);
+
+    for (let i = 1; i <= n; i++) {
+      for (let j = 1; j <= m; j++) {
+        const matchScore = score[i - 1][j - 1] + similarity(tNorm[i - 1], rNorm[j - 1]);
+        const upScore = score[i - 1][j] + GAP;
+        const leftScore = score[i][j - 1] + GAP;
+        const best = Math.max(matchScore, upScore, leftScore);
+        score[i][j] = best;
+        if (best === matchScore) traceback[i][j] = 'diag';
+        else if (best === upScore) traceback[i][j] = 'up';
+        else traceback[i][j] = 'left';
+      }
+    }
+
+    const pairs = [];
+    let i = n, j = m;
+    while (i > 0 || j > 0) {
+      const dir = traceback[i][j];
+      if (dir === 'diag') {
+        pairs.unshift({ targetIndex: i - 1, recognizedIndex: j - 1 });
+        i--; j--;
+      } else if (dir === 'up') {
+        pairs.unshift({ targetIndex: i - 1, recognizedIndex: null });
+        i--;
+      } else {
+        j--;
+      }
+    }
+    return pairs;
+  }
+
+  function classify(targetWord, recognizedWord) {
+    if (recognizedWord === null || recognizedWord === undefined) return 'wrong';
+    const t = stripForCompare(targetWord);
+    const r = stripForCompare(recognizedWord);
+    if (t === r) return 'correct';
+    const sim = similarity(t, r);
+    if (sim >= 0.6) return 'similar';
+    return 'wrong';
+  }
+
+  function renderResult(recognizedText) {
+    const recognizedWords = tokenize(recognizedText);
+    const pairs = alignWords(targetWords, recognizedWords);
+    const spans = pairs.map(function (pair) {
+      const word = targetWords[pair.targetIndex];
+      const recognizedWord = pair.recognizedIndex !== null ? recognizedWords[pair.recognizedIndex] : null;
+      const cls = classify(word, recognizedWord);
+      return '<span class="' + cls + '">' + word + '</span>';
+    });
+    phraseEl.innerHTML = spans.join(' ');
+    transcriptEl.innerHTML = '<strong>Hai detto:</strong> ' + (recognizedText ? recognizedText : '(nessun testo riconosciuto)');
+  }
+
+  renderInitial();
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    warningEl.style.display = 'block';
+    micBtn.disabled = true;
+    micBtn.style.opacity = 0.4;
+    micBtn.style.cursor = 'not-allowed';
+    statusEl.textContent = 'Riconoscimento vocale non disponibile';
+  } else {
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    let listening = false;
+
+    recognition.onstart = function () {
+      listening = true;
+      micBtn.classList.add('listening');
+      statusEl.textContent = 'In ascolto... parla ora';
+    };
+
+    recognition.onend = function () {
+      listening = false;
+      micBtn.classList.remove('listening');
+      if (statusEl.textContent === 'In ascolto... parla ora') {
+        statusEl.textContent = 'Premi il microfono per iniziare';
+      }
+    };
+
+    recognition.onerror = function (event) {
+      listening = false;
+      micBtn.classList.remove('listening');
+      let msg = 'Errore nel riconoscimento vocale';
+      if (event.error === 'no-speech') msg = 'Nessun parlato rilevato, riprova';
+      else if (event.error === 'not-allowed' || event.error === 'service-not-allowed') msg = 'Permesso microfono negato';
+      statusEl.textContent = msg;
+    };
+
+    recognition.onresult = function (event) {
+      const text = event.results[0][0].transcript;
+      renderResult(text);
+      statusEl.textContent = 'Fatto! Premi di nuovo il microfono per riprovare';
+    };
+
+    micBtn.addEventListener('click', function () {
+      if (listening) {
+        recognition.stop();
+        return;
+      }
+      renderInitial();
+      transcriptEl.innerHTML = '';
+      try {
+        recognition.start();
+      } catch (e) {
+        statusEl.textContent = 'Impossibile avviare il microfono';
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>
