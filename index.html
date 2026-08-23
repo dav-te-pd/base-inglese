@@ -113,6 +113,41 @@
     }
   };
 
+  /* ============================================================
+     FALLBACK DATA — resilience net only, not the authoring source.
+     Per-episode module content (CLAUDE.md rule 4) is authored in
+     data/*.json and always fetched from there first. Some hosting
+     contexts (e.g. this page published as a single standalone file)
+     can't serve that sibling file, so this is a same-content mirror
+     used only when the fetch fails. Edit data/episode1-repeat-aloud.json
+     for real changes — this block should mirror it, never diverge.
+     ============================================================ */
+  window.FALLBACK_REPEAT_ALOUD_DATA = {
+    'data/episode1-repeat-aloud.json': {
+      episodeId: 1,
+      episodeTitle: 'Presentarsi',
+      module: 'repeatAloud',
+      items: [
+        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.' },
+        { id: 'everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.' },
+        { id: 'nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".' },
+        { id: 'can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.' },
+        { id: 'introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".' },
+        { id: 'yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".' },
+        { id: 'im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.' },
+        { id: 'from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".' },
+        { id: 'hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".' },
+        { id: 'wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.' },
+        { id: 'years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".' },
+        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.' },
+        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.' },
+        { id: 'trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.' },
+        { id: 'family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".' }
+      ],
+      generalRule: 'La "e" finale in inglese non si legge quasi mai.'
+    }
+  };
+
   // Applied before first paint so a returning user's saved theme never flashes to the default.
   (function () {
     try {
@@ -611,6 +646,139 @@
 
   .edit-custom-link:hover { opacity: 1; color: var(--accent); }
 
+  /* ---------- episode map view ---------- */
+  .module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .module-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-2);
+    font-family: var(--font-body);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .module-row:disabled { cursor: not-allowed; opacity: 0.55; }
+  .module-row:not(:disabled):hover { border-color: var(--accent); }
+
+  .module-row:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .module-row.current {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--card-2));
+  }
+
+  .module-row.completed {
+    border-color: color-mix(in srgb, var(--correct-ink) 45%, var(--border));
+  }
+
+  .module-row-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+  }
+
+  .module-status-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .module-row.completed .module-status-icon { background: var(--correct-bg); color: var(--correct-ink); border-color: transparent; }
+  .module-row.current .module-status-icon { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .module-row.locked .module-status-icon { opacity: 0.6; }
+
+  .module-state-badge {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .module-row.completed .module-state-badge { background: var(--correct-bg); color: var(--correct-ink); }
+  .module-row.current .module-state-badge { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
+  .module-row.locked .module-state-badge { background: var(--card); color: var(--text); opacity: 0.6; }
+
+  /* ---------- repeat aloud module view ---------- */
+  .module-status-text {
+    text-align: center;
+    opacity: 0.7;
+    padding: 20px;
+  }
+
+  .module-status-text.is-error { color: var(--wrong-ink); }
+
+  .repeat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .repeat-item {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .repeat-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .repeat-item-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  .repeat-listen-btn.speaking { border-color: var(--accent); color: var(--accent); }
+
+  .repeat-item-italian { font-size: 0.92rem; opacity: 0.8; }
+  .repeat-item-tip { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+
+  .general-rule {
+    padding: 16px 18px;
+    text-align: center;
+  }
+
+  .general-rule-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin-bottom: 6px;
+  }
+
   .warning {
     background: var(--wrong-bg);
     border: 1px solid color-mix(in srgb, var(--wrong-ink) 40%, transparent);
@@ -679,6 +847,48 @@
           <div class="slot-grid" id="slot-grid"></div>
 
           <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: EPISODE MAP ============ -->
+    <section id="view-map" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
+            <span class="badge" id="map-episode-badge">Episodio 1</span>
+          </div>
+
+          <header class="app-header">
+            <h1>Mappa dell'episodio</h1>
+            <p style="opacity:0.7; font-size:0.92rem;">Completa i moduli in ordine per avanzare nella storia.</p>
+          </header>
+
+          <div class="module-list" id="module-list"></div>
+
+          <button type="button" class="edit-custom-link" id="map-practice-sentence">🗣️ Pratica la frase intera</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: REPEAT ALOUD MODULE ============ -->
+    <section id="view-repeat-aloud" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
+            <span class="badge">Repeat Aloud</span>
+          </div>
+
+          <header class="app-header">
+            <h1 id="repeat-aloud-title">Repeat Aloud</h1>
+            <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
+          </header>
+
+          <div id="repeat-aloud-body"></div>
+
+          <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
         </div>
       </div>
     </section>
@@ -805,6 +1015,8 @@
     onboarding: document.getElementById('view-onboarding'),
     home: document.getElementById('view-home'),
     customize: document.getElementById('view-customize'),
+    map: document.getElementById('view-map'),
+    repeatAloud: document.getElementById('view-repeat-aloud'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -915,6 +1127,12 @@
     episode1: {
       id: 'episode1',
       badge: 'Episodio 1',
+      // The episode map reads this list — never hardcode a module's name
+      // or order inside the map-rendering code. dataFile is the external
+      // data source for that module's content (see CLAUDE.md rule 4).
+      modules: [
+        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/episode1-repeat-aloud.json' }
+      ],
       slotFields: [
         { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
         { key: 'mamma', label: 'Nome della mamma', type: 'select', options: CONFIG.people.mamma, def: 'giulia' },
@@ -939,6 +1157,39 @@
       ]
     }
   };
+
+  /* ============================================================
+     MODULE PROGRESS
+     Which of an episode's modules a user has completed, persisted per
+     user. Status of any module is derived from this, never stored
+     directly: 'completed' if in the set, 'current' if it's the first
+     one not yet completed, 'locked' otherwise. This is what keeps the
+     map from ever letting a user skip ahead.
+     ============================================================ */
+  function moduleProgressKey(episodeId, userName) {
+    return 'baseinglese:modules:' + episodeId + ':' + userName;
+  }
+
+  function loadModuleProgress(episodeId, userName) {
+    try {
+      var raw = localStorage.getItem(moduleProgressKey(episodeId, userName));
+      var parsed = raw ? JSON.parse(raw) : null;
+      return (parsed && Array.isArray(parsed.completed)) ? parsed : { completed: [] };
+    } catch (e) { return { completed: [] }; }
+  }
+
+  function markModuleCompleted(episode, userName, moduleId) {
+    var progress = loadModuleProgress(episode.id, userName);
+    if (progress.completed.indexOf(moduleId) === -1) progress.completed.push(moduleId);
+    try { localStorage.setItem(moduleProgressKey(episode.id, userName), JSON.stringify(progress)); } catch (e) {}
+    return progress;
+  }
+
+  function moduleStatus(episode, progress, moduleId) {
+    if (progress.completed.indexOf(moduleId) !== -1) return 'completed';
+    var firstIncomplete = episode.modules.find(function (m) { return progress.completed.indexOf(m.id) === -1; });
+    return firstIncomplete && firstIncomplete.id === moduleId ? 'current' : 'locked';
+  }
 
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
   // plain value (e.g. an age number) becomes all columns the same; people
@@ -1103,8 +1354,124 @@
   document.getElementById('go-episode').addEventListener('click', openCustomize);
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
 
-  document.getElementById('start-episode').addEventListener('click', function () {
-    startPronunciationExercise();
+  /* ============================================================
+     EPISODE MAP
+     Lists the modules declared on the episode (see EPISODES above) with
+     their derived status. Only the current module, or a completed one
+     being reviewed, can be opened — a locked row is a disabled button.
+     ============================================================ */
+  var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
+  var STATUS_ICON = { completed: '✓', current: '▶', locked: '🔒' };
+
+  function renderModuleList() {
+    var progress = loadModuleProgress(currentEpisode.id, getUserName());
+    var html = currentEpisode.modules.map(function (m) {
+      var status = moduleStatus(currentEpisode, progress, m.id);
+      var clickable = status !== 'locked';
+      return '<button type="button" class="module-row ' + status + '" data-module="' + m.id + '"' +
+        (clickable ? '' : ' disabled') + '>' +
+        '<span class="module-row-label"><span class="module-status-icon">' + STATUS_ICON[status] + '</span>' + m.label + '</span>' +
+        '<span class="module-state-badge">' + STATUS_LABEL[status] + '</span>' +
+        '</button>';
+    }).join('');
+    document.getElementById('module-list').innerHTML = html;
+  }
+
+  function openEpisodeMap() {
+    document.getElementById('map-episode-badge').textContent = currentEpisode.badge;
+    renderModuleList();
+    showView('map');
+  }
+
+  document.getElementById('module-list').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-module]');
+    if (!btn || btn.disabled) return;
+    var module = currentEpisode.modules.find(function (m) { return m.id === btn.getAttribute('data-module'); });
+    if (!module) return;
+    if (module.kind === 'repeatAloud') openRepeatAloud(module);
+  });
+
+  document.getElementById('map-back-home').addEventListener('click', goHome);
+  document.getElementById('map-practice-sentence').addEventListener('click', startPronunciationExercise);
+
+  document.getElementById('start-episode').addEventListener('click', openEpisodeMap);
+
+  /* ============================================================
+     MODULE: REPEAT ALOUD
+     Content comes from an external per-episode data file (never
+     hardcoded here, per CLAUDE.md rule 4), fetched once and cached in
+     memory. The embedded FALLBACK_REPEAT_ALOUD_DATA below exists only
+     for hosting contexts that can't serve the sibling data/ file (e.g.
+     this page published as a single-file preview) — the fetch is
+     always tried first, and this is never the authoring source.
+     ============================================================ */
+  var repeatAloudDataCache = {};
+  var currentRepeatAloudModule = null;
+
+  function loadRepeatAloudData(module) {
+    if (repeatAloudDataCache[module.dataFile]) {
+      return Promise.resolve(repeatAloudDataCache[module.dataFile]);
+    }
+    return fetch(module.dataFile)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        var fallback = window.FALLBACK_REPEAT_ALOUD_DATA && window.FALLBACK_REPEAT_ALOUD_DATA[module.dataFile];
+        if (fallback) return fallback;
+        throw new Error('no data available for ' + module.dataFile);
+      })
+      .then(function (data) {
+        repeatAloudDataCache[module.dataFile] = data;
+        return data;
+      });
+  }
+
+  function renderRepeatAloud(data) {
+    var itemsHtml = data.items.map(function (item) {
+      return '<div class="repeat-item panel">' +
+        '<div class="repeat-item-top">' +
+        '<span class="repeat-item-english">' + item.english + '</span>' +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">🔊</button>' +
+        '</div>' +
+        '<span class="repeat-item-italian">' + item.italian + '</span>' +
+        '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
+        '</div>';
+    }).join('');
+    var ruleHtml = data.generalRule
+      ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
+      : '';
+    document.getElementById('repeat-aloud-body').innerHTML =
+      '<div class="repeat-list">' + itemsHtml + '</div>' + ruleHtml;
+  }
+
+  function openRepeatAloud(module) {
+    currentRepeatAloudModule = module;
+    document.getElementById('repeat-aloud-title').textContent = module.label;
+    document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    showView('repeatAloud');
+    loadRepeatAloudData(module).then(function (data) {
+      if (currentRepeatAloudModule !== module) return;
+      renderRepeatAloud(data);
+    }).catch(function () {
+      if (currentRepeatAloudModule !== module) return;
+      document.getElementById('repeat-aloud-body').innerHTML =
+        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+    });
+  }
+
+  document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-say]');
+    if (!btn) return;
+    var data = repeatAloudDataCache[currentRepeatAloudModule.dataFile];
+    var item = data && data.items.find(function (it) { return it.id === btn.getAttribute('data-say'); });
+    if (!item) return;
+    toggleSpeak(item.english, btn);
+  });
+
+  document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
+    openEpisodeMap();
   });
 
   boot();
@@ -1274,47 +1641,57 @@
   }
 
   var synth = window.speechSynthesis;
+  var voices = [];
+
+  function loadVoices() {
+    voices = synth ? synth.getVoices() : [];
+  }
 
   if (!synth) {
     speakBtn.disabled = true;
   } else {
-    var voices = [];
-
-    function loadVoices() {
-      voices = synth.getVoices();
-    }
     loadVoices();
     if ('onvoiceschanged' in synth) {
       synth.onvoiceschanged = loadVoices;
     }
+  }
 
-    function pickVoice() {
-      if (!voices.length) voices = synth.getVoices();
-      var preferredNames = CONFIG.speech.preferredVoiceNames;
-      for (var k = 0; k < preferredNames.length; k++) {
-        var match = voices.find(function (v) { return v.name === preferredNames[k]; });
-        if (match) return match;
-      }
-      var enUS = voices.find(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
-      if (enUS) return enUS;
-      return voices.find(function (v) { return v.lang && v.lang.indexOf('en') === 0; }) || null;
+  function pickVoice() {
+    if (!synth) return null;
+    if (!voices.length) voices = synth.getVoices();
+    var preferredNames = CONFIG.speech.preferredVoiceNames;
+    for (var k = 0; k < preferredNames.length; k++) {
+      var match = voices.find(function (v) { return v.name === preferredNames[k]; });
+      if (match) return match;
     }
+    var enUS = voices.find(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
+    if (enUS) return enUS;
+    return voices.find(function (v) { return v.lang && v.lang.indexOf('en') === 0; }) || null;
+  }
 
+  // Shared text-to-speech helper: used by the full-sentence speak button
+  // and by every Repeat Aloud item's listen button. Clicking the button
+  // that is currently playing stops it; clicking a different one while
+  // something else is playing interrupts that and starts the new one.
+  function toggleSpeak(text, btn) {
+    if (!synth) return;
+    var wasSpeaking = btn.classList.contains('speaking');
+    if (synth.speaking) synth.cancel();
+    if (wasSpeaking) return;
+    var utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = CONFIG.speech.synthesisLang;
+    var voice = pickVoice();
+    if (voice) utterance.voice = voice;
+    utterance.rate = CONFIG.speech.synthesisRate;
+    utterance.onstart = function () { btn.classList.add('speaking'); };
+    utterance.onend = function () { btn.classList.remove('speaking'); };
+    utterance.onerror = function () { btn.classList.remove('speaking'); };
+    synth.speak(utterance);
+  }
+
+  if (synth) {
     speakBtn.addEventListener('click', function () {
-      if (synth.speaking) {
-        synth.cancel();
-        return;
-      }
-      var utterance = new SpeechSynthesisUtterance(currentPhraseText());
-      utterance.lang = CONFIG.speech.synthesisLang;
-      var voice = pickVoice();
-      if (voice) utterance.voice = voice;
-      utterance.rate = CONFIG.speech.synthesisRate;
-      utterance.onstart = function () { speakBtn.classList.add('speaking'); };
-      utterance.onend = function () { speakBtn.classList.remove('speaking'); };
-      utterance.onerror = function () { speakBtn.classList.remove('speaking'); };
-      synth.cancel();
-      synth.speak(utterance);
+      toggleSpeak(currentPhraseText(), speakBtn);
     });
   }
 
