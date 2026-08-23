@@ -67,28 +67,42 @@
     // text. fr/es/de are reserved columns for future languages — leave
     // them '' until the app supports picking those. Add a row to make a
     // new name selectable for that role; no other code needs to change. ----
+    // The first row of each table is the default. The rest are here so the
+    // picker has more than one option to test.
     people: {
       papa: [
-        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' }
+        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' },
+        { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
+        { value: 'francesco', it: 'Francesco', en: 'Francis', fr: '', es: '', de: '' }
       ],
       mamma: [
-        { value: 'giulia', it: 'Giulia', en: 'Julia', fr: '', es: '', de: '' }
+        { value: 'giulia', it: 'Giulia', en: 'Julia', fr: '', es: '', de: '' },
+        { value: 'anna', it: 'Anna', en: 'Anna', fr: '', es: '', de: '' },
+        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' }
       ],
       figlia: [
-        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' }
+        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' },
+        { value: 'emma', it: 'Emma', en: 'Emma', fr: '', es: '', de: '' },
+        { value: 'alice', it: 'Alice', en: 'Alice', fr: '', es: '', de: '' }
       ],
       figlio: [
-        { value: 'leo', it: 'Leo', en: 'Leo', fr: '', es: '', de: '' }
+        { value: 'leo', it: 'Leo', en: 'Leo', fr: '', es: '', de: '' },
+        { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
+        { value: 'tommaso', it: 'Tommaso', en: 'Thomas', fr: '', es: '', de: '' }
       ]
     },
     // ---- predefined place tables: same { value, it, en, fr, es, de }
     // shape as people. Add a row here to make a new place selectable. ----
     places: {
       departures: [
-        { value: 'mondovi', it: 'Mondovì', en: 'Mondovì', fr: '', es: '', de: '' }
+        { value: 'mondovi', it: 'Mondovì', en: 'Mondovì', fr: '', es: '', de: '' },
+        { value: 'torino', it: 'Torino', en: 'Turin', fr: '', es: '', de: '' },
+        { value: 'milano', it: 'Milano', en: 'Milan', fr: '', es: '', de: '' }
       ],
       destinations: [
-        { value: 'cina', it: 'Cina', en: 'China', fr: '', es: '', de: '' }
+        { value: 'cina', it: 'Cina', en: 'China', fr: '', es: '', de: '' },
+        { value: 'giappone', it: 'Giappone', en: 'Japan', fr: '', es: '', de: '' },
+        { value: 'stati-uniti', it: 'Stati Uniti', en: 'United States', fr: '', es: '', de: '' }
       ]
     },
     // ---- predefined age choices per role: plain numbers, picked by
