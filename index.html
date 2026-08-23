@@ -176,6 +176,11 @@
 
   .btn-block { width: 100%; }
 
+  .btn-sm {
+    padding: 8px 14px;
+    font-size: 0.8rem;
+  }
+
   .card {
     background: var(--card);
     border: 1px solid var(--border);
@@ -336,11 +341,52 @@
 
   .switch-user:hover { opacity: 1; color: var(--accent); }
 
+  /* ---------- customization view ---------- */
+  .slot-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .slot-card {
+    padding: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .slot-card-fields {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .slot-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .slot-field.slot-field-narrow { flex: 0 1 90px; min-width: 80px; }
+
+  .slot-label {
+    font-size: 0.76rem;
+    color: var(--text);
+    opacity: 0.65;
+  }
+
+  .slot-card input[type="text"] { background: var(--card); }
+
   /* ---------- pronunciation view ---------- */
   .phrase {
     font-family: var(--font-display);
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     line-height: 2.3;
     text-align: center;
     padding: 24px 20px;
@@ -357,6 +403,7 @@
   .phrase span.correct { background: var(--correct-bg); color: var(--correct-ink); }
   .phrase span.similar { background: var(--similar-bg); color: var(--similar-ink); }
   .phrase span.wrong   { background: var(--wrong-bg); color: var(--wrong-ink); }
+  .phrase span.new     { background: transparent; border: 1px dashed var(--border); opacity: 0.7; }
 
   .listen-row { display: flex; justify-content: center; }
 
@@ -427,7 +474,7 @@
   .legend {
     display: flex;
     justify-content: center;
-    gap: 20px;
+    gap: 16px;
     flex-wrap: wrap;
     font-size: 0.8rem;
     color: var(--text);
@@ -439,6 +486,22 @@
   .dot.correct { background: var(--correct-ink); }
   .dot.similar { background: var(--similar-ink); }
   .dot.wrong { background: var(--wrong-ink); }
+  .dot.new { background: transparent; border: 1px dashed var(--text); }
+
+  .edit-custom-link {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text);
+    opacity: 0.65;
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: var(--font-body);
+    padding: 4px;
+  }
+
+  .edit-custom-link:hover { opacity: 1; color: var(--accent); }
 
   .warning {
     background: var(--wrong-bg);
@@ -491,25 +554,45 @@
           </div>
 
           <div class="home-actions">
-            <button type="button" class="btn btn-primary btn-block" id="go-pronunciation">Vai al test di pronuncia</button>
+            <button type="button" class="btn btn-primary btn-block" id="go-episode">Inizia Episodio 1</button>
             <button type="button" class="switch-user" id="switch-user">Non sei tu? Cambia nome</button>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ============ VIEW: PRONUNCIATION TEST ============ -->
+    <!-- ============ VIEW: EPISODE CUSTOMIZATION ============ -->
+    <section id="view-customize" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
+            <span class="badge" id="customize-episode-badge">Episodio 1</span>
+          </div>
+
+          <header class="app-header">
+            <h1>Personalizza la tua storia o lascia così.</h1>
+          </header>
+
+          <div class="slot-grid" id="slot-grid"></div>
+
+          <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: PRONUNCIATION EXERCISE ============ -->
     <section id="view-pronunciation" class="view">
       <div class="card">
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="back-home">← Home</button>
-            <span class="badge">Pronunciation Check</span>
+            <span class="badge" id="pronunciation-episode-badge">Episodio 1</span>
           </div>
 
           <header class="app-header">
             <h1>Prova la tua pronuncia</h1>
-            <p style="opacity:0.7; font-size:0.92rem;">Ascolta la frase, poi premi il microfono e leggila ad alta voce</p>
+            <p style="opacity:0.7; font-size:0.92rem;">Il colore di ogni parola è il tuo progresso salvato: 2 risposte corrette di fila fanno salire di livello, un errore lo fa scendere subito.</p>
           </header>
 
           <div class="listen-row">
@@ -526,10 +609,13 @@
           <div id="transcript" class="panel"></div>
 
           <div class="legend">
-            <span><i class="dot correct"></i> corretta</span>
-            <span><i class="dot similar"></i> simile</span>
-            <span><i class="dot wrong"></i> sbagliata / mancante</span>
+            <span><i class="dot new"></i> nuova</span>
+            <span><i class="dot wrong"></i> da esercitare</span>
+            <span><i class="dot similar"></i> in progresso</span>
+            <span><i class="dot correct"></i> padroneggiata</span>
           </div>
+
+          <button type="button" class="edit-custom-link" id="edit-custom">✎ Modifica i nomi della storia</button>
 
           <div class="warning" id="warning">
             Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
@@ -602,6 +688,7 @@
   var views = {
     onboarding: document.getElementById('view-onboarding'),
     home: document.getElementById('view-home'),
+    customize: document.getElementById('view-customize'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -643,27 +730,246 @@
     input.focus();
   });
 
-  document.getElementById('go-pronunciation').addEventListener('click', function () {
-    showView('pronunciation');
+  document.getElementById('back-home').addEventListener('click', goHome);
+  document.getElementById('customize-back-home').addEventListener('click', goHome);
+
+  /* ============================================================
+     CUMULATIVE MASTERY (foundation #1)
+     Tracks a color state — 'rosso' / 'giallo' / 'verde' — per exercise
+     item (a word or a phrase), per user. Unseen items have no entry
+     yet, which the UI renders as "nuova".
+     ============================================================ */
+
+  // The single, easily tunable setting: how many consecutive correct
+  // answers on the same item are required to climb one level.
+  var PROMOTION_STREAK = 2;
+
+  var LEVELS = ['rosso', 'giallo', 'verde'];
+  var LEVEL_CLASS = { rosso: 'wrong', giallo: 'similar', verde: 'correct' };
+
+  function nextLevel(level) {
+    var idx = LEVELS.indexOf(level);
+    return idx > -1 && idx < LEVELS.length - 1 ? LEVELS[idx + 1] : level;
+  }
+
+  function prevLevel(level) {
+    var idx = LEVELS.indexOf(level);
+    return idx > 0 ? LEVELS[idx - 1] : LEVELS[0];
+  }
+
+  function masteryStorageKey(episodeId, userName) {
+    return 'baseinglese:mastery:' + episodeId + ':' + userName;
+  }
+
+  function loadMastery(episodeId, userName) {
+    try {
+      var raw = localStorage.getItem(masteryStorageKey(episodeId, userName));
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+
+  function saveMastery(episodeId, userName, mastery) {
+    try { localStorage.setItem(masteryStorageKey(episodeId, userName), JSON.stringify(mastery)); } catch (e) {}
+  }
+
+  // result: 'correct' | 'similar' | 'wrong'
+  function applyMasteryResult(entry, result) {
+    if (!entry) {
+      // First ever attempt on this item establishes the baseline tracked
+      // level; even a correct first hit still needs the streak rule to climb.
+      return { level: 'rosso', streak: result === 'correct' ? 1 : 0 };
+    }
+    if (result === 'wrong') {
+      return { level: prevLevel(entry.level), streak: 0 };
+    }
+    if (result === 'similar') {
+      return { level: entry.level, streak: 0 };
+    }
+    var streak = entry.streak + 1;
+    if (streak >= PROMOTION_STREAK && entry.level !== 'verde') {
+      return { level: nextLevel(entry.level), streak: 0 };
+    }
+    return { level: entry.level, streak: streak };
+  }
+
+  /* ============================================================
+     EPISODES DATA (foundation #2)
+     Each episode declares only the slots its own text uses, with a
+     default value. The customization card is generated from this.
+     ============================================================ */
+  var EPISODES = {
+    episode1: {
+      id: 'episode1',
+      badge: 'Episodio 1',
+      slotFields: [
+        { key: 'papa', label: 'Nome del papà / utente', def: 'Angelo' },
+        { key: 'mamma', label: 'Nome della mamma', def: 'Agata' },
+        { key: 'figliaNome', label: 'Nome della figlia', def: 'Maria', group: 'figlia' },
+        { key: 'figliaEta', label: 'Età della figlia', def: '16', group: 'figlia', narrow: true },
+        { key: 'figlioNome', label: 'Nome del figlio', def: 'Davide', group: 'figlio' },
+        { key: 'figlioEta', label: 'Età del figlio', def: '10', group: 'figlio', narrow: true },
+        { key: 'partenza', label: 'Città di partenza', def: 'Mondovì' },
+        { key: 'destinazione', label: 'Destinazione', def: 'Cina' }
+      ],
+      // Fixed words are authored individually so punctuation stays attached
+      // to the right word; slots expand to one or more words at render time.
+      segments: [
+        { text: "Hello," }, { text: "I'm" }, { slot: 'papa', suffix: '.' },
+        { text: "This" }, { text: "is" }, { slot: 'mamma', suffix: ',' },
+        { text: "my" }, { text: "wife." }, { text: "Our" }, { text: "children" }, { text: "are" },
+        { slot: 'figliaNome', suffix: ',' }, { text: "who" }, { text: "is" }, { slot: 'figliaEta' },
+        { text: "years" }, { text: "old," }, { text: "and" }, { slot: 'figlioNome', suffix: ',' },
+        { text: "who" }, { text: "is" }, { slot: 'figlioEta' }, { text: "years" }, { text: "old." },
+        { text: "We" }, { text: "are" }, { text: "leaving" }, { slot: 'partenza' },
+        { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
+      ]
+    }
+  };
+
+  function slotDefault(episode, key) {
+    var field = episode.slotFields.find(function (f) { return f.key === key; });
+    return field ? field.def : '';
+  }
+
+  function customValuesKey(episodeId, userName) {
+    return 'baseinglese:' + episodeId + ':custom:' + userName;
+  }
+
+  function loadCustomValues(episode, userName) {
+    var stored = {};
+    try {
+      var raw = localStorage.getItem(customValuesKey(episode.id, userName));
+      stored = raw ? JSON.parse(raw) : {};
+    } catch (e) {}
+    var values = {};
+    episode.slotFields.forEach(function (f) {
+      values[f.key] = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
+    });
+    return values;
+  }
+
+  function saveCustomValues(episode, userName, values) {
+    try { localStorage.setItem(customValuesKey(episode.id, userName), JSON.stringify(values)); } catch (e) {}
+  }
+
+  // Groups slotFields for card layout: fields sharing a "group" render in
+  // one card (e.g. child's name + age), others get their own card.
+  function groupSlotFields(fields) {
+    var groups = [];
+    var byGroup = {};
+    fields.forEach(function (f) {
+      if (f.group) {
+        if (!byGroup[f.group]) {
+          byGroup[f.group] = { key: f.group, fields: [] };
+          groups.push(byGroup[f.group]);
+        }
+        byGroup[f.group].fields.push(f);
+      } else {
+        groups.push({ key: f.key, fields: [f] });
+      }
+    });
+    return groups;
+  }
+
+  // Builds the flat target token list for alignment/rendering: each token
+  // is a rendered word plus the stable mastery unit it belongs to. Fixed
+  // words get a position-based id; every word of a slot's value shares the
+  // slot's own id, so renaming a slot never shifts or resets other items.
+  function buildTargetTokens(episode, values) {
+    var tokens = [];
+    var fixedIdx = 0;
+    episode.segments.forEach(function (seg) {
+      if (seg.text) {
+        tokens.push({ word: seg.text, unitId: 'fixed:' + (fixedIdx++) });
+      } else {
+        var raw = (values[seg.slot] || '').trim() || slotDefault(episode, seg.slot);
+        var words = raw.split(/\s+/).filter(Boolean);
+        if (!words.length) words = [''];
+        words.forEach(function (w, i) {
+          var isLast = i === words.length - 1;
+          tokens.push({ word: w + (isLast && seg.suffix ? seg.suffix : ''), unitId: 'slot:' + seg.slot });
+        });
+      }
+    });
+    return tokens;
+  }
+
+  /* ============================================================
+     EPISODE CUSTOMIZATION VIEW
+     ============================================================ */
+  var currentEpisode = EPISODES.episode1;
+  var currentValues = null;
+
+  function renderSlotGrid() {
+    var grid = document.getElementById('slot-grid');
+    var groups = groupSlotFields(currentEpisode.slotFields);
+    grid.innerHTML = groups.map(function (g) {
+      var fieldsHtml = g.fields.map(function (f) {
+        return '<label class="slot-field' + (f.narrow ? ' slot-field-narrow' : '') + '">' +
+          '<span class="slot-label">' + f.label + '</span>' +
+          '<input type="text" data-slot="' + f.key + '" value="' + (currentValues[f.key] || '') + '">' +
+          '</label>';
+      }).join('');
+      return '<div class="slot-card panel">' +
+        '<div class="slot-card-fields">' + fieldsHtml + '</div>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-reset-group="' + g.key + '">↺ Reset</button>' +
+        '</div>';
+    }).join('');
+  }
+
+  document.getElementById('slot-grid').addEventListener('input', function (e) {
+    var key = e.target.getAttribute('data-slot');
+    if (!key) return;
+    currentValues[key] = e.target.value;
+    saveCustomValues(currentEpisode, getUserName(), currentValues);
   });
 
-  document.getElementById('back-home').addEventListener('click', function () {
-    goHome();
+  document.getElementById('slot-grid').addEventListener('click', function (e) {
+    var groupKey = e.target.getAttribute('data-reset-group');
+    if (!groupKey) return;
+    currentEpisode.slotFields.forEach(function (f) {
+      var owner = f.group || f.key;
+      if (owner === groupKey) {
+        currentValues[f.key] = f.def;
+        var input = document.querySelector('[data-slot="' + f.key + '"]');
+        if (input) input.value = f.def;
+      }
+    });
+    saveCustomValues(currentEpisode, getUserName(), currentValues);
+  });
+
+  document.getElementById('go-episode').addEventListener('click', function () {
+    currentValues = loadCustomValues(currentEpisode, getUserName());
+    document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
+    renderSlotGrid();
+    showView('customize');
+  });
+
+  document.getElementById('start-episode').addEventListener('click', function () {
+    startPronunciationExercise();
+  });
+
+  document.getElementById('edit-custom').addEventListener('click', function () {
+    currentValues = loadCustomValues(currentEpisode, getUserName());
+    document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
+    renderSlotGrid();
+    showView('customize');
   });
 
   boot();
 
   /* ============================================================
-     FEATURE: PRONUNCIATION TEST
+     FEATURE: PRONUNCIATION EXERCISE
      ============================================================ */
-  var TARGET_PHRASE = "Hello, I'm Giancarlo. I'm from Mondovì, Italy.";
-
   var phraseEl = document.getElementById('phrase');
   var micBtn = document.getElementById('mic-btn');
   var speakBtn = document.getElementById('speak-btn');
   var statusEl = document.getElementById('status');
   var transcriptEl = document.getElementById('transcript');
   var warningEl = document.getElementById('warning');
+
+  var currentTargetTokens = [];
+  var currentMastery = {};
 
   function stripForCompare(word) {
     return word
@@ -676,12 +982,26 @@
     return text.trim().split(/\s+/).filter(Boolean);
   }
 
-  var targetWords = tokenize(TARGET_PHRASE);
+  function currentPhraseText() {
+    return currentTargetTokens.map(function (t) { return t.word; }).join(' ');
+  }
 
-  function renderInitial() {
-    phraseEl.innerHTML = targetWords
-      .map(function (w) { return '<span>' + w + '</span>'; })
-      .join(' ');
+  function renderPhrase() {
+    phraseEl.innerHTML = currentTargetTokens.map(function (t) {
+      var entry = currentMastery[t.unitId];
+      var cls = entry ? LEVEL_CLASS[entry.level] : 'new';
+      return '<span class="' + cls + '">' + t.word + '</span>';
+    }).join(' ');
+  }
+
+  function startPronunciationExercise() {
+    currentTargetTokens = buildTargetTokens(currentEpisode, currentValues);
+    currentMastery = loadMastery(currentEpisode.id, getUserName());
+    document.getElementById('pronunciation-episode-badge').textContent = currentEpisode.badge;
+    statusEl.textContent = 'Premi il microfono per iniziare';
+    transcriptEl.innerHTML = '';
+    renderPhrase();
+    showView('pronunciation');
   }
 
   function levenshtein(a, b) {
@@ -770,20 +1090,33 @@
     return 'wrong';
   }
 
-  function renderResult(recognizedText) {
+  var RESULT_RANK = { correct: 0, similar: 1, wrong: 2 };
+
+  function submitAttempt(recognizedText) {
     var recognizedWords = tokenize(recognizedText);
+    var targetWords = currentTargetTokens.map(function (t) { return t.word; });
     var pairs = alignWords(targetWords, recognizedWords);
-    var spans = pairs.map(function (pair) {
-      var word = targetWords[pair.targetIndex];
+
+    // Roll per-word results up to their mastery unit: the worst word in a
+    // multi-word unit (e.g. a two-word name) decides that unit's outcome.
+    var unitResults = {};
+    pairs.forEach(function (pair) {
+      var token = currentTargetTokens[pair.targetIndex];
       var recognizedWord = pair.recognizedIndex !== null ? recognizedWords[pair.recognizedIndex] : null;
-      var cls = classify(word, recognizedWord);
-      return '<span class="' + cls + '">' + word + '</span>';
+      var result = classify(token.word, recognizedWord);
+      if (!unitResults[token.unitId] || RESULT_RANK[result] > RESULT_RANK[unitResults[token.unitId]]) {
+        unitResults[token.unitId] = result;
+      }
     });
-    phraseEl.innerHTML = spans.join(' ');
+
+    Object.keys(unitResults).forEach(function (unitId) {
+      currentMastery[unitId] = applyMasteryResult(currentMastery[unitId], unitResults[unitId]);
+    });
+    saveMastery(currentEpisode.id, getUserName(), currentMastery);
+
+    renderPhrase();
     transcriptEl.innerHTML = '<strong>Hai detto:</strong> ' + (recognizedText ? recognizedText : '(nessun testo riconosciuto)');
   }
-
-  renderInitial();
 
   var synth = window.speechSynthesis;
 
@@ -822,7 +1155,7 @@
         synth.cancel();
         return;
       }
-      var utterance = new SpeechSynthesisUtterance(TARGET_PHRASE);
+      var utterance = new SpeechSynthesisUtterance(currentPhraseText());
       utterance.lang = 'en-US';
       var voice = pickVoice();
       if (voice) utterance.voice = voice;
@@ -876,7 +1209,7 @@
 
     recognition.onresult = function (event) {
       var text = event.results[0][0].transcript;
-      renderResult(text);
+      submitAttempt(text);
       statusEl.textContent = 'Fatto! Premi di nuovo il microfono per riprovare';
     };
 
@@ -886,7 +1219,6 @@
         return;
       }
       if (synth && synth.speaking) synth.cancel();
-      renderInitial();
       transcriptEl.innerHTML = '';
       try {
         recognition.start();
