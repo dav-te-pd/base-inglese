@@ -178,6 +178,38 @@
     outline-offset: 3px;
   }
 
+  .listen-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  #speak-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--surface-alt);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, sans-serif;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  #speak-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  #speak-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  #speak-btn.speaking { border-color: var(--accent); color: var(--accent); }
+
+  #speak-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  #speak-btn:disabled:hover { border-color: var(--border); color: var(--ink); }
+
   #mic-btn.listening {
     background: var(--wrong-ink);
     animation: pulse 1.4s infinite;
@@ -250,6 +282,10 @@
       <p class="subtitle">Premi il microfono e leggi ad alta voce la frase qui sotto</p>
     </header>
 
+    <div class="listen-row">
+      <button id="speak-btn" title="Ascolta la frase" aria-label="Ascolta la frase">🔊 Ascolta</button>
+    </div>
+
     <div class="phrase" id="phrase"></div>
 
     <div class="controls">
@@ -277,6 +313,7 @@
 
   const phraseEl = document.getElementById('phrase');
   const micBtn = document.getElementById('mic-btn');
+  const speakBtn = document.getElementById('speak-btn');
   const statusEl = document.getElementById('status');
   const transcriptEl = document.getElementById('transcript');
   const warningEl = document.getElementById('warning');
@@ -401,6 +438,56 @@
 
   renderInitial();
 
+  const synth = window.speechSynthesis;
+
+  if (!synth) {
+    speakBtn.disabled = true;
+  } else {
+    let voices = [];
+
+    function loadVoices() {
+      voices = synth.getVoices();
+    }
+    loadVoices();
+    if ('onvoiceschanged' in synth) {
+      synth.onvoiceschanged = loadVoices;
+    }
+
+    function pickVoice() {
+      if (!voices.length) voices = synth.getVoices();
+      const preferredNames = [
+        'Google US English',
+        'Samantha',
+        'Microsoft Aria Online (Natural) - English (United States)',
+        'Microsoft Jenny Online (Natural) - English (United States)'
+      ];
+      for (const name of preferredNames) {
+        const match = voices.find(function (v) { return v.name === name; });
+        if (match) return match;
+      }
+      const enUS = voices.find(function (v) { return v.lang === 'en-US'; });
+      if (enUS) return enUS;
+      return voices.find(function (v) { return v.lang && v.lang.indexOf('en') === 0; }) || null;
+    }
+
+    speakBtn.addEventListener('click', function () {
+      if (synth.speaking) {
+        synth.cancel();
+        return;
+      }
+      const utterance = new SpeechSynthesisUtterance(TARGET_PHRASE);
+      utterance.lang = 'en-US';
+      const voice = pickVoice();
+      if (voice) utterance.voice = voice;
+      utterance.rate = 0.95;
+      utterance.onstart = function () { speakBtn.classList.add('speaking'); };
+      utterance.onend = function () { speakBtn.classList.remove('speaking'); };
+      utterance.onerror = function () { speakBtn.classList.remove('speaking'); };
+      synth.cancel();
+      synth.speak(utterance);
+    });
+  }
+
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
   if (!SpeechRecognition) {
@@ -451,6 +538,7 @@
         recognition.stop();
         return;
       }
+      if (synth && synth.speaking) synth.cancel();
       renderInitial();
       transcriptEl.innerHTML = '';
       try {
