@@ -61,21 +61,41 @@
         { value: 'natura', label: 'Natura', dot: '#7ec850' }
       ]
     },
-    // ---- predefined first-name lists, used by any episode's name slots ----
-    names: {
-      male: ['Angelo', 'Davide', 'Marco', 'Luca', 'Giovanni', 'Paolo', 'Stefano', 'Andrea'],
-      female: ['Agata', 'Maria', 'Giulia', 'Anna', 'Sara', 'Chiara', 'Elena', 'Francesca']
+    // ---- predefined character-name tables, one per family role. Each row
+    // is { value, it, en, fr, es, de }: "it" is shown to the user when
+    // picking, "en" is what's actually spoken in the (English) exercise
+    // text. fr/es/de are reserved columns for future languages — leave
+    // them '' until the app supports picking those. Add a row to make a
+    // new name selectable for that role; no other code needs to change. ----
+    people: {
+      papa: [
+        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' }
+      ],
+      mamma: [
+        { value: 'giulia', it: 'Giulia', en: 'Julia', fr: '', es: '', de: '' }
+      ],
+      figlia: [
+        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' }
+      ],
+      figlio: [
+        { value: 'leo', it: 'Leo', en: 'Leo', fr: '', es: '', de: '' }
+      ]
     },
-    // ---- predefined place lists: Italian label shown to the user,
-    // English "phrase" used inside the (English) exercise text.
-    // Add an entry here to make a new place selectable everywhere. ----
+    // ---- predefined place tables: same { value, it, en, fr, es, de }
+    // shape as people. Add a row here to make a new place selectable. ----
     places: {
       departures: [
-        { value: 'mondovi', label: 'Mondovì', phrase: 'Mondovì' }
+        { value: 'mondovi', it: 'Mondovì', en: 'Mondovì', fr: '', es: '', de: '' }
       ],
       destinations: [
-        { value: 'cina', label: 'Cina', phrase: 'China' }
+        { value: 'cina', it: 'Cina', en: 'China', fr: '', es: '', de: '' }
       ]
+    },
+    // ---- predefined age choices per role: plain numbers, picked by
+    // clicking rather than typed — no table, no auto-categorization. ----
+    ages: {
+      figlia: [8, 10, 16],
+      figlio: [6, 8, 10]
     }
   };
 
@@ -882,12 +902,12 @@
       id: 'episode1',
       badge: 'Episodio 1',
       slotFields: [
-        { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.names.male, def: 'Angelo' },
-        { key: 'mamma', label: 'Nome della mamma', type: 'select', options: CONFIG.names.female, def: 'Agata' },
-        { key: 'figliaNome', label: 'Nome della figlia', type: 'select', options: CONFIG.names.female, def: 'Maria', group: 'figlia' },
-        { key: 'figliaEta', label: 'Età della figlia', type: 'text', def: '16', group: 'figlia', narrow: true },
-        { key: 'figlioNome', label: 'Nome del figlio', type: 'select', options: CONFIG.names.male, def: 'Davide', group: 'figlio' },
-        { key: 'figlioEta', label: 'Età del figlio', type: 'text', def: '10', group: 'figlio', narrow: true },
+        { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
+        { key: 'mamma', label: 'Nome della mamma', type: 'select', options: CONFIG.people.mamma, def: 'giulia' },
+        { key: 'figliaNome', label: 'Nome della figlia', type: 'select', options: CONFIG.people.figlia, def: 'sofia', group: 'figlia' },
+        { key: 'figliaEta', label: 'Età della figlia', type: 'select', options: CONFIG.ages.figlia, def: '16', group: 'figlia', narrow: true },
+        { key: 'figlioNome', label: 'Nome del figlio', type: 'select', options: CONFIG.people.figlio, def: 'leo', group: 'figlio' },
+        { key: 'figlioEta', label: 'Età del figlio', type: 'select', options: CONFIG.ages.figlio, def: '10', group: 'figlio', narrow: true },
         { key: 'partenza', label: 'Città di partenza', type: 'select', options: CONFIG.places.departures, def: 'mondovi' },
         { key: 'destinazione', label: 'Destinazione', type: 'select', options: CONFIG.places.destinations, def: 'cina' }
       ],
@@ -906,11 +926,14 @@
     }
   };
 
-  // Normalizes a slot's option list into {value, label, phrase}: a plain
-  // string (names) becomes all three; place entries already have this shape.
+  // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
+  // plain value (e.g. an age number) becomes all columns the same; people
+  // and place rows already have this shape.
   function slotOptions(field) {
     return (field.options || []).map(function (item) {
-      return typeof item === 'string' ? { value: item, label: item, phrase: item } : item;
+      if (item && typeof item === 'object') return item;
+      var s = String(item);
+      return { value: s, it: s, en: s, fr: '', es: '', de: '' };
     });
   }
 
@@ -924,14 +947,14 @@
   }
 
   // What actually gets spoken in the exercise phrase for a slot's current
-  // (stored) value: the option's English "phrase" for select slots, or the
-  // raw text as typed for free-text slots (e.g. age).
+  // (stored) value: the option's "en" column for select slots, or the raw
+  // text as typed for any free-text slot.
   function resolveSlotPhrase(episode, key, rawValue) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {
       var opts = slotOptions(field);
       var match = opts.find(function (o) { return o.value === rawValue; });
-      return match ? match.phrase : (opts[0] ? opts[0].phrase : rawValue);
+      return match ? match.en : (opts[0] ? opts[0].en : rawValue);
     }
     return rawValue;
   }
@@ -1017,7 +1040,7 @@
           var opts = slotOptions(f);
           control = '<select data-slot="' + f.key + '">' + opts.map(function (o) {
             var selected = o.value === currentValues[f.key] ? ' selected' : '';
-            return '<option value="' + o.value + '"' + selected + '>' + o.label + '</option>';
+            return '<option value="' + o.value + '"' + selected + '>' + o.it + '</option>';
           }).join('') + '</select>';
         } else {
           control = '<input type="text" data-slot="' + f.key + '" value="' + (currentValues[f.key] || '') + '">';
