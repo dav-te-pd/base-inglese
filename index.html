@@ -59,9 +59,13 @@
       // maxRecordingMsPerWord) + maxRecordingMarginMs.
       maxRecordingMsPerWord: 1000,
       maxRecordingMarginMs: 3000,
-      // Attempt count (on the same sentence) at/above which the gentle
-      // "you've already tried N times" reminder appears.
-      attemptsReminderThreshold: 3
+      // Attempt count (on the same sentence) at which the "you've tried
+      // 3 times" nudge popup appears — also the label's "DI N" denominator.
+      attemptsReminderThreshold: 3,
+      // Minimum % of correct (green) words, out of the whole target
+      // sentence, needed for 1/2/3 stars — mirrors the "range" fields
+      // documented in data/messaggi-feedback.json's starRating.
+      starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 }
     },
     // ---- selectable color themes ----
     themes: {
@@ -216,6 +220,55 @@
         body: '<p>Ascolta con 🔊, poi tocca il microfono e ripeti la frase. Il cestino durante la registrazione annulla senza valutare.</p><p>Dopo aver parlato, guarda i colori: verde ok, giallo quasi, rosso da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
       }
     }
+  };
+
+  // Mirrors data/messaggi-feedback.json — same resilience-net role as the
+  // blocks above, used by Voice Coach for star ratings and attempt nudges.
+  window.FALLBACK_FEEDBACK_MESSAGES = {
+    starRating: {
+      rule: 'basata sulla percentuale di parole verdi sul totale',
+      '0': { range: '0%', showMessage: false, note: 'nessun messaggio mostrato, solo le stelle vuote' },
+      '1': { range: '1-49%', showMessage: true, messageKey: 'unaStella' },
+      '2': { range: '50-79%', showMessage: true, messageKey: 'dueStelle' },
+      '3': { range: '80-100%', showMessage: true, messageKey: 'treStelle' }
+    },
+    messages: {
+      treStelle: [
+        'Perfetto! Pronuncia impeccabile.',
+        'Wow, sembri già un madrelingua!',
+        'Eccellente, continua così!',
+        'Fantastico, hai centrato tutto.',
+        'Bravissimo, non c\'è nulla da correggere.'
+      ],
+      dueStelle: [
+        'Bene, ci sei quasi!',
+        'Buon lavoro, qualche dettaglio da limare.',
+        'Sulla strada giusta, continua a esercitarti.',
+        'Non male! Un altro paio di tentativi e sarà perfetto.',
+        'Ci sei quasi, un piccolo sforzo in più.'
+      ],
+      unaStella: [
+        'Va bene così, l\'importante è provarci.',
+        'Ci vuole pratica, e tu la stai facendo — bravo.',
+        'Ogni tentativo ti avvicina di più, continua.',
+        'Nessun problema, ripasseremo insieme questa frase.',
+        'Va tutto bene, è normale all\'inizio.'
+      ]
+    },
+    terzoTentativoMessages: [
+      {
+        title: 'Tranquillo, capita!',
+        body: 'Hai provato già 3 volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Ti consiglio di andare avanti e finire l\'esercizio: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale. Il nostro metodo è pensato apposta per farti rivedere quello che ti serve di più, senza doverti impuntare adesso. Non preoccuparti, ci arriverai.'
+      },
+      {
+        title: 'Nessuna fretta',
+        body: 'Tre tentativi su questa frase — succede, ed è anche un buon segno: vuol dire che ci stai davvero provando. Ti conviene proseguire con l\'esercizio; questa frase la ritroverai più avanti nei ripassi mirati, proprio quando servirà di più. Impara con calma, il metodo fa il resto.'
+      },
+      {
+        title: 'Ci arriverai, promesso',
+        body: 'A volte una frase è più ostica delle altre, capita anche ai migliori. Meglio andare avanti ora e lasciarla decantare — tornerà da sola nei prossimi ripassi, e la prossima volta ti sembrerà più facile. Fidati del percorso.'
+      }
+    ]
   };
 
   // Applied before first paint so a returning user's saved theme never flashes to the default.
@@ -1128,36 +1181,50 @@
     gap: 12px;
   }
 
-  .record-controls {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-  }
-
-  .record-btn {
-    width: 64px;
-    height: 64px;
+  /* Single button that morphs through the record states — never swapped
+     for a different element, just restyled/re-labeled by JS. */
+  .record-toggle-btn {
+    width: 76px;
+    height: 76px;
     border-radius: 50%;
     border: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.4rem;
+    font-size: 1.8rem;
+    color: var(--accent-ink);
+    background: var(--correct-ink);
     cursor: pointer;
-    transition: transform 0.15s ease;
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--correct-ink) 60%, transparent);
+    transition: transform 0.15s ease, background 0.15s ease;
   }
 
-  .record-btn:hover { transform: scale(1.05); }
-  .record-btn:active { transform: scale(0.96); }
+  .record-toggle-btn:hover { transform: scale(1.05); }
+  .record-toggle-btn:active { transform: scale(0.96); }
 
-  .record-btn:focus-visible {
+  .record-toggle-btn:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
   }
 
-  .record-btn-stop { background: var(--accent); color: var(--accent-ink); }
-  .record-btn-discard { background: var(--wrong-bg); color: var(--wrong-ink); }
+  .record-toggle-btn.is-recording {
+    background: var(--wrong-ink);
+    animation: pulse 1.4s infinite;
+  }
+
+  .vc-record-timer {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+
+  .vc-confirm-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
 
   .pending-actions {
     display: flex;
@@ -1166,11 +1233,32 @@
     gap: 12px;
   }
 
-  .vc-attempts-note {
+  .vc-attempt-label {
     text-align: center;
-    font-size: 0.85rem;
-    opacity: 0.75;
-    margin: 10px 0 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0 0 4px;
+  }
+
+  .vc-stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .vc-star { color: var(--border); }
+  .vc-star.is-filled { color: var(--correct-ink); }
+
+  .vc-feedback-message {
+    text-align: center;
+    font-size: 0.92rem;
+    opacity: 0.85;
+    margin: 4px 0 0;
   }
 
   .vc-nav-row {
@@ -1178,6 +1266,8 @@
     justify-content: space-between;
     gap: 12px;
   }
+
+  #attempt-popup .overlay-backdrop { cursor: default; }
 
   .warning {
     background: var(--wrong-bg);
@@ -1347,24 +1437,28 @@
           <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
 
           <div class="vc-mic-area">
-            <button type="button" class="mic-btn" id="vc-mic-btn" aria-label="Tocca e parla">🎤</button>
-            <div class="record-controls" id="vc-recording-controls" hidden>
-              <button type="button" class="record-btn record-btn-stop" id="vc-stop-btn" aria-label="Ferma la registrazione">■</button>
-              <button type="button" class="record-btn record-btn-discard" id="vc-discard-btn" aria-label="Annulla registrazione">🗑️</button>
+            <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
+              <span id="vc-record-icon">🎤</span>
+            </button>
+            <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
+            <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
+
+            <div class="vc-confirm-area" id="vc-confirm-area" hidden>
+              <p class="overlay-text">Se sei sicuro della tua frase, inviala per la valutazione. Sennò cancella e riprova.</p>
+              <div class="pending-actions">
+                <button type="button" class="btn btn-secondary" id="vc-cancel-btn">✕ Cancella</button>
+                <button type="button" class="btn btn-primary" id="vc-send-btn">✓ Invia</button>
+              </div>
             </div>
-            <div class="pending-actions" id="vc-pending-controls" hidden>
-              <button type="button" class="btn btn-secondary" id="vc-cancel-btn">Cancella</button>
-              <button type="button" class="btn btn-primary" id="vc-send-btn">Invia</button>
-            </div>
-            <div class="status-text" id="vc-status" aria-live="polite">Tocca e parla</div>
           </div>
 
           <div id="vc-result" hidden>
+            <p class="vc-attempt-label" id="vc-attempt-label"></p>
             <div class="phrase panel" id="vc-feedback"></div>
+            <div class="vc-stars" id="vc-stars"></div>
+            <p class="vc-feedback-message" id="vc-feedback-message"></p>
             <div class="panel transcript-box" id="vc-transcript"></div>
           </div>
-
-          <p class="vc-attempts-note" id="vc-attempts-note" hidden>Hai già provato 3 volte — continua pure, o passa avanti quando vuoi.</p>
 
           <div class="help-row">
             <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
@@ -1441,6 +1535,28 @@
         <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi">✕</button>
       </div>
       <div class="overlay-body" id="help-overlay-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ SHARED: THIRD-ATTEMPT NUDGE POPUP ============
+       Voice Coach-specific for now, but built generically (title/body
+       from data, two named actions) so any future module hitting its
+       own attempt milestone can reuse it. Only "Riprova ancora" /
+       "Vai avanti" dismiss it — no backdrop/Escape close, the choice
+       is meant to be explicit. -->
+  <div class="overlay" id="attempt-popup">
+    <div class="overlay-backdrop" aria-hidden="true"></div>
+    <div class="overlay-panel card">
+      <div class="overlay-header">
+        <h2 id="attempt-popup-title"></h2>
+      </div>
+      <div class="overlay-body">
+        <p class="overlay-text" id="attempt-popup-body"></p>
+        <div class="overlay-actions">
+          <button type="button" class="btn btn-secondary" id="attempt-popup-retry">Riprova ancora</button>
+          <button type="button" class="btn btn-primary" id="attempt-popup-next">Vai avanti →</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2303,10 +2419,11 @@
      uses (loadEpisodeData reuses the cache — no extra request), one
      sentence at a time. Recording happens through this module's own
      SpeechRecognition instance; the recognized text is held (never
-     evaluated) until the user explicitly presses "Invia" — pressing
-     the trash mid-recording, or "Cancella" once stopped, discards it
-     instead. Completion is manual only (CLAUDE.md rule 7), on the last
-     sentence's "Ho finito" button.
+     evaluated) until the user explicitly presses "Invia" from the
+     stopped state — there is no way to discard mid-recording, only to
+     stop (silence/timeout/tap all stop the same way) and then confirm
+     or cancel. Completion is manual only (CLAUDE.md rule 7), on the
+     last sentence's "Ho finito" button.
      ============================================================ */
   var vcModule = null;
   var vcLines = [];
@@ -2314,9 +2431,11 @@
   var vcAttempts = {};
   var vcState = 'idle'; // idle | recording | pending | result
   var vcListening = false;
-  var vcDiscarding = false;
+  var vcSuppressTransition = false;
   var vcLatestTranscript = '';
   var vcTimeoutId = null;
+  var vcTimerInterval = null;
+  var vcRecordStartedAt = 0;
 
   var VCSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var vcRecognition = null;
@@ -2331,6 +2450,7 @@
     vcRecognition.onstart = function () {
       vcListening = true;
       setVcState('recording');
+      startVcTimer();
     };
 
     vcRecognition.onresult = function (event) {
@@ -2346,9 +2466,12 @@
     vcRecognition.onend = function () {
       vcListening = false;
       clearVcTimeout();
-      if (vcDiscarding) {
-        vcDiscarding = false;
-        setVcState('idle');
+      stopVcTimer();
+      // A reset (navigating away mid-recording) already forced 'idle' and
+      // aborted the session; the abort's onend must not override that by
+      // jumping to 'pending' once it eventually fires.
+      if (vcSuppressTransition) {
+        vcSuppressTransition = false;
         return;
       }
       setVcState('pending');
@@ -2356,16 +2479,29 @@
 
     vcRecognition.onerror = function () {
       // onend always follows onerror per the Web Speech API lifecycle and
-      // is where we make the final state transition — acting here too
-      // would race it (e.g. a discard's onerror clearing vcDiscarding
-      // before onend gets to check it). Only clear the timeout here.
+      // is where the real state transition happens — acting here too
+      // would race it. Only clear timers here.
       vcListening = false;
       clearVcTimeout();
+      stopVcTimer();
     };
   }
 
   function clearVcTimeout() {
     if (vcTimeoutId) { clearTimeout(vcTimeoutId); vcTimeoutId = null; }
+  }
+
+  function startVcTimer() {
+    vcRecordStartedAt = Date.now();
+    document.getElementById('vc-record-timer').textContent = '0s';
+    vcTimerInterval = setInterval(function () {
+      var secs = Math.floor((Date.now() - vcRecordStartedAt) / 1000);
+      document.getElementById('vc-record-timer').textContent = secs + 's';
+    }, 1000);
+  }
+
+  function stopVcTimer() {
+    if (vcTimerInterval) { clearInterval(vcTimerInterval); vcTimerInterval = null; }
   }
 
   function vcCurrentLine() { return vcLines[vcIndex]; }
@@ -2376,36 +2512,91 @@
 
   function setVcState(state) {
     vcState = state;
-    document.getElementById('vc-mic-btn').hidden = state !== 'idle';
-    document.getElementById('vc-recording-controls').hidden = state !== 'recording';
-    document.getElementById('vc-pending-controls').hidden = state !== 'pending';
+    var btn = document.getElementById('vc-record-btn');
+    var recording = state === 'recording';
+    btn.hidden = state === 'pending' || state === 'result';
+    btn.classList.toggle('is-recording', recording);
+    btn.setAttribute('aria-label', recording ? 'Tocca per fermare' : 'Tocca per registrare');
+    document.getElementById('vc-record-icon').textContent = recording ? '■' : '🎤';
+    document.getElementById('vc-record-caption').hidden = btn.hidden;
+    document.getElementById('vc-record-caption').textContent = recording ? 'Tocca per fermare' : 'Tocca per registrare';
+    document.getElementById('vc-record-timer').hidden = !recording;
+    document.getElementById('vc-confirm-area').hidden = state !== 'pending';
     document.getElementById('vc-result').hidden = state !== 'result';
-    var statusMessages = {
-      idle: 'Tocca e parla',
-      recording: 'Sto ascoltando... tocca ■ per fermarti',
-      pending: 'Ascolta cosa hai registrato: invia o cancella',
-      result: ''
-    };
-    document.getElementById('vc-status').textContent = statusMessages[state] || '';
   }
 
   function vcResetRecording() {
     clearVcTimeout();
+    stopVcTimer();
     if (vcListening) {
-      vcDiscarding = true;
+      vcSuppressTransition = true;
       try { vcRecognition.abort(); } catch (e) {}
     }
+    vcListening = false;
     vcLatestTranscript = '';
     setVcState('idle');
   }
 
-  function updateVcAttemptsNote() {
-    var count = vcAttempts[vcCurrentLine().id] || 0;
-    document.getElementById('vc-attempts-note').hidden = count < CONFIG.voiceCoach.attemptsReminderThreshold;
+  // ---- star rating + feedback/attempt messages (data/messaggi-feedback.json) ----
+  var vcFeedbackDataCache = null;
+  var STAR_MESSAGE_KEYS = { 1: 'unaStella', 2: 'dueStelle', 3: 'treStelle' };
+
+  function loadFeedbackMessages() {
+    if (vcFeedbackDataCache) return Promise.resolve(vcFeedbackDataCache);
+    return fetch('data/messaggi-feedback.json')
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        if (window.FALLBACK_FEEDBACK_MESSAGES) return window.FALLBACK_FEEDBACK_MESSAGES;
+        throw new Error('no feedback messages available');
+      })
+      .then(function (data) {
+        vcFeedbackDataCache = data;
+        return data;
+      });
+  }
+
+  function pickRandom(list) {
+    return list[Math.floor(Math.random() * list.length)];
+  }
+
+  function starsForPercent(pct) {
+    var t = CONFIG.voiceCoach.starThresholds;
+    if (pct >= t.threeStars) return 3;
+    if (pct >= t.twoStars) return 2;
+    if (pct >= t.oneStar) return 1;
+    return 0;
+  }
+
+  function renderStars(count) {
+    var html = '';
+    for (var i = 1; i <= 3; i++) {
+      html += '<span class="vc-star' + (i <= count ? ' is-filled' : '') + '">' + (i <= count ? '★' : '☆') + '</span>';
+    }
+    return html;
+  }
+
+  function openAttemptPopup() {
+    document.getElementById('attempt-popup-title').textContent = 'Hai già provato 3 volte';
+    document.getElementById('attempt-popup-body').textContent = 'Continua pure, o passa avanti quando vuoi.';
+    document.getElementById('attempt-popup').classList.add('is-open');
+    loadFeedbackMessages().then(function (data) {
+      var entry = pickRandom(data.terzoTentativoMessages);
+      document.getElementById('attempt-popup-title').textContent = entry.title;
+      document.getElementById('attempt-popup-body').textContent = entry.body;
+    }).catch(function () {});
+  }
+
+  function closeAttemptPopup() {
+    document.getElementById('attempt-popup').classList.remove('is-open');
+  }
+
+  function updateVcRetryButton() {
+    document.getElementById('voice-coach-retry-btn').disabled = !vcAttempts[vcCurrentLine().id];
   }
 
   function renderVoiceCoachSentence() {
     vcResetRecording();
+    closeAttemptPopup();
     var line = vcCurrentLine();
     document.getElementById('vc-counter').textContent = (vcIndex + 1) + ' / ' + vcLines.length;
     document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
@@ -2415,11 +2606,22 @@
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>';
     document.getElementById('vc-feedback').innerHTML = '';
     document.getElementById('vc-transcript').innerHTML = '';
-    document.getElementById('voice-coach-retry-btn').disabled = !vcAttempts[line.id];
-    updateVcAttemptsNote();
+    document.getElementById('vc-stars').innerHTML = '';
+    document.getElementById('vc-feedback-message').textContent = '';
+    updateVcRetryButton();
     document.getElementById('vc-prev-btn').disabled = vcIndex === 0;
     document.getElementById('vc-next-btn').textContent =
       vcIndex === vcLines.length - 1 ? 'Ho finito, torna alla mappa' : 'Avanti →';
+  }
+
+  function vcAdvance() {
+    if (vcIndex < vcLines.length - 1) {
+      vcIndex++;
+      renderVoiceCoachSentence();
+    } else {
+      markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
+      openEpisodeMap();
+    }
   }
 
   function openVoiceCoach(module) {
@@ -2428,14 +2630,14 @@
     vcAttempts = {};
     document.getElementById('vc-result').hidden = true;
     document.getElementById('vc-warning').style.display = VCSpeechRecognition ? 'none' : 'block';
-    document.getElementById('vc-mic-btn').disabled = !VCSpeechRecognition;
+    document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
     document.getElementById('vc-cue').textContent = '';
     document.getElementById('vc-target').textContent = 'Caricamento...';
     document.getElementById('vc-audio-controls').innerHTML = '';
     showView('voiceCoach');
-    loadEpisodeData(module).then(function (data) {
+    Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
       if (vcModule !== module) return;
-      vcLines = data.dialogue;
+      vcLines = results[0].dialogue;
       renderVoiceCoachSentence();
     }).catch(function () {
       if (vcModule !== module) return;
@@ -2448,20 +2650,42 @@
     var targetWords = tokenize(vcTargetText());
     var recognizedWords = tokenize(vcLatestTranscript);
     var pairs = alignWords(targetWords, recognizedWords);
+    var correctCount = 0;
     var spans = pairs.map(function (pair) {
       var word = targetWords[pair.targetIndex];
       var recognizedWord = pair.recognizedIndex !== null ? recognizedWords[pair.recognizedIndex] : null;
       var cls = classify(word, recognizedWord);
+      if (cls === 'correct') correctCount++;
       return '<span class="' + cls + '">' + word + '</span>';
     });
     document.getElementById('vc-feedback').innerHTML = spans.join(' ');
     document.getElementById('vc-transcript').innerHTML =
       '<strong>Hai detto:</strong> ' + (vcLatestTranscript || '(nessun testo riconosciuto)');
 
-    vcAttempts[line.id] = (vcAttempts[line.id] || 0) + 1;
-    document.getElementById('voice-coach-retry-btn').disabled = false;
-    updateVcAttemptsNote();
+    var attemptNum = (vcAttempts[line.id] || 0) + 1;
+    vcAttempts[line.id] = attemptNum;
+    document.getElementById('vc-attempt-label').textContent =
+      'TENTATIVO ' + attemptNum + ' DI ' + CONFIG.voiceCoach.attemptsReminderThreshold;
+
+    var pct = targetWords.length ? Math.round((correctCount / targetWords.length) * 100) : 0;
+    var stars = starsForPercent(pct);
+    document.getElementById('vc-stars').innerHTML = renderStars(stars);
+
+    var messageEl = document.getElementById('vc-feedback-message');
+    messageEl.textContent = '';
+    if (stars > 0) {
+      loadFeedbackMessages().then(function (data) {
+        var pool = data.messages && data.messages[STAR_MESSAGE_KEYS[stars]];
+        if (pool && pool.length) messageEl.textContent = pickRandom(pool);
+      }).catch(function () {});
+    }
+
+    updateVcRetryButton();
     setVcState('result');
+
+    if (attemptNum === CONFIG.voiceCoach.attemptsReminderThreshold) {
+      openAttemptPopup();
+    }
   }
 
   document.getElementById('vc-audio-controls').addEventListener('click', function (e) {
@@ -2471,10 +2695,14 @@
     toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
-  document.getElementById('vc-mic-btn').addEventListener('click', function () {
+  document.getElementById('vc-record-btn').addEventListener('click', function () {
     if (!vcRecognition) return;
+    if (vcState === 'recording') {
+      if (vcListening) vcRecognition.stop();
+      return;
+    }
+    if (vcState !== 'idle') return;
     vcLatestTranscript = '';
-    vcDiscarding = false;
     var wordCount = tokenize(vcTargetText()).length;
     var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
     try {
@@ -2484,20 +2712,6 @@
     vcTimeoutId = setTimeout(function () {
       if (vcListening) vcRecognition.stop();
     }, maxMs);
-  });
-
-  document.getElementById('vc-stop-btn').addEventListener('click', function () {
-    if (vcListening) vcRecognition.stop();
-  });
-
-  document.getElementById('vc-discard-btn').addEventListener('click', function () {
-    vcDiscarding = true;
-    if (vcListening) {
-      try { vcRecognition.abort(); } catch (e) {}
-    } else {
-      vcDiscarding = false;
-      setVcState('idle');
-    }
   });
 
   document.getElementById('vc-cancel-btn').addEventListener('click', function () {
@@ -2520,18 +2734,21 @@
     }
   });
 
-  document.getElementById('vc-next-btn').addEventListener('click', function () {
-    if (vcIndex < vcLines.length - 1) {
-      vcIndex++;
-      renderVoiceCoachSentence();
-    } else {
-      markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
-      openEpisodeMap();
-    }
+  document.getElementById('vc-next-btn').addEventListener('click', vcAdvance);
+
+  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
+    closeAttemptPopup();
+    setVcState('idle');
+  });
+
+  document.getElementById('attempt-popup-next').addEventListener('click', function () {
+    closeAttemptPopup();
+    vcAdvance();
   });
 
   document.getElementById('voice-coach-back-map').addEventListener('click', function () {
     vcResetRecording();
+    closeAttemptPopup();
     openEpisodeMap();
   });
 

@@ -1,0 +1,46 @@
+{
+  "starRating": {
+    "rule": "basata sulla percentuale di parole verdi sul totale",
+    "0": { "range": "0%", "showMessage": false, "note": "nessun messaggio mostrato, solo le stelle vuote" },
+    "1": { "range": "1-49%", "showMessage": true, "messageKey": "unaStella" },
+    "2": { "range": "50-79%", "showMessage": true, "messageKey": "dueStelle" },
+    "3": { "range": "80-100%", "showMessage": true, "messageKey": "treStelle" }
+  },
+  "messages": {
+    "treStelle": [
+      "Perfetto! Pronuncia impeccabile.",
+      "Wow, sembri già un madrelingua!",
+      "Eccellente, continua così!",
+      "Fantastico, hai centrato tutto.",
+      "Bravissimo, non c'è nulla da correggere."
+    ],
+    "dueStelle": [
+      "Bene, ci sei quasi!",
+      "Buon lavoro, qualche dettaglio da limare.",
+      "Sulla strada giusta, continua a esercitarti.",
+      "Non male! Un altro paio di tentativi e sarà perfetto.",
+      "Ci sei quasi, un piccolo sforzo in più."
+    ],
+    "unaStella": [
+      "Va bene così, l'importante è provarci.",
+      "Ci vuole pratica, e tu la stai facendo — bravo.",
+      "Ogni tentativo ti avvicina di più, continua.",
+      "Nessun problema, ripasseremo insieme questa frase.",
+      "Va tutto bene, è normale all'inizio."
+    ]
+  },
+  "terzoTentativoMessages": [
+    {
+      "title": "Tranquillo, capita!",
+      "body": "Hai provato già 3 volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Ti consiglio di andare avanti e finire l'esercizio: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale. Il nostro metodo è pensato apposta per farti rivedere quello che ti serve di più, senza doverti impuntare adesso. Non preoccuparti, ci arriverai."
+    },
+    {
+      "title": "Nessuna fretta",
+      "body": "Tre tentativi su questa frase — succede, ed è anche un buon segno: vuol dire che ci stai davvero provando. Ti conviene proseguire con l'esercizio; questa frase la ritroverai più avanti nei ripassi mirati, proprio quando servirà di più. Impara con calma, il metodo fa il resto."
+    },
+    {
+      "title": "Ci arriverai, promesso",
+      "body": "A volte una frase è più ostica delle altre, capita anche ai migliori. Meglio andare avanti ora e lasciarla decantare — tornerà da sola nei prossimi ripassi, e la prossima volta ti sembrerà più facile. Fidati del percorso."
+    }
+  ]
+}
