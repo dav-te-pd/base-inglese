@@ -3045,9 +3045,11 @@
      for the whole session, everything else is identical. Flow: a start
      screen showing the full howItWorks text (method + goal, no separate
      watch-bar here — the text already is the screen) -> "Pronto? Via!"
-     -> a 3-2-1 countdown -> one shuffled pass over every vocabulary item
-     followed by a single retry pass over anything wrong/skipped/timed
-     out -> a summary screen. Wrong/timeout/"Non lo so" all reveal the
+     -> a 3-2-1 countdown -> one shuffled pass over every vocabulary item,
+     then as many further retry passes as needed over whatever is still
+     wrong/skipped/timed out — each announced by its own "Ripassiamo
+     insieme..." screen — until one retry pass comes back with zero
+     misses -> a summary screen. Wrong/timeout/"Non lo so" all reveal the
      correct answer and wait for an explicit "Avanti" (read and memorize
      before moving on); a correct tap auto-advances after a short pause.
      Help only appears on the summary screen (top-row); no Indietro.
@@ -3060,7 +3062,6 @@
   var srVocab = [];
   var srQueue = [];
   var srRetryQueue = [];
-  var srInRetryPass = false;
   var srPassIndex = 0;
   var srPassTotal = 0;
   var srCurrentItem = null;
@@ -3150,7 +3151,7 @@
     mastery[unitId] = applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
     saveMastery(currentEpisode.id, userName, mastery);
 
-    if (!correct && !srInRetryPass && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
+    if (!correct && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
       srRetryQueue.push(srCurrentItem.id);
     }
   }
@@ -3182,8 +3183,7 @@
 
   function srNextQuestion() {
     if (srQueue.length === 0) {
-      if (!srInRetryPass && srRetryQueue.length > 0) {
-        srInRetryPass = true;
+      if (srRetryQueue.length > 0) {
         srQueue = srShuffle(srRetryQueue);
         srRetryQueue = [];
         srPassTotal = srQueue.length;
@@ -3234,7 +3234,6 @@
   function srStartQuiz() {
     srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
     srRetryQueue = [];
-    srInRetryPass = false;
     srPassTotal = srQueue.length;
     srPassIndex = 0;
     document.getElementById('sr-direction').textContent = SR_DIRECTION_LABEL[srDirection];
