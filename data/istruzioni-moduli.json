@@ -19,14 +19,24 @@
       "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito, torna alla mappa\".</p>"
     }
   },
-  "speedRound": {
+  "speedRoundEngIta": {
     "howItWorks": {
       "title": "Guarda come si fa",
-      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la parola o frase mostrata, e tocca tra le 4 opzioni la traduzione corretta prima che scada il tempo.</p><p>Se non sei sicuro, tocca \"Non lo so\" invece di rischiare a caso — non è un problema, ripasserai questa parola più avanti.</p><p>Il round è diviso in due blocchi: prima dall'inglese all'italiano, poi dall'italiano all'inglese. Alla fine di ogni blocco vedrai il tuo punteggio.</p>"
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Tocca la traduzione corretta tra le 4 opzioni prima che scada il tempo. Se non sai la risposta, tocca \"Non lo so\" invece di indovinare a caso.</p>"
+      "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
+    }
+  },
+  "speedRoundItaEng": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
     }
   },
   "voiceCoach": {

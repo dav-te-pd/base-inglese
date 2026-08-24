@@ -67,17 +67,23 @@
       // documented in data/messaggi-feedback.json's percentageRule.
       starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 }
     },
-    // ---- Speed Round quiz ----
+    // ---- Speed Round quiz (speedRoundEngIta / speedRoundItaEng modules) ----
     speedRound: {
       // Seconds on the countdown bar before a question times out
       // (timeout is treated the same as a wrong answer).
       timeLimitSeconds: 10,
-      // Points awarded the first time an item+direction is answered
-      // correctly. Total possible = vocabulary.length * 2 blocks * this.
+      // Points awarded the first time an item is answered correctly.
+      // Total possible per module = vocabulary.length * this.
       pointsPerCorrect: 50,
-      // Pause (ms) after a tap before moving to the next question, so the
-      // correct/wrong highlight is visible.
+      // Pause (ms) after a correct tap before auto-advancing to the next
+      // question (wrong/timeout/skip instead wait for an explicit "Avanti").
       feedbackPauseMs: 600,
+      // 3-2-1 countdown shown after "Pronto? Via!", before the first question.
+      countdownSeconds: 3,
+      countdownStepMs: 800,
+      // % of correct answers needed for the basso/medio/alto end-of-module
+      // message bucket — mirrors messaggi-feedback.json's percentageRule.
+      percentageThresholds: { basso: 1, medio: 50, alto: 80 },
       // Tones played on correct/wrong answers via the Web Audio API
       // (no external audio files, per project convention).
       sound: {
@@ -229,14 +235,24 @@
         body: '<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire "Mostra traduzione". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi "Ho finito, torna alla mappa".</p>'
       }
     },
-    speedRound: {
+    speedRoundEngIta: {
       howItWorks: {
         title: 'Guarda come si fa',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la parola o frase mostrata, e tocca tra le 4 opzioni la traduzione corretta prima che scada il tempo.</p><p>Se non sei sicuro, tocca "Non lo so" invece di rischiare a caso — non è un problema, ripasserai questa parola più avanti.</p><p>Il round è diviso in due blocchi: prima dall\'inglese all\'italiano, poi dall\'italiano all\'inglese. Alla fine di ogni blocco vedrai il tuo punteggio.</p>'
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
-        body: '<p>Tocca la traduzione corretta tra le 4 opzioni prima che scada il tempo. Se non sai la risposta, tocca "Non lo so" invece di indovinare a caso.</p>'
+        body: '<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>'
+      }
+    },
+    speedRoundItaEng: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>'
       }
     },
     voiceCoach: {
@@ -1351,22 +1367,44 @@
   #attempt-popup .overlay-backdrop { cursor: default; }
 
   /* ---------- speed round view ---------- */
-  .sr-block-label {
+  #sr-start-screen,
+  #sr-quiz-screen,
+  #sr-summary-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  #sr-countdown-screen {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  .sr-countdown-number {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 4rem;
+    color: var(--accent);
+  }
+
+  .sr-counter {
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
     opacity: 0.6;
     margin: 0;
   }
 
-  .sr-score {
+  .sr-direction {
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin: 4px 0 0;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 0;
   }
 
   .sr-timerbar-track {
@@ -1403,6 +1441,14 @@
   .sr-option.is-correct { background: var(--correct-bg); color: var(--correct-ink); border-color: transparent; }
   .sr-option.is-wrong { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
 
+  .sr-reveal {
+    text-align: center;
+    padding: 12px 16px;
+    border: 2px solid var(--accent);
+  }
+
+  .sr-reveal p { margin: 0; font-size: 0.92rem; }
+
   .sr-summary {
     text-align: center;
     padding: 28px 16px;
@@ -1420,9 +1466,22 @@
 
   .sr-summary-score {
     font-family: var(--font-mono);
-    font-size: 1rem;
-    opacity: 0.85;
+    font-size: 1.1rem;
+    font-weight: 600;
     margin: 0;
+  }
+
+  .sr-summary-pct {
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .sr-summary-message {
+    font-size: 0.92rem;
+    opacity: 0.85;
+    margin: 4px 0 0;
   }
 
   .warning {
@@ -1628,42 +1687,64 @@
       </div>
     </section>
 
-    <!-- ============ VIEW: SPEED ROUND MODULE ============ -->
+    <!-- ============ VIEW: SPEED ROUND MODULES (Eng-Ita / Ita-Eng) ============
+         One shared view for both directions — module.kind picks the
+         direction and the istruzioni-moduli.json entry, everything else
+         (markup, CSS, JS) is identical. Help only appears on the final
+         screen (top-row, hidden the rest of the time) — nowhere else,
+         per the module's own design. -->
     <section id="view-speed-round" class="view">
       <div class="card">
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
-            <span class="badge">Speed Round</span>
+            <span class="badge" id="speed-round-badge">Speed Round</span>
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn" hidden>Help</button>
           </div>
 
-          <header class="app-header">
-            <h1>Speed Round</h1>
-            <p class="sr-block-label" id="sr-block-label"></p>
-            <p class="sr-score" id="sr-score">0 / 0</p>
-          </header>
+          <!-- START SCREEN: full howItWorks text, explains method + goal -->
+          <div id="sr-start-screen">
+            <header class="app-header">
+              <h1 id="sr-start-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="sr-start-body">Caricamento...</div>
+            <button type="button" class="btn btn-primary btn-block" id="sr-ready-btn">Pronto? Via!</button>
+          </div>
 
-          <button type="button" class="watch-bar" id="speed-round-watch-bar">🎥 Guarda come si fa</button>
+          <!-- COUNTDOWN SCREEN -->
+          <div id="sr-countdown-screen" hidden>
+            <div class="sr-countdown-number" id="sr-countdown-number">3</div>
+          </div>
 
-          <div id="sr-quiz">
+          <!-- QUIZ SCREEN -->
+          <div id="sr-quiz-screen" hidden>
+            <p class="sr-counter" id="sr-counter"></p>
+            <p class="sr-direction" id="sr-direction"></p>
+
             <div class="sr-timerbar-track"><div class="sr-timerbar-fill" id="sr-timerbar-fill"></div></div>
 
             <div class="sr-prompt panel" id="sr-prompt"></div>
 
             <div class="sr-options" id="sr-options"></div>
 
+            <div class="sr-reveal panel" id="sr-reveal" hidden>
+              <p id="sr-reveal-text"></p>
+            </div>
+
             <button type="button" class="btn btn-secondary btn-block" id="sr-dontknow-btn">Non lo so</button>
+            <button type="button" class="btn btn-primary btn-block" id="sr-advance-btn" hidden>Avanti →</button>
           </div>
 
-          <div id="sr-block-summary" hidden>
+          <!-- SUMMARY SCREEN -->
+          <div id="sr-summary-screen" hidden>
             <div class="sr-summary panel">
               <p class="sr-summary-title" id="sr-summary-title"></p>
               <p class="sr-summary-score" id="sr-summary-score"></p>
+              <p class="sr-summary-pct" id="sr-summary-pct"></p>
+              <p class="sr-summary-message" id="sr-summary-message"></p>
             </div>
-            <button type="button" class="btn btn-primary btn-block" id="sr-continue-btn" hidden>Continua →</button>
+            <button type="button" class="btn btn-primary btn-block" id="sr-complete-btn">Ho finito, torna alla mappa</button>
           </div>
-
-          <button type="button" class="btn btn-primary btn-block" id="sr-complete-btn" hidden>Ho finito, torna alla mappa</button>
         </div>
       </div>
     </section>
@@ -2108,7 +2189,8 @@
         { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'speedRound', kind: 'speedRound', label: 'Speed Round', dataFile: 'data/a1-episodio1-inglese.json' }
+        { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' }
       ],
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -2406,7 +2488,7 @@
     if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
-    else if (module.kind === 'speedRound') openSpeedRound(module);
+    else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
@@ -2955,30 +3037,37 @@
   });
 
   /* ============================================================
-     MODULE: SPEED ROUND
-     Reads the same "vocabulary" section Repeat Aloud already uses
-     (loadEpisodeData reuses the cache). Two sequential blocks — English
-     -> Italian, then Italian -> English — each a shuffled pass over
-     every item followed by a single retry pass over anything wrong or
-     skipped, before the block closes. No Indietro/Help here by design:
-     the question always moves forward, and "Non lo so" already covers
-     the "I'm stuck" need Help serves elsewhere.
+     MODULES: SPEED ROUND ENG-ITA / SPEED ROUND ITA-ENG
+     Two separate map modules sharing one view and this one JS section —
+     module.kind fixes the direction and the istruzioni-moduli.json entry
+     for the whole session, everything else is identical. Flow: a start
+     screen showing the full howItWorks text (method + goal, no separate
+     watch-bar here — the text already is the screen) -> "Pronto? Via!"
+     -> a 3-2-1 countdown -> one shuffled pass over every vocabulary item
+     followed by a single retry pass over anything wrong/skipped/timed
+     out -> a summary screen. Wrong/timeout/"Non lo so" all reveal the
+     correct answer and wait for an explicit "Avanti" (read and memorize
+     before moving on); a correct tap auto-advances after a short pause.
+     Help only appears on the summary screen (top-row); no Indietro.
      ============================================================ */
+  var SR_DIRECTION_BY_KIND = { speedRoundEngIta: 'en-it', speedRoundItaEng: 'it-en' };
+  var SR_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
+
   var srModule = null;
+  var srDirection = 'en-it'; // fixed for the whole module session
   var srVocab = [];
-  var srBlockIndex = 0;
-  var srDirection = 'en-it'; // 'en-it' | 'it-en'
   var srQueue = [];
   var srRetryQueue = [];
   var srInRetryPass = false;
+  var srPassIndex = 0;
+  var srPassTotal = 0;
   var srCurrentItem = null;
   var srCurrentOptions = [];
-  var srAwarded = {}; // unitId -> true, once an item+direction has ever earned points
+  var srAwarded = {}; // unitId -> true, once an item has ever earned points
   var srScore = 0;
-  var srBlockScore = 0;
   var srTotalPossible = 0;
-  var srBlockTotal = 0;
   var srTimeoutId = null;
+  var srCountdownTimeoutId = null;
   var srAudioCtx = null;
 
   function srShuffle(list) {
@@ -3046,8 +3135,12 @@
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b) { b.disabled = true; });
   }
 
-  function updateSrScoreDisplay() {
-    document.getElementById('sr-score').textContent = srScore + ' / ' + srTotalPossible;
+  function srShowScreen(name) {
+    document.getElementById('sr-start-screen').hidden = name !== 'start';
+    document.getElementById('sr-countdown-screen').hidden = name !== 'countdown';
+    document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
+    document.getElementById('sr-summary-screen').hidden = name !== 'summary';
+    document.getElementById('speed-round-help-btn').hidden = name !== 'summary';
   }
 
   function srRecordResult(correct) {
@@ -3061,12 +3154,10 @@
       if (!srAwarded[unitId]) {
         srAwarded[unitId] = true;
         srScore += CONFIG.speedRound.pointsPerCorrect;
-        srBlockScore += CONFIG.speedRound.pointsPerCorrect;
       }
     } else if (!srInRetryPass && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
       srRetryQueue.push(srCurrentItem.id);
     }
-    updateSrScoreDisplay();
   }
 
   function srBuildOptions(item) {
@@ -3081,6 +3172,10 @@
   }
 
   function srRenderQuestion() {
+    document.getElementById('sr-reveal').hidden = true;
+    document.getElementById('sr-advance-btn').hidden = true;
+    document.getElementById('sr-dontknow-btn').hidden = false;
+    document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
     var promptText = srDirection === 'en-it' ? srCurrentItem.english : srCurrentItem.italian;
     document.getElementById('sr-prompt').textContent = promptText;
     srCurrentOptions = srBuildOptions(srCurrentItem);
@@ -3096,14 +3191,31 @@
         srInRetryPass = true;
         srQueue = srShuffle(srRetryQueue);
         srRetryQueue = [];
+        srPassTotal = srQueue.length;
+        srPassIndex = 0;
       } else {
-        srFinishBlock();
+        srFinishModule();
         return;
       }
     }
     var itemId = srQueue.shift();
+    srPassIndex++;
     srCurrentItem = srVocab.find(function (v) { return v.id === itemId; });
     srRenderQuestion();
+  }
+
+  // Shared by a wrong tap, a timeout, and "Non lo so": reveal the correct
+  // answer and wait for an explicit "Avanti" instead of auto-advancing,
+  // so the user reads and memorizes it (CLAUDE.md-style deliberate pacing).
+  function srShowReveal() {
+    var correctText = srDirection === 'en-it' ? srCurrentItem.italian : srCurrentItem.english;
+    document.querySelectorAll('#sr-options .sr-option').forEach(function (b, i) {
+      if (srCurrentOptions[i] && srCurrentOptions[i].correct) b.classList.add('is-correct');
+    });
+    document.getElementById('sr-reveal-text').textContent = 'Risposta corretta: ' + correctText;
+    document.getElementById('sr-reveal').hidden = false;
+    document.getElementById('sr-dontknow-btn').hidden = true;
+    document.getElementById('sr-advance-btn').hidden = false;
   }
 
   function srHandleTimeout() {
@@ -3111,61 +3223,85 @@
     srDisableOptions();
     srPlayWrongSound();
     srRecordResult(false);
-    setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
+    srShowReveal();
   }
 
-  function srFinishBlock() {
+  function srFinishModule() {
     srClearTimer();
-    document.getElementById('sr-quiz').hidden = true;
-    var blockNum = srBlockIndex + 1;
-    document.getElementById('sr-summary-title').textContent = 'Blocco ' + blockNum + ' completato!';
-    document.getElementById('sr-summary-score').textContent =
-      'Punteggio di questo blocco: ' + srBlockScore + ' / ' + srBlockTotal;
-    document.getElementById('sr-block-summary').hidden = false;
-    var isFirstBlock = srBlockIndex === 0;
-    document.getElementById('sr-continue-btn').hidden = !isFirstBlock;
-    document.getElementById('sr-complete-btn').hidden = isFirstBlock;
+    var pct = srTotalPossible ? Math.round((srScore / srTotalPossible) * 100) : 0;
+    document.getElementById('sr-summary-title').textContent = 'Modulo completato!';
+    document.getElementById('sr-summary-score').textContent = srScore + ' / ' + srTotalPossible;
+    document.getElementById('sr-summary-pct').textContent = pct + '%';
+    var messageEl = document.getElementById('sr-summary-message');
+    messageEl.textContent = '';
+    if (pct > 0) {
+      var t = CONFIG.speedRound.percentageThresholds;
+      var bucket = pct >= t.alto ? 'alto' : (pct >= t.medio ? 'medio' : 'basso');
+      loadFeedbackMessages().then(function (data) {
+        var pool = data.speedRoundMessages && data.speedRoundMessages[bucket];
+        if (pool && pool.length) messageEl.textContent = pickRandom(pool);
+      }).catch(function () {});
+    }
+    srShowScreen('summary');
   }
 
-  function srStartBlock(blockIndex) {
-    srBlockIndex = blockIndex;
-    srDirection = blockIndex === 0 ? 'en-it' : 'it-en';
+  function srStartQuiz() {
     srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
     srRetryQueue = [];
     srInRetryPass = false;
-    srBlockScore = 0;
-    srBlockTotal = srVocab.length * CONFIG.speedRound.pointsPerCorrect;
-    document.getElementById('sr-block-label').textContent =
-      blockIndex === 0 ? 'Blocco 1 · Inglese → Italiano' : 'Blocco 2 · Italiano → Inglese';
-    document.getElementById('sr-block-summary').hidden = true;
-    document.getElementById('sr-quiz').hidden = false;
-    updateSrScoreDisplay();
+    srPassTotal = srQueue.length;
+    srPassIndex = 0;
+    srScore = 0;
+    srAwarded = {};
+    srTotalPossible = srVocab.length * CONFIG.speedRound.pointsPerCorrect;
+    document.getElementById('sr-direction').textContent = SR_DIRECTION_LABEL[srDirection];
+    srShowScreen('quiz');
     srNextQuestion();
+  }
+
+  function srRunCountdown() {
+    srShowScreen('countdown');
+    var n = CONFIG.speedRound.countdownSeconds;
+    var el = document.getElementById('sr-countdown-number');
+    function tick() {
+      if (n <= 0) { srCountdownTimeoutId = null; srStartQuiz(); return; }
+      el.textContent = n;
+      n--;
+      srCountdownTimeoutId = setTimeout(tick, CONFIG.speedRound.countdownStepMs);
+    }
+    tick();
   }
 
   function openSpeedRound(module) {
     srModule = module;
-    document.getElementById('sr-quiz').hidden = false;
-    document.getElementById('sr-block-summary').hidden = true;
-    document.getElementById('sr-complete-btn').hidden = true;
-    document.getElementById('sr-block-label').textContent = '';
-    document.getElementById('sr-score').textContent = '0 / 0';
-    document.getElementById('sr-prompt').textContent = 'Caricamento...';
+    srDirection = SR_DIRECTION_BY_KIND[module.kind];
+    srVocab = [];
+    document.getElementById('speed-round-badge').textContent = module.label;
+    document.getElementById('sr-start-title').textContent = 'Guarda come si fa';
+    document.getElementById('sr-start-body').textContent = 'Caricamento...';
+    document.getElementById('sr-prompt').textContent = '';
     document.getElementById('sr-options').innerHTML = '';
+    srShowScreen('start');
     showView('speedRound');
-    loadEpisodeData(module).then(function (data) {
+    Promise.all([loadEpisodeData(module), loadModuleInstructions()]).then(function (results) {
       if (srModule !== module) return;
-      srVocab = data.vocabulary;
-      srAwarded = {};
-      srScore = 0;
-      srTotalPossible = srVocab.length * 2 * CONFIG.speedRound.pointsPerCorrect;
-      updateSrScoreDisplay();
-      srStartBlock(0);
+      srVocab = results[0].vocabulary;
+      var entry = results[1][module.kind] && results[1][module.kind].howItWorks;
+      document.getElementById('sr-start-title').textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById('sr-start-body').innerHTML = entry
+        ? entry.body
+        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
     }).catch(function () {
       if (srModule !== module) return;
-      document.getElementById('sr-prompt').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+      document.getElementById('sr-start-body').innerHTML =
+        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
     });
   }
+
+  document.getElementById('sr-ready-btn').addEventListener('click', function () {
+    if (!srVocab.length) return;
+    srRunCountdown();
+  });
 
   document.getElementById('sr-options').addEventListener('click', function (e) {
     var btn = e.target.closest('.sr-option');
@@ -3178,24 +3314,26 @@
       btn.classList.add('is-correct');
       srPlayCorrectSound();
       srRecordResult(true);
+      setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
       srPlayWrongSound();
       srRecordResult(false);
+      srShowReveal();
     }
-    setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
   });
 
   document.getElementById('sr-dontknow-btn').addEventListener('click', function () {
     srClearTimer();
     srFreezeTimer();
     srDisableOptions();
+    srPlayWrongSound();
     srRecordResult(false);
-    srNextQuestion();
+    srShowReveal();
   });
 
-  document.getElementById('sr-continue-btn').addEventListener('click', function () {
-    srStartBlock(1);
+  document.getElementById('sr-advance-btn').addEventListener('click', function () {
+    srNextQuestion();
   });
 
   document.getElementById('sr-complete-btn').addEventListener('click', function () {
@@ -3205,11 +3343,12 @@
 
   document.getElementById('speed-round-back-map').addEventListener('click', function () {
     srClearTimer();
+    if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
     openEpisodeMap();
   });
 
-  document.getElementById('speed-round-watch-bar').addEventListener('click', function () {
-    openInstructionsFor(srModule);
+  document.getElementById('speed-round-help-btn').addEventListener('click', function () {
+    openHelpFor(srModule);
   });
 
   boot();
