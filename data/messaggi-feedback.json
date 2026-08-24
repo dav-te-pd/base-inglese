@@ -1,32 +1,55 @@
 {
-  "starRating": {
-    "rule": "basata sulla percentuale di parole verdi sul totale",
-    "0": { "range": "0%", "showMessage": false, "note": "nessun messaggio mostrato, solo le stelle vuote" },
-    "1": { "range": "1-49%", "showMessage": true, "messageKey": "unaStella" },
-    "2": { "range": "50-79%", "showMessage": true, "messageKey": "dueStelle" },
-    "3": { "range": "80-100%", "showMessage": true, "messageKey": "treStelle" }
+  "percentageRule": {
+    "rule": "basata sulla percentuale di risposte/parole corrette sul totale",
+    "0": { "range": "0%", "showMessage": false, "note": "nessun messaggio mostrato" },
+    "1": { "range": "1-49%", "messageKey": "basso" },
+    "2": { "range": "50-79%", "messageKey": "medio" },
+    "3": { "range": "80-100%", "messageKey": "alto" }
   },
-  "messages": {
-    "treStelle": [
+  "voiceCoachMessages": {
+    "alto": [
       "Perfetto! Pronuncia impeccabile.",
       "Wow, sembri già un madrelingua!",
       "Eccellente, continua così!",
       "Fantastico, hai centrato tutto.",
       "Bravissimo, non c'è nulla da correggere."
     ],
-    "dueStelle": [
+    "medio": [
       "Bene, ci sei quasi!",
       "Buon lavoro, qualche dettaglio da limare.",
       "Sulla strada giusta, continua a esercitarti.",
       "Non male! Un altro paio di tentativi e sarà perfetto.",
       "Ci sei quasi, un piccolo sforzo in più."
     ],
-    "unaStella": [
+    "basso": [
       "Va bene così, l'importante è provarci.",
       "Ci vuole pratica, e tu la stai facendo — bravo.",
       "Ogni tentativo ti avvicina di più, continua.",
       "Nessun problema, ripasseremo insieme questa frase.",
       "Va tutto bene, è normale all'inizio."
+    ]
+  },
+  "speedRoundMessages": {
+    "alto": [
+      "Ottimo punteggio, hai davvero le idee chiare!",
+      "Wow, quasi tutte corrette!",
+      "Eccellente memoria!",
+      "Complimenti, sei quasi al massimo!",
+      "Fantastico lavoro su questo blocco."
+    ],
+    "medio": [
+      "Buon punteggio, si vede che stai imparando.",
+      "Bene così, continua a esercitarti.",
+      "Ci sei quasi: ripassa le parole che ti sono sfuggite.",
+      "Non male, un altro giro e migliori ancora.",
+      "Buon ritmo, tieni duro."
+    ],
+    "basso": [
+      "Va bene così, ora sai quali parole ripassare.",
+      "L'importante è essersi messi alla prova.",
+      "Ripasseremo insieme le parole più difficili.",
+      "È solo l'inizio, andrà meglio.",
+      "Nessun problema, il ripasso è fatto apposta per questo."
     ]
   },
   "terzoTentativoMessages": [

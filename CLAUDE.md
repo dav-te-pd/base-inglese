@@ -28,6 +28,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 8. **I testi "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`) vivono sempre in `data/istruzioni-moduli.json`**, mai scritti nel codice del componente. Struttura: un oggetto per ogni tipo di modulo (chiave = `kind` del modulo, es. `repeatAloud`, `speakEasy`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento). Sono condivisi tra episodi — non sono contenuto specifico di un episodio, quindi non vivono nel file `{livello}-episodioN-{lingua}.json` della regola 4. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 
+9. **Il pulsante "Help" va sempre nella riga di intestazione in alto**, insieme al pulsante "← Mappa" e al tag/badge del modulo — mai in basso vicino al pulsante di completamento ("Ho finito, torna alla mappa" o simile), perché lì causa click accidentali quando si scorre per finire l'esercizio. Vale per ogni modulo, presente e futuro.
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese`
