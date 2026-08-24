@@ -19,14 +19,24 @@
       "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito, torna alla mappa\".</p>"
     }
   },
-  "voiceCoach": {
+  "speedRound": {
     "howItWorks": {
       "title": "Guarda come si fa",
-      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono e ripeti la frase ad alta voce.</p><p>Se ti accorgi di aver sbagliato mentre stai ancora parlando, tocca il cestino per annullare e riprovare senza che venga valutato.</p><p>Dopo aver parlato, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere. Puoi riprovare la stessa frase con \"Riprova\", oppure andare avanti.</p><p>Quando arrivi all'ultima frase, premi \"Ho finito, torna alla mappa\".</p>"
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la parola o frase mostrata, e tocca tra le 4 opzioni la traduzione corretta prima che scada il tempo.</p><p>Se non sei sicuro, tocca \"Non lo so\" invece di rischiare a caso — non è un problema, ripasserai questa parola più avanti.</p><p>Il round è diviso in due blocchi: prima dall'inglese all'italiano, poi dall'italiano all'inglese. Alla fine di ogni blocco vedrai il tuo punteggio.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Ascolta con 🔊, poi tocca il microfono e ripeti la frase. Il cestino durante la registrazione annulla senza valutare.</p><p>Dopo aver parlato, guarda i colori: verde ok, giallo quasi, rosso da rivedere. \"Riprova\" per riprovare, \"Avanti\" per la prossima.</p>"
+      "body": "<p>Tocca la traduzione corretta tra le 4 opzioni prima che scada il tempo. Se non sai la risposta, tocca \"Non lo so\" invece di indovinare a caso.</p>"
+    }
+  },
+  "voiceCoach": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con \"Riprova\", oppure andare avanti.</p><p>Quando arrivi all'ultima frase, premi \"Ho finito, torna alla mappa\".</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. \"Riprova\" per riprovare, \"Avanti\" per la prossima.</p>"
     }
   }
 }

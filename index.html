@@ -67,6 +67,25 @@
       // documented in data/messaggi-feedback.json's starRating.
       starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 }
     },
+    // ---- Speed Round quiz ----
+    speedRound: {
+      // Seconds on the countdown bar before a question times out
+      // (timeout is treated the same as a wrong answer).
+      timeLimitSeconds: 10,
+      // Points awarded the first time an item+direction is answered
+      // correctly. Total possible = vocabulary.length * 2 blocks * this.
+      pointsPerCorrect: 50,
+      // Pause (ms) after a tap before moving to the next question, so the
+      // correct/wrong highlight is visible.
+      feedbackPauseMs: 600,
+      // Tones played on correct/wrong answers via the Web Audio API
+      // (no external audio files, per project convention).
+      sound: {
+        correctFreq: 880,
+        wrongFreq: 220,
+        durationMs: 180
+      }
+    },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
@@ -210,14 +229,24 @@
         body: '<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire "Mostra traduzione". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi "Ho finito, torna alla mappa".</p>'
       }
     },
-    voiceCoach: {
+    speedRound: {
       howItWorks: {
         title: 'Guarda come si fa',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono e ripeti la frase ad alta voce.</p><p>Se ti accorgi di aver sbagliato mentre stai ancora parlando, tocca il cestino per annullare e riprovare senza che venga valutato.</p><p>Dopo aver parlato, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la parola o frase mostrata, e tocca tra le 4 opzioni la traduzione corretta prima che scada il tempo.</p><p>Se non sei sicuro, tocca "Non lo so" invece di rischiare a caso — non è un problema, ripasserai questa parola più avanti.</p><p>Il round è diviso in due blocchi: prima dall\'inglese all\'italiano, poi dall\'italiano all\'inglese. Alla fine di ogni blocco vedrai il tuo punteggio.</p>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
-        body: '<p>Ascolta con 🔊, poi tocca il microfono e ripeti la frase. Il cestino durante la registrazione annulla senza valutare.</p><p>Dopo aver parlato, guarda i colori: verde ok, giallo quasi, rosso da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
+        body: '<p>Tocca la traduzione corretta tra le 4 opzioni prima che scada il tempo. Se non sai la risposta, tocca "Non lo so" invece di indovinare a caso.</p>'
+      }
+    },
+    voiceCoach: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
       }
     }
   };
@@ -1269,6 +1298,81 @@
 
   #attempt-popup .overlay-backdrop { cursor: default; }
 
+  /* ---------- speed round view ---------- */
+  .sr-block-label {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .sr-score {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin: 4px 0 0;
+  }
+
+  .sr-timerbar-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .sr-timerbar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--accent);
+  }
+
+  .sr-prompt {
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.4;
+    padding: 26px 16px;
+  }
+
+  .sr-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sr-option:disabled { cursor: default; opacity: 0.85; }
+  .sr-option.is-correct { background: var(--correct-bg); color: var(--correct-ink); border-color: transparent; }
+  .sr-option.is-wrong { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
+
+  .sr-summary {
+    text-align: center;
+    padding: 28px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sr-summary-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .sr-summary-score {
+    font-family: var(--font-mono);
+    font-size: 1rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+
   .warning {
     background: var(--wrong-bg);
     border: 1px solid color-mix(in srgb, var(--wrong-ink) 40%, transparent);
@@ -1477,6 +1581,46 @@
       </div>
     </section>
 
+    <!-- ============ VIEW: SPEED ROUND MODULE ============ -->
+    <section id="view-speed-round" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
+            <span class="badge">Speed Round</span>
+          </div>
+
+          <header class="app-header">
+            <h1>Speed Round</h1>
+            <p class="sr-block-label" id="sr-block-label"></p>
+            <p class="sr-score" id="sr-score">0 / 0</p>
+          </header>
+
+          <button type="button" class="watch-bar" id="speed-round-watch-bar">🎥 Guarda come si fa</button>
+
+          <div id="sr-quiz">
+            <div class="sr-timerbar-track"><div class="sr-timerbar-fill" id="sr-timerbar-fill"></div></div>
+
+            <div class="sr-prompt panel" id="sr-prompt"></div>
+
+            <div class="sr-options" id="sr-options"></div>
+
+            <button type="button" class="btn btn-secondary btn-block" id="sr-dontknow-btn">Non lo so</button>
+          </div>
+
+          <div id="sr-block-summary" hidden>
+            <div class="sr-summary panel">
+              <p class="sr-summary-title" id="sr-summary-title"></p>
+              <p class="sr-summary-score" id="sr-summary-score"></p>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="sr-continue-btn" hidden>Continua →</button>
+          </div>
+
+          <button type="button" class="btn btn-primary btn-block" id="sr-complete-btn" hidden>Ho finito, torna alla mappa</button>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ VIEW: PRONUNCIATION EXERCISE ============ -->
     <section id="view-pronunciation" class="view">
       <div class="card">
@@ -1640,6 +1784,7 @@
     repeatAloud: document.getElementById('view-repeat-aloud'),
     speakEasy: document.getElementById('view-speak-easy'),
     voiceCoach: document.getElementById('view-voice-coach'),
+    speedRound: document.getElementById('view-speed-round'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -1915,7 +2060,8 @@
       modules: [
         { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' }
+        { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'speedRound', kind: 'speedRound', label: 'Speed Round', dataFile: 'data/a1-episodio1-inglese.json' }
       ],
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -2213,6 +2359,7 @@
     if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
+    else if (module.kind === 'speedRound') openSpeedRound(module);
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
@@ -2758,6 +2905,264 @@
 
   document.getElementById('voice-coach-help-btn').addEventListener('click', function () {
     openHelpFor(vcModule);
+  });
+
+  /* ============================================================
+     MODULE: SPEED ROUND
+     Reads the same "vocabulary" section Repeat Aloud already uses
+     (loadEpisodeData reuses the cache). Two sequential blocks — English
+     -> Italian, then Italian -> English — each a shuffled pass over
+     every item followed by a single retry pass over anything wrong or
+     skipped, before the block closes. No Indietro/Help here by design:
+     the question always moves forward, and "Non lo so" already covers
+     the "I'm stuck" need Help serves elsewhere.
+     ============================================================ */
+  var srModule = null;
+  var srVocab = [];
+  var srBlockIndex = 0;
+  var srDirection = 'en-it'; // 'en-it' | 'it-en'
+  var srQueue = [];
+  var srRetryQueue = [];
+  var srInRetryPass = false;
+  var srCurrentItem = null;
+  var srCurrentOptions = [];
+  var srAwarded = {}; // unitId -> true, once an item+direction has ever earned points
+  var srScore = 0;
+  var srBlockScore = 0;
+  var srTotalPossible = 0;
+  var srBlockTotal = 0;
+  var srTimeoutId = null;
+  var srAudioCtx = null;
+
+  function srShuffle(list) {
+    var a = list.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  function srGetAudioCtx() {
+    if (!srAudioCtx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      srAudioCtx = new AC();
+    }
+    return srAudioCtx;
+  }
+
+  function srPlayTone(freq, durationMs) {
+    var ctx = srGetAudioCtx();
+    if (!ctx) return;
+    try {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs / 1000);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + durationMs / 1000);
+    } catch (e) {}
+  }
+
+  function srPlayCorrectSound() { srPlayTone(CONFIG.speedRound.sound.correctFreq, CONFIG.speedRound.sound.durationMs); }
+  function srPlayWrongSound() { srPlayTone(CONFIG.speedRound.sound.wrongFreq, CONFIG.speedRound.sound.durationMs); }
+
+  function srClearTimer() {
+    if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
+  }
+
+  function srStartTimer() {
+    srClearTimer();
+    var fill = document.getElementById('sr-timerbar-fill');
+    var seconds = CONFIG.speedRound.timeLimitSeconds;
+    fill.style.transition = 'none';
+    fill.style.width = '100%';
+    void fill.offsetWidth;
+    fill.style.transition = 'width ' + seconds + 's linear';
+    fill.style.width = '0%';
+    srTimeoutId = setTimeout(srHandleTimeout, seconds * 1000);
+  }
+
+  function srFreezeTimer() {
+    var fill = document.getElementById('sr-timerbar-fill');
+    var w = getComputedStyle(fill).width;
+    fill.style.transition = 'none';
+    fill.style.width = w;
+  }
+
+  function srDisableOptions() {
+    document.querySelectorAll('#sr-options .sr-option').forEach(function (b) { b.disabled = true; });
+  }
+
+  function updateSrScoreDisplay() {
+    document.getElementById('sr-score').textContent = srScore + ' / ' + srTotalPossible;
+  }
+
+  function srRecordResult(correct) {
+    var unitId = 'speedround:' + srCurrentItem.id + ':' + srDirection;
+    var userName = getUserName();
+    var mastery = loadMastery(currentEpisode.id, userName);
+    mastery[unitId] = applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
+    saveMastery(currentEpisode.id, userName, mastery);
+
+    if (correct) {
+      if (!srAwarded[unitId]) {
+        srAwarded[unitId] = true;
+        srScore += CONFIG.speedRound.pointsPerCorrect;
+        srBlockScore += CONFIG.speedRound.pointsPerCorrect;
+      }
+    } else if (!srInRetryPass && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
+      srRetryQueue.push(srCurrentItem.id);
+    }
+    updateSrScoreDisplay();
+  }
+
+  function srBuildOptions(item) {
+    var correctText = srDirection === 'en-it' ? item.italian : item.english;
+    var pool = srVocab.filter(function (v) { return v.id !== item.id; });
+    var distractors = srShuffle(pool).slice(0, 3).map(function (v) {
+      return srDirection === 'en-it' ? v.italian : v.english;
+    });
+    var options = distractors.map(function (text) { return { text: text, correct: false }; });
+    options.push({ text: correctText, correct: true });
+    return srShuffle(options);
+  }
+
+  function srRenderQuestion() {
+    var promptText = srDirection === 'en-it' ? srCurrentItem.english : srCurrentItem.italian;
+    document.getElementById('sr-prompt').textContent = promptText;
+    srCurrentOptions = srBuildOptions(srCurrentItem);
+    document.getElementById('sr-options').innerHTML = srCurrentOptions.map(function (opt, i) {
+      return '<button type="button" class="help-option sr-option" data-sr-index="' + i + '">' + opt.text + '</button>';
+    }).join('');
+    srStartTimer();
+  }
+
+  function srNextQuestion() {
+    if (srQueue.length === 0) {
+      if (!srInRetryPass && srRetryQueue.length > 0) {
+        srInRetryPass = true;
+        srQueue = srShuffle(srRetryQueue);
+        srRetryQueue = [];
+      } else {
+        srFinishBlock();
+        return;
+      }
+    }
+    var itemId = srQueue.shift();
+    srCurrentItem = srVocab.find(function (v) { return v.id === itemId; });
+    srRenderQuestion();
+  }
+
+  function srHandleTimeout() {
+    srTimeoutId = null;
+    srDisableOptions();
+    srPlayWrongSound();
+    srRecordResult(false);
+    setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
+  }
+
+  function srFinishBlock() {
+    srClearTimer();
+    document.getElementById('sr-quiz').hidden = true;
+    var blockNum = srBlockIndex + 1;
+    document.getElementById('sr-summary-title').textContent = 'Blocco ' + blockNum + ' completato!';
+    document.getElementById('sr-summary-score').textContent =
+      'Punteggio di questo blocco: ' + srBlockScore + ' / ' + srBlockTotal;
+    document.getElementById('sr-block-summary').hidden = false;
+    var isFirstBlock = srBlockIndex === 0;
+    document.getElementById('sr-continue-btn').hidden = !isFirstBlock;
+    document.getElementById('sr-complete-btn').hidden = isFirstBlock;
+  }
+
+  function srStartBlock(blockIndex) {
+    srBlockIndex = blockIndex;
+    srDirection = blockIndex === 0 ? 'en-it' : 'it-en';
+    srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
+    srRetryQueue = [];
+    srInRetryPass = false;
+    srBlockScore = 0;
+    srBlockTotal = srVocab.length * CONFIG.speedRound.pointsPerCorrect;
+    document.getElementById('sr-block-label').textContent =
+      blockIndex === 0 ? 'Blocco 1 · Inglese → Italiano' : 'Blocco 2 · Italiano → Inglese';
+    document.getElementById('sr-block-summary').hidden = true;
+    document.getElementById('sr-quiz').hidden = false;
+    updateSrScoreDisplay();
+    srNextQuestion();
+  }
+
+  function openSpeedRound(module) {
+    srModule = module;
+    document.getElementById('sr-quiz').hidden = false;
+    document.getElementById('sr-block-summary').hidden = true;
+    document.getElementById('sr-complete-btn').hidden = true;
+    document.getElementById('sr-block-label').textContent = '';
+    document.getElementById('sr-score').textContent = '0 / 0';
+    document.getElementById('sr-prompt').textContent = 'Caricamento...';
+    document.getElementById('sr-options').innerHTML = '';
+    showView('speedRound');
+    loadEpisodeData(module).then(function (data) {
+      if (srModule !== module) return;
+      srVocab = data.vocabulary;
+      srAwarded = {};
+      srScore = 0;
+      srTotalPossible = srVocab.length * 2 * CONFIG.speedRound.pointsPerCorrect;
+      updateSrScoreDisplay();
+      srStartBlock(0);
+    }).catch(function () {
+      if (srModule !== module) return;
+      document.getElementById('sr-prompt').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+    });
+  }
+
+  document.getElementById('sr-options').addEventListener('click', function (e) {
+    var btn = e.target.closest('.sr-option');
+    if (!btn || btn.disabled) return;
+    srClearTimer();
+    srFreezeTimer();
+    srDisableOptions();
+    var opt = srCurrentOptions[parseInt(btn.getAttribute('data-sr-index'), 10)];
+    if (opt.correct) {
+      btn.classList.add('is-correct');
+      srPlayCorrectSound();
+      srRecordResult(true);
+    } else {
+      btn.classList.add('is-wrong');
+      srPlayWrongSound();
+      srRecordResult(false);
+    }
+    setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
+  });
+
+  document.getElementById('sr-dontknow-btn').addEventListener('click', function () {
+    srClearTimer();
+    srFreezeTimer();
+    srDisableOptions();
+    srRecordResult(false);
+    srNextQuestion();
+  });
+
+  document.getElementById('sr-continue-btn').addEventListener('click', function () {
+    srStartBlock(1);
+  });
+
+  document.getElementById('sr-complete-btn').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), srModule.id);
+    openEpisodeMap();
+  });
+
+  document.getElementById('speed-round-back-map').addEventListener('click', function () {
+    srClearTimer();
+    openEpisodeMap();
+  });
+
+  document.getElementById('speed-round-watch-bar').addEventListener('click', function () {
+    openInstructionsFor(srModule);
   });
 
   boot();
