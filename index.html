@@ -377,7 +377,7 @@
     white-space: nowrap;
   }
 
-  input[type="text"], select {
+  input[type="text"], select, textarea {
     font-family: var(--font-body);
     font-size: 1rem;
     color: var(--text);
@@ -388,15 +388,154 @@
     width: 100%;
   }
 
-  input[type="text"]:focus-visible, select:focus-visible {
+  textarea { resize: vertical; min-height: 90px; }
+
+  input[type="text"]:focus-visible, select:focus-visible, textarea:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 1px;
   }
 
-  input[type="text"]::placeholder { color: var(--text); opacity: 0.45; }
+  input[type="text"]::placeholder, textarea::placeholder { color: var(--text); opacity: 0.45; }
 
   @media (prefers-reduced-motion: reduce) {
     * { animation: none !important; transition: none !important; }
+  }
+
+  /* ============================================================
+     SHARED: "watch how it's done" bar + Help entry point
+     Every module screen can drop these two elements in (see Repeat
+     Aloud for the pattern) and wire them to openInstructionsFor() /
+     openHelpFor() — no per-module CSS or overlay markup needed.
+     ============================================================ */
+  .watch-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 18px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--card-2);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .watch-bar:hover { border-color: var(--accent); color: var(--accent); }
+
+  .watch-bar:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .help-row { display: flex; justify-content: flex-end; }
+
+  .help-btn {
+    width: 20%;
+    min-width: 84px;
+    padding: 8px 10px;
+    font-size: 0.78rem;
+  }
+
+  /* ---------- shared overlay (instructions + help panel) ---------- */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+  }
+
+  .overlay.is-open { display: flex; }
+
+  .overlay-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 10, 8, 0.55);
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .overlay-panel {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .overlay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .overlay-close {
+    background: none;
+    border: none;
+    font-size: 1.1rem;
+    line-height: 1;
+    color: var(--text);
+    opacity: 0.6;
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  .overlay-close:hover { opacity: 1; color: var(--accent); }
+
+  .overlay-close:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .overlay-text { font-size: 0.92rem; opacity: 0.85; line-height: 1.5; }
+
+  .help-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .help-option {
+    text-align: left;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--card-2);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .help-option:hover { border-color: var(--accent); color: var(--accent); }
+
+  .help-option:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .help-option-urgent { border-color: color-mix(in srgb, var(--wrong-ink) 45%, var(--border)); }
+
+  .overlay-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
   }
 
   /* ============================================================
@@ -958,7 +1097,13 @@
             <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
           </header>
 
+          <button type="button" class="watch-bar" id="repeat-aloud-watch-bar">🎥 Guarda come si fa</button>
+
           <div id="repeat-aloud-body"></div>
+
+          <div class="help-row">
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+          </div>
 
           <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
         </div>
@@ -1009,6 +1154,21 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- ============ SHARED: MODULE HELP OVERLAY ============
+       One overlay, reused by every module for both "Guarda come si fa"
+       and "Help": content is filled in by JS from the current module's
+       config, never duplicated per module. -->
+  <div class="overlay" id="help-overlay">
+    <button type="button" class="overlay-backdrop" id="help-overlay-backdrop" aria-label="Chiudi"></button>
+    <div class="overlay-panel card">
+      <div class="overlay-header">
+        <h2 id="help-overlay-title">Aiuto</h2>
+        <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi">✕</button>
+      </div>
+      <div class="overlay-body" id="help-overlay-body"></div>
+    </div>
   </div>
 
 <script>
@@ -1134,6 +1294,140 @@
   document.getElementById('customize-back-home').addEventListener('click', goHome);
 
   /* ============================================================
+     SHARED: MODULE HELP OVERLAY (reusable by every module)
+     One overlay element in the DOM (see the HTML near the end of
+     .app), driven entirely by the module object passed in. A module
+     opts in by rendering a "watch-bar" button calling
+     openInstructionsFor(module) and a "help-btn" calling
+     openHelpFor(module) — see the Repeat Aloud view for the pattern.
+     Help requests (options B/C) are saved with the same per-user
+     localStorage mechanism as mastery/customization.
+     ============================================================ */
+  function helpRequestsKey(userName) {
+    return 'baseinglese:helpRequests:' + userName;
+  }
+
+  function loadHelpRequests(userName) {
+    try {
+      var raw = localStorage.getItem(helpRequestsKey(userName));
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+
+  function saveHelpRequest(userName, entry) {
+    var list = loadHelpRequests(userName);
+    list.push(entry);
+    try { localStorage.setItem(helpRequestsKey(userName), JSON.stringify(list)); } catch (e) {}
+  }
+
+  var activeHelpModule = null;
+  var helpOverlayEl = document.getElementById('help-overlay');
+
+  function openOverlay() { helpOverlayEl.classList.add('is-open'); }
+  function closeOverlay() { helpOverlayEl.classList.remove('is-open'); }
+
+  document.getElementById('help-overlay-close').addEventListener('click', closeOverlay);
+  document.getElementById('help-overlay-backdrop').addEventListener('click', closeOverlay);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && helpOverlayEl.classList.contains('is-open')) closeOverlay();
+  });
+
+  // Instructions body is a placeholder <p> today; swap it for a <video>
+  // reading module.instructions.videoUrl later without touching the
+  // overlay shell or either entry point that opens it.
+  function renderInstructions(module) {
+    var text = (module.instructions && module.instructions.placeholder) ||
+      'Istruzioni non ancora disponibili per questo modulo.';
+    return '<p class="overlay-text">' + text + '</p>';
+  }
+
+  function openInstructionsOverlay(module) {
+    document.getElementById('help-overlay-title').textContent = 'Guarda come si fa';
+    document.getElementById('help-overlay-body').innerHTML = renderInstructions(module);
+    openOverlay();
+  }
+
+  function renderHelpMenu() {
+    return '<div class="help-menu">' +
+      '<button type="button" class="help-option" data-help-action="instructions">Rivedi come funziona l\'esercizio</button>' +
+      '<button type="button" class="help-option" data-help-action="clarify">Vorrei capire questo</button>' +
+      '<button type="button" class="help-option help-option-urgent" data-help-action="urgent">Sono veramente bloccato, Davide ho bisogno del tuo aiuto</button>' +
+      '</div>';
+  }
+
+  function openHelpMenu(module) {
+    document.getElementById('help-overlay-title').textContent = 'Hai bisogno di aiuto?';
+    document.getElementById('help-overlay-body').innerHTML = renderHelpMenu();
+    openOverlay();
+  }
+
+  function renderHelpForm(type) {
+    var helper = type === 'urgent'
+      ? 'Scrivi cosa ti blocca: la tua richiesta verrà salvata come urgente.'
+      : 'Scrivi cosa non ti è chiaro.';
+    return '<form id="help-form" data-help-type="' + type + '">' +
+      '<p class="overlay-text">' + helper + '</p>' +
+      '<textarea id="help-text" rows="4" placeholder="Scrivi qui..." required></textarea>' +
+      '<div class="overlay-actions">' +
+      '<button type="button" class="btn btn-secondary" id="help-form-back">← Indietro</button>' +
+      '<button type="submit" class="btn btn-primary">Invia</button>' +
+      '</div>' +
+      '</form>';
+  }
+
+  function renderHelpConfirmation() {
+    return '<p class="overlay-text">✓ Richiesta salvata. Grazie!</p>' +
+      '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">← Torna al menu</button></div>';
+  }
+
+  function openInstructionsFor(module) {
+    activeHelpModule = module;
+    openInstructionsOverlay(module);
+  }
+
+  function openHelpFor(module) {
+    activeHelpModule = module;
+    openHelpMenu(module);
+  }
+
+  document.getElementById('help-overlay-body').addEventListener('click', function (e) {
+    var actionBtn = e.target.closest('[data-help-action]');
+    if (actionBtn) {
+      var action = actionBtn.getAttribute('data-help-action');
+      if (action === 'instructions') {
+        openInstructionsOverlay(activeHelpModule);
+      } else {
+        document.getElementById('help-overlay-title').textContent =
+          action === 'urgent' ? 'Richiesta urgente' : 'Vorrei capire questo';
+        document.getElementById('help-overlay-body').innerHTML = renderHelpForm(action);
+      }
+      return;
+    }
+    if (e.target.id === 'help-form-back') {
+      openHelpMenu(activeHelpModule);
+    }
+  });
+
+  document.getElementById('help-overlay-body').addEventListener('submit', function (e) {
+    if (e.target.id !== 'help-form') return;
+    e.preventDefault();
+    var type = e.target.getAttribute('data-help-type');
+    var text = document.getElementById('help-text').value.trim();
+    if (!text) return;
+    saveHelpRequest(getUserName(), {
+      episodeId: currentEpisode.id,
+      moduleId: activeHelpModule.id,
+      type: type,
+      text: text,
+      createdAt: new Date().toISOString()
+    });
+    document.getElementById('help-overlay-title').textContent =
+      type === 'urgent' ? 'Richiesta urgente' : 'Vorrei capire questo';
+    document.getElementById('help-overlay-body').innerHTML = renderHelpConfirmation();
+  });
+
+  /* ============================================================
      CUMULATIVE MASTERY (foundation #1)
      Tracks a color state — 'rosso' / 'giallo' / 'verde' — per exercise
      item (a word or a phrase), per user. Unseen items have no entry
@@ -1203,7 +1497,14 @@
       // or order inside the map-rendering code. dataFile is the external
       // data source for that module's content (see CLAUDE.md rule 4).
       modules: [
-        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' }
+        {
+          id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json',
+          // Placeholder for "Guarda come si fa" — swap for a videoUrl later,
+          // renderInstructions() is the only place that needs to change.
+          instructions: {
+            placeholder: 'Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia, poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".'
+          }
+        }
       ],
       slotFields: [
         { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
@@ -1553,6 +1854,14 @@
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('repeat-aloud-watch-bar').addEventListener('click', function () {
+    openInstructionsFor(currentRepeatAloudModule);
+  });
+
+  document.getElementById('repeat-aloud-help-btn').addEventListener('click', function () {
+    openHelpFor(currentRepeatAloudModule);
+  });
 
   document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
     markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
