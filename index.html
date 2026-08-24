@@ -992,6 +992,71 @@
     margin-bottom: 8px;
   }
 
+  /* ---------- shared: module completion banner ---------- */
+  .module-complete-banner {
+    padding: 14px 18px;
+    text-align: center;
+    font-weight: 600;
+    background: var(--correct-bg);
+    color: var(--correct-ink);
+    border-color: transparent;
+  }
+
+  /* ---------- speak easy view (chat bubbles) ---------- */
+  .chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chat-row { display: flex; }
+  .chat-row.left { justify-content: flex-start; }
+  .chat-row.right { justify-content: flex-end; }
+
+  .chat-bubble {
+    max-width: 84%;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chat-speaker {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  .chat-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .chat-italian { font-size: 0.88rem; opacity: 0.8; margin: 0; }
+
+  .translation-toggle {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 2px 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .translation-toggle:hover { opacity: 0.8; }
+
+  .translation-toggle:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
   .warning {
     background: var(--wrong-bg);
     border: 1px solid color-mix(in srgb, var(--wrong-ink) 40%, transparent);
@@ -1106,6 +1171,33 @@
           </div>
 
           <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: SPEAK EASY MODULE ============ -->
+    <section id="view-speak-easy" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
+            <span class="badge">Speak Easy</span>
+          </div>
+
+          <header class="app-header">
+            <h1 id="speak-easy-title">Speak Easy</h1>
+            <p style="opacity:0.7; font-size:0.92rem;">Segui il dialogo, ascolta ogni battuta e prova a ripeterla.</p>
+          </header>
+
+          <button type="button" class="watch-bar" id="speak-easy-watch-bar">🎥 Guarda come si fa</button>
+
+          <div class="panel module-complete-banner" id="speak-easy-banner" hidden>✓ Hai completato questo modulo! Torna alla mappa quando vuoi.</div>
+
+          <div id="speak-easy-body"></div>
+
+          <div class="help-row">
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1249,6 +1341,7 @@
     customize: document.getElementById('view-customize'),
     map: document.getElementById('view-map'),
     repeatAloud: document.getElementById('view-repeat-aloud'),
+    speakEasy: document.getElementById('view-speak-easy'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -1504,8 +1597,36 @@
           instructions: {
             placeholder: 'Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia, poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".'
           }
+        },
+        {
+          id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json',
+          instructions: {
+            placeholder: 'Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano. Il modulo si completa da solo quando hai ascoltato o tradotto tutte le battute.'
+          }
         }
       ],
+      // Maps a {{placeholder}} used in dialogue lines to the slotFields key
+      // that supplies its value — the only piece a new episode's dialogue
+      // needs to redeclare if it uses different placeholder names.
+      dialoguePlaceholderMap: {
+        papaName: 'papa',
+        mammaName: 'mamma',
+        figliaName: 'figliaNome',
+        figlioName: 'figlioNome',
+        figliaEta: 'figliaEta',
+        figlioEta: 'figlioEta',
+        cittaPartenza: 'partenza',
+        destinazione: 'destinazione'
+      },
+      // Maps a dialogue "speaker" id to the slotFields key used for their
+      // display name tag in the Speak Easy chat bubbles. A speaker with no
+      // entry here (e.g. "guide") gets a fixed label instead.
+      dialogueSpeakers: {
+        papa: 'papa',
+        mamma: 'mamma',
+        figlia: 'figliaNome',
+        figlio: 'figlioNome'
+      },
       slotFields: [
         { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
         { key: 'mamma', label: 'Nome della mamma', type: 'select', options: CONFIG.people.mamma, def: 'giulia' },
@@ -1584,17 +1705,33 @@
     return field ? field.def : '';
   }
 
-  // What actually gets spoken in the exercise phrase for a slot's current
-  // (stored) value: the option's "en" column for select slots, or the raw
-  // text as typed for any free-text slot.
-  function resolveSlotPhrase(episode, key, rawValue) {
+  // What a slot's current (stored) value displays as in a given language:
+  // the option's "it"/"en"/... column for select slots, or the raw text
+  // as typed for any free-text slot. Used both for the exercise phrase
+  // (English) and for dialogue lines (either language) and speaker tags
+  // (Italian) in Speak Easy.
+  function resolveSlotValue(episode, key, rawValue, lang) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {
       var opts = slotOptions(field);
       var match = opts.find(function (o) { return o.value === rawValue; });
-      return match ? match.en : (opts[0] ? opts[0].en : rawValue);
+      var picked = match || opts[0];
+      return picked ? picked[lang] : rawValue;
     }
     return rawValue;
+  }
+
+  // Fills {{placeholders}} in a dialogue line using the episode's
+  // dialoguePlaceholderMap (placeholder name -> slotFields key) and the
+  // user's current customization values, in the given language. Unknown
+  // placeholders are left untouched rather than breaking the line.
+  function fillTemplate(text, episode, values, lang) {
+    return text.replace(/\{\{(\w+)\}\}/g, function (match, varName) {
+      var slotKey = episode.dialoguePlaceholderMap && episode.dialoguePlaceholderMap[varName];
+      if (!slotKey) return match;
+      var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
+      return resolveSlotValue(episode, slotKey, rawValue, lang);
+    });
   }
 
   function customValuesKey(episodeId, userName) {
@@ -1650,7 +1787,7 @@
         tokens.push({ word: seg.text, unitId: 'fixed:' + (fixedIdx++) });
       } else {
         var rawValue = (values[seg.slot] || '').trim() || slotDefault(episode, seg.slot);
-        var phrase = resolveSlotPhrase(episode, seg.slot, rawValue);
+        var phrase = resolveSlotValue(episode, seg.slot, rawValue, 'en');
         var words = phrase.split(/\s+/).filter(Boolean);
         if (!words.length) words = [''];
         words.forEach(function (w, i) {
@@ -1762,6 +1899,7 @@
     var module = currentEpisode.modules.find(function (m) { return m.id === btn.getAttribute('data-module'); });
     if (!module) return;
     if (module.kind === 'repeatAloud') openRepeatAloud(module);
+    else if (module.kind === 'speakEasy') openSpeakEasy(module);
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
@@ -1866,6 +2004,115 @@
   document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
     markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
     openEpisodeMap();
+  });
+
+  /* ============================================================
+     MODULE: SPEAK EASY
+     Reads the same "dialogue" section of the episode's data file
+     Repeat Aloud already fetched (loadEpisodeData reuses its cache, no
+     extra request). Unlike Repeat Aloud, this module has no manual
+     "done" button: it completes itself once every line has been
+     listened to or had its translation revealed.
+     ============================================================ */
+  var currentSpeakEasyModule = null;
+  var speakEasyEngaged = {};
+
+  function speakerLabel(episode, speaker) {
+    var slotKey = episode.dialogueSpeakers && episode.dialogueSpeakers[speaker];
+    if (!slotKey) return 'Guida';
+    var rawValue = (currentValues[slotKey] || '').trim() || slotDefault(episode, slotKey);
+    return resolveSlotValue(episode, slotKey, rawValue, 'it');
+  }
+
+  function renderSpeakEasy(data) {
+    var itemsHtml = data.dialogue.map(function (line) {
+      var align = line.speaker === 'guide' ? 'left' : 'right';
+      var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+      var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
+      return '<div class="chat-row ' + align + '">' +
+        '<div class="chat-bubble panel">' +
+        '<span class="chat-speaker">' + speakerLabel(currentEpisode, line.speaker) + '</span>' +
+        '<p class="chat-english">' + english + '</p>' +
+        '<div class="repeat-item-audio">' +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">🔊</button>' +
+        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
+        '</div>' +
+        '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>' +
+        '<p class="chat-italian" id="chat-italian-' + line.id + '" hidden>' + italian + '</p>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+    document.getElementById('speak-easy-body').innerHTML = '<div class="chat-list">' + itemsHtml + '</div>';
+  }
+
+  function markSpeakEasyLineEngaged(lineId) {
+    speakEasyEngaged[lineId] = true;
+    var data = episodeDataCache[currentSpeakEasyModule.dataFile];
+    if (!data) return;
+    var allEngaged = data.dialogue.every(function (line) { return speakEasyEngaged[line.id]; });
+    if (allEngaged) {
+      markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
+      document.getElementById('speak-easy-banner').hidden = false;
+    }
+  }
+
+  function openSpeakEasy(module) {
+    currentSpeakEasyModule = module;
+    speakEasyEngaged = {};
+    document.getElementById('speak-easy-title').textContent = module.label;
+    document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    document.getElementById('speak-easy-banner').hidden = true;
+    showView('speakEasy');
+    loadEpisodeData(module).then(function (data) {
+      if (currentSpeakEasyModule !== module) return;
+      renderSpeakEasy(data);
+      var progress = loadModuleProgress(currentEpisode.id, getUserName());
+      if (progress.completed.indexOf(module.id) !== -1) {
+        document.getElementById('speak-easy-banner').hidden = false;
+      }
+    }).catch(function () {
+      if (currentSpeakEasyModule !== module) return;
+      document.getElementById('speak-easy-body').innerHTML =
+        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+    });
+  }
+
+  document.getElementById('speak-easy-body').addEventListener('click', function (e) {
+    var listenBtn = e.target.closest('[data-say]');
+    if (listenBtn) {
+      var data = episodeDataCache[currentSpeakEasyModule.dataFile];
+      var line = data && data.dialogue.find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
+      if (!line) return;
+      var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+      var rateAttr = listenBtn.getAttribute('data-rate');
+      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      markSpeakEasyLineEngaged(line.id);
+      return;
+    }
+    var toggleBtn = e.target.closest('[data-toggle-translation]');
+    if (toggleBtn) {
+      var lineId = toggleBtn.getAttribute('data-toggle-translation');
+      var italianEl = document.getElementById('chat-italian-' + lineId);
+      var reveal = italianEl.hasAttribute('hidden');
+      if (reveal) {
+        italianEl.removeAttribute('hidden');
+        toggleBtn.textContent = 'Nascondi traduzione';
+      } else {
+        italianEl.setAttribute('hidden', '');
+        toggleBtn.textContent = 'Mostra traduzione';
+      }
+      markSpeakEasyLineEngaged(lineId);
+    }
+  });
+
+  document.getElementById('speak-easy-back-map').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('speak-easy-watch-bar').addEventListener('click', function () {
+    openInstructionsFor(currentSpeakEasyModule);
+  });
+
+  document.getElementById('speak-easy-help-btn').addEventListener('click', function () {
+    openHelpFor(currentSpeakEasyModule);
   });
 
   boot();
