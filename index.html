@@ -1368,6 +1368,7 @@
 
   /* ---------- speed round view ---------- */
   #sr-start-screen,
+  #sr-retry-intro-screen,
   #sr-quiz-screen,
   #sr-summary-screen {
     display: flex;
@@ -1381,6 +1382,17 @@
     padding: 40px 0;
   }
 
+  /* The four screens toggle via the "hidden" attribute, but the ID rules
+     above/below set their own "display" — same bug class fixed on Voice
+     Coach's mic/confirm/result states: an ID selector's "display" beats
+     the browser's default [hidden]{display:none} on specificity alone,
+     so without this override every screen stays visible at once. */
+  #sr-start-screen[hidden],
+  #sr-countdown-screen[hidden],
+  #sr-retry-intro-screen[hidden],
+  #sr-quiz-screen[hidden],
+  #sr-summary-screen[hidden] { display: none; }
+
   .sr-countdown-number {
     font-family: var(--font-display);
     font-weight: 700;
@@ -1391,9 +1403,9 @@
   .sr-counter {
     text-align: center;
     font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    opacity: 0.6;
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
     margin: 0;
   }
 
@@ -1462,26 +1474,6 @@
     font-weight: 600;
     font-size: 1.2rem;
     margin: 0;
-  }
-
-  .sr-summary-score {
-    font-family: var(--font-mono);
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .sr-summary-pct {
-    font-family: var(--font-mono);
-    font-size: 0.9rem;
-    opacity: 0.7;
-    margin: 0;
-  }
-
-  .sr-summary-message {
-    font-size: 0.92rem;
-    opacity: 0.85;
-    margin: 4px 0 0;
   }
 
   .warning {
@@ -1716,6 +1708,17 @@
             <div class="sr-countdown-number" id="sr-countdown-number">3</div>
           </div>
 
+          <!-- RETRY-PASS INTRO SCREEN: shown once before re-asking anything
+               wrong/skipped/timed out, so the counter reset and repeated
+               questions make sense to the user. -->
+          <div id="sr-retry-intro-screen" hidden>
+            <header class="app-header">
+              <h1>Ripasso</h1>
+            </header>
+            <div class="overlay-text panel">Ripassiamo insieme le domande sbagliate o saltate, finché non sono tutte corrette.</div>
+            <button type="button" class="btn btn-primary btn-block" id="sr-retry-continue-btn">Continua →</button>
+          </div>
+
           <!-- QUIZ SCREEN -->
           <div id="sr-quiz-screen" hidden>
             <p class="sr-counter" id="sr-counter"></p>
@@ -1735,13 +1738,12 @@
             <button type="button" class="btn btn-primary btn-block" id="sr-advance-btn" hidden>Avanti →</button>
           </div>
 
-          <!-- SUMMARY SCREEN -->
+          <!-- SUMMARY SCREEN: score/percentage/message deliberately omitted
+               for now (temporary simplification) — just the completion
+               acknowledgement and the exit actions. -->
           <div id="sr-summary-screen" hidden>
             <div class="sr-summary panel">
-              <p class="sr-summary-title" id="sr-summary-title"></p>
-              <p class="sr-summary-score" id="sr-summary-score"></p>
-              <p class="sr-summary-pct" id="sr-summary-pct"></p>
-              <p class="sr-summary-message" id="sr-summary-message"></p>
+              <p class="sr-summary-title" id="sr-summary-title">Round completato!</p>
             </div>
             <button type="button" class="btn btn-primary btn-block" id="sr-complete-btn">Ho finito, torna alla mappa</button>
           </div>
@@ -3063,9 +3065,6 @@
   var srPassTotal = 0;
   var srCurrentItem = null;
   var srCurrentOptions = [];
-  var srAwarded = {}; // unitId -> true, once an item has ever earned points
-  var srScore = 0;
-  var srTotalPossible = 0;
   var srTimeoutId = null;
   var srCountdownTimeoutId = null;
   var srAudioCtx = null;
@@ -3138,6 +3137,7 @@
   function srShowScreen(name) {
     document.getElementById('sr-start-screen').hidden = name !== 'start';
     document.getElementById('sr-countdown-screen').hidden = name !== 'countdown';
+    document.getElementById('sr-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('sr-summary-screen').hidden = name !== 'summary';
     document.getElementById('speed-round-help-btn').hidden = name !== 'summary';
@@ -3150,12 +3150,7 @@
     mastery[unitId] = applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
     saveMastery(currentEpisode.id, userName, mastery);
 
-    if (correct) {
-      if (!srAwarded[unitId]) {
-        srAwarded[unitId] = true;
-        srScore += CONFIG.speedRound.pointsPerCorrect;
-      }
-    } else if (!srInRetryPass && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
+    if (!correct && !srInRetryPass && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
       srRetryQueue.push(srCurrentItem.id);
     }
   }
@@ -3193,6 +3188,8 @@
         srRetryQueue = [];
         srPassTotal = srQueue.length;
         srPassIndex = 0;
+        srShowScreen('retryIntro');
+        return;
       } else {
         srFinishModule();
         return;
@@ -3201,6 +3198,7 @@
     var itemId = srQueue.shift();
     srPassIndex++;
     srCurrentItem = srVocab.find(function (v) { return v.id === itemId; });
+    srShowScreen('quiz');
     srRenderQuestion();
   }
 
@@ -3226,22 +3224,10 @@
     srShowReveal();
   }
 
+  // Score/percentage/message deliberately not shown here for now (temporary
+  // simplification, per explicit request) — just the completion screen.
   function srFinishModule() {
     srClearTimer();
-    var pct = srTotalPossible ? Math.round((srScore / srTotalPossible) * 100) : 0;
-    document.getElementById('sr-summary-title').textContent = 'Modulo completato!';
-    document.getElementById('sr-summary-score').textContent = srScore + ' / ' + srTotalPossible;
-    document.getElementById('sr-summary-pct').textContent = pct + '%';
-    var messageEl = document.getElementById('sr-summary-message');
-    messageEl.textContent = '';
-    if (pct > 0) {
-      var t = CONFIG.speedRound.percentageThresholds;
-      var bucket = pct >= t.alto ? 'alto' : (pct >= t.medio ? 'medio' : 'basso');
-      loadFeedbackMessages().then(function (data) {
-        var pool = data.speedRoundMessages && data.speedRoundMessages[bucket];
-        if (pool && pool.length) messageEl.textContent = pickRandom(pool);
-      }).catch(function () {});
-    }
     srShowScreen('summary');
   }
 
@@ -3251,9 +3237,6 @@
     srInRetryPass = false;
     srPassTotal = srQueue.length;
     srPassIndex = 0;
-    srScore = 0;
-    srAwarded = {};
-    srTotalPossible = srVocab.length * CONFIG.speedRound.pointsPerCorrect;
     document.getElementById('sr-direction').textContent = SR_DIRECTION_LABEL[srDirection];
     srShowScreen('quiz');
     srNextQuestion();
@@ -3333,6 +3316,10 @@
   });
 
   document.getElementById('sr-advance-btn').addEventListener('click', function () {
+    srNextQuestion();
+  });
+
+  document.getElementById('sr-retry-continue-btn').addEventListener('click', function () {
     srNextQuestion();
   });
 
