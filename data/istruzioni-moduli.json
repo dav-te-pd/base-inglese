@@ -39,6 +39,16 @@
       "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
     }
   },
+  "flashcardLevelA": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi, poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca la carta per girarla, poi dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
+    }
+  },
   "voiceCoach": {
     "howItWorks": {
       "title": "Guarda come si fa",

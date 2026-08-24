@@ -92,6 +92,20 @@
         durationMs: 180
       }
     },
+    // ---- Flash Card decks. One entry per level (today just "a"); each
+    // module descriptor (see EPISODES) points at a level key + a
+    // direction, so the component always reads its label/data source
+    // from here instead of hardcoding "Livello A" — adding level B/C
+    // later is just a new key here plus two more module descriptors. ----
+    flashcard: {
+      levels: {
+        a: {
+          label: 'LIVELLO A · PAROLE SINGOLE',
+          // Key into the episode data file's own object (CLAUDE.md rule 4).
+          vocabKey: 'flashcardLevelA'
+        }
+      }
+    },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
@@ -205,6 +219,23 @@
         { id: 'family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".', grammarCategory: 'sostantivo' }
       ],
       generalRule: 'La "e" finale in inglese non si legge quasi mai.',
+      flashcardLevelA: [
+        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve' },
+        { id: 'everyone', english: 'everyone', italian: 'tutti' },
+        { id: 'nice', english: 'Nice', italian: 'Piacevole' },
+        { id: 'meet', english: 'meet', italian: 'conoscere/incontrare' },
+        { id: 'you', english: 'you', italian: 'tu / voi' },
+        { id: 'can', english: 'Can', italian: 'Puoi / Potete' },
+        { id: 'introduce', english: 'introduce', italian: 'presentare' },
+        { id: 'wife', english: 'wife', italian: 'moglie' },
+        { id: 'years', english: 'years', italian: 'anni' },
+        { id: 'old', english: 'old', italian: 'vecchio (età)' },
+        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico' },
+        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i' },
+        { id: 'trip', english: 'trip', italian: 'viaggio' },
+        { id: 'family', english: 'family', italian: 'famiglia' },
+        { id: 'from', english: 'from', italian: 'da / di' }
+      ],
       ageOptions: {
         figlia: [8, 10, 16],
         figlio: [6, 8, 10]
@@ -253,6 +284,16 @@
       helpReminder: {
         title: 'Come funziona, in breve',
         body: '<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>'
+      }
+    },
+    flashcardLevelA: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi, poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca la carta per girarla, poi dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>'
       }
     },
     voiceCoach: {
@@ -363,8 +404,9 @@
     --card-2: color-mix(in srgb, #FFFFFF 85%, #F2F4EE 15%);
     --text: #1C2B26;
     --primary: #1F3B36;
+    --primary-ink: #FFFFFF; /* contrast ink for text/icons on a --primary background (e.g. flash cards) */
     --accent: #B7472A;
-    --accent-ink: #FFFFFF;
+    --accent-ink: #FFFFFF; /* contrast ink for text/icons on an --accent background — not the same pairing as above */
     --secondary: #D9A441;
     --border: #D8D6C9;
     --shadow: 0 1px 2px rgba(20, 20, 15, 0.06);
@@ -389,6 +431,7 @@
     --card-2: color-mix(in srgb, #1E252B 85%, #14181C 15%);
     --text: #EDEFEF;
     --primary: #EDEFEF;
+    --primary-ink: #14181C;
     --accent: #E8A33D;
     --accent-ink: #1A1206;
     --secondary: #4FA8A0;
@@ -402,6 +445,7 @@
     --card-2: color-mix(in srgb, #FFFFFF 85%, #FBF3E8 15%);
     --text: #2B2118;
     --primary: #1B5E63;
+    --primary-ink: #FFFFFF;
     --accent: #E8734A;
     --accent-ink: #2B1208;
     --secondary: #E3A857;
@@ -415,6 +459,7 @@
     --card-2: color-mix(in srgb, #FFFFFF 85%, #F4F5F7 15%);
     --text: #1A1D23;
     --primary: #2F4FD1;
+    --primary-ink: #FFFFFF;
     --accent: #17A2B8;
     --accent-ink: #FFFFFF;
     --secondary: #6C5CE7;
@@ -428,6 +473,7 @@
     --card-2: #243320;
     --text: #e8f0e0;
     --primary: #e8f0e0;
+    --primary-ink: #1e2d18;
     --accent: #7ec850;
     --accent-ink: #0F1A14;
     --secondary: #7ec850;
@@ -731,9 +777,10 @@
 
   .top-row {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px 12px;
   }
 
   /* ---------- onboarding ---------- */
@@ -1364,6 +1411,11 @@
     gap: 12px;
   }
 
+  /* Voice Coach never hides this row, but Flash Card reuses the same
+     class and does toggle it via "hidden" — same [hidden]-vs-"display"
+     fix as elsewhere, added here so the class stays safe to reuse. */
+  .vc-nav-row[hidden] { display: none; }
+
   #attempt-popup .overlay-backdrop { cursor: default; }
 
   /* ---------- speed round view ---------- */
@@ -1473,6 +1525,144 @@
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 1.2rem;
+    margin: 0;
+  }
+
+  /* ---------- flash card view ---------- */
+  .fc-level-label {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .fc-direction {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 4px 0 0;
+  }
+
+  .fc-counter {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 4px 0 0;
+  }
+
+  #fc-card-screen,
+  #fc-retry-intro-screen,
+  #fc-summary-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Same [hidden]-vs-own-"display" bug class fixed on Voice Coach and
+     Speed Round: any of these rules setting "display" beats the
+     browser's default [hidden]{display:none}, so every screen/box
+     needs its own override or several can end up visible at once. */
+  #fc-card-screen[hidden],
+  #fc-retry-intro-screen[hidden],
+  #fc-summary-screen[hidden],
+  .fc-choice-row[hidden] { display: none; }
+
+  .fc-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    perspective: 1200px;
+  }
+
+  .fc-card:focus-visible .fc-card-inner {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .fc-card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    border-radius: 16px;
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+  }
+
+  .fc-card.is-flipped .fc-card-inner { transform: rotateY(180deg); }
+
+  .fc-card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 32px 20px;
+    border-radius: 16px;
+    background: var(--primary);
+    color: var(--primary-ink);
+    backface-visibility: hidden;
+  }
+
+  .fc-card-back { transform: rotateY(180deg); }
+
+  .fc-card-word {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* The shared listen/speed-control buttons default to light-card tokens
+     (--text/--border/--card); override to --primary-ink — the contrast
+     ink paired with --primary specifically (not --accent-ink, which
+     pairs with --accent and can be the wrong contrast against
+     --primary in some themes) — so they stay legible on every theme. */
+  .fc-card-face .repeat-listen-btn {
+    color: var(--primary-ink);
+    border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent);
+  }
+
+  .fc-card-face .repeat-listen-btn:hover:not(:disabled) {
+    border-color: var(--primary-ink);
+    color: var(--primary-ink);
+    opacity: 0.85;
+  }
+
+  .fc-card-face .rate-btn {
+    background: color-mix(in srgb, var(--primary-ink) 14%, transparent);
+    color: var(--primary-ink);
+    border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent);
+  }
+
+  .fc-card-face .rate-btn:hover,
+  .fc-card-face .rate-btn.speaking {
+    border-color: var(--primary-ink);
+    color: var(--primary-ink);
+    background: color-mix(in srgb, var(--primary-ink) 26%, transparent);
+  }
+
+  .fc-choice-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .fc-choice-question {
+    font-weight: 600;
     margin: 0;
   }
 
@@ -1751,6 +1941,75 @@
       </div>
     </section>
 
+    <!-- ============ VIEW: FLASH CARD MODULES ============
+         One shared view/component for every level+direction combo —
+         module.flashcardLevel/flashcardDirection (see EPISODES) pick the
+         level config and data, nothing here is level-specific. Unlike
+         Speed Round this reuses the standard watch-bar + Help pattern. -->
+    <section id="view-flashcard" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
+            <span class="badge" id="flashcard-badge">Flash Card</span>
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+          </div>
+
+          <header class="app-header">
+            <p class="fc-level-label" id="fc-level-label"></p>
+            <p class="fc-direction" id="fc-direction"></p>
+            <p class="fc-counter" id="fc-counter"></p>
+          </header>
+
+          <button type="button" class="watch-bar" id="flashcard-watch-bar">🎥 Guarda come si fa</button>
+
+          <!-- RETRY-PASS INTRO SCREEN: shown before every new retry pass,
+               not just the first (loops until a pass has zero misses). -->
+          <div id="fc-retry-intro-screen" hidden>
+            <div class="overlay-text panel">Ripassiamo insieme le carte che non ricordavi ancora, finché non le sai tutte.</div>
+            <button type="button" class="btn btn-primary btn-block" id="fc-retry-continue-btn">Continua</button>
+          </div>
+
+          <!-- CARD SCREEN -->
+          <div id="fc-card-screen">
+            <div class="fc-card" id="fc-card" tabindex="0" role="button" aria-label="Tocca per girare la carta">
+              <div class="fc-card-inner" id="fc-card-inner">
+                <div class="fc-card-face fc-card-front">
+                  <div class="fc-card-word" id="fc-front-word"></div>
+                  <div class="repeat-item-audio" id="fc-front-audio"></div>
+                </div>
+                <div class="fc-card-face fc-card-back">
+                  <div class="fc-card-word" id="fc-back-word"></div>
+                  <div class="repeat-item-audio" id="fc-back-audio"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="vc-nav-row" id="fc-nav-row">
+              <button type="button" class="btn btn-secondary" id="fc-prev-btn">← Indietro</button>
+              <button type="button" class="btn btn-primary" id="fc-next-btn">Avanti →</button>
+            </div>
+
+            <div class="panel fc-choice-row" id="fc-choice-row" hidden>
+              <p class="fc-choice-question">L'hai imparata?</p>
+              <div class="pending-actions">
+                <button type="button" class="btn btn-secondary" id="fc-not-yet-btn">Non ancora</button>
+                <button type="button" class="btn btn-primary" id="fc-know-it-btn">Sì, la so!</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUMMARY SCREEN -->
+          <div id="fc-summary-screen" hidden>
+            <div class="sr-summary panel">
+              <p class="sr-summary-title">Tutte le carte ripassate! 🎉</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="fc-complete-btn">Ho finito, torna alla mappa</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ VIEW: PRONUNCIATION EXERCISE ============ -->
     <section id="view-pronunciation" class="view">
       <div class="card">
@@ -1915,6 +2174,7 @@
     speakEasy: document.getElementById('view-speak-easy'),
     voiceCoach: document.getElementById('view-voice-coach'),
     speedRound: document.getElementById('view-speed-round'),
+    flashcard: document.getElementById('view-flashcard'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -2192,7 +2452,14 @@
         { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' }
+        { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+        // kind is shared between directions on purpose: both read the same
+        // level-based (not direction-based) istruzioni-moduli.json entry.
+        // flashcardLevel/flashcardDirection tell the shared component what
+        // to load — see CONFIG.flashcard.levels — so adding Level B/C later
+        // never touches the component itself, only this list + that config.
+        { id: 'flashcardAEngIta', kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it' },
+        { id: 'flashcardAItaEng', kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en' }
       ],
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -2491,6 +2758,7 @@
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
+    else if (module.flashcardLevel) openFlashcard(module);
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
@@ -3335,6 +3603,191 @@
 
   document.getElementById('speed-round-help-btn').addEventListener('click', function () {
     openHelpFor(srModule);
+  });
+
+  /* ============================================================
+     MODULES: FLASH CARD (Level A Eng-Ita / Level A Ita-Eng, more
+     levels later)
+     One shared component for every level+direction combo. module.
+     flashcardLevel picks the CONFIG.flashcard.levels entry (label +
+     which key of the episode data file to read) and module.
+     flashcardDirection picks front/back — nothing about "Level A" is
+     hardcoded here, so a future level is just a new CONFIG.flashcard.
+     levels entry plus two more module descriptors, no component
+     changes. Standard watch-bar + Help (top-row, always present),
+     unlike Speed Round. One shuffled pass over every card; a card is
+     "wrong" if flipped-and-"Non ancora" OR advanced without ever being
+     flipped (didn't even try); as many further retry passes as needed
+     — each with its own "Ripassiamo insieme..." screen — until one
+     comes back with zero misses, then the summary screen. No Indietro
+     there, only in the card flow itself.
+     ============================================================ */
+  var FC_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
+
+  var fcModule = null;
+  var fcLevel = 'a';
+  var fcDirection = 'en-it';
+  var fcVocab = [];
+  var fcPassItems = [];
+  var fcPassIndex = 0;
+  var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
+  var fcCurrentItem = null;
+  var fcFlipped = false;
+
+  function fcFrontText() { return fcDirection === 'en-it' ? fcCurrentItem.english : fcCurrentItem.italian; }
+  function fcBackText() { return fcDirection === 'en-it' ? fcCurrentItem.italian : fcCurrentItem.english; }
+
+  function fcShowScreen(name) {
+    document.getElementById('fc-card-screen').hidden = name !== 'card';
+    document.getElementById('fc-retry-intro-screen').hidden = name !== 'retryIntro';
+    document.getElementById('fc-summary-screen').hidden = name !== 'summary';
+  }
+
+  function fcShowNav(showNav) {
+    document.getElementById('fc-nav-row').hidden = !showNav;
+    document.getElementById('fc-choice-row').hidden = showNav;
+  }
+
+  function fcRecordResult(result) {
+    fcPassResults[fcCurrentItem.id] = result;
+    var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
+    var userName = getUserName();
+    var mastery = loadMastery(currentEpisode.id, userName);
+    mastery[unitId] = applyMasteryResult(mastery[unitId], result);
+    saveMastery(currentEpisode.id, userName, mastery);
+  }
+
+  function fcRenderCard() {
+    fcCurrentItem = fcVocab.find(function (v) { return v.id === fcPassItems[fcPassIndex]; });
+    fcFlipped = false;
+    document.getElementById('fc-card').classList.remove('is-flipped');
+    document.getElementById('fc-counter').textContent = (fcPassIndex + 1) + ' / ' + fcPassItems.length;
+    document.getElementById('fc-front-word').textContent = fcFrontText();
+    document.getElementById('fc-back-word').textContent = fcBackText();
+    document.getElementById('fc-front-audio').innerHTML =
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">🔊</button>' +
+      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('front') + '</div>';
+    document.getElementById('fc-back-audio').innerHTML =
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">🔊</button>' +
+      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>';
+    document.getElementById('fc-prev-btn').disabled = fcPassIndex === 0;
+    fcShowNav(true);
+    fcShowScreen('card');
+  }
+
+  function fcFlip() {
+    if (fcFlipped) return;
+    fcFlipped = true;
+    document.getElementById('fc-card').classList.add('is-flipped');
+    fcShowNav(false);
+  }
+
+  function fcFinishPassCheck() {
+    var wrongIds = fcPassItems.filter(function (id) { return fcPassResults[id] !== 'correct'; });
+    if (wrongIds.length === 0) {
+      fcShowScreen('summary');
+    } else {
+      fcPassItems = srShuffle(wrongIds);
+      fcPassIndex = 0;
+      fcPassResults = {};
+      fcShowScreen('retryIntro');
+    }
+  }
+
+  function fcGoNext() {
+    if (!fcFlipped) {
+      fcRecordResult('wrong'); // advanced without ever flipping = didn't even try
+    }
+    if (fcPassIndex < fcPassItems.length - 1) {
+      fcPassIndex++;
+      fcRenderCard();
+    } else {
+      fcFinishPassCheck();
+    }
+  }
+
+  function fcGoPrev() {
+    if (fcPassIndex > 0) {
+      fcPassIndex--;
+      fcRenderCard();
+    }
+  }
+
+  function fcStartDeck() {
+    fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
+    fcPassIndex = 0;
+    fcPassResults = {};
+    fcRenderCard();
+  }
+
+  function openFlashcard(module) {
+    fcModule = module;
+    fcLevel = module.flashcardLevel;
+    fcDirection = module.flashcardDirection;
+    var levelConfig = CONFIG.flashcard.levels[fcLevel];
+    document.getElementById('flashcard-badge').textContent = module.label;
+    document.getElementById('fc-level-label').textContent = levelConfig.label;
+    document.getElementById('fc-direction').textContent = FC_DIRECTION_LABEL[fcDirection];
+    document.getElementById('fc-counter').textContent = '';
+    document.getElementById('fc-front-word').textContent = 'Caricamento...';
+    document.getElementById('fc-back-word').textContent = '';
+    fcShowScreen('card');
+    showView('flashcard');
+    loadEpisodeData(module).then(function (data) {
+      if (fcModule !== module) return;
+      fcVocab = data[levelConfig.vocabKey] || [];
+      fcStartDeck();
+    }).catch(function () {
+      if (fcModule !== module) return;
+      document.getElementById('fc-front-word').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+    });
+  }
+
+  document.getElementById('fc-card').addEventListener('click', function (e) {
+    var sayBtn = e.target.closest('[data-say]');
+    if (sayBtn) {
+      e.stopPropagation();
+      var isBack = !!e.target.closest('.fc-card-back');
+      var text = isBack ? fcBackText() : fcFrontText();
+      var rateAttr = sayBtn.getAttribute('data-rate');
+      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      return;
+    }
+    fcFlip();
+  });
+
+  document.getElementById('fc-card').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fcFlip(); }
+  });
+
+  document.getElementById('fc-prev-btn').addEventListener('click', fcGoPrev);
+  document.getElementById('fc-next-btn').addEventListener('click', fcGoNext);
+
+  document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
+    fcRecordResult('wrong');
+    fcShowNav(true);
+  });
+
+  document.getElementById('fc-know-it-btn').addEventListener('click', function () {
+    fcRecordResult('correct');
+    fcShowNav(true);
+  });
+
+  document.getElementById('fc-retry-continue-btn').addEventListener('click', fcRenderCard);
+
+  document.getElementById('fc-complete-btn').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), fcModule.id);
+    openEpisodeMap();
+  });
+
+  document.getElementById('flashcard-back-map').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('flashcard-watch-bar').addEventListener('click', function () {
+    openInstructionsFor(fcModule);
+  });
+
+  document.getElementById('flashcard-help-btn').addEventListener('click', function () {
+    openHelpFor(fcModule);
   });
 
   boot();

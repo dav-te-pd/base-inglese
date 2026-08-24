@@ -43,6 +43,24 @@
 
   "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
 
+  "flashcardLevelA": [
+    { "id": "hello", "english": "Hello", "italian": "Ciao / Salve" },
+    { "id": "everyone", "english": "everyone", "italian": "tutti" },
+    { "id": "nice", "english": "Nice", "italian": "Piacevole" },
+    { "id": "meet", "english": "meet", "italian": "conoscere/incontrare" },
+    { "id": "you", "english": "you", "italian": "tu / voi" },
+    { "id": "can", "english": "Can", "italian": "Puoi / Potete" },
+    { "id": "introduce", "english": "introduce", "italian": "presentare" },
+    { "id": "wife", "english": "wife", "italian": "moglie" },
+    { "id": "years", "english": "years", "italian": "anni" },
+    { "id": "old", "english": "old", "italian": "vecchio (età)" },
+    { "id": "great", "english": "Great", "italian": "Ottimo / Fantastico" },
+    { "id": "welcome", "english": "Welcome", "italian": "Benvenuto/i" },
+    { "id": "trip", "english": "trip", "italian": "viaggio" },
+    { "id": "family", "english": "family", "italian": "famiglia" },
+    { "id": "from", "english": "from", "italian": "da / di" }
+  ],
+
   "ageOptions": {
     "figlia": [8, 10, 16],
     "figlio": [6, 8, 10]
