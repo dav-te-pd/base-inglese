@@ -1,0 +1,22 @@
+{
+  "repeatAloud": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi \"Ho finito, torna alla mappa\".</p><p>Se non lo vuoi fare adesso, clicca semplicemente \"Mappa\".</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
+    }
+  },
+  "speakEasy": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri \"Mostra traduzione\" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi \"Ho finito, torna alla mappa\".</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito, torna alla mappa\".</p>"
+    }
+  }
+}

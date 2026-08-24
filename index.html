@@ -173,6 +173,31 @@
     }
   };
 
+  // Mirrors data/istruzioni-moduli.json (howItWorks/helpReminder per module
+  // kind, CLAUDE.md rule 8) — same resilience-net role as the block above.
+  window.FALLBACK_MODULE_INSTRUCTIONS = {
+    repeatAloud: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi "Ho finito, torna alla mappa".</p>'
+      }
+    },
+    speakEasy: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito, torna alla mappa".</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire "Mostra traduzione". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi "Ho finito, torna alla mappa".</p>'
+      }
+    }
+  };
+
   // Applied before first paint so a returning user's saved theme never flashes to the default.
   (function () {
     try {
@@ -502,6 +527,8 @@
   }
 
   .overlay-text { font-size: 0.92rem; opacity: 0.85; line-height: 1.5; }
+  .overlay-text p { margin: 0 0 10px; }
+  .overlay-text p:last-child { margin-bottom: 0; }
 
   .help-menu {
     display: flex;
@@ -992,16 +1019,6 @@
     margin-bottom: 8px;
   }
 
-  /* ---------- shared: module completion banner ---------- */
-  .module-complete-banner {
-    padding: 14px 18px;
-    text-align: center;
-    font-weight: 600;
-    background: var(--correct-bg);
-    color: var(--correct-ink);
-    border-color: transparent;
-  }
-
   /* ---------- speak easy view (chat bubbles) ---------- */
   .chat-list {
     display: flex;
@@ -1191,13 +1208,13 @@
 
           <button type="button" class="watch-bar" id="speak-easy-watch-bar">🎥 Guarda come si fa</button>
 
-          <div class="panel module-complete-banner" id="speak-easy-banner" hidden>✓ Hai completato questo modulo! Torna alla mappa quando vuoi.</div>
-
           <div id="speak-easy-body"></div>
 
           <div class="help-row">
             <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
           </div>
+
+          <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito, torna alla mappa</button>
         </div>
       </div>
     </section>
@@ -1426,19 +1443,42 @@
     if (e.key === 'Escape' && helpOverlayEl.classList.contains('is-open')) closeOverlay();
   });
 
-  // Instructions body is a placeholder <p> today; swap it for a <video>
-  // reading module.instructions.videoUrl later without touching the
-  // overlay shell or either entry point that opens it.
-  function renderInstructions(module) {
-    var text = (module.instructions && module.instructions.placeholder) ||
-      'Istruzioni non ancora disponibili per questo modulo.';
-    return '<p class="overlay-text">' + text + '</p>';
+  // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
+  // shared across episodes and keyed by module kind — never hardcoded
+  // here. Fetched once and cached, same pattern as episode data.
+  var MODULE_INSTRUCTIONS_FILE = 'data/istruzioni-moduli.json';
+  var moduleInstructionsCache = null;
+
+  function loadModuleInstructions() {
+    if (moduleInstructionsCache) return Promise.resolve(moduleInstructionsCache);
+    return fetch(MODULE_INSTRUCTIONS_FILE)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        if (window.FALLBACK_MODULE_INSTRUCTIONS) return window.FALLBACK_MODULE_INSTRUCTIONS;
+        throw new Error('no module instructions available');
+      })
+      .then(function (data) {
+        moduleInstructionsCache = data;
+        return data;
+      });
   }
 
-  function openInstructionsOverlay(module) {
-    document.getElementById('help-overlay-title').textContent = 'Guarda come si fa';
-    document.getElementById('help-overlay-body').innerHTML = renderInstructions(module);
+  // Renders either the "howItWorks" (watch-bar) or "helpReminder" (Help
+  // option A) field for a module's kind into the shared overlay.
+  function renderModuleInstructionField(module, field, fallbackTitle) {
+    document.getElementById('help-overlay-title').textContent = fallbackTitle;
+    document.getElementById('help-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     openOverlay();
+    loadModuleInstructions().then(function (data) {
+      var entry = data[module.kind] && data[module.kind][field];
+      document.getElementById('help-overlay-title').textContent = (entry && entry.title) || fallbackTitle;
+      document.getElementById('help-overlay-body').innerHTML = entry
+        ? '<div class="overlay-text">' + entry.body + '</div>'
+        : '<p class="overlay-text">Contenuto non ancora disponibile per questo modulo.</p>';
+    }).catch(function () {
+      document.getElementById('help-overlay-body').innerHTML =
+        '<p class="overlay-text is-error">Non è stato possibile caricare il contenuto.</p>';
+    });
   }
 
   function renderHelpMenu() {
@@ -1476,7 +1516,7 @@
 
   function openInstructionsFor(module) {
     activeHelpModule = module;
-    openInstructionsOverlay(module);
+    renderModuleInstructionField(module, 'howItWorks', 'Guarda come si fa');
   }
 
   function openHelpFor(module) {
@@ -1489,7 +1529,7 @@
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-help-action');
       if (action === 'instructions') {
-        openInstructionsOverlay(activeHelpModule);
+        renderModuleInstructionField(activeHelpModule, 'helpReminder', 'Come funziona, in breve');
       } else {
         document.getElementById('help-overlay-title').textContent =
           action === 'urgent' ? 'Richiesta urgente' : 'Vorrei capire questo';
@@ -1589,21 +1629,11 @@
       // The episode map reads this list — never hardcode a module's name
       // or order inside the map-rendering code. dataFile is the external
       // data source for that module's content (see CLAUDE.md rule 4).
+      // howItWorks/helpReminder text for each module kind lives in
+      // data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
       modules: [
-        {
-          id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json',
-          // Placeholder for "Guarda come si fa" — swap for a videoUrl later,
-          // renderInstructions() is the only place that needs to change.
-          instructions: {
-            placeholder: 'Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia, poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".'
-          }
-        },
-        {
-          id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json',
-          instructions: {
-            placeholder: 'Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano. Il modulo si completa da solo quando hai ascoltato o tradotto tutte le battute.'
-          }
-        }
+        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' }
       ],
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -2010,12 +2040,11 @@
      MODULE: SPEAK EASY
      Reads the same "dialogue" section of the episode's data file
      Repeat Aloud already fetched (loadEpisodeData reuses its cache, no
-     extra request). Unlike Repeat Aloud, this module has no manual
-     "done" button: it completes itself once every line has been
-     listened to or had its translation revealed.
+     extra request). Completion is manual only (CLAUDE.md rule 7): the
+     module marks itself done when the user presses the button, never
+     from listening/translation activity.
      ============================================================ */
   var currentSpeakEasyModule = null;
-  var speakEasyEngaged = {};
 
   function speakerLabel(episode, speaker) {
     var slotKey = episode.dialogueSpeakers && episode.dialogueSpeakers[speaker];
@@ -2045,31 +2074,14 @@
     document.getElementById('speak-easy-body').innerHTML = '<div class="chat-list">' + itemsHtml + '</div>';
   }
 
-  function markSpeakEasyLineEngaged(lineId) {
-    speakEasyEngaged[lineId] = true;
-    var data = episodeDataCache[currentSpeakEasyModule.dataFile];
-    if (!data) return;
-    var allEngaged = data.dialogue.every(function (line) { return speakEasyEngaged[line.id]; });
-    if (allEngaged) {
-      markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
-      document.getElementById('speak-easy-banner').hidden = false;
-    }
-  }
-
   function openSpeakEasy(module) {
     currentSpeakEasyModule = module;
-    speakEasyEngaged = {};
     document.getElementById('speak-easy-title').textContent = module.label;
     document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    document.getElementById('speak-easy-banner').hidden = true;
     showView('speakEasy');
     loadEpisodeData(module).then(function (data) {
       if (currentSpeakEasyModule !== module) return;
       renderSpeakEasy(data);
-      var progress = loadModuleProgress(currentEpisode.id, getUserName());
-      if (progress.completed.indexOf(module.id) !== -1) {
-        document.getElementById('speak-easy-banner').hidden = false;
-      }
     }).catch(function () {
       if (currentSpeakEasyModule !== module) return;
       document.getElementById('speak-easy-body').innerHTML =
@@ -2086,7 +2098,6 @@
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var rateAttr = listenBtn.getAttribute('data-rate');
       toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
-      markSpeakEasyLineEngaged(line.id);
       return;
     }
     var toggleBtn = e.target.closest('[data-toggle-translation]');
@@ -2101,7 +2112,6 @@
         italianEl.setAttribute('hidden', '');
         toggleBtn.textContent = 'Mostra traduzione';
       }
-      markSpeakEasyLineEngaged(lineId);
     }
   });
 
@@ -2113,6 +2123,11 @@
 
   document.getElementById('speak-easy-help-btn').addEventListener('click', function () {
     openHelpFor(currentSpeakEasyModule);
+  });
+
+  document.getElementById('speak-easy-complete').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
+    openEpisodeMap();
   });
 
   boot();
