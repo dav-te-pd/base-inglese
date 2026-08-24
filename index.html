@@ -122,32 +122,54 @@
      data/*.json and always fetched from there first. Some hosting
      contexts (e.g. this page published as a single standalone file)
      can't serve that sibling file, so this is a same-content mirror
-     used only when the fetch fails. Edit data/episode1-repeat-aloud.json
+     used only when the fetch fails. Edit data/a1-episodio1-inglese.json
      for real changes — this block should mirror it, never diverge.
      ============================================================ */
-  window.FALLBACK_REPEAT_ALOUD_DATA = {
-    'data/episode1-repeat-aloud.json': {
+  window.FALLBACK_EPISODE_DATA = {
+    'data/a1-episodio1-inglese.json': {
+      level: 'A1',
       episodeId: 1,
       episodeTitle: 'Presentarsi',
-      module: 'repeatAloud',
-      items: [
-        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.' },
-        { id: 'everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.' },
-        { id: 'nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".' },
-        { id: 'can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.' },
-        { id: 'introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".' },
-        { id: 'yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".' },
-        { id: 'im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.' },
-        { id: 'from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".' },
-        { id: 'hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".' },
-        { id: 'wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.' },
-        { id: 'years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".' },
-        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.' },
-        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.' },
-        { id: 'trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.' },
-        { id: 'family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".' }
+      language: 'inglese',
+      personalizationTablesUsed: [
+        'personalizzazione-nomi-papa',
+        'personalizzazione-nomi-mamma',
+        'personalizzazione-nomi-figlia',
+        'personalizzazione-nomi-figlio',
+        'personalizzazione-citta',
+        'personalizzazione-destinazioni'
       ],
-      generalRule: 'La "e" finale in inglese non si legge quasi mai.'
+      dialogue: [
+        { id: 'd1', speaker: 'guide', english: 'Hello everyone! Nice to meet you. Can you introduce yourselves?', italian: 'Ciao a tutti! Piacere di conoscervi. Potete presentarvi?' },
+        { id: 'd2', speaker: 'papa', english: 'Hello, I\'m {{papaName}}. I\'m from {{cittaPartenza}}, Italy.', italian: 'Ciao, sono {{papaName}}. Vengo da {{cittaPartenza}}, Italia.' },
+        { id: 'd3', speaker: 'guide', english: 'Nice to meet you, {{papaName}}. And you?', italian: 'Piacere, {{papaName}}. E tu?' },
+        { id: 'd4', speaker: 'mamma', english: 'Hi, I\'m {{mammaName}}. I\'m {{papaName}}\'s wife.', italian: 'Ciao, sono {{mammaName}}. Sono la moglie di {{papaName}}.' },
+        { id: 'd5', speaker: 'figlia', english: 'Hi, I\'m {{figliaName}}. I\'m {{figliaEta}} years old.', italian: 'Ciao, sono {{figliaName}}. Ho {{figliaEta}} anni.' },
+        { id: 'd6', speaker: 'figlio', english: 'Hello, I\'m {{figlioName}}. I\'m {{figlioEta}}.', italian: 'Ciao, sono {{figlioName}}. Ho {{figlioEta}} anni.' },
+        { id: 'd7', speaker: 'guide', english: 'Great! Welcome to the trip, {{papaName}}\'s family!', italian: 'Ottimo! Benvenuti al viaggio, famiglia di {{papaName}}!' }
+      ],
+      vocabulary: [
+        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.', grammarCategory: 'interiezione/saluto' },
+        { id: 'everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.', grammarCategory: 'pronome indefinito' },
+        { id: 'nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".', grammarCategory: 'espressione idiomatica' },
+        { id: 'can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.', grammarCategory: 'verbo modale' },
+        { id: 'introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".', grammarCategory: 'verbo' },
+        { id: 'yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".', grammarCategory: 'pronome riflessivo' },
+        { id: 'im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.', grammarCategory: 'pronome + verbo essere' },
+        { id: 'from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".', grammarCategory: 'preposizione' },
+        { id: 'hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".', grammarCategory: 'interiezione/saluto' },
+        { id: 'wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.', grammarCategory: 'sostantivo' },
+        { id: 'years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".', grammarCategory: 'espressione per età' },
+        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.', grammarCategory: 'aggettivo' },
+        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.', grammarCategory: 'interiezione/saluto' },
+        { id: 'trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.', grammarCategory: 'sostantivo' },
+        { id: 'family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".', grammarCategory: 'sostantivo' }
+      ],
+      generalRule: 'La "e" finale in inglese non si legge quasi mai.',
+      ageOptions: {
+        figlia: [8, 10, 16],
+        figlio: [6, 8, 10]
+      }
     }
   };
 
@@ -1181,7 +1203,7 @@
       // or order inside the map-rendering code. dataFile is the external
       // data source for that module's content (see CLAUDE.md rule 4).
       modules: [
-        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/episode1-repeat-aloud.json' }
+        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' }
       ],
       slotFields: [
         { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
@@ -1447,29 +1469,31 @@
 
   /* ============================================================
      MODULE: REPEAT ALOUD
-     Content comes from an external per-episode data file (never
-     hardcoded here, per CLAUDE.md rule 4), fetched once and cached in
-     memory. The embedded FALLBACK_REPEAT_ALOUD_DATA below exists only
-     for hosting contexts that can't serve the sibling data/ file (e.g.
-     this page published as a single-file preview) — the fetch is
-     always tried first, and this is never the authoring source.
+     Content comes from the episode's external data file (never
+     hardcoded here, per CLAUDE.md rule 4) — one file per episode,
+     shared by every module, this one reading its own "vocabulary" key
+     — fetched once and cached in memory. The embedded
+     FALLBACK_EPISODE_DATA below exists only for hosting contexts that
+     can't serve the sibling data/ file (e.g. this page published as a
+     single-file preview) — the fetch is always tried first, and this
+     is never the authoring source.
      ============================================================ */
-  var repeatAloudDataCache = {};
+  var episodeDataCache = {};
   var currentRepeatAloudModule = null;
 
-  function loadRepeatAloudData(module) {
-    if (repeatAloudDataCache[module.dataFile]) {
-      return Promise.resolve(repeatAloudDataCache[module.dataFile]);
+  function loadEpisodeData(module) {
+    if (episodeDataCache[module.dataFile]) {
+      return Promise.resolve(episodeDataCache[module.dataFile]);
     }
     return fetch(module.dataFile)
       .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
       .catch(function () {
-        var fallback = window.FALLBACK_REPEAT_ALOUD_DATA && window.FALLBACK_REPEAT_ALOUD_DATA[module.dataFile];
+        var fallback = window.FALLBACK_EPISODE_DATA && window.FALLBACK_EPISODE_DATA[module.dataFile];
         if (fallback) return fallback;
         throw new Error('no data available for ' + module.dataFile);
       })
       .then(function (data) {
-        repeatAloudDataCache[module.dataFile] = data;
+        episodeDataCache[module.dataFile] = data;
         return data;
       });
   }
@@ -1486,7 +1510,7 @@
     var ruleHtml = data.generalRule
       ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
       : '';
-    var itemsHtml = data.items.map(function (item) {
+    var itemsHtml = data.vocabulary.map(function (item) {
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
         '<span class="repeat-item-english">' + item.english + '</span>' +
@@ -1508,7 +1532,7 @@
     document.getElementById('repeat-aloud-title').textContent = module.label;
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('repeatAloud');
-    loadRepeatAloudData(module).then(function (data) {
+    loadEpisodeData(module).then(function (data) {
       if (currentRepeatAloudModule !== module) return;
       renderRepeatAloud(data);
     }).catch(function () {
@@ -1521,8 +1545,8 @@
   document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-say]');
     if (!btn) return;
-    var data = repeatAloudDataCache[currentRepeatAloudModule.dataFile];
-    var item = data && data.items.find(function (it) { return it.id === btn.getAttribute('data-say'); });
+    var data = episodeDataCache[currentRepeatAloudModule.dataFile];
+    var item = data && data.vocabulary.find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
     var rateAttr = btn.getAttribute('data-rate');
     toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);

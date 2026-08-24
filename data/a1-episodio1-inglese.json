@@ -1,0 +1,50 @@
+{
+  "level": "A1",
+  "episodeId": 1,
+  "episodeTitle": "Presentarsi",
+  "language": "inglese",
+
+  "personalizationTablesUsed": [
+    "personalizzazione-nomi-papa",
+    "personalizzazione-nomi-mamma",
+    "personalizzazione-nomi-figlia",
+    "personalizzazione-nomi-figlio",
+    "personalizzazione-citta",
+    "personalizzazione-destinazioni"
+  ],
+
+  "dialogue": [
+    { "id": "d1", "speaker": "guide", "english": "Hello everyone! Nice to meet you. Can you introduce yourselves?", "italian": "Ciao a tutti! Piacere di conoscervi. Potete presentarvi?" },
+    { "id": "d2", "speaker": "papa", "english": "Hello, I'm {{papaName}}. I'm from {{cittaPartenza}}, Italy.", "italian": "Ciao, sono {{papaName}}. Vengo da {{cittaPartenza}}, Italia." },
+    { "id": "d3", "speaker": "guide", "english": "Nice to meet you, {{papaName}}. And you?", "italian": "Piacere, {{papaName}}. E tu?" },
+    { "id": "d4", "speaker": "mamma", "english": "Hi, I'm {{mammaName}}. I'm {{papaName}}'s wife.", "italian": "Ciao, sono {{mammaName}}. Sono la moglie di {{papaName}}." },
+    { "id": "d5", "speaker": "figlia", "english": "Hi, I'm {{figliaName}}. I'm {{figliaEta}} years old.", "italian": "Ciao, sono {{figliaName}}. Ho {{figliaEta}} anni." },
+    { "id": "d6", "speaker": "figlio", "english": "Hello, I'm {{figlioName}}. I'm {{figlioEta}}.", "italian": "Ciao, sono {{figlioName}}. Ho {{figlioEta}} anni." },
+    { "id": "d7", "speaker": "guide", "english": "Great! Welcome to the trip, {{papaName}}'s family!", "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papaName}}!" }
+  ],
+
+  "vocabulary": [
+    { "id": "hello", "english": "Hello", "italian": "Ciao / Salve", "pronunciationTip": "L'accento cade sulla seconda sillaba: \"hel-LOU\", non \"E-lo\". La \"h\" si sente appena, un soffio.", "grammarCategory": "interiezione/saluto" },
+    { "id": "everyone", "english": "everyone", "italian": "tutti", "pronunciationTip": "\"EV-ri-uan\", accento sulla prima sillaba.", "grammarCategory": "pronome indefinito" },
+    { "id": "nice-to-meet-you", "english": "Nice to meet you", "italian": "Piacere di conoscerti/vi", "pronunciationTip": "La \"ee\" di \"meet\" è lunga e tesa (non \"mit\" secco all'italiana): \"nais tu MIIT yu\".", "grammarCategory": "espressione idiomatica" },
+    { "id": "can", "english": "Can", "italian": "Puoi / Potete", "pronunciationTip": "La \"a\" è aperta, quasi come \"kan\" ma più schiacciata.", "grammarCategory": "verbo modale" },
+    { "id": "introduce", "english": "introduce", "italian": "presentare", "pronunciationTip": "Accento sull'ultima sillaba: \"in-tro-DIUS\".", "grammarCategory": "verbo" },
+    { "id": "yourselves", "english": "yourselves", "italian": "voi stessi", "pronunciationTip": "\"yor-SELVZ\", la \"s\" finale suona \"z\".", "grammarCategory": "pronome riflessivo" },
+    { "id": "im", "english": "I'm", "italian": "Sono / Mi chiamo", "pronunciationTip": "È la contrazione di \"I am\", si pronuncia tutta attaccata: \"aim\", mai \"ai-em\" staccato.", "grammarCategory": "pronome + verbo essere" },
+    { "id": "from", "english": "from", "italian": "da / di", "pronunciationTip": "La \"o\" è una via di mezzo tra \"a\" e \"o\" aperta, non la \"o\" chiusa italiana: suona quasi \"fram\".", "grammarCategory": "preposizione" },
+    { "id": "hi", "english": "Hi", "italian": "Ciao", "pronunciationTip": "Dittongo lungo \"hai\", più informale di \"Hello\".", "grammarCategory": "interiezione/saluto" },
+    { "id": "wife", "english": "wife", "italian": "moglie", "pronunciationTip": "\"uaif\" — la \"w\" è un suono labiale che non esiste in italiano.", "grammarCategory": "sostantivo" },
+    { "id": "years-old", "english": "years old", "italian": "... anni", "pronunciationTip": "\"years\" parte quasi come \"ie-ars\"; \"old\" ha la \"o\" lunga: \"ould\".", "grammarCategory": "espressione per età" },
+    { "id": "great", "english": "Great", "italian": "Ottimo / Fantastico", "pronunciationTip": "Si legge \"greit\", non \"great\" all'italiana.", "grammarCategory": "aggettivo" },
+    { "id": "welcome", "english": "Welcome", "italian": "Benvenuto/i", "pronunciationTip": "L'accento è tutto sulla prima sillaba: \"WEL-com\", la seconda parte si \"mangia\" leggermente.", "grammarCategory": "interiezione/saluto" },
+    { "id": "trip", "english": "trip", "italian": "viaggio", "pronunciationTip": "La \"r\" è morbida, non arrotata come in italiano.", "grammarCategory": "sostantivo" },
+    { "id": "family", "english": "family", "italian": "famiglia", "pronunciationTip": "Accento sulla prima sillaba: \"FA-mi-li\".", "grammarCategory": "sostantivo" }
+  ],
+
+  "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
+
+  "ageOptions": {
+    "figlia": [8, 10, 16],
+    "figlio": [6, 8, 10]
+  }
+}
