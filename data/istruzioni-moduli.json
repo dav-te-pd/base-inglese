@@ -18,5 +18,15 @@
       "title": "Come funziona, in breve",
       "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito, torna alla mappa\".</p>"
     }
+  },
+  "voiceCoach": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono e ripeti la frase ad alta voce.</p><p>Se ti accorgi di aver sbagliato mentre stai ancora parlando, tocca il cestino per annullare e riprovare senza che venga valutato.</p><p>Dopo aver parlato, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere. Puoi riprovare la stessa frase con \"Riprova\", oppure andare avanti.</p><p>Quando arrivi all'ultima frase, premi \"Ho finito, torna alla mappa\".</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Ascolta con 🔊, poi tocca il microfono e ripeti la frase. Il cestino durante la registrazione annulla senza valutare.</p><p>Dopo aver parlato, guarda i colori: verde ok, giallo quasi, rosso da rivedere. \"Riprova\" per riprovare, \"Avanti\" per la prossima.</p>"
+    }
   }
 }

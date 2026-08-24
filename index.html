@@ -53,6 +53,16 @@
     limits: {
       userNameMaxLength: 40
     },
+    // ---- Voice Coach recording ----
+    voiceCoach: {
+      // Hard cap on one recording = (word count of the target sentence *
+      // maxRecordingMsPerWord) + maxRecordingMarginMs.
+      maxRecordingMsPerWord: 1000,
+      maxRecordingMarginMs: 3000,
+      // Attempt count (on the same sentence) at/above which the gentle
+      // "you've already tried N times" reminder appears.
+      attemptsReminderThreshold: 3
+    },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
@@ -194,6 +204,16 @@
       helpReminder: {
         title: 'Come funziona, in breve',
         body: '<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire "Mostra traduzione". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi "Ho finito, torna alla mappa".</p>'
+      }
+    },
+    voiceCoach: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono e ripeti la frase ad alta voce.</p><p>Se ti accorgi di aver sbagliato mentre stai ancora parlando, tocca il cestino per annullare e riprovare senza che venga valutato.</p><p>Dopo aver parlato, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Ascolta con 🔊, poi tocca il microfono e ripeti la frase. Il cestino durante la registrazione annulla senza valutare.</p><p>Dopo aver parlato, guarda i colori: verde ok, giallo quasi, rosso da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
       }
     }
   };
@@ -750,7 +770,7 @@
     gap: 14px;
   }
 
-  #mic-btn {
+  .mic-btn {
     width: 76px;
     height: 76px;
     border-radius: 50%;
@@ -766,15 +786,15 @@
     transition: transform 0.15s ease;
   }
 
-  #mic-btn:hover { transform: scale(1.05); }
-  #mic-btn:active { transform: scale(0.96); }
+  .mic-btn:hover { transform: scale(1.05); }
+  .mic-btn:active { transform: scale(0.96); }
 
-  #mic-btn:focus-visible {
+  .mic-btn:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
   }
 
-  #mic-btn.listening {
+  .mic-btn.listening {
     background: var(--wrong-ink);
     animation: pulse 1.4s infinite;
   }
@@ -785,7 +805,7 @@
     100% { box-shadow: 0 0 0 0 transparent; }
   }
 
-  #status {
+  .status-text {
     color: var(--text);
     opacity: 0.7;
     font-size: 0.88rem;
@@ -793,7 +813,7 @@
     text-align: center;
   }
 
-  #transcript {
+  .transcript-box {
     padding: 14px 18px;
     font-family: var(--font-mono);
     font-size: 0.85rem;
@@ -803,7 +823,7 @@
     text-align: center;
   }
 
-  #transcript strong { opacity: 1; font-weight: 500; }
+  .transcript-box strong { opacity: 1; font-weight: 500; }
 
   .legend {
     display: flex;
@@ -1074,6 +1094,91 @@
     outline-offset: 2px;
   }
 
+  /* ---------- voice coach view ---------- */
+  .vc-counter {
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .vc-cue {
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .vc-target {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .vc-audio-row { justify-content: center; }
+
+  .vc-mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .record-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  .record-btn {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .record-btn:hover { transform: scale(1.05); }
+  .record-btn:active { transform: scale(0.96); }
+
+  .record-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .record-btn-stop { background: var(--accent); color: var(--accent-ink); }
+  .record-btn-discard { background: var(--wrong-bg); color: var(--wrong-ink); }
+
+  .pending-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .vc-attempts-note {
+    text-align: center;
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin: 10px 0 0;
+  }
+
+  .vc-nav-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
   .warning {
     background: var(--wrong-bg);
     border: 1px solid color-mix(in srgb, var(--wrong-ink) 40%, transparent);
@@ -1219,6 +1324,65 @@
       </div>
     </section>
 
+    <!-- ============ VIEW: VOICE COACH MODULE ============ -->
+    <section id="view-voice-coach" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="top-row">
+            <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-retry-btn" disabled>Riprova</button>
+          </div>
+
+          <header class="app-header">
+            <h1>Voice Coach</h1>
+            <p class="vc-counter" id="vc-counter">1 / 1</p>
+          </header>
+
+          <button type="button" class="watch-bar" id="voice-coach-watch-bar">🎥 Guarda come si fa</button>
+
+          <div class="vc-cue panel" id="vc-cue"></div>
+
+          <div class="vc-target" id="vc-target"></div>
+
+          <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
+
+          <div class="vc-mic-area">
+            <button type="button" class="mic-btn" id="vc-mic-btn" aria-label="Tocca e parla">🎤</button>
+            <div class="record-controls" id="vc-recording-controls" hidden>
+              <button type="button" class="record-btn record-btn-stop" id="vc-stop-btn" aria-label="Ferma la registrazione">■</button>
+              <button type="button" class="record-btn record-btn-discard" id="vc-discard-btn" aria-label="Annulla registrazione">🗑️</button>
+            </div>
+            <div class="pending-actions" id="vc-pending-controls" hidden>
+              <button type="button" class="btn btn-secondary" id="vc-cancel-btn">Cancella</button>
+              <button type="button" class="btn btn-primary" id="vc-send-btn">Invia</button>
+            </div>
+            <div class="status-text" id="vc-status" aria-live="polite">Tocca e parla</div>
+          </div>
+
+          <div id="vc-result" hidden>
+            <div class="phrase panel" id="vc-feedback"></div>
+            <div class="panel transcript-box" id="vc-transcript"></div>
+          </div>
+
+          <p class="vc-attempts-note" id="vc-attempts-note" hidden>Hai già provato 3 volte — continua pure, o passa avanti quando vuoi.</p>
+
+          <div class="help-row">
+            <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
+          </div>
+
+          <div class="vc-nav-row">
+            <button type="button" class="btn btn-secondary" id="vc-prev-btn">← Indietro</button>
+            <button type="button" class="btn btn-primary" id="vc-next-btn">Avanti →</button>
+          </div>
+
+          <div class="warning" id="vc-warning">
+            Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
+            Prova con Google Chrome su desktop o Android.
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ VIEW: PRONUNCIATION EXERCISE ============ -->
     <section id="view-pronunciation" class="view">
       <div class="card">
@@ -1240,11 +1404,11 @@
           <div class="phrase panel" id="phrase"></div>
 
           <div class="controls">
-            <button id="mic-btn" title="Avvia riconoscimento vocale" aria-label="Avvia riconoscimento vocale">🎤</button>
-            <div id="status">Premi il microfono per iniziare</div>
+            <button id="mic-btn" class="mic-btn" title="Avvia riconoscimento vocale" aria-label="Avvia riconoscimento vocale">🎤</button>
+            <div id="status" class="status-text">Premi il microfono per iniziare</div>
           </div>
 
-          <div id="transcript" class="panel"></div>
+          <div id="transcript" class="panel transcript-box"></div>
 
           <div class="legend">
             <span><i class="dot new"></i> nuova</span>
@@ -1359,6 +1523,7 @@
     map: document.getElementById('view-map'),
     repeatAloud: document.getElementById('view-repeat-aloud'),
     speakEasy: document.getElementById('view-speak-easy'),
+    voiceCoach: document.getElementById('view-voice-coach'),
     pronunciation: document.getElementById('view-pronunciation')
   };
 
@@ -1633,7 +1798,8 @@
       // data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
       modules: [
         { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' }
+        { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' }
       ],
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -1930,6 +2096,7 @@
     if (!module) return;
     if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
+    else if (module.kind === 'voiceCoach') openVoiceCoach(module);
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
@@ -2128,6 +2295,252 @@
   document.getElementById('speak-easy-complete').addEventListener('click', function () {
     markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
     openEpisodeMap();
+  });
+
+  /* ============================================================
+     MODULE: VOICE COACH
+     Reads every line of the same "dialogue" section Speak Easy already
+     uses (loadEpisodeData reuses the cache — no extra request), one
+     sentence at a time. Recording happens through this module's own
+     SpeechRecognition instance; the recognized text is held (never
+     evaluated) until the user explicitly presses "Invia" — pressing
+     the trash mid-recording, or "Cancella" once stopped, discards it
+     instead. Completion is manual only (CLAUDE.md rule 7), on the last
+     sentence's "Ho finito" button.
+     ============================================================ */
+  var vcModule = null;
+  var vcLines = [];
+  var vcIndex = 0;
+  var vcAttempts = {};
+  var vcState = 'idle'; // idle | recording | pending | result
+  var vcListening = false;
+  var vcDiscarding = false;
+  var vcLatestTranscript = '';
+  var vcTimeoutId = null;
+
+  var VCSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var vcRecognition = null;
+
+  if (VCSpeechRecognition) {
+    vcRecognition = new VCSpeechRecognition();
+    vcRecognition.lang = CONFIG.speech.recognitionLang;
+    vcRecognition.continuous = true;
+    vcRecognition.interimResults = false;
+    vcRecognition.maxAlternatives = CONFIG.speech.maxAlternatives;
+
+    vcRecognition.onstart = function () {
+      vcListening = true;
+      setVcState('recording');
+    };
+
+    vcRecognition.onresult = function (event) {
+      var finalText = '';
+      for (var i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalText += (finalText ? ' ' : '') + event.results[i][0].transcript;
+        }
+      }
+      vcLatestTranscript = finalText.trim();
+    };
+
+    vcRecognition.onend = function () {
+      vcListening = false;
+      clearVcTimeout();
+      if (vcDiscarding) {
+        vcDiscarding = false;
+        setVcState('idle');
+        return;
+      }
+      setVcState('pending');
+    };
+
+    vcRecognition.onerror = function () {
+      // onend always follows onerror per the Web Speech API lifecycle and
+      // is where we make the final state transition — acting here too
+      // would race it (e.g. a discard's onerror clearing vcDiscarding
+      // before onend gets to check it). Only clear the timeout here.
+      vcListening = false;
+      clearVcTimeout();
+    };
+  }
+
+  function clearVcTimeout() {
+    if (vcTimeoutId) { clearTimeout(vcTimeoutId); vcTimeoutId = null; }
+  }
+
+  function vcCurrentLine() { return vcLines[vcIndex]; }
+
+  function vcTargetText() {
+    return fillTemplate(vcCurrentLine().english, currentEpisode, currentValues, 'en');
+  }
+
+  function setVcState(state) {
+    vcState = state;
+    document.getElementById('vc-mic-btn').hidden = state !== 'idle';
+    document.getElementById('vc-recording-controls').hidden = state !== 'recording';
+    document.getElementById('vc-pending-controls').hidden = state !== 'pending';
+    document.getElementById('vc-result').hidden = state !== 'result';
+    var statusMessages = {
+      idle: 'Tocca e parla',
+      recording: 'Sto ascoltando... tocca ■ per fermarti',
+      pending: 'Ascolta cosa hai registrato: invia o cancella',
+      result: ''
+    };
+    document.getElementById('vc-status').textContent = statusMessages[state] || '';
+  }
+
+  function vcResetRecording() {
+    clearVcTimeout();
+    if (vcListening) {
+      vcDiscarding = true;
+      try { vcRecognition.abort(); } catch (e) {}
+    }
+    vcLatestTranscript = '';
+    setVcState('idle');
+  }
+
+  function updateVcAttemptsNote() {
+    var count = vcAttempts[vcCurrentLine().id] || 0;
+    document.getElementById('vc-attempts-note').hidden = count < CONFIG.voiceCoach.attemptsReminderThreshold;
+  }
+
+  function renderVoiceCoachSentence() {
+    vcResetRecording();
+    var line = vcCurrentLine();
+    document.getElementById('vc-counter').textContent = (vcIndex + 1) + ' / ' + vcLines.length;
+    document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
+    document.getElementById('vc-target').textContent = vcTargetText();
+    document.getElementById('vc-audio-controls').innerHTML =
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">🔊</button>' +
+      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>';
+    document.getElementById('vc-feedback').innerHTML = '';
+    document.getElementById('vc-transcript').innerHTML = '';
+    document.getElementById('voice-coach-retry-btn').disabled = !vcAttempts[line.id];
+    updateVcAttemptsNote();
+    document.getElementById('vc-prev-btn').disabled = vcIndex === 0;
+    document.getElementById('vc-next-btn').textContent =
+      vcIndex === vcLines.length - 1 ? 'Ho finito, torna alla mappa' : 'Avanti →';
+  }
+
+  function openVoiceCoach(module) {
+    vcModule = module;
+    vcIndex = 0;
+    vcAttempts = {};
+    document.getElementById('vc-result').hidden = true;
+    document.getElementById('vc-warning').style.display = VCSpeechRecognition ? 'none' : 'block';
+    document.getElementById('vc-mic-btn').disabled = !VCSpeechRecognition;
+    document.getElementById('vc-cue').textContent = '';
+    document.getElementById('vc-target').textContent = 'Caricamento...';
+    document.getElementById('vc-audio-controls').innerHTML = '';
+    showView('voiceCoach');
+    loadEpisodeData(module).then(function (data) {
+      if (vcModule !== module) return;
+      vcLines = data.dialogue;
+      renderVoiceCoachSentence();
+    }).catch(function () {
+      if (vcModule !== module) return;
+      document.getElementById('vc-target').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+    });
+  }
+
+  function vcEvaluate() {
+    var line = vcCurrentLine();
+    var targetWords = tokenize(vcTargetText());
+    var recognizedWords = tokenize(vcLatestTranscript);
+    var pairs = alignWords(targetWords, recognizedWords);
+    var spans = pairs.map(function (pair) {
+      var word = targetWords[pair.targetIndex];
+      var recognizedWord = pair.recognizedIndex !== null ? recognizedWords[pair.recognizedIndex] : null;
+      var cls = classify(word, recognizedWord);
+      return '<span class="' + cls + '">' + word + '</span>';
+    });
+    document.getElementById('vc-feedback').innerHTML = spans.join(' ');
+    document.getElementById('vc-transcript').innerHTML =
+      '<strong>Hai detto:</strong> ' + (vcLatestTranscript || '(nessun testo riconosciuto)');
+
+    vcAttempts[line.id] = (vcAttempts[line.id] || 0) + 1;
+    document.getElementById('voice-coach-retry-btn').disabled = false;
+    updateVcAttemptsNote();
+    setVcState('result');
+  }
+
+  document.getElementById('vc-audio-controls').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-say]');
+    if (!btn) return;
+    var rateAttr = btn.getAttribute('data-rate');
+    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+  });
+
+  document.getElementById('vc-mic-btn').addEventListener('click', function () {
+    if (!vcRecognition) return;
+    vcLatestTranscript = '';
+    vcDiscarding = false;
+    var wordCount = tokenize(vcTargetText()).length;
+    var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
+    try {
+      vcRecognition.start();
+    } catch (e) { return; }
+    clearVcTimeout();
+    vcTimeoutId = setTimeout(function () {
+      if (vcListening) vcRecognition.stop();
+    }, maxMs);
+  });
+
+  document.getElementById('vc-stop-btn').addEventListener('click', function () {
+    if (vcListening) vcRecognition.stop();
+  });
+
+  document.getElementById('vc-discard-btn').addEventListener('click', function () {
+    vcDiscarding = true;
+    if (vcListening) {
+      try { vcRecognition.abort(); } catch (e) {}
+    } else {
+      vcDiscarding = false;
+      setVcState('idle');
+    }
+  });
+
+  document.getElementById('vc-cancel-btn').addEventListener('click', function () {
+    vcLatestTranscript = '';
+    setVcState('idle');
+  });
+
+  document.getElementById('vc-send-btn').addEventListener('click', function () {
+    vcEvaluate();
+  });
+
+  document.getElementById('voice-coach-retry-btn').addEventListener('click', function () {
+    setVcState('idle');
+  });
+
+  document.getElementById('vc-prev-btn').addEventListener('click', function () {
+    if (vcIndex > 0) {
+      vcIndex--;
+      renderVoiceCoachSentence();
+    }
+  });
+
+  document.getElementById('vc-next-btn').addEventListener('click', function () {
+    if (vcIndex < vcLines.length - 1) {
+      vcIndex++;
+      renderVoiceCoachSentence();
+    } else {
+      markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
+      openEpisodeMap();
+    }
+  });
+
+  document.getElementById('voice-coach-back-map').addEventListener('click', function () {
+    vcResetRecording();
+    openEpisodeMap();
+  });
+
+  document.getElementById('voice-coach-watch-bar').addEventListener('click', function () {
+    openInstructionsFor(vcModule);
+  });
+
+  document.getElementById('voice-coach-help-btn').addEventListener('click', function () {
+    openHelpFor(vcModule);
   });
 
   boot();
