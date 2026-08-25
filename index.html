@@ -913,6 +913,19 @@
     width: auto;
   }
 
+  /* Groups a badge with its .header-actions as a single right-aligned unit
+     inside .top-row (currently used by Speed Round, whose badge label is
+     long enough to push header-actions past the wrap point on its own).
+     margin-left: auto keeps the pair flush right even on its own wrapped
+     line, instead of falling back to flex-start under "← Mappa". */
+  .top-row-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    margin-left: auto;
+  }
+
   /* ---------- onboarding ---------- */
   #view-onboarding .card-body { align-items: center; text-align: center; }
   #onboarding-form {
@@ -1346,6 +1359,14 @@
     border-color: var(--accent);
     color: var(--accent);
     background: color-mix(in srgb, var(--accent) 14%, var(--card));
+  }
+
+  /* Same disabled treatment as .btn:disabled, needed here because .rate-btn
+     isn't a .btn — the Voice Coach listen block gets grayed out during
+     active recording (Regola Azione Critica) same as Guarda/Help. */
+  .rate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
   }
 
   .repeat-item-italian { font-size: 0.92rem; opacity: 0.8; }
@@ -2250,10 +2271,20 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
-            <span class="badge" id="speed-round-badge">Speed Round</span>
-            <div class="header-actions" id="speed-round-header-actions" hidden>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn">Help</button>
+            <!-- Speed Round's badge label ("Speed Round Eng-Ita"/"Ita-Eng") is
+                 long enough that, on the plain 3-child .top-row every other
+                 module uses, it can push header-actions past the wrap point
+                 on its own — dropping it alone onto a left-aligned line under
+                 "← Mappa" instead of staying next to the badge. Grouping badge
+                 + header-actions in their own wrapper keeps them together as
+                 one right-aligned unit, wrapping (and staying right-aligned
+                 via margin-left:auto) as a pair if they ever don't fit. -->
+            <div class="top-row-group">
+              <span class="badge" id="speed-round-badge">Speed Round</span>
+              <div class="header-actions" id="speed-round-header-actions" hidden>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -3973,8 +4004,12 @@
     document.getElementById('vc-result').hidden = state !== 'result';
     // "Guarda come si fa" and "Help" gray out only while actually recording
     // — back as soon as it's stopped/confirmed/cancelled (any other state).
+    // Same rule applies to the listen block (100/75/50%): otherwise it can
+    // be tapped mid-recording and the model audio starts playing over the
+    // user's own voice.
     document.getElementById('voice-coach-watch-btn').disabled = recording;
     document.getElementById('voice-coach-help-btn').disabled = recording;
+    document.querySelectorAll('#vc-audio-controls button').forEach(function (b) { b.disabled = recording; });
   }
 
   function vcResetRecording() {
