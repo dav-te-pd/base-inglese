@@ -339,7 +339,7 @@
     },
     flashcardLevelA: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi, poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p>'
       },
       helpReminder: {
@@ -1800,6 +1800,59 @@
   }
 
   /* ---------- flash card view ---------- */
+
+  /* Trial two-row header, scoped to Flash Card only — not merged into the
+     shared .top-row/.top-row-group/.header-actions pattern every other
+     module uses, since this is being validated on one module first before
+     any decision to extend it further (see the request that introduced
+     it). Row 1: badge alone, centered, full width, plain text. Row 2:
+     Mappa/Spiegazione/Help as three equal-width flex items — flex (not
+     grid) so that if one of them is hidden (e.g. Spiegazione on an
+     evaluative summary screen, CLAUDE.md rule 10) the remaining two
+     redistribute the row evenly instead of leaving a gap where the third
+     column would have been. */
+  .fc-header {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .fc-header-badge-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .fc-header-actions-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  /* flex: 1 1 0 alone doesn't guarantee equal thirds here: "← Mappa" (plain
+     .btn) and Spiegazione/Help (.btn-sm/.help-btn) have different padding,
+     and a border-box flex item can't shrink narrower than its own padding
+     even at flex-basis 0 — so the wider-padded button was quietly claiming
+     more than a third. Forcing the same padding/font-size (reusing the
+     existing --btn-padding-sm/--btn-text-sm tokens, not new ones) removes
+     that mismatch so all three actually split the row evenly. */
+  .fc-header-actions-row > .btn {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+    padding: var(--btn-padding-sm);
+    font-size: var(--btn-text-sm);
+  }
+
+  /* Below this width three equal columns get too cramped for "Spiegazione"
+     — stack them one per row instead of letting them wrap unpredictably. */
+  @media (max-width: 420px) {
+    .fc-header-actions-row {
+      flex-direction: column;
+    }
+    .fc-header-actions-row > .btn {
+      width: 100%;
+    }
+  }
+
   .fc-level-label {
     text-align: center;
     font-family: var(--font-mono);
@@ -2387,14 +2440,20 @@
     <section id="view-flashcard" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
-            <div class="top-row-group">
+          <!-- Trial two-row header (Flash Card only, not yet the shared
+               .top-row pattern used by every other module — see the
+               request that introduced this before extending it further):
+               row 1 is the badge alone, centered, full width, plain text;
+               row 2 is Mappa/Spiegazione/Help as three equal columns,
+               collapsing to one column per row below fc-header-stack-bp. -->
+          <div class="fc-header">
+            <div class="fc-header-badge-row">
               <span class="badge" id="flashcard-badge">Flash Card</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="fc-header-actions-row">
+              <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
             </div>
           </div>
 
@@ -2403,7 +2462,7 @@
                same content afterward as a popup instead. -->
           <div id="fc-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="fc-intro-title">Guarda come si fa</h1>
+              <h1 id="fc-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="fc-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2789,7 +2848,12 @@
 
   function openHowItWorksOverlay(module, options) {
     options = options || {};
-    document.getElementById('howitworks-overlay-title').textContent = 'Guarda come si fa';
+    // placeholderTitle covers the brief moment before loadModuleInstructions
+    // resolves, and the fallback if this module has no entry at all — Flash
+    // Card passes 'Spiegazione' here so that brief moment matches its own
+    // renamed button instead of showing the old "Guarda come si fa" text.
+    var placeholderTitle = options.placeholderTitle || 'Guarda come si fa';
+    document.getElementById('howitworks-overlay-title').textContent = placeholderTitle;
     document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     howItWorksOverlayEl.classList.add('is-open');
 
@@ -2806,7 +2870,7 @@
 
     loadModuleInstructions().then(function (data) {
       var entry = data[module.kind] && data[module.kind].howItWorks;
-      document.getElementById('howitworks-overlay-title').textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById('howitworks-overlay-title').textContent = (entry && entry.title) || placeholderTitle;
       document.getElementById('howitworks-overlay-body').innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -3689,13 +3753,16 @@
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
   // for the given kind — the same content Repeat Aloud's renderRaIntroContent
   // loads, generalized so every module's intro screen shares one loader
-  // instead of repeating it per module.
-  function renderIntroContent(kind, titleElId, bodyElId) {
-    document.getElementById(titleElId).textContent = 'Guarda come si fa';
+  // instead of repeating it per module. placeholderTitle is optional (default
+  // 'Guarda come si fa'); Flash Card passes 'Spiegazione' so the brief moment
+  // before loadModuleInstructions resolves matches its own renamed button.
+  function renderIntroContent(kind, titleElId, bodyElId, placeholderTitle) {
+    placeholderTitle = placeholderTitle || 'Guarda come si fa';
+    document.getElementById(titleElId).textContent = placeholderTitle;
     document.getElementById(bodyElId).innerHTML = '<p class="module-status-text">Caricamento...</p>';
     loadModuleInstructions().then(function (data) {
       var entry = data[kind] && data[kind].howItWorks;
-      document.getElementById(titleElId).textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById(titleElId).textContent = (entry && entry.title) || placeholderTitle;
       document.getElementById(bodyElId).innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -4866,7 +4933,7 @@
     fcIntroPending = !isIntroDismissed(module.kind, getUserName());
     if (fcIntroPending) {
       document.getElementById('fc-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body');
+      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body', 'Spiegazione');
       fcShowScreen('intro');
     } else {
       fcShowScreen('card');
@@ -4927,7 +4994,7 @@
   });
 
   document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
+    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind), placeholderTitle: 'Spiegazione' });
   });
 
   document.getElementById('fc-intro-start-btn').addEventListener('click', function () {

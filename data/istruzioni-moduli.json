@@ -65,7 +65,7 @@
   },
   "flashcardLevelA": {
     "howItWorks": {
-      "title": "Guarda come si fa",
+      "title": "Spiegazione",
       "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi, poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p>"
     },
     "helpReminder": {
