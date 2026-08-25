@@ -65,6 +65,17 @@
       // how fast progress climbs everywhere in the app.
       promotionStreak: 2
     },
+    // ---- shared retry-queue safety valve ----
+    // Every module with a retry-queue mechanic (Speed Round, Quick Match,
+    // Flash Card today) reads this SAME constant, not a per-module copy:
+    // once an item has been wrong/"Non ancora"/declared-non-attempt this
+    // many times in one session (across the main pass and every retry
+    // pass), it's force-accepted as rosso and dropped from the active
+    // retry queue instead of being requeued again. Change this one number
+    // to retune the loop-prevention threshold everywhere at once.
+    retryQueue: {
+      maxAttempts: 3
+    },
     // ---- limits ----
     limits: {
       userNameMaxLength: 40
@@ -100,11 +111,9 @@
       // % of correct answers needed for the basso/medio/alto end-of-module
       // message bucket — mirrors messaggi-feedback.json's percentageRule.
       percentageThresholds: { basso: 1, medio: 50, alto: 80 },
-      // Safety valve against an infinite retry loop: once an item has been
-      // wrong/skipped/timed out this many times in one session (across the
-      // main pass and every retry pass), it's accepted as rosso and dropped
-      // from the active retry queue instead of being requeued again.
-      maxRetryAttempts: 3,
+      // Retry-queue safety valve threshold lives in CONFIG.retryQueue.
+      // maxAttempts (shared across every module with this mechanic), not
+      // duplicated here.
       // Tones played on correct/wrong answers via the Web Audio API
       // (no external audio files, per project convention).
       sound: {
@@ -118,12 +127,12 @@
     // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
     // see the comment near those), just untimed: no timeLimitSeconds,
     // countdownSeconds or percentageThresholds here since there's no timer
-    // or countdown to configure. Own maxRetryAttempts/feedbackPauseMs (not
+    // or countdown to configure. feedbackPauseMs is its own key (not
     // reusing speedRound's) so the two can be tuned independently later —
-    // same default values today, kept as separate keys on purpose.
+    // same default value today, kept separate on purpose. Retry-queue
+    // safety valve threshold is shared — see CONFIG.retryQueue.maxAttempts.
     quickMatch: {
-      feedbackPauseMs: 600,
-      maxRetryAttempts: 3
+      feedbackPauseMs: 600
     },
     // ---- Flash Card decks. One entry per level (today just "a"); each
     // module descriptor (see EPISODES) points at a level key + a
@@ -137,13 +146,10 @@
           // Key into the episode data file's own object (CLAUDE.md rule 4).
           vocabKey: 'flashcardLevelA'
         }
-      },
-      // Safety valve against an infinite retry loop: once a card has been
-      // marked "Non ancora" (or skipped without flipping) this many times
-      // in one session, it's accepted as rosso and dropped from the active
-      // retry queue instead of being requeued again — same mechanism and
-      // default as CONFIG.speedRound.maxRetryAttempts.
-      maxRetryAttempts: 3
+      }
+      // Retry-queue safety valve threshold lives in CONFIG.retryQueue.
+      // maxAttempts (shared across every module with this mechanic), not
+      // duplicated here.
     },
     // ---- selectable color themes ----
     themes: {
@@ -2729,11 +2735,11 @@
               </div>
             </div>
 
-            <div class="vc-nav-row" id="fc-nav-row">
-              <button type="button" class="btn btn-secondary" id="fc-prev-btn">← Indietro</button>
-              <button type="button" class="btn btn-primary" id="fc-next-btn">Avanti →</button>
-            </div>
-
+            <!-- No Indietro/Avanti: every card must get a real flip + Sì/Non
+                 ancora attempt, which now advances on its own (see
+                 fcAdvance) — the retry-queue passes at the end already
+                 re-present anything wrong, so manual back-navigation would
+                 only risk re-recording an already-counted attempt. -->
             <div class="panel fc-choice-row" id="fc-choice-row" hidden>
               <p class="fc-choice-question">L'hai imparata?</p>
               <div class="pending-actions">
@@ -4629,10 +4635,11 @@
      Direction label, 4-option builder, and mastery/retry-queue
      recording are the same mechanics in both module types (CLAUDE.md
      rule 13) — module-specific state (own retryAttempts/retryQueue,
-     own mastery unitId prefix, own maxRetryAttempts) is passed in
-     rather than hardcoded here, so Speed Round and Quick Match keep
-     fully independent safety valves and never share mastery entries
-     for the same vocabulary item.
+     own mastery unitId prefix) is passed in rather than hardcoded
+     here, so Speed Round and Quick Match keep fully independent retry
+     queues and never share mastery entries for the same vocabulary
+     item. The max-attempts threshold itself is NOT module-specific —
+     every caller passes the same CONFIG.retryQueue.maxAttempts.
      ============================================================ */
   var DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
 
@@ -4650,9 +4657,10 @@
   // declaredNonAttempt: an explicit "Non lo so" — not a wrong answer but an
   // admitted non-attempt, so it resets straight to rosso regardless of the
   // current level (bypasses applyMasteryResult's normal one-level-at-a-time
-  // demotion, same special case as Flash Card's "skipped without flipping").
-  // params.retryAttempts/retryQueue/maxRetryAttempts are the caller's own
-  // state, not shared, so each module type keeps its own safety valve.
+  // demotion). params.retryAttempts/retryQueue are the caller's own state,
+  // not shared, so each module type keeps its own independent retry queue;
+  // params.maxRetryAttempts is the one shared CONFIG.retryQueue.maxAttempts
+  // value every caller passes in (not a per-module setting).
   function recordMultipleChoiceResult(params) {
     var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
     var userName = getUserName();
@@ -4741,8 +4749,9 @@
   }
 
   // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
-  // own mastery unitId prefix and own retry state keep Quick Match's
-  // mastery/safety-valve fully independent from Speed Round's.
+  // own mastery unitId prefix and own retry queue keep Quick Match's
+  // mastery independent from Speed Round's (the max-attempts threshold
+  // itself is the one shared CONFIG.retryQueue.maxAttempts).
   function qmRecordResult(correct, declaredNonAttempt) {
     recordMultipleChoiceResult({
       item: qmCurrentItem,
@@ -4752,7 +4761,7 @@
       unitPrefix: 'quickmatch',
       retryAttempts: qmRetryAttempts,
       retryQueue: qmRetryQueue,
-      maxRetryAttempts: CONFIG.quickMatch.maxRetryAttempts
+      maxRetryAttempts: CONFIG.retryQueue.maxAttempts
     });
   }
 
@@ -5071,8 +5080,9 @@
   // flipping" (applyMasteryResult's normal one-level-at-a-time demotion is
   // untouched — timeout and a wrong tap still go through it as before).
   // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
-  // supplies Speed Round's own state/config so its mastery unitId prefix
-  // and retry safety valve stay independent from Quick Match's.
+  // supplies Speed Round's own state so its mastery unitId prefix and
+  // retry queue stay independent from Quick Match's (the max-attempts
+  // threshold itself is the one shared CONFIG.retryQueue.maxAttempts).
   function srRecordResult(correct, declaredNonAttempt) {
     recordMultipleChoiceResult({
       item: srCurrentItem,
@@ -5082,7 +5092,7 @@
       unitPrefix: 'speedround',
       retryAttempts: srRetryAttempts,
       retryQueue: srRetryQueue,
-      maxRetryAttempts: CONFIG.speedRound.maxRetryAttempts
+      maxRetryAttempts: CONFIG.retryQueue.maxAttempts
     });
   }
 
@@ -5274,12 +5284,16 @@
      levels entry plus two more module descriptors, no component
      changes. Standard Guarda+Help (top-row, always present except
      Guarda on the summary screen — CLAUDE.md rule 10), unlike Speed
-     Round. One shuffled pass over every card; a card is
-     "wrong" if flipped-and-"Non ancora" OR advanced without ever being
-     flipped (didn't even try); as many further retry passes as needed
-     — each with its own "Ripassiamo insieme..." screen — until one
-     comes back with zero misses, then the summary screen. No Indietro
-     there, only in the card flow itself.
+     Round. One shuffled pass over every card; every card gets a real
+     attempt — flip it, then Sì/Non ancora, which now advances straight
+     to the next card on its own (fcAdvance) — a card is "wrong" only
+     via a real "Non ancora". No Indietro/Avanti: there is no way to
+     skip a card without flipping it, and no manual back-navigation to
+     an already-answered card (which could otherwise re-record an
+     already-counted attempt against mastery/the safety valve). As many
+     further retry passes as needed — each with its own "Ripassiamo
+     insieme..." screen — until one comes back with zero misses, then
+     the summary screen.
      ============================================================ */
   // Card-to-card slide duration — must match the CSS transition on .fc-card.
   var FC_SLIDE_MS = 260;
@@ -5292,10 +5306,9 @@
   var fcPassItems = [];
   var fcPassIndex = 0;
   var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
-  var fcRetryAttempts = {}; // itemId -> times wrong/skipped this session (across every pass)
+  var fcRetryAttempts = {}; // itemId -> times wrong this session (across every pass)
   var fcCurrentItem = null;
   var fcFlipped = false;
-  var fcEverFlipped = false; // true once this card has shown its back at least once this viewing
   var fcAnswered = false; // true once Sì/Non ancora has been chosen this viewing
   var fcNavLocked = false;
   var fcNavTimeoutId = null;
@@ -5316,37 +5329,32 @@
     document.getElementById('flashcard-watch-btn').hidden = name === 'summary';
   }
 
-  function fcShowNav(showNav) {
-    document.getElementById('fc-nav-row').hidden = !showNav;
-    document.getElementById('fc-choice-row').hidden = showNav;
+  function fcShowChoice(show) {
+    document.getElementById('fc-choice-row').hidden = !show;
   }
 
-  // skippedWithoutTrying: "Avanti" pressed without ever having flipped the
-  // card this viewing — not a wrong answer but a non-attempt, so it resets
-  // straight to rosso regardless of the current level instead of stepping
-  // down one level like every other module's "wrong" (applyMasteryResult
-  // is untouched — this is a Flash-Card-specific path, not a change to the
-  // shared demotion rule). A real "Non ancora" that keeps recurring across
-  // retry passes is force-accepted as rosso after CONFIG.flashcard.
-  // maxRetryAttempts attempts — same safety valve, same default, as Speed
-  // Round's maxRetryAttempts, so a single stubborn card can't loop the
-  // retry passes forever; fcPassResults is set to 'correct' in that case
-  // purely to close it out of fcFinishPassCheck's retry-queue computation,
-  // not a real self-assessed answer.
-  function fcRecordResult(result, skippedWithoutTrying) {
+  // Every card gets a real attempt now (flip + Sì/Non ancora — no more
+  // skip-without-flipping path), so 'wrong' always goes through the normal
+  // one-level-at-a-time applyMasteryResult demotion, same as every other
+  // module's real wrong answer. A "Non ancora" that keeps recurring across
+  // retry passes is force-accepted as rosso after CONFIG.retryQueue.
+  // maxAttempts attempts — the same shared safety valve every module with
+  // a retry queue uses, so a single stubborn card can't loop the retry
+  // passes forever; fcPassResults is set to 'correct' in that case purely
+  // to close it out of fcFinishPassCheck's retry-queue computation, not a
+  // real self-assessed answer.
+  function fcRecordResult(result) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
     var userName = getUserName();
     var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = skippedWithoutTrying
-      ? { level: 'rosso', streak: 0 }
-      : applyMasteryResult(mastery[unitId], result);
+    mastery[unitId] = applyMasteryResult(mastery[unitId], result);
     saveMastery(currentEpisode.id, userName, mastery);
 
     if (result === 'wrong') {
       var attempts = (fcRetryAttempts[fcCurrentItem.id] || 0) + 1;
       fcRetryAttempts[fcCurrentItem.id] = attempts;
-      if (attempts >= CONFIG.flashcard.maxRetryAttempts) {
+      if (attempts >= CONFIG.retryQueue.maxAttempts) {
         mastery[unitId] = { level: 'rosso', streak: 0 };
         saveMastery(currentEpisode.id, userName, mastery);
         fcPassResults[fcCurrentItem.id] = 'correct';
@@ -5371,7 +5379,6 @@
   function fcRenderCard() {
     fcCurrentItem = fcVocab.find(function (v) { return v.id === fcPassItems[fcPassIndex]; });
     fcFlipped = false;
-    fcEverFlipped = false;
     fcAnswered = false;
     // Front state committed before anything else renders, per the fix above.
     fcResetFlipInstant();
@@ -5396,8 +5403,7 @@
       ? '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>'
       : '';
-    document.getElementById('fc-prev-btn').disabled = fcPassIndex === 0;
-    fcShowNav(true);
+    fcShowChoice(false);
     // The data load runs in the background regardless of the intro screen
     // (see openFlashcard) — don't let it jump past an intro still pending
     // dismissal; the "Ho capito, inizia" handler shows 'card' itself once done.
@@ -5412,10 +5418,9 @@
   function fcFlip() {
     if (fcNavLocked || fcAnswered) return;
     fcFlipped = !fcFlipped;
-    if (fcFlipped) fcEverFlipped = true;
     document.getElementById('fc-card').classList.toggle('is-flipped', fcFlipped);
     // The Doppia Scelta box only makes sense with the back showing.
-    fcShowNav(!fcFlipped);
+    fcShowChoice(fcFlipped);
   }
 
   function fcFinishPassCheck() {
@@ -5457,9 +5462,10 @@
     }, FC_SLIDE_MS);
   }
 
-  // Shared by fcGoNext (Avanti, possibly without ever answering) and the
-  // Sì/Non ancora handlers below (CLAUDE.md rule 13) — advances to the next
-  // card, or wraps up the pass, once a result has already been recorded.
+  // Advances to the next card, or wraps up the pass, once the Sì/Non
+  // ancora handlers below have already recorded a result — no other
+  // caller: there's no way to advance without answering, and no way to
+  // navigate back to a previous (already-answered) card.
   function fcAdvance() {
     if (fcPassIndex < fcPassItems.length - 1) {
       fcPassIndex++;
@@ -5467,20 +5473,6 @@
     } else {
       fcFinishPassCheck();
     }
-  }
-
-  function fcGoNext() {
-    if (fcNavLocked) return;
-    if (!fcEverFlipped) {
-      fcRecordResult('wrong', true); // advanced without ever flipping = didn't even try
-    }
-    fcAdvance();
-  }
-
-  function fcGoPrev() {
-    if (fcNavLocked || fcPassIndex === 0) return;
-    fcPassIndex--;
-    fcNavigateTo(fcRenderCard);
   }
 
   function fcStartDeck() {
@@ -5539,14 +5531,10 @@
     if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fcFlip(); }
   });
 
-  document.getElementById('fc-prev-btn').addEventListener('click', fcGoPrev);
-  document.getElementById('fc-next-btn').addEventListener('click', fcGoNext);
-
-  // Sì/Non ancora now advance straight to the next card — no intermediate
-  // Avanti click. fcAnswered=true still guards fcFlip during the brief
-  // slide-out (fcNavigateTo/fcNavLocked already guards against a double
-  // advance); going back to review a previous card stays available via
-  // Indietro on the next card's front-facing nav row, same as before.
+  // Sì/Non ancora advance straight to the next card — no Avanti click, and
+  // no Indietro to go back: a card can only be answered once. fcAnswered=
+  // true still guards fcFlip during the brief slide-out (fcNavigateTo/
+  // fcNavLocked already guards against a double advance).
   document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
     fcRecordResult('wrong');
     fcAnswered = true;
