@@ -279,7 +279,7 @@
       requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
       requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
       },
       helpReminder: {
@@ -289,7 +289,7 @@
     },
     mappaEpisodio: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Questa è la mappa dell\'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>'
       },
       helpReminder: {
@@ -299,7 +299,7 @@
     },
     repeatAloud: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p>'
       },
       helpReminder: {
@@ -309,7 +309,7 @@
     },
     speakEasy: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito, torna alla mappa".</p>'
       },
       helpReminder: {
@@ -319,7 +319,7 @@
     },
     speedRoundEngIta: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
       },
       helpReminder: {
@@ -329,7 +329,7 @@
     },
     speedRoundItaEng: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
       },
       helpReminder: {
@@ -349,7 +349,7 @@
     },
     voiceCoach: {
       howItWorks: {
-        title: 'Guarda come si fa',
+        title: 'Spiegazione',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
       },
       helpReminder: {
@@ -729,16 +729,13 @@
   }
 
   /* ============================================================
-     SHARED: Help entry point (+ "Guarda come si fa", header-actions)
-     Every module header drops these buttons into its top-row, wired to
-     openHowItWorksOverlay()/openHelpFor() — no per-module CSS needed.
+     SHARED: Help entry point (+ "Spiegazione") — every module drops
+     these two buttons into its .header-actions-row (see .header-2row
+     near .top-row), wired to openHowItWorksOverlay()/openHelpFor().
+     .header-actions-row > .btn already sets the sizing that applies to
+     every button there, .help-btn is just the semantic/JS-hook marker.
      ============================================================ */
-  .help-btn {
-    width: 20%;
-    min-width: 84px;
-    padding: 8px 10px;
-    font-size: 0.78rem;
-  }
+  .help-btn {}
 
   /* ---------- shared overlay (instructions + help panel) ---------- */
   .overlay {
@@ -882,6 +879,9 @@
      [hidden]{display:none}. */
   header.app-header[hidden] { display: none; }
 
+  /* Only view-pronunciation (legacy, unreachable from the current UI —
+     left untouched, out of scope) still uses a plain .top-row. Every
+     reachable module now uses .header-2row below instead. */
   .top-row {
     display: flex;
     flex-wrap: wrap;
@@ -890,45 +890,60 @@
     gap: 8px 12px;
   }
 
-  /* Groups two+ small header buttons (e.g. "Guarda come si fa" + Help) so
-     they stay adjacent as a pair inside .top-row's space-between layout,
-     instead of getting spread apart across the row. */
-  .header-actions {
+  /* ---------- shared: two-row module header ----------
+     Generalized from the Flash Card trial (was .fc-header/.fc-header-*,
+     scoped to that one module) into the shared pattern every module with
+     a badge + Mappa/Spiegazione/Help header now uses — a future module
+     gets it automatically by reusing these same three classes instead of
+     copying its own header markup/CSS. Row 1: badge alone, centered, full
+     width, plain text, not clickable. Row 2: back button + Spiegazione +
+     Help as three equal-width flex items — flex (not grid) so that when
+     one or two are hidden (per-screen, e.g. Speed Round's timed screens;
+     or CLAUDE.md rule 10 on an evaluative summary) the remaining ones
+     redistribute the row evenly instead of leaving a gap. Each module's
+     own JS still decides which of ITS buttons are hidden and when — this
+     only provides the shared layout, not a shared visibility policy. */
+  .header-2row {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header-badge-row {
+    display: flex;
+    justify-content: center;
+  }
+
+  .header-actions-row {
+    display: flex;
     gap: 8px;
   }
 
-  /* Same [hidden]-vs-own-"display" fix as elsewhere: Speed Round is the
-     first to actually hide this wrapper (outside the timed questions),
-     and its own "display: flex" would otherwise win over the browser's
-     default [hidden]{display:none}. */
-  .header-actions[hidden] { display: none; }
-
-  /* .help-btn's own "width: 20%" assumes it's alone as a direct .top-row
-     child; grouped here with another button it would force text like
-     "Guarda come si fa" to wrap awkwardly. Let both size to content. */
-  .header-actions .help-btn {
+  /* flex: 1 1 0 alone doesn't guarantee equal shares here: the back
+     button (plain .btn) and Spiegazione/Help (.btn-sm/.help-btn) have
+     different padding, and a border-box flex item can't shrink narrower
+     than its own padding even at flex-basis 0 — so the wider-padded
+     button quietly claims more than its share. Forcing the same padding/
+     font-size (reusing the existing --btn-padding-sm/--btn-text-sm
+     tokens, not new ones) removes that mismatch so all visible items
+     actually split the row evenly. */
+  .header-actions-row > .btn {
+    flex: 1 1 0;
     width: auto;
+    min-width: 0;
+    padding: var(--btn-padding-sm);
+    font-size: var(--btn-text-sm);
   }
 
-  /* Groups every module's badge with its .header-actions as a single
-     right-aligned unit inside .top-row. Without this, a long enough badge
-     label (Speed Round's "Speed Round Eng-Ita"/"Ita-Eng", Flash Card's
-     "Flash Card A Eng-Ita"/"Ita-Eng", ...) can push header-actions past
-     .top-row's own wrap point on its own, splitting it off onto a separate
-     line that then falls back to flex-start — flush left under "← Mappa"
-     — instead of staying next to the badge. margin-left: auto keeps badge
-     + header-actions flush right as a pair even when they end up alone on
-     their own wrapped line. Used by every module's top-row, not just the
-     one(s) where a long badge currently makes the wrap visible. */
-  .top-row-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 8px 12px;
-    margin-left: auto;
+  /* Below this width the row gets too cramped for "Spiegazione" — stack
+     the buttons one per row instead of letting them wrap unpredictably. */
+  @media (max-width: 420px) {
+    .header-actions-row {
+      flex-direction: column;
+    }
+    .header-actions-row > .btn {
+      width: 100%;
+    }
   }
 
   /* ---------- onboarding ---------- */
@@ -1800,58 +1815,9 @@
   }
 
   /* ---------- flash card view ---------- */
-
-  /* Trial two-row header, scoped to Flash Card only — not merged into the
-     shared .top-row/.top-row-group/.header-actions pattern every other
-     module uses, since this is being validated on one module first before
-     any decision to extend it further (see the request that introduced
-     it). Row 1: badge alone, centered, full width, plain text. Row 2:
-     Mappa/Spiegazione/Help as three equal-width flex items — flex (not
-     grid) so that if one of them is hidden (e.g. Spiegazione on an
-     evaluative summary screen, CLAUDE.md rule 10) the remaining two
-     redistribute the row evenly instead of leaving a gap where the third
-     column would have been. */
-  .fc-header {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .fc-header-badge-row {
-    display: flex;
-    justify-content: center;
-  }
-
-  .fc-header-actions-row {
-    display: flex;
-    gap: 8px;
-  }
-
-  /* flex: 1 1 0 alone doesn't guarantee equal thirds here: "← Mappa" (plain
-     .btn) and Spiegazione/Help (.btn-sm/.help-btn) have different padding,
-     and a border-box flex item can't shrink narrower than its own padding
-     even at flex-basis 0 — so the wider-padded button was quietly claiming
-     more than a third. Forcing the same padding/font-size (reusing the
-     existing --btn-padding-sm/--btn-text-sm tokens, not new ones) removes
-     that mismatch so all three actually split the row evenly. */
-  .fc-header-actions-row > .btn {
-    flex: 1 1 0;
-    width: auto;
-    min-width: 0;
-    padding: var(--btn-padding-sm);
-    font-size: var(--btn-text-sm);
-  }
-
-  /* Below this width three equal columns get too cramped for "Spiegazione"
-     — stack them one per row instead of letting them wrap unpredictably. */
-  @media (max-width: 420px) {
-    .fc-header-actions-row {
-      flex-direction: column;
-    }
-    .fc-header-actions-row > .btn {
-      width: 100%;
-    }
-  }
+  /* The two-row header itself now lives in the shared .header-2row/
+     .header-badge-row/.header-actions-row rules (near .top-row) — Flash
+     Card was just the module that trialed it first. */
 
   .fc-level-label {
     text-align: center;
@@ -2063,23 +2029,23 @@
     <section id="view-customize" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge" id="customize-episode-badge">Episodio 1</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
             </div>
           </div>
 
           <!-- INTRO SCREEN: shown automatically until "don't show again" is
-               checked; the header's "Guarda come si fa" always reopens the
+               checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead. -->
           <div id="customize-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="customize-intro-title">Guarda come si fa</h1>
+              <h1 id="customize-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="customize-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2117,23 +2083,23 @@
     <section id="view-map" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge" id="map-episode-badge">Episodio 1</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
             </div>
           </div>
 
           <!-- INTRO SCREEN: shown automatically until "don't show again" is
-               checked; the header's "Guarda come si fa" always reopens the
+               checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead. -->
           <div id="map-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="map-intro-title">Guarda come si fa</h1>
+              <h1 id="map-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="map-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2160,25 +2126,25 @@
     <section id="view-repeat-aloud" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge">Repeat Aloud</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
             </div>
           </div>
 
           <!-- INTRO SCREEN (trial: Repeat Aloud only, see CLAUDE.md notes
                before extending this pattern to other modules). Shown
                automatically until the user checks "don't show again";
-               the header's "Guarda come si fa" button always reopens
+               the header's "Spiegazione" button always reopens
                this same screen regardless of that saved preference. -->
           <div id="repeat-aloud-intro-screen" hidden>
             <header class="app-header">
-              <h1 id="ra-intro-title">Guarda come si fa</h1>
+              <h1 id="ra-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="ra-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2207,24 +2173,24 @@
     <section id="view-speak-easy" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge">Speak Easy</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
             </div>
           </div>
 
           <!-- INTRO SCREEN: shown automatically until "don't show again" is
-               checked; the header's "Guarda come si fa" always reopens the
+               checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead (see
                openHowItWorksOverlay), never this screen again. -->
           <div id="speak-easy-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="speak-easy-intro-title">Guarda come si fa</h1>
+              <h1 id="speak-easy-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="speak-easy-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2253,23 +2219,23 @@
     <section id="view-voice-coach" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge">Voice Coach</span>
-              <div class="header-actions">
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
             </div>
           </div>
 
           <!-- INTRO SCREEN: shown automatically until "don't show again" is
-               checked; the header's "Guarda come si fa" always reopens the
+               checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead. -->
           <div id="voice-coach-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="voice-coach-intro-title">Guarda come si fa</h1>
+              <h1 id="voice-coach-intro-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="voice-coach-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -2339,28 +2305,26 @@
     <!-- ============ VIEW: SPEED ROUND MODULES (Eng-Ita / Ita-Eng) ============
          One shared view for both directions — module.kind picks the
          direction and the istruzioni-moduli.json entry, everything else
-         (markup, CSS, JS) is identical. Guarda+Help only appear on the
-         start/summary screens (top-row, hidden the rest of the time) —
-         never during the timed questions, per the module's own design
-         (CLAUDE.md rule 11 exemption, unchanged by the header-merge task).
-         Guarda additionally hides on summary alone (CLAUDE.md rule 10:
-         nothing left to explain on an evaluative module's final screen). -->
+         (markup, CSS, JS) is identical. Spiegazione+Help only appear on
+         the start/summary screens (each hidden individually via its own
+         id — see srShowScreen()) — never during the timed questions, per
+         the module's own design (CLAUDE.md rule 11 exemption, unchanged
+         by the header-merge task). Spiegazione additionally hides on
+         summary alone (CLAUDE.md rule 10: nothing left to explain on an
+         evaluative module's final screen); .header-actions-row's flex
+         layout (see .header-2row near .top-row) redistributes ← Mappa/
+         Help evenly whenever one or both of the other two are hidden. -->
     <section id="view-speed-round" class="view">
       <div class="card">
         <div class="card-body">
-          <div class="top-row">
-            <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
-            <!-- .top-row-group keeps badge + header-actions together as one
-                 right-aligned unit (see its CSS comment) — every module's
-                 top-row uses it; Speed Round's own badge label ("Speed Round
-                 Eng-Ita"/"Ita-Eng") is simply long enough to make the wrap
-                 visible at ordinary widths where shorter badges don't. -->
-            <div class="top-row-group">
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge" id="speed-round-badge">Speed Round</span>
-              <div class="header-actions" id="speed-round-header-actions" hidden>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn">Help</button>
-              </div>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn" hidden>Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn" hidden>Help</button>
             </div>
           </div>
 
@@ -2372,7 +2336,7 @@
                timed countdown, so it never disappears entirely). -->
           <div id="sr-start-screen">
             <header class="app-header">
-              <h1 id="sr-start-title">Guarda come si fa</h1>
+              <h1 id="sr-start-title">Spiegazione</h1>
             </header>
             <div class="overlay-text panel" id="sr-start-body">Caricamento...</div>
             <label class="ra-intro-checkbox" id="sr-start-checkbox-row">
@@ -2440,17 +2404,14 @@
     <section id="view-flashcard" class="view">
       <div class="card">
         <div class="card-body">
-          <!-- Trial two-row header (Flash Card only, not yet the shared
-               .top-row pattern used by every other module — see the
-               request that introduced this before extending it further):
-               row 1 is the badge alone, centered, full width, plain text;
-               row 2 is Mappa/Spiegazione/Help as three equal columns,
-               collapsing to one column per row below fc-header-stack-bp. -->
-          <div class="fc-header">
-            <div class="fc-header-badge-row">
+          <!-- Two-row header (see .header-2row near .top-row) — Flash Card
+               was the module that trialed this pattern, now shared by
+               every module with a badge + Mappa/Spiegazione/Help header. -->
+          <div class="header-2row">
+            <div class="header-badge-row">
               <span class="badge" id="flashcard-badge">Flash Card</span>
             </div>
-            <div class="fc-header-actions-row">
+            <div class="header-actions-row">
               <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
               <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn">Spiegazione</button>
               <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
@@ -2458,7 +2419,7 @@
           </div>
 
           <!-- INTRO SCREEN: shown automatically until "don't show again" is
-               checked; the header's "Guarda come si fa" always reopens the
+               checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead. -->
           <div id="fc-intro-screen" class="module-screen" hidden>
             <header class="app-header">
@@ -2573,7 +2534,7 @@
 
   <!-- ============ SHARED: MODULE HELP OVERLAY ============
        One overlay, reused by every module's "Help" button (menu +
-       clarify/urgent forms), and by "Guarda come si fa" for every
+       clarify/urgent forms), and by "Spiegazione" for every
        module except Repeat Aloud, which is trialing the dedicated
        full-screen intro + simple overlay below instead. -->
   <div class="overlay" id="help-overlay">
@@ -2599,7 +2560,7 @@
     <button type="button" class="overlay-backdrop" id="howitworks-overlay-backdrop" aria-label="Chiudi"></button>
     <div class="overlay-panel card">
       <div class="overlay-header">
-        <h2 id="howitworks-overlay-title">Guarda come si fa</h2>
+        <h2 id="howitworks-overlay-title">Spiegazione</h2>
       </div>
       <div class="overlay-body">
         <div class="overlay-text" id="howitworks-overlay-body"></div>
@@ -2837,7 +2798,7 @@
   document.getElementById('help-overlay-close').addEventListener('click', closeOverlay);
   document.getElementById('help-overlay-backdrop').addEventListener('click', closeOverlay);
 
-  // Simple "Guarda come si fa" popup (see markup comment) — generic by
+  // Simple "Spiegazione" popup (see markup comment) — generic by
   // module.kind, only Repeat Aloud's watch button calls it today.
   // Optional options.dismissPref = { get(), set(bool) } wires up the
   // "don't show again" checkbox against whatever persistent preference
@@ -2849,10 +2810,9 @@
   function openHowItWorksOverlay(module, options) {
     options = options || {};
     // placeholderTitle covers the brief moment before loadModuleInstructions
-    // resolves, and the fallback if this module has no entry at all — Flash
-    // Card passes 'Spiegazione' here so that brief moment matches its own
-    // renamed button instead of showing the old "Guarda come si fa" text.
-    var placeholderTitle = options.placeholderTitle || 'Guarda come si fa';
+    // resolves, and the fallback if this module has no entry at all. Default
+    // 'Spiegazione' matches every module's current button label.
+    var placeholderTitle = options.placeholderTitle || 'Spiegazione';
     document.getElementById('howitworks-overlay-title').textContent = placeholderTitle;
     document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     howItWorksOverlayEl.classList.add('is-open');
@@ -3753,11 +3713,11 @@
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
   // for the given kind — the same content Repeat Aloud's renderRaIntroContent
   // loads, generalized so every module's intro screen shares one loader
-  // instead of repeating it per module. placeholderTitle is optional (default
-  // 'Guarda come si fa'); Flash Card passes 'Spiegazione' so the brief moment
-  // before loadModuleInstructions resolves matches its own renamed button.
+  // instead of repeating it per module. placeholderTitle is optional
+  // (default 'Spiegazione', every module's current button label) for the
+  // brief moment before loadModuleInstructions resolves.
   function renderIntroContent(kind, titleElId, bodyElId, placeholderTitle) {
-    placeholderTitle = placeholderTitle || 'Guarda come si fa';
+    placeholderTitle = placeholderTitle || 'Spiegazione';
     document.getElementById(titleElId).textContent = placeholderTitle;
     document.getElementById(bodyElId).innerHTML = '<p class="module-status-text">Caricamento...</p>';
     loadModuleInstructions().then(function (data) {
@@ -3796,11 +3756,11 @@
   }
 
   function renderRaIntroContent() {
-    document.getElementById('ra-intro-title').textContent = 'Guarda come si fa';
+    document.getElementById('ra-intro-title').textContent = 'Spiegazione';
     document.getElementById('ra-intro-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     loadModuleInstructions().then(function (data) {
       var entry = data.repeatAloud && data.repeatAloud.howItWorks;
-      document.getElementById('ra-intro-title').textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById('ra-intro-title').textContent = (entry && entry.title) || 'Spiegazione';
       document.getElementById('ra-intro-body').innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -4094,7 +4054,7 @@
     document.getElementById('vc-record-timer').hidden = !recording;
     document.getElementById('vc-confirm-area').hidden = state !== 'pending';
     document.getElementById('vc-result').hidden = state !== 'result';
-    // "Guarda come si fa" and "Help" gray out only while actually recording
+    // "Spiegazione" and "Help" gray out only while actually recording
     // — back as soon as it's stopped/confirmed/cancelled (any other state).
     // Same rule applies to the listen block (100/75/50%): otherwise it can
     // be tapped mid-recording and the model audio starts playing over the
@@ -4472,10 +4432,14 @@
     document.getElementById('sr-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('sr-summary-screen').hidden = name !== 'summary';
+    // Spiegazione+Help each toggle by their own id now (no shared wrapper
+    // — .header-actions-row's flex layout redistributes ← Mappa/whichever
+    // of the two stays whenever one or both are hidden, same mechanism as
+    // Flash Card's rule-10 case). Spiegazione additionally hides on
+    // summary alone (CLAUDE.md rule 10) — Help alone stays there.
     var showHeaderActions = name === 'start' || name === 'summary';
-    document.getElementById('speed-round-header-actions').hidden = !showHeaderActions;
-    // Guarda hides on summary too (CLAUDE.md rule 10) — Help alone stays.
-    document.getElementById('speed-round-watch-btn').hidden = name === 'summary';
+    document.getElementById('speed-round-watch-btn').hidden = !showHeaderActions || name === 'summary';
+    document.getElementById('speed-round-help-btn').hidden = !showHeaderActions;
   }
 
   // First time (not dismissed): full howItWorks explanation + checkbox +
@@ -4933,7 +4897,7 @@
     fcIntroPending = !isIntroDismissed(module.kind, getUserName());
     if (fcIntroPending) {
       document.getElementById('fc-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body', 'Spiegazione');
+      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body');
       fcShowScreen('intro');
     } else {
       fcShowScreen('card');
@@ -4994,7 +4958,7 @@
   });
 
   document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind), placeholderTitle: 'Spiegazione' });
+    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
   });
 
   document.getElementById('fc-intro-start-btn').addEventListener('click', function () {
