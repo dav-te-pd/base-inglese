@@ -84,6 +84,11 @@
       // % of correct answers needed for the basso/medio/alto end-of-module
       // message bucket — mirrors messaggi-feedback.json's percentageRule.
       percentageThresholds: { basso: 1, medio: 50, alto: 80 },
+      // Safety valve against an infinite retry loop: once an item has been
+      // wrong/skipped/timed out this many times in one session (across the
+      // main pass and every retry pass), it's accepted as rosso and dropped
+      // from the active retry queue instead of being requeued again.
+      maxRetryAttempts: 3,
       // Tones played on correct/wrong answers via the Web Audio API
       // (no external audio files, per project convention).
       sound: {
@@ -3372,6 +3377,7 @@
   var srVocab = [];
   var srQueue = [];
   var srRetryQueue = [];
+  var srRetryAttempts = {}; // itemId -> times wrong/skipped/timed out this session
   var srPassIndex = 0;
   var srPassTotal = 0;
   var srCurrentItem = null;
@@ -3454,15 +3460,31 @@
     document.getElementById('speed-round-help-btn').hidden = name !== 'summary';
   }
 
-  function srRecordResult(correct) {
+  // declaredNonAttempt: "Non lo so" — not a wrong answer but an admitted
+  // non-attempt, so it resets straight to rosso regardless of the current
+  // level, same special-cased path as Flash Card's "skipped without
+  // flipping" (applyMasteryResult's normal one-level-at-a-time demotion is
+  // untouched — timeout and a wrong tap still go through it as before).
+  function srRecordResult(correct, declaredNonAttempt) {
     var unitId = 'speedround:' + srCurrentItem.id + ':' + srDirection;
     var userName = getUserName();
     var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
+    mastery[unitId] = declaredNonAttempt
+      ? { level: 'rosso', streak: 0 }
+      : applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
     saveMastery(currentEpisode.id, userName, mastery);
 
-    if (!correct && srRetryQueue.indexOf(srCurrentItem.id) === -1) {
-      srRetryQueue.push(srCurrentItem.id);
+    if (!correct) {
+      var attempts = (srRetryAttempts[srCurrentItem.id] || 0) + 1;
+      srRetryAttempts[srCurrentItem.id] = attempts;
+      if (attempts >= CONFIG.speedRound.maxRetryAttempts) {
+        // Give up retrying this one — force-accept as rosso so the retry
+        // loop can't run forever on a single stubborn item.
+        mastery[unitId] = { level: 'rosso', streak: 0 };
+        saveMastery(currentEpisode.id, userName, mastery);
+      } else if (srRetryQueue.indexOf(srCurrentItem.id) === -1) {
+        srRetryQueue.push(srCurrentItem.id);
+      }
     }
   }
 
@@ -3544,6 +3566,7 @@
   function srStartQuiz() {
     srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
     srRetryQueue = [];
+    srRetryAttempts = {};
     srPassTotal = srQueue.length;
     srPassIndex = 0;
     document.getElementById('sr-direction').textContent = SR_DIRECTION_LABEL[srDirection];
@@ -3620,7 +3643,7 @@
     srFreezeTimer();
     srDisableOptions();
     srPlayWrongSound();
-    srRecordResult(false);
+    srRecordResult(false, true); // declared non-attempt -> straight to rosso
     srShowReveal();
   });
 
