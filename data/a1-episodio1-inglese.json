@@ -5,12 +5,14 @@
   "language": "inglese",
 
   "personalizationTablesUsed": [
-    "personalizzazione-nomi-papa",
-    "personalizzazione-nomi-mamma",
-    "personalizzazione-nomi-figlia",
-    "personalizzazione-nomi-figlio",
-    "personalizzazione-citta",
-    "personalizzazione-destinazioni"
+    { "key": "papa", "label": "Nome del papà / utente", "type": "select", "table": "people.papa", "default": "giancarlo" },
+    { "key": "mamma", "label": "Nome della mamma", "type": "select", "table": "people.mamma", "default": "giulia" },
+    { "key": "figliaNome", "label": "Nome della figlia", "type": "select", "table": "people.figlia", "default": "sofia", "group": "figlia" },
+    { "key": "figliaEta", "label": "Età della figlia", "type": "select", "table": "episode.ageOptions.figlia", "default": "16", "group": "figlia", "narrow": true },
+    { "key": "figlioNome", "label": "Nome del figlio", "type": "select", "table": "people.figlio", "default": "leo", "group": "figlio" },
+    { "key": "figlioEta", "label": "Età del figlio", "type": "select", "table": "episode.ageOptions.figlio", "default": "10", "group": "figlio", "narrow": true },
+    { "key": "partenza", "label": "Città di partenza", "type": "select", "table": "places.departures", "default": "mondovi" },
+    { "key": "destinazione", "label": "Destinazione", "type": "select", "table": "places.destinations", "default": "cina" }
   ],
 
   "dialogue": [

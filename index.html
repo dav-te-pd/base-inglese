@@ -165,13 +165,11 @@
         { value: 'giappone', it: 'Giappone', en: 'Japan', fr: '', es: '', de: '' },
         { value: 'stati-uniti', it: 'Stati Uniti', en: 'United States', fr: '', es: '', de: '' }
       ]
-    },
-    // ---- predefined age choices per role: plain numbers, picked by
-    // clicking rather than typed — no table, no auto-categorization. ----
-    ages: {
-      figlia: [8, 10, 16],
-      figlio: [6, 8, 10]
     }
+    // Age choices (figlia/figlio) used to live here as a shared CONFIG.ages
+    // table; they're episode-specific now (a story's plausible age range
+    // isn't a reusable name/place), read from each episode's own
+    // "ageOptions" via personalizationTablesUsed — see buildSlotFields.
   };
 
   /* ============================================================
@@ -190,12 +188,14 @@
       episodeTitle: 'Presentarsi',
       language: 'inglese',
       personalizationTablesUsed: [
-        'personalizzazione-nomi-papa',
-        'personalizzazione-nomi-mamma',
-        'personalizzazione-nomi-figlia',
-        'personalizzazione-nomi-figlio',
-        'personalizzazione-citta',
-        'personalizzazione-destinazioni'
+        { key: 'papa', label: 'Nome del papà / utente', type: 'select', table: 'people.papa', default: 'giancarlo' },
+        { key: 'mamma', label: 'Nome della mamma', type: 'select', table: 'people.mamma', default: 'giulia' },
+        { key: 'figliaNome', label: 'Nome della figlia', type: 'select', table: 'people.figlia', default: 'sofia', group: 'figlia' },
+        { key: 'figliaEta', label: 'Età della figlia', type: 'select', table: 'episode.ageOptions.figlia', default: '16', group: 'figlia', narrow: true },
+        { key: 'figlioNome', label: 'Nome del figlio', type: 'select', table: 'people.figlio', default: 'leo', group: 'figlio' },
+        { key: 'figlioEta', label: 'Età del figlio', type: 'select', table: 'episode.ageOptions.figlio', default: '10', group: 'figlio', narrow: true },
+        { key: 'partenza', label: 'Città di partenza', type: 'select', table: 'places.departures', default: 'mondovi' },
+        { key: 'destinazione', label: 'Destinazione', type: 'select', table: 'places.destinations', default: 'cina' }
       ],
       dialogue: [
         { id: 'd1', speaker: 'guide', english: 'Hello everyone! Nice to meet you. Can you introduce yourselves?', italian: 'Ciao a tutti! Piacere di conoscervi. Potete presentarvi?' },
@@ -2917,11 +2917,21 @@
      default value. Slot fields of type "select" pull their options
      straight from CONFIG (names / places) — nothing episode-specific
      is duplicated. The customization card is generated from this.
+     slotFields itself is NOT declared here — it's built at runtime from
+     the episode's own data file's "personalizationTablesUsed" (see
+     ensureEpisodeSlotFields/buildSlotFields below), so a future episode
+     with different personalization categories (e.g. "nonno", "animale")
+     needs only its own JSON file, never a change here.
      ============================================================ */
   var EPISODES = {
     episode1: {
       id: 'episode1',
       badge: 'Episodio 1',
+      // Same file every one of this episode's modules already reads (one
+      // file per episode, CLAUDE.md rule 4) — used here just to resolve
+      // personalizationTablesUsed before Customize can render, sharing
+      // loadEpisodeData's own cache (no extra request).
+      dataFile: 'data/a1-episodio1-inglese.json',
       // The episode map reads this list — never hardcode a module's name
       // or order inside the map-rendering code. dataFile is the external
       // data source for that module's content (see CLAUDE.md rule 4).
@@ -2963,16 +2973,6 @@
         figlia: 'figliaNome',
         figlio: 'figlioNome'
       },
-      slotFields: [
-        { key: 'papa', label: 'Nome del papà / utente', type: 'select', options: CONFIG.people.papa, def: 'giancarlo' },
-        { key: 'mamma', label: 'Nome della mamma', type: 'select', options: CONFIG.people.mamma, def: 'giulia' },
-        { key: 'figliaNome', label: 'Nome della figlia', type: 'select', options: CONFIG.people.figlia, def: 'sofia', group: 'figlia' },
-        { key: 'figliaEta', label: 'Età della figlia', type: 'select', options: CONFIG.ages.figlia, def: '16', group: 'figlia', narrow: true },
-        { key: 'figlioNome', label: 'Nome del figlio', type: 'select', options: CONFIG.people.figlio, def: 'leo', group: 'figlio' },
-        { key: 'figlioEta', label: 'Età del figlio', type: 'select', options: CONFIG.ages.figlio, def: '10', group: 'figlio', narrow: true },
-        { key: 'partenza', label: 'Città di partenza', type: 'select', options: CONFIG.places.departures, def: 'mondovi' },
-        { key: 'destinazione', label: 'Destinazione', type: 'select', options: CONFIG.places.destinations, def: 'cina' }
-      ],
       // Fixed words are authored individually so punctuation stays attached
       // to the right word; slots expand to one or more words at render time.
       segments: [
@@ -3024,6 +3024,59 @@
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
   // plain value (e.g. an age number) becomes all columns the same; people
   // and place rows already have this shape.
+  // Resolves a personalizationTablesUsed entry's "table" reference to its
+  // actual option list: a shared CONFIG.* table (people/places — reused
+  // across every episode and language, CLAUDE.md rule 4) by default, or,
+  // prefixed "episode.", a table declared inside this same episode's own
+  // data file instead (values that only make sense for this one story,
+  // like a plausible age range — never shared with other episodes).
+  function resolveSlotTable(tableRef, episodeData) {
+    var isEpisodeLocal = tableRef.indexOf('episode.') === 0;
+    var root = isEpisodeLocal ? episodeData : CONFIG;
+    var path = (isEpisodeLocal ? tableRef.slice('episode.'.length) : tableRef).split('.');
+    var val = root;
+    for (var i = 0; i < path.length && val; i++) { val = val[path[i]]; }
+    return val || [];
+  }
+
+  // Builds the slotFields array a loaded episode.data.personalizationTablesUsed
+  // describes — same shape (key/label/type/options/def/group/narrow) the
+  // rest of the customization code already expects, so nothing downstream
+  // (renderSlotGrid, the Request Box, fillTemplate's slot lookups, …) needs
+  // to know this now comes from the episode's data file instead of being
+  // hardcoded per episode here.
+  function buildSlotFields(episodeData) {
+    return (episodeData.personalizationTablesUsed || []).map(function (slot) {
+      return {
+        key: slot.key,
+        label: slot.label,
+        type: slot.type,
+        options: resolveSlotTable(slot.table, episodeData),
+        def: slot.default,
+        group: slot.group,
+        narrow: slot.narrow
+      };
+    });
+  }
+
+  // Fetches (once, cached) the episode's own data file and populates
+  // episode.slotFields from its personalizationTablesUsed — every place
+  // that touches .slotFields (Customize's grid, the Request Box, a
+  // module's fillTemplate calls) goes through this first, so a new
+  // episode with different personalization categories needs only its own
+  // JSON file, never a change to this code.
+  var episodeSlotFieldsPromises = {};
+  function ensureEpisodeSlotFields(episode) {
+    if (episode.slotFields) return Promise.resolve(episode.slotFields);
+    if (!episodeSlotFieldsPromises[episode.id]) {
+      episodeSlotFieldsPromises[episode.id] = loadEpisodeData(episode).then(function (data) {
+        episode.slotFields = buildSlotFields(data);
+        return episode.slotFields;
+      });
+    }
+    return episodeSlotFieldsPromises[episode.id];
+  }
+
   function slotOptions(field) {
     return (field.options || []).map(function (item) {
       if (item && typeof item === 'object') return item;
@@ -3307,10 +3360,9 @@
   }
 
   function openCustomize() {
-    currentValues = loadCustomValues(currentEpisode, getUserName());
     document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
-    renderSlotGrid();
-    renderRequestBox();
+    document.getElementById('slot-grid').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    document.getElementById('request-fields').innerHTML = '';
     renderCustomizePageText();
     showView('customize');
     if (isIntroDismissed('personalizzazione', getUserName())) {
@@ -3320,6 +3372,14 @@
       renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body');
       customizeShowScreen('intro');
     }
+    ensureEpisodeSlotFields(currentEpisode).then(function () {
+      currentValues = loadCustomValues(currentEpisode, getUserName());
+      renderSlotGrid();
+      renderRequestBox();
+    }).catch(function () {
+      document.getElementById('slot-grid').innerHTML =
+        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di personalizzazione.</p>';
+    });
   }
 
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
@@ -3414,18 +3474,33 @@
       openCustomize();
       return;
     }
-    openModuleByKind(module);
+    // Even when Customize is skipped (already seen), a module's own
+    // fillTemplate calls still need currentEpisode.slotFields AND
+    // currentValues populated — on a fresh page load (Customize's own
+    // screen, which normally sets both, never ran this session) neither
+    // exists yet, so make sure they're there first. loadCustomValues is a
+    // cheap synchronous localStorage read, so refreshing it here even when
+    // already set costs nothing and keeps it correct after a user switch.
+    ensureEpisodeSlotFields(currentEpisode).then(function () {
+      currentValues = loadCustomValues(currentEpisode, getUserName());
+      openModuleByKind(module);
+    });
   });
 
   document.getElementById('start-episode').addEventListener('click', function () {
-    setCustomizeSeen(currentEpisode.id, getUserName());
-    if (pendingModuleAfterCustomize) {
-      var module = pendingModuleAfterCustomize;
-      pendingModuleAfterCustomize = null;
-      openModuleByKind(module);
-    } else {
-      openEpisodeMap();
-    }
+    // slot-grid/request-box already wait on this in openCustomize(), so in
+    // practice it's already resolved by the time this is clickable — this
+    // just guards a very fast click from racing the fetch.
+    ensureEpisodeSlotFields(currentEpisode).then(function () {
+      setCustomizeSeen(currentEpisode.id, getUserName());
+      if (pendingModuleAfterCustomize) {
+        var module = pendingModuleAfterCustomize;
+        pendingModuleAfterCustomize = null;
+        openModuleByKind(module);
+      } else {
+        openEpisodeMap();
+      }
+    });
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
