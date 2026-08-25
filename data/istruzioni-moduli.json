@@ -66,11 +66,11 @@
   "flashcardLevelA": {
     "howItWorks": {
       "title": "Spiegazione",
-      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi, poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p>"
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente 'Non ancora', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Tocca la carta per girarla, poi dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
+      "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
     }
   },
   "voiceCoach": {
@@ -86,21 +86,21 @@
   "quickMatchEngIta": {
     "howItWorks": {
       "title": "Spiegazione",
-      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese — ascoltala con il pulsante 🔊 se vuoi (puoi scegliere la velocità) — e 4 possibili traduzioni in italiano. Tocca quella giusta, o tocca \"Non lo so\" se non la ricordi.</p><p>Qui non c'è timer: prenditi tutto il tempo che vuoi. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>"
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola inglese (ascoltala con 🔊 se serve), tocca la traduzione italiana corretta tra le 4 opzioni. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti. Nessun limite di tempo.</p>"
+      "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
     }
   },
   "quickMatchItaEng": {
     "howItWorks": {
       "title": "Spiegazione",
-      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese, ciascuna con il proprio pulsante 🔊 per ascoltarla. Tocca quella giusta, o tocca \"Non lo so\" se non la ricordi.</p><p>Qui non c'è timer: prenditi tutto il tempo che vuoi. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>"
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola italiana, ascolta le 4 opzioni inglesi con 🔊 se ti serve, tocca quella corretta. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti. Nessun limite di tempo.</p>"
+      "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
     }
   }
 }
