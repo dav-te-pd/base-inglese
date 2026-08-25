@@ -906,18 +906,23 @@
      default [hidden]{display:none}. */
   .header-actions[hidden] { display: none; }
 
-  /* .help-btn's own "width: 20%" assumes it's alone as the 3rd .top-row
+  /* .help-btn's own "width: 20%" assumes it's alone as a direct .top-row
      child; grouped here with another button it would force text like
      "Guarda come si fa" to wrap awkwardly. Let both size to content. */
   .header-actions .help-btn {
     width: auto;
   }
 
-  /* Groups a badge with its .header-actions as a single right-aligned unit
-     inside .top-row (currently used by Speed Round, whose badge label is
-     long enough to push header-actions past the wrap point on its own).
-     margin-left: auto keeps the pair flush right even on its own wrapped
-     line, instead of falling back to flex-start under "← Mappa". */
+  /* Groups every module's badge with its .header-actions as a single
+     right-aligned unit inside .top-row. Without this, a long enough badge
+     label (Speed Round's "Speed Round Eng-Ita"/"Ita-Eng", Flash Card's
+     "Flash Card A Eng-Ita"/"Ita-Eng", ...) can push header-actions past
+     .top-row's own wrap point on its own, splitting it off onto a separate
+     line that then falls back to flex-start — flush left under "← Mappa"
+     — instead of staying next to the badge. margin-left: auto keeps badge
+     + header-actions flush right as a pair even when they end up alone on
+     their own wrapped line. Used by every module's top-row, not just the
+     one(s) where a long badge currently makes the wrap visible. */
   .top-row-group {
     display: flex;
     flex-wrap: wrap;
@@ -1561,6 +1566,17 @@
   .record-toggle-btn:hover { transform: scale(1.05); }
   .record-toggle-btn:active { transform: scale(0.96); }
 
+  /* Same disabled treatment as .btn:disabled — needed here because
+     .record-toggle-btn isn't a .btn. Covers both the permanent case (no
+     SpeechRecognition support) and the temporary one (model audio playing
+     from the listen block, Regola Azione Critica in reverse). */
+  .record-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .record-toggle-btn:disabled:hover,
+  .record-toggle-btn:disabled:active { transform: none; }
+
   .record-toggle-btn:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 3px;
@@ -1996,10 +2012,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
-            <span class="badge" id="customize-episode-badge">Episodio 1</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge" id="customize-episode-badge">Episodio 1</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -2048,10 +2066,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
-            <span class="badge" id="map-episode-badge">Episodio 1</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge" id="map-episode-badge">Episodio 1</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -2089,10 +2109,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
-            <span class="badge">Repeat Aloud</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge">Repeat Aloud</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -2134,10 +2156,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
-            <span class="badge">Speak Easy</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge">Speak Easy</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -2178,10 +2202,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
-            <span class="badge">Voice Coach</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge">Voice Coach</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -2271,14 +2297,11 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
-            <!-- Speed Round's badge label ("Speed Round Eng-Ita"/"Ita-Eng") is
-                 long enough that, on the plain 3-child .top-row every other
-                 module uses, it can push header-actions past the wrap point
-                 on its own — dropping it alone onto a left-aligned line under
-                 "← Mappa" instead of staying next to the badge. Grouping badge
-                 + header-actions in their own wrapper keeps them together as
-                 one right-aligned unit, wrapping (and staying right-aligned
-                 via margin-left:auto) as a pair if they ever don't fit. -->
+            <!-- .top-row-group keeps badge + header-actions together as one
+                 right-aligned unit (see its CSS comment) — every module's
+                 top-row uses it; Speed Round's own badge label ("Speed Round
+                 Eng-Ita"/"Ita-Eng") is simply long enough to make the wrap
+                 visible at ordinary widths where shorter badges don't. -->
             <div class="top-row-group">
               <span class="badge" id="speed-round-badge">Speed Round</span>
               <div class="header-actions" id="speed-round-header-actions" hidden>
@@ -2366,10 +2389,12 @@
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
-            <span class="badge" id="flashcard-badge">Flash Card</span>
-            <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+            <div class="top-row-group">
+              <span class="badge" id="flashcard-badge">Flash Card</span>
+              <div class="header-actions">
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+                <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+              </div>
             </div>
           </div>
 
@@ -4191,7 +4216,17 @@
     var btn = e.target.closest('[data-say]');
     if (!btn) return;
     var rateAttr = btn.getAttribute('data-rate');
-    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    // Regola Azione Critica, in the opposite direction from setVcState's
+    // recording-disables-listen-block: while the model audio is playing,
+    // disable Record too, so the mic can't pick up the model's own voice
+    // and skew the pronunciation grading.
+    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
+      onStart: function () { document.getElementById('vc-record-btn').disabled = true; },
+      // Only re-enable if recording is actually supported here — openVoiceCoach
+      // permanently disables Record when the browser has no SpeechRecognition,
+      // and this must not undo that.
+      onEnd: function () { document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition; }
+    });
   });
 
   document.getElementById('vc-record-btn').addEventListener('click', function () {
@@ -5119,7 +5154,11 @@
   // button that is currently playing stops it; clicking a different one
   // while something else is playing interrupts that and starts the new
   // one. rate is optional; omit it to use the app's tuned default.
-  function toggleSpeak(text, btn, rate) {
+  // callbacks is optional ({onStart, onEnd}) for callers that need to react
+  // to this specific utterance's playback window — e.g. Voice Coach, which
+  // disables its own Record button while the model audio plays so the mic
+  // can't pick it up (see the vc-audio-controls click handler below).
+  function toggleSpeak(text, btn, rate, callbacks) {
     if (!synth) return;
     var wasSpeaking = btn.classList.contains('speaking');
     if (synth.speaking) synth.cancel();
@@ -5129,9 +5168,18 @@
     var voice = pickVoice();
     if (voice) utterance.voice = voice;
     utterance.rate = (rate === undefined || rate === null) ? CONFIG.speech.synthesisRate : rate;
-    utterance.onstart = function () { btn.classList.add('speaking'); };
-    utterance.onend = function () { btn.classList.remove('speaking'); };
-    utterance.onerror = function () { btn.classList.remove('speaking'); };
+    utterance.onstart = function () {
+      btn.classList.add('speaking');
+      if (callbacks && callbacks.onStart) callbacks.onStart();
+    };
+    utterance.onend = function () {
+      btn.classList.remove('speaking');
+      if (callbacks && callbacks.onEnd) callbacks.onEnd();
+    };
+    utterance.onerror = function () {
+      btn.classList.remove('speaking');
+      if (callbacks && callbacks.onEnd) callbacks.onEnd();
+    };
     synth.speak(utterance);
   }
 
