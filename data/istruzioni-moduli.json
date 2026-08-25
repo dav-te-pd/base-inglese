@@ -83,6 +83,36 @@
       "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. \"Riprova\" per riprovare, \"Avanti\" per la prossima.</p>"
     }
   },
+  "dialogoAscoltaRipeti": {
+    "howItWorks": {
+      "title": "Spiegazione",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: questo è il dialogo intero dell'episodio, dall'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l'inglese senza appoggiarsi all'italiano.</p><p>Quando ti senti pronto, in fondo trovi la domanda finale.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>"
+    }
+  },
+  "dialogoRipetiATempo": {
+    "howItWorks": {
+      "title": "Spiegazione",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra.</p><p>Durante l'ascolto e la barra tutto il resto è bloccato. Finita la barra, tocca tu la battuta successiva.</p>"
+    }
+  },
+  "dialogoContinuo": {
+    "howItWorks": {
+      "title": "Spiegazione",
+      "body": "<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: è l'ultimo passaggio sul dialogo, e va da solo.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — fino alla fine del dialogo.</p><p>Non devi toccare niente. Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>È la prova generale: se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>"
+    }
+  },
   "quickMatchEngIta": {
     "howItWorks": {
       "title": "Spiegazione",

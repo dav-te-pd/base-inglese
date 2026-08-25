@@ -76,6 +76,27 @@
     retryQueue: {
       maxAttempts: 3
     },
+    // ---- shared sound effects beyond Speed Round's own correct/wrong
+    // tones (CONFIG.speedRound.sound) ----
+    // Traguardo: three ascending notes, same family as srPlayTone (sine
+    // wave, 0.15 -> 0.0001 exponential envelope) — Dialogo Ascolta e
+    // Ripeti's "Sì, lo so" today, any future module wanting a stronger
+    // completion cue than the plain correct tone later. Built by calling
+    // srPlayTone three times in sequence (see srPlayTraguardoSound), not
+    // a new synthesis technique.
+    // Countdown: reserved for Dialogo Ripeti a Tempo / Dialogo Continuo —
+    // not used by any module yet this session.
+    sound: {
+      traguardo: {
+        notes: [523, 659, 784],
+        noteDurationMs: 90,
+        noteGapMs: 60
+      },
+      countdown: {
+        freq: 660,
+        durationMs: 120
+      }
+    },
     // ---- limits ----
     limits: {
       userNameMaxLength: 40
@@ -150,6 +171,53 @@
       // Retry-queue safety valve threshold lives in CONFIG.retryQueue.
       // maxAttempts (shared across every module with this mechanic), not
       // duplicated here.
+    },
+    // ---- Dialogo modules: ONE parametrized component, three profiles ----
+    // "Dialogo Completo" is three consecutive map modules over the same
+    // dialogue content — Ascolta e Ripeti (free, no timer), Ripeti a
+    // Tempo (timed, manual advance), Dialogo Continuo (timed, automatic
+    // advance) — sharing one component (openDialogo and friends). Only
+    // ascoltaRipeti is registered on the episode map this session; the
+    // other two profiles are prepared here so the same component can
+    // read them later without rebuilding it, but nothing in the app
+    // activates them yet.
+    dialogo: {
+      profiles: {
+        ascoltaRipeti: {
+          // 'full' = badge + Mappa/Spiegazione/Help; 'backOnly' = Mappa only.
+          header: 'full',
+          translations: true,
+          countdown: false,
+          // The 3-2-1 "Pronto" countdown gating the whole exercise's
+          // start (distinct from the per-line countdown bar above) —
+          // only Dialogo Continuo auto-starts, so only it needs this.
+          readyCountdown: false,
+          // 'free' = any line, any order, no advance step; 'manual' = an
+          // explicit tap moves to the next line; 'auto' = the next line
+          // starts on its own once the current one's countdown ends.
+          advance: 'free',
+          pauseResume: false,
+          finalBoxQuestion: 'L\'hai imparato?'
+        },
+        ripetiATempo: {
+          header: 'backOnly',
+          translations: false,
+          countdown: true,
+          readyCountdown: false,
+          advance: 'manual',
+          pauseResume: false,
+          finalBoxQuestion: 'Sai ripetere le frasi?'
+        },
+        continuo: {
+          header: 'backOnly',
+          translations: false,
+          countdown: true,
+          readyCountdown: true,
+          advance: 'auto',
+          pauseResume: true,
+          finalBoxQuestion: 'Ce l\'hai fatta?'
+        }
+      }
     },
     // ---- selectable color themes ----
     themes: {
@@ -375,6 +443,36 @@
         body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
       }
     },
+    dialogoAscoltaRipeti: {
+      howItWorks: {
+        title: 'Spiegazione',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando ti senti pronto, in fondo trovi la domanda finale.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>'
+      }
+    },
+    dialogoRipetiATempo: {
+      howItWorks: {
+        title: 'Spiegazione',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra.</p><p>Durante l\'ascolto e la barra tutto il resto è bloccato. Finita la barra, tocca tu la battuta successiva.</p>'
+      }
+    },
+    dialogoContinuo: {
+      howItWorks: {
+        title: 'Spiegazione',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: è l\'ultimo passaggio sul dialogo, e va da solo.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — fino alla fine del dialogo.</p><p>Non devi toccare niente. Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>È la prova generale: se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>'
+      }
+    },
     quickMatchEngIta: {
       howItWorks: {
         title: 'Spiegazione',
@@ -499,6 +597,16 @@
     --secondary: #D9A441;
     --border: #D8D6C9;
     --shadow: 0 1px 2px rgba(20, 20, 15, 0.06);
+
+    /* Dialogue bubble colors (Dialogo Ascolta e Ripeti and future dialogue
+       modules) — derived from the tokens above via color-mix, not fixed
+       hex values, so every theme gets its own coherent pair automatically
+       instead of needing a manual override. "them" = esterno (outside the
+       family — a guide, a waiter, ...), "us" = famiglia. */
+    --bubble-them-bg: var(--card-2);
+    --bubble-them-border: var(--border);
+    --bubble-us-bg: color-mix(in srgb, var(--accent) 12%, var(--card));
+    --bubble-us-border: color-mix(in srgb, var(--accent) 35%, var(--card));
 
     /* Semantic feedback colors: fixed across every theme, never overridden */
     --correct-bg: #DFEEE3;
@@ -1399,6 +1507,15 @@
   .module-row.current .module-state-badge { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
   .module-row.locked .module-state-badge { background: var(--card); color: var(--text); opacity: 0.6; }
 
+  /* Optional colored outcome (see MODULE OUTCOME in JS) — a completed
+     module that was self-assessed "Non ancora" shows giallo/"Da
+     rivedere" instead of the plain green "Completato". Same specificity
+     as the .completed rules above, placed after them so it wins on a
+     row carrying both classes; every other module never gets this class. */
+  .module-row.outcome-giallo { border-color: color-mix(in srgb, var(--similar-ink) 45%, var(--border)); }
+  .module-row.outcome-giallo .module-status-icon { background: var(--similar-bg); color: var(--similar-ink); border-color: transparent; }
+  .module-row.outcome-giallo .module-state-badge { background: var(--similar-bg); color: var(--similar-ink); }
+
   /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
      near .top-row for why these exist even though nothing toggles them
      via hidden today. */
@@ -1878,6 +1995,138 @@
   .qm-option-row .repeat-listen-btn {
     flex-shrink: 0;
   }
+
+  /* ---------- dialogo view ----------
+     .fc-choice-row/.sr-summary/.sr-summary-title reused verbatim (see
+     view-dialogo's markup comment) — only the bubble list itself is new. */
+  #dg-start-screen,
+  #dg-main-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  #dg-start-screen[hidden],
+  #dg-main-screen[hidden],
+  #dg-summary-screen[hidden] { display: none; }
+
+  .dg-toolbar {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .dg-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .dg-row { display: flex; }
+  .dg-row.left { justify-content: flex-start; }
+  .dg-row.right { justify-content: flex-end; }
+
+  .dg-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 80%;
+  }
+
+  .dg-row.left .dg-item { align-items: flex-start; }
+  .dg-row.right .dg-item { align-items: flex-end; }
+
+  .dg-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .dg-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+  }
+
+  .dg-heard-check {
+    display: inline-flex;
+    color: var(--correct-ink);
+  }
+
+  .dg-heard-check svg { width: 14px; height: 14px; }
+
+  /* The bubble itself is a <button> for accessibility (keyboard/focus),
+     styled borderless so it still reads as a chat bubble, not a button. */
+  .dg-bubble {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  .dg-bubble-them { background: var(--bubble-them-bg); border: 1px solid var(--bubble-them-border); }
+  .dg-bubble-us { background: var(--bubble-us-bg); border: 1px solid var(--bubble-us-border); }
+
+  .dg-bubble-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .dg-listen-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--accent);
+  }
+
+  .dg-listen-icon svg { width: 18px; height: 18px; }
+
+  .dg-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-body);
+    margin: 0;
+  }
+
+  .dg-translation {
+    font-size: var(--text-label);
+    color: var(--secondary);
+    margin: 0;
+    padding-left: 26px;
+  }
+
+  /* Regola Azione Critica: the speaking bubble lifts (same raised-shadow
+     language as Voice Coach's record-toggle-btn, toned down for a
+     rectangular bubble instead of a circular button); every other bubble
+     dims and stops responding to clicks until playback ends. */
+  .dg-bubble.is-active {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+
+  .dg-bubble.is-locked {
+    opacity: 0.4;
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
+     nothing toggles these via "hidden" today beyond dg-heard-check. */
+  .dg-toolbar[hidden],
+  .dg-list[hidden],
+  .dg-row[hidden],
+  .dg-bubble[hidden],
+  .dg-heard-check[hidden],
+  .dg-translation[hidden] { display: none; }
 
   /* ---------- speed round view ---------- */
   #sr-start-screen,
@@ -2457,13 +2706,11 @@
               <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
 
               <div class="vc-confirm-area" id="vc-confirm-area" hidden>
-                <div class="vc-confirm-box">
-                  <p class="vc-confirm-text">Sicuro? Invia per la valutazione, o cancella e riprova.</p>
-                  <div class="pending-actions">
-                    <button type="button" class="btn btn-secondary" id="vc-cancel-btn"><span data-icon="x"></span> Cancella</button>
-                    <button type="button" class="btn btn-primary" id="vc-send-btn"><span data-icon="check"></span> Invia</button>
-                  </div>
-                </div>
+                <!-- Box Doppia Scelta: inner markup generated by the shared
+                     renderChoiceBox() (CLAUDE.md rule 13, see near
+                     hydrateIcons) — this wrapper keeps its own
+                     .vc-confirm-box class/styling untouched. -->
+                <div class="vc-confirm-box" id="vc-confirm-box"></div>
               </div>
             </div>
 
@@ -2565,13 +2812,78 @@
             <button type="button" class="btn btn-primary btn-block" id="qm-advance-btn" hidden>Avanti →</button>
           </div>
 
-          <!-- SUMMARY SCREEN -->
-          <div id="qm-summary-screen" hidden>
-            <div class="sr-summary panel">
-              <p class="sr-summary-title" id="qm-summary-title">Round completato!</p>
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13, see
+               near hydrateIcons). -->
+          <div id="qm-summary-screen" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ VIEW: DIALOGO (Ascolta e Ripeti / Ripeti a Tempo /
+         Dialogo Continuo) ============
+         One shared component for all three "Dialogo Completo" steps —
+         module.dialogoProfile picks a CONFIG.dialogo.profiles entry
+         driving header/translations/countdown/advance/pauseResume/
+         finalBoxQuestion. Only dialogoAscoltaRipeti is registered on the
+         episode map this session (see EPISODES) — this markup only
+         builds what its profile actually turns on (full header,
+         translations toggle, free advance, no countdown/pause); the
+         other two profiles are data-only for now. Same dialogue content
+         as Speak Easy, same shared dialogueLineAlign()/speakerLabel()
+         (CLAUDE.md rule 13) — no new data, no new file. -->
+    <section id="view-dialogo" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="header-2row">
+            <div class="header-badge-row">
+              <span class="badge" id="dialogo-badge">Ascolta e Ripeti</span>
             </div>
-            <button type="button" class="btn btn-primary btn-block" id="qm-complete-btn">Ho finito, torna alla mappa</button>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="dialogo-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-watch-btn" hidden>Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-help-btn" hidden>Help</button>
+            </div>
           </div>
+
+          <!-- START SCREEN: same dual-purpose pattern as Speed Round/Quick
+               Match — full howItWorks the first time, short "Pronto?"
+               prompt after — straight into the exercise, no countdown
+               (ascoltaRipeti.readyCountdown is false). -->
+          <div id="dg-start-screen">
+            <header class="app-header">
+              <h1 id="dg-start-title">Spiegazione</h1>
+            </header>
+            <div class="overlay-text panel" id="dg-start-body">Caricamento...</div>
+            <label class="ra-intro-checkbox" id="dg-start-checkbox-row">
+              <input type="checkbox" id="dg-start-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="dg-start-btn">Ho capito, inizia</button>
+          </div>
+
+          <!-- MAIN SCREEN: bubbles cliccabili in qualsiasi ordine, nessun
+               tasto Avanti/Salta — see dgLockAll for the Regola Azione
+               Critica applied per bubble. -->
+          <div id="dg-main-screen" hidden>
+            <div class="dg-toolbar">
+              <button type="button" class="btn btn-secondary btn-sm" id="dg-translations-toggle">Mostra traduzioni</button>
+            </div>
+
+            <div class="dg-list" id="dg-list"></div>
+
+            <!-- Box Doppia Scelta: reuses Flash Card's own .fc-choice-row
+                 class verbatim (CLAUDE.md rule 13/5 — same plain padded
+                 shape, zero new CSS), inner markup generated by the
+                 shared renderChoiceBox() (see near hydrateIcons). Always
+                 present and clickable, no gating on how many lines have
+                 been heard. -->
+            <div class="panel fc-choice-row" id="dg-choice-row"></div>
+          </div>
+
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13). -->
+          <div id="dg-summary-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -2658,12 +2970,7 @@
           <!-- SUMMARY SCREEN: score/percentage/message deliberately omitted
                for now (temporary simplification) — just the completion
                acknowledgement and the exit actions. -->
-          <div id="sr-summary-screen" hidden>
-            <div class="sr-summary panel">
-              <p class="sr-summary-title" id="sr-summary-title">Round completato!</p>
-            </div>
-            <button type="button" class="btn btn-primary btn-block" id="sr-complete-btn">Ho finito, torna alla mappa</button>
-          </div>
+          <div id="sr-summary-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -2740,22 +3047,17 @@
                  fcAdvance) — the retry-queue passes at the end already
                  re-present anything wrong, so manual back-navigation would
                  only risk re-recording an already-counted attempt. -->
-            <div class="panel fc-choice-row" id="fc-choice-row" hidden>
-              <p class="fc-choice-question">L'hai imparata?</p>
-              <div class="pending-actions">
-                <button type="button" class="btn btn-secondary" id="fc-not-yet-btn">Non ancora</button>
-                <button type="button" class="btn btn-primary" id="fc-know-it-btn">Sì, la so!</button>
-              </div>
-            </div>
+            <!-- Box Doppia Scelta: inner markup generated by the shared
+                 renderChoiceBox() (CLAUDE.md rule 13, see near
+                 hydrateIcons) — this wrapper keeps its own .fc-choice-row
+                 class/styling untouched. -->
+            <div class="panel fc-choice-row" id="fc-choice-row" hidden></div>
           </div>
 
-          <!-- SUMMARY SCREEN -->
-          <div id="fc-summary-screen" hidden>
-            <div class="sr-summary panel">
-              <p class="sr-summary-title">Tutte le carte ripassate!</p>
-            </div>
-            <button type="button" class="btn btn-primary btn-block" id="fc-complete-btn">Ho finito, torna alla mappa</button>
-          </div>
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13, see
+               near hydrateIcons). -->
+          <div id="fc-summary-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -2912,6 +3214,56 @@
   }
 
   /* ============================================================
+     SHARED: "Box Doppia Scelta" + "Schermata Finale" components
+     (CLAUDE.md rule 13) — used by Voice Coach, Flash Card, Speed Round,
+     Quick Match, and Dialogo Ascolta e Ripeti. Configured once here, at
+     boot, before any module's own event listeners are wired further
+     down in this same script — every target element already exists in
+     the static HTML by the time this runs (this <script> sits at the
+     end of <body>), only its *inner* markup is generated here so each
+     shape lives in exactly one place instead of being written out per
+     module.
+     ============================================================ */
+  // Box Doppia Scelta: a question + a secondary/primary button pair.
+  // Each caller keeps its OWN outer wrapper class already in the static
+  // HTML (.vc-confirm-box's tinted callout vs .fc-choice-row's plain
+  // padded block — genuinely different looks, not accidental
+  // duplication) — only the inner markup is shared. Labels may contain
+  // markup (e.g. an icon via icon()), not just plain text.
+  function renderChoiceBox(containerId, questionClass, questionText, secondaryBtnId, secondaryLabel, primaryBtnId, primaryLabel) {
+    document.getElementById(containerId).innerHTML =
+      '<p class="' + questionClass + '">' + questionText + '</p>' +
+      '<div class="pending-actions">' +
+      '<button type="button" class="btn btn-secondary" id="' + secondaryBtnId + '">' + secondaryLabel + '</button>' +
+      '<button type="button" class="btn btn-primary" id="' + primaryBtnId + '">' + primaryLabel + '</button>' +
+      '</div>';
+  }
+
+  // Schermata Finale: the .sr-summary/.sr-summary-title shape (already
+  // shared verbatim as CSS classes by Speed Round/Quick Match/Flash
+  // Card) plus the one explicit completion button every module needs
+  // (CLAUDE.md rule 7) — same "Ho finito, torna alla mappa" label
+  // everywhere, so it isn't re-typed per module either.
+  function renderSummaryScreen(screenId, titleId, titleText, completeBtnId) {
+    document.getElementById(screenId).innerHTML =
+      '<div class="sr-summary panel">' +
+      '<p class="sr-summary-title" id="' + titleId + '">' + titleText + '</p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
+  }
+
+  renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
+  renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
+
+  renderSummaryScreen('sr-summary-screen', 'sr-summary-title', 'Round completato!', 'sr-complete-btn');
+  renderSummaryScreen('qm-summary-screen', 'qm-summary-title', 'Round completato!', 'qm-complete-btn');
+  renderSummaryScreen('fc-summary-screen', 'fc-summary-title', 'Tutte le carte ripassate!', 'fc-complete-btn');
+  // Same generic completion title regardless of "Sì, lo so"/"Non ancora"
+  // — the verde/giallo distinction already shows on the map badge (see
+  // MODULE OUTCOME), no need to repeat it here.
+  renderSummaryScreen('dg-summary-screen', 'dg-summary-title', 'Dialogo ripassato!', 'dg-complete-btn');
+
+  /* ============================================================
      THEME MANAGER — driven by CONFIG.themes
      ============================================================ */
   var THEME_KEY = 'baseinglese:theme';
@@ -2988,6 +3340,7 @@
     speakEasy: document.getElementById('view-speak-easy'),
     voiceCoach: document.getElementById('view-voice-coach'),
     quickMatch: document.getElementById('view-quick-match'),
+    dialogo: document.getElementById('view-dialogo'),
     speedRound: document.getElementById('view-speed-round'),
     flashcard: document.getElementById('view-flashcard'),
     pronunciation: document.getElementById('view-pronunciation')
@@ -3328,6 +3681,10 @@
         { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'quickMatchEngIta', kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'quickMatchItaEng', kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+        // First of the three "Dialogo Completo" modules (see CONFIG.
+        // dialogo.profiles) — Ripeti a Tempo / Dialogo Continuo aren't
+        // registered here yet, only built as config profiles for now.
+        { id: 'dialogoAscoltaRipeti', kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti' },
         { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
         // kind is shared between directions on purpose: both read the same
@@ -3406,6 +3763,37 @@
     if (progress.completed.indexOf(moduleId) !== -1) return 'completed';
     var firstIncomplete = episode.modules.find(function (m) { return progress.completed.indexOf(m.id) === -1; });
     return firstIncomplete && firstIncomplete.id === moduleId ? 'current' : 'locked';
+  }
+
+  /* ============================================================
+     MODULE OUTCOME (optional colored map badge)
+     Separate from both moduleProgress (locked/current/completed
+     unlock-sequencing above) and the per-word mastery store below: an
+     optional self-assessed outcome for a whole module, today only used
+     by Dialogo Ascolta e Ripeti's final "L'hai imparato?" ("Sì, lo so"
+     -> verde/Completato, "Non ancora" -> giallo/Da rivedere — see
+     renderModuleList). A module that never calls saveModuleOutcome just
+     shows the plain "Completato" badge as before (CLAUDE.md rule 1 — no
+     other module's map row changes).
+     ============================================================ */
+  function moduleOutcomeKey(episodeId, userName) {
+    return 'baseinglese:moduleOutcome:' + episodeId + ':' + userName;
+  }
+
+  function loadModuleOutcomes(episodeId, userName) {
+    try {
+      var raw = localStorage.getItem(moduleOutcomeKey(episodeId, userName));
+      return raw ? JSON.parse(raw) : {};
+    } catch (e) { return {}; }
+  }
+
+  // outcome: { level: 'verde' | 'giallo', ...any module-specific stats —
+  // e.g. Dialogo Ascolta e Ripeti also stores linesListened/linesTotal.
+  // renderModuleList only ever reads outcome.level.
+  function saveModuleOutcome(episode, userName, moduleId, outcome) {
+    var outcomes = loadModuleOutcomes(episode.id, userName);
+    outcomes[moduleId] = outcome;
+    try { localStorage.setItem(moduleOutcomeKey(episode.id, userName), JSON.stringify(outcomes)); } catch (e) {}
   }
 
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
@@ -3798,13 +4186,21 @@
 
   function renderModuleList() {
     var progress = loadModuleProgress(currentEpisode.id, getUserName());
+    var outcomes = loadModuleOutcomes(currentEpisode.id, getUserName());
     var html = currentEpisode.modules.map(function (m) {
       var status = moduleStatus(currentEpisode, progress, m.id);
       var clickable = status !== 'locked';
-      return '<button type="button" class="module-row ' + status + '" data-module="' + m.id + '"' +
+      // Optional colored outcome (see MODULE OUTCOME above) — only ever
+      // set for a completed module, only ever read here; every other
+      // module's row is untouched since outcomes[m.id] stays undefined.
+      var outcome = status === 'completed' ? outcomes[m.id] : null;
+      var outcomeLevel = outcome && outcome.level;
+      var rowClass = status + (outcomeLevel ? ' outcome-' + outcomeLevel : '');
+      var badgeLabel = outcomeLevel === 'giallo' ? 'Da rivedere' : STATUS_LABEL[status];
+      return '<button type="button" class="module-row ' + rowClass + '" data-module="' + m.id + '"' +
         (clickable ? '' : ' disabled') + '>' +
         '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' + m.label + '</span>' +
-        '<span class="module-state-badge">' + STATUS_LABEL[status] + '</span>' +
+        '<span class="module-state-badge">' + badgeLabel + '</span>' +
         '</button>';
     }).join('');
     document.getElementById('module-list').innerHTML = html;
@@ -3848,6 +4244,7 @@
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
     else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
+    else if (module.dialogoProfile) openDialogo(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
     else if (module.flashcardLevel) openFlashcard(module);
   }
@@ -4121,6 +4518,16 @@
      ============================================================ */
   var currentSpeakEasyModule = null;
 
+  // Shared by Speak Easy and every Dialogo module (CLAUDE.md rule 13) —
+  // which side of the chat a line renders on. Driven by the line's own
+  // "ruolo" ('esterno' | 'famiglia') in the episode data, never derived
+  // from the speaker's name/id: names are personalizable per user, so a
+  // name-based rule (e.g. "guide" hardcoded) would silently break on a
+  // future episode with a different cast (a waiter, a police officer...).
+  function dialogueLineAlign(line) {
+    return line.ruolo === 'famiglia' ? 'right' : 'left';
+  }
+
   function speakerLabel(episode, speaker) {
     var slotKey = episode.dialogueSpeakers && episode.dialogueSpeakers[speaker];
     if (!slotKey) return 'Guida';
@@ -4130,7 +4537,7 @@
 
   function renderSpeakEasy(data) {
     var itemsHtml = data.dialogue.map(function (line) {
-      var align = line.speaker === 'guide' ? 'left' : 'right';
+      var align = dialogueLineAlign(line);
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
       return '<div class="chat-row ' + align + '">' +
@@ -4942,6 +5349,212 @@
   });
 
   /* ============================================================
+     MODULES: DIALOGO (Ascolta e Ripeti / Ripeti a Tempo / Dialogo
+     Continuo)
+     One shared component for all three "Dialogo Completo" steps —
+     module.dialogoProfile picks the CONFIG.dialogo.profiles entry that
+     drives header/translations/countdown/advance/pauseResume/
+     finalBoxQuestion (see CONFIG.dialogo). Only ascoltaRipeti is wired
+     up and registered on the map this session (see EPISODES) —
+     dgProfile.countdown/readyCountdown/pauseResume/advance are read
+     here so a future Ripeti a Tempo/Dialogo Continuo build can branch
+     on them without rebuilding this component, but nothing below
+     actually implements those paths yet (ascoltaRipeti's profile has
+     them all off/'free').
+     Reads the same "dialogue" section of the episode's data file Speak
+     Easy already reads (loadEpisodeData's cache, no extra request) —
+     dialogueLineAlign()/speakerLabel() are the exact same functions
+     Speak Easy uses (CLAUDE.md rule 13). Lines are free/infinite/
+     unordered; "L'hai imparato?" is a single self-assessment for the
+     WHOLE dialogue (verde/giallo module outcome), not per-word — no
+     mastery entries are touched by this module.
+     ============================================================ */
+  var dgModule = null;
+  var dgProfile = null;
+  var dgDialogue = [];
+  var dgHeardIds = []; // line ids heard at least once this viewing
+
+  function dgShowScreen(name) {
+    document.getElementById('dg-start-screen').hidden = name !== 'start';
+    document.getElementById('dg-main-screen').hidden = name !== 'main';
+    document.getElementById('dg-summary-screen').hidden = name !== 'summary';
+    var headerFull = dgProfile.header === 'full';
+    // ascoltaRipeti has no timer/countdown to protect, so Spiegazione+Help
+    // stay available through the exercise itself too (not just start/
+    // summary like Speed Round/Quick Match) — Spiegazione still hides on
+    // summary alone (CLAUDE.md rule 10). A future 'backOnly' profile
+    // hides both everywhere.
+    document.getElementById('dialogo-watch-btn').hidden = !headerFull || name === 'summary';
+    document.getElementById('dialogo-help-btn').hidden = !headerFull;
+  }
+
+  // Same dual-purpose start screen as Speed Round/Quick Match: full
+  // howItWorks the first time, short "Pronto?" prompt after — straight
+  // into the exercise, no countdown (ascoltaRipeti.readyCountdown is false).
+  function dgRenderStartScreen(module) {
+    var dismissed = isIntroDismissed(module.kind, getUserName());
+    document.getElementById('dg-start-checkbox-row').hidden = dismissed;
+    document.getElementById('dg-start-body').hidden = dismissed;
+    if (dismissed) {
+      document.getElementById('dg-start-title').textContent = 'Pronto?';
+      document.getElementById('dg-start-btn').textContent = 'Pronto? Via!';
+    } else {
+      document.getElementById('dg-start-dont-show-again').checked = false;
+      document.getElementById('dg-start-btn').textContent = 'Ho capito, inizia';
+      renderIntroContent(module.kind, 'dg-start-title', 'dg-start-body');
+    }
+  }
+
+  // Regola Azione Critica: while one bubble plays, every other control —
+  // Spiegazione, Help, the translations toggle, every other bubble, the
+  // final choice box — dims and stops responding; the active bubble
+  // itself lifts (see .dg-bubble.is-active). No pop-up ever covers the
+  // list, and nothing here is the microphone: this module never records.
+  function dgLockAll(locked, activeBubble) {
+    document.getElementById('dialogo-watch-btn').disabled = locked;
+    document.getElementById('dialogo-help-btn').disabled = locked;
+    document.getElementById('dg-translations-toggle').disabled = locked;
+    document.querySelectorAll('#dg-list .dg-bubble').forEach(function (b) {
+      if (b !== activeBubble) b.classList.toggle('is-locked', locked);
+    });
+    document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = locked; });
+    activeBubble.classList.toggle('is-active', locked);
+  }
+
+  function dgMarkHeard(lineId) {
+    if (dgHeardIds.indexOf(lineId) === -1) dgHeardIds.push(lineId);
+    var check = document.getElementById('dg-heard-' + lineId);
+    if (check) check.hidden = false;
+  }
+
+  function dgRenderList() {
+    var toggle = document.getElementById('dg-translations-toggle');
+    toggle.textContent = 'Mostra traduzioni';
+    toggle.classList.remove('btn-primary');
+    toggle.classList.add('btn-secondary');
+    document.getElementById('dg-list').innerHTML = dgDialogue.map(function (line) {
+      var align = dialogueLineAlign(line);
+      var isFamiglia = align === 'right';
+      var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+      var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
+      var heard = dgHeardIds.indexOf(line.id) !== -1;
+      return '<div class="dg-row ' + align + '">' +
+        '<div class="dg-item">' +
+        '<div class="dg-name-row">' +
+        '<span class="dg-name">' + speakerLabel(currentEpisode, line.speaker) + '</span>' +
+        '<span class="dg-heard-check" id="dg-heard-' + line.id + '"' + (heard ? '' : ' hidden') + '>' + icon('check') + '</span>' +
+        '</div>' +
+        '<button type="button" class="dg-bubble ' + (isFamiglia ? 'dg-bubble-us' : 'dg-bubble-them') + '" data-line-id="' + line.id + '">' +
+        '<span class="dg-bubble-top"><span class="dg-listen-icon">' + icon('volume-2') + '</span><p class="dg-english">' + english + '</p></span>' +
+        '<p class="dg-translation" hidden>' + italian + '</p>' +
+        '</button>' +
+        '</div>' +
+        '</div>';
+    }).join('');
+  }
+
+  // level: 'verde' ("Sì, lo so") | 'giallo' ("Non ancora") — a single
+  // self-assessment for the whole dialogue, not per-word: this module
+  // never touches loadMastery/saveMastery. Traguardo plays only on verde.
+  function dgFinishModule(level) {
+    if (level === 'verde') srPlayTraguardoSound();
+    saveModuleOutcome(currentEpisode, getUserName(), dgModule.id, {
+      level: level,
+      linesListened: dgHeardIds.length,
+      linesTotal: dgDialogue.length
+    });
+    dgShowScreen('summary');
+  }
+
+  function dgStartExercise() {
+    dgHeardIds = [];
+    dgRenderList();
+    renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion, 'dg-not-yet-btn', 'Non ancora', 'dg-know-it-btn', 'Sì, lo so');
+    dgShowScreen('main');
+  }
+
+  function openDialogo(module) {
+    dgModule = module;
+    dgProfile = CONFIG.dialogo.profiles[module.dialogoProfile];
+    dgDialogue = [];
+    dgHeardIds = [];
+    document.getElementById('dialogo-badge').textContent = module.label;
+    document.getElementById('dg-list').innerHTML = '';
+    dgRenderStartScreen(module);
+    dgShowScreen('start');
+    showView('dialogo');
+    loadEpisodeData(module).then(function (data) {
+      if (dgModule !== module) return;
+      dgDialogue = data.dialogue;
+    }).catch(function () {
+      if (dgModule !== module) return;
+      document.getElementById('dg-start-body').hidden = false;
+      document.getElementById('dg-start-body').innerHTML =
+        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+    });
+  }
+
+  document.getElementById('dg-start-btn').addEventListener('click', function () {
+    if (!dgDialogue.length) return;
+    if (!document.getElementById('dg-start-checkbox-row').hidden) {
+      setIntroDismissed(dgModule.kind, getUserName(), document.getElementById('dg-start-dont-show-again').checked);
+    }
+    dgStartExercise();
+  });
+
+  document.getElementById('dialogo-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(dgModule, { dismissPref: introDismissPref(dgModule.kind) });
+  });
+
+  document.getElementById('dg-translations-toggle').addEventListener('click', function () {
+    var btn = document.getElementById('dg-translations-toggle');
+    var next = !btn.classList.contains('btn-primary');
+    document.querySelectorAll('#dg-list .dg-translation').forEach(function (el) { el.hidden = !next; });
+    btn.textContent = next ? 'Nascondi traduzioni' : 'Mostra traduzioni';
+    btn.classList.toggle('btn-primary', next);
+    btn.classList.toggle('btn-secondary', !next);
+  });
+
+  // Whole-bubble click target (not just the mini listen icon inside it —
+  // a bigger touch target reads better here since "play audio" is this
+  // module's only interaction). data-line-id resolves which line to
+  // speak; the mini listen icon shown inside is purely visual.
+  document.getElementById('dg-list').addEventListener('click', function (e) {
+    var bubble = e.target.closest('.dg-bubble');
+    if (!bubble || bubble.classList.contains('is-locked')) return;
+    var lineId = bubble.getAttribute('data-line-id');
+    var line = dgDialogue.find(function (l) { return l.id === lineId; });
+    if (!line) return;
+    var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+    toggleSpeak(english, bubble, undefined, {
+      onStart: function () { dgLockAll(true, bubble); },
+      onEnd: function () { dgLockAll(false, bubble); dgMarkHeard(lineId); }
+    });
+  });
+
+  // dg-not-yet-btn/dg-know-it-btn are regenerated on every dgStartExercise()
+  // (their label comes from dgProfile.finalBoxQuestion), so this listener
+  // is delegated on the always-present #dg-choice-row wrapper instead of
+  // attached to the buttons directly.
+  document.getElementById('dg-choice-row').addEventListener('click', function (e) {
+    if (e.target.id === 'dg-not-yet-btn') dgFinishModule('giallo');
+    else if (e.target.id === 'dg-know-it-btn') dgFinishModule('verde');
+  });
+
+  document.getElementById('dg-complete-btn').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), dgModule.id);
+    openEpisodeMap();
+  });
+
+  document.getElementById('dialogo-back-map').addEventListener('click', function () {
+    openEpisodeMap();
+  });
+
+  document.getElementById('dialogo-help-btn').addEventListener('click', function () {
+    openHelpFor(dgModule);
+  });
+
+  /* ============================================================
      MODULES: SPEED ROUND ENG-ITA / SPEED ROUND ITA-ENG
      Two separate map modules sharing one view and this one JS section —
      module.kind fixes the direction and the istruzioni-moduli.json entry
@@ -5012,6 +5625,17 @@
 
   function srPlayCorrectSound() { srPlayTone(CONFIG.speedRound.sound.correctFreq, CONFIG.speedRound.sound.durationMs); }
   function srPlayWrongSound() { srPlayTone(CONFIG.speedRound.sound.wrongFreq, CONFIG.speedRound.sound.durationMs); }
+
+  // Traguardo: three ascending notes via srPlayTone in sequence (CLAUDE.md
+  // rule 13 — no new synthesis technique), CONFIG.sound.traguardo's own
+  // frequencies/durations/gap. Used by Dialogo Ascolta e Ripeti's "Sì, lo
+  // so" only — never on "Non ancora".
+  function srPlayTraguardoSound() {
+    var cfg = CONFIG.sound.traguardo;
+    cfg.notes.forEach(function (freq, i) {
+      setTimeout(function () { srPlayTone(freq, cfg.noteDurationMs); }, i * (cfg.noteDurationMs + cfg.noteGapMs));
+    });
+  }
 
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
