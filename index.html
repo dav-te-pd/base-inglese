@@ -675,43 +675,10 @@
   }
 
   /* ============================================================
-     SHARED: "watch how it's done" bar + Help entry point
-     Every module screen can drop these two elements in (see Repeat
-     Aloud for the pattern) and wire them to openInstructionsFor() /
-     openHelpFor() — no per-module CSS or overlay markup needed.
+     SHARED: Help entry point (+ "Guarda come si fa", header-actions)
+     Every module header drops these buttons into its top-row, wired to
+     openHowItWorksOverlay()/openHelpFor() — no per-module CSS needed.
      ============================================================ */
-  .watch-bar {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 14px 18px;
-    border-radius: var(--radius-sm);
-    border: 1px solid var(--border);
-    background: var(--card-2);
-    color: var(--text);
-    font-family: var(--font-body);
-    font-weight: 600;
-    font-size: var(--btn-text-md);
-    cursor: pointer;
-    white-space: nowrap;
-    transition: border-color 0.15s ease, color 0.15s ease;
-  }
-
-  .watch-bar:hover { border-color: var(--accent); color: var(--accent); }
-
-  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card is the
-     first module to actually hide the watch-bar (on its summary screen),
-     and .watch-bar's own "display: flex" would otherwise win over the
-     browser's default [hidden]{display:none}. */
-  .watch-bar[hidden] { display: none; }
-
-  .watch-bar:focus-visible {
-    outline: 3px solid var(--accent);
-    outline-offset: 2px;
-  }
-
   .help-btn {
     width: 20%;
     min-width: 84px;
@@ -854,6 +821,13 @@
     text-align: center;
   }
 
+  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card's
+     #fc-meta-header is the first app-header actually hidden via the
+     [hidden] attribute (during its intro screen), and its own
+     "display: flex" would otherwise win over the browser's default
+     [hidden]{display:none}. */
+  header.app-header[hidden] { display: none; }
+
   .top-row {
     display: flex;
     flex-wrap: wrap;
@@ -871,6 +845,12 @@
     align-items: center;
     gap: 8px;
   }
+
+  /* Same [hidden]-vs-own-"display" fix as elsewhere: Speed Round is the
+     first to actually hide this wrapper (outside the timed questions),
+     and its own "display: flex" would otherwise win over the browser's
+     default [hidden]{display:none}. */
+  .header-actions[hidden] { display: none; }
 
   /* .help-btn's own "width: 20%" assumes it's alone as the 3rd .top-row
      child; grouped here with another button it would force text like
@@ -1292,6 +1272,22 @@
 
   #repeat-aloud-intro-screen[hidden],
   #repeat-aloud-main-screen[hidden] { display: none; }
+
+  /* Shared by every module's intro/main screen div added after Repeat
+     Aloud's (Speak Easy, Voice Coach, Flash Card): each is one level
+     deeper than direct .card-body children, so needs the same flex
+     column + gap .card-body already gives its own direct children,
+     plus the same [hidden]-vs-"display" fix. Repeat Aloud's own pair
+     above predates this shared class and still works standalone —
+     see CLAUDE.md rule 11, flagged for a future consolidation pass
+     rather than touched here. */
+  .module-screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .module-screen[hidden] { display: none; }
 
   .ra-intro-checkbox {
     display: flex;
@@ -1972,19 +1968,39 @@
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
             <span class="badge">Speak Easy</span>
-            <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+            </div>
           </div>
 
-          <header class="app-header">
-            <h1 id="speak-easy-title">Speak Easy</h1>
-            <p style="opacity:0.7; font-size:0.92rem;">Segui il dialogo, ascolta ogni battuta e prova a ripeterla.</p>
-          </header>
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Guarda come si fa" always reopens the
+               same content afterward as a popup instead (see
+               openHowItWorksOverlay), never this screen again. -->
+          <div id="speak-easy-intro-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="speak-easy-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="speak-easy-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="speak-easy-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="speak-easy-intro-start-btn">Ho capito, inizia</button>
+          </div>
 
-          <button type="button" class="watch-bar" id="speak-easy-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
+          <!-- MAIN SCREEN -->
+          <div id="speak-easy-main-screen" class="module-screen">
+            <header class="app-header">
+              <h1 id="speak-easy-title">Speak Easy</h1>
+              <p style="opacity:0.7; font-size:0.92rem;">Segui il dialogo, ascolta ogni battuta e prova a ripeterla.</p>
+            </header>
 
-          <div id="speak-easy-body"></div>
+            <div id="speak-easy-body"></div>
 
-          <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito, torna alla mappa</button>
+            <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito, torna alla mappa</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1996,60 +2012,79 @@
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
             <span class="badge">Voice Coach</span>
-            <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
-          </div>
-
-          <header class="app-header">
-            <h1>Voice Coach</h1>
-            <p class="vc-counter" id="vc-counter">1 / 1</p>
-          </header>
-
-          <button type="button" class="watch-bar" id="voice-coach-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
-
-          <div class="vc-retry-row">
-            <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
-          </div>
-
-          <div class="vc-cue panel" id="vc-cue"></div>
-
-          <div class="vc-target" id="vc-target"></div>
-
-          <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
-
-          <div class="vc-mic-area">
-            <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
-              <span id="vc-record-icon" data-icon="mic" data-icon-class="icon-lg"></span>
-            </button>
-            <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
-            <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
-
-            <div class="vc-confirm-area" id="vc-confirm-area" hidden>
-              <div class="vc-confirm-box">
-                <p class="vc-confirm-text">Sicuro? Invia per la valutazione, o cancella e riprova.</p>
-                <div class="pending-actions">
-                  <button type="button" class="btn btn-secondary" id="vc-cancel-btn"><span data-icon="x"></span> Cancella</button>
-                  <button type="button" class="btn btn-primary" id="vc-send-btn"><span data-icon="check"></span> Invia</button>
-                </div>
-              </div>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
             </div>
           </div>
 
-          <div id="vc-result" hidden>
-            <p class="vc-attempt-label" id="vc-attempt-label"></p>
-            <div class="phrase panel" id="vc-feedback"></div>
-            <div class="vc-stars" id="vc-stars"></div>
-            <p class="vc-feedback-message" id="vc-feedback-message"></p>
-            <div class="panel transcript-box" id="vc-transcript"></div>
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Guarda come si fa" always reopens the
+               same content afterward as a popup instead. -->
+          <div id="voice-coach-intro-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="voice-coach-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="voice-coach-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="voice-coach-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="voice-coach-intro-start-btn">Ho capito, inizia</button>
           </div>
 
-          <div class="vc-nav-row">
-            <button type="button" class="btn btn-secondary" id="vc-prev-btn">← Indietro</button>
-            <button type="button" class="btn btn-primary" id="vc-next-btn">Avanti →</button>
-          </div>
+          <!-- MAIN SCREEN -->
+          <div id="voice-coach-main-screen" class="module-screen">
+            <header class="app-header">
+              <h1>Voice Coach</h1>
+              <p class="vc-counter" id="vc-counter">1 / 1</p>
+            </header>
 
-          <div class="warning" id="vc-warning">
-            Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
-            Prova con Google Chrome su desktop o Android.
+            <div class="vc-retry-row">
+              <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
+            </div>
+
+            <div class="vc-cue panel" id="vc-cue"></div>
+
+            <div class="vc-target" id="vc-target"></div>
+
+            <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
+
+            <div class="vc-mic-area">
+              <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
+                <span id="vc-record-icon" data-icon="mic" data-icon-class="icon-lg"></span>
+              </button>
+              <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
+              <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
+
+              <div class="vc-confirm-area" id="vc-confirm-area" hidden>
+                <div class="vc-confirm-box">
+                  <p class="vc-confirm-text">Sicuro? Invia per la valutazione, o cancella e riprova.</p>
+                  <div class="pending-actions">
+                    <button type="button" class="btn btn-secondary" id="vc-cancel-btn"><span data-icon="x"></span> Cancella</button>
+                    <button type="button" class="btn btn-primary" id="vc-send-btn"><span data-icon="check"></span> Invia</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="vc-result" hidden>
+              <p class="vc-attempt-label" id="vc-attempt-label"></p>
+              <div class="phrase panel" id="vc-feedback"></div>
+              <div class="vc-stars" id="vc-stars"></div>
+              <p class="vc-feedback-message" id="vc-feedback-message"></p>
+              <div class="panel transcript-box" id="vc-transcript"></div>
+            </div>
+
+            <div class="vc-nav-row">
+              <button type="button" class="btn btn-secondary" id="vc-prev-btn">← Indietro</button>
+              <button type="button" class="btn btn-primary" id="vc-next-btn">Avanti →</button>
+            </div>
+
+            <div class="warning" id="vc-warning">
+              Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
+              Prova con Google Chrome su desktop o Android.
+            </div>
           </div>
         </div>
       </div>
@@ -2058,24 +2093,39 @@
     <!-- ============ VIEW: SPEED ROUND MODULES (Eng-Ita / Ita-Eng) ============
          One shared view for both directions — module.kind picks the
          direction and the istruzioni-moduli.json entry, everything else
-         (markup, CSS, JS) is identical. Help only appears on the final
-         screen (top-row, hidden the rest of the time) — nowhere else,
-         per the module's own design. -->
+         (markup, CSS, JS) is identical. Guarda+Help only appear on the
+         start/summary screens (top-row, hidden the rest of the time) —
+         never during the timed questions, per the module's own design
+         (CLAUDE.md rule 11 exemption, unchanged by the header-merge task).
+         Guarda additionally hides on summary alone (CLAUDE.md rule 10:
+         nothing left to explain on an evaluative module's final screen). -->
     <section id="view-speed-round" class="view">
       <div class="card">
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
             <span class="badge" id="speed-round-badge">Speed Round</span>
-            <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn" hidden>Help</button>
+            <div class="header-actions" id="speed-round-header-actions" hidden>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn">Help</button>
+            </div>
           </div>
 
-          <!-- START SCREEN: full howItWorks text, explains method + goal -->
+          <!-- START SCREEN: first time (not dismissed) shows the full
+               howItWorks explanation + "don't show again" checkbox; once
+               dismissed, shows a short "ready" prompt instead — always
+               shown before every round either way, unlike the other
+               modules' intro (it doubles as the get-ready gate before the
+               timed countdown, so it never disappears entirely). -->
           <div id="sr-start-screen">
             <header class="app-header">
               <h1 id="sr-start-title">Guarda come si fa</h1>
             </header>
             <div class="overlay-text panel" id="sr-start-body">Caricamento...</div>
+            <label class="ra-intro-checkbox" id="sr-start-checkbox-row">
+              <input type="checkbox" id="sr-start-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
             <button type="button" class="btn btn-primary btn-block" id="sr-ready-btn">Pronto? Via!</button>
           </div>
 
@@ -2131,23 +2181,41 @@
          One shared view/component for every level+direction combo —
          module.flashcardLevel/flashcardDirection (see EPISODES) pick the
          level config and data, nothing here is level-specific. Unlike
-         Speed Round this reuses the standard watch-bar + Help pattern. -->
+         Speed Round this reuses the standard header-actions + Help
+         pattern, always visible except Guarda on the summary screen
+         (CLAUDE.md rule 10). -->
     <section id="view-flashcard" class="view">
       <div class="card">
         <div class="card-body">
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
             <span class="badge" id="flashcard-badge">Flash Card</span>
-            <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+            </div>
           </div>
 
-          <header class="app-header">
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Guarda come si fa" always reopens the
+               same content afterward as a popup instead. -->
+          <div id="fc-intro-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="fc-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="fc-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="fc-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="fc-intro-start-btn">Ho capito, inizia</button>
+          </div>
+
+          <header class="app-header" id="fc-meta-header">
             <p class="fc-level-label" id="fc-level-label"></p>
             <p class="fc-direction" id="fc-direction"></p>
             <p class="fc-counter" id="fc-counter"></p>
           </header>
-
-          <button type="button" class="watch-bar" id="flashcard-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
 
           <!-- RETRY-PASS INTRO SCREEN: shown before every new retry pass,
                not just the first (loops until a pass has zero misses). -->
@@ -2473,11 +2541,10 @@
      SHARED: MODULE HELP OVERLAY (reusable by every module)
      One overlay element in the DOM (see the HTML near the end of
      .app), driven entirely by the module object passed in. A module
-     opts in by rendering a "watch-bar" button calling
-     openInstructionsFor(module) and a "help-btn" calling
-     openHelpFor(module) — see the Repeat Aloud view for the pattern.
-     Help requests (options B/C) are saved with the same per-user
-     localStorage mechanism as mastery/customization.
+     opts in by rendering a "help-btn" calling openHelpFor(module) —
+     see the Repeat Aloud view for the pattern. Help requests (options
+     B/C) are saved with the same per-user localStorage mechanism as
+     mastery/customization.
      ============================================================ */
   function helpRequestsKey(userName) {
     return 'baseinglese:helpRequests:' + userName;
@@ -2575,8 +2642,11 @@
       });
   }
 
-  // Renders either the "howItWorks" (watch-bar) or "helpReminder" (Help
-  // option A) field for a module's kind into the shared overlay.
+  // Renders a module-instructions field (today just "helpReminder", the
+  // Help menu's "Rivedi come funziona l'esercizio" option) for a module's
+  // kind into the shared help overlay. "howItWorks" itself is rendered by
+  // renderIntroContent()/openHowItWorksOverlay() instead — the intro
+  // screen and its header popup, not this overlay.
   function renderModuleInstructionField(module, field, fallbackTitle) {
     document.getElementById('help-overlay-title').textContent = fallbackTitle;
     document.getElementById('help-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
@@ -2624,11 +2694,6 @@
   function renderHelpConfirmation() {
     return '<p class="overlay-text">✓ Richiesta salvata. Grazie!</p>' +
       '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">← Torna al menu</button></div>';
-  }
-
-  function openInstructionsFor(module) {
-    activeHelpModule = module;
-    renderModuleInstructionField(module, 'howItWorks', 'Guarda come si fa');
   }
 
   function openHelpFor(module) {
@@ -3121,6 +3186,60 @@
       ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
   }
 
+  // ---- Shared full-screen module intro (Speak Easy, Voice Coach, Speed
+  // Round, Flash Card — every module after Repeat Aloud's original trial
+  // above, which keeps its own ra-* functions standalone; see CLAUDE.md
+  // rule 11, flagged for a future consolidation pass rather than touched
+  // here). One dismiss flag per module kind (not per episode — it's about
+  // knowing the module type, same as Repeat Aloud's). howItWorks always
+  // comes from istruzioni-moduli.json (CLAUDE.md rule 8); this only
+  // decides WHERE it's shown (full screen first time, popup afterward). ----
+  function introDismissedKey(kind, userName) {
+    return 'baseinglese:introDismissed:' + kind + ':' + userName;
+  }
+
+  function isIntroDismissed(kind, userName) {
+    try {
+      var stored = localStorage.getItem(introDismissedKey(kind, userName));
+      if (stored !== null) return stored === '1';
+      // One-time fallback to Repeat Aloud's original pre-generalization key,
+      // so a preference already saved there isn't silently reset.
+      if (kind === 'repeatAloud') return localStorage.getItem(raIntroDismissedKey(userName)) === '1';
+      return false;
+    } catch (e) { return false; }
+  }
+
+  function setIntroDismissed(kind, userName, dismissed) {
+    try { localStorage.setItem(introDismissedKey(kind, userName), dismissed ? '1' : '0'); } catch (e) {}
+  }
+
+  // options.dismissPref for openHowItWorksOverlay, built from a module kind.
+  function introDismissPref(kind) {
+    return {
+      get: function () { return isIntroDismissed(kind, getUserName()); },
+      set: function (val) { setIntroDismissed(kind, getUserName(), val); }
+    };
+  }
+
+  // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
+  // for the given kind — the same content Repeat Aloud's renderRaIntroContent
+  // loads, generalized so every module's intro screen shares one loader
+  // instead of repeating it per module.
+  function renderIntroContent(kind, titleElId, bodyElId) {
+    document.getElementById(titleElId).textContent = 'Guarda come si fa';
+    document.getElementById(bodyElId).innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    loadModuleInstructions().then(function (data) {
+      var entry = data[kind] && data[kind].howItWorks;
+      document.getElementById(titleElId).textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById(bodyElId).innerHTML = entry
+        ? entry.body
+        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
+    }).catch(function () {
+      document.getElementById(bodyElId).innerHTML =
+        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
+    });
+  }
+
   // ---- Repeat Aloud intro screen (trial — see the request that added
   // this before extending the pattern to other modules). howItWorks
   // still comes only from istruzioni-moduli.json (CLAUDE.md rule 8);
@@ -3260,11 +3379,23 @@
     document.getElementById('speak-easy-body').innerHTML = '<div class="chat-list">' + itemsHtml + '</div>';
   }
 
+  function seShowScreen(name) {
+    document.getElementById('speak-easy-intro-screen').hidden = name !== 'intro';
+    document.getElementById('speak-easy-main-screen').hidden = name !== 'main';
+  }
+
   function openSpeakEasy(module) {
     currentSpeakEasyModule = module;
     document.getElementById('speak-easy-title').textContent = module.label;
     document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('speakEasy');
+    if (isIntroDismissed('speakEasy', getUserName())) {
+      seShowScreen('main');
+    } else {
+      document.getElementById('speak-easy-intro-dont-show-again').checked = false;
+      renderIntroContent('speakEasy', 'speak-easy-intro-title', 'speak-easy-intro-body');
+      seShowScreen('intro');
+    }
     loadEpisodeData(module).then(function (data) {
       if (currentSpeakEasyModule !== module) return;
       renderSpeakEasy(data);
@@ -3303,8 +3434,13 @@
 
   document.getElementById('speak-easy-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('speak-easy-watch-bar').addEventListener('click', function () {
-    openInstructionsFor(currentSpeakEasyModule);
+  document.getElementById('speak-easy-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(currentSpeakEasyModule, { dismissPref: introDismissPref('speakEasy') });
+  });
+
+  document.getElementById('speak-easy-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('speakEasy', getUserName(), document.getElementById('speak-easy-intro-dont-show-again').checked);
+    seShowScreen('main');
   });
 
   document.getElementById('speak-easy-help-btn').addEventListener('click', function () {
@@ -3426,6 +3562,10 @@
     document.getElementById('vc-record-timer').hidden = !recording;
     document.getElementById('vc-confirm-area').hidden = state !== 'pending';
     document.getElementById('vc-result').hidden = state !== 'result';
+    // "Guarda come si fa" and "Help" gray out only while actually recording
+    // — back as soon as it's stopped/confirmed/cancelled (any other state).
+    document.getElementById('voice-coach-watch-btn').disabled = recording;
+    document.getElementById('voice-coach-help-btn').disabled = recording;
   }
 
   function vcResetRecording() {
@@ -3527,6 +3667,11 @@
     }
   }
 
+  function vcShowScreen(name) {
+    document.getElementById('voice-coach-intro-screen').hidden = name !== 'intro';
+    document.getElementById('voice-coach-main-screen').hidden = name !== 'main';
+  }
+
   function openVoiceCoach(module) {
     vcModule = module;
     vcIndex = 0;
@@ -3538,6 +3683,13 @@
     document.getElementById('vc-target').textContent = 'Caricamento...';
     document.getElementById('vc-audio-controls').innerHTML = '';
     showView('voiceCoach');
+    if (isIntroDismissed('voiceCoach', getUserName())) {
+      vcShowScreen('main');
+    } else {
+      document.getElementById('voice-coach-intro-dont-show-again').checked = false;
+      renderIntroContent('voiceCoach', 'voice-coach-intro-title', 'voice-coach-intro-body');
+      vcShowScreen('intro');
+    }
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
       if (vcModule !== module) return;
       vcLines = results[0].dialogue;
@@ -3655,8 +3807,13 @@
     openEpisodeMap();
   });
 
-  document.getElementById('voice-coach-watch-bar').addEventListener('click', function () {
-    openInstructionsFor(vcModule);
+  document.getElementById('voice-coach-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref('voiceCoach') });
+  });
+
+  document.getElementById('voice-coach-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('voiceCoach', getUserName(), document.getElementById('voice-coach-intro-dont-show-again').checked);
+    vcShowScreen('main');
   });
 
   document.getElementById('voice-coach-help-btn').addEventListener('click', function () {
@@ -3668,16 +3825,18 @@
      Two separate map modules sharing one view and this one JS section —
      module.kind fixes the direction and the istruzioni-moduli.json entry
      for the whole session, everything else is identical. Flow: a start
-     screen showing the full howItWorks text (method + goal, no separate
-     watch-bar here — the text already is the screen) -> "Pronto? Via!"
-     -> a 3-2-1 countdown -> one shuffled pass over every vocabulary item,
-     then as many further retry passes as needed over whatever is still
-     wrong/skipped/timed out — each announced by its own "Ripassiamo
-     insieme..." screen — until one retry pass comes back with zero
-     misses -> a summary screen. Wrong/timeout/"Non lo so" all reveal the
-     correct answer and wait for an explicit "Avanti" (read and memorize
-     before moving on); a correct tap auto-advances after a short pause.
-     Help only appears on the summary screen (top-row); no Indietro.
+     screen (first time: full howItWorks text + "don't show again" +
+     "Ho capito, inizia"; afterward: a short "Pronto?" prompt + "Pronto?
+     Via!" — see srRenderStartScreen) -> a 3-2-1 countdown -> one shuffled
+     pass over every vocabulary item, then as many further retry passes as
+     needed over whatever is still wrong/skipped/timed out — each
+     announced by its own "Ripassiamo insieme..." screen — until one retry
+     pass comes back with zero misses -> a summary screen. Wrong/timeout/
+     "Non lo so" all reveal the correct answer and wait for an explicit
+     "Avanti" (read and memorize before moving on); a correct tap
+     auto-advances after a short pause. Guarda+Help (top-row) only appear
+     on the start/summary screens, Guarda alone hiding again on summary
+     (CLAUDE.md rule 10); no Indietro.
      ============================================================ */
   var SR_DIRECTION_BY_KIND = { speedRoundEngIta: 'en-it', speedRoundItaEng: 'it-en' };
   var SR_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
@@ -3767,7 +3926,28 @@
     document.getElementById('sr-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('sr-summary-screen').hidden = name !== 'summary';
-    document.getElementById('speed-round-help-btn').hidden = name !== 'summary';
+    var showHeaderActions = name === 'start' || name === 'summary';
+    document.getElementById('speed-round-header-actions').hidden = !showHeaderActions;
+    // Guarda hides on summary too (CLAUDE.md rule 10) — Help alone stays.
+    document.getElementById('speed-round-watch-btn').hidden = name === 'summary';
+  }
+
+  // First time (not dismissed): full howItWorks explanation + checkbox +
+  // "Ho capito, inizia". Already dismissed: short ready prompt + "Pronto?
+  // Via!" — this screen never disappears entirely (unlike other modules'
+  // intro) since it also gates the timed countdown.
+  function srRenderStartScreen(module) {
+    var dismissed = isIntroDismissed(module.kind, getUserName());
+    document.getElementById('sr-start-checkbox-row').hidden = dismissed;
+    document.getElementById('sr-start-body').hidden = dismissed;
+    if (dismissed) {
+      document.getElementById('sr-start-title').textContent = 'Pronto?';
+      document.getElementById('sr-ready-btn').textContent = 'Pronto? Via!';
+    } else {
+      document.getElementById('sr-start-dont-show-again').checked = false;
+      document.getElementById('sr-ready-btn').textContent = 'Ho capito, inizia';
+      renderIntroContent(module.kind, 'sr-start-title', 'sr-start-body');
+    }
   }
 
   // declaredNonAttempt: "Non lo so" — not a wrong answer but an admitted
@@ -3902,22 +4082,17 @@
     srDirection = SR_DIRECTION_BY_KIND[module.kind];
     srVocab = [];
     document.getElementById('speed-round-badge').textContent = module.label;
-    document.getElementById('sr-start-title').textContent = 'Guarda come si fa';
-    document.getElementById('sr-start-body').textContent = 'Caricamento...';
     document.getElementById('sr-prompt').textContent = '';
     document.getElementById('sr-options').innerHTML = '';
+    srRenderStartScreen(module);
     srShowScreen('start');
     showView('speedRound');
-    Promise.all([loadEpisodeData(module), loadModuleInstructions()]).then(function (results) {
+    loadEpisodeData(module).then(function (data) {
       if (srModule !== module) return;
-      srVocab = results[0].vocabulary;
-      var entry = results[1][module.kind] && results[1][module.kind].howItWorks;
-      document.getElementById('sr-start-title').textContent = (entry && entry.title) || 'Guarda come si fa';
-      document.getElementById('sr-start-body').innerHTML = entry
-        ? entry.body
-        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
+      srVocab = data.vocabulary;
     }).catch(function () {
       if (srModule !== module) return;
+      document.getElementById('sr-start-body').hidden = false;
       document.getElementById('sr-start-body').innerHTML =
         '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
     });
@@ -3925,7 +4100,14 @@
 
   document.getElementById('sr-ready-btn').addEventListener('click', function () {
     if (!srVocab.length) return;
+    if (!document.getElementById('sr-start-checkbox-row').hidden) {
+      setIntroDismissed(srModule.kind, getUserName(), document.getElementById('sr-start-dont-show-again').checked);
+    }
     srRunCountdown();
+  });
+
+  document.getElementById('speed-round-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(srModule, { dismissPref: introDismissPref(srModule.kind) });
   });
 
   document.getElementById('sr-options').addEventListener('click', function (e) {
@@ -3989,8 +4171,9 @@
      flashcardDirection picks front/back — nothing about "Level A" is
      hardcoded here, so a future level is just a new CONFIG.flashcard.
      levels entry plus two more module descriptors, no component
-     changes. Standard watch-bar + Help (top-row, always present),
-     unlike Speed Round. One shuffled pass over every card; a card is
+     changes. Standard Guarda+Help (top-row, always present except
+     Guarda on the summary screen — CLAUDE.md rule 10), unlike Speed
+     Round. One shuffled pass over every card; a card is
      "wrong" if flipped-and-"Non ancora" OR advanced without ever being
      flipped (didn't even try); as many further retry passes as needed
      — each with its own "Ripassiamo insieme..." screen — until one
@@ -4002,6 +4185,7 @@
   var FC_SLIDE_MS = 260;
 
   var fcModule = null;
+  var fcIntroPending = false;
   var fcLevel = 'a';
   var fcDirection = 'en-it';
   var fcVocab = [];
@@ -4017,11 +4201,16 @@
   function fcBackText() { return fcDirection === 'en-it' ? fcCurrentItem.italian : fcCurrentItem.english; }
 
   function fcShowScreen(name) {
+    document.getElementById('fc-intro-screen').hidden = name !== 'intro';
+    // Level/direction/card-counter belong to the actual exercise, not the
+    // one-time intro explaining it — keep it hidden until intro is dismissed.
+    document.getElementById('fc-meta-header').hidden = name === 'intro';
     document.getElementById('fc-card-screen').hidden = name !== 'card';
     document.getElementById('fc-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('fc-summary-screen').hidden = name !== 'summary';
-    // Nothing to explain on the completion screen — hide the watch-bar there.
-    document.getElementById('flashcard-watch-bar').hidden = name === 'summary';
+    // Nothing to explain on the completion screen — hide the button there
+    // (CLAUDE.md rule 10); Help alone stays, same as every other screen.
+    document.getElementById('flashcard-watch-btn').hidden = name === 'summary';
   }
 
   function fcShowNav(showNav) {
@@ -4076,7 +4265,10 @@
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>';
     document.getElementById('fc-prev-btn').disabled = fcPassIndex === 0;
     fcShowNav(true);
-    fcShowScreen('card');
+    // The data load runs in the background regardless of the intro screen
+    // (see openFlashcard) — don't let it jump past an intro still pending
+    // dismissal; the "Ho capito, inizia" handler shows 'card' itself once done.
+    if (!fcIntroPending) fcShowScreen('card');
   }
 
   function fcFlip() {
@@ -4163,7 +4355,14 @@
     document.getElementById('fc-counter').textContent = '';
     document.getElementById('fc-front-word').textContent = 'Caricamento...';
     document.getElementById('fc-back-word').textContent = '';
-    fcShowScreen('card');
+    fcIntroPending = !isIntroDismissed(module.kind, getUserName());
+    if (fcIntroPending) {
+      document.getElementById('fc-intro-dont-show-again').checked = false;
+      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body');
+      fcShowScreen('intro');
+    } else {
+      fcShowScreen('card');
+    }
     showView('flashcard');
     loadEpisodeData(module).then(function (data) {
       if (fcModule !== module) return;
@@ -4217,8 +4416,14 @@
     openEpisodeMap();
   });
 
-  document.getElementById('flashcard-watch-bar').addEventListener('click', function () {
-    openInstructionsFor(fcModule);
+  document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
+  });
+
+  document.getElementById('fc-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed(fcModule.kind, getUserName(), document.getElementById('fc-intro-dont-show-again').checked);
+    fcIntroPending = false;
+    fcShowScreen('card');
   });
 
   document.getElementById('flashcard-help-btn').addEventListener('click', function () {

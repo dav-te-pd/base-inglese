@@ -32,6 +32,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 10. **Nella Schermata Finale di un modulo valutativo (quiz, ripasso, esercizio a passaggi) non va mostrata la barra "🎥 Guarda come si fa"** — a quel punto non c'è più nulla da spiegare. Vale per ogni modulo, presente e futuro: chi costruisce una schermata finale la tiene priva della watch-bar, mostrando solo l'esito/il messaggio di completamento e le azioni di uscita (Help se previsto, "Ho finito, torna alla mappa").
 
+11. **Prima di costruire un nuovo elemento di interfaccia, verificare se esiste già un componente riusabile che serve allo scopo** (es. i pannelli/box/schermate già presenti nel progetto) ed estenderlo invece di duplicarlo. Se durante un lavoro noti duplicazioni già esistenti nel codice, segnalale nel riepilogo finale invece di correggerle silenziosamente — verranno affrontate in una revisione dedicata.
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese`
