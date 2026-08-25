@@ -3696,12 +3696,20 @@
     document.getElementById('fc-choice-row').hidden = showNav;
   }
 
-  function fcRecordResult(result) {
+  // skippedWithoutTrying: "Avanti" pressed while the card was still on its
+  // front, unflipped — not a wrong answer but a non-attempt, so it resets
+  // straight to rosso regardless of the current level instead of stepping
+  // down one level like every other module's "wrong" (applyMasteryResult
+  // is untouched — this is a Flash-Card-specific path, not a change to the
+  // shared demotion rule).
+  function fcRecordResult(result, skippedWithoutTrying) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
     var userName = getUserName();
     var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = applyMasteryResult(mastery[unitId], result);
+    mastery[unitId] = skippedWithoutTrying
+      ? { level: 'rosso', streak: 0 }
+      : applyMasteryResult(mastery[unitId], result);
     saveMastery(currentEpisode.id, userName, mastery);
   }
 
@@ -3787,7 +3795,7 @@
   function fcGoNext() {
     if (fcNavLocked) return;
     if (!fcFlipped) {
-      fcRecordResult('wrong'); // advanced without ever flipping = didn't even try
+      fcRecordResult('wrong', true); // advanced without ever flipping = didn't even try
     }
     if (fcPassIndex < fcPassItems.length - 1) {
       fcPassIndex++;
