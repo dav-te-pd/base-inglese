@@ -639,6 +639,12 @@
 
   .watch-bar:hover { border-color: var(--accent); color: var(--accent); }
 
+  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card is the
+     first module to actually hide the watch-bar (on its summary screen),
+     and .watch-bar's own "display: flex" would otherwise win over the
+     browser's default [hidden]{display:none}. */
+  .watch-bar[hidden] { display: none; }
+
   .watch-bar:focus-visible {
     outline: 3px solid var(--accent);
     outline-offset: 2px;
@@ -1360,14 +1366,21 @@
     width: 100%;
   }
 
+  /* A real callout box on Voice Coach's light card background — tinted
+     fill using the existing "similar" semantic tokens (the same amber/
+     mustard already used for the mid-mastery color, reused here rather
+     than inventing a new color), full border, a little top margin to
+     separate it from the target phrase above without floating it
+     outside the card it lives in. */
   .vc-confirm-box {
     text-align: center;
     font-size: 0.92rem;
     padding: 12px 16px;
-    border: 2px solid var(--accent);
+    border: 1px solid var(--similar-ink);
     border-radius: 12px;
-    background: var(--card-2);
-    margin: 0;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+    margin: 8px 0 0;
   }
 
   .pending-actions {
@@ -1580,6 +1593,23 @@
     width: 100%;
     cursor: pointer;
     perspective: 1200px;
+    transition: transform 0.26s ease, opacity 0.26s ease;
+  }
+
+  /* Card-to-card navigation (Avanti/Indietro): the outgoing card slides out
+     to the right, then — once the new card's content is already in place
+     and front-facing — the next one settles in from a slight offset. This
+     is a separate transform from the flip (on .fc-card-inner below), so
+     the two never fight over the "transform" property. */
+  .fc-card.is-sliding-out {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+
+  .fc-card.is-sliding-in {
+    transform: translateX(-24px);
+    opacity: 0;
+    transition: none;
   }
 
   .fc-card:focus-visible .fc-card-inner {
@@ -3623,6 +3653,8 @@
      there, only in the card flow itself.
      ============================================================ */
   var FC_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
+  // Card-to-card slide duration — must match the CSS transition on .fc-card.
+  var FC_SLIDE_MS = 260;
 
   var fcModule = null;
   var fcLevel = 'a';
@@ -3633,6 +3665,8 @@
   var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
   var fcCurrentItem = null;
   var fcFlipped = false;
+  var fcNavLocked = false;
+  var fcNavTimeoutId = null;
 
   function fcFrontText() { return fcDirection === 'en-it' ? fcCurrentItem.english : fcCurrentItem.italian; }
   function fcBackText() { return fcDirection === 'en-it' ? fcCurrentItem.italian : fcCurrentItem.english; }
@@ -3641,6 +3675,8 @@
     document.getElementById('fc-card-screen').hidden = name !== 'card';
     document.getElementById('fc-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('fc-summary-screen').hidden = name !== 'summary';
+    // Nothing to explain on the completion screen — hide the watch-bar there.
+    document.getElementById('flashcard-watch-bar').hidden = name === 'summary';
   }
 
   function fcShowNav(showNav) {
@@ -3657,10 +3693,25 @@
     saveMastery(currentEpisode.id, userName, mastery);
   }
 
+  // Resets the card to its front-facing state with no animation: just
+  // removing "is-flipped" would trigger .fc-card-inner's own flip
+  // transition, briefly animating the OUTGOING (already-flipped) face
+  // back into view — exactly the "flash of the translated content"
+  // this exists to prevent. Disabling the transition, forcing a reflow,
+  // then re-enabling it makes the reset instantaneous.
+  function fcResetFlipInstant() {
+    var inner = document.getElementById('fc-card-inner');
+    inner.style.transition = 'none';
+    document.getElementById('fc-card').classList.remove('is-flipped');
+    void inner.offsetWidth;
+    inner.style.transition = '';
+  }
+
   function fcRenderCard() {
     fcCurrentItem = fcVocab.find(function (v) { return v.id === fcPassItems[fcPassIndex]; });
     fcFlipped = false;
-    document.getElementById('fc-card').classList.remove('is-flipped');
+    // Front state committed before anything else renders, per the fix above.
+    fcResetFlipInstant();
     document.getElementById('fc-counter').textContent = (fcPassIndex + 1) + ' / ' + fcPassItems.length;
     document.getElementById('fc-front-word').textContent = fcFrontText();
     document.getElementById('fc-back-word').textContent = fcBackText();
@@ -3676,7 +3727,7 @@
   }
 
   function fcFlip() {
-    if (fcFlipped) return;
+    if (fcFlipped || fcNavLocked) return;
     fcFlipped = true;
     document.getElementById('fc-card').classList.add('is-flipped');
     fcShowNav(false);
@@ -3694,23 +3745,50 @@
     }
   }
 
+  // Card-to-card navigation only (not the retry-pass's first card, which
+  // has nothing to slide away from): the current card slides out right,
+  // then the new one — already front-facing, per fcRenderCard above —
+  // settles in. Guarded by fcNavLocked so a rapid double-tap can't start
+  // a second slide mid-animation.
+  function fcClearNavTimeout() {
+    if (fcNavTimeoutId) { clearTimeout(fcNavTimeoutId); fcNavTimeoutId = null; }
+    fcNavLocked = false;
+    document.getElementById('fc-card').classList.remove('is-sliding-out', 'is-sliding-in');
+  }
+
+  function fcNavigateTo(renderFn) {
+    if (fcNavLocked) return;
+    fcNavLocked = true;
+    var card = document.getElementById('fc-card');
+    card.classList.add('is-sliding-out');
+    fcNavTimeoutId = setTimeout(function () {
+      fcNavTimeoutId = null;
+      renderFn();
+      card.classList.remove('is-sliding-out');
+      card.classList.add('is-sliding-in');
+      void card.offsetWidth;
+      card.classList.remove('is-sliding-in');
+      fcNavLocked = false;
+    }, FC_SLIDE_MS);
+  }
+
   function fcGoNext() {
+    if (fcNavLocked) return;
     if (!fcFlipped) {
       fcRecordResult('wrong'); // advanced without ever flipping = didn't even try
     }
     if (fcPassIndex < fcPassItems.length - 1) {
       fcPassIndex++;
-      fcRenderCard();
+      fcNavigateTo(fcRenderCard);
     } else {
       fcFinishPassCheck();
     }
   }
 
   function fcGoPrev() {
-    if (fcPassIndex > 0) {
-      fcPassIndex--;
-      fcRenderCard();
-    }
+    if (fcNavLocked || fcPassIndex === 0) return;
+    fcPassIndex--;
+    fcNavigateTo(fcRenderCard);
   }
 
   function fcStartDeck() {
@@ -3722,6 +3800,7 @@
 
   function openFlashcard(module) {
     fcModule = module;
+    fcClearNavTimeout();
     fcLevel = module.flashcardLevel;
     fcDirection = module.flashcardDirection;
     var levelConfig = CONFIG.flashcard.levels[fcLevel];
@@ -3780,7 +3859,10 @@
     openEpisodeMap();
   });
 
-  document.getElementById('flashcard-back-map').addEventListener('click', openEpisodeMap);
+  document.getElementById('flashcard-back-map').addEventListener('click', function () {
+    fcClearNavTimeout();
+    openEpisodeMap();
+  });
 
   document.getElementById('flashcard-watch-bar').addEventListener('click', function () {
     openInstructionsFor(fcModule);

@@ -30,6 +30,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 9. **Il pulsante "Help" va sempre nella riga di intestazione in alto**, insieme al pulsante "← Mappa" e al tag/badge del modulo — mai in basso vicino al pulsante di completamento ("Ho finito, torna alla mappa" o simile), perché lì causa click accidentali quando si scorre per finire l'esercizio. Vale per ogni modulo, presente e futuro.
 
+10. **Nella Schermata Finale di un modulo valutativo (quiz, ripasso, esercizio a passaggi) non va mostrata la barra "🎥 Guarda come si fa"** — a quel punto non c'è più nulla da spiegare. Vale per ogni modulo, presente e futuro: chi costruisce una schermata finale la tiene priva della watch-bar, mostrando solo l'esito/il messaggio di completamento e le azioni di uscita (Help se previsto, "Ho finito, torna alla mappa").
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese`
