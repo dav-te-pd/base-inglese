@@ -251,6 +251,26 @@
   // Mirrors data/istruzioni-moduli.json (howItWorks/helpReminder per module
   // kind, CLAUDE.md rule 8) — same resilience-net role as the block above.
   window.FALLBACK_MODULE_INSTRUCTIONS = {
+    personalizzazione: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. \'Reset\' torna al default. Poi premi \'Inizia l\'episodio\'.</p>'
+      }
+    },
+    mappaEpisodio: {
+      howItWorks: {
+        title: 'Guarda come si fa',
+        body: '<p>Questa è la mappa dell\'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>'
+      }
+    },
     repeatAloud: {
       howItWorks: {
         title: 'Guarda come si fa',
@@ -1884,15 +1904,37 @@
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
             <span class="badge" id="customize-episode-badge">Episodio 1</span>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
+            </div>
           </div>
 
-          <header class="app-header">
-            <h1>Personalizza la tua storia o lascia così.</h1>
-          </header>
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Guarda come si fa" always reopens the
+               same content afterward as a popup instead. -->
+          <div id="customize-intro-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="customize-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="customize-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="customize-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="customize-intro-start-btn">Ho capito, inizia</button>
+          </div>
 
-          <div class="slot-grid" id="slot-grid"></div>
+          <!-- MAIN SCREEN -->
+          <div id="customize-main-screen" class="module-screen">
+            <header class="app-header">
+              <h1>Personalizza la tua storia o lascia così.</h1>
+            </header>
 
-          <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+            <div class="slot-grid" id="slot-grid"></div>
+
+            <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+          </div>
         </div>
       </div>
     </section>
@@ -1904,14 +1946,36 @@
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
             <span class="badge" id="map-episode-badge">Episodio 1</span>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
+            </div>
           </div>
 
-          <header class="app-header">
-            <h1>Mappa dell'episodio</h1>
-            <p style="opacity:0.7; font-size:0.92rem;">Completa i moduli in ordine per avanzare nella storia.</p>
-          </header>
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Guarda come si fa" always reopens the
+               same content afterward as a popup instead. -->
+          <div id="map-intro-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="map-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="map-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="map-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="map-intro-start-btn">Ho capito, inizia</button>
+          </div>
 
-          <div class="module-list" id="module-list"></div>
+          <!-- MAIN SCREEN -->
+          <div id="map-main-screen" class="module-screen">
+            <header class="app-header">
+              <h1>Mappa dell'episodio</h1>
+              <p style="opacity:0.7; font-size:0.92rem;">Completa i moduli in ordine per avanzare nella storia.</p>
+            </header>
+
+            <div class="module-list" id="module-list"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -2535,7 +2599,10 @@
   });
 
   document.getElementById('back-home').addEventListener('click', goHome);
-  document.getElementById('customize-back-home').addEventListener('click', goHome);
+  document.getElementById('customize-back-home').addEventListener('click', function () {
+    pendingModuleAfterCustomize = null;
+    goHome();
+  });
 
   /* ============================================================
      SHARED: MODULE HELP OVERLAY (reusable by every module)
@@ -3021,6 +3088,11 @@
      ============================================================ */
   var currentEpisode = EPISODES.episode1;
   var currentValues = null;
+  // Set right before opening Customize from a module click (see the Map's
+  // click handler below); read once by "Inizia l'episodio" to jump straight
+  // into that module instead of back to the Map. null when Customize was
+  // reached some other way (e.g. the legacy "Modifica i nomi" link).
+  var pendingModuleAfterCustomize = null;
 
   function renderSlotGrid() {
     var grid = document.getElementById('slot-grid');
@@ -3071,21 +3143,71 @@
     saveCustomValues(currentEpisode, getUserName(), currentValues);
   });
 
+  // Pseudo-modules: Map and Customize aren't in currentEpisode.modules (they
+  // aren't a playable step), but the shared Help/HowItWorks machinery only
+  // needs .kind (istruzioni-moduli.json lookup) and .id (help-request
+  // storage key), so these small stand-ins let them reuse it as-is.
+  var MAP_PSEUDO_MODULE = { id: 'mappaEpisodio', kind: 'mappaEpisodio', label: 'Mappa dell\'episodio' };
+  var CUSTOMIZE_PSEUDO_MODULE = { id: 'personalizzazione', kind: 'personalizzazione', label: 'Personalizza' };
+
+  // Whether this user has been through Customize at least once for this
+  // episode (independent of the actual values chosen — defaults are valid
+  // too). Gates the Map's per-module click below: the flow is now Map
+  // first, Customize only the first time a module is opened this episode.
+  function customizeSeenKey(episodeId, userName) {
+    return 'baseinglese:' + episodeId + ':customizeSeen:' + userName;
+  }
+
+  function isCustomizeSeen(episodeId, userName) {
+    try { return localStorage.getItem(customizeSeenKey(episodeId, userName)) === '1'; } catch (e) { return false; }
+  }
+
+  function setCustomizeSeen(episodeId, userName) {
+    try { localStorage.setItem(customizeSeenKey(episodeId, userName), '1'); } catch (e) {}
+  }
+
+  function customizeShowScreen(name) {
+    document.getElementById('customize-intro-screen').hidden = name !== 'intro';
+    document.getElementById('customize-main-screen').hidden = name !== 'main';
+  }
+
   function openCustomize() {
     currentValues = loadCustomValues(currentEpisode, getUserName());
     document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
     renderSlotGrid();
     showView('customize');
+    if (isIntroDismissed('personalizzazione', getUserName())) {
+      customizeShowScreen('main');
+    } else {
+      document.getElementById('customize-intro-dont-show-again').checked = false;
+      renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body');
+      customizeShowScreen('intro');
+    }
   }
 
-  document.getElementById('go-episode').addEventListener('click', openCustomize);
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
+
+  document.getElementById('customize-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(CUSTOMIZE_PSEUDO_MODULE, { dismissPref: introDismissPref('personalizzazione') });
+  });
+
+  document.getElementById('customize-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('personalizzazione', getUserName(), document.getElementById('customize-intro-dont-show-again').checked);
+    customizeShowScreen('main');
+  });
+
+  document.getElementById('customize-help-btn').addEventListener('click', function () {
+    openHelpFor(CUSTOMIZE_PSEUDO_MODULE);
+  });
 
   /* ============================================================
      EPISODE MAP
      Lists the modules declared on the episode (see EPISODES above) with
      their derived status. Only the current module, or a completed one
      being reviewed, can be opened — a locked row is a disabled button.
+     Shown right after "Inizia Episodio 1" (before Customize, which now
+     only opens the first time a module is clicked this episode — see
+     the click handler below and CUSTOMIZE_PSEUDO_MODULE above).
      ============================================================ */
   var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
   var STATUS_ICON = { completed: 'check', current: 'play', locked: 'lock' };
@@ -3104,10 +3226,45 @@
     document.getElementById('module-list').innerHTML = html;
   }
 
+  function mapShowScreen(name) {
+    document.getElementById('map-intro-screen').hidden = name !== 'intro';
+    document.getElementById('map-main-screen').hidden = name !== 'main';
+  }
+
   function openEpisodeMap() {
     document.getElementById('map-episode-badge').textContent = currentEpisode.badge;
     renderModuleList();
     showView('map');
+    if (isIntroDismissed('mappaEpisodio', getUserName())) {
+      mapShowScreen('main');
+    } else {
+      document.getElementById('map-intro-dont-show-again').checked = false;
+      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body');
+      mapShowScreen('intro');
+    }
+  }
+
+  document.getElementById('go-episode').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('map-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(MAP_PSEUDO_MODULE, { dismissPref: introDismissPref('mappaEpisodio') });
+  });
+
+  document.getElementById('map-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('mappaEpisodio', getUserName(), document.getElementById('map-intro-dont-show-again').checked);
+    mapShowScreen('main');
+  });
+
+  document.getElementById('map-help-btn').addEventListener('click', function () {
+    openHelpFor(MAP_PSEUDO_MODULE);
+  });
+
+  function openModuleByKind(module) {
+    if (module.kind === 'repeatAloud') openRepeatAloud(module);
+    else if (module.kind === 'speakEasy') openSpeakEasy(module);
+    else if (module.kind === 'voiceCoach') openVoiceCoach(module);
+    else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
+    else if (module.flashcardLevel) openFlashcard(module);
   }
 
   document.getElementById('module-list').addEventListener('click', function (e) {
@@ -3115,16 +3272,26 @@
     if (!btn || btn.disabled) return;
     var module = currentEpisode.modules.find(function (m) { return m.id === btn.getAttribute('data-module'); });
     if (!module) return;
-    if (module.kind === 'repeatAloud') openRepeatAloud(module);
-    else if (module.kind === 'speakEasy') openSpeakEasy(module);
-    else if (module.kind === 'voiceCoach') openVoiceCoach(module);
-    else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
-    else if (module.flashcardLevel) openFlashcard(module);
+    if (!isCustomizeSeen(currentEpisode.id, getUserName())) {
+      pendingModuleAfterCustomize = module;
+      openCustomize();
+      return;
+    }
+    openModuleByKind(module);
+  });
+
+  document.getElementById('start-episode').addEventListener('click', function () {
+    setCustomizeSeen(currentEpisode.id, getUserName());
+    if (pendingModuleAfterCustomize) {
+      var module = pendingModuleAfterCustomize;
+      pendingModuleAfterCustomize = null;
+      openModuleByKind(module);
+    } else {
+      openEpisodeMap();
+    }
   });
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
-
-  document.getElementById('start-episode').addEventListener('click', openEpisodeMap);
 
   /* ============================================================
      MODULE: REPEAT ALOUD

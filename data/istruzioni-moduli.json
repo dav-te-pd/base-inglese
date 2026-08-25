@@ -1,4 +1,24 @@
 {
+  "personalizzazione": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante 'Reset' per tornare al valore di default.</p><p>Quando sei pronto, premi 'Inizia l'episodio'.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. 'Reset' torna al default. Poi premi 'Inizia l'episodio'.</p>"
+    }
+  },
+  "mappaEpisodio": {
+    "howItWorks": {
+      "title": "Guarda come si fa",
+      "body": "<p>Questa è la mappa dell'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
+    }
+  },
   "repeatAloud": {
     "howItWorks": {
       "title": "Guarda come si fa",
