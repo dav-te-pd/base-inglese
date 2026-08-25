@@ -428,6 +428,32 @@
     --font-display: "Source Serif 4", Georgia, serif;
     --font-body: "Inter", system-ui, sans-serif;
     --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    /* ---- Design tokens: spacing / radius / text size / buttons ----
+       Non colori (quelli restano per-tema sopra): questi valori sono
+       fissi in ogni tema, derivati dalla scala già in uso nel progetto. */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 18px;
+    --space-xl: 26px;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 999px;
+
+    --text-label: 0.75rem;
+    --text-body: 0.92rem;
+    --text-title: 1.3rem;
+    --text-title-lg: 2rem;
+
+    --btn-padding-sm: 8px 14px;
+    --btn-padding-md: 13px 24px;
+    --btn-padding-lg: 16px 30px;
+    --btn-text-sm: 0.8rem;
+    --btn-text-md: 0.95rem;
+    --btn-text-lg: 1.05rem;
   }
 
   [data-theme="notte"] {
@@ -501,8 +527,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 32px 20px;
+    padding: var(--space-lg) var(--space-md);
     transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  @media (min-width: 768px) {
+    body { padding: 32px 20px; }
   }
 
   h1, h2 {
@@ -512,19 +542,27 @@
     text-wrap: balance;
   }
 
+  h1 { font-size: var(--text-title-lg); }
+  h2 { font-size: var(--text-title); }
+
   p { margin: 0; }
 
   /* ============================================================
      COMPONENTS — buttons, cards, badges
      ============================================================ */
   .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.95rem;
-    border-radius: 8px;
-    padding: 13px 24px;
+    font-size: var(--btn-text-md);
+    border-radius: var(--radius-sm);
+    padding: var(--btn-padding-md);
     border: 1px solid transparent;
     cursor: pointer;
+    white-space: nowrap;
     transition: filter 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
   }
 
@@ -562,21 +600,39 @@
   .btn-block { width: 100%; }
 
   .btn-sm {
-    padding: 8px 14px;
-    font-size: 0.8rem;
+    padding: var(--btn-padding-sm);
+    font-size: var(--btn-text-sm);
+  }
+
+  .btn-lg {
+    padding: var(--btn-padding-lg);
+    font-size: var(--btn-text-lg);
   }
 
   .card {
     background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
     box-shadow: var(--shadow);
   }
 
   .panel {
     background: var(--card-2);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: var(--radius-md);
+  }
+
+  /* Inline Lucide SVG icons — inherit color via currentColor so they
+     follow whatever ink color their container already uses per theme. */
+  .icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  .icon-lg {
+    width: 32px;
+    height: 32px;
   }
 
   .badge {
@@ -584,11 +640,11 @@
     align-items: center;
     gap: 6px;
     font-family: var(--font-mono);
-    font-size: 0.72rem;
+    font-size: var(--text-label);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     padding: 5px 12px;
-    border-radius: 999px;
+    border-radius: var(--radius-full);
     background: color-mix(in srgb, var(--accent) 14%, var(--card));
     color: var(--accent);
     white-space: nowrap;
@@ -631,14 +687,15 @@
     justify-content: center;
     gap: 8px;
     padding: 14px 18px;
-    border-radius: 8px;
+    border-radius: var(--radius-sm);
     border: 1px solid var(--border);
     background: var(--card-2);
     color: var(--text);
     font-family: var(--font-body);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: var(--btn-text-md);
     cursor: pointer;
+    white-space: nowrap;
     transition: border-color 0.15s ease, color 0.15s ease;
   }
 
@@ -705,6 +762,9 @@
   }
 
   .overlay-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: none;
     border: none;
     font-size: 1.1rem;
@@ -770,13 +830,21 @@
   }
 
   .view { display: none; }
-  .view.is-active { display: flex; flex-direction: column; gap: 26px; }
+  .view.is-active { display: flex; flex-direction: column; gap: var(--space-xl); }
 
   .card-body {
-    padding: 40px;
+    padding: var(--space-lg);
     display: flex;
     flex-direction: column;
-    gap: 26px;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 480px) {
+    .card-body { padding: var(--space-xl); }
+  }
+
+  @media (min-width: 768px) {
+    .card-body { padding: 40px; }
   }
 
   header.app-header {
@@ -799,6 +867,7 @@
      instead of getting spread apart across the row. */
   .header-actions {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 8px;
   }
@@ -1859,7 +1928,7 @@
             <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
             <span class="badge">Repeat Aloud</span>
             <div class="header-actions">
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn">🎥 Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn"><span data-icon="video"></span> Guarda come si fa</button>
               <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
             </div>
           </div>
@@ -1911,7 +1980,7 @@
             <p style="opacity:0.7; font-size:0.92rem;">Segui il dialogo, ascolta ogni battuta e prova a ripeterla.</p>
           </header>
 
-          <button type="button" class="watch-bar" id="speak-easy-watch-bar">🎥 Guarda come si fa</button>
+          <button type="button" class="watch-bar" id="speak-easy-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
 
           <div id="speak-easy-body"></div>
 
@@ -1935,7 +2004,7 @@
             <p class="vc-counter" id="vc-counter">1 / 1</p>
           </header>
 
-          <button type="button" class="watch-bar" id="voice-coach-watch-bar">🎥 Guarda come si fa</button>
+          <button type="button" class="watch-bar" id="voice-coach-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
 
           <div class="vc-retry-row">
             <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
@@ -1949,7 +2018,7 @@
 
           <div class="vc-mic-area">
             <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
-              <span id="vc-record-icon">🎤</span>
+              <span id="vc-record-icon" data-icon="mic" data-icon-class="icon-lg"></span>
             </button>
             <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
             <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
@@ -1958,8 +2027,8 @@
               <div class="vc-confirm-box">
                 <p class="vc-confirm-text">Sicuro? Invia per la valutazione, o cancella e riprova.</p>
                 <div class="pending-actions">
-                  <button type="button" class="btn btn-secondary" id="vc-cancel-btn">✕ Cancella</button>
-                  <button type="button" class="btn btn-primary" id="vc-send-btn">✓ Invia</button>
+                  <button type="button" class="btn btn-secondary" id="vc-cancel-btn"><span data-icon="x"></span> Cancella</button>
+                  <button type="button" class="btn btn-primary" id="vc-send-btn"><span data-icon="check"></span> Invia</button>
                 </div>
               </div>
             </div>
@@ -2078,7 +2147,7 @@
             <p class="fc-counter" id="fc-counter"></p>
           </header>
 
-          <button type="button" class="watch-bar" id="flashcard-watch-bar">🎥 Guarda come si fa</button>
+          <button type="button" class="watch-bar" id="flashcard-watch-bar"><span data-icon="video"></span> Guarda come si fa</button>
 
           <!-- RETRY-PASS INTRO SCREEN: shown before every new retry pass,
                not just the first (loops until a pass has zero misses). -->
@@ -2161,7 +2230,7 @@
             <span><i class="dot correct"></i> padroneggiata</span>
           </div>
 
-          <button type="button" class="edit-custom-link" id="edit-custom">✎ Modifica i nomi della storia</button>
+          <button type="button" class="edit-custom-link" id="edit-custom"><span data-icon="pencil"></span> Modifica i nomi della storia</button>
 
           <div class="warning" id="warning">
             Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
@@ -2183,7 +2252,7 @@
     <div class="overlay-panel card">
       <div class="overlay-header">
         <h2 id="help-overlay-title">Aiuto</h2>
-        <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi">✕</button>
+        <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi"><span data-icon="x"></span></button>
       </div>
       <div class="overlay-body" id="help-overlay-body"></div>
     </div>
@@ -2244,6 +2313,39 @@
 <script>
 (function () {
   var CONFIG = window.APP_CONFIG;
+
+  /* ============================================================
+     ICONS — inline Lucide SVG markup (MIT/ISC, self-contained, no
+     external request or runtime library). Path data copied verbatim
+     from lucide-static. Colors follow currentColor, so icons inherit
+     whatever text/ink color their container already uses per theme.
+     ============================================================ */
+  var ICONS = {
+    'volume-2': '<path d="M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.364 18.364a9 9 0 0 0 0-12.728"/>',
+    'video': '<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/>',
+    'mic': '<path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>',
+    'square': '<rect width="18" height="18" x="3" y="3" rx="2"/>',
+    'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+    'check': '<path d="M20 6 9 17l-5-5"/>',
+    'lock': '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+    'play': '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>',
+    'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
+    'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'
+  };
+
+  function icon(name, extraClass) {
+    var inner = ICONS[name];
+    if (!inner) return '';
+    return '<svg class="icon' + (extraClass ? ' ' + extraClass : '') + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + inner + '</svg>';
+  }
+
+  function hydrateIcons(root) {
+    (root || document).querySelectorAll('[data-icon]').forEach(function (el) {
+      var name = el.getAttribute('data-icon');
+      var extraClass = el.getAttribute('data-icon-class') || '';
+      el.innerHTML = icon(name, extraClass);
+    });
+  }
 
   /* ============================================================
      THEME MANAGER — driven by CONFIG.themes
@@ -2875,7 +2977,7 @@
       }).join('');
       return '<div class="slot-card panel">' +
         '<div class="slot-card-fields">' + fieldsHtml + '</div>' +
-        '<button type="button" class="btn btn-secondary btn-sm" data-reset-group="' + g.key + '">↺ Reset</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-reset-group="' + g.key + '">' + icon('rotate-ccw') + ' Reset</button>' +
         '</div>';
     }).join('');
   }
@@ -2921,7 +3023,7 @@
      being reviewed, can be opened — a locked row is a disabled button.
      ============================================================ */
   var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
-  var STATUS_ICON = { completed: '✓', current: '▶', locked: '🔒' };
+  var STATUS_ICON = { completed: 'check', current: 'play', locked: 'lock' };
 
   function renderModuleList() {
     var progress = loadModuleProgress(currentEpisode.id, getUserName());
@@ -2930,7 +3032,7 @@
       var clickable = status !== 'locked';
       return '<button type="button" class="module-row ' + status + '" data-module="' + m.id + '"' +
         (clickable ? '' : ' disabled') + '>' +
-        '<span class="module-row-label"><span class="module-status-icon">' + STATUS_ICON[status] + '</span>' + m.label + '</span>' +
+        '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' + m.label + '</span>' +
         '<span class="module-state-badge">' + STATUS_LABEL[status] + '</span>' +
         '</button>';
     }).join('');
@@ -3007,7 +3109,7 @@
         '<div class="repeat-item-top">' +
         '<span class="repeat-item-english">' + item.english + '</span>' +
         '<div class="repeat-item-audio">' +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">🔊</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(item.id) + '</div>' +
         '</div>' +
         '</div>' +
@@ -3147,7 +3249,7 @@
         '<span class="chat-speaker">' + speakerLabel(currentEpisode, line.speaker) + '</span>' +
         '<p class="chat-english">' + english + '</p>' +
         '<div class="repeat-item-audio">' +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">🔊</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
         '</div>' +
         '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>' +
@@ -3318,7 +3420,7 @@
     btn.hidden = state === 'pending' || state === 'result';
     btn.classList.toggle('is-recording', recording);
     btn.setAttribute('aria-label', recording ? 'Tocca per fermare' : 'Tocca per registrare');
-    document.getElementById('vc-record-icon').textContent = recording ? '■' : '🎤';
+    document.getElementById('vc-record-icon').innerHTML = icon(recording ? 'square' : 'mic', 'icon-lg');
     document.getElementById('vc-record-caption').hidden = btn.hidden;
     document.getElementById('vc-record-caption').textContent = recording ? 'Tocca per fermare' : 'Tocca per registrare';
     document.getElementById('vc-record-timer').hidden = !recording;
@@ -3403,7 +3505,7 @@
     document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
     document.getElementById('vc-target').textContent = vcTargetText();
     document.getElementById('vc-audio-controls').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">🔊</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>';
     document.getElementById('vc-feedback').innerHTML = '';
     document.getElementById('vc-transcript').innerHTML = '';
@@ -3967,10 +4069,10 @@
     document.getElementById('fc-front-word').textContent = fcFrontText();
     document.getElementById('fc-back-word').textContent = fcBackText();
     document.getElementById('fc-front-audio').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">🔊</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('front') + '</div>';
     document.getElementById('fc-back-audio').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">🔊</button>' +
+      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>';
     document.getElementById('fc-prev-btn').disabled = fcPassIndex === 0;
     fcShowNav(true);
@@ -4123,6 +4225,7 @@
     openHelpFor(fcModule);
   });
 
+  hydrateIcons(document);
   boot();
 
   /* ============================================================
