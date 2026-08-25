@@ -26,12 +26,28 @@
       // Playback speed choices offered next to a listen button, as a
       // multiplier of normal rate (1 = 100%). Order here is render order.
       rateOptions: [1, 0.75, 0.5],
+      // Male voices listed first — a male voice is preferred for English
+      // when the system/browser offers one, falling back to whichever
+      // English voice is actually available otherwise (see pickVoice()
+      // and maleVoiceNameHints below for systems whose voice isn't one of
+      // these exact names).
       preferredVoiceNames: [
+        'Microsoft Guy Online (Natural) - English (United States)',
+        'Microsoft David - English (United States)',
+        'Google UK English Male',
+        'Alex',
+        'Daniel',
         'Google US English',
         'Samantha',
         'Microsoft Aria Online (Natural) - English (United States)',
         'Microsoft Jenny Online (Natural) - English (United States)'
-      ]
+      ],
+      // Used only when none of the exact names above exist on this system:
+      // a lightweight heuristic to still prefer a male-sounding voice among
+      // whichever English voices ARE available, before falling back to
+      // whichever one the browser happens to list first. Checked against
+      // the voice's own name, lowercased.
+      maleVoiceNameHints: ['male', 'guy', 'david', 'alex', 'daniel', 'mark', 'fred', 'james', 'george', 'thomas', 'oliver']
     },
     // ---- word matching (speech-to-target comparison) ----
     matching: {
@@ -109,7 +125,13 @@
           // Key into the episode data file's own object (CLAUDE.md rule 4).
           vocabKey: 'flashcardLevelA'
         }
-      }
+      },
+      // Safety valve against an infinite retry loop: once a card has been
+      // marked "Non ancora" (or skipped without flipping) this many times
+      // in one session, it's accepted as rosso and dropped from the active
+      // retry queue instead of being requeued again — same mechanism and
+      // default as CONFIG.speedRound.maxRetryAttempts.
+      maxRetryAttempts: 3
     },
     // ---- selectable color themes ----
     themes: {
@@ -602,6 +624,14 @@
     cursor: not-allowed;
     transform: none;
   }
+
+  /* Same [hidden]-vs-own-"display" fix as elsewhere in the file: .btn's
+     own "display: inline-flex" beats the browser's default
+     [hidden]{display:none} regardless of specificity, so any button
+     toggled via the hidden attribute (Speed Round's "Non lo so"/"Avanti",
+     the "Guarda come si fa" buttons on a summary screen, …) stayed
+     visibly on screen despite hidden=true until this was added. */
+  .btn[hidden] { display: none; }
 
   .btn-primary {
     background: var(--accent);
@@ -4571,8 +4601,11 @@
   var fcPassItems = [];
   var fcPassIndex = 0;
   var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
+  var fcRetryAttempts = {}; // itemId -> times wrong/skipped this session (across every pass)
   var fcCurrentItem = null;
   var fcFlipped = false;
+  var fcEverFlipped = false; // true once this card has shown its back at least once this viewing
+  var fcAnswered = false; // true once Sì/Non ancora has been chosen this viewing
   var fcNavLocked = false;
   var fcNavTimeoutId = null;
 
@@ -4597,12 +4630,18 @@
     document.getElementById('fc-choice-row').hidden = showNav;
   }
 
-  // skippedWithoutTrying: "Avanti" pressed while the card was still on its
-  // front, unflipped — not a wrong answer but a non-attempt, so it resets
+  // skippedWithoutTrying: "Avanti" pressed without ever having flipped the
+  // card this viewing — not a wrong answer but a non-attempt, so it resets
   // straight to rosso regardless of the current level instead of stepping
   // down one level like every other module's "wrong" (applyMasteryResult
   // is untouched — this is a Flash-Card-specific path, not a change to the
-  // shared demotion rule).
+  // shared demotion rule). A real "Non ancora" that keeps recurring across
+  // retry passes is force-accepted as rosso after CONFIG.flashcard.
+  // maxRetryAttempts attempts — same safety valve, same default, as Speed
+  // Round's maxRetryAttempts, so a single stubborn card can't loop the
+  // retry passes forever; fcPassResults is set to 'correct' in that case
+  // purely to close it out of fcFinishPassCheck's retry-queue computation,
+  // not a real self-assessed answer.
   function fcRecordResult(result, skippedWithoutTrying) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
@@ -4612,6 +4651,16 @@
       ? { level: 'rosso', streak: 0 }
       : applyMasteryResult(mastery[unitId], result);
     saveMastery(currentEpisode.id, userName, mastery);
+
+    if (result === 'wrong') {
+      var attempts = (fcRetryAttempts[fcCurrentItem.id] || 0) + 1;
+      fcRetryAttempts[fcCurrentItem.id] = attempts;
+      if (attempts >= CONFIG.flashcard.maxRetryAttempts) {
+        mastery[unitId] = { level: 'rosso', streak: 0 };
+        saveMastery(currentEpisode.id, userName, mastery);
+        fcPassResults[fcCurrentItem.id] = 'correct';
+      }
+    }
   }
 
   // Resets the card to its front-facing state with no animation: just
@@ -4631,6 +4680,8 @@
   function fcRenderCard() {
     fcCurrentItem = fcVocab.find(function (v) { return v.id === fcPassItems[fcPassIndex]; });
     fcFlipped = false;
+    fcEverFlipped = false;
+    fcAnswered = false;
     // Front state committed before anything else renders, per the fix above.
     fcResetFlipInstant();
     document.getElementById('fc-counter').textContent = (fcPassIndex + 1) + ' / ' + fcPassItems.length;
@@ -4650,11 +4701,18 @@
     if (!fcIntroPending) fcShowScreen('card');
   }
 
+  // Toggles the card between front and back at any point — not just a
+  // one-shot flip — so the user can flip back to reread the front before
+  // committing to an answer. Once answered (Sì/Non ancora), the card is
+  // resolved for this viewing and no longer responds to taps, so a
+  // completed choice can't be silently reopened by flipping again.
   function fcFlip() {
-    if (fcFlipped || fcNavLocked) return;
-    fcFlipped = true;
-    document.getElementById('fc-card').classList.add('is-flipped');
-    fcShowNav(false);
+    if (fcNavLocked || fcAnswered) return;
+    fcFlipped = !fcFlipped;
+    if (fcFlipped) fcEverFlipped = true;
+    document.getElementById('fc-card').classList.toggle('is-flipped', fcFlipped);
+    // The Doppia Scelta box only makes sense with the back showing.
+    fcShowNav(!fcFlipped);
   }
 
   function fcFinishPassCheck() {
@@ -4698,7 +4756,7 @@
 
   function fcGoNext() {
     if (fcNavLocked) return;
-    if (!fcFlipped) {
+    if (!fcEverFlipped) {
       fcRecordResult('wrong', true); // advanced without ever flipping = didn't even try
     }
     if (fcPassIndex < fcPassItems.length - 1) {
@@ -4719,6 +4777,7 @@
     fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
     fcPassIndex = 0;
     fcPassResults = {};
+    fcRetryAttempts = {};
     fcRenderCard();
   }
 
@@ -4775,11 +4834,13 @@
 
   document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
     fcRecordResult('wrong');
+    fcAnswered = true;
     fcShowNav(true);
   });
 
   document.getElementById('fc-know-it-btn').addEventListener('click', function () {
     fcRecordResult('correct');
+    fcAnswered = true;
     fcShowNav(true);
   });
 
@@ -4992,6 +5053,16 @@
     }
   }
 
+  // Heuristic-only: the Web Speech API exposes no real gender field, so a
+  // voice not in CONFIG.speech.preferredVoiceNames is guessed from its own
+  // name against maleVoiceNameHints — "female" is excluded explicitly
+  // first since it would otherwise match the "male" substring inside it.
+  function looksLikeMaleVoice(voice) {
+    var name = voice.name.toLowerCase();
+    if (name.indexOf('female') !== -1) return false;
+    return CONFIG.speech.maleVoiceNameHints.some(function (hint) { return name.indexOf(hint) !== -1; });
+  }
+
   function pickVoice() {
     if (!synth) return null;
     if (!voices.length) voices = synth.getVoices();
@@ -5000,9 +5071,12 @@
       var match = voices.find(function (v) { return v.name === preferredNames[k]; });
       if (match) return match;
     }
-    var enUS = voices.find(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
-    if (enUS) return enUS;
-    return voices.find(function (v) { return v.lang && v.lang.indexOf('en') === 0; }) || null;
+    var langVoices = voices.filter(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
+    if (!langVoices.length) {
+      langVoices = voices.filter(function (v) { return v.lang && v.lang.indexOf('en') === 0; });
+    }
+    if (!langVoices.length) return null;
+    return langVoices.find(looksLikeMaleVoice) || langVoices[0];
   }
 
   // Shared text-to-speech helper: used by the full-sentence speak button
