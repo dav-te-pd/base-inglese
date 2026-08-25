@@ -704,6 +704,11 @@
     white-space: nowrap;
   }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why this exists even though nothing toggles .badge
+     via hidden today. */
+  .badge[hidden] { display: none; }
+
   input[type="text"], select, textarea {
     font-family: var(--font-body);
     font-size: 1rem;
@@ -839,6 +844,18 @@
     gap: 10px;
   }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12): every class above that
+     sets its own "display" gets the matching [hidden]{display:none}
+     override here, regardless of whether anything toggles it via the
+     hidden attribute today — so a future module reusing one of these
+     classes can't reintroduce this bug class by surprise. */
+  .overlay.is-open[hidden],
+  .overlay-panel[hidden],
+  .overlay-header[hidden],
+  .overlay-close[hidden],
+  .help-menu[hidden],
+  .overlay-actions[hidden] { display: none; }
+
   /* ============================================================
      APP SHELL
      ============================================================ */
@@ -864,6 +881,12 @@
   @media (min-width: 768px) {
     .card-body { padding: 40px; }
   }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     above for why these exist even though nothing toggles them via
+     hidden today. */
+  .view.is-active[hidden],
+  .card-body[hidden] { display: none; }
 
   header.app-header {
     display: flex;
@@ -946,6 +969,13 @@
     }
   }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12) — .top-row included even
+     though only the legacy, unreachable view-pronunciation still uses it. */
+  .top-row[hidden],
+  .header-2row[hidden],
+  .header-badge-row[hidden],
+  .header-actions-row[hidden] { display: none; }
+
   /* ---------- onboarding ---------- */
   #view-onboarding .card-body { align-items: center; text-align: center; }
   #onboarding-form {
@@ -1008,6 +1038,14 @@
     flex-direction: column;
     gap: 10px;
   }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .theme-picker[hidden],
+  .theme-swatch[hidden],
+  .swatch-dot[hidden],
+  .home-actions[hidden] { display: none; }
 
   .switch-user {
     text-align: center;
@@ -1102,6 +1140,18 @@
 
   .request-field-feedback.is-warning { color: var(--wrong-ink); }
   .request-field-feedback.is-success { color: var(--correct-ink); }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .slot-grid[hidden],
+  .slot-card[hidden],
+  .slot-card-fields[hidden],
+  .slot-field[hidden],
+  .request-box[hidden],
+  .request-fields[hidden],
+  .request-field-row[hidden],
+  .request-field-input-row[hidden] { display: none; }
 
   /* ---------- pronunciation view ---------- */
   .phrase {
@@ -1224,6 +1274,15 @@
 
   .edit-custom-link:hover { opacity: 1; color: var(--accent); }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
+     view-pronunciation (legacy, unreachable from the current UI) is the
+     only consumer of these. */
+  .listen-row[hidden],
+  .controls[hidden],
+  .mic-btn[hidden],
+  .legend[hidden],
+  .dot[hidden] { display: none; }
+
   /* ---------- episode map view ---------- */
   .module-list {
     display: flex;
@@ -1301,6 +1360,14 @@
   .module-row.completed .module-state-badge { background: var(--correct-bg); color: var(--correct-ink); }
   .module-row.current .module-state-badge { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
   .module-row.locked .module-state-badge { background: var(--card); color: var(--text); opacity: 0.6; }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .module-list[hidden],
+  .module-row[hidden],
+  .module-row-label[hidden],
+  .module-status-icon[hidden] { display: none; }
 
   /* ---------- repeat aloud module view ---------- */
   .module-status-text {
@@ -1470,6 +1537,15 @@
     margin-bottom: 8px;
   }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .repeat-list[hidden],
+  .repeat-item[hidden],
+  .repeat-item-top[hidden],
+  .rate-group[hidden],
+  .general-rule-label[hidden] { display: none; }
+
   /* ---------- speak easy view (chat bubbles) ---------- */
   .chat-list {
     display: flex;
@@ -1524,6 +1600,13 @@
     outline: 3px solid var(--accent);
     outline-offset: 2px;
   }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .chat-list[hidden],
+  .chat-row[hidden],
+  .chat-bubble[hidden] { display: none; }
 
   /* ---------- voice coach view ---------- */
   .vc-counter {
@@ -1711,6 +1794,15 @@
 
   #attempt-popup .overlay-backdrop { cursor: default; }
 
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .vc-mic-area[hidden],
+  .vc-retry-row[hidden],
+  .vc-confirm-box[hidden],
+  .pending-actions[hidden],
+  .vc-stars[hidden] { display: none; }
+
   /* ---------- speed round view ---------- */
   #sr-start-screen,
   #sr-retry-intro-screen,
@@ -1820,6 +1912,12 @@
     font-size: 1.2rem;
     margin: 0;
   }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .sr-options[hidden],
+  .sr-summary[hidden] { display: none; }
 
   /* ---------- flash card view ---------- */
   /* The two-row header itself now lives in the shared .header-2row/
@@ -1979,6 +2077,12 @@
     font-weight: 600;
     margin: 0;
   }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
+     near .top-row for why these exist even though nothing toggles them
+     via hidden today. */
+  .fc-card[hidden],
+  .fc-card-face[hidden] { display: none; }
 
   .warning {
     background: var(--wrong-bg);
