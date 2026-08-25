@@ -2170,9 +2170,10 @@
   </div>
 
   <!-- ============ SHARED: MODULE HELP OVERLAY ============
-       One overlay, reused by every module for both "Guarda come si fa"
-       and "Help": content is filled in by JS from the current module's
-       config, never duplicated per module. -->
+       One overlay, reused by every module's "Help" button (menu +
+       clarify/urgent forms), and by "Guarda come si fa" for every
+       module except Repeat Aloud, which is trialing the dedicated
+       full-screen intro + simple overlay below instead. -->
   <div class="overlay" id="help-overlay">
     <button type="button" class="overlay-backdrop" id="help-overlay-backdrop" aria-label="Chiudi"></button>
     <div class="overlay-panel card">
@@ -2181,6 +2182,29 @@
         <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi">✕</button>
       </div>
       <div class="overlay-body" id="help-overlay-body"></div>
+    </div>
+  </div>
+
+  <!-- ============ SHARED: "GUARDA COME SI FA" SIMPLE OVERLAY ============
+       A plain popup for the manual re-check of a module's howItWorks
+       text: title + body + one "Chiudi" button, closes back to exactly
+       whatever was on screen underneath — no state to freeze, nothing
+       module-specific here, so any module's watch button can call
+       openHowItWorksOverlay(module) later without new markup. Distinct
+       from the full-screen auto-shown intro (Repeat Aloud today), which
+       keeps its own "Ho capito, inizia" + dismissal checkbox. -->
+  <div class="overlay" id="howitworks-overlay">
+    <button type="button" class="overlay-backdrop" id="howitworks-overlay-backdrop" aria-label="Chiudi"></button>
+    <div class="overlay-panel card">
+      <div class="overlay-header">
+        <h2 id="howitworks-overlay-title">Guarda come si fa</h2>
+      </div>
+      <div class="overlay-body">
+        <div class="overlay-text" id="howitworks-overlay-body"></div>
+        <div class="overlay-actions">
+          <button type="button" class="btn btn-primary" id="howitworks-overlay-close-btn">Chiudi</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2368,8 +2392,36 @@
 
   document.getElementById('help-overlay-close').addEventListener('click', closeOverlay);
   document.getElementById('help-overlay-backdrop').addEventListener('click', closeOverlay);
+
+  // Simple "Guarda come si fa" popup (see markup comment) — generic by
+  // module.kind, only Repeat Aloud's watch button calls it today.
+  var howItWorksOverlayEl = document.getElementById('howitworks-overlay');
+
+  function openHowItWorksOverlay(module) {
+    document.getElementById('howitworks-overlay-title').textContent = 'Guarda come si fa';
+    document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    howItWorksOverlayEl.classList.add('is-open');
+    loadModuleInstructions().then(function (data) {
+      var entry = data[module.kind] && data[module.kind].howItWorks;
+      document.getElementById('howitworks-overlay-title').textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById('howitworks-overlay-body').innerHTML = entry
+        ? entry.body
+        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
+    }).catch(function () {
+      document.getElementById('howitworks-overlay-body').innerHTML =
+        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
+    });
+  }
+
+  function closeHowItWorksOverlay() { howItWorksOverlayEl.classList.remove('is-open'); }
+
+  document.getElementById('howitworks-overlay-close-btn').addEventListener('click', closeHowItWorksOverlay);
+  document.getElementById('howitworks-overlay-backdrop').addEventListener('click', closeHowItWorksOverlay);
+
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape' && helpOverlayEl.classList.contains('is-open')) closeOverlay();
+    if (e.key !== 'Escape') return;
+    if (helpOverlayEl.classList.contains('is-open')) closeOverlay();
+    if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
   });
 
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
@@ -3016,7 +3068,9 @@
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('repeat-aloud-watch-btn').addEventListener('click', openRaIntro);
+  document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(currentRepeatAloudModule);
+  });
 
   document.getElementById('ra-intro-start-btn').addEventListener('click', function () {
     setRaIntroDismissed(getUserName(), document.getElementById('ra-intro-dont-show-again').checked);
