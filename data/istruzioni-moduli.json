@@ -1,12 +1,16 @@
 {
   "personalizzazione": {
+    "pageDescription": "Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.",
+    "requestBoxLabel": "Non trovi il nome, la città o la parola che ti serve?",
+    "requestBoxExample": "Esempio: se vai a Parigi invece che in Cina, scrivi \"Parigi\" nel campo Destinazione qui sotto — valuteremo di adattare il corso.",
+    "requestBoxDuplicateWarning": "Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.",
     "howItWorks": {
       "title": "Guarda come si fa",
-      "body": "<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante 'Reset' per tornare al valore di default.</p><p>Quando sei pronto, premi 'Inizia l'episodio'.</p>"
+      "body": "<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante 'Reset' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi 'Inizia l'episodio'.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. 'Reset' torna al default. Poi premi 'Inizia l'episodio'.</p>"
+      "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. Le scelte valgono per tutto l'episodio — per cambiarle dopo, si riparte da capo. 'Reset' torna al default.</p>"
     }
   },
   "mappaEpisodio": {

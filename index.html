@@ -252,13 +252,17 @@
   // kind, CLAUDE.md rule 8) — same resilience-net role as the block above.
   window.FALLBACK_MODULE_INSTRUCTIONS = {
     personalizzazione: {
+      pageDescription: 'Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.',
+      requestBoxLabel: 'Non trovi il nome, la città o la parola che ti serve?',
+      requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
+      requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
       howItWorks: {
         title: 'Guarda come si fa',
-        body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
+        body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
-        body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. \'Reset\' torna al default. Poi premi \'Inizia l\'episodio\'.</p>'
+        body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. Le scelte valgono per tutto l\'episodio — per cambiarle dopo, si riparte da capo. \'Reset\' torna al default.</p>'
       }
     },
     mappaEpisodio: {
@@ -997,6 +1001,44 @@
   }
 
   .slot-card input[type="text"], .slot-card select { background: var(--card); }
+
+  .request-box {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .request-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .request-field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .request-field-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .request-field-input-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    background: var(--card);
+  }
+
+  .request-field-feedback {
+    font-size: var(--text-label);
+    margin: 0;
+  }
+
+  .request-field-feedback.is-warning { color: var(--wrong-ink); }
+  .request-field-feedback.is-success { color: var(--correct-ink); }
 
   /* ---------- pronunciation view ---------- */
   .phrase {
@@ -1929,11 +1971,21 @@
           <div id="customize-main-screen" class="module-screen">
             <header class="app-header">
               <h1>Personalizza la tua storia o lascia così.</h1>
+              <p style="opacity:0.7; font-size:0.92rem;" id="customize-page-description"></p>
             </header>
 
             <div class="slot-grid" id="slot-grid"></div>
 
             <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+
+            <!-- REQUEST BOX: one small free-text field per personalization
+                 category already shown above, for a name/place not in the
+                 predefined lists — see submitCustomizationRequest(). -->
+            <div class="request-box panel" id="request-box">
+              <p style="font-weight:600;" id="request-box-label"></p>
+              <p style="opacity:0.75; font-size:0.85rem;" id="request-box-example"></p>
+              <div class="request-fields" id="request-fields"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -3143,6 +3195,89 @@
     saveCustomValues(currentEpisode, getUserName(), currentValues);
   });
 
+  // ---- Request Box: one small free-text field per personalization group
+  // already shown above (papà, mamma, figlia, figlio, partenza,
+  // destinazione — the same groupSlotFields() grouping renderSlotGrid()
+  // uses), for a name/place not in the predefined lists. The field to
+  // compare against for a given group is its non-"narrow" field (the
+  // name/place select, not an age) — same data already driving that
+  // group's own dropdown, so no group->table mapping is hardcoded here. ----
+  function requestGroupField(group) {
+    return group.fields.find(function (f) { return !f.narrow; }) || group.fields[0];
+  }
+
+  function renderRequestBox() {
+    var groups = groupSlotFields(currentEpisode.slotFields);
+    document.getElementById('request-fields').innerHTML = groups.map(function (g) {
+      var field = requestGroupField(g);
+      return '<div class="request-field-row">' +
+        '<span class="slot-label">' + field.label + '</span>' +
+        '<div class="request-field-input-row">' +
+        '<input type="text" data-request-group="' + g.key + '" id="request-' + g.key + '">' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-request-submit="' + g.key + '">Invia</button>' +
+        '</div>' +
+        '<p class="request-field-feedback" id="request-feedback-' + g.key + '" hidden></p>' +
+        '</div>';
+    }).join('');
+  }
+
+  function submitCustomizationRequest(groupKey) {
+    var input = document.getElementById('request-' + groupKey);
+    var value = input.value.trim();
+    if (!value) return;
+    var group = groupSlotFields(currentEpisode.slotFields).find(function (g) { return g.key === groupKey; });
+    if (!group) return;
+    var opts = slotOptions(requestGroupField(group));
+    var isDuplicate = opts.some(function (o) { return o.it.toLowerCase() === value.toLowerCase(); });
+    var feedbackEl = document.getElementById('request-feedback-' + groupKey);
+    loadModuleInstructions().then(function (data) {
+      var entry = data.personalizzazione || {};
+      if (isDuplicate) {
+        feedbackEl.textContent = entry.requestBoxDuplicateWarning || 'Questa parola è già tra le opzioni disponibili.';
+        feedbackEl.className = 'request-field-feedback is-warning';
+      } else {
+        saveHelpRequest(getUserName(), {
+          episodeId: currentEpisode.id,
+          moduleId: CUSTOMIZE_PSEUDO_MODULE.id,
+          type: 'customization',
+          category: groupKey,
+          text: value,
+          createdAt: new Date().toISOString()
+        });
+        feedbackEl.textContent = '✓ Richiesta salvata. Grazie!';
+        feedbackEl.className = 'request-field-feedback is-success';
+        input.value = '';
+      }
+      feedbackEl.hidden = false;
+    });
+  }
+
+  document.getElementById('request-fields').addEventListener('click', function (e) {
+    var groupKey = e.target.getAttribute('data-request-submit');
+    if (!groupKey) return;
+    submitCustomizationRequest(groupKey);
+  });
+
+  document.getElementById('request-fields').addEventListener('keydown', function (e) {
+    if (e.key !== 'Enter') return;
+    var groupKey = e.target.getAttribute('data-request-group');
+    if (!groupKey) return;
+    e.preventDefault();
+    submitCustomizationRequest(groupKey);
+  });
+
+  function renderCustomizePageText() {
+    document.getElementById('customize-page-description').textContent = '';
+    document.getElementById('request-box-label').textContent = '';
+    document.getElementById('request-box-example').textContent = '';
+    loadModuleInstructions().then(function (data) {
+      var entry = data.personalizzazione || {};
+      document.getElementById('customize-page-description').textContent = entry.pageDescription || '';
+      document.getElementById('request-box-label').textContent = entry.requestBoxLabel || '';
+      document.getElementById('request-box-example').textContent = entry.requestBoxExample || '';
+    }).catch(function () {});
+  }
+
   // Pseudo-modules: Map and Customize aren't in currentEpisode.modules (they
   // aren't a playable step), but the shared Help/HowItWorks machinery only
   // needs .kind (istruzioni-moduli.json lookup) and .id (help-request
@@ -3175,6 +3310,8 @@
     currentValues = loadCustomValues(currentEpisode, getUserName());
     document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
     renderSlotGrid();
+    renderRequestBox();
+    renderCustomizePageText();
     showView('customize');
     if (isIntroDismissed('personalizzazione', getUserName())) {
       customizeShowScreen('main');
