@@ -1232,6 +1232,10 @@
     cursor: pointer;
   }
 
+  /* Reused (unhidden dynamically) inside the simple overlay too — same
+     [hidden]-vs-"display" fix as elsewhere. */
+  .ra-intro-checkbox[hidden] { display: none; }
+
   .ra-intro-checkbox input[type="checkbox"] {
     width: 18px;
     height: 18px;
@@ -2201,6 +2205,13 @@
       </div>
       <div class="overlay-body">
         <div class="overlay-text" id="howitworks-overlay-body"></div>
+        <!-- Only shown when the caller passes a dismissPref (see
+             openHowItWorksOverlay) — today just Repeat Aloud, reusing
+             its one persistent preference, not a second flag. -->
+        <label class="ra-intro-checkbox" id="howitworks-overlay-checkbox-row" hidden>
+          <input type="checkbox" id="howitworks-overlay-dont-show-again">
+          <span>Non mostrarmi più questa schermata</span>
+        </label>
         <div class="overlay-actions">
           <button type="button" class="btn btn-primary" id="howitworks-overlay-close-btn">Chiudi</button>
         </div>
@@ -2395,12 +2406,30 @@
 
   // Simple "Guarda come si fa" popup (see markup comment) — generic by
   // module.kind, only Repeat Aloud's watch button calls it today.
+  // Optional options.dismissPref = { get(), set(bool) } wires up the
+  // "don't show again" checkbox against whatever persistent preference
+  // the caller owns (Repeat Aloud passes its existing one — same flag
+  // the full-screen auto-show reads, not a second one); omitted entirely
+  // for modules that don't have that concept yet, hiding the checkbox.
   var howItWorksOverlayEl = document.getElementById('howitworks-overlay');
 
-  function openHowItWorksOverlay(module) {
+  function openHowItWorksOverlay(module, options) {
+    options = options || {};
     document.getElementById('howitworks-overlay-title').textContent = 'Guarda come si fa';
     document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     howItWorksOverlayEl.classList.add('is-open');
+
+    var checkboxRow = document.getElementById('howitworks-overlay-checkbox-row');
+    var checkbox = document.getElementById('howitworks-overlay-dont-show-again');
+    if (options.dismissPref) {
+      checkboxRow.hidden = false;
+      checkbox.checked = options.dismissPref.get();
+      checkbox.onchange = function () { options.dismissPref.set(checkbox.checked); };
+    } else {
+      checkboxRow.hidden = true;
+      checkbox.onchange = null;
+    }
+
     loadModuleInstructions().then(function (data) {
       var entry = data[module.kind] && data[module.kind].howItWorks;
       document.getElementById('howitworks-overlay-title').textContent = (entry && entry.title) || 'Guarda come si fa';
@@ -3069,7 +3098,12 @@
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(currentRepeatAloudModule);
+    openHowItWorksOverlay(currentRepeatAloudModule, {
+      dismissPref: {
+        get: function () { return isRaIntroDismissed(getUserName()); },
+        set: function (val) { setRaIntroDismissed(getUserName(), val); }
+      }
+    });
   });
 
   document.getElementById('ra-intro-start-btn').addEventListener('click', function () {
