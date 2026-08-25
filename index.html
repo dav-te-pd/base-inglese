@@ -84,8 +84,11 @@
     // completion cue than the plain correct tone later. Built by calling
     // srPlayTone three times in sequence (see srPlayTraguardoSound), not
     // a new synthesis technique.
-    // Countdown: reserved for Dialogo Ripeti a Tempo / Dialogo Continuo —
-    // not used by any module yet this session.
+    // Countdown: Dialogo Ripeti a Tempo / Dialogo Continuo's per-line
+    // timer bar — plays once when the bar finishes (never a tick during
+    // the bar itself, see srPlayCountdownSound). Quieter than Corretto/
+    // Sbagliato's default volume since it's a background pacing cue, not
+    // a right/wrong judgment.
     sound: {
       traguardo: {
         notes: [523, 659, 784],
@@ -94,7 +97,8 @@
       },
       countdown: {
         freq: 660,
-        durationMs: 120
+        durationMs: 120,
+        volume: 0.08
       }
     },
     // ---- limits ----
@@ -176,12 +180,28 @@
     // "Dialogo Completo" is three consecutive map modules over the same
     // dialogue content — Ascolta e Ripeti (free, no timer), Ripeti a
     // Tempo (timed, manual advance), Dialogo Continuo (timed, automatic
-    // advance) — sharing one component (openDialogo and friends). Only
-    // ascoltaRipeti is registered on the episode map this session; the
-    // other two profiles are prepared here so the same component can
-    // read them later without rebuilding it, but nothing in the app
-    // activates them yet.
+    // advance) — sharing one component (openDialogo and friends).
     dialogo: {
+      // Per-line countdown-bar duration (Ripeti a Tempo / Dialogo
+      // Continuo only): pausaBase + numeroParole * pausaPerParola,
+      // capped at pausaMassima. Word count comes from the line's own
+      // English text (see dgLineDurationMs).
+      pausaBase: 2000,
+      pausaPerParola: 900,
+      pausaMassima: 12000,
+      // Ripeti a Tempo only: how long the suggested next line waits,
+      // untouched, before it starts a slow pulsing dissolve (never a
+      // forced advance — see dgSuggestNext).
+      pulsareDopoInattivita: 5000,
+      // Dialogo Continuo only: the 3-2-1 shown before it auto-starts,
+      // same step timing as Speed Round's own countdown but its own key
+      // (not reused) so the two can be tuned independently later.
+      countdownPre: 3,
+      countdownStepMs: 800,
+      // If true, also play the Countdown tone when a line's bar STARTS,
+      // not just when it ends. Off by default — see srPlayCountdownSound
+      // and CONFIG.sound.countdown; no ticking during the bar either way.
+      suonoCountdownInizio: false,
       profiles: {
         ascoltaRipeti: {
           // 'full' = badge + Mappa/Spiegazione/Help; 'backOnly' = Mappa only.
@@ -2119,6 +2139,44 @@
     cursor: not-allowed;
   }
 
+  /* Ripeti a Tempo/Dialogo Continuo only: the per-line countdown bar
+     shown inside the bubble once its audio finishes (reuses Speed
+     Round's own .sr-timerbar-track/.sr-timerbar-fill verbatim, CLAUDE.md
+     rule 13/5 — see dgStartLineTimer). Toggled via a class on the
+     bubble, not the "hidden" attribute, so no rule-12 override needed. */
+  .dg-line-timer {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .dg-bubble.dg-bubble-timer .dg-line-timer { display: flex; }
+
+  .dg-line-timer-caption {
+    margin: 0;
+    font-size: var(--text-label);
+    opacity: 0.75;
+  }
+
+  /* Ripeti a Tempo only: the suggested next line (dgSuggestNext) gets a
+     quiet highlight, then — if untouched for CONFIG.dialogo.
+     pulsareDopoInattivita — a slow opacity breathing (a soft dissolve,
+     never a hard blink). No timeout ever forces an advance. */
+  .dg-bubble.is-suggested {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+
+  @keyframes dg-pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.55; }
+  }
+
+  .dg-bubble.is-pulsing {
+    animation: dg-pulse-soft 2.2s ease-in-out infinite;
+  }
+
   /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
      nothing toggles these via "hidden" today beyond dg-heard-check. */
   .dg-toolbar[hidden],
@@ -2138,7 +2196,10 @@
     gap: 18px;
   }
 
-  #sr-countdown-screen {
+  /* Dialogo Continuo's dg-ready-screen (3-2-1) reuses this exact shape
+     (CLAUDE.md rule 13/5), own id since it's a distinct element. */
+  #sr-countdown-screen,
+  #dg-ready-screen {
     display: flex;
     justify-content: center;
     padding: 40px 0;
@@ -2151,6 +2212,7 @@
      so without this override every screen stays visible at once. */
   #sr-start-screen[hidden],
   #sr-countdown-screen[hidden],
+  #dg-ready-screen[hidden],
   #sr-retry-intro-screen[hidden],
   #sr-quiz-screen[hidden],
   #sr-summary-screen[hidden] { display: none; }
@@ -2822,15 +2884,14 @@
 
     <!-- ============ VIEW: DIALOGO (Ascolta e Ripeti / Ripeti a Tempo /
          Dialogo Continuo) ============
-         One shared component for all three "Dialogo Completo" steps —
+         ONE shared component for all three "Dialogo Completo" steps —
          module.dialogoProfile picks a CONFIG.dialogo.profiles entry
          driving header/translations/countdown/advance/pauseResume/
-         finalBoxQuestion. Only dialogoAscoltaRipeti is registered on the
-         episode map this session (see EPISODES) — this markup only
-         builds what its profile actually turns on (full header,
-         translations toggle, free advance, no countdown/pause); the
-         other two profiles are data-only for now. Same dialogue content
-         as Speak Easy, same shared dialogueLineAlign()/speakerLabel()
+         finalBoxQuestion. dg-toolbar's content (translations toggle vs
+         Pausa/Riprendi vs nothing) is generated per profile by
+         dgSetupToolbar, not hardcoded here — see the JS module comment
+         for the full per-profile behavior. Same dialogue content as
+         Speak Easy, same shared dialogueLineAlign()/speakerLabel()
          (CLAUDE.md rule 13) — no new data, no new file. -->
     <section id="view-dialogo" class="view">
       <div class="card">
@@ -2848,8 +2909,7 @@
 
           <!-- START SCREEN: same dual-purpose pattern as Speed Round/Quick
                Match — full howItWorks the first time, short "Pronto?"
-               prompt after — straight into the exercise, no countdown
-               (ascoltaRipeti.readyCountdown is false). -->
+               prompt after. -->
           <div id="dg-start-screen">
             <header class="app-header">
               <h1 id="dg-start-title">Spiegazione</h1>
@@ -2862,13 +2922,23 @@
             <button type="button" class="btn btn-primary btn-block" id="dg-start-btn">Ho capito, inizia</button>
           </div>
 
-          <!-- MAIN SCREEN: bubbles cliccabili in qualsiasi ordine, nessun
-               tasto Avanti/Salta — see dgLockAll for the Regola Azione
-               Critica applied per bubble. -->
+          <!-- READY SCREEN: Dialogo Continuo only (profile.readyCountdown)
+               — 3-2-1 before it starts playing on its own. Reuses Speed
+               Round's own .sr-countdown-number class verbatim (CLAUDE.md
+               rule 13/5), own screen id since it's a distinct element. -->
+          <div id="dg-ready-screen" hidden>
+            <div class="sr-countdown-number" id="dg-ready-number">3</div>
+          </div>
+
+          <!-- MAIN SCREEN: bubbles cliccabili (mod 1/2) o riproduzione
+               automatica (mod 3) — see dgLockAll for the Regola Azione
+               Critica applied per bubble, dgPlayLine for the shared
+               play/countdown-bar cycle every profile routes through. -->
           <div id="dg-main-screen" hidden>
-            <div class="dg-toolbar">
-              <button type="button" class="btn btn-secondary btn-sm" id="dg-translations-toggle">Mostra traduzioni</button>
-            </div>
+            <!-- Holds the translations toggle (Ascolta e Ripeti) or the
+                 Pausa/Riprendi button (Dialogo Continuo) or nothing
+                 (Ripeti a Tempo) — filled in by dgSetupToolbar per profile. -->
+            <div class="dg-toolbar" id="dg-toolbar" hidden></div>
 
             <div class="dg-list" id="dg-list"></div>
 
@@ -2876,8 +2946,8 @@
                  class verbatim (CLAUDE.md rule 13/5 — same plain padded
                  shape, zero new CSS), inner markup generated by the
                  shared renderChoiceBox() (see near hydrateIcons). Always
-                 present and clickable, no gating on how many lines have
-                 been heard. -->
+                 present, but disabled like every other control while a
+                 line is playing (see dgLockAll). -->
             <div class="panel fc-choice-row" id="dg-choice-row"></div>
           </div>
 
@@ -3685,6 +3755,8 @@
         // dialogo.profiles) — Ripeti a Tempo / Dialogo Continuo aren't
         // registered here yet, only built as config profiles for now.
         { id: 'dialogoAscoltaRipeti', kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti' },
+        { id: 'dialogoRipetiATempo', kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo' },
+        { id: 'dialogoContinuo', kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo' },
         { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
         // kind is shared between directions on purpose: both read the same
@@ -5351,46 +5423,72 @@
   /* ============================================================
      MODULES: DIALOGO (Ascolta e Ripeti / Ripeti a Tempo / Dialogo
      Continuo)
-     One shared component for all three "Dialogo Completo" steps —
-     module.dialogoProfile picks the CONFIG.dialogo.profiles entry that
-     drives header/translations/countdown/advance/pauseResume/
-     finalBoxQuestion (see CONFIG.dialogo). Only ascoltaRipeti is wired
-     up and registered on the map this session (see EPISODES) —
-     dgProfile.countdown/readyCountdown/pauseResume/advance are read
-     here so a future Ripeti a Tempo/Dialogo Continuo build can branch
-     on them without rebuilding this component, but nothing below
-     actually implements those paths yet (ascoltaRipeti's profile has
-     them all off/'free').
+     ONE shared component for all three "Dialogo Completo" steps, all
+     three registered on the map — module.dialogoProfile picks the
+     CONFIG.dialogo.profiles entry that drives everything that differs:
+       - header: 'full' (Ascolta e Ripeti) shows badge+Mappa/Spiegazione/
+         Help; 'backOnly' (the other two) shows only Mappa, always,
+         every screen (dgShowScreen).
+       - translations / pauseResume: which single control (if any)
+         dgSetupToolbar puts in the toolbar — the translations toggle,
+         Pausa/Riprendi, or nothing.
+       - countdown: whether dgPlayLine follows a line's audio with a
+         per-line countdown bar INSIDE the bubble (dgStartLineTimer) —
+         off for Ascolta e Ripeti, on for the other two. Duration is
+         computed per line, not fixed (dgLineDurationMs).
+       - advance: 'free' (tap any line, nothing else happens) | 'manual'
+         (bar ends -> UI unlocks -> the next line is suggested, then
+         pulses if untouched — dgSuggestNext) | 'auto' (bar ends -> the
+         next line's dgPlayLine is called automatically, chaining to the
+         end — dgLineTimerFinished).
+       - readyCountdown: Dialogo Continuo only — a 3-2-1 (dgRunReady
+         Countdown) before the chain starts on its own.
+       - finalBoxQuestion: the Box Doppia Scelta's question text.
+     Every profile funnels through the SAME dgPlayLine (audio, via
+     toggleSpeak) -> dgStartLineTimer (if countdown) -> dgLineTimerFinished
+     cycle; only what happens at each end differs, per dgProfile — no
+     logic is duplicated between the three.
      Reads the same "dialogue" section of the episode's data file Speak
      Easy already reads (loadEpisodeData's cache, no extra request) —
      dialogueLineAlign()/speakerLabel() are the exact same functions
-     Speak Easy uses (CLAUDE.md rule 13). Lines are free/infinite/
-     unordered; "L'hai imparato?" is a single self-assessment for the
-     WHOLE dialogue (verde/giallo module outcome), not per-word — no
-     mastery entries are touched by this module.
+     Speak Easy uses, tokenize() is Voice Coach's own word counter
+     (CLAUDE.md rule 13). "L'hai imparato?"/etc. is always a single
+     self-assessment for the WHOLE dialogue (verde/giallo module
+     outcome), never per-word — no mastery entries are touched here.
      ============================================================ */
   var dgModule = null;
   var dgProfile = null;
   var dgDialogue = [];
   var dgHeardIds = []; // line ids heard at least once this viewing
+  var dgPaused = false;
+  // Per-line countdown bar state (Ripeti a Tempo/Continuo only) — a
+  // single active timer at a time, same pattern as Speed Round's own
+  // srTimeoutId, but pause-aware (dgPauseLineTimer/dgResumeLineTimer)
+  // since Dialogo Continuo can pause mid-bar and Speed Round never needs to.
+  var dgLineTimerTimeoutId = null;
+  var dgLineTimerFillEl = null;
+  var dgLineTimerRemainingMs = 0;
+  var dgLineTimerStartedAt = 0;
+  var dgLineTimerOnDone = null;
+  var dgSuggestTimeoutId = null; // Ripeti a Tempo only
+  var dgReadyTimeoutId = null; // Dialogo Continuo's 3-2-1 only
 
   function dgShowScreen(name) {
     document.getElementById('dg-start-screen').hidden = name !== 'start';
+    document.getElementById('dg-ready-screen').hidden = name !== 'ready';
     document.getElementById('dg-main-screen').hidden = name !== 'main';
     document.getElementById('dg-summary-screen').hidden = name !== 'summary';
     var headerFull = dgProfile.header === 'full';
-    // ascoltaRipeti has no timer/countdown to protect, so Spiegazione+Help
-    // stay available through the exercise itself too (not just start/
-    // summary like Speed Round/Quick Match) — Spiegazione still hides on
-    // summary alone (CLAUDE.md rule 10). A future 'backOnly' profile
-    // hides both everywhere.
+    // 'full' (Ascolta e Ripeti): Help stays visible throughout (no timer
+    // to protect, unlike Speed Round/Quick Match); Spiegazione hides on
+    // summary alone (CLAUDE.md rule 10). 'backOnly' (the other two):
+    // both stay hidden on every screen — only Mappa in the header row.
     document.getElementById('dialogo-watch-btn').hidden = !headerFull || name === 'summary';
     document.getElementById('dialogo-help-btn').hidden = !headerFull;
   }
 
   // Same dual-purpose start screen as Speed Round/Quick Match: full
-  // howItWorks the first time, short "Pronto?" prompt after — straight
-  // into the exercise, no countdown (ascoltaRipeti.readyCountdown is false).
+  // howItWorks the first time, short "Pronto?" prompt after.
   function dgRenderStartScreen(module) {
     var dismissed = isIntroDismissed(module.kind, getUserName());
     document.getElementById('dg-start-checkbox-row').hidden = dismissed;
@@ -5405,20 +5503,42 @@
     }
   }
 
-  // Regola Azione Critica: while one bubble plays, every other control —
-  // Spiegazione, Help, the translations toggle, every other bubble, the
-  // final choice box — dims and stops responding; the active bubble
-  // itself lifts (see .dg-bubble.is-active). No pop-up ever covers the
-  // list, and nothing here is the microphone: this module never records.
+  // The single toolbar control, per profile — never more than one.
+  function dgSetupToolbar() {
+    var toolbar = document.getElementById('dg-toolbar');
+    if (dgProfile.translations) {
+      toolbar.hidden = false;
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-translations-toggle">Mostra traduzioni</button>';
+    } else if (dgProfile.pauseResume) {
+      toolbar.hidden = false;
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn">Pausa</button>';
+    } else {
+      toolbar.hidden = true;
+      toolbar.innerHTML = '';
+    }
+  }
+
+  // Regola Azione Critica: while one bubble plays (audio or its
+  // countdown bar), every other control — Spiegazione, Help, the
+  // translations toggle, every other bubble, the final choice box —
+  // dims and stops responding; the active bubble itself lifts (see
+  // .dg-bubble.is-active). Mappa (and Pausa/Riprendi, which lives
+  // outside this sweep in #dg-toolbar) stay clickable throughout. No
+  // pop-up ever covers the list, and nothing here is the microphone:
+  // this module never records. Recomputes every bubble's state from
+  // scratch each call (rather than only touching the previously-active
+  // one) so a chained dgPlayLine -> dgPlayLine (Dialogo Continuo) can't
+  // leave a stale is-active on the bubble it just moved on from.
   function dgLockAll(locked, activeBubble) {
     document.getElementById('dialogo-watch-btn').disabled = locked;
     document.getElementById('dialogo-help-btn').disabled = locked;
-    document.getElementById('dg-translations-toggle').disabled = locked;
+    var translationsToggle = document.getElementById('dg-translations-toggle');
+    if (translationsToggle) translationsToggle.disabled = locked;
     document.querySelectorAll('#dg-list .dg-bubble').forEach(function (b) {
-      if (b !== activeBubble) b.classList.toggle('is-locked', locked);
+      b.classList.toggle('is-locked', locked && b !== activeBubble);
+      b.classList.toggle('is-active', locked && b === activeBubble);
     });
     document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = locked; });
-    activeBubble.classList.toggle('is-active', locked);
   }
 
   function dgMarkHeard(lineId) {
@@ -5428,16 +5548,14 @@
   }
 
   function dgRenderList() {
-    var toggle = document.getElementById('dg-translations-toggle');
-    toggle.textContent = 'Mostra traduzioni';
-    toggle.classList.remove('btn-primary');
-    toggle.classList.add('btn-secondary');
     document.getElementById('dg-list').innerHTML = dgDialogue.map(function (line) {
       var align = dialogueLineAlign(line);
       var isFamiglia = align === 'right';
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
-      var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
       var heard = dgHeardIds.indexOf(line.id) !== -1;
+      var translationHtml = dgProfile.translations
+        ? '<p class="dg-translation" hidden>' + fillTemplate(line.italian, currentEpisode, currentValues, 'it') + '</p>'
+        : '';
       return '<div class="dg-row ' + align + '">' +
         '<div class="dg-item">' +
         '<div class="dg-name-row">' +
@@ -5446,11 +5564,140 @@
         '</div>' +
         '<button type="button" class="dg-bubble ' + (isFamiglia ? 'dg-bubble-us' : 'dg-bubble-them') + '" data-line-id="' + line.id + '">' +
         '<span class="dg-bubble-top"><span class="dg-listen-icon">' + icon('volume-2') + '</span><p class="dg-english">' + english + '</p></span>' +
-        '<p class="dg-translation" hidden>' + italian + '</p>' +
+        translationHtml +
+        '<div class="dg-line-timer">' +
+        '<div class="sr-timerbar-track"><div class="sr-timerbar-fill"></div></div>' +
+        '<p class="dg-line-timer-caption">Ripeti ad alta voce</p>' +
+        '</div>' +
         '</button>' +
         '</div>' +
         '</div>';
     }).join('');
+  }
+
+  // Formula from CONFIG.dialogo: pausaBase + numeroParole * pausaPerParola,
+  // capped at pausaMassima — numeroParole counted from the line's own
+  // English text via tokenize() (Voice Coach's own word counter, CLAUDE.md
+  // rule 13).
+  function dgLineDurationMs(englishText) {
+    var wordCount = tokenize(englishText).length;
+    var ms = CONFIG.dialogo.pausaBase + wordCount * CONFIG.dialogo.pausaPerParola;
+    return Math.min(ms, CONFIG.dialogo.pausaMassima);
+  }
+
+  function dgNextDialogueLine(afterLine) {
+    var idx = dgDialogue.findIndex(function (l) { return l.id === afterLine.id; });
+    return idx > -1 && idx < dgDialogue.length - 1 ? dgDialogue[idx + 1] : null;
+  }
+
+  function dgClearSuggestion() {
+    if (dgSuggestTimeoutId) { clearTimeout(dgSuggestTimeoutId); dgSuggestTimeoutId = null; }
+    document.querySelectorAll('#dg-list .dg-bubble').forEach(function (b) {
+      b.classList.remove('is-suggested', 'is-pulsing');
+    });
+  }
+
+  // Ripeti a Tempo ('manual' advance) only: highlights the next line in
+  // dialogue order as a suggestion, then — only if the user hasn't
+  // started anything new within dialogo.pulsareDopoInattivita — lets it
+  // pulse (soft dissolve, .dg-bubble.is-pulsing). Never forces an
+  // advance; the suggestion just waits indefinitely.
+  function dgSuggestNext(afterLine) {
+    var next = dgNextDialogueLine(afterLine);
+    if (!next) return;
+    var bubble = document.querySelector('.dg-bubble[data-line-id="' + next.id + '"]');
+    if (!bubble) return;
+    bubble.classList.add('is-suggested');
+    dgSuggestTimeoutId = setTimeout(function () {
+      dgSuggestTimeoutId = null;
+      bubble.classList.add('is-pulsing');
+    }, CONFIG.dialogo.pulsareDopoInattivita);
+  }
+
+  // Starts (or, via dgResumeLineTimer, resumes) the per-line countdown
+  // bar inside a bubble, using the shared startTimerBar/freezeTimerBar
+  // (see near srStartTimer) — remaining time is tracked in ms so
+  // Dialogo Continuo's Pausa can freeze and later resume it exactly
+  // where it left off, unlike Speed Round's simpler one-shot timer.
+  function dgStartLineTimer(bubble, line) {
+    var fillEl = bubble.querySelector('.sr-timerbar-fill');
+    var ms = dgLineDurationMs(fillTemplate(line.english, currentEpisode, currentValues, 'en'));
+    bubble.classList.add('dg-bubble-timer');
+    if (CONFIG.dialogo.suonoCountdownInizio) srPlayCountdownSound();
+    dgLineTimerFillEl = fillEl;
+    dgLineTimerRemainingMs = ms;
+    dgLineTimerOnDone = function () { dgLineTimerFinished(bubble, line); };
+    startTimerBar(fillEl, ms);
+    dgLineTimerStartedAt = Date.now();
+    dgLineTimerTimeoutId = setTimeout(dgLineTimerFire, ms);
+  }
+
+  function dgLineTimerFire() {
+    dgLineTimerTimeoutId = null;
+    var onDone = dgLineTimerOnDone;
+    dgLineTimerOnDone = null;
+    if (onDone) onDone();
+  }
+
+  // Countdown tone once the bar ends (never a tick during it — that time
+  // is for the user to speak out loud), then branches purely on
+  // dgProfile.advance: 'auto' chains straight into the next line
+  // (Dialogo Continuo, until there's no next line left); 'manual'
+  // unlocks and suggests the next one (Ripeti a Tempo).
+  function dgLineTimerFinished(bubble, line) {
+    bubble.classList.remove('dg-bubble-timer');
+    srPlayCountdownSound();
+    if (dgProfile.advance === 'auto') {
+      var next = dgNextDialogueLine(line);
+      if (next) {
+        dgPlayLine(next);
+      } else {
+        dgLockAll(false, bubble);
+      }
+    } else {
+      dgLockAll(false, bubble);
+      if (dgProfile.advance === 'manual') dgSuggestNext(line);
+    }
+  }
+
+  function dgPauseLineTimer() {
+    if (dgLineTimerTimeoutId === null || !dgLineTimerFillEl) return;
+    var elapsed = Date.now() - dgLineTimerStartedAt;
+    dgLineTimerRemainingMs = Math.max(0, dgLineTimerRemainingMs - elapsed);
+    clearTimeout(dgLineTimerTimeoutId);
+    dgLineTimerTimeoutId = null;
+    freezeTimerBar(dgLineTimerFillEl);
+  }
+
+  function dgResumeLineTimer() {
+    if (!dgLineTimerFillEl || dgLineTimerRemainingMs <= 0 || !dgLineTimerOnDone) return;
+    startTimerBar(dgLineTimerFillEl, dgLineTimerRemainingMs);
+    dgLineTimerStartedAt = Date.now();
+    dgLineTimerTimeoutId = setTimeout(dgLineTimerFire, dgLineTimerRemainingMs);
+  }
+
+  // The one play cycle every profile shares (CLAUDE.md rule 13): lock
+  // everything but Mappa/Pausa and lift the bubble, play its audio, mark
+  // it heard, then either start the per-line countdown bar
+  // (dgProfile.countdown) or unlock immediately (Ascolta e Ripeti has
+  // none). What happens after the bar is dgLineTimerFinished's job, not
+  // this function's.
+  function dgPlayLine(line) {
+    var bubble = document.querySelector('.dg-bubble[data-line-id="' + line.id + '"]');
+    if (!bubble) return;
+    dgClearSuggestion();
+    dgLockAll(true, bubble);
+    var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+    toggleSpeak(english, bubble, undefined, {
+      onEnd: function () {
+        dgMarkHeard(line.id);
+        if (dgProfile.countdown) {
+          dgStartLineTimer(bubble, line);
+        } else {
+          dgLockAll(false, bubble);
+        }
+      }
+    });
   }
 
   // level: 'verde' ("Sì, lo so") | 'giallo' ("Non ancora") — a single
@@ -5466,11 +5713,71 @@
     dgShowScreen('summary');
   }
 
+  // Dialogo Continuo only. Pausa freezes BOTH the audio (synth.pause())
+  // and the countdown bar (dgPauseLineTimer, remaining time tracked in
+  // ms); Riprendi resumes both from exactly where they stopped. Lives
+  // outside dgLockAll's sweep (it's in #dg-toolbar) so it — like Mappa —
+  // stays clickable no matter what else is locked.
+  function dgTogglePause() {
+    dgPaused = !dgPaused;
+    var btn = document.getElementById('dg-pause-btn');
+    if (btn) btn.textContent = dgPaused ? 'Riprendi' : 'Pausa';
+    if (dgPaused) {
+      if (synth && synth.speaking && !synth.paused) synth.pause();
+      dgPauseLineTimer();
+    } else {
+      if (synth && synth.paused) synth.resume();
+      dgResumeLineTimer();
+    }
+  }
+
+  // Dialogo Continuo only: the 3-2-1 before it starts playing on its
+  // own, same shape as Speed Round's srRunCountdown (not the same
+  // function — Speed Round always ends the same way, this one starts a
+  // chain instead — CLAUDE.md rule 11 notes the resulting small
+  // duplication rather than forcing a shared abstraction over it).
+  function dgRunReadyCountdown() {
+    dgShowScreen('ready');
+    var n = CONFIG.dialogo.countdownPre;
+    var el = document.getElementById('dg-ready-number');
+    function tick() {
+      if (n <= 0) {
+        dgReadyTimeoutId = null;
+        dgShowScreen('main');
+        if (dgDialogue.length) dgPlayLine(dgDialogue[0]);
+        return;
+      }
+      el.textContent = n;
+      n--;
+      dgReadyTimeoutId = setTimeout(tick, CONFIG.dialogo.countdownStepMs);
+    }
+    tick();
+  }
+
+  // Cancels every pending Dialogo timer/animation and resets Pausa state
+  // — called both when leaving the module (Mappa) and when (re)opening
+  // it, so a stray callback from a previous viewing can never fire
+  // against the freshly-rendered list.
+  function dgClearAllTimers() {
+    if (dgLineTimerTimeoutId) { clearTimeout(dgLineTimerTimeoutId); dgLineTimerTimeoutId = null; }
+    dgLineTimerOnDone = null;
+    dgLineTimerFillEl = null;
+    if (dgSuggestTimeoutId) { clearTimeout(dgSuggestTimeoutId); dgSuggestTimeoutId = null; }
+    if (dgReadyTimeoutId) { clearTimeout(dgReadyTimeoutId); dgReadyTimeoutId = null; }
+    dgPaused = false;
+  }
+
   function dgStartExercise() {
     dgHeardIds = [];
+    dgClearAllTimers();
     dgRenderList();
+    dgSetupToolbar();
     renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion, 'dg-not-yet-btn', 'Non ancora', 'dg-know-it-btn', 'Sì, lo so');
-    dgShowScreen('main');
+    if (dgProfile.readyCountdown) {
+      dgRunReadyCountdown();
+    } else {
+      dgShowScreen('main');
+    }
   }
 
   function openDialogo(module) {
@@ -5478,6 +5785,7 @@
     dgProfile = CONFIG.dialogo.profiles[module.dialogoProfile];
     dgDialogue = [];
     dgHeardIds = [];
+    dgClearAllTimers();
     document.getElementById('dialogo-badge').textContent = module.label;
     document.getElementById('dg-list').innerHTML = '';
     dgRenderStartScreen(module);
@@ -5506,30 +5814,35 @@
     openHowItWorksOverlay(dgModule, { dismissPref: introDismissPref(dgModule.kind) });
   });
 
-  document.getElementById('dg-translations-toggle').addEventListener('click', function () {
-    var btn = document.getElementById('dg-translations-toggle');
-    var next = !btn.classList.contains('btn-primary');
-    document.querySelectorAll('#dg-list .dg-translation').forEach(function (el) { el.hidden = !next; });
-    btn.textContent = next ? 'Nascondi traduzioni' : 'Mostra traduzioni';
-    btn.classList.toggle('btn-primary', next);
-    btn.classList.toggle('btn-secondary', !next);
+  // dg-translations-toggle (Ascolta e Ripeti) / dg-pause-btn (Dialogo
+  // Continuo) are generated per profile by dgSetupToolbar — at most one
+  // exists at a time — so this listener is delegated on the
+  // always-present #dg-toolbar wrapper instead of attached directly.
+  document.getElementById('dg-toolbar').addEventListener('click', function (e) {
+    if (e.target.id === 'dg-translations-toggle') {
+      var btn = e.target;
+      var next = !btn.classList.contains('btn-primary');
+      document.querySelectorAll('#dg-list .dg-translation').forEach(function (el) { el.hidden = !next; });
+      btn.textContent = next ? 'Nascondi traduzioni' : 'Mostra traduzioni';
+      btn.classList.toggle('btn-primary', next);
+      btn.classList.toggle('btn-secondary', !next);
+    } else if (e.target.id === 'dg-pause-btn') {
+      dgTogglePause();
+    }
   });
 
   // Whole-bubble click target (not just the mini listen icon inside it —
-  // a bigger touch target reads better here since "play audio" is this
-  // module's only interaction). data-line-id resolves which line to
-  // speak; the mini listen icon shown inside is purely visual.
+  // a bigger touch target reads better here since "play audio" is the
+  // interaction). Dialogo Continuo ('auto' advance) never accepts a
+  // click here — it plays on its own via dgPlayLine's own chaining.
   document.getElementById('dg-list').addEventListener('click', function (e) {
+    if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
     if (!bubble || bubble.classList.contains('is-locked')) return;
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
-    var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
-    toggleSpeak(english, bubble, undefined, {
-      onStart: function () { dgLockAll(true, bubble); },
-      onEnd: function () { dgLockAll(false, bubble); dgMarkHeard(lineId); }
-    });
+    dgPlayLine(line);
   });
 
   // dg-not-yet-btn/dg-know-it-btn are regenerated on every dgStartExercise()
@@ -5547,6 +5860,8 @@
   });
 
   document.getElementById('dialogo-back-map').addEventListener('click', function () {
+    dgClearAllTimers();
+    if (synth && synth.speaking) synth.cancel();
     openEpisodeMap();
   });
 
@@ -5606,7 +5921,9 @@
     return srAudioCtx;
   }
 
-  function srPlayTone(freq, durationMs) {
+  // volume defaults to 0.15 (Corretto/Sbagliato/Traguardo's own level) when
+  // omitted — Countdown passes its own quieter CONFIG.sound.countdown.volume.
+  function srPlayTone(freq, durationMs, volume) {
     var ctx = srGetAudioCtx();
     if (!ctx) return;
     try {
@@ -5614,7 +5931,7 @@
       var gain = ctx.createGain();
       osc.type = 'sine';
       osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.setValueAtTime(volume === undefined ? 0.15 : volume, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs / 1000);
       osc.connect(gain);
       gain.connect(ctx.destination);
@@ -5637,27 +5954,48 @@
     });
   }
 
+  // Countdown: plays once when a Dialogo per-line timer bar finishes (see
+  // dgLineTimerFinished) — never a tick during the bar itself, that time
+  // is reserved for the user to speak out loud.
+  function srPlayCountdownSound() {
+    var cfg = CONFIG.sound.countdown;
+    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+  }
+
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
   }
 
+  // Shared, duration-as-parameter timer-bar mechanics (CLAUDE.md rule 13)
+  // — Speed Round below passes its own fixed CONFIG.speedRound.
+  // timeLimitSeconds; Dialogo Ripeti a Tempo/Continuo pass a different,
+  // per-line duration instead (see dgLineDurationMs). Pure DOM/CSS —
+  // timeout scheduling stays with each caller since Speed Round's is a
+  // simple one-shot while Dialogo's also needs to be pausable (see
+  // dgPauseLineTimer/dgResumeLineTimer).
+  function startTimerBar(fillEl, ms) {
+    fillEl.style.transition = 'none';
+    fillEl.style.width = '100%';
+    void fillEl.offsetWidth;
+    fillEl.style.transition = 'width ' + (ms / 1000) + 's linear';
+    fillEl.style.width = '0%';
+  }
+
+  function freezeTimerBar(fillEl) {
+    var w = getComputedStyle(fillEl).width;
+    fillEl.style.transition = 'none';
+    fillEl.style.width = w;
+  }
+
   function srStartTimer() {
     srClearTimer();
-    var fill = document.getElementById('sr-timerbar-fill');
     var seconds = CONFIG.speedRound.timeLimitSeconds;
-    fill.style.transition = 'none';
-    fill.style.width = '100%';
-    void fill.offsetWidth;
-    fill.style.transition = 'width ' + seconds + 's linear';
-    fill.style.width = '0%';
+    startTimerBar(document.getElementById('sr-timerbar-fill'), seconds * 1000);
     srTimeoutId = setTimeout(srHandleTimeout, seconds * 1000);
   }
 
   function srFreezeTimer() {
-    var fill = document.getElementById('sr-timerbar-fill');
-    var w = getComputedStyle(fill).width;
-    fill.style.transition = 'none';
-    fill.style.width = w;
+    freezeTimerBar(document.getElementById('sr-timerbar-fill'));
   }
 
   function srDisableOptions() {
