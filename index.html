@@ -1346,6 +1346,13 @@
     justify-content: flex-end;
   }
 
+  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card is the
+     first to actually hide one of these (the Italian side's listen block
+     — see fcRenderCard), and its own "display: flex" would otherwise win
+     over the browser's default [hidden]{display:none}, also leaving a
+     stray flex-gap on the card face where the empty block used to be. */
+  .repeat-item-audio[hidden] { display: none; }
+
   .repeat-listen-btn.speaking { border-color: var(--accent); color: var(--accent); }
 
   .rate-group {
@@ -3978,11 +3985,11 @@
     vcRecognition.interimResults = false;
     vcRecognition.maxAlternatives = CONFIG.speech.maxAlternatives;
 
-    vcRecognition.onstart = function () {
-      vcListening = true;
-      setVcState('recording');
-      startVcTimer();
-    };
+    // No onstart handler: entering "recording" (state, icon, timer, the
+    // Regola Azione Critica lock) happens synchronously in the
+    // vc-record-btn click handler instead, right when the user asks to
+    // record — SpeechRecognition's own "started" event can fire late
+    // enough (real, measurable delay) to make the lock feel unresponsive.
 
     vcRecognition.onresult = function (event) {
       var finalText = '';
@@ -4041,6 +4048,15 @@
     return fillTemplate(vcCurrentLine().english, currentEpisode, currentValues, 'en');
   }
 
+  // Regola Azione Critica, shared lock/unlock for "Spiegazione" + "Help" —
+  // used by both directions (setVcState below, for recording; the
+  // vc-audio-controls click handler further down, for the listen block)
+  // so the same two buttons aren't toggled by two separate pieces of code.
+  function vcLockSpiegazioneHelp(locked) {
+    document.getElementById('voice-coach-watch-btn').disabled = locked;
+    document.getElementById('voice-coach-help-btn').disabled = locked;
+  }
+
   function setVcState(state) {
     vcState = state;
     var btn = document.getElementById('vc-record-btn');
@@ -4058,9 +4074,10 @@
     // — back as soon as it's stopped/confirmed/cancelled (any other state).
     // Same rule applies to the listen block (100/75/50%): otherwise it can
     // be tapped mid-recording and the model audio starts playing over the
-    // user's own voice.
-    document.getElementById('voice-coach-watch-btn').disabled = recording;
-    document.getElementById('voice-coach-help-btn').disabled = recording;
+    // user's own voice. This is called the instant recording is requested
+    // (see the vc-record-btn click handler), not from the browser's own
+    // async "recognition started" event, so the lock is instantaneous.
+    vcLockSpiegazioneHelp(recording);
     document.querySelectorAll('#vc-audio-controls button').forEach(function (b) { b.disabled = recording; });
   }
 
@@ -4248,11 +4265,21 @@
     // disable Record too, so the mic can't pick up the model's own voice
     // and skew the pronunciation grading.
     toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-      onStart: function () { document.getElementById('vc-record-btn').disabled = true; },
-      // Only re-enable if recording is actually supported here — openVoiceCoach
-      // permanently disables Record when the browser has no SpeechRecognition,
-      // and this must not undo that.
-      onEnd: function () { document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition; }
+      // Regola Azione Critica (listening direction, mirrors setVcState's
+      // recording direction above): Spiegazione + Help + Record all lock
+      // together, instantly (see toggleSpeak's onStart — fires
+      // synchronously, not from the engine's own async "started" event).
+      onStart: function () {
+        vcLockSpiegazioneHelp(true);
+        document.getElementById('vc-record-btn').disabled = true;
+      },
+      onEnd: function () {
+        vcLockSpiegazioneHelp(false);
+        // Only re-enable Record if recording is actually supported here —
+        // openVoiceCoach permanently disables it when the browser has no
+        // SpeechRecognition, and this must not undo that.
+        document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
+      }
     });
   });
 
@@ -4269,6 +4296,12 @@
     try {
       vcRecognition.start();
     } catch (e) { return; }
+    // Enter "recording" (state, icon, timer, the Regola Azione Critica
+    // lock via setVcState) the instant the user asks to record, instead
+    // of waiting for SpeechRecognition's own async "started" event.
+    vcListening = true;
+    setVcState('recording');
+    startVcTimer();
     clearVcTimeout();
     vcTimeoutId = setTimeout(function () {
       if (vcListening) vcRecognition.stop();
@@ -4788,12 +4821,24 @@
     document.getElementById('fc-counter').textContent = (fcPassIndex + 1) + ' / ' + fcPassItems.length;
     document.getElementById('fc-front-word').textContent = fcFrontText();
     document.getElementById('fc-back-word').textContent = fcBackText();
-    document.getElementById('fc-front-audio').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('front') + '</div>';
-    document.getElementById('fc-back-audio').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>';
+    // The listen block only makes sense on the English side — it always
+    // speaks with an English voice (toggleSpeak/pickVoice), so on the
+    // Italian side it would read the user's own native language with an
+    // English accent. Which side is English depends on fcDirection, not
+    // on front/back, and flips between the two Flash Card directions.
+    var frontIsEnglish = fcDirection === 'en-it';
+    var frontAudioEl = document.getElementById('fc-front-audio');
+    var backAudioEl = document.getElementById('fc-back-audio');
+    frontAudioEl.hidden = !frontIsEnglish;
+    frontAudioEl.innerHTML = frontIsEnglish
+      ? '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
+        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('front') + '</div>'
+      : '';
+    backAudioEl.hidden = frontIsEnglish;
+    backAudioEl.innerHTML = !frontIsEnglish
+      ? '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
+        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>'
+      : '';
     document.getElementById('fc-prev-btn').disabled = fcPassIndex === 0;
     fcShowNav(true);
     // The data load runs in the background regardless of the intro screen
@@ -5189,6 +5234,12 @@
   // to this specific utterance's playback window — e.g. Voice Coach, which
   // disables its own Record button while the model audio plays so the mic
   // can't pick it up (see the vc-audio-controls click handler below).
+  // onStart fires synchronously, right before synth.speak() — NOT from
+  // SpeechSynthesisUtterance's own asynchronous "onstart" event, which
+  // some engines fire late enough (real, measurable delay) to make a
+  // same-tick UI lock feel unresponsive. onEnd stays tied to the real
+  // onend/onerror, since there's no way to know playback actually
+  // finished any earlier than the engine reports it.
   function toggleSpeak(text, btn, rate, callbacks) {
     if (!synth) return;
     var wasSpeaking = btn.classList.contains('speaking');
@@ -5199,10 +5250,7 @@
     var voice = pickVoice();
     if (voice) utterance.voice = voice;
     utterance.rate = (rate === undefined || rate === null) ? CONFIG.speech.synthesisRate : rate;
-    utterance.onstart = function () {
-      btn.classList.add('speaking');
-      if (callbacks && callbacks.onStart) callbacks.onStart();
-    };
+    utterance.onstart = function () { btn.classList.add('speaking'); };
     utterance.onend = function () {
       btn.classList.remove('speaking');
       if (callbacks && callbacks.onEnd) callbacks.onEnd();
@@ -5211,6 +5259,7 @@
       btn.classList.remove('speaking');
       if (callbacks && callbacks.onEnd) callbacks.onEnd();
     };
+    if (callbacks && callbacks.onStart) callbacks.onStart();
     synth.speak(utterance);
   }
 
