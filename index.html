@@ -794,6 +794,22 @@
     gap: 8px 12px;
   }
 
+  /* Groups two+ small header buttons (e.g. "Guarda come si fa" + Help) so
+     they stay adjacent as a pair inside .top-row's space-between layout,
+     instead of getting spread apart across the row. */
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* .help-btn's own "width: 20%" assumes it's alone as the 3rd .top-row
+     child; grouped here with another button it would force text like
+     "Guarda come si fa" to wrap awkwardly. Let both size to content. */
+  .header-actions .help-btn {
+    width: auto;
+  }
+
   /* ---------- onboarding ---------- */
   #view-onboarding .card-body { align-items: center; text-align: center; }
   #onboarding-form {
@@ -1193,6 +1209,35 @@
 
   .repeat-item-italian { font-size: 0.92rem; opacity: 0.8; }
   .repeat-item-tip { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+
+  /* Repeat Aloud's intro screen and its main content each need their own
+     flex column (with the .card-body's usual gap) now that they're one
+     level deeper than direct .card-body children — same [hidden]-vs-
+     "display" fix as elsewhere, since both set their own "display". */
+  #repeat-aloud-intro-screen,
+  #repeat-aloud-main-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  #repeat-aloud-intro-screen[hidden],
+  #repeat-aloud-main-screen[hidden] { display: none; }
+
+  .ra-intro-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .ra-intro-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
 
   #repeat-aloud-body {
     display: flex;
@@ -1809,19 +1854,40 @@
           <div class="top-row">
             <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
             <span class="badge">Repeat Aloud</span>
-            <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+            <div class="header-actions">
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn">🎥 Guarda come si fa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+            </div>
           </div>
 
-          <header class="app-header">
-            <h1 id="repeat-aloud-title">Repeat Aloud</h1>
-            <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
-          </header>
+          <!-- INTRO SCREEN (trial: Repeat Aloud only, see CLAUDE.md notes
+               before extending this pattern to other modules). Shown
+               automatically until the user checks "don't show again";
+               the header's "Guarda come si fa" button always reopens
+               this same screen regardless of that saved preference. -->
+          <div id="repeat-aloud-intro-screen" hidden>
+            <header class="app-header">
+              <h1 id="ra-intro-title">Guarda come si fa</h1>
+            </header>
+            <div class="overlay-text panel" id="ra-intro-body"></div>
+            <label class="ra-intro-checkbox">
+              <input type="checkbox" id="ra-intro-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="ra-intro-start-btn">Ho capito, inizia</button>
+          </div>
 
-          <button type="button" class="watch-bar" id="repeat-aloud-watch-bar">🎥 Guarda come si fa</button>
+          <!-- MAIN SCREEN -->
+          <div id="repeat-aloud-main-screen">
+            <header class="app-header">
+              <h1 id="repeat-aloud-title">Repeat Aloud</h1>
+              <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
+            </header>
 
-          <div id="repeat-aloud-body"></div>
+            <div id="repeat-aloud-body"></div>
 
-          <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
+            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
+          </div>
         </div>
       </div>
     </section>
@@ -2872,11 +2938,62 @@
       ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
   }
 
+  // ---- Repeat Aloud intro screen (trial — see the request that added
+  // this before extending the pattern to other modules). howItWorks
+  // still comes only from istruzioni-moduli.json (CLAUDE.md rule 8);
+  // this just changes WHERE it's shown for this one module, not what
+  // owns the text. Dismissal is a simple per-user flag, independent of
+  // episode (it's about knowing the module, not the episode content). ----
+  function raIntroDismissedKey(userName) {
+    return 'baseinglese:repeatAloudIntroDismissed:' + userName;
+  }
+
+  function isRaIntroDismissed(userName) {
+    try { return localStorage.getItem(raIntroDismissedKey(userName)) === '1'; } catch (e) { return false; }
+  }
+
+  function setRaIntroDismissed(userName, dismissed) {
+    try { localStorage.setItem(raIntroDismissedKey(userName), dismissed ? '1' : '0'); } catch (e) {}
+  }
+
+  function raShowScreen(name) {
+    document.getElementById('repeat-aloud-intro-screen').hidden = name !== 'intro';
+    document.getElementById('repeat-aloud-main-screen').hidden = name !== 'main';
+  }
+
+  function renderRaIntroContent() {
+    document.getElementById('ra-intro-title').textContent = 'Guarda come si fa';
+    document.getElementById('ra-intro-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    loadModuleInstructions().then(function (data) {
+      var entry = data.repeatAloud && data.repeatAloud.howItWorks;
+      document.getElementById('ra-intro-title').textContent = (entry && entry.title) || 'Guarda come si fa';
+      document.getElementById('ra-intro-body').innerHTML = entry
+        ? entry.body
+        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
+    }).catch(function () {
+      document.getElementById('ra-intro-body').innerHTML =
+        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
+    });
+  }
+
+  // Always the same screen regardless of the saved preference — the
+  // checkbox just starts pre-set to whatever that preference currently is.
+  function openRaIntro() {
+    document.getElementById('ra-intro-dont-show-again').checked = isRaIntroDismissed(getUserName());
+    renderRaIntroContent();
+    raShowScreen('intro');
+  }
+
   function openRepeatAloud(module) {
     currentRepeatAloudModule = module;
     document.getElementById('repeat-aloud-title').textContent = module.label;
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('repeatAloud');
+    if (isRaIntroDismissed(getUserName())) {
+      raShowScreen('main');
+    } else {
+      openRaIntro();
+    }
     loadEpisodeData(module).then(function (data) {
       if (currentRepeatAloudModule !== module) return;
       renderRepeatAloud(data);
@@ -2899,8 +3016,11 @@
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('repeat-aloud-watch-bar').addEventListener('click', function () {
-    openInstructionsFor(currentRepeatAloudModule);
+  document.getElementById('repeat-aloud-watch-btn').addEventListener('click', openRaIntro);
+
+  document.getElementById('ra-intro-start-btn').addEventListener('click', function () {
+    setRaIntroDismissed(getUserName(), document.getElementById('ra-intro-dont-show-again').checked);
+    raShowScreen('main');
   });
 
   document.getElementById('repeat-aloud-help-btn').addEventListener('click', function () {
