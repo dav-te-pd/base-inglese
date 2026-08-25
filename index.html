@@ -113,6 +113,18 @@
         durationMs: 180
       }
     },
+    // ---- Quick Match quiz (quickMatchEngIta / quickMatchItaEng modules) ----
+    // Same multiple-choice/retry/mastery mechanics as speedRound above
+    // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
+    // see the comment near those), just untimed: no timeLimitSeconds,
+    // countdownSeconds or percentageThresholds here since there's no timer
+    // or countdown to configure. Own maxRetryAttempts/feedbackPauseMs (not
+    // reusing speedRound's) so the two can be tuned independently later —
+    // same default values today, kept as separate keys on purpose.
+    quickMatch: {
+      feedbackPauseMs: 600,
+      maxRetryAttempts: 3
+    },
     // ---- Flash Card decks. One entry per level (today just "a"); each
     // module descriptor (see EPISODES) points at a level key + a
     // direction, so the component always reads its label/data source
@@ -355,6 +367,26 @@
       helpReminder: {
         title: 'Come funziona, in breve',
         body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
+      }
+    },
+    quickMatchEngIta: {
+      howItWorks: {
+        title: 'Spiegazione',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese — ascoltala con il pulsante 🔊 se vuoi (puoi scegliere la velocità) — e 4 possibili traduzioni in italiano. Tocca quella giusta, o tocca "Non lo so" se non la ricordi.</p><p>Qui non c\'è timer: prenditi tutto il tempo che vuoi. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Vedi la parola inglese (ascoltala con 🔊 se serve), tocca la traduzione italiana corretta tra le 4 opzioni. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti. Nessun limite di tempo.</p>'
+      }
+    },
+    quickMatchItaEng: {
+      howItWorks: {
+        title: 'Spiegazione',
+        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese, ciascuna con il proprio pulsante 🔊 per ascoltarla. Tocca quella giusta, o tocca "Non lo so" se non la ricordi.</p><p>Qui non c\'è timer: prenditi tutto il tempo che vuoi. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Vedi la parola italiana, ascolta le 4 opzioni inglesi con 🔊 se ti serve, tocca quella corretta. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti. Nessun limite di tempo.</p>'
       }
     }
   };
@@ -1803,6 +1835,44 @@
   .pending-actions[hidden],
   .vc-stars[hidden] { display: none; }
 
+  /* ---------- quick match view ----------
+     Screens/prompt/options/reveal/summary all reuse Speed Round's own
+     #qm-*-screen ids (own, since they're different DOM elements) but
+     Speed Round's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
+     .sr-reveal/.sr-summary CLASSES verbatim — see the markup comment on
+     view-quick-match. Only the Ita-Eng per-option mini listen button
+     needs a new layout rule. */
+  #qm-start-screen,
+  #qm-retry-intro-screen,
+  #qm-quiz-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  #qm-start-screen[hidden],
+  #qm-retry-intro-screen[hidden],
+  #qm-quiz-screen[hidden],
+  #qm-summary-screen[hidden] { display: none; }
+
+  /* Ita-Eng only: pairs each option's answer button with its own compact
+     icon-only listen button, so tapping the icon plays the audio instead
+     of submitting that option as the answer. */
+  .qm-option-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .qm-option-row .sr-option {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .qm-option-row .repeat-listen-btn {
+    flex-shrink: 0;
+  }
+
   /* ---------- speed round view ---------- */
   #sr-start-screen,
   #sr-retry-intro-screen,
@@ -2413,6 +2483,93 @@
       </div>
     </section>
 
+    <!-- ============ VIEW: QUICK MATCH MODULES (Eng-Ita / Ita-Eng) ============
+         Same multiple-choice/retry/mastery mechanics as Speed Round (see
+         recordMultipleChoiceResult/buildMultipleChoiceOptions, shared by
+         both) with no timer, no countdown bar, no 3-2-1 countdown screen
+         and no "Mostra traduzione" (the answer itself IS the translation
+         here). Eng-Ita gets the full listen block (icon + 100/75/50%)
+         under the English prompt, reusing renderRateButtons/toggleSpeak
+         exactly like Repeat Aloud. Ita-Eng instead gives each of the 4
+         English options its own compact icon-only "mini" listen button
+         (always default rate) — the Italian prompt itself has no audio at
+         all, since it's the user's own language. -->
+    <section id="view-quick-match" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="header-2row">
+            <div class="header-badge-row">
+              <span class="badge" id="quick-match-badge">Quick Match</span>
+            </div>
+            <div class="header-actions-row">
+              <button type="button" class="btn btn-secondary" id="quick-match-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="quick-match-watch-btn" hidden>Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="quick-match-help-btn" hidden>Help</button>
+            </div>
+          </div>
+
+          <!-- START SCREEN: same dual-purpose pattern as Speed Round (full
+               howItWorks the first time, short "Pronto?" prompt after) —
+               it just leads straight into the quiz instead of gating a
+               countdown, since there's no countdown here. -->
+          <div id="qm-start-screen">
+            <header class="app-header">
+              <h1 id="qm-start-title">Spiegazione</h1>
+            </header>
+            <div class="overlay-text panel" id="qm-start-body">Caricamento...</div>
+            <label class="ra-intro-checkbox" id="qm-start-checkbox-row">
+              <input type="checkbox" id="qm-start-dont-show-again">
+              <span>Non mostrarmi più questa schermata</span>
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="qm-start-btn">Ho capito, inizia</button>
+          </div>
+
+          <!-- RETRY-PASS INTRO SCREEN: shown once before re-asking anything
+               wrong or declared "Non lo so", same as Speed Round's — just
+               without "o saltate" in the copy, since nothing can time out
+               here. -->
+          <div id="qm-retry-intro-screen" hidden>
+            <header class="app-header">
+              <h1>Ripasso</h1>
+            </header>
+            <div class="overlay-text panel">Ripassiamo insieme le domande sbagliate, finché non sono tutte corrette.</div>
+            <button type="button" class="btn btn-primary btn-block" id="qm-retry-continue-btn">Continua →</button>
+          </div>
+
+          <!-- QUIZ SCREEN: .sr-counter/.sr-direction/.sr-prompt/.sr-options/
+               .sr-reveal/.sr-summary below are Speed Round's own classes,
+               reused as-is (CLAUDE.md rule 13) — same look, zero new CSS,
+               since nothing about their styling is actually Speed-Round-
+               specific. qm-prompt-audio only ever fills in for the en-it
+               direction (see qmRenderQuestion). -->
+          <div id="qm-quiz-screen" hidden>
+            <p class="sr-counter" id="qm-counter"></p>
+            <p class="sr-direction" id="qm-direction"></p>
+
+            <div class="sr-prompt panel" id="qm-prompt"></div>
+            <div class="repeat-item-audio" id="qm-prompt-audio" hidden></div>
+
+            <div class="sr-options" id="qm-options"></div>
+
+            <div class="sr-reveal panel" id="qm-reveal" hidden>
+              <p id="qm-reveal-text"></p>
+            </div>
+
+            <button type="button" class="btn btn-secondary btn-block" id="qm-dontknow-btn">Non lo so</button>
+            <button type="button" class="btn btn-primary btn-block" id="qm-advance-btn" hidden>Avanti →</button>
+          </div>
+
+          <!-- SUMMARY SCREEN -->
+          <div id="qm-summary-screen" hidden>
+            <div class="sr-summary panel">
+              <p class="sr-summary-title" id="qm-summary-title">Round completato!</p>
+            </div>
+            <button type="button" class="btn btn-primary btn-block" id="qm-complete-btn">Ho finito, torna alla mappa</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ============ VIEW: SPEED ROUND MODULES (Eng-Ita / Ita-Eng) ============
          One shared view for both directions — module.kind picks the
          direction and the istruzioni-moduli.json entry, everything else
@@ -2824,6 +2981,7 @@
     repeatAloud: document.getElementById('view-repeat-aloud'),
     speakEasy: document.getElementById('view-speak-easy'),
     voiceCoach: document.getElementById('view-voice-coach'),
+    quickMatch: document.getElementById('view-quick-match'),
     speedRound: document.getElementById('view-speed-round'),
     flashcard: document.getElementById('view-flashcard'),
     pronunciation: document.getElementById('view-pronunciation')
@@ -3162,6 +3320,8 @@
         { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'quickMatchEngIta', kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
+        { id: 'quickMatchItaEng', kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
         { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
         // kind is shared between directions on purpose: both read the same
@@ -3681,6 +3841,7 @@
     if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
+    else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
     else if (module.flashcardLevel) openFlashcard(module);
   }
@@ -4464,6 +4625,314 @@
   });
 
   /* ============================================================
+     SHARED: multiple-choice quiz logic (Speed Round + Quick Match)
+     Direction label, 4-option builder, and mastery/retry-queue
+     recording are the same mechanics in both module types (CLAUDE.md
+     rule 13) — module-specific state (own retryAttempts/retryQueue,
+     own mastery unitId prefix, own maxRetryAttempts) is passed in
+     rather than hardcoded here, so Speed Round and Quick Match keep
+     fully independent safety valves and never share mastery entries
+     for the same vocabulary item.
+     ============================================================ */
+  var DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
+
+  function buildMultipleChoiceOptions(item, direction, vocabPool) {
+    var correctText = direction === 'en-it' ? item.italian : item.english;
+    var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
+    var distractors = srShuffle(pool).slice(0, 3).map(function (v) {
+      return direction === 'en-it' ? v.italian : v.english;
+    });
+    var options = distractors.map(function (text) { return { text: text, correct: false }; });
+    options.push({ text: correctText, correct: true });
+    return srShuffle(options);
+  }
+
+  // declaredNonAttempt: an explicit "Non lo so" — not a wrong answer but an
+  // admitted non-attempt, so it resets straight to rosso regardless of the
+  // current level (bypasses applyMasteryResult's normal one-level-at-a-time
+  // demotion, same special case as Flash Card's "skipped without flipping").
+  // params.retryAttempts/retryQueue/maxRetryAttempts are the caller's own
+  // state, not shared, so each module type keeps its own safety valve.
+  function recordMultipleChoiceResult(params) {
+    var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
+    var userName = getUserName();
+    var mastery = loadMastery(currentEpisode.id, userName);
+    mastery[unitId] = params.declaredNonAttempt
+      ? { level: 'rosso', streak: 0 }
+      : applyMasteryResult(mastery[unitId], params.correct ? 'correct' : 'wrong');
+    saveMastery(currentEpisode.id, userName, mastery);
+
+    if (!params.correct) {
+      var attempts = (params.retryAttempts[params.item.id] || 0) + 1;
+      params.retryAttempts[params.item.id] = attempts;
+      if (attempts >= params.maxRetryAttempts) {
+        // Give up retrying this one — force-accept as rosso so the retry
+        // loop can't run forever on a single stubborn item.
+        mastery[unitId] = { level: 'rosso', streak: 0 };
+        saveMastery(currentEpisode.id, userName, mastery);
+      } else if (params.retryQueue.indexOf(params.item.id) === -1) {
+        params.retryQueue.push(params.item.id);
+      }
+    }
+  }
+
+  /* ============================================================
+     MODULES: QUICK MATCH ENG-ITA / QUICK MATCH ITA-ENG
+     Same multiple-choice/retry/mastery mechanics as Speed Round below
+     (shared via buildMultipleChoiceOptions/recordMultipleChoiceResult
+     above — CLAUDE.md rule 13), minus everything timer-related: no
+     time limit, no progress bar, no countdown, no Indietro (Speed
+     Round doesn't have one either). Own mastery unitId prefix
+     ('quickmatch:') and own retry-queue/attempts state, so mastery is
+     tracked separately per exercise type even for the same vocabulary
+     item. No "Mostra traduzione" in either direction — the 4-option
+     answer IS the translation here. Eng-Ita shows a full listen block
+     (icon + 100/75/50%) under the English prompt, reusing
+     renderRateButtons/toggleSpeak exactly like Repeat Aloud. Ita-Eng
+     instead gives each of the 4 English options its own compact
+     icon-only mini listen button (always default rate) via
+     .qm-option-row; the Italian prompt has no audio at all, since
+     it's the user's own language.
+     ============================================================ */
+  var QM_DIRECTION_BY_KIND = { quickMatchEngIta: 'en-it', quickMatchItaEng: 'it-en' };
+
+  var qmModule = null;
+  var qmDirection = 'en-it'; // fixed for the whole module session
+  var qmVocab = [];
+  var qmQueue = [];
+  var qmRetryQueue = [];
+  var qmRetryAttempts = {}; // itemId -> times wrong/declared-non-attempt this session
+  var qmPassIndex = 0;
+  var qmPassTotal = 0;
+  var qmCurrentItem = null;
+  var qmCurrentOptions = [];
+
+  function qmDisableOptions() {
+    document.querySelectorAll('#qm-options .sr-option').forEach(function (b) { b.disabled = true; });
+  }
+
+  function qmShowScreen(name) {
+    document.getElementById('qm-start-screen').hidden = name !== 'start';
+    document.getElementById('qm-retry-intro-screen').hidden = name !== 'retryIntro';
+    document.getElementById('qm-quiz-screen').hidden = name !== 'quiz';
+    document.getElementById('qm-summary-screen').hidden = name !== 'summary';
+    // Spiegazione+Help only on start/summary, same as Speed Round; Spiegazione
+    // additionally hides on summary alone (CLAUDE.md rule 10).
+    var showHeaderActions = name === 'start' || name === 'summary';
+    document.getElementById('quick-match-watch-btn').hidden = !showHeaderActions || name === 'summary';
+    document.getElementById('quick-match-help-btn').hidden = !showHeaderActions;
+  }
+
+  // Same dual-purpose start screen as Speed Round: full howItWorks the
+  // first time, short "Pronto?" prompt after — it just leads straight
+  // into the quiz instead of gating a countdown, since there's none here.
+  function qmRenderStartScreen(module) {
+    var dismissed = isIntroDismissed(module.kind, getUserName());
+    document.getElementById('qm-start-checkbox-row').hidden = dismissed;
+    document.getElementById('qm-start-body').hidden = dismissed;
+    if (dismissed) {
+      document.getElementById('qm-start-title').textContent = 'Pronto?';
+      document.getElementById('qm-start-btn').textContent = 'Pronto? Via!';
+    } else {
+      document.getElementById('qm-start-dont-show-again').checked = false;
+      document.getElementById('qm-start-btn').textContent = 'Ho capito, inizia';
+      renderIntroContent(module.kind, 'qm-start-title', 'qm-start-body');
+    }
+  }
+
+  // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
+  // own mastery unitId prefix and own retry state keep Quick Match's
+  // mastery/safety-valve fully independent from Speed Round's.
+  function qmRecordResult(correct, declaredNonAttempt) {
+    recordMultipleChoiceResult({
+      item: qmCurrentItem,
+      direction: qmDirection,
+      correct: correct,
+      declaredNonAttempt: declaredNonAttempt,
+      unitPrefix: 'quickmatch',
+      retryAttempts: qmRetryAttempts,
+      retryQueue: qmRetryQueue,
+      maxRetryAttempts: CONFIG.quickMatch.maxRetryAttempts
+    });
+  }
+
+  function qmRenderQuestion() {
+    document.getElementById('qm-reveal').hidden = true;
+    document.getElementById('qm-advance-btn').hidden = true;
+    document.getElementById('qm-dontknow-btn').hidden = false;
+    document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
+    document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
+    var promptText = qmDirection === 'en-it' ? qmCurrentItem.english : qmCurrentItem.italian;
+    document.getElementById('qm-prompt').textContent = promptText;
+
+    var audioEl = document.getElementById('qm-prompt-audio');
+    if (qmDirection === 'en-it') {
+      audioEl.hidden = false;
+      audioEl.innerHTML =
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="prompt" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
+        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('prompt') + '</div>';
+    } else {
+      audioEl.hidden = true;
+      audioEl.innerHTML = '';
+    }
+
+    qmCurrentOptions = buildMultipleChoiceOptions(qmCurrentItem, qmDirection, qmVocab);
+    document.getElementById('qm-options').innerHTML = qmCurrentOptions.map(function (opt, i) {
+      var optionBtn = '<button type="button" class="help-option sr-option" data-qm-index="' + i + '">' + opt.text + '</button>';
+      if (qmDirection !== 'it-en') return optionBtn;
+      // Ita-Eng only: pair each English option with its own mini listen
+      // button (see .qm-option-row) — data-qm-listen-index keeps this
+      // click target distinct from the answer button it sits next to.
+      return '<div class="qm-option-row">' + optionBtn +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-qm-listen-index="' + i + '" aria-label="Ascolta">' + icon('volume-2') + '</button></div>';
+    }).join('');
+  }
+
+  function qmNextQuestion() {
+    if (qmQueue.length === 0) {
+      if (qmRetryQueue.length > 0) {
+        qmQueue = srShuffle(qmRetryQueue);
+        qmRetryQueue = [];
+        qmPassTotal = qmQueue.length;
+        qmPassIndex = 0;
+        qmShowScreen('retryIntro');
+        return;
+      } else {
+        qmFinishModule();
+        return;
+      }
+    }
+    var itemId = qmQueue.shift();
+    qmPassIndex++;
+    qmCurrentItem = qmVocab.find(function (v) { return v.id === itemId; });
+    qmShowScreen('quiz');
+    qmRenderQuestion();
+  }
+
+  // Shared by a wrong tap and "Non lo so": reveal the correct answer and
+  // wait for an explicit "Avanti" instead of auto-advancing, same pacing
+  // as Speed Round. Reads the answer straight off qmCurrentOptions rather
+  // than recomputing the direction logic again.
+  function qmShowReveal() {
+    var correctOpt = qmCurrentOptions.find(function (o) { return o.correct; });
+    document.querySelectorAll('#qm-options .sr-option').forEach(function (b, i) {
+      if (qmCurrentOptions[i] && qmCurrentOptions[i].correct) b.classList.add('is-correct');
+    });
+    document.getElementById('qm-reveal-text').textContent = 'Risposta corretta: ' + correctOpt.text;
+    document.getElementById('qm-reveal').hidden = false;
+    document.getElementById('qm-dontknow-btn').hidden = true;
+    document.getElementById('qm-advance-btn').hidden = false;
+  }
+
+  function qmFinishModule() {
+    qmShowScreen('summary');
+  }
+
+  function qmStartQuiz() {
+    qmQueue = srShuffle(qmVocab.map(function (v) { return v.id; }));
+    qmRetryQueue = [];
+    qmRetryAttempts = {};
+    qmPassTotal = qmQueue.length;
+    qmPassIndex = 0;
+    qmShowScreen('quiz');
+    qmNextQuestion();
+  }
+
+  function openQuickMatch(module) {
+    qmModule = module;
+    qmDirection = QM_DIRECTION_BY_KIND[module.kind];
+    qmVocab = [];
+    document.getElementById('quick-match-badge').textContent = module.label;
+    document.getElementById('qm-prompt').textContent = '';
+    document.getElementById('qm-options').innerHTML = '';
+    qmRenderStartScreen(module);
+    qmShowScreen('start');
+    showView('quickMatch');
+    loadEpisodeData(module).then(function (data) {
+      if (qmModule !== module) return;
+      qmVocab = data.vocabulary;
+    }).catch(function () {
+      if (qmModule !== module) return;
+      document.getElementById('qm-start-body').hidden = false;
+      document.getElementById('qm-start-body').innerHTML =
+        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+    });
+  }
+
+  document.getElementById('qm-start-btn').addEventListener('click', function () {
+    if (!qmVocab.length) return;
+    if (!document.getElementById('qm-start-checkbox-row').hidden) {
+      setIntroDismissed(qmModule.kind, getUserName(), document.getElementById('qm-start-dont-show-again').checked);
+    }
+    qmStartQuiz();
+  });
+
+  document.getElementById('quick-match-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(qmModule, { dismissPref: introDismissPref(qmModule.kind) });
+  });
+
+  document.getElementById('qm-options').addEventListener('click', function (e) {
+    // Ita-Eng's mini listen button sits inside the same options container —
+    // check it first so tapping it plays audio instead of submitting an answer.
+    var listenBtn = e.target.closest('[data-qm-listen-index]');
+    if (listenBtn) {
+      var listenOpt = qmCurrentOptions[parseInt(listenBtn.getAttribute('data-qm-listen-index'), 10)];
+      if (listenOpt) toggleSpeak(listenOpt.text, listenBtn);
+      return;
+    }
+    var btn = e.target.closest('.sr-option');
+    if (!btn || btn.disabled) return;
+    qmDisableOptions();
+    var opt = qmCurrentOptions[parseInt(btn.getAttribute('data-qm-index'), 10)];
+    if (opt.correct) {
+      btn.classList.add('is-correct');
+      srPlayCorrectSound();
+      qmRecordResult(true);
+      setTimeout(qmNextQuestion, CONFIG.quickMatch.feedbackPauseMs);
+    } else {
+      btn.classList.add('is-wrong');
+      srPlayWrongSound();
+      qmRecordResult(false);
+      qmShowReveal();
+    }
+  });
+
+  document.getElementById('qm-prompt-audio').addEventListener('click', function (e) {
+    var say = e.target.closest('[data-say]');
+    if (!say) return;
+    var rateAttr = say.getAttribute('data-rate');
+    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+  });
+
+  document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
+    qmDisableOptions();
+    srPlayWrongSound();
+    qmRecordResult(false, true); // declared non-attempt -> straight to rosso
+    qmShowReveal();
+  });
+
+  document.getElementById('qm-advance-btn').addEventListener('click', function () {
+    qmNextQuestion();
+  });
+
+  document.getElementById('qm-retry-continue-btn').addEventListener('click', function () {
+    qmNextQuestion();
+  });
+
+  document.getElementById('qm-complete-btn').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), qmModule.id);
+    openEpisodeMap();
+  });
+
+  document.getElementById('quick-match-back-map').addEventListener('click', function () {
+    openEpisodeMap();
+  });
+
+  document.getElementById('quick-match-help-btn').addEventListener('click', function () {
+    openHelpFor(qmModule);
+  });
+
+  /* ============================================================
      MODULES: SPEED ROUND ENG-ITA / SPEED ROUND ITA-ENG
      Two separate map modules sharing one view and this one JS section —
      module.kind fixes the direction and the istruzioni-moduli.json entry
@@ -4482,7 +4951,6 @@
      (CLAUDE.md rule 10); no Indietro.
      ============================================================ */
   var SR_DIRECTION_BY_KIND = { speedRoundEngIta: 'en-it', speedRoundItaEng: 'it-en' };
-  var SR_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
 
   var srModule = null;
   var srDirection = 'en-it'; // fixed for the whole module session
@@ -4602,38 +5070,24 @@
   // level, same special-cased path as Flash Card's "skipped without
   // flipping" (applyMasteryResult's normal one-level-at-a-time demotion is
   // untouched — timeout and a wrong tap still go through it as before).
+  // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
+  // supplies Speed Round's own state/config so its mastery unitId prefix
+  // and retry safety valve stay independent from Quick Match's.
   function srRecordResult(correct, declaredNonAttempt) {
-    var unitId = 'speedround:' + srCurrentItem.id + ':' + srDirection;
-    var userName = getUserName();
-    var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = declaredNonAttempt
-      ? { level: 'rosso', streak: 0 }
-      : applyMasteryResult(mastery[unitId], correct ? 'correct' : 'wrong');
-    saveMastery(currentEpisode.id, userName, mastery);
-
-    if (!correct) {
-      var attempts = (srRetryAttempts[srCurrentItem.id] || 0) + 1;
-      srRetryAttempts[srCurrentItem.id] = attempts;
-      if (attempts >= CONFIG.speedRound.maxRetryAttempts) {
-        // Give up retrying this one — force-accept as rosso so the retry
-        // loop can't run forever on a single stubborn item.
-        mastery[unitId] = { level: 'rosso', streak: 0 };
-        saveMastery(currentEpisode.id, userName, mastery);
-      } else if (srRetryQueue.indexOf(srCurrentItem.id) === -1) {
-        srRetryQueue.push(srCurrentItem.id);
-      }
-    }
+    recordMultipleChoiceResult({
+      item: srCurrentItem,
+      direction: srDirection,
+      correct: correct,
+      declaredNonAttempt: declaredNonAttempt,
+      unitPrefix: 'speedround',
+      retryAttempts: srRetryAttempts,
+      retryQueue: srRetryQueue,
+      maxRetryAttempts: CONFIG.speedRound.maxRetryAttempts
+    });
   }
 
   function srBuildOptions(item) {
-    var correctText = srDirection === 'en-it' ? item.italian : item.english;
-    var pool = srVocab.filter(function (v) { return v.id !== item.id; });
-    var distractors = srShuffle(pool).slice(0, 3).map(function (v) {
-      return srDirection === 'en-it' ? v.italian : v.english;
-    });
-    var options = distractors.map(function (text) { return { text: text, correct: false }; });
-    options.push({ text: correctText, correct: true });
-    return srShuffle(options);
+    return buildMultipleChoiceOptions(item, srDirection, srVocab);
   }
 
   function srRenderQuestion() {
@@ -4706,7 +5160,7 @@
     srRetryAttempts = {};
     srPassTotal = srQueue.length;
     srPassIndex = 0;
-    document.getElementById('sr-direction').textContent = SR_DIRECTION_LABEL[srDirection];
+    document.getElementById('sr-direction').textContent = DIRECTION_LABEL[srDirection];
     srShowScreen('quiz');
     srNextQuestion();
   }
@@ -4827,7 +5281,6 @@
      comes back with zero misses, then the summary screen. No Indietro
      there, only in the card flow itself.
      ============================================================ */
-  var FC_DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
   // Card-to-card slide duration — must match the CSS transition on .fc-card.
   var FC_SLIDE_MS = 260;
 
@@ -5039,7 +5492,7 @@
     var levelConfig = CONFIG.flashcard.levels[fcLevel];
     document.getElementById('flashcard-badge').textContent = module.label;
     document.getElementById('fc-level-label').textContent = levelConfig.label;
-    document.getElementById('fc-direction').textContent = FC_DIRECTION_LABEL[fcDirection];
+    document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
     document.getElementById('fc-counter').textContent = '';
     document.getElementById('fc-front-word').textContent = 'Caricamento...';
     document.getElementById('fc-back-word').textContent = '';
