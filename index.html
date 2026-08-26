@@ -106,9 +106,12 @@
       // the final beat before starting is audibly distinct. Not to be
       // confused with "countdown" above, which is a different sound for a
       // different moment (a per-line timer bar finishing).
+      // Raised well above wrongFreq (220) so a countdown never reads as
+      // an error buzz — bright/squillante on purpose, same interval
+      // ratio as before between freq and finalFreq.
       readyCountdown: {
-        freq: 440,
-        finalFreq: 523,
+        freq: 784,
+        finalFreq: 988,
         durationMs: 100
       }
     },
@@ -302,6 +305,7 @@
     moduleTypes: {
       studio: { label: 'Studio libero' },
       quiz: { label: 'Quiz con ripasso' },
+      quizATempo: { label: 'Quiz a tempo' },
       test: { label: 'Verifica finale' }
     },
     // ---- selectable color themes ----
@@ -472,7 +476,7 @@
       requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
       requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
       howItWorks: {
-        title: 'Spiegazione — Personalizza',
+        title: 'Personalizza',
         body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
       },
       helpReminder: {
@@ -480,8 +484,8 @@
         body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. Le scelte valgono per tutto l\'episodio — per cambiarle dopo, si riparte da capo. \'Reset\' torna al default.</p>'
       },
       midEpisodeWarning: {
-        title: 'Attenzione: stai per cancellare i progressi',
-        body: '<p>Hai già iniziato questo episodio: i colori e i risultati che hai fatto finora si riferiscono ai nomi e ai luoghi che hai scelto ora. Se li cambi, quei progressi puntano a parole che non esistono più.</p><p>Per continuare, <b>tutti i progressi di questo episodio verranno cancellati</b> e dovrai rifare gli esercizi da capo.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>',
+        title: 'Stai per cancellare i tuoi progressi',
+        body: '<p>Hai già iniziato questo episodio. Se cambi ora i nomi e i luoghi della storia, tutto quello che hai fatto finora smette di avere senso: si riferiva alle parole che stai per sostituire.</p><p>Per continuare, <b>perderai tutti i progressi fatti in questo episodio</b> — dovrai rifare da capo gli esercizi che avevi già completato.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>',
         confirmPhrase: 'cancella episodio',
         confirmLabel: 'Scrivi "cancella episodio" per confermare',
         confirmButton: 'Cancella i progressi e modifica',
@@ -490,7 +494,7 @@
     },
     mappaEpisodio: {
       howItWorks: {
-        title: 'Spiegazione — Mappa dell\'episodio',
+        title: 'Mappa dell\'episodio',
         body: '<p>Questa è la mappa dell\'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>'
       },
       helpReminder: {
@@ -500,8 +504,8 @@
     },
     repeatAloud: {
       howItWorks: {
-        title: 'Spiegazione — Repeat Aloud',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p>'
+        title: 'Repeat Aloud',
+        body: '<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -510,8 +514,8 @@
     },
     speakEasy: {
       howItWorks: {
-        title: 'Spiegazione — Speak Easy',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito, torna alla mappa".</p>'
+        title: 'Speak Easy',
+        body: '<p>Leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito, torna alla mappa".</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -520,8 +524,8 @@
     },
     speedRoundEngIta: {
       howItWorks: {
-        title: 'Spiegazione — Speed Round Eng-Ita',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
+        title: 'Speed Round Eng-Ita',
+        body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -530,8 +534,8 @@
     },
     speedRoundItaEng: {
       howItWorks: {
-        title: 'Spiegazione — Speed Round Ita-Eng',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
+        title: 'Speed Round Ita-Eng',
+        body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -540,8 +544,8 @@
     },
     flashcardLevelA: {
       howItWorks: {
-        title: 'Spiegazione — Flash Card',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente \'Non ancora\', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p>'
+        title: 'Flash Card',
+        body: '<p>Guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente \'Non ancora\', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -550,8 +554,8 @@
     },
     voiceCoach: {
       howItWorks: {
-        title: 'Spiegazione — Voice Coach',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
+        title: 'Voice Coach',
+        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -560,8 +564,8 @@
     },
     dialogoAscoltaRipeti: {
       howItWorks: {
-        title: 'Spiegazione — Ascolta e Ripeti',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando ti senti pronto, in fondo trovi la domanda finale.</p>'
+        title: 'Ascolta e Ripeti',
+        body: '<p>Questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -570,8 +574,8 @@
     },
     dialogoRipetiATempo: {
       howItWorks: {
-        title: 'Spiegazione — Ripeti a Tempo',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p>'
+        title: 'Ripeti a Tempo',
+        body: '<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -580,8 +584,8 @@
     },
     dialogoContinuo: {
       howItWorks: {
-        title: 'Spiegazione — Dialogo Continuo',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: è l\'ultimo passaggio sul dialogo, e va da solo.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — fino alla fine del dialogo.</p><p>Non devi toccare niente. Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>È la prova generale: se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p>'
+        title: 'Dialogo Continuo',
+        body: '<p>Questa è la prova generale: il dialogo intero scorre da solo, dall\'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -590,8 +594,8 @@
     },
     quickMatchEngIta: {
       howItWorks: {
-        title: 'Spiegazione — Quick Match Eng-Ita',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>'
+        title: 'Quick Match Eng-Ita',
+        body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -600,8 +604,8 @@
     },
     quickMatchItaEng: {
       howItWorks: {
-        title: 'Spiegazione — Quick Match Ita-Eng',
-        body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>'
+        title: 'Quick Match Ita-Eng',
+        body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
@@ -610,8 +614,6 @@
     }
   };
 
-  // Mirrors data/messaggi-feedback.json — same resilience-net role as the
-  // blocks above, used by Voice Coach for star ratings and attempt nudges.
   window.FALLBACK_FEEDBACK_MESSAGES = {
     percentageRule: {
       rule: 'basata sulla percentuale di risposte/parole corrette sul totale',
@@ -1282,6 +1284,69 @@
      "display: flex" would otherwise win over the browser's default
      [hidden]{display:none}. */
   header.app-header[hidden] { display: none; }
+
+  /* "Spiegazione" title (renderSpiegazioneTitle): row 1 is the fixed
+     kicker, small and secondary; row 2 is the module's own name, in
+     evidence — replaces the old single "Spiegazione — X" line, which
+     wrapped awkwardly on narrow screens. Both spans are block-level so
+     they stack even though they live inside one <h1>. */
+  .spiegazione-title-kicker {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .spiegazione-title-name {
+    display: block;
+  }
+
+  /* Danger panel (Personalizza's mid-episode wipe warning) — the ONE
+     place in the app where confirming a button destroys data, so it's
+     deliberately styled to look unlike every other panel: thick border,
+     the wrong/error tone (--wrong-bg/--wrong-ink, already the app's
+     "something's off" color — not a new hardcoded one) instead of the
+     neutral .panel background, and a warning icon up top. Never reuse
+     this look for anything that isn't itself destructive. */
+  .danger-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 22px 18px;
+    border: 3px solid var(--wrong-ink);
+    border-radius: 12px;
+    background: var(--wrong-bg);
+    color: var(--wrong-ink);
+  }
+
+  .danger-panel-icon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .danger-panel-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .danger-panel-body {
+    font-size: 0.92rem;
+    text-align: left;
+  }
+
+  .danger-panel-body p { margin: 0 0 10px; }
+  .danger-panel-body p:last-child { margin-bottom: 0; }
+
+  .danger-panel[hidden],
+  .danger-panel-icon[hidden],
+  .danger-panel-body[hidden] { display: none; }
 
   /* Only view-pronunciation (legacy, unreachable from the current UI —
      left untouched, out of scope) still uses a plain .top-row. Every
@@ -1995,6 +2060,11 @@
   }
 
   .chat-italian { font-size: 0.88rem; opacity: 0.8; margin: 0; }
+
+  /* Voice Coach's "Mostra pronuncia" reveal — same recipe as .chat-
+     italian above, own class since it's a different context (not a
+     chat bubble), not a hardcoded new color/pattern. */
+  .vc-pronunciation { font-size: 0.88rem; opacity: 0.8; margin: 4px 0 0; }
 
   .translation-toggle {
     align-self: flex-start;
@@ -2820,12 +2890,17 @@
                now would invalidate that progress, so a deliberate typed
                confirmation is required before entering the editor. Text
                + confirm phrase come from data/istruzioni-moduli.json's
-               personalizzazione.midEpisodeWarning (CLAUDE.md rule 8). -->
+               personalizzazione.midEpisodeWarning (CLAUDE.md rule 8).
+               .danger-panel is deliberately the only place in the app
+               with this treatment — data destruction happens here and
+               nowhere else, so it's meant to look unlike everything
+               around it (see .danger-panel's own CSS comment). -->
           <div id="customize-warning-screen" class="module-screen" hidden>
-            <header class="app-header">
-              <h1 id="customize-warning-title">Attenzione</h1>
-            </header>
-            <div class="overlay-text panel" id="customize-warning-body"></div>
+            <div class="danger-panel">
+              <span class="danger-panel-icon" data-icon="triangle-alert" data-icon-class="icon-lg"></span>
+              <h1 class="danger-panel-title" id="customize-warning-title">Attenzione</h1>
+              <div class="danger-panel-body" id="customize-warning-body"></div>
+            </div>
             <label class="slot-field">
               <span class="slot-label" id="customize-warning-confirm-label"></span>
               <input type="text" id="customize-warning-confirm-input" autocomplete="off">
@@ -3038,6 +3113,16 @@
             <div class="vc-cue panel" id="vc-cue"></div>
 
             <div class="vc-target" id="vc-target"></div>
+
+            <!-- Mostra pronuncia: same reveal pattern as Speak Easy's
+                 "Mostra traduzione" (.translation-toggle, CLAUDE.md rule
+                 13) — reveals the line's own pronunciationTip (already
+                 the vocabulary's field name, reused here per-line) as an
+                 Italian-style transcription, never IPA. Hidden entirely
+                 (not just the text) when a line has no pronunciationTip
+                 — see renderVoiceCoachSentence. -->
+            <button type="button" class="translation-toggle" id="vc-pronunciation-toggle" hidden>Mostra pronuncia</button>
+            <p class="vc-pronunciation" id="vc-pronunciation" hidden></p>
 
             <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
 
@@ -3573,7 +3658,8 @@
     'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
     'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
     'chevron-up': '<path d="m18 15-6-6-6 6"/>',
-    'chevron-down': '<path d="m6 9 6 6 6-6"/>'
+    'chevron-down': '<path d="m6 9 6 6 6-6"/>',
+    'triangle-alert': '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>'
   };
 
   function icon(name, extraClass) {
@@ -3658,10 +3744,13 @@
   // MODULE OUTCOME), no need to repeat it here.
   renderSummaryScreen('dg-summary-screen', 'dg-summary-title', 'Dialogo ripassato!', 'dg-complete-btn');
 
-  renderRetryIntroScreen('sr-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate o saltate, finché non sono tutte corrette.', 'sr-retry-continue-btn');
-  renderRetryIntroScreen('qm-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate, finché non sono tutte corrette.', 'qm-retry-continue-btn');
-  renderRetryIntroScreen('fc-retry-intro-screen', 'Ripassiamo insieme le carte che non ricordavi ancora, finché non le sai tutte.', 'fc-retry-continue-btn', 'Continua');
-  renderRetryIntroScreen('voice-coach-retry-intro-screen', 'Ripassiamo insieme le frasi che non ti sono venute bene, finché non sono tutte a posto.', 'voice-coach-retry-continue-btn');
+  // Softened on purpose (CLAUDE.md-driven revision): dropped the "finché
+  // non..." framing, which read as "you don't leave until you're
+  // perfect" rather than a plain, warm heads-up.
+  renderRetryIntroScreen('sr-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate o saltate.', 'sr-retry-continue-btn');
+  renderRetryIntroScreen('qm-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate.', 'qm-retry-continue-btn');
+  renderRetryIntroScreen('fc-retry-intro-screen', 'Ripassiamo insieme le carte che non ricordavi ancora.', 'fc-retry-continue-btn', 'Continua');
+  renderRetryIntroScreen('voice-coach-retry-intro-screen', 'Ripassiamo insieme le frasi che non ti sono venute bene.', 'voice-coach-retry-continue-btn');
 
   renderSummaryScreen('voice-coach-summary-screen', 'voice-coach-summary-title', 'Modulo completato!', 'voice-coach-complete-btn');
 
@@ -3837,10 +3926,12 @@
   function openHowItWorksOverlay(module, options) {
     options = options || {};
     // placeholderTitle covers the brief moment before loadModuleInstructions
-    // resolves, and the fallback if this module has no entry at all. Default
-    // 'Spiegazione' matches every module's current button label.
-    var placeholderTitle = options.placeholderTitle || 'Spiegazione';
-    document.getElementById('howitworks-overlay-title').textContent = placeholderTitle;
+    // resolves, and the fallback if this module has no entry at all —
+    // every caller already knows its own module.label, so this is only
+    // ever an explicit override for the rare case that differs.
+    var placeholderTitle = options.placeholderTitle || module.label || '';
+    var titleEl = document.getElementById('howitworks-overlay-title');
+    renderSpiegazioneTitle(titleEl, placeholderTitle);
     document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     howItWorksOverlayEl.classList.add('is-open');
 
@@ -3857,7 +3948,7 @@
 
     loadModuleInstructions().then(function (data) {
       var entry = data[module.kind] && data[module.kind].howItWorks;
-      document.getElementById('howitworks-overlay-title').textContent = (entry && entry.title) || placeholderTitle;
+      renderSpiegazioneTitle(titleEl, (entry && entry.title) || placeholderTitle);
       document.getElementById('howitworks-overlay-body').innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -3914,6 +4005,20 @@
 
   document.getElementById('config-panel-close-btn').addEventListener('click', closeConfigPanel);
   document.getElementById('config-panel-backdrop').addEventListener('click', closeConfigPanel);
+
+  // Second reveal path, for phones (typing "config" needs a keyboard):
+  // a ?config query param, checked once at boot. Still not something a
+  // beta tester stumbles into by browsing the app — only by typing it
+  // into the address bar — same "not discoverable by accident" bar as
+  // the keyboard sequence above. Deferred to the next tick: openConfigPanel
+  // -> renderConfigPanel reads EPISODES, which this script assigns later
+  // (further down, top-to-bottom) — by the time a 0ms timeout fires, the
+  // whole script has finished running and EPISODES exists.
+  try {
+    if (new URLSearchParams(window.location.search).has('config')) {
+      setTimeout(openConfigPanel, 0);
+    }
+  } catch (e) {}
 
   function setConfigPath(path, value) {
     var obj = window.APP_CONFIG;
@@ -4293,7 +4398,11 @@
       // next to the module on the map (see MODULE_TYPE_LABEL) but not
       // yet wired to map colors or to the valvola/richiamo mechanics.
       modulesById: {
-        personalizzazione: { kind: 'personalizzazione', label: 'Personalizza', type: 'studio' },
+        // "Studio libero" (the generic studio-type label) doesn't
+        // describe this one well — it's setup, not learning — so it
+        // overrides the type's own label with typeLabel instead of
+        // needing a whole category just for one module.
+        personalizzazione: { kind: 'personalizzazione', label: 'Personalizza', type: 'studio', typeLabel: 'Preparazione' },
         repeatAloud: { kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         speakEasy: { kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         voiceCoach: { kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
@@ -4301,10 +4410,10 @@
         quickMatchItaEng: { kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
         dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studio' },
-        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studio' },
-        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'quizATempo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'quizATempo' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // flashcardLevel/flashcardDirection tell the shared component what
@@ -4859,7 +4968,7 @@
       customizeShowMainOrWarning();
     } else {
       document.getElementById('customize-intro-dont-show-again').checked = false;
-      renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body');
+      renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body', personalizzazioneModule().label);
       customizeShowScreen('intro');
     }
     ensureEpisodeSlotFields(currentEpisode).then(function () {
@@ -4913,7 +5022,10 @@
       var rowClass = status + (outcomeLevel ? ' outcome-' + outcomeLevel : '');
       var badgeLabel = outcomeLevel === 'giallo' ? 'Da rivedere' : STATUS_LABEL[status];
       var typeInfo = CONFIG.moduleTypes[m.type];
-      var typeHtml = typeInfo ? '<span class="module-row-type">' + typeInfo.label + '</span>' : '';
+      // typeLabel (see personalizzazione's own entry) overrides the
+      // type's generic label for a module it doesn't quite describe.
+      var typeLabelText = m.typeLabel || (typeInfo && typeInfo.label);
+      var typeHtml = typeLabelText ? '<span class="module-row-type">' + typeLabelText + '</span>' : '';
       return '<button type="button" class="module-row ' + rowClass + '" data-module="' + m.id + '"' +
         (clickable ? '' : ' disabled') + '>' +
         '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' +
@@ -4938,7 +5050,7 @@
       mapShowScreen('main');
     } else {
       document.getElementById('map-intro-dont-show-again').checked = false;
-      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body');
+      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body', MAP_PSEUDO_MODULE.label);
       mapShowScreen('intro');
     }
   }
@@ -5098,19 +5210,35 @@
     };
   }
 
+  // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
+  // "Spiegazione" kicker (never varies — see .spiegazione-title-kicker),
+  // row 2 is the module's own name in evidence. Used by every module's
+  // full-screen intro (renderIntroContent below, Repeat Aloud's own
+  // renderRaIntroContent) and by the "Spiegazione" popup overlay
+  // (openHowItWorksOverlay) — the only three places this title appears.
+  // Previously a single "Spiegazione — X" string from istruzioni-moduli.
+  // json; the em dash wrapped awkwardly on narrow screens, so the JSON's
+  // own title is now just the module name and this always adds the
+  // fixed row on top.
+  function renderSpiegazioneTitle(el, moduleName) {
+    el.innerHTML = '<span class="spiegazione-title-kicker">Spiegazione</span>' +
+      (moduleName ? '<span class="spiegazione-title-name">' + moduleName + '</span>' : '');
+  }
+
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
   // for the given kind — the same content Repeat Aloud's renderRaIntroContent
   // loads, generalized so every module's intro screen shares one loader
-  // instead of repeating it per module. placeholderTitle is optional
-  // (default 'Spiegazione', every module's current button label) for the
-  // brief moment before loadModuleInstructions resolves.
-  function renderIntroContent(kind, titleElId, bodyElId, placeholderTitle) {
-    placeholderTitle = placeholderTitle || 'Spiegazione';
-    document.getElementById(titleElId).textContent = placeholderTitle;
+  // instead of repeating it per module. moduleLabel is the module's own
+  // name (row 2, shown immediately — the JSON's own title, once loaded,
+  // is preferred if it differs, but every caller's own label is already
+  // correct so this only ever matters as the pre-load placeholder).
+  function renderIntroContent(kind, titleElId, bodyElId, moduleLabel) {
+    var titleEl = document.getElementById(titleElId);
+    renderSpiegazioneTitle(titleEl, moduleLabel);
     document.getElementById(bodyElId).innerHTML = '<p class="module-status-text">Caricamento...</p>';
     loadModuleInstructions().then(function (data) {
       var entry = data[kind] && data[kind].howItWorks;
-      document.getElementById(titleElId).textContent = (entry && entry.title) || placeholderTitle;
+      renderSpiegazioneTitle(titleEl, (entry && entry.title) || moduleLabel);
       document.getElementById(bodyElId).innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -5144,11 +5272,12 @@
   }
 
   function renderRaIntroContent() {
-    document.getElementById('ra-intro-title').textContent = 'Spiegazione';
+    var titleEl = document.getElementById('ra-intro-title');
+    renderSpiegazioneTitle(titleEl, currentRepeatAloudModule && currentRepeatAloudModule.label);
     document.getElementById('ra-intro-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     loadModuleInstructions().then(function (data) {
       var entry = data.repeatAloud && data.repeatAloud.howItWorks;
-      document.getElementById('ra-intro-title').textContent = (entry && entry.title) || 'Spiegazione';
+      renderSpiegazioneTitle(titleEl, (entry && entry.title) || (currentRepeatAloudModule && currentRepeatAloudModule.label));
       document.getElementById('ra-intro-body').innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -5283,7 +5412,7 @@
       seShowScreen('main');
     } else {
       document.getElementById('speak-easy-intro-dont-show-again').checked = false;
-      renderIntroContent('speakEasy', 'speak-easy-intro-title', 'speak-easy-intro-body');
+      renderIntroContent('speakEasy', 'speak-easy-intro-title', 'speak-easy-intro-body', currentSpeakEasyModule.label);
       seShowScreen('intro');
     }
     loadEpisodeData(module).then(function (data) {
@@ -5566,6 +5695,12 @@
     document.getElementById('vc-counter').textContent = vcPassIndex + ' / ' + vcPassTotal;
     document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
     document.getElementById('vc-target').textContent = vcTargetText();
+    var pronToggle = document.getElementById('vc-pronunciation-toggle');
+    var pronEl = document.getElementById('vc-pronunciation');
+    pronToggle.hidden = !line.pronunciationTip;
+    pronToggle.textContent = 'Mostra pronuncia';
+    pronEl.textContent = line.pronunciationTip || '';
+    pronEl.hidden = true;
     document.getElementById('vc-audio-controls').innerHTML =
       '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
       '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>';
@@ -5637,7 +5772,7 @@
       vcShowScreen('main');
     } else {
       document.getElementById('voice-coach-intro-dont-show-again').checked = false;
-      renderIntroContent('voiceCoach', 'voice-coach-intro-title', 'voice-coach-intro-body');
+      renderIntroContent('voiceCoach', 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label);
       vcShowScreen('intro');
     }
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
@@ -5772,6 +5907,13 @@
 
   document.getElementById('voice-coach-retry-btn').addEventListener('click', function () {
     setVcState('idle');
+  });
+
+  document.getElementById('vc-pronunciation-toggle').addEventListener('click', function () {
+    var pronEl = document.getElementById('vc-pronunciation');
+    var reveal = pronEl.hidden;
+    pronEl.hidden = !reveal;
+    this.textContent = reveal ? 'Nascondi pronuncia' : 'Mostra pronuncia';
   });
 
   document.getElementById('vc-next-btn').addEventListener('click', vcNextLine);
@@ -5929,7 +6071,7 @@
     } else {
       document.getElementById('qm-start-dont-show-again').checked = false;
       document.getElementById('qm-start-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'qm-start-title', 'qm-start-body');
+      renderIntroContent(module.kind, 'qm-start-title', 'qm-start-body', module.label);
     }
   }
 
@@ -6206,7 +6348,7 @@
     } else {
       document.getElementById('dg-start-dont-show-again').checked = false;
       document.getElementById('dg-start-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'dg-start-title', 'dg-start-body');
+      renderIntroContent(module.kind, 'dg-start-title', 'dg-start-body', module.label);
     }
   }
 
@@ -6245,13 +6387,33 @@
       b.classList.toggle('is-locked', locked && b !== activeBubble);
       b.classList.toggle('is-active', locked && b === activeBubble);
     });
-    document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = locked; });
+    // While a line is actively playing, the choice box is always locked
+    // (same as before). Once idle, it only unlocks once every line has
+    // been heard — see dgUpdateChoiceBoxLock — so it behaves the same
+    // way in all three profiles, not just Dialogo Continuo (where this
+    // was already true as a side effect of it never going idle early).
+    if (locked) {
+      document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = true; });
+    } else {
+      dgUpdateChoiceBoxLock();
+    }
+  }
+
+  // "L'hai imparato?" only makes sense once the whole dialogue has been
+  // heard — otherwise a fast tap could self-assess something never
+  // actually listened to. Recomputed (not just set once) so it works
+  // whether it's called right after dgMarkHeard or right after
+  // renderChoiceBox regenerates fresh, not-yet-disabled buttons.
+  function dgUpdateChoiceBoxLock() {
+    var allHeard = dgDialogue.length > 0 && dgHeardIds.length >= dgDialogue.length;
+    document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = !allHeard; });
   }
 
   function dgMarkHeard(lineId) {
     if (dgHeardIds.indexOf(lineId) === -1) dgHeardIds.push(lineId);
     var check = document.getElementById('dg-heard-' + lineId);
     if (check) check.hidden = false;
+    dgUpdateChoiceBoxLock();
   }
 
   function dgRenderList() {
@@ -6481,6 +6643,7 @@
     dgRenderList();
     dgSetupToolbar();
     renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion, 'dg-not-yet-btn', 'Non ancora', 'dg-know-it-btn', 'Sì, lo so');
+    dgUpdateChoiceBoxLock();
     if (dgProfile.readyCountdown) {
       dgRunReadyCountdown();
     } else {
@@ -6753,7 +6916,7 @@
     } else {
       document.getElementById('sr-start-dont-show-again').checked = false;
       document.getElementById('sr-ready-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'sr-start-title', 'sr-start-body');
+      renderIntroContent(module.kind, 'sr-start-title', 'sr-start-body', module.label);
     }
   }
 
@@ -7184,7 +7347,7 @@
     fcIntroPending = !isIntroDismissed(module.kind, getUserName());
     if (fcIntroPending) {
       document.getElementById('fc-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body');
+      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body', module.label);
       fcShowScreen('intro');
     } else {
       fcShowScreen('card');
