@@ -38,6 +38,13 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 13. **Prima di creare una nuova funzione o calcolo, verificare se ne esiste già uno riusabile nel codice, ed estenderlo invece di duplicarlo.** Quando riusi o crei una funzione degna di nota, comunicane il nome esatto nel riepilogo di risposta.
 
+14. **Chiudere ogni risposta con una sezione fissa "⚠️ DA REGISTRARE"** contenente:
+    - funzioni e componenti nuovi o generalizzati, con il nome esatto;
+    - parametri aggiunti ad `APP_CONFIG`, con nome e valore;
+    - duplicazioni notate e non corrette.
+
+    Se non c'è nulla, scrivere "nulla da registrare". Mai diluire queste informazioni nella prosa del riepilogo.
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese`

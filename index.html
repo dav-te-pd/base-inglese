@@ -99,6 +99,17 @@
         freq: 660,
         durationMs: 120,
         volume: 0.08
+      },
+      // The 3-2-1 "get ready" countdown itself (Speed Round's srRunCountdown,
+      // Dialogo Continuo's dgRunReadyCountdown) — one note per digit, all
+      // equal except the LAST one (the "1"), which is slightly higher so
+      // the final beat before starting is audibly distinct. Not to be
+      // confused with "countdown" above, which is a different sound for a
+      // different moment (a per-line timer bar finishing).
+      readyCountdown: {
+        freq: 440,
+        finalFreq: 523,
+        durationMs: 100
       }
     },
     // ---- limits ----
@@ -239,6 +250,34 @@
         }
       }
     },
+    // ---- Episode step order — the ONLY place that decides module
+    // sequence. Reordering a step (moving Dialogo, Speed Round, a whole
+    // group of steps, ...) means moving a line in this array; nothing
+    // else needs to change — each module's own data (kind/label/
+    // dataFile/dialogoProfile/...) lives unordered in EPISODES.episode1.
+    // modulesById, keyed by these same ids (see EPISODES near
+    // moduleProgressKey). Kept as a flat list of ids for now — a future
+    // episode needing sections (a named group of steps) is the shape to
+    // extend this into later (e.g. mixing plain id strings with
+    // { section, moduleIds } entries), not something to build yet. ----
+    episodes: {
+      episode1: {
+        moduleOrder: [
+          'repeatAloud',
+          'speakEasy',
+          'voiceCoach',
+          'quickMatchEngIta',
+          'quickMatchItaEng',
+          'dialogoAscoltaRipeti',
+          'dialogoRipetiATempo',
+          'dialogoContinuo',
+          'speedRoundEngIta',
+          'speedRoundItaEng',
+          'flashcardAEngIta',
+          'flashcardAItaEng'
+        ]
+      }
+    },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
@@ -299,6 +338,28 @@
     // isn't a reusable name/place), read from each episode's own
     // "ageOptions" via personalizationTablesUsed — see buildSlotFields.
   };
+
+  // Pristine snapshot, captured before any saved override below is
+  // applied — used by the hidden config panel's "Ripristina valori di
+  // partenza" (see near hydrateIcons in the main script) to restore
+  // exact defaults.
+  window.APP_CONFIG_DEFAULTS = JSON.parse(JSON.stringify(window.APP_CONFIG));
+
+  // Applies any parameter overrides saved locally by the hidden config
+  // panel (embryo of the future Admin panel — reveal: type "config"
+  // outside a text field). One whole top-level CONFIG section at a time
+  // — a saved section replaces that section entirely, anything never
+  // touched in the panel stays at its coded default above.
+  (function applyConfigOverrides() {
+    try {
+      var raw = localStorage.getItem('baseinglese:configOverrides');
+      if (!raw) return;
+      var overrides = JSON.parse(raw);
+      Object.keys(overrides).forEach(function (key) {
+        window.APP_CONFIG[key] = overrides[key];
+      });
+    } catch (e) {}
+  })();
 
   /* ============================================================
      FALLBACK DATA — resilience net only, not the authoring source.
@@ -943,6 +1004,10 @@
     gap: 16px;
   }
 
+  /* Config panel only: same overlay panel, just wider — it holds many
+     grouped fields, not a paragraph of text. */
+  .overlay-panel-wide { max-width: 720px; }
+
   .overlay-header {
     display: flex;
     align-items: center;
@@ -1021,6 +1086,91 @@
   .overlay-close[hidden],
   .help-menu[hidden],
   .overlay-actions[hidden] { display: none; }
+
+  /* ---------- hidden config panel (embryo of the future Admin panel) ----------
+     Reuses .overlay/.overlay-panel-wide/.overlay-header/.overlay-close/
+     .overlay-actions/input[type=text]/textarea verbatim (CLAUDE.md rule
+     5/13) — only the field-group layout below is new. */
+  .config-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .config-group {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 14px;
+  }
+
+  .config-group summary {
+    padding: 10px 0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    cursor: pointer;
+  }
+
+  .config-group-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 14px;
+  }
+
+  .config-subgroup {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 14px;
+    border-left: 2px solid var(--border);
+  }
+
+  .config-subgroup-label {
+    font-size: 0.76rem;
+    opacity: 0.65;
+    margin: 0;
+  }
+
+  .config-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .config-field-label {
+    font-size: 0.76rem;
+    color: var(--text);
+    opacity: 0.65;
+    font-family: var(--font-mono);
+  }
+
+  .config-field-hint { opacity: 0.6; text-transform: none; letter-spacing: 0; }
+
+  .config-field-checkbox {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .config-field-json textarea {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+  }
+
+  .config-field-error {
+    font-size: 0.78rem;
+    color: var(--wrong-ink);
+  }
+
+  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
+     nothing toggles these via "hidden" today. */
+  .config-panel-body[hidden],
+  .config-group[hidden],
+  .config-field[hidden],
+  .config-field-error[hidden] { display: none; }
 
   /* ============================================================
      APP SHELL
@@ -3224,6 +3374,28 @@
     </div>
   </div>
 
+  <!-- ============ HIDDEN: DEV CONFIG PANEL ============
+       Embrione del futuro pannello Admin (CLAUDE.md). Non raggiungibile da
+       UI: si apre digitando "config" fuori da un campo di testo. Legge e
+       scrive window.APP_CONFIG dal vivo; le modifiche restano in
+       localStorage del browser. -->
+  <div class="overlay" id="config-panel-overlay">
+    <button type="button" class="overlay-backdrop" id="config-panel-backdrop" aria-label="Chiudi"></button>
+    <div class="overlay-panel overlay-panel-wide card">
+      <div class="overlay-header">
+        <h2>Pannello di configurazione</h2>
+        <button type="button" class="overlay-close" id="config-panel-close-btn" aria-label="Chiudi"><span data-icon="x"></span></button>
+      </div>
+      <div class="overlay-body">
+        <p class="overlay-text">Modifica diretta di APP_CONFIG — le modifiche hanno effetto subito e restano salvate in questo browser. Alcuni parametri (es. l'ordine dei moduli) richiedono di ricaricare la pagina per applicarsi alla vista corrente.</p>
+        <div id="config-panel-body" class="config-panel-body"></div>
+        <div class="overlay-actions">
+          <button type="button" class="btn btn-secondary btn-block" id="config-panel-reset-btn">Ripristina valori di partenza</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ============ SHARED: THIRD-ATTEMPT NUDGE POPUP ============
        Voice Coach-specific for now, but built generically (title/body
        from data, two named actions) so any future module hitting its
@@ -3547,6 +3719,166 @@
     if (e.key !== 'Escape') return;
     if (helpOverlayEl.classList.contains('is-open')) closeOverlay();
     if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
+    if (configPanelOverlayEl.classList.contains('is-open')) closeConfigPanel();
+  });
+
+  /* ============================================================
+     HIDDEN: DEV CONFIG PANEL (CLAUDE.md, embrione del pannello Admin)
+     Legge/scrive window.APP_CONFIG dal vivo. Si apre digitando "config"
+     fuori da un campo di testo (nessuna UI scopribile per caso). Ogni
+     modifica muta window.APP_CONFIG IN PLACE (mai una riassegnazione:
+     CONFIG, nel secondo <script>, è un riferimento allo stesso oggetto,
+     e tutto quel che l'ha già letto dipende da quel riferimento) e viene
+     salvata in localStorage per sopravvivere al reload, sostituendo per
+     intero la sezione di primo livello toccata. ============================ */
+  var CONFIG_OVERRIDES_KEY = 'baseinglese:configOverrides';
+  var configPanelOverlayEl = document.getElementById('config-panel-overlay');
+  var configPanelBodyEl = document.getElementById('config-panel-body');
+
+  function isEditableTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+  }
+
+  var configRevealBuffer = '';
+  document.addEventListener('keydown', function (e) {
+    if (isEditableTarget(e.target)) return;
+    if (e.key.length !== 1) return;
+    configRevealBuffer = (configRevealBuffer + e.key).slice(-6);
+    if (configRevealBuffer.toLowerCase() === 'config') openConfigPanel();
+  });
+
+  function openConfigPanel() {
+    renderConfigPanel();
+    configPanelOverlayEl.classList.add('is-open');
+  }
+  function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
+
+  document.getElementById('config-panel-close-btn').addEventListener('click', closeConfigPanel);
+  document.getElementById('config-panel-backdrop').addEventListener('click', closeConfigPanel);
+
+  function setConfigPath(path, value) {
+    var obj = window.APP_CONFIG;
+    for (var i = 0; i < path.length - 1; i++) obj = obj[path[i]];
+    obj[path[path.length - 1]] = value;
+  }
+
+  function persistConfigSection(sectionKey) {
+    var overrides = {};
+    try { overrides = JSON.parse(localStorage.getItem(CONFIG_OVERRIDES_KEY) || '{}'); } catch (e) { overrides = {}; }
+    overrides[sectionKey] = window.APP_CONFIG[sectionKey];
+    try { localStorage.setItem(CONFIG_OVERRIDES_KEY, JSON.stringify(overrides)); } catch (e) {}
+  }
+
+  function renderConfigScalarField(path, value) {
+    var id = 'cfg-' + path.join('-');
+    var label = path[path.length - 1];
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    if (typeof value === 'boolean') {
+      wrap.classList.add('config-field-checkbox');
+      wrap.innerHTML =
+        '<label for="' + id + '">' +
+          '<input type="checkbox" id="' + id + '" data-config-path="' + path.join('.') + '"' + (value ? ' checked' : '') + '>' +
+          '<span class="config-field-label">' + label + '</span>' +
+        '</label>';
+    } else {
+      var type = typeof value === 'number' ? 'number' : 'text';
+      wrap.innerHTML =
+        '<label class="config-field-label" for="' + id + '">' + label + '</label>' +
+        '<input type="' + type + '" id="' + id + '" data-config-path="' + path.join('.') + '" value="' + String(value).replace(/"/g, '&quot;') + '"' + (type === 'number' ? ' step="any"' : '') + '>';
+    }
+    return wrap;
+  }
+
+  function renderConfigJsonField(path, value) {
+    var id = 'cfg-' + path.join('-');
+    var label = path[path.length - 1];
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field config-field-json';
+    wrap.innerHTML =
+      '<label class="config-field-label" for="' + id + '">' + label + ' <span class="config-field-hint">(JSON)</span></label>' +
+      '<textarea id="' + id + '" rows="4" data-config-path="' + path.join('.') + '" data-config-json="1">' + JSON.stringify(value, null, 2).replace(/</g, '&lt;') + '</textarea>' +
+      '<div class="config-field-error" hidden></div>';
+    return wrap;
+  }
+
+  function renderConfigFields(container, obj, path) {
+    Object.keys(obj).forEach(function (key) {
+      var value = obj[key];
+      var fieldPath = path.concat([key]);
+      if (Array.isArray(value)) {
+        container.appendChild(renderConfigJsonField(fieldPath, value));
+      } else if (value !== null && typeof value === 'object') {
+        var sub = document.createElement('div');
+        sub.className = 'config-subgroup';
+        var subLabel = document.createElement('div');
+        subLabel.className = 'config-subgroup-label';
+        subLabel.textContent = key;
+        sub.appendChild(subLabel);
+        renderConfigFields(sub, value, fieldPath);
+        container.appendChild(sub);
+      } else {
+        container.appendChild(renderConfigScalarField(fieldPath, value));
+      }
+    });
+  }
+
+  function renderConfigPanel() {
+    configPanelBodyEl.innerHTML = '';
+    Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
+      var section = window.APP_CONFIG[sectionKey];
+      var details = document.createElement('details');
+      details.className = 'config-group';
+      var summary = document.createElement('summary');
+      summary.textContent = sectionKey;
+      details.appendChild(summary);
+      var body = document.createElement('div');
+      body.className = 'config-group-body';
+      if (Array.isArray(section)) {
+        body.appendChild(renderConfigJsonField([sectionKey], section));
+      } else if (section !== null && typeof section === 'object') {
+        renderConfigFields(body, section, [sectionKey]);
+      } else {
+        body.appendChild(renderConfigScalarField([sectionKey], section));
+      }
+      details.appendChild(body);
+      configPanelBodyEl.appendChild(details);
+    });
+  }
+
+  configPanelBodyEl.addEventListener('change', function (e) {
+    var target = e.target;
+    var pathAttr = target.getAttribute('data-config-path');
+    if (!pathAttr) return;
+    var path = pathAttr.split('.');
+    var errorEl = target.parentElement.querySelector('.config-field-error');
+
+    if (target.hasAttribute('data-config-json')) {
+      try {
+        var parsed = JSON.parse(target.value);
+        if (errorEl) errorEl.hidden = true;
+        setConfigPath(path, parsed);
+        persistConfigSection(path[0]);
+      } catch (err) {
+        if (errorEl) { errorEl.hidden = false; errorEl.textContent = 'JSON non valido: ' + err.message; }
+      }
+      return;
+    }
+
+    var value;
+    if (target.type === 'checkbox') value = target.checked;
+    else if (target.type === 'number') value = target.value === '' ? 0 : Number(target.value);
+    else value = target.value;
+
+    setConfigPath(path, value);
+    persistConfigSection(path[0]);
+  });
+
+  document.getElementById('config-panel-reset-btn').addEventListener('click', function () {
+    try { localStorage.removeItem(CONFIG_OVERRIDES_KEY); } catch (e) {}
+    location.reload();
   });
 
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
@@ -3740,33 +4072,34 @@
       // personalizationTablesUsed before Customize can render, sharing
       // loadEpisodeData's own cache (no extra request).
       dataFile: 'data/a1-episodio1-inglese.json',
-      // The episode map reads this list — never hardcode a module's name
-      // or order inside the map-rendering code. dataFile is the external
-      // data source for that module's content (see CLAUDE.md rule 4).
-      // howItWorks/helpReminder text for each module kind lives in
-      // data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
-      modules: [
-        { id: 'repeatAloud', kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'speakEasy', kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'voiceCoach', kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'quickMatchEngIta', kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'quickMatchItaEng', kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
-        // First of the three "Dialogo Completo" modules (see CONFIG.
-        // dialogo.profiles) — Ripeti a Tempo / Dialogo Continuo aren't
-        // registered here yet, only built as config profiles for now.
-        { id: 'dialogoAscoltaRipeti', kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti' },
-        { id: 'dialogoRipetiATempo', kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo' },
-        { id: 'dialogoContinuo', kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo' },
-        { id: 'speedRoundEngIta', kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
-        { id: 'speedRoundItaEng', kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+      // Each module's own data, unordered — CONFIG.episodes.episode1.
+      // moduleOrder (top of file, near "selectable color themes") is the
+      // ONLY place that decides the sequence; modules.map below just
+      // resolves that order against this dictionary. Never hardcode a
+      // module's name or order inside the map-rendering code. dataFile is
+      // the external data source for that module's content (CLAUDE.md
+      // rule 4). howItWorks/helpReminder text for each module kind lives
+      // in data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
+      modulesById: {
+        repeatAloud: { kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
+        speakEasy: { kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
+        voiceCoach: { kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+        // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // flashcardLevel/flashcardDirection tell the shared component what
         // to load — see CONFIG.flashcard.levels — so adding Level B/C later
-        // never touches the component itself, only this list + that config.
-        { id: 'flashcardAEngIta', kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it' },
-        { id: 'flashcardAItaEng', kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en' }
-      ],
+        // never touches the component itself, only this dictionary + that config.
+        flashcardAEngIta: { kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en' }
+      },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
       // needs to redeclare if it uses different placeholder names.
@@ -3803,6 +4136,18 @@
       ]
     }
   };
+
+  // Resolves CONFIG.episodes.<id>.moduleOrder against each episode's own
+  // modulesById into the ordered "modules" array every other function
+  // already reads (renderModuleList, moduleStatus, openModuleByKind,
+  // ensureEpisodeSlotFields, ...) — none of them change: reordering a
+  // step is moving a line in that config array, nothing here.
+  Object.keys(EPISODES).forEach(function (episodeId) {
+    var episode = EPISODES[episodeId];
+    episode.modules = CONFIG.episodes[episodeId].moduleOrder.map(function (id) {
+      return Object.assign({ id: id }, episode.modulesById[id]);
+    });
+  });
 
   /* ============================================================
      MODULE PROGRESS
@@ -5748,6 +6093,7 @@
         return;
       }
       el.textContent = n;
+      srPlayReadyCountdownSound(n === 1);
       n--;
       dgReadyTimeoutId = setTimeout(tick, CONFIG.dialogo.countdownStepMs);
     }
@@ -5962,6 +6308,16 @@
     srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
   }
 
+  // One note per digit of a 3-2-1 "get ready" countdown — shared by Speed
+  // Round's srRunCountdown and Dialogo Continuo's dgRunReadyCountdown
+  // (CLAUDE.md rule 13). isFinal (the last digit, "1") gets the slightly
+  // higher CONFIG.sound.readyCountdown.finalFreq; every other digit gets
+  // the same freq.
+  function srPlayReadyCountdownSound(isFinal) {
+    var cfg = CONFIG.sound.readyCountdown;
+    srPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
+  }
+
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
   }
@@ -6144,6 +6500,7 @@
     function tick() {
       if (n <= 0) { srCountdownTimeoutId = null; srStartQuiz(); return; }
       el.textContent = n;
+      srPlayReadyCountdownSound(n === 1);
       n--;
       srCountdownTimeoutId = setTimeout(tick, CONFIG.speedRound.countdownStepMs);
     }
