@@ -155,7 +155,12 @@
       sound: {
         correctFreq: 880,
         wrongFreq: 220,
-        durationMs: 180
+        durationMs: 180,
+        // Explicit, louder than the shared 0.15 default (srPlayTone's own
+        // fallback, used by Corretto below) — at equal gain, wrongFreq's
+        // lower pitch reads as quieter to the ear than correctFreq's, so
+        // it needs its own explicit bump to feel balanced.
+        wrongVolume: 0.22
       }
     },
     // ---- Quick Match quiz (quickMatchEngIta / quickMatchItaEng modules) ----
@@ -250,33 +255,54 @@
         }
       }
     },
-    // ---- Episode step order — the ONLY place that decides module
-    // sequence. Reordering a step (moving Dialogo, Speed Round, a whole
-    // group of steps, ...) means moving a line in this array; nothing
+    // ---- Module step order — the ONLY place that decides module
+    // sequence. moduleOrderDefault is the ONE sequence every episode uses
+    // unless it declares its own CONFIG.episodes.<id>.moduleOrder below
+    // (none does today — episode1 reads this default). Reordering a step
+    // (moving Dialogo, Speed Round, a whole group of steps, ...) for
+    // every episode at once means moving a line in THIS array; nothing
     // else needs to change — each module's own data (kind/label/
-    // dataFile/dialogoProfile/...) lives unordered in EPISODES.episode1.
-    // modulesById, keyed by these same ids (see EPISODES near
-    // moduleProgressKey). Kept as a flat list of ids for now — a future
-    // episode needing sections (a named group of steps) is the shape to
-    // extend this into later (e.g. mixing plain id strings with
-    // { section, moduleIds } entries), not something to build yet. ----
+    // dataFile/dialogoProfile/type/...) lives unordered in EPISODES.
+    // episode1.modulesById, keyed by these same ids (see EPISODES near
+    // moduleProgressKey). Also editable live from the hidden config
+    // panel's reorder view (see near renderModuleOrderField), which
+    // writes back here the same way any other override does. Kept as a
+    // flat list of ids for now — a future episode needing sections (a
+    // named group of steps) is the shape to extend this into later (e.g.
+    // mixing plain id strings with { section, moduleIds } entries), not
+    // something to build yet. ----
+    moduleOrderDefault: [
+      'personalizzazione',
+      'repeatAloud',
+      'speakEasy',
+      'voiceCoach',
+      'quickMatchEngIta',
+      'quickMatchItaEng',
+      'dialogoAscoltaRipeti',
+      'dialogoRipetiATempo',
+      'dialogoContinuo',
+      'speedRoundEngIta',
+      'speedRoundItaEng',
+      'flashcardAEngIta',
+      'flashcardAItaEng'
+    ],
+    // Per-episode override of moduleOrderDefault above — an episode only
+    // needs an entry here if its own step sequence differs from the
+    // global default. Empty today: episode1 has none, so it reads the
+    // global default (see the EPISODES.modules computation near
+    // moduleProgressKey).
     episodes: {
-      episode1: {
-        moduleOrder: [
-          'repeatAloud',
-          'speakEasy',
-          'voiceCoach',
-          'quickMatchEngIta',
-          'quickMatchItaEng',
-          'dialogoAscoltaRipeti',
-          'dialogoRipetiATempo',
-          'dialogoContinuo',
-          'speedRoundEngIta',
-          'speedRoundItaEng',
-          'flashcardAEngIta',
-          'flashcardAItaEng'
-        ]
-      }
+      episode1: {}
+    },
+    // ---- Module "type" labels (see each modulesById entry's own `type`)
+    // — shown next to a module's name on the map so the student knows
+    // what to expect before opening it. Purely declarative for now: not
+    // yet tied to map colors or to the valvola/richiamo mechanics (a
+    // later, dedicated pass will derive those from this same `type`). ----
+    moduleTypes: {
+      studio: { label: 'Studio libero' },
+      quiz: { label: 'Quiz con ripasso' },
+      test: { label: 'Verifica finale' }
     },
     // ---- selectable color themes ----
     themes: {
@@ -446,17 +472,25 @@
       requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
       requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Personalizza',
         body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
         body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. Le scelte valgono per tutto l\'episodio — per cambiarle dopo, si riparte da capo. \'Reset\' torna al default.</p>'
+      },
+      midEpisodeWarning: {
+        title: 'Attenzione: stai per cancellare i progressi',
+        body: '<p>Hai già iniziato questo episodio: i colori e i risultati che hai fatto finora si riferiscono ai nomi e ai luoghi che hai scelto ora. Se li cambi, quei progressi puntano a parole che non esistono più.</p><p>Per continuare, <b>tutti i progressi di questo episodio verranno cancellati</b> e dovrai rifare gli esercizi da capo.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>',
+        confirmPhrase: 'cancella episodio',
+        confirmLabel: 'Scrivi "cancella episodio" per confermare',
+        confirmButton: 'Cancella i progressi e modifica',
+        cancelButton: 'Annulla, torna alla mappa'
       }
     },
     mappaEpisodio: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Mappa dell\'episodio',
         body: '<p>Questa è la mappa dell\'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>'
       },
       helpReminder: {
@@ -466,7 +500,7 @@
     },
     repeatAloud: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Repeat Aloud',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p>'
       },
       helpReminder: {
@@ -476,7 +510,7 @@
     },
     speakEasy: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Speak Easy',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito, torna alla mappa".</p>'
       },
       helpReminder: {
@@ -486,7 +520,7 @@
     },
     speedRoundEngIta: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Speed Round Eng-Ita',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
       },
       helpReminder: {
@@ -496,7 +530,7 @@
     },
     speedRoundItaEng: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Speed Round Ita-Eng',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p>'
       },
       helpReminder: {
@@ -506,7 +540,7 @@
     },
     flashcardLevelA: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Flash Card',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente \'Non ancora\', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p>'
       },
       helpReminder: {
@@ -516,7 +550,7 @@
     },
     voiceCoach: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Voice Coach',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><p>Quando arrivi all\'ultima frase, premi "Ho finito, torna alla mappa".</p>'
       },
       helpReminder: {
@@ -526,7 +560,7 @@
     },
     dialogoAscoltaRipeti: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Ascolta e Ripeti',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando ti senti pronto, in fondo trovi la domanda finale.</p>'
       },
       helpReminder: {
@@ -536,7 +570,7 @@
     },
     dialogoRipetiATempo: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Ripeti a Tempo',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p>'
       },
       helpReminder: {
@@ -546,7 +580,7 @@
     },
     dialogoContinuo: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Dialogo Continuo',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: è l\'ultimo passaggio sul dialogo, e va da solo.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — fino alla fine del dialogo.</p><p>Non devi toccare niente. Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>È la prova generale: se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p>'
       },
       helpReminder: {
@@ -556,7 +590,7 @@
     },
     quickMatchEngIta: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Quick Match Eng-Ita',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>'
       },
       helpReminder: {
@@ -566,7 +600,7 @@
     },
     quickMatchItaEng: {
       howItWorks: {
-        title: 'Spiegazione',
+        title: 'Spiegazione — Quick Match Ita-Eng',
         body: '<p>Qui vedrai un video che ti mostra come si usa questo esercizio. Per ora: vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p>'
       },
       helpReminder: {
@@ -1165,12 +1199,43 @@
     color: var(--wrong-ink);
   }
 
+  /* moduleOrderDefault's reorder view (see renderModuleOrderField) — one
+     row per module id, up/down buttons instead of a raw JSON textarea. */
+  .config-module-order-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .config-module-order-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--card-2);
+  }
+
+  .config-module-order-label {
+    font-size: 0.85rem;
+  }
+
+  .config-module-order-controls {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
   /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
      nothing toggles these via "hidden" today. */
   .config-panel-body[hidden],
   .config-group[hidden],
   .config-field[hidden],
-  .config-field-error[hidden] { display: none; }
+  .config-field-error[hidden],
+  .config-module-order-list[hidden],
+  .config-module-order-row[hidden] { display: none; }
 
   /* ============================================================
      APP SHELL
@@ -1644,7 +1709,29 @@
     display: flex;
     align-items: center;
     gap: 10px;
+  }
+
+  .module-row-label-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .module-row-title {
     font-weight: 600;
+  }
+
+  /* Module "type" caption (Studio libero / Quiz con ripasso / Verifica
+     finale — CONFIG.moduleTypes) under the module name. Declarative
+     only for now, so it deliberately reuses the row's own muted-caption
+     look rather than a colored badge (see CLAUDE.md: not yet wired to
+     map colors). */
+  .module-row-type {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.65;
   }
 
   .module-status-icon {
@@ -1692,6 +1779,8 @@
   .module-list[hidden],
   .module-row[hidden],
   .module-row-label[hidden],
+  .module-row-label-text[hidden],
+  .module-row-type[hidden],
   .module-status-icon[hidden] { display: none; }
 
   /* ---------- repeat aloud module view ---------- */
@@ -2106,17 +2195,6 @@
     margin: 4px 0 0;
   }
 
-  .vc-nav-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 12px;
-  }
-
-  /* Voice Coach never hides this row, but Flash Card reuses the same
-     class and does toggle it via "hidden" — same [hidden]-vs-"display"
-     fix as elsewhere, added here so the class stays safe to reuse. */
-  .vc-nav-row[hidden] { display: none; }
-
   #attempt-popup .overlay-backdrop { cursor: default; }
 
   /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
@@ -2450,11 +2528,44 @@
     margin: 0;
   }
 
+  /* Schermata Ripasso (renderRetryIntroScreen) — same tinted-panel
+     treatment as .vc-confirm-box (yellow theme tone, not a new color)
+     so this transition reads as important instead of blending into the
+     surrounding plain text like the old per-module markup did. */
+  .retry-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 20px 16px;
+    border: 1px solid var(--similar-ink);
+    border-radius: 12px;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+  }
+
+  .retry-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .retry-intro-text {
+    font-size: 0.92rem;
+    margin: 0;
+  }
+
   /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
      near .top-row for why these exist even though nothing toggles them
      via hidden today. */
   .sr-options[hidden],
-  .sr-summary[hidden] { display: none; }
+  .sr-summary[hidden],
+  .retry-intro[hidden] { display: none; }
 
   /* ---------- flash card view ---------- */
   /* The two-row header itself now lives in the shared .header-2row/
@@ -2703,6 +2814,26 @@
             <button type="button" class="btn btn-primary btn-block" id="customize-intro-start-btn">Ho capito, inizia</button>
           </div>
 
+          <!-- WARNING SCREEN: shown instead of MAIN when the user has
+               already made progress elsewhere in this episode (see
+               hasStartedEpisodeModules) — changing the personalization
+               now would invalidate that progress, so a deliberate typed
+               confirmation is required before entering the editor. Text
+               + confirm phrase come from data/istruzioni-moduli.json's
+               personalizzazione.midEpisodeWarning (CLAUDE.md rule 8). -->
+          <div id="customize-warning-screen" class="module-screen" hidden>
+            <header class="app-header">
+              <h1 id="customize-warning-title">Attenzione</h1>
+            </header>
+            <div class="overlay-text panel" id="customize-warning-body"></div>
+            <label class="slot-field">
+              <span class="slot-label" id="customize-warning-confirm-label"></span>
+              <input type="text" id="customize-warning-confirm-input" autocomplete="off">
+            </label>
+            <button type="button" class="btn btn-primary btn-block" id="customize-warning-confirm-btn" disabled></button>
+            <button type="button" class="btn btn-secondary btn-block" id="customize-warning-cancel-btn"></button>
+          </div>
+
           <!-- MAIN SCREEN -->
           <div id="customize-main-screen" class="module-screen">
             <header class="app-header">
@@ -2934,16 +3065,31 @@
               <div class="panel transcript-box" id="vc-transcript"></div>
             </div>
 
-            <div class="vc-nav-row">
-              <button type="button" class="btn btn-secondary" id="vc-prev-btn">← Indietro</button>
-              <button type="button" class="btn btn-primary" id="vc-next-btn">Avanti →</button>
-            </div>
+            <!-- No Indietro: every sentence must get a real recording +
+                 evaluation (vc-next-btn stays disabled until then, see
+                 updateVcActionButtons) — going back would risk
+                 re-recording an already-counted attempt, same reasoning
+                 as Flash Card's removed Indietro/Avanti. -->
+            <button type="button" class="btn btn-primary btn-block" id="vc-next-btn" disabled>Avanti →</button>
 
             <div class="warning" id="vc-warning">
               Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
               Prova con Google Chrome su desktop o Android.
             </div>
           </div>
+
+          <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
+               generated by the shared renderRetryIntroScreen() (CLAUDE.md
+               rule 13, see near hydrateIcons). Shown before re-asking any
+               sentence left with 0-1 stars, same mechanic as Speed Round/
+               Quick Match/Flash Card's own retry pass. -->
+          <div id="voice-coach-retry-intro-screen" class="module-screen" hidden></div>
+
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13, see
+               near hydrateIcons) — previously absent, the last sentence's
+               "Avanti" button doubled as completion instead. -->
+          <div id="voice-coach-summary-screen" class="module-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -2989,17 +3135,10 @@
             <button type="button" class="btn btn-primary btn-block" id="qm-start-btn">Ho capito, inizia</button>
           </div>
 
-          <!-- RETRY-PASS INTRO SCREEN: shown once before re-asking anything
-               wrong or declared "Non lo so", same as Speed Round's — just
-               without "o saltate" in the copy, since nothing can time out
-               here. -->
-          <div id="qm-retry-intro-screen" hidden>
-            <header class="app-header">
-              <h1>Ripasso</h1>
-            </header>
-            <div class="overlay-text panel">Ripassiamo insieme le domande sbagliate, finché non sono tutte corrette.</div>
-            <button type="button" class="btn btn-primary btn-block" id="qm-retry-continue-btn">Continua →</button>
-          </div>
+          <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
+               generated by the shared renderRetryIntroScreen() (CLAUDE.md
+               rule 13, see near hydrateIcons). -->
+          <div id="qm-retry-intro-screen" hidden></div>
 
           <!-- QUIZ SCREEN: .sr-counter/.sr-direction/.sr-prompt/.sr-options/
                .sr-reveal/.sr-summary below are Speed Round's own classes,
@@ -3157,16 +3296,10 @@
             <div class="sr-countdown-number" id="sr-countdown-number">3</div>
           </div>
 
-          <!-- RETRY-PASS INTRO SCREEN: shown once before re-asking anything
-               wrong/skipped/timed out, so the counter reset and repeated
-               questions make sense to the user. -->
-          <div id="sr-retry-intro-screen" hidden>
-            <header class="app-header">
-              <h1>Ripasso</h1>
-            </header>
-            <div class="overlay-text panel">Ripassiamo insieme le domande sbagliate o saltate, finché non sono tutte corrette.</div>
-            <button type="button" class="btn btn-primary btn-block" id="sr-retry-continue-btn">Continua →</button>
-          </div>
+          <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
+               generated by the shared renderRetryIntroScreen() (CLAUDE.md
+               rule 13, see near hydrateIcons). -->
+          <div id="sr-retry-intro-screen" hidden></div>
 
           <!-- QUIZ SCREEN -->
           <div id="sr-quiz-screen" hidden>
@@ -3240,12 +3373,12 @@
             <p class="fc-counter" id="fc-counter"></p>
           </header>
 
-          <!-- RETRY-PASS INTRO SCREEN: shown before every new retry pass,
-               not just the first (loops until a pass has zero misses). -->
-          <div id="fc-retry-intro-screen" hidden>
-            <div class="overlay-text panel">Ripassiamo insieme le carte che non ricordavi ancora, finché non le sai tutte.</div>
-            <button type="button" class="btn btn-primary btn-block" id="fc-retry-continue-btn">Continua</button>
-          </div>
+          <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
+               generated by the shared renderRetryIntroScreen() (CLAUDE.md
+               rule 13, see near hydrateIcons). Shown before every new
+               retry pass, not just the first (loops until a pass has
+               zero misses). -->
+          <div id="fc-retry-intro-screen" hidden></div>
 
           <!-- CARD SCREEN -->
           <div id="fc-card-screen">
@@ -3438,7 +3571,9 @@
     'lock': '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     'play': '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>',
     'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
-    'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>'
+    'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+    'chevron-up': '<path d="m18 15-6-6-6 6"/>',
+    'chevron-down': '<path d="m6 9 6 6 6-6"/>'
   };
 
   function icon(name, extraClass) {
@@ -3494,6 +3629,24 @@
       '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
   }
 
+  // Schermata Ripasso: the message shown once before a new retry pass
+  // starts (whatever went wrong/unanswered comes back) — same panel/
+  // title/text shape for every module with a retry queue (Speed Round,
+  // Quick Match, Flash Card, Voice Coach), only bodyText/continueBtnId/
+  // continueLabel differ per caller. Deliberately its own visually
+  // prominent treatment (not a plain page header + loose text like
+  // before) since this is an important transition that used to go
+  // unnoticed — see CLAUDE.md, and .retry-intro's own comment near its
+  // CSS for the color choice.
+  function renderRetryIntroScreen(screenId, bodyText, continueBtnId, continueLabel) {
+    document.getElementById(screenId).innerHTML =
+      '<div class="retry-intro panel">' +
+      '<p class="retry-intro-title">' + icon('rotate-ccw') + ' Ripasso</p>' +
+      '<p class="retry-intro-text">' + bodyText + '</p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary btn-block" id="' + continueBtnId + '">' + (continueLabel || 'Continua →') + '</button>';
+  }
+
   renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
   renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
 
@@ -3504,6 +3657,13 @@
   // — the verde/giallo distinction already shows on the map badge (see
   // MODULE OUTCOME), no need to repeat it here.
   renderSummaryScreen('dg-summary-screen', 'dg-summary-title', 'Dialogo ripassato!', 'dg-complete-btn');
+
+  renderRetryIntroScreen('sr-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate o saltate, finché non sono tutte corrette.', 'sr-retry-continue-btn');
+  renderRetryIntroScreen('qm-retry-intro-screen', 'Ripassiamo insieme le domande sbagliate, finché non sono tutte corrette.', 'qm-retry-continue-btn');
+  renderRetryIntroScreen('fc-retry-intro-screen', 'Ripassiamo insieme le carte che non ricordavi ancora, finché non le sai tutte.', 'fc-retry-continue-btn', 'Continua');
+  renderRetryIntroScreen('voice-coach-retry-intro-screen', 'Ripassiamo insieme le frasi che non ti sono venute bene, finché non sono tutte a posto.', 'voice-coach-retry-continue-btn');
+
+  renderSummaryScreen('voice-coach-summary-screen', 'voice-coach-summary-title', 'Modulo completato!', 'voice-coach-complete-btn');
 
   /* ============================================================
      THEME MANAGER — driven by CONFIG.themes
@@ -3627,10 +3787,7 @@
   });
 
   document.getElementById('back-home').addEventListener('click', goHome);
-  document.getElementById('customize-back-home').addEventListener('click', function () {
-    pendingModuleAfterCustomize = null;
-    goHome();
-  });
+  document.getElementById('customize-back-home').addEventListener('click', goHome);
 
   /* ============================================================
      SHARED: MODULE HELP OVERLAY (reusable by every module)
@@ -3825,6 +3982,55 @@
     });
   }
 
+  // moduleOrderDefault gets its own reorder view (up/down per row)
+  // instead of the generic raw-JSON textarea every other array field
+  // gets — the same override storage (setConfigPath/persistConfigSection)
+  // either way, just a friendlier editor for a field that's meant to be
+  // touched often as the course grows (CLAUDE.md rule 13).
+  function moduleOrderRowLabel(id) {
+    var meta = EPISODES.episode1 && EPISODES.episode1.modulesById[id];
+    return (meta && meta.label) || id;
+  }
+
+  function renderModuleOrderRows(list) {
+    var order = window.APP_CONFIG.moduleOrderDefault;
+    list.innerHTML = order.map(function (id, i) {
+      return '<div class="config-module-order-row">' +
+        '<span class="config-module-order-label">' + moduleOrderRowLabel(id) + '</span>' +
+        '<div class="config-module-order-controls">' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-order-move="up" data-order-index="' + i + '"' + (i === 0 ? ' disabled' : '') + ' aria-label="Sposta su">' + icon('chevron-up') + '</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-order-move="down" data-order-index="' + i + '"' + (i === order.length - 1 ? ' disabled' : '') + ' aria-label="Sposta giù">' + icon('chevron-down') + '</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderModuleOrderField() {
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    var hint = document.createElement('p');
+    hint.className = 'config-field-hint';
+    hint.textContent = 'Ordine di default dei moduli, usato da ogni episodio che non ne dichiara uno proprio. Sposta su/giù; ricarica la pagina per vedere l\'effetto in mappa.';
+    wrap.appendChild(hint);
+    var list = document.createElement('div');
+    list.className = 'config-module-order-list';
+    wrap.appendChild(list);
+    renderModuleOrderRows(list);
+    return wrap;
+  }
+
+  configPanelBodyEl.addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-order-move]');
+    if (!btn) return;
+    var index = Number(btn.getAttribute('data-order-index'));
+    var dir = btn.getAttribute('data-order-move');
+    var order = window.APP_CONFIG.moduleOrderDefault;
+    var swapWith = dir === 'up' ? index - 1 : index + 1;
+    if (swapWith < 0 || swapWith >= order.length) return;
+    var tmp = order[index]; order[index] = order[swapWith]; order[swapWith] = tmp;
+    persistConfigSection('moduleOrderDefault');
+    renderModuleOrderRows(btn.closest('.config-module-order-list'));
+  });
+
   function renderConfigPanel() {
     configPanelBodyEl.innerHTML = '';
     Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
@@ -3836,7 +4042,9 @@
       details.appendChild(summary);
       var body = document.createElement('div');
       body.className = 'config-group-body';
-      if (Array.isArray(section)) {
+      if (sectionKey === 'moduleOrderDefault') {
+        body.appendChild(renderModuleOrderField());
+      } else if (Array.isArray(section)) {
         body.appendChild(renderConfigJsonField([sectionKey], section));
       } else if (section !== null && typeof section === 'object') {
         renderConfigFields(body, section, [sectionKey]);
@@ -4072,33 +4280,38 @@
       // personalizationTablesUsed before Customize can render, sharing
       // loadEpisodeData's own cache (no extra request).
       dataFile: 'data/a1-episodio1-inglese.json',
-      // Each module's own data, unordered — CONFIG.episodes.episode1.
-      // moduleOrder (top of file, near "selectable color themes") is the
-      // ONLY place that decides the sequence; modules.map below just
-      // resolves that order against this dictionary. Never hardcode a
-      // module's name or order inside the map-rendering code. dataFile is
-      // the external data source for that module's content (CLAUDE.md
-      // rule 4). howItWorks/helpReminder text for each module kind lives
-      // in data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
+      // Each module's own data, unordered — CONFIG.moduleOrderDefault (or
+      // this episode's own override in CONFIG.episodes.episode1, if it
+      // declared one — see near "Module step order") is the ONLY place
+      // that decides the sequence; modules.map below just resolves that
+      // order against this dictionary. Never hardcode a module's name or
+      // order inside the map-rendering code. dataFile is the external
+      // data source for that module's content (CLAUDE.md rule 4).
+      // howItWorks/helpReminder text for each module kind lives in
+      // data/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
+      // `type` (studio/quiz/test) is purely declarative for now — shown
+      // next to the module on the map (see MODULE_TYPE_LABEL) but not
+      // yet wired to map colors or to the valvola/richiamo mechanics.
       modulesById: {
-        repeatAloud: { kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json' },
-        speakEasy: { kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json' },
-        voiceCoach: { kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json' },
-        quickMatchEngIta: { kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+        personalizzazione: { kind: 'personalizzazione', label: 'Personalizza', type: 'studio' },
+        repeatAloud: { kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        speakEasy: { kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        voiceCoach: { kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo' },
-        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studio' },
+        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studio' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // flashcardLevel/flashcardDirection tell the shared component what
         // to load — see CONFIG.flashcard.levels — so adding Level B/C later
         // never touches the component itself, only this dictionary + that config.
-        flashcardAEngIta: { kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it' },
-        flashcardAItaEng: { kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en' }
+        flashcardAEngIta: { kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'quiz' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'quiz' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -4137,14 +4350,19 @@
     }
   };
 
-  // Resolves CONFIG.episodes.<id>.moduleOrder against each episode's own
-  // modulesById into the ordered "modules" array every other function
-  // already reads (renderModuleList, moduleStatus, openModuleByKind,
+  // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,
+  // when it declares none (every episode today), the shared CONFIG.
+  // moduleOrderDefault — against that episode's own modulesById into the
+  // ordered "modules" array every other function already reads
+  // (renderModuleList, moduleStatus, openModuleByKind,
   // ensureEpisodeSlotFields, ...) — none of them change: reordering a
-  // step is moving a line in that config array, nothing here.
+  // step for one episode is moving a line in its own moduleOrder;
+  // reordering it for every episode at once is moving a line in
+  // moduleOrderDefault. Nothing here changes either way.
   Object.keys(EPISODES).forEach(function (episodeId) {
     var episode = EPISODES[episodeId];
-    episode.modules = CONFIG.episodes[episodeId].moduleOrder.map(function (id) {
+    var order = (CONFIG.episodes[episodeId] && CONFIG.episodes[episodeId].moduleOrder) || CONFIG.moduleOrderDefault;
+    episode.modules = order.map(function (id) {
       return Object.assign({ id: id }, episode.modulesById[id]);
     });
   });
@@ -4385,11 +4603,6 @@
      ============================================================ */
   var currentEpisode = EPISODES.episode1;
   var currentValues = null;
-  // Set right before opening Customize from a module click (see the Map's
-  // click handler below); read once by "Inizia l'episodio" to jump straight
-  // into that module instead of back to the Map. null when Customize was
-  // reached some other way (e.g. the legacy "Modifica i nomi" link).
-  var pendingModuleAfterCustomize = null;
 
   function renderSlotGrid() {
     var grid = document.getElementById('slot-grid');
@@ -4483,7 +4696,7 @@
       } else {
         saveHelpRequest(getUserName(), {
           episodeId: currentEpisode.id,
-          moduleId: CUSTOMIZE_PSEUDO_MODULE.id,
+          moduleId: 'personalizzazione',
           type: 'customization',
           category: groupKey,
           text: value,
@@ -4523,17 +4736,25 @@
     }).catch(function () {});
   }
 
-  // Pseudo-modules: Map and Customize aren't in currentEpisode.modules (they
-  // aren't a playable step), but the shared Help/HowItWorks machinery only
-  // needs .kind (istruzioni-moduli.json lookup) and .id (help-request
-  // storage key), so these small stand-ins let them reuse it as-is.
+  // Pseudo-module: the Map isn't in currentEpisode.modules (it's not a
+  // playable step), but the shared Help/HowItWorks machinery only needs
+  // .kind (istruzioni-moduli.json lookup) and .id (help-request storage
+  // key), so this small stand-in lets it reuse that as-is. Personalizza
+  // used to need one too, but it's a real entry in currentEpisode.
+  // modulesById now (see personalizzazioneModule below) — no duplicate
+  // object for the same module.
   var MAP_PSEUDO_MODULE = { id: 'mappaEpisodio', kind: 'mappaEpisodio', label: 'Mappa dell\'episodio' };
-  var CUSTOMIZE_PSEUDO_MODULE = { id: 'personalizzazione', kind: 'personalizzazione', label: 'Personalizza' };
 
-  // Whether this user has been through Customize at least once for this
-  // episode (independent of the actual values chosen — defaults are valid
-  // too). Gates the Map's per-module click below: the flow is now Map
-  // first, Customize only the first time a module is opened this episode.
+  function personalizzazioneModule() {
+    return currentEpisode.modules.find(function (m) { return m.id === 'personalizzazione'; });
+  }
+
+  // Read-only survivor of the old "Customize seen" flag (Personalizza
+  // wasn't a real map module before) — kept only for
+  // migrateCustomizeSeenToModuleProgress below, so returning users who
+  // already personalized under the old flow don't suddenly find
+  // Personalizza relocking every module in front of progress they
+  // already made. Nothing writes this key anymore.
   function customizeSeenKey(episodeId, userName) {
     return 'baseinglese:' + episodeId + ':customizeSeen:' + userName;
   }
@@ -4542,13 +4763,90 @@
     try { return localStorage.getItem(customizeSeenKey(episodeId, userName)) === '1'; } catch (e) { return false; }
   }
 
-  function setCustomizeSeen(episodeId, userName) {
-    try { localStorage.setItem(customizeSeenKey(episodeId, userName), '1'); } catch (e) {}
+  function migrateCustomizeSeenToModuleProgress(episode, userName) {
+    if (!isCustomizeSeen(episode.id, userName)) return;
+    var progress = loadModuleProgress(episode.id, userName);
+    if (progress.completed.indexOf('personalizzazione') === -1) {
+      markModuleCompleted(episode, userName, 'personalizzazione');
+    }
   }
+
+  // Whether the user has made real progress elsewhere in this episode —
+  // i.e. beyond Personalizza itself, which may already be in
+  // progress.completed from a previous, uneventful visit. Any signal
+  // (a completed module, a mastery entry, a Dialogo outcome) means
+  // reopening Personalizza now needs the mid-episode wipe warning below;
+  // none of them means the episode hasn't really started yet, so editing
+  // stays free.
+  function hasStartedEpisodeModules(episode, userName) {
+    var progress = loadModuleProgress(episode.id, userName);
+    var completedBeyondCustomize = progress.completed.filter(function (id) { return id !== 'personalizzazione'; });
+    if (completedBeyondCustomize.length > 0) return true;
+    if (Object.keys(loadMastery(episode.id, userName)).length > 0) return true;
+    if (Object.keys(loadModuleOutcomes(episode.id, userName)).length > 0) return true;
+    return false;
+  }
+
+  // The consequence of confirming the mid-episode warning: every piece of
+  // progress that depends on the (about to change) personalization is
+  // cleared, so the map re-locks everything after Personalizza and the
+  // user redoes the episode. customValues (the personalization itself)
+  // is deliberately left untouched — that's what they're about to edit.
+  function wipeEpisodeProgress(episode, userName) {
+    try { localStorage.removeItem(moduleProgressKey(episode.id, userName)); } catch (e) {}
+    try { localStorage.removeItem(moduleOutcomeKey(episode.id, userName)); } catch (e) {}
+    try { localStorage.removeItem(masteryStorageKey(episode.id, userName)); } catch (e) {}
+  }
+
+  var customizeWarningConfirmPhrase = '';
+
+  function renderCustomizeWarningScreen() {
+    document.getElementById('customize-warning-confirm-input').value = '';
+    document.getElementById('customize-warning-confirm-btn').disabled = true;
+    customizeWarningConfirmPhrase = '';
+    loadModuleInstructions().then(function (data) {
+      var entry = (data.personalizzazione && data.personalizzazione.midEpisodeWarning) || {};
+      document.getElementById('customize-warning-title').textContent = entry.title || 'Attenzione';
+      document.getElementById('customize-warning-body').innerHTML = entry.body || '';
+      document.getElementById('customize-warning-confirm-label').textContent = entry.confirmLabel || '';
+      document.getElementById('customize-warning-confirm-btn').textContent = entry.confirmButton || 'Conferma';
+      document.getElementById('customize-warning-cancel-btn').textContent = entry.cancelButton || 'Annulla';
+      customizeWarningConfirmPhrase = (entry.confirmPhrase || '').trim().toLowerCase();
+    }).catch(function () {});
+  }
+
+  document.getElementById('customize-warning-confirm-input').addEventListener('input', function (e) {
+    var typed = e.target.value.trim().toLowerCase();
+    document.getElementById('customize-warning-confirm-btn').disabled =
+      !customizeWarningConfirmPhrase || typed !== customizeWarningConfirmPhrase;
+  });
+
+  document.getElementById('customize-warning-confirm-btn').addEventListener('click', function (e) {
+    if (e.target.disabled) return;
+    wipeEpisodeProgress(currentEpisode, getUserName());
+    customizeShowScreen('main');
+  });
+
+  document.getElementById('customize-warning-cancel-btn').addEventListener('click', function () {
+    openEpisodeMap();
+  });
 
   function customizeShowScreen(name) {
     document.getElementById('customize-intro-screen').hidden = name !== 'intro';
+    document.getElementById('customize-warning-screen').hidden = name !== 'warning';
     document.getElementById('customize-main-screen').hidden = name !== 'main';
+  }
+
+  // Decides between 'warning' and 'main' once the intro is out of the
+  // way — shared by openCustomize (intro already dismissed) and the
+  // intro's own "Ho capito, inizia" handler below.
+  function customizeShowMainOrWarning() {
+    if (hasStartedEpisodeModules(currentEpisode, getUserName())) {
+      renderCustomizeWarningScreen();
+      customizeShowScreen('warning');
+    } else {
+      customizeShowScreen('main');
+    }
   }
 
   function openCustomize() {
@@ -4558,7 +4856,7 @@
     renderCustomizePageText();
     showView('customize');
     if (isIntroDismissed('personalizzazione', getUserName())) {
-      customizeShowScreen('main');
+      customizeShowMainOrWarning();
     } else {
       document.getElementById('customize-intro-dont-show-again').checked = false;
       renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body');
@@ -4577,16 +4875,16 @@
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
 
   document.getElementById('customize-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(CUSTOMIZE_PSEUDO_MODULE, { dismissPref: introDismissPref('personalizzazione') });
+    openHowItWorksOverlay(personalizzazioneModule(), { dismissPref: introDismissPref('personalizzazione') });
   });
 
   document.getElementById('customize-intro-start-btn').addEventListener('click', function () {
     setIntroDismissed('personalizzazione', getUserName(), document.getElementById('customize-intro-dont-show-again').checked);
-    customizeShowScreen('main');
+    customizeShowMainOrWarning();
   });
 
   document.getElementById('customize-help-btn').addEventListener('click', function () {
-    openHelpFor(CUSTOMIZE_PSEUDO_MODULE);
+    openHelpFor(personalizzazioneModule());
   });
 
   /* ============================================================
@@ -4594,9 +4892,9 @@
      Lists the modules declared on the episode (see EPISODES above) with
      their derived status. Only the current module, or a completed one
      being reviewed, can be opened — a locked row is a disabled button.
-     Shown right after "Inizia Episodio 1" (before Customize, which now
-     only opens the first time a module is clicked this episode — see
-     the click handler below and CUSTOMIZE_PSEUDO_MODULE above).
+     Personalizza is module #1 of that same list (see moduleOrderDefault)
+     — no special-casing here, it locks/unlocks/completes exactly like
+     every other module.
      ============================================================ */
   var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
   var STATUS_ICON = { completed: 'check', current: 'play', locked: 'lock' };
@@ -4614,9 +4912,12 @@
       var outcomeLevel = outcome && outcome.level;
       var rowClass = status + (outcomeLevel ? ' outcome-' + outcomeLevel : '');
       var badgeLabel = outcomeLevel === 'giallo' ? 'Da rivedere' : STATUS_LABEL[status];
+      var typeInfo = CONFIG.moduleTypes[m.type];
+      var typeHtml = typeInfo ? '<span class="module-row-type">' + typeInfo.label + '</span>' : '';
       return '<button type="button" class="module-row ' + rowClass + '" data-module="' + m.id + '"' +
         (clickable ? '' : ' disabled') + '>' +
-        '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' + m.label + '</span>' +
+        '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' +
+        '<span class="module-row-label-text"><span class="module-row-title">' + m.label + '</span>' + typeHtml + '</span></span>' +
         '<span class="module-state-badge">' + badgeLabel + '</span>' +
         '</button>';
     }).join('');
@@ -4629,6 +4930,7 @@
   }
 
   function openEpisodeMap() {
+    migrateCustomizeSeenToModuleProgress(currentEpisode, getUserName());
     document.getElementById('map-episode-badge').textContent = currentEpisode.badge;
     renderModuleList();
     showView('map');
@@ -4657,7 +4959,8 @@
   });
 
   function openModuleByKind(module) {
-    if (module.kind === 'repeatAloud') openRepeatAloud(module);
+    if (module.kind === 'personalizzazione') openCustomize();
+    else if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
     else if (module.kind === 'voiceCoach') openVoiceCoach(module);
     else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
@@ -4671,18 +4974,17 @@
     if (!btn || btn.disabled) return;
     var module = currentEpisode.modules.find(function (m) { return m.id === btn.getAttribute('data-module'); });
     if (!module) return;
-    if (!isCustomizeSeen(currentEpisode.id, getUserName())) {
-      pendingModuleAfterCustomize = module;
-      openCustomize();
-      return;
-    }
-    // Even when Customize is skipped (already seen), a module's own
-    // fillTemplate calls still need currentEpisode.slotFields AND
-    // currentValues populated — on a fresh page load (Customize's own
-    // screen, which normally sets both, never ran this session) neither
-    // exists yet, so make sure they're there first. loadCustomValues is a
-    // cheap synchronous localStorage read, so refreshing it here even when
-    // already set costs nothing and keeps it correct after a user switch.
+    // Personalizza is module #1 (see moduleOrderDefault), so every other
+    // module is naturally locked until it's completed — no separate
+    // "seen Customize yet?" gate needed here anymore (see
+    // migrateCustomizeSeenToModuleProgress for the old flag's one-time
+    // migration).
+    // A module's own fillTemplate calls still need currentEpisode.
+    // slotFields AND currentValues populated — on a fresh page load
+    // neither exists yet, so make sure they're there first.
+    // loadCustomValues is a cheap synchronous localStorage read, so
+    // refreshing it here even when already set costs nothing and keeps
+    // it correct after a user switch.
     ensureEpisodeSlotFields(currentEpisode).then(function () {
       currentValues = loadCustomValues(currentEpisode, getUserName());
       openModuleByKind(module);
@@ -4694,14 +4996,8 @@
     // practice it's already resolved by the time this is clickable — this
     // just guards a very fast click from racing the fetch.
     ensureEpisodeSlotFields(currentEpisode).then(function () {
-      setCustomizeSeen(currentEpisode.id, getUserName());
-      if (pendingModuleAfterCustomize) {
-        var module = pendingModuleAfterCustomize;
-        pendingModuleAfterCustomize = null;
-        openModuleByKind(module);
-      } else {
-        openEpisodeMap();
-      }
+      markModuleCompleted(currentEpisode, getUserName(), 'personalizzazione');
+      openEpisodeMap();
     });
   });
 
@@ -5060,7 +5356,18 @@
      ============================================================ */
   var vcModule = null;
   var vcLines = [];
-  var vcIndex = 0;
+  // Queue-based pass navigation (same shape as Quick Match's qmQueue/
+  // qmRetryQueue/qmPassIndex/qmPassTotal, CLAUDE.md rule 13): the main
+  // pass walks every line once; anything left with 0-1 stars at that
+  // point comes back in a retry pass (Schermata Ripasso), repeating
+  // until a pass has none — or a line hits CONFIG.retryQueue.maxAttempts
+  // and is force-accepted (see vcEvaluate).
+  var vcQueue = [];
+  var vcRetryQueue = [];
+  var vcPassIndex = 0;
+  var vcPassTotal = 0;
+  var vcCurrentLineObj = null;
+  var vcCurrentEvaluated = false; // has THIS viewing of the line been sent+evaluated yet
   var vcAttempts = {};
   var vcState = 'idle'; // idle | recording | pending | result
   var vcListening = false;
@@ -5137,7 +5444,7 @@
     if (vcTimerInterval) { clearInterval(vcTimerInterval); vcTimerInterval = null; }
   }
 
-  function vcCurrentLine() { return vcLines[vcIndex]; }
+  function vcCurrentLine() { return vcCurrentLineObj; }
 
   function vcTargetText() {
     return fillTemplate(vcCurrentLine().english, currentEpisode, currentValues, 'en');
@@ -5241,15 +5548,22 @@
     document.getElementById('attempt-popup').classList.remove('is-open');
   }
 
-  function updateVcRetryButton() {
+  // Gates both "Riprova" (ever attempted this line, across the whole
+  // session — original semantics, unchanged) and "Avanti" (attempted
+  // THIS viewing — new: closes the hole where repeated "Avanti" taps
+  // could complete the module without ever recording, same fix already
+  // applied to Flash Card's Indietro/Avanti).
+  function updateVcActionButtons() {
     document.getElementById('voice-coach-retry-btn').disabled = !vcAttempts[vcCurrentLine().id];
+    document.getElementById('vc-next-btn').disabled = !vcCurrentEvaluated;
   }
 
   function renderVoiceCoachSentence() {
     vcResetRecording();
     closeAttemptPopup();
+    vcCurrentEvaluated = false;
     var line = vcCurrentLine();
-    document.getElementById('vc-counter').textContent = (vcIndex + 1) + ' / ' + vcLines.length;
+    document.getElementById('vc-counter').textContent = vcPassIndex + ' / ' + vcPassTotal;
     document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
     document.getElementById('vc-target').textContent = vcTargetText();
     document.getElementById('vc-audio-controls').innerHTML =
@@ -5259,31 +5573,59 @@
     document.getElementById('vc-transcript').innerHTML = '';
     document.getElementById('vc-stars').innerHTML = '';
     document.getElementById('vc-feedback-message').textContent = '';
-    updateVcRetryButton();
-    document.getElementById('vc-prev-btn').disabled = vcIndex === 0;
-    document.getElementById('vc-next-btn').textContent =
-      vcIndex === vcLines.length - 1 ? 'Ho finito, torna alla mappa' : 'Avanti →';
+    updateVcActionButtons();
   }
 
-  function vcAdvance() {
-    if (vcIndex < vcLines.length - 1) {
-      vcIndex++;
-      renderVoiceCoachSentence();
-    } else {
-      markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
-      openEpisodeMap();
+  // Queue-based "move to the next line" (mirrors qmNextQuestion, CLAUDE.md
+  // rule 13): empty main queue with a non-empty retry queue starts a new
+  // pass behind the Schermata Ripasso; empty with nothing to retry
+  // finishes the module. Screen visibility during the sentence-by-
+  // sentence flow is intentionally left alone here (see openVoiceCoach/
+  // the retry-continue-btn handler) — only the retryIntro/summary
+  // transitions are this function's own to make.
+  function vcNextLine() {
+    if (vcQueue.length === 0) {
+      if (vcRetryQueue.length > 0) {
+        vcQueue = srShuffle(vcRetryQueue);
+        vcRetryQueue = [];
+        vcPassTotal = vcQueue.length;
+        vcPassIndex = 0;
+        vcShowScreen('retryIntro');
+        return;
+      }
+      vcFinishModule();
+      return;
     }
+    var lineId = vcQueue.shift();
+    vcPassIndex++;
+    vcCurrentLineObj = vcLines.find(function (l) { return l.id === lineId; });
+    renderVoiceCoachSentence();
+  }
+
+  function vcFinishModule() {
+    srPlayTraguardoSound();
+    vcShowScreen('summary');
   }
 
   function vcShowScreen(name) {
     document.getElementById('voice-coach-intro-screen').hidden = name !== 'intro';
     document.getElementById('voice-coach-main-screen').hidden = name !== 'main';
+    document.getElementById('voice-coach-retry-intro-screen').hidden = name !== 'retryIntro';
+    document.getElementById('voice-coach-summary-screen').hidden = name !== 'summary';
+    // Nothing to explain on the completion screen — hide Spiegazione
+    // there (CLAUDE.md rule 10); Help stays available everywhere, same
+    // as this module's header always has.
+    document.getElementById('voice-coach-watch-btn').hidden = name === 'summary';
   }
 
   function openVoiceCoach(module) {
     vcModule = module;
-    vcIndex = 0;
     vcAttempts = {};
+    vcQueue = [];
+    vcRetryQueue = [];
+    vcPassIndex = 0;
+    vcPassTotal = 0;
+    vcCurrentLineObj = null;
     document.getElementById('vc-result').hidden = true;
     document.getElementById('vc-warning').style.display = VCSpeechRecognition ? 'none' : 'block';
     document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
@@ -5301,7 +5643,9 @@
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
       if (vcModule !== module) return;
       vcLines = results[0].dialogue;
-      renderVoiceCoachSentence();
+      vcQueue = vcLines.map(function (l) { return l.id; });
+      vcPassTotal = vcQueue.length;
+      vcNextLine();
     }).catch(function () {
       if (vcModule !== module) return;
       document.getElementById('vc-target').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
@@ -5334,6 +5678,19 @@
     var stars = starsForPercent(pct);
     document.getElementById('vc-stars').innerHTML = renderStars(stars);
 
+    // Richiamo: a 0-1 star result queues this line for a retry pass at
+    // the end of the module (same shared CONFIG.retryQueue.maxAttempts
+    // safety valve as Speed Round/Quick Match/Flash Card — attemptNum
+    // already IS that counter here, no separate one needed, CLAUDE.md
+    // rule 13). Membership always reflects the LATEST evaluation of this
+    // viewing: a "Riprova" that turns a bad result good takes it back out.
+    var queueIdx = vcRetryQueue.indexOf(line.id);
+    if (stars <= 1 && attemptNum < CONFIG.retryQueue.maxAttempts) {
+      if (queueIdx === -1) vcRetryQueue.push(line.id);
+    } else if (queueIdx !== -1) {
+      vcRetryQueue.splice(queueIdx, 1);
+    }
+
     var messageEl = document.getElementById('vc-feedback-message');
     messageEl.textContent = '';
     if (stars > 0) {
@@ -5343,7 +5700,8 @@
       }).catch(function () {});
     }
 
-    updateVcRetryButton();
+    vcCurrentEvaluated = true;
+    updateVcActionButtons();
     setVcState('result');
 
     if (attemptNum === CONFIG.voiceCoach.attemptsReminderThreshold) {
@@ -5416,14 +5774,17 @@
     setVcState('idle');
   });
 
-  document.getElementById('vc-prev-btn').addEventListener('click', function () {
-    if (vcIndex > 0) {
-      vcIndex--;
-      renderVoiceCoachSentence();
-    }
+  document.getElementById('vc-next-btn').addEventListener('click', vcNextLine);
+
+  document.getElementById('voice-coach-retry-continue-btn').addEventListener('click', function () {
+    vcShowScreen('main');
+    vcNextLine();
   });
 
-  document.getElementById('vc-next-btn').addEventListener('click', vcAdvance);
+  document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
+    markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
+    openEpisodeMap();
+  });
 
   document.getElementById('attempt-popup-retry').addEventListener('click', function () {
     closeAttemptPopup();
@@ -5432,7 +5793,7 @@
 
   document.getElementById('attempt-popup-next').addEventListener('click', function () {
     closeAttemptPopup();
-    vcAdvance();
+    vcNextLine();
   });
 
   document.getElementById('voice-coach-back-map').addEventListener('click', function () {
@@ -5616,8 +5977,8 @@
       // Ita-Eng only: pair each English option with its own mini listen
       // button (see .qm-option-row) — data-qm-listen-index keeps this
       // click target distinct from the answer button it sits next to.
-      return '<div class="qm-option-row">' + optionBtn +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-qm-listen-index="' + i + '" aria-label="Ascolta">' + icon('volume-2') + '</button></div>';
+      return '<div class="qm-option-row">' +
+        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-qm-listen-index="' + i + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' + optionBtn + '</div>';
     }).join('');
   }
 
@@ -5658,6 +6019,7 @@
   }
 
   function qmFinishModule() {
+    srPlayTraguardoSound();
     qmShowScreen('summary');
   }
 
@@ -6287,12 +6649,15 @@
   }
 
   function srPlayCorrectSound() { srPlayTone(CONFIG.speedRound.sound.correctFreq, CONFIG.speedRound.sound.durationMs); }
-  function srPlayWrongSound() { srPlayTone(CONFIG.speedRound.sound.wrongFreq, CONFIG.speedRound.sound.durationMs); }
+  function srPlayWrongSound() { srPlayTone(CONFIG.speedRound.sound.wrongFreq, CONFIG.speedRound.sound.durationMs, CONFIG.speedRound.sound.wrongVolume); }
 
   // Traguardo: three ascending notes via srPlayTone in sequence (CLAUDE.md
   // rule 13 — no new synthesis technique), CONFIG.sound.traguardo's own
-  // frequencies/durations/gap. Used by Dialogo Ascolta e Ripeti's "Sì, lo
-  // so" only — never on "Non ancora".
+  // frequencies/durations/gap. Plays whenever a Schermata Finale appears
+  // for a genuinely finished attempt — Speed Round, Quick Match and Flash
+  // Card's own Finale (unconditionally: those have no verde/giallo
+  // distinction), Dialogo's Finale only on "Sì, lo so" (never on "Non
+  // ancora" — see dgFinishModule), Voice Coach's own Finale below.
   function srPlayTraguardoSound() {
     var cfg = CONFIG.sound.traguardo;
     cfg.notes.forEach(function (freq, i) {
@@ -6479,6 +6844,7 @@
   // simplification, per explicit request) — just the completion screen.
   function srFinishModule() {
     srClearTimer();
+    srPlayTraguardoSound();
     srShowScreen('summary');
   }
 
@@ -6745,6 +7111,7 @@
   function fcFinishPassCheck() {
     var wrongIds = fcPassItems.filter(function (id) { return fcPassResults[id] !== 'correct'; });
     if (wrongIds.length === 0) {
+      srPlayTraguardoSound();
       fcShowScreen('summary');
     } else {
       fcPassItems = srShuffle(wrongIds);
