@@ -308,6 +308,33 @@
       quizATempo: { label: 'Quiz a tempo' },
       test: { label: 'Verifica finale' }
     },
+    // ---- Module display names — the ONE place a module's name/subtitle
+    // is written. Keyed by module id (same keys as EPISODES.episode1.
+    // modulesById), read by the Object.keys(EPISODES).forEach computed-
+    // modules block (near moduleProgressKey) which attaches them onto
+    // every module object as .label/.subtitle — every existing reader of
+    // module.label (map, Spiegazione title, module headers) already picks
+    // this up unchanged. "name" is shown wherever a module's name appears
+    // at all; "subtitle" only on the map, in small/secondary text under
+    // the name. A trailing "en→it"/"it→en" in name is part of the name
+    // (styled smaller by moduleNameHtml, see near renderSpiegazioneTitle)
+    // — never a second label — and means "see English, answer Italian"
+    // (or the reverse). ----
+    moduleLabels: {
+      personalizzazione: { name: 'Your Story', subtitle: 'Personalizza la tua storia' },
+      repeatAloud: { name: 'Repeat Aloud', subtitle: 'Ripeti ad alta voce' },
+      speakEasy: { name: 'Speak Easy', subtitle: 'Leggi il dialogo' },
+      voiceCoach: { name: 'Voice Coach', subtitle: 'Allena la pronuncia' },
+      quickMatchEngIta: { name: 'Word Match en→it', subtitle: 'Abbina le parole' },
+      quickMatchItaEng: { name: 'Word Match it→en', subtitle: 'Abbina le parole' },
+      speedRoundEngIta: { name: 'Speed Round en→it', subtitle: 'Traduci a tempo' },
+      speedRoundItaEng: { name: 'Speed Round it→en', subtitle: 'Traduci a tempo' },
+      flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa le parole' },
+      flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa le parole' },
+      dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
+      dialogoRipetiATempo: { name: 'Dialogue: Repeat in Time', subtitle: 'Ripeti a tempo' },
+      dialogoContinuo: { name: 'Dialogue: Full Dialogue', subtitle: 'Il dialogo completo' }
+    },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
@@ -362,11 +389,70 @@
         { value: 'giappone', it: 'Giappone', en: 'Japan', fr: '', es: '', de: '' },
         { value: 'stati-uniti', it: 'Stati Uniti', en: 'United States', fr: '', es: '', de: '' }
       ]
-    }
+    },
     // Age choices (figlia/figlio) used to live here as a shared CONFIG.ages
     // table; they're episode-specific now (a story's plausible age range
     // isn't a reusable name/place), read from each episode's own
     // "ageOptions" via personalizationTablesUsed — see buildSlotFields.
+
+    // ---- Per-parameter descriptions shown in the hidden config panel,
+    // one row below each field (CLAUDE.md rule 13: the panel itself
+    // already reads this generically — configFieldDescriptionHtml near
+    // renderConfigScalarField — so a new parameter documents itself by
+    // adding one line here, never by touching the panel's code). Keyed
+    // by the same dotted path as the field's own data-config-path (e.g.
+    // "dialogo.pausaPerParola"). A parameter missing here just renders
+    // without a description line — no visual gap, nothing required.
+    // Written for a non-technical reader: what the number changes, not
+    // implementation detail, with a sensible range where one exists.
+    // Purely descriptive — never read by anything except the panel. ----
+    configFieldDescriptions: {
+      'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
+      'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi inglesi.',
+      'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
+      'speech.micMaxRecordingMs': 'Tempo massimo di una registrazione al microfono, in millisecondi, oltre il quale si ferma da sola.',
+      'speech.rateOptions': 'Velocità di riproduzione proposte accanto ai pulsanti di ascolto (1 = 100%).',
+      'speech.preferredVoiceNames': 'Voci inglesi preferite, in ordine, se il dispositivo le ha disponibili.',
+      'matching.similarThreshold': 'Quanto deve essere simile una parola detta a voce per essere segnata "simile" (giallo) invece che "sbagliata" (rosso). Valore tra 0 e 1: più alto è, più severo è il giudizio.',
+      'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
+      'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',
+      'sound.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
+      'sound.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
+      'sound.countdown.freq': 'Altezza del suono che segna la fine della barra a tempo in Dialogo (in Hz — più alto è, più acuto suona).',
+      'sound.countdown.durationMs': 'Durata del suono di fine barra, in millisecondi.',
+      'sound.countdown.volume': 'Volume del suono di fine barra, da 0 (silenzioso) a circa 1.',
+      'sound.readyCountdown.freq': 'Altezza delle prime due note del conto alla rovescia 3-2-1, in Hz.',
+      'sound.readyCountdown.finalFreq': 'Altezza dell\'ultima nota (l\'"1") del conto alla rovescia, in Hz — di solito più acuta delle altre due.',
+      'sound.readyCountdown.durationMs': 'Durata di ciascuna nota del conto alla rovescia 3-2-1, in millisecondi.',
+      'limits.userNameMaxLength': 'Numero massimo di caratteri consentiti per il nome utente.',
+      'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere in Voice Coach.',
+      'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
+      'voiceCoach.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa frase compare il messaggio di incoraggiamento a proseguire.',
+      'voiceCoach.starThresholds.oneStar': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere almeno una stella.',
+      'voiceCoach.starThresholds.twoStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere due stelle.',
+      'voiceCoach.starThresholds.threeStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere tre stelle, il massimo.',
+      'speedRound.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
+      'speedRound.pointsPerCorrect': 'Punti assegnati per ogni risposta corretta al primo tentativo.',
+      'speedRound.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
+      'speedRound.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',
+      'speedRound.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia 3-2-1.',
+      'speedRound.percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale il messaggio finale usa il tono "basso".',
+      'speedRound.percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
+      'speedRound.percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
+      'speedRound.sound.correctFreq': 'Altezza del suono per una risposta corretta, in Hz.',
+      'speedRound.sound.wrongFreq': 'Altezza del suono per una risposta sbagliata, in Hz.',
+      'speedRound.sound.durationMs': 'Durata dei suoni di risposta corretta/sbagliata, in millisecondi.',
+      'speedRound.sound.wrongVolume': 'Volume del suono "Sbagliato", da 0 a circa 1 — più alto del volume di base per farsi sentire meglio.',
+      'quickMatch.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
+      'dialogo.pausaBase': 'Millisecondi di base della barra a tempo di ogni battuta, prima di aggiungere il tempo per le sue parole.',
+      'dialogo.pausaPerParola': 'Millisecondi aggiunti alla barra a tempo per ogni parola della battuta.',
+      'dialogo.pausaMassima': 'Durata massima della barra a tempo per una battuta, in millisecondi, qualunque sia la sua lunghezza.',
+      'dialogo.pulsareDopoInattivita': 'Dopo quanti millisecondi di inattività la battuta suggerita inizia a pulsare, in Ripeti a Tempo.',
+      'dialogo.countdownPre': 'Da quale numero parte il conto alla rovescia 3-2-1 di Dialogo Continuo.',
+      'dialogo.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia di Dialogo Continuo.',
+      'dialogo.suonoCountdownInizio': 'Se attivo, il suono di fine barra suona anche quando la barra inizia, non solo quando finisce.',
+      'themes.defaultTheme': 'Tema colore attivo per chi non ne ha ancora scelto uno.'
+    }
   };
 
   // Pristine snapshot, captured before any saved override below is
@@ -476,7 +562,7 @@
       requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
       requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
       howItWorks: {
-        title: 'Personalizza',
+        title: 'Your Story',
         body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
       },
       helpReminder: {
@@ -524,7 +610,7 @@
     },
     speedRoundEngIta: {
       howItWorks: {
-        title: 'Speed Round Eng-Ita',
+        title: 'Speed Round en→it',
         body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -534,7 +620,7 @@
     },
     speedRoundItaEng: {
       howItWorks: {
-        title: 'Speed Round Ita-Eng',
+        title: 'Speed Round it→en',
         body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -564,7 +650,7 @@
     },
     dialogoAscoltaRipeti: {
       howItWorks: {
-        title: 'Ascolta e Ripeti',
+        title: 'Dialogue: Listen & Repeat',
         body: '<p>Questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
@@ -574,7 +660,7 @@
     },
     dialogoRipetiATempo: {
       howItWorks: {
-        title: 'Ripeti a Tempo',
+        title: 'Dialogue: Repeat in Time',
         body: '<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -584,7 +670,7 @@
     },
     dialogoContinuo: {
       howItWorks: {
-        title: 'Dialogo Continuo',
+        title: 'Dialogue: Full Dialogue',
         body: '<p>Questa è la prova generale: il dialogo intero scorre da solo, dall\'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -594,7 +680,7 @@
     },
     quickMatchEngIta: {
       howItWorks: {
-        title: 'Quick Match Eng-Ita',
+        title: 'Word Match en→it',
         body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
@@ -604,7 +690,7 @@
     },
     quickMatchItaEng: {
       howItWorks: {
-        title: 'Quick Match Ita-Eng',
+        title: 'Word Match it→en',
         body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
@@ -1185,6 +1271,15 @@
 
   .config-field-hint { opacity: 0.6; text-transform: none; letter-spacing: 0; }
 
+  /* Per-parameter description (CONFIG.configFieldDescriptions) — small,
+     secondary tone, plain (not mono/uppercase like .config-field-label
+     above it) so it reads as a sentence, not a technical caption. */
+  .config-field-description {
+    font-size: 0.76rem;
+    opacity: 0.6;
+    margin: 0;
+  }
+
   .config-field-checkbox {
     flex-direction: row;
     align-items: center;
@@ -1302,6 +1397,17 @@
 
   .spiegazione-title-name {
     display: block;
+  }
+
+  /* Trailing "en→it"/"it→en" direction suffix inside a module name
+     (moduleNameHtml()) — smaller and more discreet than the name itself,
+     but inline with it (part of the name, not a second label). em units
+     so it scales with whatever font-size the name is shown at (map row,
+     Spiegazione title, module badges). */
+  .module-name-direction {
+    font-size: 0.78em;
+    opacity: 0.65;
+    font-weight: 400;
   }
 
   /* Danger panel (Personalizza's mid-episode wipe warning) — the ONE
@@ -1797,6 +1903,15 @@
     letter-spacing: 0.03em;
     text-transform: uppercase;
     opacity: 0.65;
+  }
+
+  /* Italian subtitle under a module's (now English) display name in the
+     map row — CONFIG.moduleLabels[id].subtitle. Small and secondary,
+     plain (not mono/uppercase like .module-row-type) since it reads as
+     a short phrase, not a caption. */
+  .module-row-subtitle {
+    font-size: 0.82rem;
+    opacity: 0.7;
   }
 
   .module-status-icon {
@@ -4033,6 +4148,14 @@
     try { localStorage.setItem(CONFIG_OVERRIDES_KEY, JSON.stringify(overrides)); } catch (e) {}
   }
 
+  // Looked up by dotted path (same string as data-config-path) in
+  // CONFIG.configFieldDescriptions — a parameter with no entry there
+  // just renders without this line, never a placeholder gap.
+  function configFieldDescriptionHtml(path) {
+    var text = CONFIG.configFieldDescriptions[path.join('.')];
+    return text ? '<p class="config-field-description">' + text + '</p>' : '';
+  }
+
   function renderConfigScalarField(path, value) {
     var id = 'cfg-' + path.join('-');
     var label = path[path.length - 1];
@@ -4044,11 +4167,13 @@
         '<label for="' + id + '">' +
           '<input type="checkbox" id="' + id + '" data-config-path="' + path.join('.') + '"' + (value ? ' checked' : '') + '>' +
           '<span class="config-field-label">' + label + '</span>' +
-        '</label>';
+        '</label>' +
+        configFieldDescriptionHtml(path);
     } else {
       var type = typeof value === 'number' ? 'number' : 'text';
       wrap.innerHTML =
         '<label class="config-field-label" for="' + id + '">' + label + '</label>' +
+        configFieldDescriptionHtml(path) +
         '<input type="' + type + '" id="' + id + '" data-config-path="' + path.join('.') + '" value="' + String(value).replace(/"/g, '&quot;') + '"' + (type === 'number' ? ' step="any"' : '') + '>';
     }
     return wrap;
@@ -4061,6 +4186,7 @@
     wrap.className = 'config-field config-field-json';
     wrap.innerHTML =
       '<label class="config-field-label" for="' + id + '">' + label + ' <span class="config-field-hint">(JSON)</span></label>' +
+      configFieldDescriptionHtml(path) +
       '<textarea id="' + id + '" rows="4" data-config-path="' + path.join('.') + '" data-config-json="1">' + JSON.stringify(value, null, 2).replace(/</g, '&lt;') + '</textarea>' +
       '<div class="config-field-error" hidden></div>';
     return wrap;
@@ -4139,6 +4265,9 @@
   function renderConfigPanel() {
     configPanelBodyEl.innerHTML = '';
     Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
+      // Meta-documentation about the panel's own fields, not itself a
+      // tunable parameter — never shown as its own editable group.
+      if (sectionKey === 'configFieldDescriptions') return;
       var section = window.APP_CONFIG[sectionKey];
       var details = document.createElement('details');
       details.className = 'config-group';
@@ -4397,30 +4526,34 @@
       // `type` (studio/quiz/test) is purely declarative for now — shown
       // next to the module on the map (see MODULE_TYPE_LABEL) but not
       // yet wired to map colors or to the valvola/richiamo mechanics.
+      // label/subtitle are NOT declared per-entry here — they're read from
+      // CONFIG.moduleLabels[id] (see the Object.keys(EPISODES).forEach
+      // computed-modules block below), keyed by these same ids, so the
+      // displayed name lives in exactly one place (CLAUDE.md).
       modulesById: {
         // "Studio libero" (the generic studio-type label) doesn't
         // describe this one well — it's setup, not learning — so it
         // overrides the type's own label with typeLabel instead of
         // needing a whole category just for one module.
-        personalizzazione: { kind: 'personalizzazione', label: 'Personalizza', type: 'studio', typeLabel: 'Preparazione' },
-        repeatAloud: { kind: 'repeatAloud', label: 'Repeat Aloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        speakEasy: { kind: 'speakEasy', label: 'Speak Easy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        voiceCoach: { kind: 'voiceCoach', label: 'Voice Coach', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        quickMatchEngIta: { kind: 'quickMatchEngIta', label: 'Quick Match Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', label: 'Quick Match Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', label: 'Ascolta e Ripeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', label: 'Ripeti a Tempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'quizATempo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', label: 'Dialogo Continuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'quizATempo' },
-        speedRoundEngIta: { kind: 'speedRoundEngIta', label: 'Speed Round Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', label: 'Speed Round Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'quizATempo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'quizATempo' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // flashcardLevel/flashcardDirection tell the shared component what
         // to load — see CONFIG.flashcard.levels — so adding Level B/C later
         // never touches the component itself, only this dictionary + that config.
-        flashcardAEngIta: { kind: 'flashcardLevelA', label: 'Flash Card A Eng-Ita', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'quiz' },
-        flashcardAItaEng: { kind: 'flashcardLevelA', label: 'Flash Card A Ita-Eng', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'quiz' }
+        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'quiz' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'quiz' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value — the only piece a new episode's dialogue
@@ -4467,12 +4600,20 @@
   // ensureEpisodeSlotFields, ...) — none of them change: reordering a
   // step for one episode is moving a line in its own moduleOrder;
   // reordering it for every episode at once is moving a line in
-  // moduleOrderDefault. Nothing here changes either way.
+  // moduleOrderDefault. Nothing here changes either way. Also attaches
+  // .label/.subtitle from CONFIG.moduleLabels[id] — the one place the
+  // displayed name lives — onto every module object, so every existing
+  // reader of module.label (map, Spiegazione title, module headers) picks
+  // up the new name without itself changing.
   Object.keys(EPISODES).forEach(function (episodeId) {
     var episode = EPISODES[episodeId];
     var order = (CONFIG.episodes[episodeId] && CONFIG.episodes[episodeId].moduleOrder) || CONFIG.moduleOrderDefault;
     episode.modules = order.map(function (id) {
-      return Object.assign({ id: id }, episode.modulesById[id]);
+      var module = Object.assign({ id: id }, episode.modulesById[id]);
+      var labelInfo = CONFIG.moduleLabels[id];
+      module.label = (labelInfo && labelInfo.name) || id;
+      module.subtitle = labelInfo && labelInfo.subtitle;
+      return module;
     });
   });
 
@@ -5026,10 +5167,11 @@
       // type's generic label for a module it doesn't quite describe.
       var typeLabelText = m.typeLabel || (typeInfo && typeInfo.label);
       var typeHtml = typeLabelText ? '<span class="module-row-type">' + typeLabelText + '</span>' : '';
+      var subtitleHtml = m.subtitle ? '<span class="module-row-subtitle">' + m.subtitle + '</span>' : '';
       return '<button type="button" class="module-row ' + rowClass + '" data-module="' + m.id + '"' +
         (clickable ? '' : ' disabled') + '>' +
         '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[status]) + '</span>' +
-        '<span class="module-row-label-text"><span class="module-row-title">' + m.label + '</span>' + typeHtml + '</span></span>' +
+        '<span class="module-row-label-text"><span class="module-row-title">' + moduleNameHtml(m.label) + '</span>' + subtitleHtml + typeHtml + '</span></span>' +
         '<span class="module-state-badge">' + badgeLabel + '</span>' +
         '</button>';
     }).join('');
@@ -5210,6 +5352,14 @@
     };
   }
 
+  // Styles a trailing "en→it"/"it→en" direction suffix smaller and more
+  // discreet than the rest of a module's name (CLAUDE.md: part of the
+  // name, not a second label) — used everywhere a module name is shown
+  // (map row, Spiegazione title, module headers/badges).
+  function moduleNameHtml(name) {
+    return String(name).replace(/ (en→it|it→en)$/, ' <span class="module-name-direction">$1</span>');
+  }
+
   // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
   // "Spiegazione" kicker (never varies — see .spiegazione-title-kicker),
   // row 2 is the module's own name in evidence. Used by every module's
@@ -5222,7 +5372,7 @@
   // fixed row on top.
   function renderSpiegazioneTitle(el, moduleName) {
     el.innerHTML = '<span class="spiegazione-title-kicker">Spiegazione</span>' +
-      (moduleName ? '<span class="spiegazione-title-name">' + moduleName + '</span>' : '');
+      (moduleName ? '<span class="spiegazione-title-name">' + moduleNameHtml(moduleName) + '</span>' : '');
   }
 
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
@@ -5297,7 +5447,7 @@
 
   function openRepeatAloud(module) {
     currentRepeatAloudModule = module;
-    document.getElementById('repeat-aloud-title').textContent = module.label;
+    document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('repeatAloud');
     if (isRaIntroDismissed(getUserName())) {
@@ -5405,7 +5555,7 @@
 
   function openSpeakEasy(module) {
     currentSpeakEasyModule = module;
-    document.getElementById('speak-easy-title').textContent = module.label;
+    document.getElementById('speak-easy-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('speakEasy');
     if (isIntroDismissed('speakEasy', getUserName())) {
@@ -6179,7 +6329,7 @@
     qmModule = module;
     qmDirection = QM_DIRECTION_BY_KIND[module.kind];
     qmVocab = [];
-    document.getElementById('quick-match-badge').textContent = module.label;
+    document.getElementById('quick-match-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('qm-prompt').textContent = '';
     document.getElementById('qm-options').innerHTML = '';
     qmRenderStartScreen(module);
@@ -6657,7 +6807,7 @@
     dgDialogue = [];
     dgHeardIds = [];
     dgClearAllTimers();
-    document.getElementById('dialogo-badge').textContent = module.label;
+    document.getElementById('dialogo-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('dg-list').innerHTML = '';
     dgRenderStartScreen(module);
     dgShowScreen('start');
@@ -7040,7 +7190,7 @@
     srModule = module;
     srDirection = SR_DIRECTION_BY_KIND[module.kind];
     srVocab = [];
-    document.getElementById('speed-round-badge').textContent = module.label;
+    document.getElementById('speed-round-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('sr-prompt').textContent = '';
     document.getElementById('sr-options').innerHTML = '';
     srRenderStartScreen(module);
@@ -7338,7 +7488,7 @@
     fcLevel = module.flashcardLevel;
     fcDirection = module.flashcardDirection;
     var levelConfig = CONFIG.flashcard.levels[fcLevel];
-    document.getElementById('flashcard-badge').textContent = module.label;
+    document.getElementById('flashcard-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('fc-level-label').textContent = levelConfig.label;
     document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
     document.getElementById('fc-counter').textContent = '';
