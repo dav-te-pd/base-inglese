@@ -119,5 +119,49 @@
     "Non è un passo indietro, è parte dell'allenamento.",
     "Va bene tornarci sopra, è previsto dal percorso.",
     "Le prossime volte saranno più semplici."
-  ]
+  ],
+  "episodeFinalMessages": {
+    "tuttiVerdi": {
+      "compliments": [
+        "Episodio completato alla grande — tutti i moduli sono andati bene!",
+        "Ottimo lavoro su tutto l'episodio, davvero solido dall'inizio alla fine.",
+        "Ce l'hai fatta su ogni modulo: complimenti per la costanza.",
+        "Episodio superato in pieno, senza punti deboli.",
+        "Un episodio impeccabile — hai il controllo di tutto quello che hai imparato."
+      ],
+      "tip": []
+    },
+    "gialloNoRosso": {
+      "compliments": [
+        "Hai completato l'intero episodio, complimenti!",
+        "Bel lavoro: hai portato a termine tutti i moduli dell'episodio.",
+        "Episodio finito, con buoni risultati su gran parte dei moduli.",
+        "Ottimo impegno su tutto l'episodio, si vede che hai lavorato bene.",
+        "Complimenti per aver completato l'intero episodio."
+      ],
+      "tip": [
+        "Se vuoi, un ripasso veloce sui moduli gialli non fa mai male.",
+        "Quando ti va, dai un'altra occhiata ai moduli da rivedere.",
+        "Nessuna fretta, ma un ripasso dei moduli gialli può aiutare.",
+        "I moduli da rivedere restano lì per quando avrai voglia di ripassarli.",
+        "Un ripasso dei moduli segnati in giallo, quando capita, li rende ancora più solidi."
+      ]
+    },
+    "almenoUnRosso": {
+      "compliments": [
+        "Hai completato l'intero episodio, complimenti per esserci arrivato in fondo!",
+        "Bel lavoro: hai portato a termine tutti i moduli, dall'inizio alla fine.",
+        "Episodio finito — non è per niente scontato arrivare fino in fondo.",
+        "Complimenti per aver completato tutto l'episodio.",
+        "Ottimo impegno: hai chiuso l'intero episodio."
+      ],
+      "tip": [
+        "Vale la pena rifare i moduli segnati in rosso: ti aiuteranno a fissare meglio queste parti.",
+        "I moduli in rosso meritano un altro giro: sono lì apposta per essere ripresi.",
+        "Conviene tornare sui moduli rossi quando puoi: aiuta più di quanto sembri.",
+        "Dai un'altra possibilità ai moduli rossi: rifarli è il modo più veloce per migliorarli.",
+        "I moduli rossi sono un buon punto da cui ripartire con un ripasso."
+      ]
+    }
+  }
 }

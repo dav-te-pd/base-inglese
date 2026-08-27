@@ -331,6 +331,29 @@
       quizATempo: { label: 'Quiz a tempo' },
       test: { label: 'Verifica finale' }
     },
+    // ---- Module Rules — which of three systems colors a module's map
+    // badge, keyed by module id. Read this instead of the code to know
+    // how a module gets judged:
+    //   completionRules — no evaluation: verde/"Completato" the moment
+    //     the student clicks the module's own completion button (Repeat
+    //     Aloud, Speak Easy, Your Story). The default for any module id
+    //     with no entry here — nothing to declare for these.
+    //   moduleRules — verde/giallo/rosso from the FIRST-PASS score
+    //     against CONFIG.percentageThresholds (see moduleRulesLevel()).
+    //     Extending this to a new module means adding its id here AND
+    //     calling moduleRulesLevel()+saveModuleOutcome() at its own
+    //     completion — never a second copy of the verde/giallo/rosso math.
+    //   selfAssessment — verde/giallo from the student's own "L'hai
+    //     imparato?" answer (Dialogo's three modules, via dgFinishModule).
+    // Distinct from WordsColorRules (per-word mastery ladder, untouched)
+    // and EpisodeRules (next-episode unlock — reads completion only,
+    // never a color). ----
+    moduleOutcomeRules: {
+      voiceCoach: 'moduleRules',
+      dialogoAscoltaRipeti: 'selfAssessment',
+      dialogoRipetiATempo: 'selfAssessment',
+      dialogoContinuo: 'selfAssessment'
+    },
     // ---- Module display names — the ONE place a module's name/subtitle
     // is written. Keyed by module id (same keys as EPISODES.episode1.
     // modulesById), read by the Object.keys(EPISODES).forEach computed-
@@ -362,7 +385,7 @@
     themes: {
       defaultTheme: 'viaggio',
       options: [
-        { value: 'viaggio', label: 'Viaggio', dot: '#B7472A' },
+        { value: 'viaggio', label: 'Viaggio', dot: '#2B6CA3' },
         { value: 'notte', label: 'Notte', dot: '#E8A33D' },
         { value: 'mediterraneo', label: 'Mediterraneo', dot: '#E8734A' },
         { value: 'moderno', label: 'Moderno', dot: '#17A2B8' },
@@ -863,7 +886,51 @@
       'Non è un passo indietro, è parte dell\'allenamento.',
       'Va bene tornarci sopra, è previsto dal percorso.',
       'Le prossime volte saranno più semplici.'
-    ]
+    ],
+    episodeFinalMessages: {
+      tuttiVerdi: {
+        compliments: [
+          'Episodio completato alla grande — tutti i moduli sono andati bene!',
+          'Ottimo lavoro su tutto l\'episodio, davvero solido dall\'inizio alla fine.',
+          'Ce l\'hai fatta su ogni modulo: complimenti per la costanza.',
+          'Episodio superato in pieno, senza punti deboli.',
+          'Un episodio impeccabile — hai il controllo di tutto quello che hai imparato.'
+        ],
+        tip: []
+      },
+      gialloNoRosso: {
+        compliments: [
+          'Hai completato l\'intero episodio, complimenti!',
+          'Bel lavoro: hai portato a termine tutti i moduli dell\'episodio.',
+          'Episodio finito, con buoni risultati su gran parte dei moduli.',
+          'Ottimo impegno su tutto l\'episodio, si vede che hai lavorato bene.',
+          'Complimenti per aver completato l\'intero episodio.'
+        ],
+        tip: [
+          'Se vuoi, un ripasso veloce sui moduli gialli non fa mai male.',
+          'Quando ti va, dai un\'altra occhiata ai moduli da rivedere.',
+          'Nessuna fretta, ma un ripasso dei moduli gialli può aiutare.',
+          'I moduli da rivedere restano lì per quando avrai voglia di ripassarli.',
+          'Un ripasso dei moduli segnati in giallo, quando capita, li rende ancora più solidi.'
+        ]
+      },
+      almenoUnRosso: {
+        compliments: [
+          'Hai completato l\'intero episodio, complimenti per esserci arrivato in fondo!',
+          'Bel lavoro: hai portato a termine tutti i moduli, dall\'inizio alla fine.',
+          'Episodio finito — non è per niente scontato arrivare fino in fondo.',
+          'Complimenti per aver completato tutto l\'episodio.',
+          'Ottimo impegno: hai chiuso l\'intero episodio.'
+        ],
+        tip: [
+          'Vale la pena rifare i moduli segnati in rosso: ti aiuteranno a fissare meglio queste parti.',
+          'I moduli in rosso meritano un altro giro: sono lì apposta per essere ripresi.',
+          'Conviene tornare sui moduli rossi quando puoi: aiuta più di quanto sembri.',
+          'Dai un\'altra possibilità ai moduli rossi: rifarli è il modo più veloce per migliorarli.',
+          'I moduli rossi sono un buon punto da cui ripartire con un ripasso.'
+        ]
+      }
+    }
   };
 
   // Applied before first paint so a returning user's saved theme never flashes to the default.
@@ -891,7 +958,16 @@
     --text: #1C2B26;
     --primary: #1F3B36;
     --primary-ink: #FFFFFF; /* contrast ink for text/icons on a --primary background (e.g. flash cards) */
-    --accent: #B7472A;
+    /* Was #B7472A — identical to --wrong-ink below, purely by accident.
+       --accent is the app's neutral, judgment-free highlight (buttons,
+       focus rings, the map's "Attuale" state, ...); --wrong-ink is the
+       ONE color that means "andato male". Sharing a hex value made
+       "Attuale" (not yet attempted) visually read as a red/failing
+       state before the student had even started. Blue, as requested —
+       keeps every existing --accent usage the same shape, just no
+       longer colliding with red. Keep CONFIG.themes.options[0].dot (the
+       theme-picker swatch) in sync with this value. */
+    --accent: #2B6CA3;
     --accent-ink: #FFFFFF; /* contrast ink for text/icons on an --accent background — not the same pairing as above */
     --secondary: #D9A441;
     --border: #D8D6C9;
@@ -2067,6 +2143,15 @@
   .module-row.outcome-giallo { border-color: color-mix(in srgb, var(--similar-ink) 45%, var(--border)); }
   .module-row.outcome-giallo .module-status-icon { background: var(--similar-bg); color: var(--similar-ink); border-color: transparent; }
   .module-row.outcome-giallo .module-state-badge { background: var(--similar-bg); color: var(--similar-ink); }
+
+  /* rosso (ModuleRules, job "ModuleRules" — ex: Voice Coach below
+     CONFIG.percentageThresholds.medio) — same shape as outcome-giallo
+     above, --wrong-ink/--wrong-bg instead: the app's one "andato male"
+     color, never used for a non-judgment state (see the --accent fix
+     near :root, same job). */
+  .module-row.outcome-rosso { border-color: color-mix(in srgb, var(--wrong-ink) 45%, var(--border)); }
+  .module-row.outcome-rosso .module-status-icon { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
+  .module-row.outcome-rosso .module-state-badge { background: var(--wrong-bg); color: var(--wrong-ink); }
 
   /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
      near .top-row for why these exist even though nothing toggles them
@@ -4079,6 +4164,20 @@
     return 'basso';
   }
 
+  // ModuleRules (see CONFIG.moduleOutcomeRules) — the shared verde/
+  // giallo/rosso map-badge color for an evaluated module's FIRST-PASS
+  // score. Reuses percentageBucket()'s own alto/medio/basso split
+  // instead of a second copy of the same threshold comparison; only the
+  // bucket-name-to-color mapping is new. A module wires itself into
+  // this by declaring itself in CONFIG.moduleOutcomeRules and calling
+  // this + saveModuleOutcome() at its own completion (see Voice Coach's
+  // voice-coach-complete-btn handler for the reference wiring) — the
+  // color math itself never needs to move.
+  var MODULE_RULES_LEVEL = { alto: 'verde', medio: 'giallo', basso: 'rosso' };
+  function moduleRulesLevel(pct) {
+    return MODULE_RULES_LEVEL[percentageBucket(pct)];
+  }
+
   renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
   renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
 
@@ -4962,6 +5061,28 @@
     try { localStorage.setItem(moduleOutcomeKey(episode.id, userName), JSON.stringify(outcomes)); } catch (e) {}
   }
 
+  // Modulo Finale (not yet built) needs to pick one of three contents —
+  // this is that decision, ready ahead of the screen itself. Only
+  // modules that actually carry a verde/giallo/rosso outcome.level
+  // count (ModuleRules or selfAssessment — see CONFIG.moduleOutcomeRules);
+  // a plain completionRules module (Repeat Aloud, Speak Easy, Your
+  // Story) has no judgment to weigh in, same as it never gets an
+  // outcome-* class on its own map row. 'almenoUnRosso' wins over
+  // 'gialloNoRosso' if both are present; an episode with no graded
+  // modules at all defaults to 'tuttiVerdi' (nothing to flag). Reads
+  // data/messaggi-feedback.json's episodeFinalMessages[caseKey] for the
+  // actual text (compliment first, then an optional trailing tip) —
+  // never write the copy here.
+  function episodeFinalOutcomeCase(episode, userName) {
+    var outcomes = loadModuleOutcomes(episode.id, userName);
+    var levels = episode.modules
+      .map(function (m) { return outcomes[m.id] && outcomes[m.id].level; })
+      .filter(Boolean);
+    if (levels.indexOf('rosso') !== -1) return 'almenoUnRosso';
+    if (levels.indexOf('giallo') !== -1) return 'gialloNoRosso';
+    return 'tuttiVerdi';
+  }
+
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
   // plain value (e.g. an age number) becomes all columns the same; people
   // and place rows already have this shape.
@@ -5434,6 +5555,13 @@
      ============================================================ */
   var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
   var STATUS_ICON = { completed: 'check', current: 'play', locked: 'lock' };
+  // Outcome badge label (see MODULE OUTCOME above) — a completed module
+  // with a colored outcome shows this instead of the plain "Completato",
+  // regardless of which rule (ModuleRules or self-assessment) produced
+  // that outcome.level. "Da riprovare" deliberately mirrors "Da
+  // rivedere"'s phrasing (a next step, not a verdict) rather than
+  // naming the failure outright.
+  var OUTCOME_BADGE_LABEL = { giallo: 'Da rivedere', rosso: 'Da riprovare' };
 
   function renderModuleList() {
     var progress = loadModuleProgress(currentEpisode.id, getUserName());
@@ -5447,7 +5575,7 @@
       var outcome = status === 'completed' ? outcomes[m.id] : null;
       var outcomeLevel = outcome && outcome.level;
       var rowClass = status + (outcomeLevel ? ' outcome-' + outcomeLevel : '');
-      var badgeLabel = outcomeLevel === 'giallo' ? 'Da rivedere' : STATUS_LABEL[status];
+      var badgeLabel = (outcomeLevel && OUTCOME_BADGE_LABEL[outcomeLevel]) || STATUS_LABEL[status];
       var typeInfo = CONFIG.moduleTypes[m.type];
       // typeLabel (see personalizzazione's own entry) overrides the
       // type's generic label for a module it doesn't quite describe.
@@ -5959,6 +6087,7 @@
   // module resume normally — see vcUpdateMicNotice.
   var vcMicConfirmedProblem = false;
   var vcFirstAttemptPercents = []; // this session's per-line % correct, first attempt only — see vcFinishModule
+  var vcLastAvgPct = 0; // vcFinishModule's own avgPct, held for the complete-btn handler's saveModuleOutcome call (ModuleRules)
 
   var VCSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var vcRecognition = null;
@@ -6268,10 +6397,14 @@
   function vcFinishModule() {
     srPlayTraguardoSound();
     vcShowScreen('summary');
-    var avgPct = vcFirstAttemptPercents.length
+    // FIRST-PASS score only (vcFirstAttemptPercents, frozen before the
+    // retry pass — see its own comment) — this is also the score
+    // ModuleRules colors the map badge with (see voice-coach-complete-btn
+    // below), not just this screen's message tone.
+    vcLastAvgPct = vcFirstAttemptPercents.length
       ? Math.round(vcFirstAttemptPercents.reduce(function (a, b) { return a + b; }, 0) / vcFirstAttemptPercents.length)
       : 0;
-    applyOutcomeSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages', percentageBucket(avgPct));
+    applyOutcomeSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages', percentageBucket(vcLastAvgPct));
   }
 
   function vcShowScreen(name) {
@@ -6476,6 +6609,12 @@
   });
 
   document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
+    // ModuleRules (CONFIG.moduleOutcomeRules.voiceCoach): the map badge
+    // color is the first-pass score, verdict included even when it's
+    // rosso — saveModuleOutcome always overwrites, so a redo genuinely
+    // replaces the previous color in either direction, same as every
+    // other module already using this store (see MODULE OUTCOME above).
+    saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
     markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
     openEpisodeMap();
   });
