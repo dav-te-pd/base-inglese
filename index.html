@@ -67,14 +67,20 @@
     },
     // ---- shared retry-queue safety valve ----
     // Every module with a retry-queue mechanic (Speed Round, Quick Match,
-    // Flash Card today) reads this SAME constant, not a per-module copy:
-    // once an item has been wrong/"Non ancora"/declared-non-attempt this
-    // many times in one session (across the main pass and every retry
-    // pass), it's force-accepted as rosso and dropped from the active
-    // retry queue instead of being requeued again. Change this one number
-    // to retune the loop-prevention threshold everywhere at once.
+    // Flash Card, Voice Coach today) reads these SAME constants, not a
+    // per-module copy.
     retryQueue: {
-      maxAttempts: 3
+      // Once an item has been wrong/"Non ancora"/declared-non-attempt this
+      // many times in one session (across the main pass and every retry
+      // pass), it's force-accepted as rosso and dropped from the active
+      // retry queue instead of being requeued again. Change this one
+      // number to retune the loop-prevention threshold everywhere at once.
+      maxAttempts: 3,
+      // Attempt count (on the same item) at which the "you've tried N
+      // times" nudge popup appears (openAttemptPopup) — same shared value
+      // for every module with this mechanic, moved out of voiceCoach's own
+      // section since it's no longer Voice-Coach-only.
+      attemptsReminderThreshold: 3
     },
     // ---- shared sound effects beyond Speed Round's own correct/wrong
     // tones (CONFIG.speedRound.sound) ----
@@ -125,13 +131,24 @@
       // maxRecordingMsPerWord) + maxRecordingMarginMs.
       maxRecordingMsPerWord: 1000,
       maxRecordingMarginMs: 3000,
-      // Attempt count (on the same sentence) at which the "you've tried
-      // 3 times" nudge popup appears — also the label's "DI N" denominator.
-      attemptsReminderThreshold: 3,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
       // documented in data/messaggi-feedback.json's percentageRule.
-      starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 }
+      starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 },
+      // Progressive mic-trouble detection: counts CONSECUTIVE recordings
+      // where the recognizer heard no words at all — not a wrong word,
+      // that's just a mispronunciation and never counts here — and resets
+      // to 0 the moment any recording IS recognized (right or wrong).
+      // warningAt shows a first heads-up (check mic/permessi),
+      // restartSuggestionAt proposes restarting the exercise,
+      // confirmedAt treats it as a confirmed problem and offers "Torna
+      // alla mappa". Same vc-mic-notice panel at every step (see
+      // .danger-panel-notice) — only the text and the action escalate.
+      micIssue: {
+        warningAt: 2,
+        restartSuggestionAt: 4,
+        confirmedAt: 6
+      }
     },
     // ---- Speed Round quiz (speedRoundEngIta / speedRoundItaEng modules) ----
     speedRound: {
@@ -223,8 +240,6 @@
       suonoCountdownInizio: false,
       profiles: {
         ascoltaRipeti: {
-          // 'full' = badge + Mappa/Spiegazione/Help; 'backOnly' = Mappa only.
-          header: 'full',
           translations: true,
           countdown: false,
           // The 3-2-1 "Pronto" countdown gating the whole exercise's
@@ -239,7 +254,6 @@
           finalBoxQuestion: 'L\'hai imparato?'
         },
         ripetiATempo: {
-          header: 'backOnly',
           translations: false,
           countdown: true,
           readyCountdown: false,
@@ -248,7 +262,6 @@
           finalBoxQuestion: 'Sai ripetere le frasi?'
         },
         continuo: {
-          header: 'backOnly',
           translations: false,
           countdown: true,
           readyCountdown: true,
@@ -416,6 +429,7 @@
       'matching.similarThreshold': 'Quanto deve essere simile una parola detta a voce per essere segnata "simile" (giallo) invece che "sbagliata" (rosso). Valore tra 0 e 1: più alto è, più severo è il giudizio.',
       'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
       'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',
+      'retryQueue.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa domanda o frase compare il messaggio "capita, tranquillo" (o quello di riconoscimento se l\'hai indovinata).',
       'sound.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
       'sound.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
       'sound.countdown.freq': 'Altezza del suono che segna la fine della barra a tempo in Dialogo (in Hz — più alto è, più acuto suona).',
@@ -427,10 +441,12 @@
       'limits.userNameMaxLength': 'Numero massimo di caratteri consentiti per il nome utente.',
       'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere in Voice Coach.',
       'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
-      'voiceCoach.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa frase compare il messaggio di incoraggiamento a proseguire.',
       'voiceCoach.starThresholds.oneStar': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere almeno una stella.',
       'voiceCoach.starThresholds.twoStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere due stelle.',
       'voiceCoach.starThresholds.threeStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere tre stelle, il massimo.',
+      'voiceCoach.micIssue.warningAt': 'Dopo quante registrazioni di fila senza nessuna parola riconosciuta compare il primo avviso sul microfono.',
+      'voiceCoach.micIssue.restartSuggestionAt': 'Dopo quante registrazioni vuote di fila viene proposto di ricominciare l\'esercizio.',
+      'voiceCoach.micIssue.confirmedAt': 'Dopo quante registrazioni vuote di fila il problema viene dato per confermato, con il pulsante per tornare alla mappa.',
       'speedRound.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
       'speedRound.pointsPerCorrect': 'Punti assegnati per ogni risposta corretta al primo tentativo.',
       'speedRound.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
@@ -703,10 +719,23 @@
   window.FALLBACK_FEEDBACK_MESSAGES = {
     percentageRule: {
       rule: 'basata sulla percentuale di risposte/parole corrette sul totale',
-      '0': { range: '0%', showMessage: false, note: 'nessun messaggio mostrato' },
-      '1': { range: '1-49%', messageKey: 'basso' },
-      '2': { range: '50-79%', messageKey: 'medio' },
-      '3': { range: '80-100%', messageKey: 'alto' }
+      '0': {
+        range: '0%',
+        showMessage: false,
+        note: 'nessun messaggio mostrato'
+      },
+      '1': {
+        range: '1-49%',
+        messageKey: 'basso'
+      },
+      '2': {
+        range: '50-79%',
+        messageKey: 'medio'
+      },
+      '3': {
+        range: '80-100%',
+        messageKey: 'alto'
+      }
     },
     voiceCoachMessages: {
       alto: [
@@ -754,19 +783,41 @@
         'Nessun problema, il ripasso è fatto apposta per questo.'
       ]
     },
-    terzoTentativoMessages: [
-      {
+    valvolaSicurezzaMessages: {
+      nonRiuscita: {
         title: 'Tranquillo, capita!',
-        body: 'Hai provato già 3 volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Ti consiglio di andare avanti e finire l\'esercizio: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale. Il nostro metodo è pensato apposta per farti rivedere quello che ti serve di più, senza doverti impuntare adesso. Non preoccuparti, ci arriverai.'
+        bodies: [
+          'Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale.',
+          'Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l\'esercizio, la ritroverai più avanti nei ripassi mirati.',
+          'A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi.',
+          'Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve.',
+          'Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell\'esercizio.'
+        ]
       },
-      {
-        title: 'Nessuna fretta',
-        body: 'Tre tentativi su questa frase — succede, ed è anche un buon segno: vuol dire che ci stai davvero provando. Ti conviene proseguire con l\'esercizio; questa frase la ritroverai più avanti nei ripassi mirati, proprio quando servirà di più. Impara con calma, il metodo fa il resto.'
-      },
-      {
-        title: 'Ci arriverai, promesso',
-        body: 'A volte una frase è più ostica delle altre, capita anche ai migliori. Meglio andare avanti ora e lasciarla decantare — tornerà da sola nei prossimi ripassi, e la prossima volta ti sembrerà più facile. Fidati del percorso.'
+      riuscita: {
+        title: 'Ce l\'hai fatta!',
+        bodies: [
+          'Ce l\'hai fatta, e si vede che i tentativi hanno aiutato: hai insistito ed è servito. Vai avanti con lo stesso spirito.',
+          'Alla fine ci sei arrivato — i primi tentativi non erano andati benissimo, ma hai corretto la mira. Proprio questo è il modo in cui si impara.',
+          'Bel recupero: non era venuta bene subito, ma hai continuato a provarci e ora è a posto. Continua così.',
+          'Hai insistito su questa frase ed è servito: adesso la sai fare meglio di prima. È esattamente il senso del ripasso.',
+          'Ci sei riuscito dopo qualche tentativo in più, e va benissimo così — vuol dire che il ripasso sta funzionando.'
+        ]
       }
+    },
+    moduleCompleteMessages: [
+      'Ogni ripetizione conta, e questa l\'hai portata a termine.',
+      'Un passo in più verso una pronuncia più sicura.',
+      'Si vede la costanza — continua così.',
+      'Bel lavoro, vai avanti tranquillo.',
+      'Il resto verrà da sé, un esercizio alla volta.'
+    ],
+    retryIntroMessages: [
+      'Ripetere è proprio il modo in cui si impara meglio.',
+      'Ogni ripasso fissa un po\' di più quello che già sai.',
+      'Non è un passo indietro, è parte dell\'allenamento.',
+      'Va bene tornarci sopra, è previsto dal percorso.',
+      'Le prossime volte saranno più semplici.'
     ]
   };
 
@@ -1453,6 +1504,25 @@
   .danger-panel[hidden],
   .danger-panel-icon[hidden],
   .danger-panel-body[hidden] { display: none; }
+
+  /* Neutral variant of .danger-panel — same shape (icon up top, thick
+     border, centered title) for an attention message that is NOT
+     destructive: Voice Coach's progressive mic-trouble notice (job 6).
+     Deliberately not --wrong-ink/--wrong-bg (reserved for the one
+     destructive action in the app, see .danger-panel's own comment) and
+     not --correct-ink/--similar-ink either (those already mean "parola
+     giusta"/"parola incerta" — reusing them here would misread as a
+     pronunciation judgment). --accent is the one theme-varying,
+     judgment-free color already available. Same look at all three
+     escalation levels on purpose — the gradualità is in the text. */
+  .danger-panel-notice {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--card));
+    color: var(--text);
+  }
+
+  .danger-panel-notice .danger-panel-icon,
+  .danger-panel-notice .danger-panel-title { color: var(--accent); }
 
   /* Only view-pronunciation (legacy, unreachable from the current UI —
      left untouched, out of scope) still uses a plain .top-row. Every
@@ -2713,6 +2783,15 @@
     margin: 0;
   }
 
+  /* Rotating second sentence (job 2, applyRotatingSubtitle) under the
+     fixed completion title — secondary tone, plain text, empty when the
+     feedback data hasn't loaded yet (no placeholder gap). */
+  .sr-summary-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    margin: 0;
+  }
+
   /* Schermata Ripasso (renderRetryIntroScreen) — same tinted-panel
      treatment as .vc-confirm-box (yellow theme tone, not a new color)
      so this transition reads as important instead of blending into the
@@ -2742,6 +2821,16 @@
 
   .retry-intro-text {
     font-size: 0.92rem;
+    margin: 0;
+  }
+
+  /* Rotating second sentence (job 2, applyRotatingSubtitle) under the
+     fixed retry-pass text — same secondary treatment as
+     .sr-summary-subtitle, slightly dimmer than .retry-intro-text since
+     it's the panel's own tinted --similar-ink, not the neutral --text. */
+  .retry-intro-subtitle {
+    font-size: 0.85rem;
+    opacity: 0.8;
     margin: 0;
   }
 
@@ -3263,6 +3352,20 @@
               <div class="vc-stars" id="vc-stars"></div>
               <p class="vc-feedback-message" id="vc-feedback-message"></p>
               <div class="panel transcript-box" id="vc-transcript"></div>
+
+              <!-- Progressive mic-trouble notice (job 6) — same shape as
+                   .danger-panel (icon/thick border) but its own neutral
+                   color variant, never .danger-panel's red (that means
+                   "destructive" elsewhere) nor correct/similar/wrong
+                   (those already mean a pronunciation judgment). Content
+                   generated by vcUpdateMicNotice(), driven purely by
+                   vcEmptyRecognitionStreak. -->
+              <div class="danger-panel danger-panel-notice" id="vc-mic-notice" hidden>
+                <span class="danger-panel-icon" data-icon="triangle-alert" data-icon-class="icon-lg"></span>
+                <h2 class="danger-panel-title" id="vc-mic-notice-title"></h2>
+                <div class="danger-panel-body" id="vc-mic-notice-body"></div>
+                <div class="overlay-actions" id="vc-mic-notice-actions"></div>
+              </div>
             </div>
 
             <!-- No Indietro: every sentence must get a real recording +
@@ -3826,6 +3929,7 @@
     document.getElementById(screenId).innerHTML =
       '<div class="sr-summary panel">' +
       '<p class="sr-summary-title" id="' + titleId + '">' + titleText + '</p>' +
+      '<p class="sr-summary-subtitle" id="' + titleId + '-sub"></p>' +
       '</div>' +
       '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
   }
@@ -3844,8 +3948,28 @@
       '<div class="retry-intro panel">' +
       '<p class="retry-intro-title">' + icon('rotate-ccw') + ' Ripasso</p>' +
       '<p class="retry-intro-text">' + bodyText + '</p>' +
+      '<p class="retry-intro-subtitle" id="' + screenId + '-sub"></p>' +
       '</div>' +
       '<button type="button" class="btn btn-primary btn-block" id="' + continueBtnId + '">' + (continueLabel || 'Continua →') + '</button>';
+  }
+
+  // Job 2: rotating second sentence for a recurring message — the FIRST
+  // sentence stays the module's own fixed/informative text (titleText
+  // above, or bodyText for Schermata Ripasso); this fills in the second,
+  // picked at random each time the screen is actually shown (not once at
+  // boot, when these two render functions run). Prose pools live in
+  // data/messaggi-feedback.json like every other feedback message —
+  // reuses the SAME loadFeedbackMessages()/pickRandom() pair Voice
+  // Coach's star messages and the safety-valve popup already use, not a
+  // second mechanism for the same kind of thing.
+  function applyRotatingSubtitle(elId, listKey) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.textContent = '';
+    loadFeedbackMessages().then(function (data) {
+      var list = data[listKey];
+      if (list && list.length) el.textContent = pickRandom(list);
+    }).catch(function () {});
   }
 
   renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
@@ -3952,7 +4076,44 @@
     pronunciation: document.getElementById('view-pronunciation')
   };
 
+  // Bumped on every showView() call (i.e. every navigation, including
+  // opening a different module or going back to the map) and captured by
+  // toggleSpeak() when an utterance starts. A late onend/onerror — e.g.
+  // synth.cancel() interrupting an utterance mid-playback, which some
+  // engines resolve asynchronously — compares its captured value against
+  // the live one and, if the module has since been left, skips the
+  // caller's onEnd continuation. Without this, leaving mid-utterance could
+  // let a module's own auto-advance chain (Dialogo's dgPlayLine -> next
+  // line, for example) fire one more step *after* the view had already
+  // switched away, which is exactly how audio kept bleeding into whatever
+  // module opened next.
+  var moduleEpoch = 0;
+
+  // General rule (not a per-module patch): leaving any view — the map, a
+  // module, going home — stops everything currently in flight for the
+  // view being left: speech synthesis and every module's own pending
+  // timers/sequences (Dialogo's line timer/suggestion/ready-countdown,
+  // Voice Coach's recording+its timeout/timer, Speed Round's per-question
+  // timer+its own 3-2-1, Flash Card's card-slide timeout). Called from
+  // showView() itself — the one function every module-open/back-to-map/
+  // go-home path already routes through — instead of each module
+  // remembering to clean up its own "Mappa" button, which is how this bug
+  // happened in the first place (Dialogo had it, other modules didn't).
+  // Safe to call unconditionally: every one of these clear-functions is a
+  // no-op when nothing is pending.
+  function stopAllModuleActivity() {
+    if (synth && synth.speaking) synth.cancel();
+    dgClearAllTimers();
+    vcResetRecording();
+    srClearTimer();
+    if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
+    fcClearNavTimeout();
+    closeAttemptPopup();
+  }
+
   function showView(name) {
+    moduleEpoch++;
+    stopAllModuleActivity();
     Object.keys(views).forEach(function (key) {
       views[key].classList.toggle('is-active', key === name);
     });
@@ -5655,6 +5816,7 @@
   var vcTimeoutId = null;
   var vcTimerInterval = null;
   var vcRecordStartedAt = 0;
+  var vcEmptyRecognitionStreak = 0; // job 6: consecutive zero-word recognitions
 
   var VCSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var vcRecognition = null;
@@ -5774,6 +5936,45 @@
     setVcState('idle');
   }
 
+  // Job 6: progressive mic-trouble notice, driven purely by
+  // vcEmptyRecognitionStreak (see vcEvaluate). Same .danger-panel-notice
+  // panel at all three steps — text and the offered action escalate, the
+  // look never does (CLAUDE.md: gradualità nel testo, non nel colore —
+  // and NOT .danger-panel's own red, which already means "destructive").
+  function vcUpdateMicNotice() {
+    var t = CONFIG.voiceCoach.micIssue;
+    var streak = vcEmptyRecognitionStreak;
+    var panel = document.getElementById('vc-mic-notice');
+    var level = streak >= t.confirmedAt ? 3 : streak >= t.restartSuggestionAt ? 2 : streak >= t.warningAt ? 1 : 0;
+    if (level === 0) { panel.hidden = true; return; }
+    panel.hidden = false;
+    var title, body, actionsHtml;
+    if (level === 1) {
+      title = 'Non riusciamo a sentirti';
+      body = 'Le ultime registrazioni non hanno rilevato nessuna parola. Controlla che il microfono sia collegato e che il browser abbia il permesso di usarlo, poi riprova.';
+      actionsHtml = '';
+    } else if (level === 2) {
+      title = 'Ancora nessun audio';
+      body = 'Il microfono continua a non registrare nulla. Prova a ricominciare l\'esercizio: a volte basta riaprirlo perché il browser richieda di nuovo il permesso.';
+      actionsHtml = '<button type="button" class="btn btn-secondary" id="vc-mic-notice-restart">Ricomincia esercizio</button>';
+    } else {
+      title = 'Il microfono non sta funzionando';
+      body = 'Dopo diversi tentativi non abbiamo ancora sentito nulla: molto probabilmente è un problema del microfono o dei permessi, non della tua pronuncia. Puoi tornare alla mappa e riprovare più tardi.';
+      actionsHtml = '<button type="button" class="btn btn-primary" id="vc-mic-notice-map">Torna alla mappa</button>';
+    }
+    document.getElementById('vc-mic-notice-title').textContent = title;
+    document.getElementById('vc-mic-notice-body').innerHTML = '<p>' + body + '</p>';
+    document.getElementById('vc-mic-notice-actions').innerHTML = actionsHtml;
+  }
+
+  document.getElementById('vc-mic-notice-actions').addEventListener('click', function (e) {
+    if (e.target.id === 'vc-mic-notice-restart') {
+      openVoiceCoach(vcModule);
+    } else if (e.target.id === 'vc-mic-notice-map') {
+      openEpisodeMap();
+    }
+  });
+
   // ---- star rating + feedback/attempt messages (data/messaggi-feedback.json) ----
   var vcFeedbackDataCache = null;
   var STAR_MESSAGE_KEYS = { 1: 'basso', 2: 'medio', 3: 'alto' };
@@ -5812,14 +6013,34 @@
     return html;
   }
 
-  function openAttemptPopup() {
-    document.getElementById('attempt-popup-title').textContent = 'Hai già provato 3 volte';
-    document.getElementById('attempt-popup-body').textContent = 'Continua pure, o passa avanti quando vuoi.';
+  // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
+  // Round/Quick Match/Flash Card reuse this same function+markup, never a
+  // copy each. wasCorrect picks the message group from
+  // messaggi-feedback.json's valvolaSicurezzaMessages: nonRiuscita (still
+  // hasn't gotten it right at the max attempt) vs riuscita (got it right
+  // despite needing several tries) — same reassuring-vs-recognition split
+  // for every caller. onRetry/onNext are the two actions; a caller with no
+  // meaningful "try again right now" step (Speed Round/Quick Match/Flash
+  // Card, where an answer is already locked in once submitted) passes
+  // onRetry as null/undefined and only "Vai avanti" shows.
+  var attemptPopupOnRetry = null;
+  var attemptPopupOnNext = null;
+
+  function openAttemptPopup(wasCorrect, onRetry, onNext) {
+    attemptPopupOnRetry = onRetry || null;
+    attemptPopupOnNext = onNext || null;
+    document.getElementById('attempt-popup-retry').hidden = !attemptPopupOnRetry;
+    var fallback = wasCorrect
+      ? { title: 'Ce l\'hai fatta!', body: 'Continua pure, o vai avanti quando vuoi.' }
+      : { title: 'Tranquillo, capita!', body: 'Continua pure, o passa avanti quando vuoi.' };
+    document.getElementById('attempt-popup-title').textContent = fallback.title;
+    document.getElementById('attempt-popup-body').textContent = fallback.body;
     document.getElementById('attempt-popup').classList.add('is-open');
     loadFeedbackMessages().then(function (data) {
-      var entry = pickRandom(data.terzoTentativoMessages);
-      document.getElementById('attempt-popup-title').textContent = entry.title;
-      document.getElementById('attempt-popup-body').textContent = entry.body;
+      var group = data.valvolaSicurezzaMessages && data.valvolaSicurezzaMessages[wasCorrect ? 'riuscita' : 'nonRiuscita'];
+      if (!group) return;
+      document.getElementById('attempt-popup-title').textContent = group.title;
+      document.getElementById('attempt-popup-body').textContent = pickRandom(group.bodies);
     }).catch(function () {});
   }
 
@@ -5876,6 +6097,7 @@
         vcPassTotal = vcQueue.length;
         vcPassIndex = 0;
         vcShowScreen('retryIntro');
+        applyRotatingSubtitle('voice-coach-retry-intro-screen-sub', 'retryIntroMessages');
         return;
       }
       vcFinishModule();
@@ -5890,6 +6112,7 @@
   function vcFinishModule() {
     srPlayTraguardoSound();
     vcShowScreen('summary');
+    applyRotatingSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages');
   }
 
   function vcShowScreen(name) {
@@ -5906,6 +6129,8 @@
   function openVoiceCoach(module) {
     vcModule = module;
     vcAttempts = {};
+    vcEmptyRecognitionStreak = 0;
+    document.getElementById('vc-mic-notice').hidden = true;
     vcQueue = [];
     vcRetryQueue = [];
     vcPassIndex = 0;
@@ -5941,6 +6166,12 @@
     var line = vcCurrentLine();
     var targetWords = tokenize(vcTargetText());
     var recognizedWords = tokenize(vcLatestTranscript);
+    // Mic-trouble streak (job 6): counts consecutive recordings with NO
+    // recognized words at all — recognizedWords.length > 0 but wrong
+    // (a genuine mispronunciation) always resets it, never counts as a
+    // mic problem. See vcUpdateMicNotice for the 3 escalation steps.
+    vcEmptyRecognitionStreak = recognizedWords.length === 0 ? vcEmptyRecognitionStreak + 1 : 0;
+    vcUpdateMicNotice();
     var pairs = alignWords(targetWords, recognizedWords);
     var correctCount = 0;
     var spans = pairs.map(function (pair) {
@@ -5957,7 +6188,7 @@
     var attemptNum = (vcAttempts[line.id] || 0) + 1;
     vcAttempts[line.id] = attemptNum;
     document.getElementById('vc-attempt-label').textContent =
-      'TENTATIVO ' + attemptNum + ' DI ' + CONFIG.voiceCoach.attemptsReminderThreshold;
+      'TENTATIVO ' + attemptNum + ' DI ' + CONFIG.retryQueue.attemptsReminderThreshold;
 
     var pct = targetWords.length ? Math.round((correctCount / targetWords.length) * 100) : 0;
     var stars = starsForPercent(pct);
@@ -5989,8 +6220,12 @@
     updateVcActionButtons();
     setVcState('result');
 
-    if (attemptNum === CONFIG.voiceCoach.attemptsReminderThreshold) {
-      openAttemptPopup();
+    // wasCorrect (job 3): stars > 1 is the same bar the retry-queue check
+    // above uses to decide "got it" vs "still struggling" — a passing
+    // grade at the threshold attempt gets the recognition variant, a
+    // failing one gets the reassurance variant.
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) {
+      openAttemptPopup(stars > 1, function () { setVcState('idle'); }, vcNextLine);
     }
   }
 
@@ -6080,19 +6315,17 @@
 
   document.getElementById('attempt-popup-retry').addEventListener('click', function () {
     closeAttemptPopup();
-    setVcState('idle');
+    if (attemptPopupOnRetry) attemptPopupOnRetry();
   });
 
   document.getElementById('attempt-popup-next').addEventListener('click', function () {
     closeAttemptPopup();
-    vcNextLine();
+    if (attemptPopupOnNext) attemptPopupOnNext();
   });
 
-  document.getElementById('voice-coach-back-map').addEventListener('click', function () {
-    vcResetRecording();
-    closeAttemptPopup();
-    openEpisodeMap();
-  });
+  // Recording/timers/popup are stopped centrally by showView()'s own
+  // stopAllModuleActivity() (see near its definition) — not repeated here.
+  document.getElementById('voice-coach-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('voice-coach-watch-btn').addEventListener('click', function () {
     openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref('voiceCoach') });
@@ -6138,6 +6371,11 @@
   // not shared, so each module type keeps its own independent retry queue;
   // params.maxRetryAttempts is the one shared CONFIG.retryQueue.maxAttempts
   // value every caller passes in (not a per-module setting).
+  // params.attemptCounts is a SEPARATE per-item counter from retryAttempts
+  // (that one only counts wrong tries) — this one counts every attempt,
+  // right or wrong, purely so the caller can tell when an item has reached
+  // CONFIG.retryQueue.attemptsReminderThreshold (jobs 3+4's safety-valve
+  // popup, same mechanic as Voice Coach's vcAttempts). Returns that count.
   function recordMultipleChoiceResult(params) {
     var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
     var userName = getUserName();
@@ -6146,6 +6384,9 @@
       ? { level: 'rosso', streak: 0 }
       : applyMasteryResult(mastery[unitId], params.correct ? 'correct' : 'wrong');
     saveMastery(currentEpisode.id, userName, mastery);
+
+    var attemptNum = (params.attemptCounts[params.item.id] || 0) + 1;
+    params.attemptCounts[params.item.id] = attemptNum;
 
     if (!params.correct) {
       var attempts = (params.retryAttempts[params.item.id] || 0) + 1;
@@ -6159,6 +6400,7 @@
         params.retryQueue.push(params.item.id);
       }
     }
+    return attemptNum;
   }
 
   /* ============================================================
@@ -6187,6 +6429,7 @@
   var qmQueue = [];
   var qmRetryQueue = [];
   var qmRetryAttempts = {}; // itemId -> times wrong/declared-non-attempt this session
+  var qmAttemptCounts = {}; // itemId -> total attempts (right or wrong) this session, for the safety-valve popup
   var qmPassIndex = 0;
   var qmPassTotal = 0;
   var qmCurrentItem = null;
@@ -6230,13 +6473,14 @@
   // mastery independent from Speed Round's (the max-attempts threshold
   // itself is the one shared CONFIG.retryQueue.maxAttempts).
   function qmRecordResult(correct, declaredNonAttempt) {
-    recordMultipleChoiceResult({
+    return recordMultipleChoiceResult({
       item: qmCurrentItem,
       direction: qmDirection,
       correct: correct,
       declaredNonAttempt: declaredNonAttempt,
       unitPrefix: 'quickmatch',
       retryAttempts: qmRetryAttempts,
+      attemptCounts: qmAttemptCounts,
       retryQueue: qmRetryQueue,
       maxRetryAttempts: CONFIG.retryQueue.maxAttempts
     });
@@ -6282,6 +6526,7 @@
         qmPassTotal = qmQueue.length;
         qmPassIndex = 0;
         qmShowScreen('retryIntro');
+        applyRotatingSubtitle('qm-retry-intro-screen-sub', 'retryIntroMessages');
         return;
       } else {
         qmFinishModule();
@@ -6293,6 +6538,24 @@
     qmCurrentItem = qmVocab.find(function (v) { return v.id === itemId; });
     qmShowScreen('quiz');
     qmRenderQuestion();
+  }
+
+  // The one place every "move on from this question" click routes
+  // through (answer-click's correct-branch timeout, Avanti after a
+  // reveal, and the retry-pass continue button) — jobs 3+4's safety-valve
+  // popup on an item that just hit CONFIG.retryQueue.attemptsReminderThreshold
+  // (see qmPendingNudge, set right after qmRecordResult). No popup pending
+  // -> straight through to qmNextQuestion, same as before.
+  var qmPendingNudge = null;
+
+  function qmGoNext() {
+    if (qmPendingNudge) {
+      var wasCorrect = qmPendingNudge.wasCorrect;
+      qmPendingNudge = null;
+      openAttemptPopup(wasCorrect, null, qmNextQuestion);
+    } else {
+      qmNextQuestion();
+    }
   }
 
   // Shared by a wrong tap and "Non lo so": reveal the correct answer and
@@ -6313,12 +6576,14 @@
   function qmFinishModule() {
     srPlayTraguardoSound();
     qmShowScreen('summary');
+    applyRotatingSubtitle('qm-summary-title-sub', 'moduleCompleteMessages');
   }
 
   function qmStartQuiz() {
     qmQueue = srShuffle(qmVocab.map(function (v) { return v.id; }));
     qmRetryQueue = [];
     qmRetryAttempts = {};
+    qmAttemptCounts = {};
     qmPassTotal = qmQueue.length;
     qmPassIndex = 0;
     qmShowScreen('quiz');
@@ -6371,15 +6636,18 @@
     if (!btn || btn.disabled) return;
     qmDisableOptions();
     var opt = qmCurrentOptions[parseInt(btn.getAttribute('data-qm-index'), 10)];
+    var attemptNum;
     if (opt.correct) {
       btn.classList.add('is-correct');
       srPlayCorrectSound();
-      qmRecordResult(true);
-      setTimeout(qmNextQuestion, CONFIG.quickMatch.feedbackPauseMs);
+      attemptNum = qmRecordResult(true);
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: true };
+      setTimeout(qmGoNext, CONFIG.quickMatch.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
       srPlayWrongSound();
-      qmRecordResult(false);
+      attemptNum = qmRecordResult(false);
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
       qmShowReveal();
     }
   });
@@ -6394,12 +6662,13 @@
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
     qmDisableOptions();
     srPlayWrongSound();
-    qmRecordResult(false, true); // declared non-attempt -> straight to rosso
+    var attemptNum = qmRecordResult(false, true); // declared non-attempt -> straight to rosso
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
     qmShowReveal();
   });
 
   document.getElementById('qm-advance-btn').addEventListener('click', function () {
-    qmNextQuestion();
+    qmGoNext();
   });
 
   document.getElementById('qm-retry-continue-btn').addEventListener('click', function () {
@@ -6425,9 +6694,10 @@
      ONE shared component for all three "Dialogo Completo" steps, all
      three registered on the map — module.dialogoProfile picks the
      CONFIG.dialogo.profiles entry that drives everything that differs:
-       - header: 'full' (Ascolta e Ripeti) shows badge+Mappa/Spiegazione/
-         Help; 'backOnly' (the other two) shows only Mappa, always,
-         every screen (dgShowScreen).
+       - The header itself (badge + Mappa/Spiegazione/Help) is the same
+         for all three profiles, same as every other module — Spiegazione
+         hides on the summary screen alone (CLAUDE.md rule 10), Help
+         always stays (dgShowScreen).
        - translations / pauseResume: which single control (if any)
          dgSetupToolbar puts in the toolbar — the translations toggle,
          Pausa/Riprendi, or nothing.
@@ -6477,13 +6747,16 @@
     document.getElementById('dg-ready-screen').hidden = name !== 'ready';
     document.getElementById('dg-main-screen').hidden = name !== 'main';
     document.getElementById('dg-summary-screen').hidden = name !== 'summary';
-    var headerFull = dgProfile.header === 'full';
-    // 'full' (Ascolta e Ripeti): Help stays visible throughout (no timer
-    // to protect, unlike Speed Round/Quick Match); Spiegazione hides on
-    // summary alone (CLAUDE.md rule 10). 'backOnly' (the other two):
-    // both stay hidden on every screen — only Mappa in the header row.
-    document.getElementById('dialogo-watch-btn').hidden = !headerFull || name === 'summary';
-    document.getElementById('dialogo-help-btn').hidden = !headerFull;
+    // Spiegazione+Help show in every profile's header now, same as every
+    // other module (Ripeti a Tempo/Dialogo Continuo used to hide both
+    // entirely, leaving no way to reread the instructions mid-exercise —
+    // Regola Azione Critica already dims+disables both during active
+    // playback/countdown via dgLockAll, same as every other locked
+    // control, so this is purely a visibility fix). Spiegazione still
+    // hides on summary alone (CLAUDE.md rule 10) — Help stays, same
+    // convention as every other module.
+    document.getElementById('dialogo-watch-btn').hidden = name === 'summary';
+    document.getElementById('dialogo-help-btn').hidden = false;
   }
 
   // Same dual-purpose start screen as Speed Round/Quick Match: full
@@ -6730,6 +7003,7 @@
       linesTotal: dgDialogue.length
     });
     dgShowScreen('summary');
+    applyRotatingSubtitle('dg-summary-title-sub', 'moduleCompleteMessages');
   }
 
   // Dialogo Continuo only. Pausa freezes BOTH the audio (synth.pause())
@@ -6757,6 +7031,11 @@
   // duplication rather than forcing a shared abstraction over it).
   function dgRunReadyCountdown() {
     dgShowScreen('ready');
+    // Regola Azione Critica applies to this countdown too, not just the
+    // per-line bar dgPlayLine already locks around — dgPlayLine(dgDialogue[0])
+    // below keeps it locked the moment the countdown ends, so there's no
+    // unlocked gap in between.
+    dgLockAll(true);
     var n = CONFIG.dialogo.countdownPre;
     var el = document.getElementById('dg-ready-number');
     function tick() {
@@ -6880,11 +7159,9 @@
     openEpisodeMap();
   });
 
-  document.getElementById('dialogo-back-map').addEventListener('click', function () {
-    dgClearAllTimers();
-    if (synth && synth.speaking) synth.cancel();
-    openEpisodeMap();
-  });
+  // Timers/synth are stopped centrally by showView()'s own
+  // stopAllModuleActivity() (see near its definition) — not repeated here.
+  document.getElementById('dialogo-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('dialogo-help-btn').addEventListener('click', function () {
     openHelpFor(dgModule);
@@ -6916,6 +7193,7 @@
   var srQueue = [];
   var srRetryQueue = [];
   var srRetryAttempts = {}; // itemId -> times wrong/skipped/timed out this session
+  var srAttemptCounts = {}; // itemId -> total attempts (right or wrong) this session, for the safety-valve popup
   var srPassIndex = 0;
   var srPassTotal = 0;
   var srCurrentItem = null;
@@ -7080,13 +7358,14 @@
   // retry queue stay independent from Quick Match's (the max-attempts
   // threshold itself is the one shared CONFIG.retryQueue.maxAttempts).
   function srRecordResult(correct, declaredNonAttempt) {
-    recordMultipleChoiceResult({
+    return recordMultipleChoiceResult({
       item: srCurrentItem,
       direction: srDirection,
       correct: correct,
       declaredNonAttempt: declaredNonAttempt,
       unitPrefix: 'speedround',
       retryAttempts: srRetryAttempts,
+      attemptCounts: srAttemptCounts,
       retryQueue: srRetryQueue,
       maxRetryAttempts: CONFIG.retryQueue.maxAttempts
     });
@@ -7118,6 +7397,7 @@
         srPassTotal = srQueue.length;
         srPassIndex = 0;
         srShowScreen('retryIntro');
+        applyRotatingSubtitle('sr-retry-intro-screen-sub', 'retryIntroMessages');
         return;
       } else {
         srFinishModule();
@@ -7129,6 +7409,21 @@
     srCurrentItem = srVocab.find(function (v) { return v.id === itemId; });
     srShowScreen('quiz');
     srRenderQuestion();
+  }
+
+  // Mirrors qmGoNext (jobs 3+4) — the one place every "move on from this
+  // question" click routes through, so a pending safety-valve nudge shows
+  // before srNextQuestion actually runs.
+  var srPendingNudge = null;
+
+  function srGoNext() {
+    if (srPendingNudge) {
+      var wasCorrect = srPendingNudge.wasCorrect;
+      srPendingNudge = null;
+      openAttemptPopup(wasCorrect, null, srNextQuestion);
+    } else {
+      srNextQuestion();
+    }
   }
 
   // Shared by a wrong tap, a timeout, and "Non lo so": reveal the correct
@@ -7149,7 +7444,8 @@
     srTimeoutId = null;
     srDisableOptions();
     srPlayWrongSound();
-    srRecordResult(false);
+    var attemptNum = srRecordResult(false);
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
     srShowReveal();
   }
 
@@ -7159,12 +7455,14 @@
     srClearTimer();
     srPlayTraguardoSound();
     srShowScreen('summary');
+    applyRotatingSubtitle('sr-summary-title-sub', 'moduleCompleteMessages');
   }
 
   function srStartQuiz() {
     srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
     srRetryQueue = [];
     srRetryAttempts = {};
+    srAttemptCounts = {};
     srPassTotal = srQueue.length;
     srPassIndex = 0;
     document.getElementById('sr-direction').textContent = DIRECTION_LABEL[srDirection];
@@ -7226,15 +7524,18 @@
     srFreezeTimer();
     srDisableOptions();
     var opt = srCurrentOptions[parseInt(btn.getAttribute('data-sr-index'), 10)];
+    var attemptNum;
     if (opt.correct) {
       btn.classList.add('is-correct');
       srPlayCorrectSound();
-      srRecordResult(true);
-      setTimeout(srNextQuestion, CONFIG.speedRound.feedbackPauseMs);
+      attemptNum = srRecordResult(true);
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: true };
+      setTimeout(srGoNext, CONFIG.speedRound.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
       srPlayWrongSound();
-      srRecordResult(false);
+      attemptNum = srRecordResult(false);
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
       srShowReveal();
     }
   });
@@ -7244,12 +7545,13 @@
     srFreezeTimer();
     srDisableOptions();
     srPlayWrongSound();
-    srRecordResult(false, true); // declared non-attempt -> straight to rosso
+    var attemptNum = srRecordResult(false, true); // declared non-attempt -> straight to rosso
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
     srShowReveal();
   });
 
   document.getElementById('sr-advance-btn').addEventListener('click', function () {
-    srNextQuestion();
+    srGoNext();
   });
 
   document.getElementById('sr-retry-continue-btn').addEventListener('click', function () {
@@ -7261,11 +7563,9 @@
     openEpisodeMap();
   });
 
-  document.getElementById('speed-round-back-map').addEventListener('click', function () {
-    srClearTimer();
-    if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
-    openEpisodeMap();
-  });
+  // Timers are stopped centrally by showView()'s own stopAllModuleActivity()
+  // (see near its definition) — not repeated here.
+  document.getElementById('speed-round-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('speed-round-help-btn').addEventListener('click', function () {
     openHelpFor(srModule);
@@ -7305,6 +7605,7 @@
   var fcPassIndex = 0;
   var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
   var fcRetryAttempts = {}; // itemId -> times wrong this session (across every pass)
+  var fcAttemptCounts = {}; // itemId -> total attempts (right or wrong) this session, for the safety-valve popup
   var fcCurrentItem = null;
   var fcFlipped = false;
   var fcAnswered = false; // true once Sì/Non ancora has been chosen this viewing
@@ -7341,6 +7642,11 @@
   // passes forever; fcPassResults is set to 'correct' in that case purely
   // to close it out of fcFinishPassCheck's retry-queue computation, not a
   // real self-assessed answer.
+  // Returns the item's total attempt count this session (right or wrong,
+  // separate from fcRetryAttempts which only counts wrong ones) — jobs
+  // 3+4's safety-valve popup fires when it reaches
+  // CONFIG.retryQueue.attemptsReminderThreshold, same mechanic as Speed
+  // Round/Quick Match's recordMultipleChoiceResult.
   function fcRecordResult(result) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
@@ -7348,6 +7654,9 @@
     var mastery = loadMastery(currentEpisode.id, userName);
     mastery[unitId] = applyMasteryResult(mastery[unitId], result);
     saveMastery(currentEpisode.id, userName, mastery);
+
+    var attemptNum = (fcAttemptCounts[fcCurrentItem.id] || 0) + 1;
+    fcAttemptCounts[fcCurrentItem.id] = attemptNum;
 
     if (result === 'wrong') {
       var attempts = (fcRetryAttempts[fcCurrentItem.id] || 0) + 1;
@@ -7358,6 +7667,7 @@
         fcPassResults[fcCurrentItem.id] = 'correct';
       }
     }
+    return attemptNum;
   }
 
   // Resets the card to its front-facing state with no animation: just
@@ -7426,11 +7736,13 @@
     if (wrongIds.length === 0) {
       srPlayTraguardoSound();
       fcShowScreen('summary');
+      applyRotatingSubtitle('fc-summary-title-sub', 'moduleCompleteMessages');
     } else {
       fcPassItems = srShuffle(wrongIds);
       fcPassIndex = 0;
       fcPassResults = {};
       fcShowScreen('retryIntro');
+      applyRotatingSubtitle('fc-retry-intro-screen-sub', 'retryIntroMessages');
     }
   }
 
@@ -7474,11 +7786,27 @@
     }
   }
 
+  // Mirrors qmGoNext/srGoNext (jobs 3+4) — the "Sì la so"/"Non ancora"
+  // handlers below call this instead of fcAdvance directly, so a pending
+  // safety-valve nudge shows before the card actually advances.
+  var fcPendingNudge = null;
+
+  function fcGoNext() {
+    if (fcPendingNudge) {
+      var wasCorrect = fcPendingNudge.wasCorrect;
+      fcPendingNudge = null;
+      openAttemptPopup(wasCorrect, null, fcAdvance);
+    } else {
+      fcAdvance();
+    }
+  }
+
   function fcStartDeck() {
     fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
     fcPassIndex = 0;
     fcPassResults = {};
     fcRetryAttempts = {};
+    fcAttemptCounts = {};
     fcRenderCard();
   }
 
@@ -7535,15 +7863,17 @@
   // true still guards fcFlip during the brief slide-out (fcNavigateTo/
   // fcNavLocked already guards against a double advance).
   document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
-    fcRecordResult('wrong');
+    var attemptNum = fcRecordResult('wrong');
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
     fcAnswered = true;
-    fcAdvance();
+    fcGoNext();
   });
 
   document.getElementById('fc-know-it-btn').addEventListener('click', function () {
-    fcRecordResult('correct');
+    var attemptNum = fcRecordResult('correct');
+    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
     fcAnswered = true;
-    fcAdvance();
+    fcGoNext();
   });
 
   document.getElementById('fc-retry-continue-btn').addEventListener('click', fcRenderCard);
@@ -7553,10 +7883,9 @@
     openEpisodeMap();
   });
 
-  document.getElementById('flashcard-back-map').addEventListener('click', function () {
-    fcClearNavTimeout();
-    openEpisodeMap();
-  });
+  // The slide-nav timeout is stopped centrally by showView()'s own
+  // stopAllModuleActivity() (see near its definition) — not repeated here.
+  document.getElementById('flashcard-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
     openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
@@ -7801,6 +8130,13 @@
     var wasSpeaking = btn.classList.contains('speaking');
     if (synth.speaking) synth.cancel();
     if (wasSpeaking) return;
+    // Captured at start, compared in onend/onerror below — see moduleEpoch's
+    // own comment near showView(). Guards specifically against a module's
+    // own onEnd callback (e.g. Dialogo's dgPlayLine chaining into the next
+    // line) resurrecting itself after the user has already left the module,
+    // which is possible because cancel()'s onend/onerror can fire
+    // asynchronously, after showView()'s own synchronous cleanup already ran.
+    var epochAtStart = moduleEpoch;
     var utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = CONFIG.speech.synthesisLang;
     var voice = pickVoice();
@@ -7809,10 +8145,12 @@
     utterance.onstart = function () { btn.classList.add('speaking'); };
     utterance.onend = function () {
       btn.classList.remove('speaking');
+      if (epochAtStart !== moduleEpoch) return;
       if (callbacks && callbacks.onEnd) callbacks.onEnd();
     };
     utterance.onerror = function () {
       btn.classList.remove('speaking');
+      if (epochAtStart !== moduleEpoch) return;
       if (callbacks && callbacks.onEnd) callbacks.onEnd();
     };
     if (callbacks && callbacks.onStart) callbacks.onStart();

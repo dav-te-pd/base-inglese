@@ -52,18 +52,40 @@
       "Nessun problema, il ripasso è fatto apposta per questo."
     ]
   },
-  "terzoTentativoMessages": [
-    {
+  "valvolaSicurezzaMessages": {
+    "nonRiuscita": {
       "title": "Tranquillo, capita!",
-      "body": "Hai provato già 3 volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Ti consiglio di andare avanti e finire l'esercizio: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale. Il nostro metodo è pensato apposta per farti rivedere quello che ti serve di più, senza doverti impuntare adesso. Non preoccuparti, ci arriverai."
+      "bodies": [
+        "Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale.",
+        "Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l'esercizio, la ritroverai più avanti nei ripassi mirati.",
+        "A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi.",
+        "Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve.",
+        "Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell'esercizio."
+      ]
     },
-    {
-      "title": "Nessuna fretta",
-      "body": "Tre tentativi su questa frase — succede, ed è anche un buon segno: vuol dire che ci stai davvero provando. Ti conviene proseguire con l'esercizio; questa frase la ritroverai più avanti nei ripassi mirati, proprio quando servirà di più. Impara con calma, il metodo fa il resto."
-    },
-    {
-      "title": "Ci arriverai, promesso",
-      "body": "A volte una frase è più ostica delle altre, capita anche ai migliori. Meglio andare avanti ora e lasciarla decantare — tornerà da sola nei prossimi ripassi, e la prossima volta ti sembrerà più facile. Fidati del percorso."
+    "riuscita": {
+      "title": "Ce l'hai fatta!",
+      "bodies": [
+        "Ce l'hai fatta, e si vede che i tentativi hanno aiutato: hai insistito ed è servito. Vai avanti con lo stesso spirito.",
+        "Alla fine ci sei arrivato — i primi tentativi non erano andati benissimo, ma hai corretto la mira. Proprio questo è il modo in cui si impara.",
+        "Bel recupero: non era venuta bene subito, ma hai continuato a provarci e ora è a posto. Continua così.",
+        "Hai insistito su questa frase ed è servito: adesso la sai fare meglio di prima. È esattamente il senso del ripasso.",
+        "Ci sei riuscito dopo qualche tentativo in più, e va benissimo così — vuol dire che il ripasso sta funzionando."
+      ]
     }
+  },
+  "moduleCompleteMessages": [
+    "Ogni ripetizione conta, e questa l'hai portata a termine.",
+    "Un passo in più verso una pronuncia più sicura.",
+    "Si vede la costanza — continua così.",
+    "Bel lavoro, vai avanti tranquillo.",
+    "Il resto verrà da sé, un esercizio alla volta."
+  ],
+  "retryIntroMessages": [
+    "Ripetere è proprio il modo in cui si impara meglio.",
+    "Ogni ripasso fissa un po' di più quello che già sai.",
+    "Non è un passo indietro, è parte dell'allenamento.",
+    "Va bene tornarci sopra, è previsto dal percorso.",
+    "Le prossime volte saranno più semplici."
   ]
 }
