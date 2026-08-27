@@ -82,6 +82,16 @@
       // section since it's no longer Voice-Coach-only.
       attemptsReminderThreshold: 3
     },
+    // ---- shared percentage-score scale ----
+    // Started as Speed Round's own end-of-module message bucket, but now
+    // every evaluated module (Speed Round, Quick Match, Flash Card, Voice
+    // Coach) reads this SAME scale for its Schermata Finale message tone
+    // (see percentageBucket()) — living in one module's own section was
+    // misleading (nobody looking for "the app's thresholds" would think
+    // to check inside Speed Round) and an invitation for a second,
+    // duplicate set to appear later. Change these three numbers to retune
+    // the alto/medio/basso split everywhere at once.
+    percentageThresholds: { basso: 1, medio: 50, alto: 80 },
     // ---- shared sound effects beyond Speed Round's own correct/wrong
     // tones (CONFIG.speedRound.sound) ----
     // Traguardo: three ascending notes, same family as srPlayTone (sine
@@ -164,12 +174,11 @@
       // 3-2-1 countdown shown after "Pronto? Via!", before the first question.
       countdownSeconds: 3,
       countdownStepMs: 800,
-      // % of correct answers needed for the basso/medio/alto end-of-module
-      // message bucket — mirrors messaggi-feedback.json's percentageRule.
-      percentageThresholds: { basso: 1, medio: 50, alto: 80 },
       // Retry-queue safety valve threshold lives in CONFIG.retryQueue.
-      // maxAttempts (shared across every module with this mechanic), not
-      // duplicated here.
+      // maxAttempts (shared across every module with this mechanic); the
+      // basso/medio/alto end-of-module message bucket lives in the
+      // top-level CONFIG.percentageThresholds (shared by every evaluated
+      // module) — neither is duplicated here.
       // Tones played on correct/wrong answers via the Web Audio API
       // (no external audio files, per project convention).
       sound: {
@@ -186,12 +195,13 @@
     // ---- Quick Match quiz (quickMatchEngIta / quickMatchItaEng modules) ----
     // Same multiple-choice/retry/mastery mechanics as speedRound above
     // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
-    // see the comment near those), just untimed: no timeLimitSeconds,
-    // countdownSeconds or percentageThresholds here since there's no timer
-    // or countdown to configure. feedbackPauseMs is its own key (not
-    // reusing speedRound's) so the two can be tuned independently later —
-    // same default value today, kept separate on purpose. Retry-queue
-    // safety valve threshold is shared — see CONFIG.retryQueue.maxAttempts.
+    // see the comment near those), just untimed: no timeLimitSeconds or
+    // countdownSeconds here since there's no timer or countdown to
+    // configure. feedbackPauseMs is its own key (not reusing speedRound's)
+    // so the two can be tuned independently later — same default value
+    // today, kept separate on purpose. Retry-queue safety valve threshold
+    // and the end-of-module message bucket are both shared — see
+    // CONFIG.retryQueue.maxAttempts and CONFIG.percentageThresholds.
     quickMatch: {
       feedbackPauseMs: 600
     },
@@ -430,6 +440,9 @@
       'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
       'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',
       'retryQueue.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa domanda o frase compare il messaggio "capita, tranquillo" (o quello di riconoscimento se l\'hai indovinata).',
+      'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale il messaggio finale usa il tono "basso". Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
+      'percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
+      'percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
       'sound.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
       'sound.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
       'sound.countdown.freq': 'Altezza del suono che segna la fine della barra a tempo in Dialogo (in Hz — più alto è, più acuto suona).',
@@ -452,9 +465,6 @@
       'speedRound.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
       'speedRound.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',
       'speedRound.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia 3-2-1.',
-      'speedRound.percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale il messaggio finale usa il tono "basso".',
-      'speedRound.percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
-      'speedRound.percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
       'speedRound.sound.correctFreq': 'Altezza del suono per una risposta corretta, in Hz.',
       'speedRound.sound.wrongFreq': 'Altezza del suono per una risposta sbagliata, in Hz.',
       'speedRound.sound.durationMs': 'Durata dei suoni di risposta corretta/sbagliata, in millisecondi.',
@@ -2588,12 +2598,29 @@
     opacity: 0.7;
   }
 
+  /* Always visible now (job 3) — an empty outline circle for a line not
+     yet heard is the actual signal ("this one's missing"), not just the
+     absence of a checkmark, which was easy to miss. .is-heard fills it
+     in with the check icon, same --correct-ink tone as everywhere else
+     "done" is shown. */
   .dg-heard-check {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .dg-heard-check.is-heard {
+    border-color: var(--correct-ink);
+    background: var(--correct-bg);
     color: var(--correct-ink);
   }
 
-  .dg-heard-check svg { width: 14px; height: 14px; }
+  .dg-heard-check svg { width: 12px; height: 12px; }
 
   /* The bubble itself is a <button> for accessibility (keyboard/focus),
      styled borderless so it still reads as a chat bubble, not a button. */
@@ -2696,7 +2723,9 @@
   }
 
   /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
-     nothing toggles these via "hidden" today beyond dg-heard-check. */
+     nothing toggles these via "hidden" today (dg-heard-check used to,
+     before job 3 made it always-visible — filled check vs. empty circle
+     — but the override stays as defensive coverage for its own display). */
   .dg-toolbar[hidden],
   .dg-list[hidden],
   .dg-row[hidden],
@@ -4040,11 +4069,11 @@
   }
 
   // The ONE percentage scale reused everywhere a whole-session score needs
-  // an alto/medio/basso bucket (job 2A: "usa le soglie già esistenti...
-  // non crearne di nuove") — the same CONFIG.speedRound.percentageThresholds
-  // Quick Match/Flash Card/Voice Coach all read too, not a copy each.
+  // an alto/medio/basso bucket — Speed Round, Quick Match, Flash Card and
+  // Voice Coach all read this SAME top-level CONFIG.percentageThresholds,
+  // not a per-module copy.
   function percentageBucket(pct) {
-    var t = CONFIG.speedRound.percentageThresholds;
+    var t = CONFIG.percentageThresholds;
     if (pct >= t.alto) return 'alto';
     if (pct >= t.medio) return 'medio';
     return 'basso';
@@ -4458,8 +4487,13 @@
   // either way, just a friendlier editor for a field that's meant to be
   // touched often as the course grows (CLAUDE.md rule 13).
   function moduleOrderRowLabel(id) {
-    var meta = EPISODES.episode1 && EPISODES.episode1.modulesById[id];
-    return (meta && meta.label) || id;
+    // CONFIG.moduleLabels is the one place a module's display name lives
+    // (see its own comment) — modulesById stopped carrying .label when
+    // that move happened, so reading .label off it here was silently
+    // falling back to the raw module id every time (only a stale test
+    // assertion still expecting the old string kept this from surfacing).
+    var meta = CONFIG.moduleLabels[id];
+    return (meta && meta.name) || id;
   }
 
   function renderModuleOrderRows(list) {
@@ -4795,16 +4829,24 @@
         flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'quiz' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
-      // that supplies its value — the only piece a new episode's dialogue
-      // needs to redeclare if it uses different placeholder names.
+      // that supplies its value. Episode 1's own placeholder names are
+      // identical to their slotFields keys on purpose (the two vocabularies
+      // used to differ with no functional reason — {{papaName}} vs. 'papa',
+      // {{cittaPartenza}} vs. 'partenza' — which just made the mapping
+      // harder to read for no benefit), so this is an identity map today.
+      // Kept anyway, not collapsed away: a future episode is free to use
+      // its own placeholder names in its dialogue text and just point them
+      // at the existing slotFields keys here, without renaming anything
+      // upstream. fillTemplate() below warns to the console if a
+      // placeholder has no entry here, instead of failing silently.
       dialoguePlaceholderMap: {
-        papaName: 'papa',
-        mammaName: 'mamma',
-        figliaName: 'figliaNome',
-        figlioName: 'figlioNome',
+        papa: 'papa',
+        mamma: 'mamma',
+        figliaNome: 'figliaNome',
+        figlioNome: 'figlioNome',
         figliaEta: 'figliaEta',
         figlioEta: 'figlioEta',
-        cittaPartenza: 'partenza',
+        partenza: 'partenza',
         destinazione: 'destinazione'
       },
       // Maps a dialogue "speaker" id to the slotFields key used for their
@@ -5012,11 +5054,16 @@
   // Fills {{placeholders}} in a dialogue line using the episode's
   // dialoguePlaceholderMap (placeholder name -> slotFields key) and the
   // user's current customization values, in the given language. Unknown
-  // placeholders are left untouched rather than breaking the line.
+  // placeholders are left untouched rather than breaking the line — but
+  // logged, since a silently-unfilled {{token}} left on screen used to be
+  // the only sign something was missing.
   function fillTemplate(text, episode, values, lang) {
     return text.replace(/\{\{(\w+)\}\}/g, function (match, varName) {
       var slotKey = episode.dialoguePlaceholderMap && episode.dialoguePlaceholderMap[varName];
-      if (!slotKey) return match;
+      if (!slotKey) {
+        console.warn('fillTemplate: placeholder "' + varName + '" has no dialoguePlaceholderMap entry in episode "' + episode.id + '"');
+        return match;
+      }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
       return resolveSlotValue(episode, slotKey, rawValue, lang);
     });
@@ -5735,6 +5782,11 @@
   });
 
   document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
+    // Job 4: Traguardo plays on every positive/neutral completion, this
+    // module included — no score here, so completing IS the outcome.
+    // Tied to this exact button (the completion event), never to
+    // "← Mappa" above, which just leaves without completing.
+    srPlayTraguardoSound();
     markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
     openEpisodeMap();
   });
@@ -5856,6 +5908,10 @@
   });
 
   document.getElementById('speak-easy-complete').addEventListener('click', function () {
+    // Job 4: same reasoning as Repeat Aloud's own complete button above —
+    // no score here, so completing IS the outcome, tied to this exact
+    // button rather than "← Mappa".
+    srPlayTraguardoSound();
     markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
     openEpisodeMap();
   });
@@ -6954,7 +7010,7 @@
   function dgMarkHeard(lineId) {
     if (dgHeardIds.indexOf(lineId) === -1) dgHeardIds.push(lineId);
     var check = document.getElementById('dg-heard-' + lineId);
-    if (check) check.hidden = false;
+    if (check) { check.classList.add('is-heard'); check.innerHTML = icon('check'); }
     dgUpdateChoiceBoxLock();
   }
 
@@ -6971,7 +7027,7 @@
         '<div class="dg-item">' +
         '<div class="dg-name-row">' +
         '<span class="dg-name">' + speakerLabel(currentEpisode, line.speaker) + '</span>' +
-        '<span class="dg-heard-check" id="dg-heard-' + line.id + '"' + (heard ? '' : ' hidden') + '>' + icon('check') + '</span>' +
+        '<span class="dg-heard-check' + (heard ? ' is-heard' : '') + '" id="dg-heard-' + line.id + '">' + (heard ? icon('check') : '') + '</span>' +
         '</div>' +
         '<button type="button" class="dg-bubble ' + (isFamiglia ? 'dg-bubble-us' : 'dg-bubble-them') + '" data-line-id="' + line.id + '">' +
         '<span class="dg-bubble-top"><span class="dg-listen-icon">' + icon('volume-2') + '</span><p class="dg-english">' + english + '</p></span>' +

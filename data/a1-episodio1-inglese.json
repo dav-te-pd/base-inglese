@@ -17,12 +17,12 @@
 
   "dialogue": [
     { "id": "d1", "speaker": "guide", "ruolo": "esterno", "english": "Hello everyone! Nice to meet you. Can you introduce yourselves?", "italian": "Ciao a tutti! Piacere di conoscervi. Potete presentarvi?" },
-    { "id": "d2", "speaker": "papa", "ruolo": "famiglia", "english": "Hello, I'm {{papaName}}. I'm from {{cittaPartenza}}, Italy.", "italian": "Ciao, sono {{papaName}}. Vengo da {{cittaPartenza}}, Italia." },
-    { "id": "d3", "speaker": "guide", "ruolo": "esterno", "english": "Nice to meet you, {{papaName}}. And you?", "italian": "Piacere, {{papaName}}. E tu?" },
-    { "id": "d4", "speaker": "mamma", "ruolo": "famiglia", "english": "Hi, I'm {{mammaName}}. I'm {{papaName}}'s wife.", "italian": "Ciao, sono {{mammaName}}. Sono la moglie di {{papaName}}." },
-    { "id": "d5", "speaker": "figlia", "ruolo": "famiglia", "english": "Hi, I'm {{figliaName}}. I'm {{figliaEta}} years old.", "italian": "Ciao, sono {{figliaName}}. Ho {{figliaEta}} anni." },
-    { "id": "d6", "speaker": "figlio", "ruolo": "famiglia", "english": "Hello, I'm {{figlioName}}. I'm {{figlioEta}}.", "italian": "Ciao, sono {{figlioName}}. Ho {{figlioEta}} anni." },
-    { "id": "d7", "speaker": "guide", "ruolo": "esterno", "english": "Great! Welcome to the trip, {{papaName}}'s family!", "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papaName}}!" }
+    { "id": "d2", "speaker": "papa", "ruolo": "famiglia", "english": "Hello, I'm {{papa}}. I'm from {{partenza}}, Italy.", "italian": "Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia." },
+    { "id": "d3", "speaker": "guide", "ruolo": "esterno", "english": "Nice to meet you, {{papa}}. And you?", "italian": "Piacere, {{papa}}. E tu?" },
+    { "id": "d4", "speaker": "mamma", "ruolo": "famiglia", "english": "Hi, I'm {{mamma}}. I'm {{papa}}'s wife.", "italian": "Ciao, sono {{mamma}}. Sono la moglie di {{papa}}." },
+    { "id": "d5", "speaker": "figlia", "ruolo": "famiglia", "english": "Hi, I'm {{figliaNome}}. I'm {{figliaEta}} years old.", "italian": "Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni." },
+    { "id": "d6", "speaker": "figlio", "ruolo": "famiglia", "english": "Hello, I'm {{figlioNome}}. I'm {{figlioEta}}.", "italian": "Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni." },
+    { "id": "d7", "speaker": "guide", "ruolo": "esterno", "english": "Great! Welcome to the trip, {{papa}}'s family!", "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!" }
   ],
 
   "vocabulary": [
