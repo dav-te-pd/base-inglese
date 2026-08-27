@@ -92,55 +92,112 @@
     // duplicate set to appear later. Change these three numbers to retune
     // the alto/medio/basso split everywhere at once.
     percentageThresholds: { basso: 1, medio: 50, alto: 80 },
-    // ---- shared sound effects beyond Speed Round's own correct/wrong
-    // tones (CONFIG.speedRound.sound) ----
-    // Traguardo: three ascending notes, same family as srPlayTone (sine
-    // wave, 0.15 -> 0.0001 exponential envelope) — Dialogo Ascolta e
-    // Ripeti's "Sì, lo so" today, any future module wanting a stronger
-    // completion cue than the plain correct tone later. Built by calling
-    // srPlayTone three times in sequence (see srPlayTraguardoSound), not
-    // a new synthesis technique.
-    // Countdown: Dialogo Ripeti a Tempo / Dialogo Continuo's per-line
-    // timer bar — plays once when the bar finishes (never a tick during
-    // the bar itself, see srPlayCountdownSound). Quieter than Corretto/
-    // Sbagliato's default volume since it's a background pacing cue, not
-    // a right/wrong judgment.
+    // ---- shared sound catalog — EVENTS, not buttons ----
+    // Every sound in the app is a reaction to one of these 5 events, never
+    // to a specific button: a module's click handler calls the matching
+    // playXSound() function (see near srPlayTone), which reads ONLY this
+    // catalog. The event, not the widget that triggered it, decides
+    // whether — and which — sound plays; "Ho finito, torna alla mappa"
+    // sounds different across modules today because it usually ISN'T the
+    // completion event itself (Speed Round/Quick Match/Flash Card/Voice
+    // Coach/Dialogo already play Traguardo when the summary screen is
+    // reached, not on that button) — Repeat Aloud/Speak Easy are the one
+    // case where the button click IS the completion event, since those
+    // modules have no separate summary screen to reach first.
+    //   corretto   — a single right answer/attempt (Speed Round, Quick
+    //                Match, Voice Practice/Voice Check per line, Flash
+    //                Card's "Sì, la so" — one card of many, not a
+    //                completion).
+    //   sbagliato  — a single wrong answer/attempt/declared non-attempt
+    //                ("Non lo so"). Flash Card's "Non ancora" is the one
+    //                deliberate exception — no sound, so a still-learning
+    //                card doesn't announce itself as a small failure.
+    //   countdown  — a per-line timer bar running out (Dialogo Ripeti a
+    //                Tempo / Continuo).
+    //   ready      — one note per digit of a 3-2-1 "get ready" countdown
+    //                (Speed Round, Dialogo Continuo), last digit higher.
+    //   traguardo  — a module closes with a POSITIVE or NEUTRAL outcome.
+    //                Never on Dialogo's "Non ancora", never on Voice
+    //                Check's confirmed-mic-problem exit.
+    //   (anything else) — no sound.
     sound: {
-      traguardo: {
-        notes: [523, 659, 784],
-        noteDurationMs: 90,
-        noteGapMs: 60
-      },
-      countdown: {
-        freq: 660,
-        durationMs: 120,
-        volume: 0.08
-      },
-      // The 3-2-1 "get ready" countdown itself (Speed Round's srRunCountdown,
-      // Dialogo Continuo's dgRunReadyCountdown) — one note per digit, all
-      // equal except the LAST one (the "1"), which is slightly higher so
-      // the final beat before starting is audibly distinct. Not to be
-      // confused with "countdown" above, which is a different sound for a
-      // different moment (a per-line timer bar finishing).
-      // Raised well above wrongFreq (220) so a countdown never reads as
-      // an error buzz — bright/squillante on purpose, same interval
-      // ratio as before between freq and finalFreq.
-      readyCountdown: {
-        freq: 784,
-        finalFreq: 988,
-        durationMs: 100
+      events: {
+        // Same sine-wave/exponential-envelope family as every other tone
+        // (see srPlayTone) — corretto has no explicit volume, so it uses
+        // srPlayTone's own 0.15 default; sbagliato is louder on purpose
+        // (see its own comment below).
+        corretto: {
+          freq: 880,
+          durationMs: 180
+        },
+        // Explicit, louder than corretto's 0.15 default — at equal gain,
+        // this lower pitch reads as quieter to the ear than corretto's, so
+        // it needs its own explicit bump to feel balanced.
+        sbagliato: {
+          freq: 220,
+          durationMs: 180,
+          volume: 0.22
+        },
+        // Dialogo Ripeti a Tempo / Dialogo Continuo's per-line timer bar —
+        // plays once when the bar finishes (never a tick during the bar
+        // itself). Quieter than corretto/sbagliato's default volume since
+        // it's a background pacing cue, not a right/wrong judgment.
+        countdown: {
+          freq: 660,
+          durationMs: 120,
+          volume: 0.08
+        },
+        // The 3-2-1 "get ready" countdown (Speed Round's srRunCountdown,
+        // Dialogo Continuo's dgRunReadyCountdown) — one note per digit, all
+        // equal except the LAST one (the "1"), which is slightly higher so
+        // the final beat before starting is audibly distinct. Not to be
+        // confused with "countdown" above, a different sound for a
+        // different moment (a per-line timer bar finishing). One octave
+        // above its previous pitch (job: "un'ottava sopra") — same
+        // interval ratio between freq and finalFreq as before, still well
+        // above sbagliato's 220Hz so it never reads as an error buzz.
+        ready: {
+          freq: 1568,
+          finalFreq: 1976,
+          durationMs: 100
+        },
+        // Three ascending notes, same sine-wave/exponential-envelope
+        // family as srPlayTone — built by calling it three times in
+        // sequence (see srPlayTraguardoSound), not a new synthesis
+        // technique. One octave above the previous pitch (job: "un'ottava
+        // sopra"), same ascending 3-note structure and timing.
+        traguardo: {
+          notes: [1046, 1318, 1568],
+          noteDurationMs: 90,
+          noteGapMs: 60
+        }
       }
     },
     // ---- limits ----
     limits: {
       userNameMaxLength: 40
     },
-    // ---- Voice Coach recording ----
+    // ---- Voice Practice / Voice Check recording — the ONE parametrized
+    // component behind both map modules (see the JS "MODULE: VOICE COACH"
+    // comment), so both read this same section; nothing here is
+    // variant-specific. ----
     voiceCoach: {
       // Hard cap on one recording = (word count of the target sentence *
-      // maxRecordingMsPerWord) + maxRecordingMarginMs.
+      // maxRecordingMsPerWord) + maxRecordingMarginMs. These, together
+      // with silenceTimeoutSeconds below, determine how much audio
+      // actually gets sent for speech recognition — the cost driver job
+      // 6a asked to keep editable here and visible in the config panel
+      // (see #config-audio-usage for the actual seconds sent, job 6c).
       maxRecordingMsPerWord: 1000,
       maxRecordingMarginMs: 3000,
+      // Job 6b: if no speech is recognized within this many seconds of
+      // pressing record, the recording stops on its own and is discarded
+      // — never offered for Invia/Cancella, never sent for recognition
+      // (see vc-record-btn's click handler and vcRecognition.onend).
+      // Shorter than the hard cap above on purpose: that one bounds a
+      // sentence actually being spoken, this one catches "nothing is
+      // happening" much sooner.
+      silenceTimeoutSeconds: 3,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
       // documented in data/messaggi-feedback.json's percentageRule.
@@ -160,6 +217,18 @@
         confirmedAt: 6
       }
     },
+    // ---- Voice Practice only (Voice Check keeps the shared retry-QUEUE/
+    // ModuleRules mechanics unchanged, see CONFIG.retryQueue/
+    // moduleOutcomeRules) ----
+    voicePractice: {
+      // "Esercitati ancora" total tries per phrase (this counts the first
+      // recording too, not just retries) — a VISIBLE counter (vc-attempt-
+      // label), same idea as the safety-valve popup other quiz modules
+      // use, but always on screen instead of a one-time nudge. Once
+      // reached, the button disables and the student moves on with
+      // "Avanti" — no final ripasso pass for this module.
+      maxAttemptsPerPhrase: 3
+    },
     // ---- Speed Round quiz (speedRoundEngIta / speedRoundItaEng modules) ----
     speedRound: {
       // Seconds on the countdown bar before a question times out
@@ -178,19 +247,10 @@
       // maxAttempts (shared across every module with this mechanic); the
       // basso/medio/alto end-of-module message bucket lives in the
       // top-level CONFIG.percentageThresholds (shared by every evaluated
-      // module) — neither is duplicated here.
-      // Tones played on correct/wrong answers via the Web Audio API
-      // (no external audio files, per project convention).
-      sound: {
-        correctFreq: 880,
-        wrongFreq: 220,
-        durationMs: 180,
-        // Explicit, louder than the shared 0.15 default (srPlayTone's own
-        // fallback, used by Corretto below) — at equal gain, wrongFreq's
-        // lower pitch reads as quieter to the ear than correctFreq's, so
-        // it needs its own explicit bump to feel balanced.
-        wrongVolume: 0.22
-      }
+      // module); the corretto/sbagliato tones live in the shared
+      // CONFIG.sound.events catalog (every module with a per-item
+      // judgment reads the same one) — none of the three is duplicated
+      // here.
     },
     // ---- Quick Match quiz (quickMatchEngIta / quickMatchItaEng modules) ----
     // Same multiple-choice/retry/mastery mechanics as speedRound above
@@ -246,7 +306,7 @@
       countdownStepMs: 800,
       // If true, also play the Countdown tone when a line's bar STARTS,
       // not just when it ends. Off by default — see srPlayCountdownSound
-      // and CONFIG.sound.countdown; no ticking during the bar either way.
+      // and CONFIG.sound.events.countdown; no ticking during the bar either way.
       suonoCountdownInizio: false,
       profiles: {
         ascoltaRipeti: {
@@ -301,16 +361,17 @@
       'personalizzazione',
       'repeatAloud',
       'speakEasy',
-      'voiceCoach',
+      'flashcardAEngIta',
+      'flashcardAItaEng',
       'quickMatchEngIta',
       'quickMatchItaEng',
+      'voicePractice',
       'dialogoAscoltaRipeti',
       'dialogoRipetiATempo',
       'dialogoContinuo',
       'speedRoundEngIta',
       'speedRoundItaEng',
-      'flashcardAEngIta',
-      'flashcardAItaEng'
+      'voiceCoach'
     ],
     // Per-episode override of moduleOrderDefault above — an episode only
     // needs an entry here if its own step sequence differs from the
@@ -328,6 +389,12 @@
     moduleTypes: {
       studio: { label: 'Studio libero' },
       quiz: { label: 'Quiz con ripasso' },
+      // Dialogue: Repeat in Time / Real Dialogue only (job: nuovo ordine)
+      // — moved out of quizATempo since neither is actually evaluated by
+      // the system (no ModuleRules, see moduleOutcomeRules below); "a
+      // tempo" describes their pacing, not a judgment. Dialogue: Listen &
+      // Repeat stays plain "studio" (Studio libero, unchanged).
+      studioATempo: { label: 'Studio a tempo' },
       quizATempo: { label: 'Quiz a tempo' },
       test: { label: 'Verifica finale' }
     },
@@ -369,26 +436,31 @@
     moduleLabels: {
       personalizzazione: { name: 'Your Story', subtitle: 'Personalizza la tua storia' },
       repeatAloud: { name: 'Repeat Aloud', subtitle: 'Ripeti ad alta voce' },
-      speakEasy: { name: 'Speak Easy', subtitle: 'Leggi il dialogo' },
-      voiceCoach: { name: 'Voice Coach', subtitle: 'Allena la pronuncia' },
-      quickMatchEngIta: { name: 'Word Match en→it', subtitle: 'Abbina le parole' },
-      quickMatchItaEng: { name: 'Word Match it→en', subtitle: 'Abbina le parole' },
-      speedRoundEngIta: { name: 'Speed Round en→it', subtitle: 'Traduci a tempo' },
-      speedRoundItaEng: { name: 'Speed Round it→en', subtitle: 'Traduci a tempo' },
-      flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa le parole' },
-      flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa le parole' },
+      speakEasy: { name: 'Speak Easy', subtitle: 'Leggi e ascolta' },
+      // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — two map
+      // modules, one shared component (see the JS "MODULE: VOICE COACH"
+      // comment); voiceCoach is the SAME id the single module used to
+      // have, now meaning specifically its evaluated half.
+      voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
+      voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
+      quickMatchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
+      quickMatchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
+      speedRoundEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
+      speedRoundItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
+      flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
+      flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
       dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
       dialogoRipetiATempo: { name: 'Dialogue: Repeat in Time', subtitle: 'Ripeti a tempo' },
-      dialogoContinuo: { name: 'Dialogue: Full Dialogue', subtitle: 'Il dialogo completo' }
+      dialogoContinuo: { name: 'Dialogue: Real Dialogue', subtitle: 'Il dialogo vero' }
     },
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',
       options: [
         { value: 'viaggio', label: 'Viaggio', dot: '#2B6CA3' },
-        { value: 'notte', label: 'Notte', dot: '#E8A33D' },
-        { value: 'mediterraneo', label: 'Mediterraneo', dot: '#E8734A' },
-        { value: 'moderno', label: 'Moderno', dot: '#17A2B8' },
+        { value: 'notte', label: 'Notte', dot: '#5B8DEF' },
+        { value: 'mediterraneo', label: 'Mediterraneo', dot: '#3372A8' },
+        { value: 'moderno', label: 'Moderno', dot: '#1B6FA8' },
         { value: 'natura', label: 'Natura', dot: '#7ec850' }
       ]
     },
@@ -466,32 +538,35 @@
       'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale il messaggio finale usa il tono "basso". Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
       'percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
       'percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
-      'sound.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
-      'sound.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
-      'sound.countdown.freq': 'Altezza del suono che segna la fine della barra a tempo in Dialogo (in Hz — più alto è, più acuto suona).',
-      'sound.countdown.durationMs': 'Durata del suono di fine barra, in millisecondi.',
-      'sound.countdown.volume': 'Volume del suono di fine barra, da 0 (silenzioso) a circa 1.',
-      'sound.readyCountdown.freq': 'Altezza delle prime due note del conto alla rovescia 3-2-1, in Hz.',
-      'sound.readyCountdown.finalFreq': 'Altezza dell\'ultima nota (l\'"1") del conto alla rovescia, in Hz — di solito più acuta delle altre due.',
-      'sound.readyCountdown.durationMs': 'Durata di ciascuna nota del conto alla rovescia 3-2-1, in millisecondi.',
+      'sound.events.corretto.freq': 'Altezza del suono per una risposta/tentativo corretto, in Hz.',
+      'sound.events.corretto.durationMs': 'Durata del suono "corretto", in millisecondi.',
+      'sound.events.sbagliato.freq': 'Altezza del suono per una risposta/tentativo sbagliato, in Hz.',
+      'sound.events.sbagliato.durationMs': 'Durata del suono "sbagliato", in millisecondi.',
+      'sound.events.sbagliato.volume': 'Volume del suono "sbagliato", da 0 a circa 1 — più alto del volume di base per farsi sentire meglio.',
+      'sound.events.countdown.freq': 'Altezza del suono che segna la fine della barra a tempo in Dialogo (in Hz — più alto è, più acuto suona).',
+      'sound.events.countdown.durationMs': 'Durata del suono di fine barra, in millisecondi.',
+      'sound.events.countdown.volume': 'Volume del suono di fine barra, da 0 (silenzioso) a circa 1.',
+      'sound.events.ready.freq': 'Altezza delle prime due note del conto alla rovescia 3-2-1, in Hz.',
+      'sound.events.ready.finalFreq': 'Altezza dell\'ultima nota (l\'"1") del conto alla rovescia, in Hz — di solito più acuta delle altre due.',
+      'sound.events.ready.durationMs': 'Durata di ciascuna nota del conto alla rovescia 3-2-1, in millisecondi.',
+      'sound.events.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
+      'sound.events.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
       'limits.userNameMaxLength': 'Numero massimo di caratteri consentiti per il nome utente.',
-      'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere in Voice Coach.',
+      'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere, in Voice Practice e Voice Check.',
       'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
+      'voiceCoach.silenceTimeoutSeconds': 'Secondi senza rilevare voce dall\'avvio della registrazione dopo i quali si ferma da sola e NON viene inviata (compare un avviso).',
       'voiceCoach.starThresholds.oneStar': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere almeno una stella.',
       'voiceCoach.starThresholds.twoStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere due stelle.',
       'voiceCoach.starThresholds.threeStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere tre stelle, il massimo.',
       'voiceCoach.micIssue.warningAt': 'Dopo quante registrazioni di fila senza nessuna parola riconosciuta compare il primo avviso sul microfono.',
       'voiceCoach.micIssue.restartSuggestionAt': 'Dopo quante registrazioni vuote di fila viene proposto di ricominciare l\'esercizio.',
       'voiceCoach.micIssue.confirmedAt': 'Dopo quante registrazioni vuote di fila il problema viene dato per confermato, con il pulsante per tornare alla mappa.',
+      'voicePractice.maxAttemptsPerPhrase': 'Quante volte in tutto si può registrare la stessa frase in Voice Practice ("Esercitati ancora" incluso il primo tentativo), prima che si prosegua senza ripasso finale.',
       'speedRound.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
       'speedRound.pointsPerCorrect': 'Punti assegnati per ogni risposta corretta al primo tentativo.',
       'speedRound.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
       'speedRound.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',
       'speedRound.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia 3-2-1.',
-      'speedRound.sound.correctFreq': 'Altezza del suono per una risposta corretta, in Hz.',
-      'speedRound.sound.wrongFreq': 'Altezza del suono per una risposta sbagliata, in Hz.',
-      'speedRound.sound.durationMs': 'Durata dei suoni di risposta corretta/sbagliata, in millisecondi.',
-      'speedRound.sound.wrongVolume': 'Volume del suono "Sbagliato", da 0 a circa 1 — più alto del volume di base per farsi sentire meglio.',
       'quickMatch.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
       'dialogo.pausaBase': 'Millisecondi di base della barra a tempo di ogni battuta, prima di aggiungere il tempo per le sue parole.',
       'dialogo.pausaPerParola': 'Millisecondi aggiunti alla barra a tempo per ogni parola della battuta.',
@@ -659,7 +734,7 @@
     },
     speedRoundEngIta: {
       howItWorks: {
-        title: 'Speed Round en→it',
+        title: 'Speed Match en→it',
         body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -669,7 +744,7 @@
     },
     speedRoundItaEng: {
       howItWorks: {
-        title: 'Speed Round it→en',
+        title: 'Speed Match it→en',
         body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -687,14 +762,24 @@
         body: '<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>'
       }
     },
-    voiceCoach: {
+    voicePractice: {
       howItWorks: {
-        title: 'Voice Coach',
-        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con "Riprova", oppure andare avanti.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+        title: 'Voice Practice',
+        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Con "Esercitati ancora" puoi riprovare la stessa frase più volte — il contatore ti mostra sempre quante te ne restano; esaurite, si va avanti comunque.</p><p>Qui non c\'è un ripasso finale delle frasi andate meno bene: è uno spazio libero per allenarti, non una verifica.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
         title: 'Come funziona, in breve',
-        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. "Riprova" per riprovare, "Avanti" per la prossima.</p>'
+        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. "Esercitati ancora" per riprovare la stessa frase (il contatore mostra quante volte ti restano), "Avanti" per la prossima.</p>'
+      }
+    },
+    voiceCoach: {
+      howItWorks: {
+        title: 'Voice Check',
+        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla — prima di inviare puoi sempre cambiare idea.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Una sola registrazione conta per ogni frase: come sempre, a fine esercizio ti verranno riproposte le frasi andate meno bene, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+      },
+      helpReminder: {
+        title: 'Come funziona, in breve',
+        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare la registrazione.</p><p>Dopo l\'invio guarda i colori e le stelle, poi tocca "Avanti": una sola registrazione conta per frase, quelle andate meno bene torneranno a fine esercizio.</p>'
       }
     },
     dialogoAscoltaRipeti: {
@@ -719,7 +804,7 @@
     },
     dialogoContinuo: {
       howItWorks: {
-        title: 'Dialogue: Full Dialogue',
+        title: 'Dialogue: Real Dialogue',
         body: '<p>Questa è la prova generale: il dialogo intero scorre da solo, dall\'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
       },
       helpReminder: {
@@ -729,7 +814,7 @@
     },
     quickMatchEngIta: {
       howItWorks: {
-        title: 'Word Match en→it',
+        title: 'Match Practice en→it',
         body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
@@ -739,7 +824,7 @@
     },
     quickMatchItaEng: {
       howItWorks: {
-        title: 'Word Match it→en',
+        title: 'Match Practice it→en',
         body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
       },
       helpReminder: {
@@ -966,7 +1051,17 @@
        state before the student had even started. Blue, as requested —
        keeps every existing --accent usage the same shape, just no
        longer colliding with red. Keep CONFIG.themes.options[0].dot (the
-       theme-picker swatch) in sync with this value. */
+       theme-picker swatch) in sync with this value.
+       Audit across all 5 themes (CIE76 dE, <40 flagged as too close to
+       a semantic color — --correct-ink/--similar-ink/--wrong-ink, fixed
+       across every theme, see their own comment below): Viaggio fixed
+       here; Notte's old #E8A33D (dE 38/43 vs similar/wrong) and
+       Mediterraneo's old #E8734A (dE 39/17 vs similar/wrong) and
+       Moderno's old #17A2B8 (dE 38 vs correct) were real collisions,
+       fixed in their own theme blocks below. Natura's #7ec850 sits at
+       dE 48 vs correct-ink — distinct hue (yellow-green vs teal-green)
+       and lightness, left as-is; worth another look only if it's ever
+       actually reported as confusing in that one theme. */
     --accent: #2B6CA3;
     --accent-ink: #FFFFFF; /* contrast ink for text/icons on an --accent background — not the same pairing as above */
     --secondary: #D9A441;
@@ -1030,8 +1125,13 @@
     --text: #EDEFEF;
     --primary: #EDEFEF;
     --primary-ink: #14181C;
-    --accent: #E8A33D;
-    --accent-ink: #1A1206;
+    /* Was #E8A33D — a gold/orange close enough (CIE76 dE ~38/43) to both
+       --similar-ink and --wrong-ink to blur the "Attuale" state into a
+       judgment color, same collision class as Viaggio's old accent. A
+       night-blue reads as "moonlight", stays far (dE 80+) from all three
+       semantic tones — see the audit near :root's own --accent comment. */
+    --accent: #5B8DEF;
+    --accent-ink: #0A1220;
     --secondary: #4FA8A0;
     --border: #2D363D;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
@@ -1044,8 +1144,13 @@
     --text: #2B2118;
     --primary: #1B5E63;
     --primary-ink: #FFFFFF;
-    --accent: #E8734A;
-    --accent-ink: #2B1208;
+    /* Was #E8734A — the same warm red-orange family as --wrong-ink (CIE76
+       dE ~17, the closest of any theme's collision) and close to
+       --similar-ink too (dE ~39). A sea blue reads as "Mediterraneo" as
+       naturally as the orange did, and stays far (dE 55+) from all three
+       semantic tones — see the audit near :root's own --accent comment. */
+    --accent: #3372A8;
+    --accent-ink: #FFFFFF;
     --secondary: #E3A857;
     --border: #E5D6BE;
     --shadow: 0 1px 2px rgba(30, 20, 10, 0.06);
@@ -1058,7 +1163,12 @@
     --text: #1A1D23;
     --primary: #2F4FD1;
     --primary-ink: #FFFFFF;
-    --accent: #17A2B8;
+    /* Was #17A2B8 — a teal/cyan close enough (CIE76 dE ~38) to
+       --correct-ink's own green to blur "Attuale" toward a judgment
+       color. A cleaner, less green-leaning blue stays far (dE 57+) from
+       all three semantic tones — see the audit near :root's own --accent
+       comment. */
+    --accent: #1B6FA8;
     --accent-ink: #FFFFFF;
     --secondary: #6C5CE7;
     --border: #DDE1E6;
@@ -1466,6 +1576,23 @@
   .config-field-error {
     font-size: 0.78rem;
     color: var(--wrong-ink);
+  }
+
+  /* Read-only usage rows (job 6c, #config-audio-usage) — plain label/value
+     pairs, not editable fields, so deliberately NOT .config-field. */
+  .config-audio-usage-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.82rem;
+    padding: 3px 0;
+  }
+
+  .config-audio-usage-total {
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+    padding-top: 7px;
+    font-weight: 600;
   }
 
   /* moduleOrderDefault's reorder view (see renderModuleOrderField) — one
@@ -1973,6 +2100,13 @@
     text-align: center;
   }
 
+  /* Same wrong/error tone as .module-status-text.is-error — reused, not a
+     new color (job 6b: Voice Coach's silence-timeout warning). .status-
+     text itself sets no "display", so the browser's default
+     [hidden]{display:none} already applies — no CLAUDE.md rule 12
+     override needed here. */
+  .status-text.is-error { color: var(--wrong-ink); opacity: 1; }
+
   .transcript-box {
     padding: 14px 18px;
     font-family: var(--font-mono);
@@ -2063,8 +2197,15 @@
     background: color-mix(in srgb, var(--accent) 10%, var(--card-2));
   }
 
+  /* Tenue background tint per state, same 10% mix strength as .current
+     above — the border alone was too subtle to read at a glance (job:
+     "stati in mappa più leggibili"). Locked gets no tint of its own: it
+     has no corresponding semantic color, only its existing reduced
+     opacity (see .module-row.locked .module-status-icon/.module-state-
+     badge below), so nothing to add here without inventing one. */
   .module-row.completed {
     border-color: color-mix(in srgb, var(--correct-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--correct-ink) 10%, var(--card-2));
   }
 
   .module-row-label {
@@ -2140,7 +2281,10 @@
      rivedere" instead of the plain green "Completato". Same specificity
      as the .completed rules above, placed after them so it wins on a
      row carrying both classes; every other module never gets this class. */
-  .module-row.outcome-giallo { border-color: color-mix(in srgb, var(--similar-ink) 45%, var(--border)); }
+  .module-row.outcome-giallo {
+    border-color: color-mix(in srgb, var(--similar-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--similar-ink) 10%, var(--card-2));
+  }
   .module-row.outcome-giallo .module-status-icon { background: var(--similar-bg); color: var(--similar-ink); border-color: transparent; }
   .module-row.outcome-giallo .module-state-badge { background: var(--similar-bg); color: var(--similar-ink); }
 
@@ -2149,7 +2293,10 @@
      above, --wrong-ink/--wrong-bg instead: the app's one "andato male"
      color, never used for a non-judgment state (see the --accent fix
      near :root, same job). */
-  .module-row.outcome-rosso { border-color: color-mix(in srgb, var(--wrong-ink) 45%, var(--border)); }
+  .module-row.outcome-rosso {
+    border-color: color-mix(in srgb, var(--wrong-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--wrong-ink) 10%, var(--card-2));
+  }
   .module-row.outcome-rosso .module-status-icon { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
   .module-row.outcome-rosso .module-state-badge { background: var(--wrong-bg); color: var(--wrong-ink); }
 
@@ -3433,13 +3580,15 @@
       </div>
     </section>
 
-    <!-- ============ VIEW: VOICE COACH MODULE ============ -->
+    <!-- ============ VIEW: VOICE COACH MODULE (shared by Voice Practice
+         and Voice Check — module.voiceVariant picks 'practice' | 'check',
+         see the JS module comment near "MODULE: VOICE COACH") ============ -->
     <section id="view-voice-coach" class="view">
       <div class="card">
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge">Voice Coach</span>
+              <span class="badge" id="voice-coach-badge">Voice Coach</span>
             </div>
             <div class="header-actions-row">
               <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
@@ -3466,11 +3615,15 @@
           <!-- MAIN SCREEN -->
           <div id="voice-coach-main-screen" class="module-screen">
             <header class="app-header">
-              <h1>Voice Coach</h1>
+              <h1 id="voice-coach-title">Voice Coach</h1>
               <p class="vc-counter" id="vc-counter">1 / 1</p>
             </header>
 
-            <div class="vc-retry-row">
+            <!-- Voice Practice only: "Esercitati ancora", capped at
+                 CONFIG.voicePractice.maxAttemptsPerPhrase. Voice Check has
+                 no retry button at all (one recording per phrase) — this
+                 whole row is hidden for it, see updateVcActionButtons. -->
+            <div class="vc-retry-row" id="vc-retry-row">
               <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
             </div>
 
@@ -3496,6 +3649,10 @@
               </button>
               <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
               <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
+              <!-- Job 6b: shown when the silence timeout auto-stops a
+                   recording with no voice detected — that recording is
+                   discarded, never offered for Invia/Cancella. -->
+              <p class="status-text is-error" id="vc-silence-warning" hidden></p>
 
               <div class="vc-confirm-area" id="vc-confirm-area" hidden>
                 <!-- Box Doppia Scelta: inner markup generated by the shared
@@ -3991,6 +4148,15 @@
       </div>
       <div class="overlay-body">
         <p class="overlay-text">Modifica diretta di APP_CONFIG — le modifiche hanno effetto subito e restano salvate in questo browser. Alcuni parametri (es. l'ordine dei moduli) richiedono di ricaricare la pagina per applicarsi alla vista corrente.</p>
+        <!-- Read-only usage data (job 6c) — NOT part of APP_CONFIG (this is
+             accumulated per-user data, not a tunable parameter, CLAUDE.md
+             rule 3), so it gets its own section instead of a fake config
+             field. Filled in by renderAudioUsagePanel(), called alongside
+             renderConfigPanel() whenever this overlay opens. -->
+        <details class="config-group" open>
+          <summary>utilizzo microfono (secondi di audio inviati)</summary>
+          <div class="config-group-body" id="config-audio-usage"></div>
+        </details>
         <div id="config-panel-body" class="config-panel-body"></div>
         <div class="overlay-actions">
           <button type="button" class="btn btn-secondary btn-block" id="config-panel-reset-btn">Ripristina valori di partenza</button>
@@ -4479,8 +4645,29 @@
     if (configRevealBuffer.toLowerCase() === 'config') openConfigPanel();
   });
 
+  // Read-only usage rows (job 6c) — current user, current episode. Not
+  // part of renderConfigPanel's generic APP_CONFIG walk (this isn't a
+  // tunable, see addAudioSecondsSent's own comment); re-rendered every
+  // open so it always reflects whatever was just recorded.
+  function renderAudioUsagePanel() {
+    var el = document.getElementById('config-audio-usage');
+    if (!el) return;
+    var usage = loadAudioUsage(currentEpisode.id, getUserName());
+    var moduleIds = Object.keys(usage.byModule);
+    var total = moduleIds.reduce(function (sum, id) { return sum + usage.byModule[id]; }, 0);
+    var rowsHtml = moduleIds.map(function (id) {
+      var label = (CONFIG.moduleLabels[id] && CONFIG.moduleLabels[id].name) || id;
+      return '<div class="config-audio-usage-row"><span>' + label + '</span><span>' + usage.byModule[id].toFixed(1) + ' s</span></div>';
+    }).join('');
+    el.innerHTML =
+      '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' + currentEpisode.id + '.</p>' +
+      (rowsHtml || '<p class="config-field-hint">Nessuna registrazione inviata finora.</p>') +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>Totale episodio</span><span>' + total.toFixed(1) + ' s</span></div>';
+  }
+
   function openConfigPanel() {
     renderConfigPanel();
+    renderAudioUsagePanel();
     configPanelOverlayEl.classList.add('is-open');
   }
   function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
@@ -4910,13 +5097,26 @@
         personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
         repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
+        // shared component (openVoiceCoach and friends, see its own JS
+        // comment), voiceVariant is the only thing that tells them apart.
+        // Practice: studio type, no ModuleRules (see CONFIG.
+        // moduleOutcomeRules — no entry for it, defaults to
+        // completionRules), own kind for its own howItWorks/helpReminder
+        // text and intro-dismiss flag (data/istruzioni-moduli.json).
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
+        // Check: same id ('voiceCoach') the single pre-split module had —
+        // still the ONE place ModuleRules/the retry-queue ripasso live,
+        // unchanged from before the split.
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
         quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
         dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'quizATempo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'quizATempo' },
+        // studioATempo, not quizATempo (job: nuovo ordine) — neither is
+        // actually evaluated by the system (see moduleOutcomeRules).
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studioATempo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studioATempo' },
         speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
         speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
         // kind is shared between directions on purpose: both read the same
@@ -5081,6 +5281,37 @@
     if (levels.indexOf('rosso') !== -1) return 'almenoUnRosso';
     if (levels.indexOf('giallo') !== -1) return 'gialloNoRosso';
     return 'tuttiVerdi';
+  }
+
+  /* ============================================================
+     AUDIO USAGE (job 6c) — seconds of audio actually SENT for speech
+     recognition (Voice Practice/Voice Check today, whichever future
+     module records), per module and per episode. NOT part of APP_CONFIG
+     (this is accumulated per-user data, not a tunable — CLAUDE.md rule
+     3); shown read-only in the hidden config panel (see
+     renderAudioUsagePanel) purely to estimate real cost before picking a
+     paid recognition provider. Counts the WHOLE recording length sent,
+     silence included ("paghiamo anche i silenzi spediti") — never
+     speech-only time. A recording the silence timeout auto-discards
+     (job 6b) is never sent, so it's never added here.
+     ============================================================ */
+  function audioUsageKey(episodeId, userName) {
+    return 'baseinglese:audioSecondsSent:' + episodeId + ':' + userName;
+  }
+
+  function loadAudioUsage(episodeId, userName) {
+    try {
+      var raw = localStorage.getItem(audioUsageKey(episodeId, userName));
+      var parsed = raw ? JSON.parse(raw) : null;
+      return (parsed && parsed.byModule) ? parsed : { byModule: {} };
+    } catch (e) { return { byModule: {} }; }
+  }
+
+  function addAudioSecondsSent(episodeId, userName, moduleId, seconds) {
+    var usage = loadAudioUsage(episodeId, userName);
+    usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + seconds;
+    try { localStorage.setItem(audioUsageKey(episodeId, userName), JSON.stringify(usage)); } catch (e) {}
+    return usage;
   }
 
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
@@ -5630,7 +5861,7 @@
     if (module.kind === 'personalizzazione') openCustomize();
     else if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.kind === 'speakEasy') openSpeakEasy(module);
-    else if (module.kind === 'voiceCoach') openVoiceCoach(module);
+    else if (module.voiceVariant) openVoiceCoach(module);
     else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
     else if (module.dialogoProfile) openDialogo(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
@@ -5732,24 +5963,31 @@
   }
 
   // ---- Shared full-screen module intro (Speak Easy, Voice Coach, Speed
-  // Round, Flash Card — every module after Repeat Aloud's original trial
-  // above, which keeps its own ra-* functions standalone; see CLAUDE.md
-  // rule 11, flagged for a future consolidation pass rather than touched
-  // here). One dismiss flag per module kind (not per episode — it's about
-  // knowing the module type, same as Repeat Aloud's). howItWorks always
-  // comes from istruzioni-moduli.json (CLAUDE.md rule 8); this only
-  // decides WHERE it's shown (full screen first time, popup afterward). ----
+  // Round, Flash Card, and — since the backlog fix below — Repeat Aloud's
+  // own dismissal too, though its screen markup/render functions (ra-*)
+  // stay standalone; see CLAUDE.md rule 11, flagged for a future
+  // consolidation pass rather than touched here). One dismiss flag per
+  // module kind (not per episode — it's about knowing the module type).
+  // howItWorks always comes from istruzioni-moduli.json (CLAUDE.md rule
+  // 8); this only decides WHERE it's shown (full screen first time,
+  // popup afterward). ----
   function introDismissedKey(kind, userName) {
     return 'baseinglese:introDismissed:' + kind + ':' + userName;
+  }
+
+  // Repeat Aloud's own pre-generalization key, kept ONLY so a preference
+  // already saved there before this migration isn't silently reset — see
+  // isIntroDismissed's one-time fallback read below. Nothing writes here
+  // anymore; setIntroDismissed always uses introDismissedKey.
+  function legacyRaIntroDismissedKey(userName) {
+    return 'baseinglese:repeatAloudIntroDismissed:' + userName;
   }
 
   function isIntroDismissed(kind, userName) {
     try {
       var stored = localStorage.getItem(introDismissedKey(kind, userName));
       if (stored !== null) return stored === '1';
-      // One-time fallback to Repeat Aloud's original pre-generalization key,
-      // so a preference already saved there isn't silently reset.
-      if (kind === 'repeatAloud') return localStorage.getItem(raIntroDismissedKey(userName)) === '1';
+      if (kind === 'repeatAloud') return localStorage.getItem(legacyRaIntroDismissedKey(userName)) === '1';
       return false;
     } catch (e) { return false; }
   }
@@ -5816,20 +6054,10 @@
   // this before extending the pattern to other modules). howItWorks
   // still comes only from istruzioni-moduli.json (CLAUDE.md rule 8);
   // this just changes WHERE it's shown for this one module, not what
-  // owns the text. Dismissal is a simple per-user flag, independent of
-  // episode (it's about knowing the module, not the episode content). ----
-  function raIntroDismissedKey(userName) {
-    return 'baseinglese:repeatAloudIntroDismissed:' + userName;
-  }
-
-  function isRaIntroDismissed(userName) {
-    try { return localStorage.getItem(raIntroDismissedKey(userName)) === '1'; } catch (e) { return false; }
-  }
-
-  function setRaIntroDismissed(userName, dismissed) {
-    try { localStorage.setItem(raIntroDismissedKey(userName), dismissed ? '1' : '0'); } catch (e) {}
-  }
-
+  // owns the text. Dismissal now goes through the same generic
+  // isIntroDismissed/setIntroDismissed('repeatAloud', ...) every other
+  // module uses (job: backlog item — this used to be its own separate
+  // key, silently exempt from any future change to that generic pattern). ----
   function raShowScreen(name) {
     document.getElementById('repeat-aloud-intro-screen').hidden = name !== 'intro';
     document.getElementById('repeat-aloud-main-screen').hidden = name !== 'main';
@@ -5854,7 +6082,7 @@
   // Always the same screen regardless of the saved preference — the
   // checkbox just starts pre-set to whatever that preference currently is.
   function openRaIntro() {
-    document.getElementById('ra-intro-dont-show-again').checked = isRaIntroDismissed(getUserName());
+    document.getElementById('ra-intro-dont-show-again').checked = isIntroDismissed('repeatAloud', getUserName());
     renderRaIntroContent();
     raShowScreen('intro');
   }
@@ -5864,7 +6092,7 @@
     document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     showView('repeatAloud');
-    if (isRaIntroDismissed(getUserName())) {
+    if (isIntroDismissed('repeatAloud', getUserName())) {
       raShowScreen('main');
     } else {
       openRaIntro();
@@ -5892,16 +6120,11 @@
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(currentRepeatAloudModule, {
-      dismissPref: {
-        get: function () { return isRaIntroDismissed(getUserName()); },
-        set: function (val) { setRaIntroDismissed(getUserName(), val); }
-      }
-    });
+    openHowItWorksOverlay(currentRepeatAloudModule, { dismissPref: introDismissPref('repeatAloud') });
   });
 
   document.getElementById('ra-intro-start-btn').addEventListener('click', function () {
-    setRaIntroDismissed(getUserName(), document.getElementById('ra-intro-dont-show-again').checked);
+    setIntroDismissed('repeatAloud', getUserName(), document.getElementById('ra-intro-dont-show-again').checked);
     raShowScreen('main');
   });
 
@@ -6045,7 +6268,23 @@
   });
 
   /* ============================================================
-     MODULE: VOICE COACH
+     MODULE: VOICE COACH — ONE parametrized component behind two map
+     modules, Voice Practice and Voice Check (job: "sdoppiare Voice
+     Coach" — a quiz you can retry until you like the result isn't a
+     quiz). vcVariant ('practice' | 'check', set in openVoiceCoach from
+     module.voiceVariant) is the ONLY thing that branches:
+       - practice: "Esercitati ancora" (own button, capped at
+         CONFIG.voicePractice.maxAttemptsPerPhrase, visible counter) —
+         no final ripasso pass, no ModuleRules map color (plain
+         CompletionRules, like Repeat Aloud), but DOES feed the per-word
+         mastery store (a real measurement — see the practice-only block
+         in vcEvaluate).
+       - check: no retry button at all (one recording per phrase) but
+         keeps the existing retry-QUEUE/Schermata Ripasso pass and
+         ModuleRules map color, unchanged from before the split.
+     Recording mechanics, mic-trouble detection, star rating and the
+     shared safety-valve popup are identical either way — everything in
+     this section not explicitly gated on vcVariant runs for both.
      Reads every line of the same "dialogue" section Speak Easy already
      uses (loadEpisodeData reuses the cache — no extra request), one
      sentence at a time. Recording happens through this module's own
@@ -6057,6 +6296,7 @@
      last sentence's "Ho finito" button.
      ============================================================ */
   var vcModule = null;
+  var vcVariant = 'check'; // 'practice' | 'check' — set from module.voiceVariant in openVoiceCoach
   var vcLines = [];
   // Queue-based pass navigation (same shape as Quick Match's qmQueue/
   // qmRetryQueue/qmPassIndex/qmPassTotal, CLAUDE.md rule 13): the main
@@ -6075,9 +6315,12 @@
   var vcListening = false;
   var vcSuppressTransition = false;
   var vcLatestTranscript = '';
-  var vcTimeoutId = null;
+  var vcTimeoutId = null; // hard cap on recording length (maxRecordingMsPerWord/MarginMs)
+  var vcSilenceTimeoutId = null; // job 6b: shorter "no voice at all yet" timeout
+  var vcSilenceCutoff = false; // set right before stopping for silence — read once in vcRecognition.onend
   var vcTimerInterval = null;
   var vcRecordStartedAt = 0;
+  var vcLastRecordingMs = 0; // job 6c: actual length of the last completed recording, however it ended
   var vcEmptyRecognitionStreak = 0; // job 6: consecutive zero-word recognitions
   // True once the confirmed mic-problem level (job 6's confirmedAt) is
   // reached — blocks "Avanti" (see updateVcActionButtons/vcNextLine) so
@@ -6117,6 +6360,7 @@
 
     vcRecognition.onend = function () {
       vcListening = false;
+      vcLastRecordingMs = Date.now() - vcRecordStartedAt;
       clearVcTimeout();
       stopVcTimer();
       // A reset (navigating away mid-recording) already forced 'idle' and
@@ -6124,6 +6368,20 @@
       // jumping to 'pending' once it eventually fires.
       if (vcSuppressTransition) {
         vcSuppressTransition = false;
+        return;
+      }
+      // Job 6b: the silence timeout stopped this recording because no
+      // voice was ever detected — discard it entirely (never offered for
+      // Invia/Cancella, never sent) and show why, instead of the usual
+      // confirm step.
+      if (vcSilenceCutoff) {
+        vcSilenceCutoff = false;
+        vcLatestTranscript = '';
+        setVcState('idle');
+        var warn = document.getElementById('vc-silence-warning');
+        warn.textContent = 'Non ti abbiamo sentito: prova a parlare entro ' +
+          CONFIG.voiceCoach.silenceTimeoutSeconds + ' secondi dall\'avvio della registrazione.';
+        warn.hidden = false;
         return;
       }
       setVcState('pending');
@@ -6141,6 +6399,7 @@
 
   function clearVcTimeout() {
     if (vcTimeoutId) { clearTimeout(vcTimeoutId); vcTimeoutId = null; }
+    if (vcSilenceTimeoutId) { clearTimeout(vcSilenceTimeoutId); vcSilenceTimeoutId = null; }
   }
 
   function startVcTimer() {
@@ -6204,6 +6463,8 @@
     }
     vcListening = false;
     vcLatestTranscript = '';
+    vcSilenceCutoff = false;
+    document.getElementById('vc-silence-warning').hidden = true;
     setVcState('idle');
   }
 
@@ -6325,13 +6586,17 @@
     document.getElementById('attempt-popup').classList.remove('is-open');
   }
 
-  // Gates both "Riprova" (ever attempted this line, across the whole
-  // session — original semantics, unchanged) and "Avanti" (attempted
-  // THIS viewing — new: closes the hole where repeated "Avanti" taps
-  // could complete the module without ever recording, same fix already
-  // applied to Flash Card's Indietro/Avanti).
+  // Gates "Esercitati ancora"/"Riprova" (Voice Practice only — Voice
+  // Check's whole .vc-retry-row is hidden, see openVoiceCoach) and
+  // "Avanti" (attempted THIS viewing — closes the hole where repeated
+  // "Avanti" taps could complete the module without ever recording, same
+  // fix already applied to Flash Card's Indietro/Avanti).
   function updateVcActionButtons() {
-    document.getElementById('voice-coach-retry-btn').disabled = !vcAttempts[vcCurrentLine().id];
+    if (vcVariant === 'practice') {
+      var attempts = vcAttempts[vcCurrentLine().id] || 0;
+      document.getElementById('voice-coach-retry-btn').disabled =
+        attempts === 0 || attempts >= CONFIG.voicePractice.maxAttemptsPerPhrase;
+    }
     // vcMicConfirmedProblem (job 1): the confirmed mic-problem notice has
     // its own escape hatch ("Torna alla mappa") — Avanti stays blocked so
     // the module can't be completed while the system itself flagged that
@@ -6420,11 +6685,15 @@
 
   function openVoiceCoach(module) {
     vcModule = module;
+    vcVariant = module.voiceVariant === 'practice' ? 'practice' : 'check';
     vcAttempts = {};
     vcEmptyRecognitionStreak = 0;
     vcMicConfirmedProblem = false;
     vcFirstAttemptPercents = [];
+    vcSilenceCutoff = false;
+    vcLastRecordingMs = 0;
     document.getElementById('vc-mic-notice').hidden = true;
+    document.getElementById('vc-silence-warning').hidden = true;
     vcQueue = [];
     vcRetryQueue = [];
     vcPassIndex = 0;
@@ -6436,12 +6705,19 @@
     document.getElementById('vc-cue').textContent = '';
     document.getElementById('vc-target').textContent = 'Caricamento...';
     document.getElementById('vc-audio-controls').innerHTML = '';
+    // Badge/title/retry-button text are the only visible traces of which
+    // of the two variants this is — everything else in this view is one
+    // shared component (see the "MODULE: VOICE COACH" comment).
+    document.getElementById('voice-coach-badge').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('voice-coach-title').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('vc-retry-row').hidden = vcVariant !== 'practice';
+    document.getElementById('voice-coach-retry-btn').textContent = vcVariant === 'practice' ? 'Esercitati ancora' : 'Riprova';
     showView('voiceCoach');
-    if (isIntroDismissed('voiceCoach', getUserName())) {
+    if (isIntroDismissed(module.kind, getUserName())) {
       vcShowScreen('main');
     } else {
       document.getElementById('voice-coach-intro-dont-show-again').checked = false;
-      renderIntroContent('voiceCoach', 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label);
+      renderIntroContent(module.kind, 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label);
       vcShowScreen('intro');
     }
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
@@ -6468,10 +6744,12 @@
     vcUpdateMicNotice();
     var pairs = alignWords(targetWords, recognizedWords);
     var correctCount = 0;
+    var pairResults = []; // classify() result per pair, same order as pairs — reused below for Voice Practice's mastery feed instead of reclassifying
     var spans = pairs.map(function (pair) {
       var word = targetWords[pair.targetIndex];
       var recognizedWord = pair.recognizedIndex !== null ? recognizedWords[pair.recognizedIndex] : null;
       var cls = classify(word, recognizedWord);
+      pairResults.push(cls);
       if (cls === 'correct') correctCount++;
       return '<span class="' + cls + '">' + word + '</span>';
     });
@@ -6481,12 +6759,13 @@
 
     var attemptNum = (vcAttempts[line.id] || 0) + 1;
     vcAttempts[line.id] = attemptNum;
-    document.getElementById('vc-attempt-label').textContent =
-      'TENTATIVO ' + attemptNum + ' DI ' + CONFIG.retryQueue.attemptsReminderThreshold;
+    var attemptsMax = vcVariant === 'practice' ? CONFIG.voicePractice.maxAttemptsPerPhrase : CONFIG.retryQueue.attemptsReminderThreshold;
+    document.getElementById('vc-attempt-label').textContent = 'TENTATIVO ' + attemptNum + ' DI ' + attemptsMax;
 
     var pct = targetWords.length ? Math.round((correctCount / targetWords.length) * 100) : 0;
     var stars = starsForPercent(pct);
     document.getElementById('vc-stars').innerHTML = renderStars(stars);
+    var passed = stars > 1;
 
     // First-attempt % only (job 2A) — mirrors Speed Round/Quick Match/
     // Flash Card's own "first try" scoring, so a later Riprova or a
@@ -6494,17 +6773,35 @@
     // Schermata Finale message (see vcFinishModule).
     if (attemptNum === 1) vcFirstAttemptPercents.push(pct);
 
-    // Richiamo: a 0-1 star result queues this line for a retry pass at
-    // the end of the module (same shared CONFIG.retryQueue.maxAttempts
-    // safety valve as Speed Round/Quick Match/Flash Card — attemptNum
-    // already IS that counter here, no separate one needed, CLAUDE.md
-    // rule 13). Membership always reflects the LATEST evaluation of this
-    // viewing: a "Riprova" that turns a bad result good takes it back out.
-    var queueIdx = vcRetryQueue.indexOf(line.id);
-    if (stars <= 1 && attemptNum < CONFIG.retryQueue.maxAttempts) {
-      if (queueIdx === -1) vcRetryQueue.push(line.id);
-    } else if (queueIdx !== -1) {
-      vcRetryQueue.splice(queueIdx, 1);
+    // Voice Practice only (job: "sdoppiare Voice Coach") — feeds the same
+    // per-word mastery store Speed Round/Quick Match/Flash Card use, a
+    // real measurement of this word in THIS sentence position; never
+    // touched for Voice Check (unchanged from before the split). Unit id
+    // is position-based (line + word index), stable across sessions since
+    // a line's own word content doesn't change.
+    if (vcVariant === 'practice') {
+      var mastery = loadMastery(currentEpisode.id, getUserName());
+      pairs.forEach(function (pair, i) {
+        var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;
+        mastery[unitId] = applyMasteryResult(mastery[unitId], pairResults[i]);
+      });
+      saveMastery(currentEpisode.id, getUserName(), mastery);
+    }
+
+    // Richiamo (Voice Check only — Voice Practice has no final ripasso
+    // pass, see the module comment): a 0-1 star result queues this line
+    // for a retry pass at the end of the module (same shared
+    // CONFIG.retryQueue.maxAttempts safety valve as Speed Round/Quick
+    // Match/Flash Card — attemptNum already IS that counter here, no
+    // separate one needed, CLAUDE.md rule 13). Membership always reflects
+    // the LATEST evaluation of this viewing.
+    if (vcVariant === 'check') {
+      var queueIdx = vcRetryQueue.indexOf(line.id);
+      if (stars <= 1 && attemptNum < CONFIG.retryQueue.maxAttempts) {
+        if (queueIdx === -1) vcRetryQueue.push(line.id);
+      } else if (queueIdx !== -1) {
+        vcRetryQueue.splice(queueIdx, 1);
+      }
     }
 
     var messageEl = document.getElementById('vc-feedback-message');
@@ -6516,16 +6813,23 @@
       }).catch(function () {});
     }
 
+    // Event sound (job: sound catalog) — this evaluate IS the "risposta
+    // corretta"/"risposta sbagliata" event, same pass/fail bar (stars > 1)
+    // used above for the retry-queue and below for the popup — reused,
+    // not a second threshold.
+    if (passed) srPlayCorrectSound(); else srPlayWrongSound();
+
     vcCurrentEvaluated = true;
     updateVcActionButtons();
     setVcState('result');
 
-    // wasCorrect (job 3): stars > 1 is the same bar the retry-queue check
-    // above uses to decide "got it" vs "still struggling" — a passing
-    // grade at the threshold attempt gets the recognition variant, a
-    // failing one gets the reassurance variant.
-    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) {
-      openAttemptPopup(stars > 1, function () { setVcState('idle'); }, vcNextLine);
+    // Safety-valve popup — Voice Check only. Voice Practice's own visible
+    // "TENTATIVO N DI maxAttemptsPerPhrase" counter (above) already tells
+    // the same story continuously, so a popup on top would be redundant —
+    // its cap just disables "Esercitati ancora" (see updateVcActionButtons)
+    // and the student moves on with "Avanti".
+    if (vcVariant === 'check' && attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) {
+      openAttemptPopup(passed, function () { setVcState('idle'); }, vcNextLine);
     }
   }
 
@@ -6564,6 +6868,7 @@
     }
     if (vcState !== 'idle') return;
     vcLatestTranscript = '';
+    document.getElementById('vc-silence-warning').hidden = true;
     var wordCount = tokenize(vcTargetText()).length;
     var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
     try {
@@ -6579,6 +6884,15 @@
     vcTimeoutId = setTimeout(function () {
       if (vcListening) vcRecognition.stop();
     }, maxMs);
+    // Job 6b: a SHORTER, separate timeout — if nothing at all has been
+    // recognized yet by then, this is silence, not just a long sentence;
+    // stop and discard rather than waiting for the full maxMs cap above.
+    vcSilenceTimeoutId = setTimeout(function () {
+      if (vcListening && !vcLatestTranscript) {
+        vcSilenceCutoff = true;
+        vcRecognition.stop();
+      }
+    }, CONFIG.voiceCoach.silenceTimeoutSeconds * 1000);
   });
 
   document.getElementById('vc-cancel-btn').addEventListener('click', function () {
@@ -6587,6 +6901,11 @@
   });
 
   document.getElementById('vc-send-btn').addEventListener('click', function () {
+    // Job 6c: this click is the actual "sent for recognition" event — the
+    // whole recording length, silence included, counts (see
+    // addAudioSecondsSent's own comment); a discarded/cancelled recording
+    // never reaches here, so it's never counted.
+    addAudioSecondsSent(currentEpisode.id, getUserName(), vcModule.id, vcLastRecordingMs / 1000);
     vcEvaluate();
   });
 
@@ -6609,12 +6928,16 @@
   });
 
   document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
-    // ModuleRules (CONFIG.moduleOutcomeRules.voiceCoach): the map badge
-    // color is the first-pass score, verdict included even when it's
-    // rosso — saveModuleOutcome always overwrites, so a redo genuinely
-    // replaces the previous color in either direction, same as every
-    // other module already using this store (see MODULE OUTCOME above).
-    saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
+    // Voice Check only (ModuleRules, CONFIG.moduleOutcomeRules.voiceCoach):
+    // the map badge color is the first-pass score, verdict included even
+    // when it's rosso — saveModuleOutcome always overwrites, so a redo
+    // genuinely replaces the previous color in either direction, same as
+    // every other module already using this store (see MODULE OUTCOME
+    // above). Voice Practice never colors the map (plain CompletionRules,
+    // like Repeat Aloud) — see the module comment.
+    if (vcVariant === 'check') {
+      saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
+    }
     markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
     openEpisodeMap();
   });
@@ -6634,11 +6957,11 @@
   document.getElementById('voice-coach-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('voice-coach-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref('voiceCoach') });
+    openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref(vcModule.kind) });
   });
 
   document.getElementById('voice-coach-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed('voiceCoach', getUserName(), document.getElementById('voice-coach-intro-dont-show-again').checked);
+    setIntroDismissed(vcModule.kind, getUserName(), document.getElementById('voice-coach-intro-dont-show-again').checked);
     vcShowScreen('main');
   });
 
@@ -7539,8 +7862,8 @@
     return srAudioCtx;
   }
 
-  // volume defaults to 0.15 (Corretto/Sbagliato/Traguardo's own level) when
-  // omitted — Countdown passes its own quieter CONFIG.sound.countdown.volume.
+  // volume defaults to 0.15 (Corretto/Traguardo's own level) when omitted —
+  // Sbagliato/Countdown pass their own CONFIG.sound.events.*.volume.
   function srPlayTone(freq, durationMs, volume) {
     var ctx = srGetAudioCtx();
     if (!ctx) return;
@@ -7558,18 +7881,31 @@
     } catch (e) {}
   }
 
-  function srPlayCorrectSound() { srPlayTone(CONFIG.speedRound.sound.correctFreq, CONFIG.speedRound.sound.durationMs); }
-  function srPlayWrongSound() { srPlayTone(CONFIG.speedRound.sound.wrongFreq, CONFIG.speedRound.sound.durationMs, CONFIG.speedRound.sound.wrongVolume); }
+  // ---- Event-sound catalog readers (see CONFIG.sound.events' own
+  // comment) — every caller below names the EVENT it just had, never a
+  // button; each function reads ONLY its own CONFIG.sound.events entry,
+  // so retuning a pitch/volume/duration in config is the only way to
+  // change what plays, anywhere. ----
+  function srPlayCorrectSound() {
+    var cfg = CONFIG.sound.events.corretto;
+    srPlayTone(cfg.freq, cfg.durationMs);
+  }
+  function srPlayWrongSound() {
+    var cfg = CONFIG.sound.events.sbagliato;
+    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+  }
 
   // Traguardo: three ascending notes via srPlayTone in sequence (CLAUDE.md
-  // rule 13 — no new synthesis technique), CONFIG.sound.traguardo's own
-  // frequencies/durations/gap. Plays whenever a Schermata Finale appears
-  // for a genuinely finished attempt — Speed Round, Quick Match and Flash
+  // rule 13 — no new synthesis technique), CONFIG.sound.events.traguardo's
+  // own frequencies/durations/gap. Plays whenever a module closes with a
+  // positive or neutral outcome — Speed Round, Quick Match and Flash
   // Card's own Finale (unconditionally: those have no verde/giallo
   // distinction), Dialogo's Finale only on "Sì, lo so" (never on "Non
-  // ancora" — see dgFinishModule), Voice Coach's own Finale below.
+  // ancora" — see dgFinishModule), Voice Practice/Voice Check's own Finale
+  // below, Repeat Aloud/Speak Easy's own completion button (their own
+  // click IS the completion event — see CONFIG.sound's own comment).
   function srPlayTraguardoSound() {
-    var cfg = CONFIG.sound.traguardo;
+    var cfg = CONFIG.sound.events.traguardo;
     cfg.notes.forEach(function (freq, i) {
       setTimeout(function () { srPlayTone(freq, cfg.noteDurationMs); }, i * (cfg.noteDurationMs + cfg.noteGapMs));
     });
@@ -7579,17 +7915,17 @@
   // dgLineTimerFinished) — never a tick during the bar itself, that time
   // is reserved for the user to speak out loud.
   function srPlayCountdownSound() {
-    var cfg = CONFIG.sound.countdown;
+    var cfg = CONFIG.sound.events.countdown;
     srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
   }
 
   // One note per digit of a 3-2-1 "get ready" countdown — shared by Speed
   // Round's srRunCountdown and Dialogo Continuo's dgRunReadyCountdown
   // (CLAUDE.md rule 13). isFinal (the last digit, "1") gets the slightly
-  // higher CONFIG.sound.readyCountdown.finalFreq; every other digit gets
-  // the same freq.
+  // higher CONFIG.sound.events.ready.finalFreq; every other digit gets the
+  // same freq.
   function srPlayReadyCountdownSound(isFinal) {
-    var cfg = CONFIG.sound.readyCountdown;
+    var cfg = CONFIG.sound.events.ready;
     srPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
   }
 
@@ -8193,6 +8529,9 @@
   // no Indietro to go back: a card can only be answered once. fcAnswered=
   // true still guards fcFlip during the brief slide-out (fcNavigateTo/
   // fcNavLocked already guards against a double advance).
+  // "Non ancora" deliberately plays NO sound (job: sound catalog) — a
+  // still-learning card is expected here, not an error, so the generic
+  // sbagliato tone would misread as a small failure on every other card.
   document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
     var attemptNum = fcRecordResult('wrong');
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
@@ -8200,8 +8539,12 @@
     fcGoNext();
   });
 
+  // "Sì, la so" plays Corretto — one card of fifteen, not a completion
+  // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
+  // Finale, see srPlayTraguardoSound's comment).
   document.getElementById('fc-know-it-btn').addEventListener('click', function () {
     var attemptNum = fcRecordResult('correct');
+    srPlayCorrectSound();
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
     fcAnswered = true;
     fcGoNext();

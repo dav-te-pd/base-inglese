@@ -53,7 +53,7 @@
   },
   "speedRoundEngIta": {
     "howItWorks": {
-      "title": "Speed Round en→it",
+      "title": "Speed Match en→it",
       "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
@@ -63,7 +63,7 @@
   },
   "speedRoundItaEng": {
     "howItWorks": {
-      "title": "Speed Round it→en",
+      "title": "Speed Match it→en",
       "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
@@ -81,14 +81,24 @@
       "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
     }
   },
-  "voiceCoach": {
+  "voicePractice": {
     "howItWorks": {
-      "title": "Voice Coach",
-      "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e riprovare.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Puoi riprovare la stessa frase con \"Riprova\", oppure andare avanti.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+      "title": "Voice Practice",
+      "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Con \"Esercitati ancora\" puoi riprovare la stessa frase più volte — il contatore ti mostra sempre quante te ne restano; esaurite, si va avanti comunque.</p><p>Qui non c'è un ripasso finale delle frasi andate meno bene: è uno spazio libero per allenarti, non una verifica.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Dopo aver parlato, guarda i colori e le stelle: verde/tante stelle ok, rosso/poche stelle da rivedere. \"Riprova\" per riprovare, \"Avanti\" per la prossima.</p>"
+      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. \"Esercitati ancora\" per riprovare la stessa frase (il contatore mostra quante volte ti restano), \"Avanti\" per la prossima.</p>"
+    }
+  },
+  "voiceCoach": {
+    "howItWorks": {
+      "title": "Voice Check",
+      "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla — prima di inviare puoi sempre cambiare idea.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Una sola registrazione conta per ogni frase: come sempre, a fine esercizio ti verranno riproposte le frasi andate meno bene, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare la registrazione.</p><p>Dopo l'invio guarda i colori e le stelle, poi tocca \"Avanti\": una sola registrazione conta per frase, quelle andate meno bene torneranno a fine esercizio.</p>"
     }
   },
   "dialogoAscoltaRipeti": {
@@ -113,7 +123,7 @@
   },
   "dialogoContinuo": {
     "howItWorks": {
-      "title": "Dialogue: Full Dialogue",
+      "title": "Dialogue: Real Dialogue",
       "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
@@ -123,7 +133,7 @@
   },
   "quickMatchEngIta": {
     "howItWorks": {
-      "title": "Word Match en→it",
+      "title": "Match Practice en→it",
       "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
@@ -133,7 +143,7 @@
   },
   "quickMatchItaEng": {
     "howItWorks": {
-      "title": "Word Match it→en",
+      "title": "Match Practice it→en",
       "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
