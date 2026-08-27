@@ -140,5 +140,8 @@
       "title": "Come funziona, in breve",
       "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
     }
+  },
+  "dialogoShared": {
+    "choiceBoxHint": "Si attiva quando hai ascoltato tutte le battute del dialogo."
   }
 }

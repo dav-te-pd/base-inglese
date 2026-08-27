@@ -74,13 +74,45 @@
       ]
     }
   },
-  "moduleCompleteMessages": [
-    "Ogni ripetizione conta, e questa l'hai portata a termine.",
-    "Un passo in più verso una pronuncia più sicura.",
-    "Si vede la costanza — continua così.",
-    "Bel lavoro, vai avanti tranquillo.",
-    "Il resto verrà da sé, un esercizio alla volta."
-  ],
+  "moduleCompleteMessages": {
+    "alto": [
+      "Hai risposto bene quasi a tutto: si vede che il lavoro fatto finora paga.",
+      "Risultato pieno, o quasi — complimenti per la precisione.",
+      "Prova solida dall'inizio alla fine, senza bisogno di ripassi.",
+      "Hai portato a casa quasi tutte le risposte giuste: ottimo lavoro.",
+      "Punteggio alto, pronuncia e memoria sono già a buon punto."
+    ],
+    "medio": [
+      "Buon punteggio, con qualche punto da ripassare quando vuoi.",
+      "Ci sei quasi: un altro passaggio sulle parole più incerte e sarà solido.",
+      "Bel lavoro nel complesso, vale la pena tornare sulle risposte sbagliate.",
+      "Sei sulla strada giusta — un ripasso mirato completa il quadro.",
+      "Discreto risultato, ripassa le parole più difficili e migliorerà ancora."
+    ],
+    "basso": [
+      "Va bene così, ora sai su cosa concentrarti nei prossimi ripassi.",
+      "Nessun problema: è normale all'inizio, il ripasso è pensato apposta per questo.",
+      "Ogni tentativo aiuta a fissare qualcosa in più — vale la pena rivedere queste parole.",
+      "Non è andata benissimo, ma è solo un punto di partenza: ripassiamo insieme.",
+      "Capita, specialmente all'inizio — tornaci sopra con calma quando vuoi."
+    ]
+  },
+  "dialogoCompleteMessages": {
+    "siLoSo": [
+      "Hai seguito tutto il dialogo con sicurezza — bel lavoro.",
+      "Lo conosci bene: si sente che l'hai ascoltato con attenzione.",
+      "Padronanza netta di questo dialogo, complimenti.",
+      "L'hai fatto tuo: pronuncia e ritmo erano solidi.",
+      "Dialogo acquisito — un buon passo avanti nel percorso."
+    ],
+    "nonAncora": [
+      "Va bene rifarlo con calma: ogni ripasso aiuta a fissarlo meglio.",
+      "Nessuna fretta — puoi riascoltarlo quando vuoi, senza pressione.",
+      "Capita di non essere ancora sicuri: tornaci sopra con tranquillità.",
+      "Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo.",
+      "Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta."
+    ]
+  },
   "retryIntroMessages": [
     "Ripetere è proprio il modo in cui si impara meglio.",
     "Ogni ripasso fissa un po' di più quello che già sai.",
