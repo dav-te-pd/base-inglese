@@ -93,17 +93,11 @@
     // the alto/medio/basso split everywhere at once.
     percentageThresholds: { basso: 1, medio: 50, alto: 80 },
     // ---- shared sound catalog — EVENTS, not buttons ----
-    // Every sound in the app is a reaction to one of these 5 events, never
-    // to a specific button: a module's click handler calls the matching
+    // Every sound in the app is a reaction to one of these events, never to
+    // a specific button: a module's click handler calls the matching
     // playXSound() function (see near srPlayTone), which reads ONLY this
     // catalog. The event, not the widget that triggered it, decides
-    // whether — and which — sound plays; "Ho finito, torna alla mappa"
-    // sounds different across modules today because it usually ISN'T the
-    // completion event itself (Speed Round/Quick Match/Flash Card/Voice
-    // Coach/Dialogo already play Traguardo when the summary screen is
-    // reached, not on that button) — Repeat Aloud/Speak Easy are the one
-    // case where the button click IS the completion event, since those
-    // modules have no separate summary screen to reach first.
+    // whether — and which — sound plays.
     //   corretto   — a single right answer/attempt (Speed Round, Quick
     //                Match, Voice Practice/Voice Check per line, Flash
     //                Card's "Sì, la so" — one card of many, not a
@@ -119,6 +113,12 @@
     //   traguardo  — a module closes with a POSITIVE or NEUTRAL outcome.
     //                Never on Dialogo's "Non ancora", never on Voice
     //                Check's confirmed-mic-problem exit.
+    //   uscita     — the "Ho finito, torna alla mappa" button itself
+    //                (renderSummaryScreen wires this once — every module's
+    //                Schermata Finale gets it for free). Always the SAME
+    //                button regardless of what Traguardo already did a
+    //                couple seconds earlier when the summary screen first
+    //                appeared — a closing beat, not a second congratulations.
     //   (anything else) — no sound.
     sound: {
       events: {
@@ -170,6 +170,18 @@
           notes: [1046, 1318, 1568],
           noteDurationMs: 90,
           noteGapMs: 60
+        },
+        // Job 6 (3rd collaudo): the "Ho finito, torna alla mappa" button on
+        // every Schermata Finale (renderSummaryScreen wires this once, not
+        // per module) — a single short note, same sine/exponential-envelope
+        // family as every other tone here, deliberately quieter than
+        // corretto's own 0.15 default and pitched BELOW traguardo's notes so
+        // it reads as "closed"/neutral, not a second congratulations
+        // (Traguardo already played when the summary screen itself appeared).
+        uscita: {
+          freq: 784,
+          durationMs: 110,
+          volume: 0.1
         }
       }
     },
@@ -598,6 +610,9 @@
       'sound.events.ready.durationMs': 'Durata di ciascuna nota del conto alla rovescia 3-2-1, in millisecondi.',
       'sound.events.traguardo.noteDurationMs': 'Durata di ciascuna delle tre note del suono "traguardo", in millisecondi.',
       'sound.events.traguardo.noteGapMs': 'Pausa tra una nota e l\'altra del suono "traguardo", in millisecondi.',
+      'sound.events.uscita.freq': 'Altezza del suono del pulsante "Ho finito, torna alla mappa", in Hz — più basso del "traguardo", per non suonare come un secondo complimento.',
+      'sound.events.uscita.durationMs': 'Durata del suono "uscita", in millisecondi.',
+      'sound.events.uscita.volume': 'Volume del suono "uscita", da 0 a circa 1 — più basso del volume di base per restare discreto.',
       'limits.userNameMaxLength': 'Numero massimo di caratteri consentiti per il nome utente.',
       'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere, in Voice Practice e Voice Check.',
       'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
@@ -1935,12 +1950,14 @@
      gets it automatically by reusing these same three classes instead of
      copying its own header markup/CSS. Row 1: badge alone, centered, full
      width, plain text, not clickable. Row 2: back button + Spiegazione +
-     Help as three equal-width flex items — flex (not grid) so that when
-     one or two are hidden (per-screen, e.g. Speed Round's timed screens;
-     or CLAUDE.md rule 10 on an evaluative summary) the remaining ones
-     redistribute the row evenly instead of leaving a gap. Each module's
-     own JS still decides which of ITS buttons are hidden and when — this
-     only provides the shared layout, not a shared visibility policy. */
+     Help — a 3-column grid (job 7, 3rd collaudo) with Mappa pinned left,
+     Spiegazione centered, Help pinned right (see .header-actions-row's
+     own comment for why grid, not flex). When one or two are hidden
+     (per-screen, e.g. Speed Round's timed screens; or CLAUDE.md rule 10
+     on an evaluative summary) the remaining ones stay exactly where they
+     are — nothing redistributes into the gap. Each module's own JS still
+     decides which of ITS buttons are hidden and when — this only
+     provides the shared layout, not a shared visibility policy. */
   .header-2row {
     display: flex;
     flex-direction: column;
@@ -1954,24 +1971,40 @@
     gap: 8px;
   }
 
+  /* Job 7 (3rd collaudo): grid, not flex, so Spiegazione can sit at the
+     row's true center regardless of how wide "← Mappa"/"← Home" and
+     Help each happen to be — a plain flex row (or flex's auto-margin
+     trick) only ever balances the LEFTOVER space between siblings, it
+     can't center one independently of two differently-sized neighbors.
+     The three fixed 1fr/auto/1fr columns give Mappa the left column,
+     Help the right one, and Spiegazione the middle one, each pinned to
+     its own edge/center via justify-self — sizes stay exactly what Job
+     7 (2nd collaudo) already fixed below, this only repositions them.
+     nth-child keeps working correctly even when Spiegazione is hidden
+     (Schermata Finale, CLAUDE.md rule 10) since a hidden button is
+     still the DOM's 2nd child — Mappa and Help don't shift columns. */
   .header-actions-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
     gap: 8px;
   }
 
+  .header-actions-row > .btn:first-child { justify-self: start; }
+  .header-actions-row > .btn:nth-child(2) { justify-self: center; }
+  .header-actions-row > .btn:last-child { justify-self: end; }
+
   /* Job 7 (2nd collaudo): EVERY button in this row — "← Mappa" AND
-     Spiegazione/Help — keeps its own fixed size/position on every
-     screen, in every module, regardless of how many siblings are
-     visible (Speed Round's timed questions, any Schermata Finale hide
-     Spiegazione; Voice Check hides the whole retry row; etc.). flex:
-     0 0 auto/width:auto means a button never grows to fill the space a
-     hidden sibling would have taken — an element that changes shape is
-     never learned. Forcing the same padding/font-size across all of
-     them (reusing the existing --btn-padding-sm/--btn-text-sm tokens,
-     not new ones) keeps Mappa and Spiegazione/Help visually consistent
-     with each other too, not just with themselves across screens. */
+     Spiegazione/Help — keeps its own fixed size on every screen, in
+     every module, regardless of how many siblings are visible (Speed
+     Round's timed questions, any Schermata Finale hide Spiegazione;
+     Voice Check hides the whole retry row; etc.) — a grid column never
+     stretches its item unless the item itself is told to. Forcing the
+     same padding/font-size across all of them (reusing the existing
+     --btn-padding-sm/--btn-text-sm tokens, not new ones) keeps Mappa
+     and Spiegazione/Help visually consistent with each other too, not
+     just with themselves across screens. */
   .header-actions-row > .btn {
-    flex: 0 0 auto;
     width: auto;
     min-width: 0;
     padding: var(--btn-padding-sm);
@@ -1981,9 +2014,11 @@
   /* Below this width the row gets too cramped — stack the buttons one
      per row instead of letting them wrap unpredictably. Every button
      goes full-width once stacked; that's the intentional narrow-
-     viewport layout, distinct from the fixed-width rule above. */
+     viewport layout, distinct from the fixed-width rule above — the
+     left/center/right alignment above only applies at normal widths. */
   @media (max-width: 420px) {
     .header-actions-row {
+      display: flex;
       flex-direction: column;
     }
     .header-actions-row > .btn {
@@ -2757,13 +2792,12 @@
   .se-selfcheck-followup[hidden] { display: none; }
 
   /* ---------- voice coach view ---------- */
-  .vc-counter {
-    font-family: var(--font-mono);
-    font-size: 0.78rem;
-    letter-spacing: 0.05em;
-    opacity: 0.6;
-    margin: 0;
-  }
+  /* job 8 (3rd collaudo): the "1 / 7" progress counter used to have its
+     own .vc-counter rule here — smaller, unbolded, faded to 0.6 opacity —
+     visibly different from Speed Round/Quick Match/Flash Card's own
+     counters even though it's the exact same kind of information. Now
+     shares .sr-counter (see near .sr-direction) like Quick Match already
+     did, instead of a fourth near-duplicate rule. */
 
   .vc-cue {
     padding: 12px 16px;
@@ -3389,16 +3423,6 @@
      .header-badge-row/.header-actions-row rules (near .top-row) — Flash
      Card was just the module that trialed it first. */
 
-  .fc-level-label {
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    margin: 0;
-  }
-
   .fc-direction {
     text-align: center;
     font-family: var(--font-mono);
@@ -3409,13 +3433,11 @@
     margin: 4px 0 0;
   }
 
-  .fc-counter {
-    text-align: center;
-    font-family: var(--font-mono);
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin: 4px 0 0;
-  }
+  /* job 8 (3rd collaudo): the "N / M" counter used to have its own
+     .fc-counter rule here, nearly identical to .sr-counter already
+     (same family/size/weight, just a different margin/no letter-
+     spacing) — now shares .sr-counter directly instead of a near-
+     duplicate, same as Quick Match and Voice Coach's own counters. */
 
   #fc-card-screen,
   #fc-retry-intro-screen,
@@ -3874,7 +3896,7 @@
           <div id="voice-coach-main-screen" class="module-screen">
             <header class="app-header">
               <h1 id="voice-coach-title">Voice Coach</h1>
-              <p class="vc-counter" id="vc-counter">1 / 1</p>
+              <p class="sr-counter" id="vc-counter">1 / 1</p>
               <span class="ripasso-badge" id="vc-ripasso-badge" hidden>Ripasso</span>
             </header>
 
@@ -4149,9 +4171,10 @@
          the module's own design (CLAUDE.md rule 11 exemption, unchanged
          by the header-merge task). Spiegazione additionally hides on
          summary alone (CLAUDE.md rule 10: nothing left to explain on an
-         evaluative module's final screen); .header-actions-row's flex
-         layout (see .header-2row near .top-row) redistributes ← Mappa/
-         Help evenly whenever one or both of the other two are hidden. -->
+         evaluative module's final screen); .header-actions-row's grid
+         layout (see .header-2row near .top-row) keeps ← Mappa pinned
+         left and Help pinned right either way — hiding Spiegazione just
+         empties the middle column, nothing else moves. -->
     <section id="view-speed-round" class="view">
       <div class="card">
         <div class="card-body">
@@ -4264,9 +4287,9 @@
           </div>
 
           <header class="app-header" id="fc-meta-header">
-            <p class="fc-level-label" id="fc-level-label"></p>
+            <p class="sr-counter" id="fc-counter"></p>
+            <span class="ripasso-badge" id="fc-ripasso-badge" hidden>Ripasso</span>
             <p class="fc-direction" id="fc-direction"></p>
-            <p class="fc-counter" id="fc-counter"></p>
           </header>
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
@@ -4573,7 +4596,11 @@
   // shared verbatim as CSS classes by Speed Round/Quick Match/Flash
   // Card) plus the one explicit completion button every module needs
   // (CLAUDE.md rule 7) — same "Ho finito, torna alla mappa" label
-  // everywhere, so it isn't re-typed per module either.
+  // everywhere, so it isn't re-typed per module either. Job 6 (3rd
+  // collaudo): also the one place that wires the "uscita" sound onto that
+  // button — every module's own click handler (markModuleCompleted etc.)
+  // stays untouched, this listener is purely the sound, added once here
+  // instead of copied into all 7 module-specific handlers.
   function renderSummaryScreen(screenId, titleId, titleText, completeBtnId) {
     document.getElementById(screenId).innerHTML =
       '<div class="sr-summary panel">' +
@@ -4581,6 +4608,7 @@
       '<p class="sr-summary-subtitle" id="' + titleId + '-sub"></p>' +
       '</div>' +
       '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
+    document.getElementById(completeBtnId).addEventListener('click', srPlayExitSound);
   }
 
   // Schermata Ripasso: the message shown once before a new retry pass
@@ -5770,7 +5798,12 @@
         options: resolveSlotTable(slot.table, episodeData),
         def: slot.default,
         group: slot.group,
-        narrow: slot.narrow
+        narrow: slot.narrow,
+        // Job 1 (3rd collaudo): a "people.*" table holds a person's own
+        // name, never translated in the dialogue — see resolveSlotValue's
+        // own comment. A "places.*"/episode-local table (toponyms, ages)
+        // keeps translating normally.
+        isPersonName: slot.table.indexOf('people.') === 0
       };
     });
   }
@@ -5821,7 +5854,16 @@
       var opts = slotOptions(field);
       var match = opts.find(function (o) { return o.value === rawValue; });
       var picked = match || opts[0];
-      return picked ? picked[lang] : rawValue;
+      if (!picked) return rawValue;
+      // Job 1 (3rd collaudo): a person's own name is never translated,
+      // whichever language the dialogue line is being rendered in — an
+      // Italian traveler abroad still introduces themselves as
+      // "Francesco", not "Francis" (also: personalization exists so the
+      // student recognizes themselves in the story). Only used to show
+      // BOTH forms in the Customize screen, never to substitute one for
+      // the other in the dialogue. Toponyms (places) keep translating
+      // normally — 'it'/'en' picked by lang as before.
+      return field.isPersonName ? picked.it : picked[lang];
     }
     return rawValue;
   }
@@ -8033,6 +8075,7 @@
   var dgLineTimerRemainingMs = 0;
   var dgLineTimerStartedAt = 0;
   var dgLineTimerOnDone = null;
+  var dgLineTimerLine = null; // job 4 (3rd collaudo): the line the running timer belongs to, so dgSkipToNextLine can find what comes after it without a second lookup mechanism
   var dgSuggestTimeoutId = null; // Ripeti a Tempo only
   var dgReadyTimeoutId = null; // Dialogo Continuo's 3-2-1 only
 
@@ -8077,11 +8120,15 @@
       toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-translations-toggle">Mostra traduzioni</button>';
     } else if (dgProfile.pauseResume) {
       toolbar.hidden = false;
-      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn">Pausa</button>';
+      // Job 2 (3rd collaudo): starts disabled for the same reason as
+      // "Prossima frase" below — nothing to pause until a line's audio or
+      // countdown has actually started (dgUpdateToolbarButtonState keeps
+      // it in sync from there).
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn" disabled>Pausa</button>';
     } else if (dgProfile.nextLineButton) {
       toolbar.hidden = false;
       // Job 8 (2nd collaudo): starts disabled — nothing to skip until a
-      // line's countdown bar is actually running (dgUpdateNextLineButtonState
+      // line's countdown bar is actually running (dgUpdateToolbarButtonState
       // keeps it in sync from there, see dgStartLineTimer/dgLineTimerFire/
       // dgPauseLineTimer/dgResumeLineTimer).
       toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-next-line-btn" disabled>Prossima frase</button>';
@@ -8095,9 +8142,12 @@
   // countdown bar), every other control — Spiegazione, Help, the
   // translations toggle, every other bubble, the final choice box —
   // dims and stops responding; the active bubble itself lifts (see
-  // .dg-bubble.is-active). Mappa (and Pausa/Riprendi, which lives
-  // outside this sweep in #dg-toolbar) stay clickable throughout. No
-  // pop-up ever covers the list, and nothing here is the microphone:
+  // .dg-bubble.is-active). Mappa stays clickable throughout — Pausa/
+  // Riprendi lives outside this sweep in #dg-toolbar too, but (job 2,
+  // 3rd collaudo) is separately disabled while audio is actually
+  // speaking via dgUpdateToolbarButtonState, since pausing mid-utterance
+  // used to hang the whole dialogue. No pop-up ever covers the list,
+  // and nothing here is the microphone:
   // this module never records. Recomputes every bubble's state from
   // scratch each call (rather than only touching the previously-active
   // one) so a chained dgPlayLine -> dgPlayLine (Dialogo Continuo) can't
@@ -8239,16 +8289,30 @@
   // (see near srStartTimer) — remaining time is tracked in ms so
   // Dialogo Continuo's Pausa can freeze and later resume it exactly
   // where it left off, unlike Speed Round's simpler one-shot timer.
-  // Job 8 (2nd collaudo): "Prossima frase" only makes sense while a
-  // line's countdown bar is actually counting down — outside that window
-  // there's nothing to close early. Called at every point
-  // dgLineTimerTimeoutId changes (start/fire/pause/resume) instead of
-  // just guarding the click (dgSkipToNextLine's own no-op check stays,
-  // belt and braces), so the button visibly reflects the state instead
-  // of silently doing nothing when tapped.
-  function dgUpdateNextLineButtonState() {
-    var btn = document.getElementById('dg-next-line-btn');
-    if (btn) btn.disabled = dgLineTimerTimeoutId === null;
+  // Job 8 (2nd collaudo) + job 2 (3rd collaudo): keeps whichever toolbar
+  // button this profile actually has (dg-next-line-btn for Ripeti a
+  // Tempo, dg-pause-btn for Continuo — dgSetupToolbar never renders
+  // both) in sync with what's actually happening, instead of a button
+  // that's clickable but does nothing:
+  //   - "Prossima frase" only makes sense while a line's countdown bar
+  //     is actually counting down — outside that window there's nothing
+  //     to close early.
+  //   - "Pausa" pausing mid-AUDIO used to hang the whole dialogue
+  //     (synth.pause() is unreliable mid-utterance) — disabled while
+  //     audio is speaking (no countdown yet, not already paused), same
+  //     as "Prossima frase"'s own rule. "Riprendi" stays enabled while
+  //     genuinely paused (dgLineTimerTimeoutId is also null then, via
+  //     dgPauseLineTimer) — dgPaused is what tells the two apart.
+  // Called at every point dgLineTimerTimeoutId changes (start/fire/
+  // pause/resume) instead of just guarding the click (dgSkipToNextLine's
+  // own no-op check stays, belt and braces), so a button visibly
+  // reflects its state instead of silently doing nothing when tapped.
+  function dgUpdateToolbarButtonState() {
+    var isCountingDown = dgLineTimerTimeoutId !== null;
+    var nextBtn = document.getElementById('dg-next-line-btn');
+    if (nextBtn) nextBtn.disabled = !isCountingDown;
+    var pauseBtn = document.getElementById('dg-pause-btn');
+    if (pauseBtn) pauseBtn.disabled = !isCountingDown && !dgPaused;
   }
 
   function dgStartLineTimer(bubble, line) {
@@ -8258,16 +8322,17 @@
     if (CONFIG.dialogo.suonoCountdownInizio) srPlayCountdownSound();
     dgLineTimerFillEl = fillEl;
     dgLineTimerRemainingMs = ms;
+    dgLineTimerLine = line;
     dgLineTimerOnDone = function () { dgLineTimerFinished(bubble, line); };
     startTimerBar(fillEl, ms);
     dgLineTimerStartedAt = Date.now();
     dgLineTimerTimeoutId = setTimeout(dgLineTimerFire, ms);
-    dgUpdateNextLineButtonState();
+    dgUpdateToolbarButtonState();
   }
 
   function dgLineTimerFire() {
     dgLineTimerTimeoutId = null;
-    dgUpdateNextLineButtonState();
+    dgUpdateToolbarButtonState();
     var onDone = dgLineTimerOnDone;
     dgLineTimerOnDone = null;
     if (onDone) onDone();
@@ -8279,11 +8344,20 @@
   // timeout would — no separate branch to keep in sync with
   // dgLineTimerFinished. A no-op if no bar is actually counting down
   // (during audio playback, or once idle) since there is nothing to skip.
+  // Job 4 (3rd collaudo): unlike a natural timeout (which only unlocks
+  // and suggests the next line, leaving it to the user to tap), this
+  // button is meant to actually advance — so right after the shared
+  // completion path runs, it also plays the next line itself, the exact
+  // same call (dgPlayLine) the #dg-list tap handler makes, as if the
+  // user had tapped the newly-suggested bubble themselves.
   function dgSkipToNextLine() {
     if (dgLineTimerTimeoutId === null) return;
     clearTimeout(dgLineTimerTimeoutId);
     addNextLineSkip(currentEpisode.id, getUserName(), dgModule.id);
+    var finishedLine = dgLineTimerLine;
     dgLineTimerFire();
+    var next = finishedLine && dgNextDialogueLine(finishedLine);
+    if (next) dgPlayLine(next);
   }
 
   // Countdown tone once the bar ends (never a tick during it — that time
@@ -8313,7 +8387,7 @@
     dgLineTimerRemainingMs = Math.max(0, dgLineTimerRemainingMs - elapsed);
     clearTimeout(dgLineTimerTimeoutId);
     dgLineTimerTimeoutId = null;
-    dgUpdateNextLineButtonState();
+    dgUpdateToolbarButtonState();
     freezeTimerBar(dgLineTimerFillEl);
   }
 
@@ -8322,20 +8396,26 @@
     startTimerBar(dgLineTimerFillEl, dgLineTimerRemainingMs);
     dgLineTimerStartedAt = Date.now();
     dgLineTimerTimeoutId = setTimeout(dgLineTimerFire, dgLineTimerRemainingMs);
-    dgUpdateNextLineButtonState();
+    dgUpdateToolbarButtonState();
   }
 
   // The one play cycle every profile shares (CLAUDE.md rule 13): lock
-  // everything but Mappa/Pausa and lift the bubble, play its audio, mark
-  // it heard, then either start the per-line countdown bar
+  // everything but Mappa and lift the bubble, play its audio, mark it
+  // heard, then either start the per-line countdown bar
   // (dgProfile.countdown) or unlock immediately (Ascolta e Ripeti has
   // none). What happens after the bar is dgLineTimerFinished's job, not
-  // this function's.
+  // this function's. Job 2 (3rd collaudo): Pausa is no longer exempt
+  // like Mappa — audio playback (synth.pause() mid-utterance) is
+  // unreliable and used to hang the whole dialogue, so
+  // dgUpdateToolbarButtonState disables Pausa/Prossima frase for the
+  // whole time audio is speaking, same as it already did for the
+  // countdown-only window.
   function dgPlayLine(line) {
     var bubble = document.querySelector('.dg-bubble[data-line-id="' + line.id + '"]');
     if (!bubble) return;
     dgClearSuggestion();
     dgLockAll(true, bubble);
+    dgUpdateToolbarButtonState();
     var lineIndex = dgDialogue.findIndex(function (l) { return l.id === line.id; });
     if (lineIndex > dgFurthestIndex) {
       dgFurthestIndex = lineIndex;
@@ -8371,9 +8451,15 @@
   // Dialogo Continuo only. Pausa freezes BOTH the audio (synth.pause())
   // and the countdown bar (dgPauseLineTimer, remaining time tracked in
   // ms); Riprendi resumes both from exactly where they stopped. Lives
-  // outside dgLockAll's sweep (it's in #dg-toolbar) so it — like Mappa —
-  // stays clickable no matter what else is locked.
+  // outside dgLockAll's sweep (it's in #dg-toolbar), but (job 2, 3rd
+  // collaudo) is NOT clickable the whole time like Mappa — the button
+  // itself is disabled while audio is actively speaking (see
+  // dgUpdateToolbarButtonState), because synth.pause() mid-utterance is
+  // unreliable and used to hang the whole dialogue. This early return is
+  // belt-and-braces for that same window, same shape as
+  // dgSkipToNextLine's own guard.
   function dgTogglePause() {
+    if (!dgPaused && dgLineTimerTimeoutId === null) return;
     dgPaused = !dgPaused;
     var btn = document.getElementById('dg-pause-btn');
     if (btn) btn.textContent = dgPaused ? 'Riprendi' : 'Pausa';
@@ -8669,6 +8755,15 @@
     srPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
   }
 
+  // Uscita: the "Ho finito, torna alla mappa" button on every Schermata
+  // Finale (job 6, 3rd collaudo) — wired once in renderSummaryScreen, not
+  // per module. See CONFIG.sound.events.uscita's own comment for why it's
+  // pitched below Traguardo instead of reusing it.
+  function srPlayExitSound() {
+    var cfg = CONFIG.sound.events.uscita;
+    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+  }
+
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
   }
@@ -8716,8 +8811,8 @@
     document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('sr-summary-screen').hidden = name !== 'summary';
     // Spiegazione+Help each toggle by their own id now (no shared wrapper
-    // — .header-actions-row's flex layout redistributes ← Mappa/whichever
-    // of the two stays whenever one or both are hidden, same mechanism as
+    // — .header-actions-row's grid layout keeps ← Mappa left and Help
+    // right regardless of which of the two is hidden, same mechanism as
     // Flash Card's rule-10 case). Spiegazione additionally hides on
     // summary alone (CLAUDE.md rule 10) — Help alone stays there.
     var showHeaderActions = name === 'start' || name === 'summary';
@@ -9017,6 +9112,7 @@
   var fcPassItems = [];
   var fcPassIndex = 0;
   var fcPassResults = {}; // itemId -> 'correct' | 'wrong', for the current pass
+  var fcInRetryPass = false; // job 3 (3rd collaudo): "Ripasso" badge, see fcRenderCard — same pattern as vcInRetryPass/qmInRetryPass/srInRetryPass, was missing here (fc-level-label showed the module's level text in the badge's own spot instead)
   var fcRetryPassCount = 0; // job 4 (2nd collaudo): which retryIntro pool (first/last) to show
   var fcRetryAttempts = {}; // itemId -> times wrong this session (across every pass)
   var fcAttemptCounts = {}; // itemId -> total attempts (right or wrong) this session, for the safety-valve popup
@@ -9110,6 +9206,7 @@
     // Front state committed before anything else renders, per the fix above.
     fcResetFlipInstant();
     document.getElementById('fc-counter').textContent = (fcPassIndex + 1) + ' / ' + fcPassItems.length;
+    document.getElementById('fc-ripasso-badge').hidden = !fcInRetryPass;
     document.getElementById('fc-front-word').textContent = fcFrontText();
     document.getElementById('fc-back-word').textContent = fcBackText();
     // The listen block only makes sense on the English side — it always
@@ -9142,8 +9239,12 @@
   // committing to an answer. Once answered (Sì/Non ancora), the card is
   // resolved for this viewing and no longer responds to taps, so a
   // completed choice can't be silently reopened by flipping again.
+  // Regola Azione Critica (job 5, 3rd collaudo): flipping is itself a
+  // critical action, same one-liner stopAllModuleActivity/toggleSpeak
+  // already use to interrupt whatever's mid-utterance.
   function fcFlip() {
     if (fcNavLocked || fcAnswered) return;
+    if (synth && synth.speaking) synth.cancel();
     fcFlipped = !fcFlipped;
     document.getElementById('fc-card').classList.toggle('is-flipped', fcFlipped);
     // The Doppia Scelta box only makes sense with the back showing.
@@ -9164,6 +9265,7 @@
       fcPassItems = srShuffle(wrongIds);
       fcPassIndex = 0;
       fcPassResults = {};
+      fcInRetryPass = true;
       fcRetryPassCount++;
       fcShowScreen('retryIntro');
       applyRetryIntroContent('fc-retry-intro-screen', fcRetryPassCount >= CONFIG.retryQueue.maxAttempts - 1);
@@ -9232,6 +9334,7 @@
     fcRetryAttempts = {};
     fcAttemptCounts = {};
     fcFirstTryCorrectCount = 0;
+    fcInRetryPass = false;
     fcRetryPassCount = 0;
     fcRenderCard();
   }
@@ -9244,7 +9347,6 @@
     var levelConfig = CONFIG.flashcard.levels[fcLevel];
     document.getElementById('flashcard-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('flashcard-type-badge').textContent = moduleTypeLabel(module);
-    document.getElementById('fc-level-label').textContent = levelConfig.label;
     document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
     document.getElementById('fc-counter').textContent = '';
     document.getElementById('fc-front-word').textContent = 'Caricamento...';
