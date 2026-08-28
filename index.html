@@ -1990,9 +1990,17 @@
     gap: 8px;
   }
 
-  .header-actions-row > .btn:first-child { justify-self: start; }
-  .header-actions-row > .btn:nth-child(2) { justify-self: center; }
-  .header-actions-row > .btn:last-child { justify-self: end; }
+  /* Job 2 (4th collaudo): grid-column pinned explicitly on each — without
+     it, a hidden Spiegazione (CLAUDE.md rule 10, every Schermata Finale)
+     drops out of the grid's own auto-placement flow, and the remaining
+     two buttons compact into columns 1+2 instead of keeping their slots,
+     landing Help in the middle. nth-child still identifies the right
+     button when hidden (a display:none element stays in the DOM), but
+     nothing was telling grid which COLUMN that button belongs in — this
+     does, regardless of which sibling is missing. */
+  .header-actions-row > .btn:first-child { grid-column: 1; justify-self: start; }
+  .header-actions-row > .btn:nth-child(2) { grid-column: 2; justify-self: center; }
+  .header-actions-row > .btn:last-child { grid-column: 3; justify-self: end; }
 
   /* Job 7 (2nd collaudo): EVERY button in this row — "← Mappa" AND
      Spiegazione/Help — keeps its own fixed size on every screen, in
@@ -6594,7 +6602,20 @@
     var item = data && data.vocabulary.find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
     var rateAttr = btn.getAttribute('data-rate');
-    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    // Regola Azione Critica (job 1, 4th collaudo): only Mappa stays
+    // clickable while a word plays — every other listen/rate button and
+    // "Ho finito" lock together, same generic helpers Speak Easy/Flash
+    // Card/Quick Match now use.
+    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
+      onStart: function () {
+        lockAudioControls(['#repeat-aloud-body button', '#repeat-aloud-complete'], true);
+        lockModuleHeader('repeat-aloud', true);
+      },
+      onEnd: function () {
+        lockAudioControls(['#repeat-aloud-body button', '#repeat-aloud-complete'], false);
+        lockModuleHeader('repeat-aloud', false);
+      }
+    });
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
@@ -6770,7 +6791,19 @@
       if (!line) return;
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var rateAttr = listenBtn.getAttribute('data-rate');
-      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      // Regola Azione Critica (job 1, 4th collaudo): see Repeat Aloud's
+      // own comment — same generic lock, this module's own container/
+      // complete button.
+      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
+        onStart: function () {
+          lockAudioControls(['#speak-easy-body button', '#speak-easy-complete'], true);
+          lockModuleHeader('speak-easy', true);
+        },
+        onEnd: function () {
+          lockAudioControls(['#speak-easy-body button', '#speak-easy-complete'], false);
+          lockModuleHeader('speak-easy', false);
+        }
+      });
       return;
     }
     var toggleBtn = e.target.closest('[data-toggle-translation]');
@@ -7051,15 +7084,6 @@
     return fillTemplate(vcCurrentLine().english, currentEpisode, currentValues, 'en');
   }
 
-  // Regola Azione Critica, shared lock/unlock for "Spiegazione" + "Help" —
-  // used by both directions (setVcState below, for recording; the
-  // vc-audio-controls click handler further down, for the listen block)
-  // so the same two buttons aren't toggled by two separate pieces of code.
-  function vcLockSpiegazioneHelp(locked) {
-    document.getElementById('voice-coach-watch-btn').disabled = locked;
-    document.getElementById('voice-coach-help-btn').disabled = locked;
-  }
-
   function setVcState(state) {
     vcState = state;
     var btn = document.getElementById('vc-record-btn');
@@ -7080,7 +7104,11 @@
     // user's own voice. This is called the instant recording is requested
     // (see the vc-record-btn click handler), not from the browser's own
     // async "recognition started" event, so the lock is instantaneous.
-    vcLockSpiegazioneHelp(recording);
+    // Regola Azione Critica, shared lock/unlock for "Spiegazione" + "Help"
+    // — now the same generic lockModuleHeader every module's own
+    // toggleSpeak onStart/onEnd calls into (see near toggleSpeak), instead
+    // of a Voice-Coach-only helper.
+    lockModuleHeader('voice-coach', recording);
     document.querySelectorAll('#vc-audio-controls button').forEach(function (b) { b.disabled = recording; });
   }
 
@@ -7522,16 +7550,25 @@
       // recording direction above): Spiegazione + Help + Record all lock
       // together, instantly (see toggleSpeak's onStart — fires
       // synchronously, not from the engine's own async "started" event).
+      // Job 1 (4th collaudo): Avanti/Riprova now lock too — re-listening
+      // to the target after an attempt was already evaluated left both
+      // clickable, so tapping one mid-playback could advance/retry while
+      // the model's own audio was still speaking.
       onStart: function () {
-        vcLockSpiegazioneHelp(true);
+        lockModuleHeader('voice-coach', true);
         document.getElementById('vc-record-btn').disabled = true;
+        document.getElementById('vc-next-btn').disabled = true;
+        document.getElementById('voice-coach-retry-btn').disabled = true;
       },
       onEnd: function () {
-        vcLockSpiegazioneHelp(false);
+        lockModuleHeader('voice-coach', false);
         // Only re-enable Record if recording is actually supported here —
         // openVoiceCoach permanently disables it when the browser has no
         // SpeechRecognition, and this must not undo that.
         document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
+        // Avanti/Riprova go back to whatever updateVcActionButtons already
+        // decided (evaluated? attempts left?), not unconditionally enabled.
+        updateVcActionButtons();
       }
     });
   });
@@ -7964,6 +8001,11 @@
     }
     var btn = e.target.closest('.sr-option');
     if (!btn || btn.disabled) return;
+    // Regola Azione Critica: an option's own mini listen button (it-en
+    // direction, data-qm-listen-index above) isn't locked against
+    // answering the same way the main prompt is — stop it here so its
+    // audio can't bleed into the reveal/next question.
+    if (synth && synth.speaking) synth.cancel();
     qmDisableOptions();
     var opt = qmCurrentOptions[parseInt(btn.getAttribute('data-qm-index'), 10)];
     var attemptNum;
@@ -7986,10 +8028,30 @@
     var say = e.target.closest('[data-say]');
     if (!say) return;
     var rateAttr = say.getAttribute('data-rate');
-    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    // Regola Azione Critica (job 1, 4th collaudo): answer options + "Non
+    // lo so" lock while the prompt plays — nothing stopped an option tap
+    // mid-playback before, which could submit an answer while the prompt
+    // was still being read.
+    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
+      onStart: function () {
+        lockAudioControls(['#qm-options .sr-option', '#qm-dontknow-btn'], true);
+        lockModuleHeader('quick-match', true);
+      },
+      onEnd: function () {
+        // qmDisableOptions is a one-way permanent lock once an answer is
+        // chosen — don't undo it if the question got answered meanwhile.
+        if (!document.querySelector('#qm-options .is-correct, #qm-options .is-wrong')) {
+          lockAudioControls(['#qm-options .sr-option', '#qm-dontknow-btn'], false);
+        }
+        lockModuleHeader('quick-match', false);
+      }
+    });
   });
 
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
+    // Regola Azione Critica: same guard as the .sr-option handler above,
+    // for an option's own mini listen button.
+    if (synth && synth.speaking) synth.cancel();
     qmDisableOptions();
     srPlayWrongSound();
     var attemptNum = qmRecordResult(false, true); // declared non-attempt -> straight to rosso
@@ -8595,7 +8657,14 @@
   document.getElementById('dg-list').addEventListener('click', function (e) {
     if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
-    if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked')) return;
+    // Job 1 (4th collaudo): is-active was exempt from is-locked on purpose
+    // (so the playing bubble can visually lift), but that also left it
+    // clickable through its own audio AND countdown — re-tapping it
+    // called dgPlayLine again on the SAME line while the original
+    // countdown timer was still ticking in the background, so two lines
+    // ended up playing/counting down at once. The active bubble is now
+    // excluded here too: nothing but Mappa responds while one is playing.
+    if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked') || bubble.classList.contains('is-active')) return;
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
@@ -9377,7 +9446,22 @@
       var isBack = !!e.target.closest('.fc-card-back');
       var text = isBack ? fcBackText() : fcFrontText();
       var rateAttr = sayBtn.getAttribute('data-rate');
-      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      // Regola Azione Critica (job 1, 4th collaudo): Sì/Non ancora — not
+      // the card itself, which already has its own stop-on-flip rule
+      // (fcFlip) — lock during playback: answering while the OLD card's
+      // audio was still speaking used to advance to the NEXT card while
+      // that audio kept going, bleeding into it (fcRenderCard replaces
+      // the listen buttons, so the playing utterance was never cancelled).
+      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
+        onStart: function () {
+          lockAudioControls(['#fc-choice-row button'], true);
+          lockModuleHeader('flashcard', true);
+        },
+        onEnd: function () {
+          lockAudioControls(['#fc-choice-row button'], false);
+          lockModuleHeader('flashcard', false);
+        }
+      });
       return;
     }
     fcFlip();
@@ -9649,6 +9733,39 @@
     }
     if (!langVoices.length) return null;
     return langVoices.find(looksLikeMaleVoice) || langVoices[0];
+  }
+
+  // Regola Azione Critica, generic form (3rd collaudo, job 1: the same
+  // problem kept resurfacing one control at a time — Pausa in Real
+  // Dialogue, the card flip in Flash Card, now a dialogue bubble tap —
+  // because each fix only covered the ONE control just reported, not the
+  // rule itself: while a module's own audio is speaking, the only thing
+  // that should still respond is Mappa). Two small generic pieces every
+  // module's own toggleSpeak onStart/onEnd calls into, instead of a
+  // fifth/sixth hand-rolled copy of the same disable/enable sweep:
+  //   - lockModuleHeader(prefix, locked): Spiegazione+Help, identical
+  //     shape in every module's header (id pattern "{prefix}-watch-btn"/
+  //     "{prefix}-help-btn") — generalizes what used to be Voice Coach's
+  //     own vcLockSpiegazioneHelp.
+  //   - lockAudioControls(selectors, locked): disables every button
+  //     matching the given selectors — each module passes its own
+  //     content container + control buttons, since their shapes differ
+  //     (a word list, a chat, a quiz, a card), Mappa's own id never
+  //     included.
+  // Dialogo keeps its own dgLockAll (bubbles/choice box/translations
+  // toggle need per-element bookkeeping beyond a flat disable sweep,
+  // e.g. is-locked/is-active styling) rather than switching to this.
+  function lockModuleHeader(prefix, locked) {
+    var watchBtn = document.getElementById(prefix + '-watch-btn');
+    if (watchBtn) watchBtn.disabled = locked;
+    var helpBtn = document.getElementById(prefix + '-help-btn');
+    if (helpBtn) helpBtn.disabled = locked;
+  }
+
+  function lockAudioControls(selectors, locked) {
+    selectors.forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (el) { el.disabled = locked; });
+    });
   }
 
   // Shared text-to-speech helper: used by the full-sentence speak button
