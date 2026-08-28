@@ -44,11 +44,21 @@
   "speakEasy": {
     "howItWorks": {
       "title": "Speak Easy",
-      "body": "<p>Leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri \"Mostra traduzione\" se ti serve una mano.</p><p>Alla fine dovresti riuscire a capirlo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi \"Ho finito, torna alla mappa\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      "body": "<p>Leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri \"Mostra traduzione\" se ti serve una mano.</p><p>Su alcune battute trovi anche \"Cosa imparo qui\": spiega perché quella frase si costruisce proprio così. Leggila e poi dì se ti è chiara — non c'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere.</p><p>Alla fine dovresti riuscire a capire il dialogo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi \"Ho finito\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Meno clicchi sulla traduzione, più memorizzi.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito, torna alla mappa\".</p>"
+      "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Dove trovi \"Cosa imparo qui\", leggila e dì se ti è chiara.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito\".</p>"
+    },
+    "selfCheckMessages": {
+      "nonChiara": {
+        "title": "Va bene così",
+        "body": "È normale non capire tutto subito: prova ad andare avanti con gli esercizi e torna qui più tardi. Se dopo un po' resta poco chiara, usa il tasto Help in alto."
+      },
+      "nonAncora": {
+        "title": "Nessun problema",
+        "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
+      }
     }
   },
   "speedRoundEngIta": {

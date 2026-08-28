@@ -119,6 +119,29 @@
       "Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi."
     ]
   },
+  "speakEasyCompleteMessages": {
+    "alto": [
+      "Le spiegazioni ti sono quasi tutte chiare: le strutture nuove stanno andando a segno.",
+      "Ottimo, hai capito quasi tutto al primo giro.",
+      "Le costruzioni di questo dialogo ti sono chiare fin da subito, complimenti.",
+      "Buon segno: capisci già bene perché le frasi si dicono così.",
+      "Quasi tutto chiaro al primo colpo — le strutture stanno entrando bene."
+    ],
+    "medio": [
+      "Buona parte delle spiegazioni ti è chiara, qualcuna la ripasserai con calma.",
+      "Ci sei quasi: qualche spiegazione va ripresa, il resto è già acquisito.",
+      "Bel lavoro nel complesso, con qualche struttura ancora da consolidare.",
+      "Sei sulla strada giusta — torna con calma sulle spiegazioni meno chiare.",
+      "Discreto risultato, alcune costruzioni meritano un altro sguardo."
+    ],
+    "basso": [
+      "Va bene così, capita che le spiegazioni servano più di un passaggio.",
+      "Nessun problema: sono concetti nuovi, ci vuole tempo per fissarli.",
+      "Non è andata benissimo, ma è un buon punto di partenza per riprenderle.",
+      "Capita, specialmente all'inizio — potrai rivederle con calma.",
+      "Ogni spiegazione riletta aiuta a fissare qualcosa in più."
+    ]
+  },
   "dialogoCompleteMessages": {
     "siLoSo": [
       "Hai seguito tutto il dialogo con sicurezza — bel lavoro.",
@@ -135,13 +158,40 @@
       "Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta."
     ]
   },
-  "retryIntroMessages": [
-    "Ripetere è proprio il modo in cui si impara meglio.",
-    "Ogni ripasso fissa un po' di più quello che già sai.",
-    "Non è un passo indietro, è parte dell'allenamento.",
-    "Va bene tornarci sopra, è previsto dal percorso.",
-    "Le prossime volte saranno più semplici."
-  ],
+  "retryIntroMessages": {
+    "first": {
+      "titles": [
+        "Il quiz è finito",
+        "Primo giro completato",
+        "Hai finito il giro principale",
+        "Bene, si passa al ripasso",
+        "Round terminato"
+      ],
+      "bodies": [
+        "Da qui in poi si ripassano solo le voci che ti sono sfuggite.",
+        "Ora torniamo solo su quello che ti serve rivedere.",
+        "Ripassiamo insieme solo le voci che non sono ancora andate a segno.",
+        "Il resto è già acquisito: ci concentriamo solo su quello che manca.",
+        "Ripasso mirato: solo le voci da rivedere, niente di più."
+      ]
+    },
+    "last": {
+      "titles": [
+        "Ultimo ripasso",
+        "Ultimo giro",
+        "Ci siamo quasi, ultimo passaggio",
+        "Un'ultima ripassata",
+        "Ultimo richiamo"
+      ],
+      "bodies": [
+        "Dopo questo giro si passa all'esercizio successivo.",
+        "Finito questo ripasso, si va avanti con il prossimo esercizio.",
+        "Ancora questo giro, poi si prosegue con il resto del percorso.",
+        "Un'ultima volta su queste voci, poi via al prossimo esercizio.",
+        "Completa questo giro e si passa oltre."
+      ]
+    }
+  },
   "episodeFinalMessages": {
     "tuttiVerdi": {
       "compliments": [
