@@ -1,10 +1,23 @@
 {
   "percentageRule": {
     "rule": "basata sulla percentuale di risposte/parole corrette sul totale",
-    "0": { "range": "0%", "showMessage": false, "note": "nessun messaggio mostrato" },
-    "1": { "range": "1-49%", "messageKey": "basso" },
-    "2": { "range": "50-79%", "messageKey": "medio" },
-    "3": { "range": "80-100%", "messageKey": "alto" }
+    "0": {
+      "range": "0%",
+      "showMessage": false,
+      "note": "nessun messaggio mostrato"
+    },
+    "1": {
+      "range": "1-49%",
+      "messageKey": "basso"
+    },
+    "2": {
+      "range": "50-79%",
+      "messageKey": "medio"
+    },
+    "3": {
+      "range": "80-100%",
+      "messageKey": "alto"
+    }
   },
   "voiceCoachMessages": {
     "alto": [
@@ -95,6 +108,15 @@
       "Ogni tentativo aiuta a fissare qualcosa in più — vale la pena rivedere queste parole.",
       "Non è andata benissimo, ma è solo un punto di partenza: ripassiamo insieme.",
       "Capita, specialmente all'inizio — tornaci sopra con calma quando vuoi."
+    ]
+  },
+  "studioCompleteMessages": {
+    "default": [
+      "Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno.",
+      "Fatto: continuare a esercitarti così è esattamente il modo giusto.",
+      "Sessione completata — la pronuncia si allena anche così, un po' alla volta.",
+      "Ottimo: più lo ripeti, più ti resterà naturale.",
+      "Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi."
     ]
   },
   "dialogoCompleteMessages": {

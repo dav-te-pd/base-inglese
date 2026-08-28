@@ -329,6 +329,10 @@
           readyCountdown: false,
           advance: 'manual',
           pauseResume: false,
+          // "Prossima frase" — cuts the current line's countdown bar
+          // short for whoever's already done repeating; only this
+          // profile has it (see dgSetupToolbar/dg-next-line-btn).
+          nextLineButton: true,
           finalBoxQuestion: 'Sai ripetere le frasi?'
         },
         continuo: {
@@ -386,17 +390,20 @@
     // what to expect before opening it. Purely declarative for now: not
     // yet tied to map colors or to the valvola/richiamo mechanics (a
     // later, dedicated pass will derive those from this same `type`). ----
+    // Job: six category labels, describing the EXPERIENCE (how much
+    // pressure — pace yourself vs. a clock/auto-advance/no retry) rather
+    // than the underlying mechanism. A module is graded or not per
+    // moduleOutcomeRules below regardless of which of these it shows —
+    // "studio" is not a promise of "ungraded", just "no time pressure".
     moduleTypes: {
-      studio: { label: 'Studio libero' },
-      quiz: { label: 'Quiz con ripasso' },
-      // Dialogue: Repeat in Time / Real Dialogue only (job: nuovo ordine)
-      // — moved out of quizATempo since neither is actually evaluated by
-      // the system (no ModuleRules, see moduleOutcomeRules below); "a
-      // tempo" describes their pacing, not a judgment. Dialogue: Listen &
-      // Repeat stays plain "studio" (Studio libero, unchanged).
-      studioATempo: { label: 'Studio a tempo' },
-      quizATempo: { label: 'Quiz a tempo' },
-      test: { label: 'Verifica finale' }
+      studio: { label: 'Studio' },
+      // All three Dialogue modules (job: nuovo ordine) — none of them is
+      // actually evaluated by the system (no ModuleRules, see
+      // moduleOutcomeRules below); this just names what they are.
+      studiaDialogo: { label: 'Studia il dialogo' },
+      quiz: { label: 'Quiz' },
+      test: { label: 'Verifica finale' }, // future: Test
+      fine: { label: 'Fine' } // future: Modulo Finale, Download
     },
     // ---- Module Rules — which of three systems colors a module's map
     // badge, keyed by module id. Read this instead of the code to know
@@ -417,9 +424,31 @@
     // never a color). ----
     moduleOutcomeRules: {
       voiceCoach: 'moduleRules',
+      voicePractice: 'moduleRules',
       dialogoAscoltaRipeti: 'selfAssessment',
       dialogoRipetiATempo: 'selfAssessment',
       dialogoContinuo: 'selfAssessment'
+    },
+    // ---- Which attempt counts toward a moduleRules score, keyed by
+    // module id — orthogonal to moduleOutcomeRules above (that says WHAT
+    // colors the badge; this says WHICH number feeds it):
+    //   lastAttempt (LastAttemptRule) — for modules WITH a same-phrase
+    //     retry (Voice Practice's "Esercitati ancora"): the latest
+    //     attempt on each phrase always replaces the earlier one, better
+    //     or worse — training is about where you ended up, not where you
+    //     started.
+    //   firstAttempt (FirstAttemptRule) — for modules with NO same-phrase
+    //     retry, only a later ripasso pass (Voice Check, Speed Match, the
+    //     future Test): frozen at the very first pass, before the
+    //     ripasso — otherwise the ripasso (which repeats until correct)
+    //     would push every score toward 100%.
+    // A future module with its own retry mechanic picks one of the two
+    // here instead of reimplementing either scoring loop.
+    attemptRule: {
+      voicePractice: 'lastAttempt',
+      voiceCoach: 'firstAttempt',
+      speedRoundEngIta: 'firstAttempt',
+      speedRoundItaEng: 'firstAttempt'
     },
     // ---- Module display names — the ONE place a module's name/subtitle
     // is written. Keyed by module id (same keys as EPISODES.episode1.
@@ -949,6 +978,15 @@
         'Capita, specialmente all\'inizio — tornaci sopra con calma quando vuoi.'
       ]
     },
+    studioCompleteMessages: {
+      default: [
+        'Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno.',
+        'Fatto: continuare a esercitarti così è esattamente il modo giusto.',
+        'Sessione completata — la pronuncia si allena anche così, un po\' alla volta.',
+        'Ottimo: più lo ripeti, più ti resterà naturale.',
+        'Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi.'
+      ]
+    },
     dialogoCompleteMessages: {
       siLoSo: [
         'Hai seguito tutto il dialogo con sicurezza — bel lavoro.',
@@ -1440,9 +1478,20 @@
     outline-offset: 2px;
   }
 
-  .overlay-text { font-size: 0.92rem; opacity: 0.85; line-height: 1.5; }
+  .overlay-text { font-size: 0.92rem; opacity: 0.85; line-height: 1.5; text-align: left; }
   .overlay-text p { margin: 0 0 10px; }
   .overlay-text p:last-child { margin-bottom: 0; }
+
+  /* Job: the Spiegazione popup must match the full-screen version —
+     title + module name centered, body left-aligned (.overlay-text
+     above already is). .overlay-header is shared with overlays that DO
+     need a left title + close-X (Help, config panel), so this centers
+     only the Spiegazione popup's own title, forcing it to the row's
+     full width regardless of the shared header's space-between. */
+  #howitworks-overlay-title {
+    width: 100%;
+    text-align: center;
+  }
 
   .help-menu {
     display: flex;
@@ -1828,13 +1877,31 @@
     font-size: var(--btn-text-sm);
   }
 
+  /* Job: "← Mappa" must stay the same width/position on every screen —
+     flex: 1 1 0 above stretched it to fill the whole row whenever
+     Spiegazione/Help were hidden (Speed Round's timed questions, any
+     module's Schermata Finale). .help-btn (Spiegazione/Help only, never
+     Mappa) still shares the row's remaining space between however many
+     of the two are visible; Mappa itself no longer grows past its own
+     content width regardless of what else is showing. */
+  .header-actions-row > .btn:not(.help-btn) {
+    flex: 0 0 auto;
+    width: auto;
+  }
+
   /* Below this width the row gets too cramped for "Spiegazione" — stack
-     the buttons one per row instead of letting them wrap unpredictably. */
+     the buttons one per row instead of letting them wrap unpredictably.
+     Every button (Mappa included) goes full-width once stacked — that's
+     the intentional narrow-viewport layout, distinct from the same-row
+     stretch-when-alone bug the :not(.help-btn) rule above fixes; the
+     higher specificity there would otherwise block this width:100% too,
+     so it's repeated here at matching specificity. */
   @media (max-width: 420px) {
     .header-actions-row {
       flex-direction: column;
     }
-    .header-actions-row > .btn {
+    .header-actions-row > .btn,
+    .header-actions-row > .btn:not(.help-btn) {
       width: 100%;
     }
   }
@@ -2224,8 +2291,8 @@
     font-weight: 600;
   }
 
-  /* Module "type" caption (Studio libero / Quiz con ripasso / Verifica
-     finale — CONFIG.moduleTypes) under the module name. Declarative
+  /* Module "type" caption (Studio / Studia il dialogo / Quiz / Verifica
+     finale / Fine — CONFIG.moduleTypes) under the module name. Declarative
      only for now, so it deliberately reuses the row's own muted-caption
      look rather than a colored badge (see CLAUDE.md: not yet wired to
      map colors). */
@@ -2654,7 +2721,9 @@
 
   .vc-retry-row {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
   }
 
   .vc-confirm-area {
@@ -2700,13 +2769,12 @@
   }
 
   .vc-attempt-label {
-    text-align: center;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     opacity: 0.6;
-    margin: 0 0 4px;
+    margin: 0;
   }
 
   .vc-stars {
@@ -2942,16 +3010,29 @@
      never a hard blink). No timeout ever forces an advance. */
   .dg-bubble.is-suggested {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
   }
 
+  /* Job: the old 1 -> 0.55 range read as "almost imperceptible" — widened
+     to 1 -> 0.35 (still a smooth ease-in-out dissolve, never a hard
+     blink) so the suggestion is actually noticeable at a glance. */
   @keyframes dg-pulse-soft {
     0%, 100% { opacity: 1; }
-    50% { opacity: 0.55; }
+    50% { opacity: 0.35; }
   }
 
   .dg-bubble.is-pulsing {
     animation: dg-pulse-soft 2.2s ease-in-out infinite;
+  }
+
+  /* Job: Ripeti a Tempo's sequential-unlock gate — a bubble beyond the
+     next reachable line, dimmer than is-locked's temporary dim (that one
+     means "wait a moment"; this one means "not yet, listen to the
+     earlier ones first"). */
+  .dg-bubble.is-ahead-locked {
+    opacity: 0.35;
+    pointer-events: none;
+    cursor: not-allowed;
   }
 
   /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
@@ -3136,6 +3217,32 @@
   .sr-options[hidden],
   .sr-summary[hidden],
   .retry-intro[hidden] { display: none; }
+
+  /* Small persistent tag shown next to a question/sentence for as long as
+     the RETRY pass lasts (Match Practice, Speed Match, Voice Check) —
+     without it, seeing the same item again reads as an app glitch rather
+     than the deliberate richiamo it is. Same --similar-ink/--similar-bg
+     pairing as .retry-intro (its one-time transition screen), just a
+     persistent tag instead of a whole panel. */
+  .ripasso-badge {
+    display: flex;
+    align-self: center;
+    width: fit-content;
+    align-items: center;
+    gap: 4px;
+    margin: 2px auto 0;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 3px 10px;
+    border-radius: 999px;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+  }
+
+  .ripasso-badge[hidden] { display: none; }
 
   /* ---------- flash card view ---------- */
   /* The two-row header itself now lives in the shared .header-2row/
@@ -3528,8 +3635,12 @@
 
             <div id="repeat-aloud-body"></div>
 
-            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito, torna alla mappa</button>
+            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito</button>
           </div>
+
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13). -->
+          <div id="repeat-aloud-summary-screen" class="module-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -3574,8 +3685,12 @@
 
             <div id="speak-easy-body"></div>
 
-            <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito, torna alla mappa</button>
+            <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito</button>
           </div>
+
+          <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
+               the shared renderSummaryScreen() (CLAUDE.md rule 13). -->
+          <div id="speak-easy-summary-screen" class="module-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -3617,13 +3732,18 @@
             <header class="app-header">
               <h1 id="voice-coach-title">Voice Coach</h1>
               <p class="vc-counter" id="vc-counter">1 / 1</p>
+              <span class="ripasso-badge" id="vc-ripasso-badge" hidden>Ripasso</span>
             </header>
 
             <!-- Voice Practice only: "Esercitati ancora", capped at
                  CONFIG.voicePractice.maxAttemptsPerPhrase. Voice Check has
                  no retry button at all (one recording per phrase) — this
-                 whole row is hidden for it, see updateVcActionButtons. -->
+                 whole row is hidden for it, see updateVcActionButtons.
+                 vc-attempt-label lives here (not above vc-feedback/the
+                 sentence, its old spot) — it's information about THIS
+                 button, not about the phrase. -->
             <div class="vc-retry-row" id="vc-retry-row">
+              <p class="vc-attempt-label" id="vc-attempt-label"></p>
               <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
             </div>
 
@@ -3664,7 +3784,6 @@
             </div>
 
             <div id="vc-result" hidden>
-              <p class="vc-attempt-label" id="vc-attempt-label"></p>
               <div class="phrase panel" id="vc-feedback"></div>
               <div class="vc-stars" id="vc-stars"></div>
               <p class="vc-feedback-message" id="vc-feedback-message"></p>
@@ -3768,6 +3887,7 @@
                direction (see qmRenderQuestion). -->
           <div id="qm-quiz-screen" hidden>
             <p class="sr-counter" id="qm-counter"></p>
+            <span class="ripasso-badge" id="qm-ripasso-badge" hidden>Ripasso</span>
             <p class="sr-direction" id="qm-direction"></p>
 
             <div class="sr-prompt panel" id="qm-prompt"></div>
@@ -3931,6 +4051,7 @@
           <!-- QUIZ SCREEN -->
           <div id="sr-quiz-screen" hidden>
             <p class="sr-counter" id="sr-counter"></p>
+            <span class="ripasso-badge" id="sr-ripasso-badge" hidden>Ripasso</span>
             <p class="sr-direction" id="sr-direction"></p>
 
             <div class="sr-timerbar-track"><div class="sr-timerbar-fill" id="sr-timerbar-fill"></div></div>
@@ -4157,6 +4278,15 @@
           <summary>utilizzo microfono (secondi di audio inviati)</summary>
           <div class="config-group-body" id="config-audio-usage"></div>
         </details>
+        <!-- Job: "Prossima frase" usage (Dialogue: Repeat in Time) — same
+             accumulated-data reasoning as the panel above, reuses its own
+             .config-audio-usage-row/-total classes (CLAUDE.md rule 13).
+             Filled in by renderNextLineSkipsPanel(), called alongside
+             renderConfigPanel() whenever this overlay opens. -->
+        <details class="config-group" open>
+          <summary>"Prossima frase" (quante volte è stato usato)</summary>
+          <div class="config-group-body" id="config-next-line-skips"></div>
+        </details>
         <div id="config-panel-body" class="config-panel-body"></div>
         <div class="overlay-actions">
           <button type="button" class="btn btn-secondary btn-block" id="config-panel-reset-btn">Ripristina valori di partenza</button>
@@ -4190,6 +4320,35 @@
 <script>
 (function () {
   var CONFIG = window.APP_CONFIG;
+
+  /* ============================================================
+     AUDIO CONTEXT WARM-UP (bug fix)
+     The first tone ever played through a freshly-created AudioContext
+     comes out distorted (most audible on Repeat Aloud/Speak Easy, the
+     first modules to touch the audio system) — a one-buffer glitch
+     while the context's pipeline spins up, not a bug in srPlayTone
+     itself. Absorb that glitch on the user's first tap ANYWHERE on the
+     page, silently (0 gain), instead of on the first real Corretto/
+     Traguardo sound. srGetAudioCtx()/srPlayTone are defined later in
+     this same closure (hoisted) but that's fine — this only ever runs
+     from a later user-triggered event.
+     ============================================================ */
+  function warmAudioContextOnce() {
+    var ctx = srGetAudioCtx();
+    if (!ctx) return;
+    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
+    try {
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.01);
+    } catch (e) {}
+  }
+  document.addEventListener('pointerdown', warmAudioContextOnce, { once: true });
+  document.addEventListener('keydown', warmAudioContextOnce, { once: true });
 
   /* ============================================================
      ICONS — inline Lucide SVG markup (MIT/ISC, self-contained, no
@@ -4347,6 +4506,8 @@
   renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
   renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
 
+  renderSummaryScreen('repeat-aloud-summary-screen', 'repeat-aloud-summary-title', 'Esercizio completato!', 'repeat-aloud-complete-btn');
+  renderSummaryScreen('speak-easy-summary-screen', 'speak-easy-summary-title', 'Esercizio completato!', 'speak-easy-complete-btn');
   renderSummaryScreen('sr-summary-screen', 'sr-summary-title', 'Round completato!', 'sr-complete-btn');
   renderSummaryScreen('qm-summary-screen', 'qm-summary-title', 'Round completato!', 'qm-complete-btn');
   renderSummaryScreen('fc-summary-screen', 'fc-summary-title', 'Tutte le carte ripassate!', 'fc-complete-btn');
@@ -4665,9 +4826,26 @@
       '<div class="config-audio-usage-row config-audio-usage-total"><span>Totale episodio</span><span>' + total.toFixed(1) + ' s</span></div>';
   }
 
+  function renderNextLineSkipsPanel() {
+    var el = document.getElementById('config-next-line-skips');
+    if (!el) return;
+    var usage = loadNextLineSkips(currentEpisode.id, getUserName());
+    var moduleIds = Object.keys(usage.byModule);
+    var total = moduleIds.reduce(function (sum, id) { return sum + usage.byModule[id]; }, 0);
+    var rowsHtml = moduleIds.map(function (id) {
+      var label = (CONFIG.moduleLabels[id] && CONFIG.moduleLabels[id].name) || id;
+      return '<div class="config-audio-usage-row"><span>' + label + '</span><span>' + usage.byModule[id] + '</span></div>';
+    }).join('');
+    el.innerHTML =
+      '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' + currentEpisode.id + '. Se il numero è alto, i tempi di dialogo.pausaBase/pausaPerParola sono probabilmente troppo lunghi.</p>' +
+      (rowsHtml || '<p class="config-field-hint">Mai usato finora.</p>') +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>Totale episodio</span><span>' + total + '</span></div>';
+  }
+
   function openConfigPanel() {
     renderConfigPanel();
     renderAudioUsagePanel();
+    renderNextLineSkipsPanel();
     configPanelOverlayEl.classList.add('is-open');
   }
   function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
@@ -5090,42 +5268,49 @@
       // computed-modules block below), keyed by these same ids, so the
       // displayed name lives in exactly one place (CLAUDE.md).
       modulesById: {
-        // "Studio libero" (the generic studio-type label) doesn't
-        // describe this one well — it's setup, not learning — so it
-        // overrides the type's own label with typeLabel instead of
-        // needing a whole category just for one module.
+        // "Studio" (the generic studio-type label) doesn't describe this
+        // one well — it's setup, not learning — so it overrides the
+        // type's own label with typeLabel instead of needing a whole
+        // category just for one module.
         personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
         repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
-        // Practice: studio type, no ModuleRules (see CONFIG.
-        // moduleOutcomeRules — no entry for it, defaults to
-        // completionRules), own kind for its own howItWorks/helpReminder
-        // text and intro-dismiss flag (data/istruzioni-moduli.json).
+        // Practice: studio type; also ModuleRules now (CONFIG.
+        // moduleOutcomeRules), scored by CONFIG.attemptRule's
+        // LastAttemptRule instead of Voice Check's FirstAttemptRule —
+        // own kind for its own howItWorks/helpReminder text and
+        // intro-dismiss flag (data/istruzioni-moduli.json).
         voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
         // Check: same id ('voiceCoach') the single pre-split module had —
         // still the ONE place ModuleRules/the retry-queue ripasso live,
         // unchanged from before the split.
         voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
-        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        // One of the three "Dialogo Completo" modules (see CONFIG.dialogo.profiles).
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studio' },
-        // studioATempo, not quizATempo (job: nuovo ordine) — neither is
-        // actually evaluated by the system (see moduleOutcomeRules).
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studioATempo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studioATempo' },
-        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quizATempo' },
+        // Match Practice: studio, not quiz (job: sei etichette) — no time
+        // pressure, self-paced, same as Flash Card.
+        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
+        // share their own category (job: sei etichette) — distinct from
+        // plain "studio" since a dialogue plays out with its own pacing.
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studiaDialogo' },
+        // Speed Match: quiz, not a separate "a tempo" category (job: sei
+        // etichette) — the time pressure IS what makes it a quiz here.
+        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // flashcardLevel/flashcardDirection tell the shared component what
         // to load — see CONFIG.flashcard.levels — so adding Level B/C later
         // never touches the component itself, only this dictionary + that config.
-        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'quiz' },
-        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'quiz' }
+        // studio, not quiz (job: sei etichette) — self-paced, no time
+        // pressure, same as Repeat Aloud/Speak Easy/Match Practice.
+        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'studio' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value. Episode 1's own placeholder names are
@@ -5311,6 +5496,30 @@
     var usage = loadAudioUsage(episodeId, userName);
     usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + seconds;
     try { localStorage.setItem(audioUsageKey(episodeId, userName), JSON.stringify(usage)); } catch (e) {}
+    return usage;
+  }
+
+  // Job: "Prossima frase" usage count (Dialogue: Repeat in Time) — same
+  // per-episode/per-user/per-module shape as audioUsageKey/loadAudioUsage
+  // above (CLAUDE.md rule 13), read-only tuning data (not a graded
+  // outcome): a module used often means dialogo.pausaBase/pausaPerParola
+  // are running too long for real speech.
+  function nextLineSkipsKey(episodeId, userName) {
+    return 'baseinglese:nextLineSkips:' + episodeId + ':' + userName;
+  }
+
+  function loadNextLineSkips(episodeId, userName) {
+    try {
+      var raw = localStorage.getItem(nextLineSkipsKey(episodeId, userName));
+      var parsed = raw ? JSON.parse(raw) : null;
+      return (parsed && parsed.byModule) ? parsed : { byModule: {} };
+    } catch (e) { return { byModule: {} }; }
+  }
+
+  function addNextLineSkip(episodeId, userName, moduleId) {
+    var usage = loadNextLineSkips(episodeId, userName);
+    usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + 1;
+    try { localStorage.setItem(nextLineSkipsKey(episodeId, userName), JSON.stringify(usage)); } catch (e) {}
     return usage;
   }
 
@@ -6061,6 +6270,11 @@
   function raShowScreen(name) {
     document.getElementById('repeat-aloud-intro-screen').hidden = name !== 'intro';
     document.getElementById('repeat-aloud-main-screen').hidden = name !== 'main';
+    document.getElementById('repeat-aloud-summary-screen').hidden = name !== 'summary';
+    // Nothing to explain on the completion screen — hide Spiegazione
+    // there (CLAUDE.md rule 10, same as every other module's Schermata
+    // Finale); Help stays available everywhere.
+    document.getElementById('repeat-aloud-watch-btn').hidden = name === 'summary';
   }
 
   function renderRaIntroContent() {
@@ -6133,11 +6347,17 @@
   });
 
   document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
-    // Job 4: Traguardo plays on every positive/neutral completion, this
-    // module included — no score here, so completing IS the outcome.
-    // Tied to this exact button (the completion event), never to
-    // "← Mappa" above, which just leaves without completing.
+    // Job 4 (earlier turn): Traguardo plays on every positive/neutral
+    // completion — tied to THIS event (declaring the study done), same
+    // moment every other module's Traguardo fires (reaching its own
+    // Schermata Finale), never to "← Mappa" above (leaves without
+    // completing) nor to the summary's own exit button below.
     srPlayTraguardoSound();
+    raShowScreen('summary');
+    applyOutcomeSubtitle('repeat-aloud-summary-title-sub', 'studioCompleteMessages', 'default');
+  });
+
+  document.getElementById('repeat-aloud-complete-btn').addEventListener('click', function () {
     markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
     openEpisodeMap();
   });
@@ -6193,6 +6413,11 @@
   function seShowScreen(name) {
     document.getElementById('speak-easy-intro-screen').hidden = name !== 'intro';
     document.getElementById('speak-easy-main-screen').hidden = name !== 'main';
+    document.getElementById('speak-easy-summary-screen').hidden = name !== 'summary';
+    // Nothing to explain on the completion screen — hide Spiegazione
+    // there (CLAUDE.md rule 10, same as every other module's Schermata
+    // Finale); Help stays available everywhere.
+    document.getElementById('speak-easy-watch-btn').hidden = name === 'summary';
   }
 
   function openSpeakEasy(module) {
@@ -6259,10 +6484,15 @@
   });
 
   document.getElementById('speak-easy-complete').addEventListener('click', function () {
-    // Job 4: same reasoning as Repeat Aloud's own complete button above —
-    // no score here, so completing IS the outcome, tied to this exact
-    // button rather than "← Mappa".
+    // Same reasoning as Repeat Aloud's own complete button above —
+    // Traguardo fires here (declaring the study done), never on "← Mappa"
+    // nor on the summary's own exit button below.
     srPlayTraguardoSound();
+    seShowScreen('summary');
+    applyOutcomeSubtitle('speak-easy-summary-title-sub', 'studioCompleteMessages', 'default');
+  });
+
+  document.getElementById('speak-easy-complete-btn').addEventListener('click', function () {
     markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
     openEpisodeMap();
   });
@@ -6275,13 +6505,15 @@
      module.voiceVariant) is the ONLY thing that branches:
        - practice: "Esercitati ancora" (own button, capped at
          CONFIG.voicePractice.maxAttemptsPerPhrase, visible counter) —
-         no final ripasso pass, no ModuleRules map color (plain
-         CompletionRules, like Repeat Aloud), but DOES feed the per-word
-         mastery store (a real measurement — see the practice-only block
-         in vcEvaluate).
+         no final ripasso pass; DOES color the map via ModuleRules, scored
+         by the LATEST attempt on each phrase (CONFIG.attemptRule:
+         LastAttemptRule) since retrying means "I want to get better",
+         not a frozen first try; also feeds the per-word mastery store (a
+         real measurement — see the practice-only block in vcEvaluate).
        - check: no retry button at all (one recording per phrase) but
          keeps the existing retry-QUEUE/Schermata Ripasso pass and
-         ModuleRules map color, unchanged from before the split.
+         ModuleRules map color scored by the FIRST attempt only (CONFIG.
+         attemptRule: FirstAttemptRule), unchanged from before the split.
      Recording mechanics, mic-trouble detection, star rating and the
      shared safety-valve popup are identical either way — everything in
      this section not explicitly gated on vcVariant runs for both.
@@ -6308,6 +6540,7 @@
   var vcRetryQueue = [];
   var vcPassIndex = 0;
   var vcPassTotal = 0;
+  var vcInRetryPass = false; // job: "Ripasso" badge, see renderVoiceCoachSentence
   var vcCurrentLineObj = null;
   var vcCurrentEvaluated = false; // has THIS viewing of the line been sent+evaluated yet
   var vcAttempts = {};
@@ -6315,6 +6548,14 @@
   var vcListening = false;
   var vcSuppressTransition = false;
   var vcLatestTranscript = '';
+  // Set the instant ANY speech (even an interim, not-yet-final result) is
+  // heard — distinct from vcLatestTranscript, which only ever holds FINAL
+  // text and is what scoring reads. The silence-timeout below needs this
+  // separate signal: with interimResults off, vcLatestTranscript would
+  // stay empty for an entire long sentence (recognition only finalizes on
+  // a pause), so checking it alone cut every recording at the timeout
+  // regardless of whether the user was still actively speaking.
+  var vcHeardAnySpeech = false;
   var vcTimeoutId = null; // hard cap on recording length (maxRecordingMsPerWord/MarginMs)
   var vcSilenceTimeoutId = null; // job 6b: shorter "no voice at all yet" timeout
   var vcSilenceCutoff = false; // set right before stopping for silence — read once in vcRecognition.onend
@@ -6329,7 +6570,8 @@
   // IS recognized again (vcEmptyRecognitionStreak resets), letting the
   // module resume normally — see vcUpdateMicNotice.
   var vcMicConfirmedProblem = false;
-  var vcFirstAttemptPercents = []; // this session's per-line % correct, first attempt only — see vcFinishModule
+  var vcFirstAttemptPercents = []; // FirstAttemptRule modules: this session's per-line % correct, first attempt only — see vcFinishModule
+  var vcLastAttemptPercentByLine = {}; // LastAttemptRule modules (Voice Practice): per-line %, overwritten on every attempt so only the LATEST survives — see vcFinishModule
   var vcLastAvgPct = 0; // vcFinishModule's own avgPct, held for the complete-btn handler's saveModuleOutcome call (ModuleRules)
 
   var VCSpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -6339,7 +6581,10 @@
     vcRecognition = new VCSpeechRecognition();
     vcRecognition.lang = CONFIG.speech.recognitionLang;
     vcRecognition.continuous = true;
-    vcRecognition.interimResults = false;
+    // Job 6b fix: interim results are needed to know a word has been
+    // heard WHILE the user is still talking — only isFinal results feed
+    // vcLatestTranscript itself (unchanged scoring), see onresult below.
+    vcRecognition.interimResults = true;
     vcRecognition.maxAlternatives = CONFIG.speech.maxAlternatives;
 
     // No onstart handler: entering "recording" (state, icon, timer, the
@@ -6354,6 +6599,9 @@
         if (event.results[i].isFinal) {
           finalText += (finalText ? ' ' : '') + event.results[i][0].transcript;
         }
+        // Interim or final, any non-empty transcript means real speech
+        // was heard — that's all the silence-timeout needs to know.
+        if (!vcHeardAnySpeech && event.results[i][0].transcript.trim()) vcHeardAnySpeech = true;
       }
       vcLatestTranscript = finalText.trim();
     };
@@ -6463,6 +6711,7 @@
     }
     vcListening = false;
     vcLatestTranscript = '';
+    vcHeardAnySpeech = false;
     vcSilenceCutoff = false;
     document.getElementById('vc-silence-warning').hidden = true;
     setVcState('idle');
@@ -6610,6 +6859,10 @@
     vcCurrentEvaluated = false;
     var line = vcCurrentLine();
     document.getElementById('vc-counter').textContent = vcPassIndex + ' / ' + vcPassTotal;
+    document.getElementById('vc-ripasso-badge').hidden = !vcInRetryPass;
+    // Clear a previous line's stale "TENTATIVO N DI M" — vcEvaluate fills
+    // this in again once this new line has its own first attempt.
+    document.getElementById('vc-attempt-label').textContent = '';
     document.getElementById('vc-cue').textContent = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
     document.getElementById('vc-target').textContent = vcTargetText();
     var pronToggle = document.getElementById('vc-pronunciation-toggle');
@@ -6646,6 +6899,7 @@
         vcRetryQueue = [];
         vcPassTotal = vcQueue.length;
         vcPassIndex = 0;
+        vcInRetryPass = true;
         vcShowScreen('retryIntro');
         applyRotatingSubtitle('voice-coach-retry-intro-screen-sub', 'retryIntroMessages');
         return;
@@ -6662,12 +6916,17 @@
   function vcFinishModule() {
     srPlayTraguardoSound();
     vcShowScreen('summary');
-    // FIRST-PASS score only (vcFirstAttemptPercents, frozen before the
-    // retry pass — see its own comment) — this is also the score
-    // ModuleRules colors the map badge with (see voice-coach-complete-btn
-    // below), not just this screen's message tone.
-    vcLastAvgPct = vcFirstAttemptPercents.length
-      ? Math.round(vcFirstAttemptPercents.reduce(function (a, b) { return a + b; }, 0) / vcFirstAttemptPercents.length)
+    // CONFIG.attemptRule picks which numbers feed the average: Voice
+    // Check (firstAttempt) reads vcFirstAttemptPercents, frozen before
+    // the ripasso pass; Voice Practice (lastAttempt) reads the latest
+    // score per line instead — this is also the score ModuleRules colors
+    // the map badge with (see voice-coach-complete-btn below), not just
+    // this screen's message tone.
+    var vcScorePercents = CONFIG.attemptRule[vcModule.id] === 'lastAttempt'
+      ? Object.keys(vcLastAttemptPercentByLine).map(function (id) { return vcLastAttemptPercentByLine[id]; })
+      : vcFirstAttemptPercents;
+    vcLastAvgPct = vcScorePercents.length
+      ? Math.round(vcScorePercents.reduce(function (a, b) { return a + b; }, 0) / vcScorePercents.length)
       : 0;
     applyOutcomeSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages', percentageBucket(vcLastAvgPct));
   }
@@ -6690,6 +6949,7 @@
     vcEmptyRecognitionStreak = 0;
     vcMicConfirmedProblem = false;
     vcFirstAttemptPercents = [];
+    vcLastAttemptPercentByLine = {};
     vcSilenceCutoff = false;
     vcLastRecordingMs = 0;
     document.getElementById('vc-mic-notice').hidden = true;
@@ -6725,6 +6985,7 @@
       vcLines = results[0].dialogue;
       vcQueue = vcLines.map(function (l) { return l.id; });
       vcPassTotal = vcQueue.length;
+      vcInRetryPass = false;
       vcNextLine();
     }).catch(function () {
       if (vcModule !== module) return;
@@ -6767,11 +7028,17 @@
     document.getElementById('vc-stars').innerHTML = renderStars(stars);
     var passed = stars > 1;
 
-    // First-attempt % only (job 2A) — mirrors Speed Round/Quick Match/
-    // Flash Card's own "first try" scoring, so a later Riprova or a
-    // remedial retry pass doesn't inflate the session score used for the
-    // Schermata Finale message (see vcFinishModule).
-    if (attemptNum === 1) vcFirstAttemptPercents.push(pct);
+    // CONFIG.attemptRule (see its own comment): Voice Practice keeps
+    // OVERWRITING this line's score on every attempt (LastAttemptRule —
+    // the latest one always wins); Voice Check only ever records the
+    // very first (FirstAttemptRule), same as Speed Round/Quick Match/
+    // Flash Card's own "first try" scoring, so a later ripasso pass
+    // doesn't inflate the session score (see vcFinishModule).
+    if (CONFIG.attemptRule[vcModule.id] === 'lastAttempt') {
+      vcLastAttemptPercentByLine[line.id] = pct;
+    } else if (attemptNum === 1) {
+      vcFirstAttemptPercents.push(pct);
+    }
 
     // Voice Practice only (job: "sdoppiare Voice Coach") — feeds the same
     // per-word mastery store Speed Round/Quick Match/Flash Card use, a
@@ -6868,6 +7135,7 @@
     }
     if (vcState !== 'idle') return;
     vcLatestTranscript = '';
+    vcHeardAnySpeech = false;
     document.getElementById('vc-silence-warning').hidden = true;
     var wordCount = tokenize(vcTargetText()).length;
     var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
@@ -6888,7 +7156,7 @@
     // recognized yet by then, this is silence, not just a long sentence;
     // stop and discard rather than waiting for the full maxMs cap above.
     vcSilenceTimeoutId = setTimeout(function () {
-      if (vcListening && !vcLatestTranscript) {
+      if (vcListening && !vcHeardAnySpeech) {
         vcSilenceCutoff = true;
         vcRecognition.stop();
       }
@@ -6928,14 +7196,15 @@
   });
 
   document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
-    // Voice Check only (ModuleRules, CONFIG.moduleOutcomeRules.voiceCoach):
-    // the map badge color is the first-pass score, verdict included even
-    // when it's rosso — saveModuleOutcome always overwrites, so a redo
-    // genuinely replaces the previous color in either direction, same as
-    // every other module already using this store (see MODULE OUTCOME
-    // above). Voice Practice never colors the map (plain CompletionRules,
-    // like Repeat Aloud) — see the module comment.
-    if (vcVariant === 'check') {
+    // Both variants now color the map (CONFIG.moduleOutcomeRules —
+    // 'moduleRules' for voiceCoach AND voicePractice): the badge shows
+    // vcLastAvgPct, verdict included even when it's rosso —
+    // saveModuleOutcome always overwrites, so a redo genuinely replaces
+    // the previous color in either direction, same as every other module
+    // already using this store (see MODULE OUTCOME above). Which pct
+    // that is (first-pass vs. latest-attempt) is CONFIG.attemptRule's
+    // own call, already baked into vcLastAvgPct by vcFinishModule.
+    if (CONFIG.moduleOutcomeRules[vcModule.id] === 'moduleRules') {
       saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
@@ -7062,6 +7331,7 @@
   var qmFirstTryCorrectCount = 0; // job 2A: items answered correctly on their very first attempt this session
   var qmPassIndex = 0;
   var qmPassTotal = 0;
+  var qmInRetryPass = false; // job: "Ripasso" badge, see qmRenderQuestion
   var qmCurrentItem = null;
   var qmCurrentOptions = [];
 
@@ -7125,6 +7395,7 @@
     document.getElementById('qm-advance-btn').hidden = true;
     document.getElementById('qm-dontknow-btn').hidden = false;
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
+    document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
     document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
     var promptText = qmDirection === 'en-it' ? qmCurrentItem.english : qmCurrentItem.italian;
     document.getElementById('qm-prompt').textContent = promptText;
@@ -7159,6 +7430,7 @@
         qmRetryQueue = [];
         qmPassTotal = qmQueue.length;
         qmPassIndex = 0;
+        qmInRetryPass = true;
         qmShowScreen('retryIntro');
         applyRotatingSubtitle('qm-retry-intro-screen-sub', 'retryIntroMessages');
         return;
@@ -7222,6 +7494,7 @@
     qmFirstTryCorrectCount = 0;
     qmPassTotal = qmQueue.length;
     qmPassIndex = 0;
+    qmInRetryPass = false;
     qmShowScreen('quiz');
     qmNextQuestion();
   }
@@ -7365,6 +7638,7 @@
   var dgProfile = null;
   var dgDialogue = [];
   var dgHeardIds = []; // line ids heard at least once this viewing
+  var dgFurthestIndex = -1; // Ripeti a Tempo only: highest dialogue index played this viewing — see dgApplySequenceLock
   var dgPaused = false;
   // Per-line countdown bar state (Ripeti a Tempo/Continuo only) — a
   // single active timer at a time, same pattern as Speed Round's own
@@ -7420,6 +7694,9 @@
     } else if (dgProfile.pauseResume) {
       toolbar.hidden = false;
       toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn">Pausa</button>';
+    } else if (dgProfile.nextLineButton) {
+      toolbar.hidden = false;
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-next-line-btn">Prossima frase</button>';
     } else {
       toolbar.hidden = true;
       toolbar.innerHTML = '';
@@ -7473,7 +7750,15 @@
     if (dgHeardIds.indexOf(lineId) === -1) dgHeardIds.push(lineId);
     var check = document.getElementById('dg-heard-' + lineId);
     if (check) { check.classList.add('is-heard'); check.innerHTML = icon('check'); }
-    dgUpdateChoiceBoxLock();
+    // Job: the choice box unlocks at END OF TIMER, not end of audio — its
+    // own recompute (dgUpdateChoiceBoxLock) is dgLockAll's job alone
+    // (called once the UI actually unlocks: right after audio for
+    // Ascolta e Ripeti, which has no countdown; only after the per-line
+    // bar finishes for Ripeti a Tempo/Continuo). Calling it here too used
+    // to unlock the box the instant the LAST line's audio ended, while
+    // its own countdown bar was still running — a caution left over from
+    // when leaving the module didn't stop audio; showView() does that
+    // centrally now, so it's no longer needed.
   }
 
   function dgRenderList() {
@@ -7502,6 +7787,24 @@
         '</div>' +
         '</div>';
     }).join('');
+  }
+
+  // Ripeti a Tempo only (advance: 'manual') — the other two profiles
+  // never call this, so every bubble stays plain for them: Ascolta e
+  // Ripeti is deliberately free/any-order, and Dialogo Continuo already
+  // disables bubble clicks entirely (auto-advance, see the #dg-list
+  // listener). A bubble is reachable up to one past the furthest line
+  // actually played this viewing — every earlier one stays replayable,
+  // nothing beyond the next one is jumpable.
+  function dgApplySequenceLock() {
+    var bubbles = document.querySelectorAll('#dg-list .dg-bubble');
+    if (dgProfile.advance !== 'manual') {
+      bubbles.forEach(function (b) { b.classList.remove('is-ahead-locked'); });
+      return;
+    }
+    bubbles.forEach(function (b, i) {
+      b.classList.toggle('is-ahead-locked', i > dgFurthestIndex + 1);
+    });
   }
 
   // Formula from CONFIG.dialogo: pausaBase + numeroParole * pausaPerParola,
@@ -7568,6 +7871,19 @@
     if (onDone) onDone();
   }
 
+  // "Prossima frase" (Ripeti a Tempo only, dg-next-line-btn): ends the
+  // current line's countdown bar early for whoever's already done
+  // repeating, by firing the exact same completion path a natural
+  // timeout would — no separate branch to keep in sync with
+  // dgLineTimerFinished. A no-op if no bar is actually counting down
+  // (during audio playback, or once idle) since there is nothing to skip.
+  function dgSkipToNextLine() {
+    if (dgLineTimerTimeoutId === null) return;
+    clearTimeout(dgLineTimerTimeoutId);
+    addNextLineSkip(currentEpisode.id, getUserName(), dgModule.id);
+    dgLineTimerFire();
+  }
+
   // Countdown tone once the bar ends (never a tick during it — that time
   // is for the user to speak out loud), then branches purely on
   // dgProfile.advance: 'auto' chains straight into the next line
@@ -7616,6 +7932,11 @@
     if (!bubble) return;
     dgClearSuggestion();
     dgLockAll(true, bubble);
+    var lineIndex = dgDialogue.findIndex(function (l) { return l.id === line.id; });
+    if (lineIndex > dgFurthestIndex) {
+      dgFurthestIndex = lineIndex;
+      dgApplySequenceLock();
+    }
     var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
     toggleSpeak(english, bubble, undefined, {
       onEnd: function () {
@@ -7705,8 +8026,10 @@
 
   function dgStartExercise() {
     dgHeardIds = [];
+    dgFurthestIndex = -1;
     dgClearAllTimers();
     dgRenderList();
+    dgApplySequenceLock();
     dgSetupToolbar();
     renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion, 'dg-not-yet-btn', 'Non ancora', 'dg-know-it-btn', 'Sì, lo so');
     loadModuleInstructions().then(function (data) {
@@ -7769,6 +8092,8 @@
       btn.classList.toggle('btn-secondary', !next);
     } else if (e.target.id === 'dg-pause-btn') {
       dgTogglePause();
+    } else if (e.target.id === 'dg-next-line-btn') {
+      dgSkipToNextLine();
     }
   });
 
@@ -7779,7 +8104,7 @@
   document.getElementById('dg-list').addEventListener('click', function (e) {
     if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
-    if (!bubble || bubble.classList.contains('is-locked')) return;
+    if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked')) return;
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
@@ -7838,6 +8163,7 @@
   var srFirstTryCorrectCount = 0; // job 2A: items answered correctly on their very first attempt this session
   var srPassIndex = 0;
   var srPassTotal = 0;
+  var srInRetryPass = false; // job: "Ripasso" badge, see srRenderQuestion
   var srCurrentItem = null;
   var srCurrentOptions = [];
   var srTimeoutId = null;
@@ -8039,6 +8365,7 @@
     document.getElementById('sr-advance-btn').hidden = true;
     document.getElementById('sr-dontknow-btn').hidden = false;
     document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
+    document.getElementById('sr-ripasso-badge').hidden = !srInRetryPass;
     var promptText = srDirection === 'en-it' ? srCurrentItem.english : srCurrentItem.italian;
     document.getElementById('sr-prompt').textContent = promptText;
     srCurrentOptions = srBuildOptions(srCurrentItem);
@@ -8055,6 +8382,7 @@
         srRetryQueue = [];
         srPassTotal = srQueue.length;
         srPassIndex = 0;
+        srInRetryPass = true;
         srShowScreen('retryIntro');
         applyRotatingSubtitle('sr-retry-intro-screen-sub', 'retryIntroMessages');
         return;
@@ -8126,6 +8454,7 @@
     srFirstTryCorrectCount = 0;
     srPassTotal = srQueue.length;
     srPassIndex = 0;
+    srInRetryPass = false;
     document.getElementById('sr-direction').textContent = DIRECTION_LABEL[srDirection];
     srShowScreen('quiz');
     srNextQuestion();
