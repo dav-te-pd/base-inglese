@@ -4847,6 +4847,7 @@
     dgClearAllTimers();
     vcResetRecording();
     srClearTimer();
+    lockModuleHeader('speed-round', false);
     if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
     fcClearNavTimeout();
     closeAttemptPopup();
@@ -7752,8 +7753,16 @@
   var qmCurrentItem = null;
   var qmCurrentOptions = [];
 
+  // Job 1 (7th collaudo): "Non lo so" is a declared non-attempt, not a
+  // regular wrong answer — it skips the gradual demotion and sends the
+  // word straight to rosso (see qmRecordResult's declaredNonAttempt).
+  // Left clickable after an answer was already chosen, a fast tap could
+  // land on it and overwrite a just-recorded CORRECT answer with a
+  // straight-to-rosso non-attempt — it needs to lock together with the
+  // options, not as a separate afterthought.
   function qmDisableOptions() {
     document.querySelectorAll('#qm-options .sr-option').forEach(function (b) { b.disabled = true; });
+    document.getElementById('qm-dontknow-btn').disabled = true;
   }
 
   function qmShowScreen(name) {
@@ -7761,11 +7770,15 @@
     document.getElementById('qm-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('qm-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('qm-summary-screen').hidden = name !== 'summary';
-    // Spiegazione+Help only on start/summary, same as Speed Round; Spiegazione
-    // additionally hides on summary alone (CLAUDE.md rule 10).
-    var showHeaderActions = name === 'start' || name === 'summary';
-    document.getElementById('quick-match-watch-btn').hidden = !showHeaderActions || name === 'summary';
-    document.getElementById('quick-match-help-btn').hidden = !showHeaderActions;
+    // Spiegazione+Help now visible on every screen, quiz included (the
+    // buttons existed in markup but were only ever un-hidden on start/
+    // summary — bug fix, 8th collaudo). Spiegazione still hides on the
+    // Schermata Finale alone (CLAUDE.md rule 10 — nothing left to explain
+    // there); Help never hides. No timer in Quick Match, so neither is
+    // ever disabled either (unlike Speed Round's srStartTimer/
+    // srDisableOptions lock).
+    document.getElementById('quick-match-watch-btn').hidden = name === 'summary';
+    document.getElementById('quick-match-help-btn').hidden = false;
   }
 
   // Same dual-purpose start screen as Speed Round: full howItWorks the
@@ -7811,6 +7824,7 @@
     document.getElementById('qm-reveal').hidden = true;
     document.getElementById('qm-advance-btn').hidden = true;
     document.getElementById('qm-dontknow-btn').hidden = false;
+    document.getElementById('qm-dontknow-btn').disabled = false;
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
     document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
     document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
@@ -8852,14 +8866,28 @@
     var seconds = CONFIG.speedRound.timeLimitSeconds;
     startTimerBar(document.getElementById('sr-timerbar-fill'), seconds * 1000);
     srTimeoutId = setTimeout(srHandleTimeout, seconds * 1000);
+    // Spiegazione/Help don't tolerate an interruption while the time bar
+    // is running (CLAUDE.md rule 13 reuse: same lockModuleHeader Voice
+    // Coach uses for its recording lock) — released again in
+    // srDisableOptions, the choke point every question-ending path shares.
+    lockModuleHeader('speed-round', true);
   }
 
   function srFreezeTimer() {
     freezeTimerBar(document.getElementById('sr-timerbar-fill'));
   }
 
+  // Same non-attempt bug as Quick Match's qmDisableOptions (rule 13: mirrors
+  // that fix exactly) — "Non lo so" must lock together with the options,
+  // not separately, or a fast tap can overwrite a just-recorded correct
+  // answer with a straight-to-rosso non-attempt. This is also the single
+  // choke point every question-ending path (option tap, "Non lo so", timeout)
+  // already goes through, so it doubles as where the per-question timer's
+  // Spiegazione/Help lock (see srStartTimer) gets released again.
   function srDisableOptions() {
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b) { b.disabled = true; });
+    document.getElementById('sr-dontknow-btn').disabled = true;
+    lockModuleHeader('speed-round', false);
   }
 
   function srShowScreen(name) {
@@ -8868,14 +8896,16 @@
     document.getElementById('sr-retry-intro-screen').hidden = name !== 'retryIntro';
     document.getElementById('sr-quiz-screen').hidden = name !== 'quiz';
     document.getElementById('sr-summary-screen').hidden = name !== 'summary';
-    // Spiegazione+Help each toggle by their own id now (no shared wrapper
-    // — .header-actions-row's grid layout keeps ← Mappa left and Help
-    // right regardless of which of the two is hidden, same mechanism as
-    // Flash Card's rule-10 case). Spiegazione additionally hides on
-    // summary alone (CLAUDE.md rule 10) — Help alone stays there.
-    var showHeaderActions = name === 'start' || name === 'summary';
-    document.getElementById('speed-round-watch-btn').hidden = !showHeaderActions || name === 'summary';
-    document.getElementById('speed-round-help-btn').hidden = !showHeaderActions;
+    // Spiegazione+Help now visible on every screen, quiz included (the
+    // buttons existed in markup but were only ever un-hidden on start/
+    // summary — bug fix, 8th collaudo). Spiegazione still hides on the
+    // Schermata Finale alone (CLAUDE.md rule 10 — nothing left to explain
+    // there); Help never hides. Hiding is separate from the DISABLING
+    // that happens specifically while the per-question timer bar runs
+    // (srStartTimer locks, srDisableOptions releases) — that's the "azioni
+    // che non tollerano interruzioni" exception, not a visibility one.
+    document.getElementById('speed-round-watch-btn').hidden = name === 'summary';
+    document.getElementById('speed-round-help-btn').hidden = false;
   }
 
   // First time (not dismissed): full howItWorks explanation + checkbox +
@@ -8931,6 +8961,7 @@
     document.getElementById('sr-reveal').hidden = true;
     document.getElementById('sr-advance-btn').hidden = true;
     document.getElementById('sr-dontknow-btn').hidden = false;
+    document.getElementById('sr-dontknow-btn').disabled = false;
     document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
     document.getElementById('sr-ripasso-badge').hidden = !srInRetryPass;
     var promptText = srDirection === 'en-it' ? srCurrentItem.english : srCurrentItem.italian;
