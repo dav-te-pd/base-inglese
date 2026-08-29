@@ -1,0 +1,569 @@
+<title>Censimento Moduli</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --paper: #F3F5F8;
+    --surface: #FFFFFF;
+    --surface-alt: #EAEEF4;
+    --ink: #1C2333;
+    --ink-muted: #5B6478;
+    --ink-faint: #8891A3;
+    --border: #D7DCE5;
+    --border-strong: #C3CADA;
+    --accent: #33456B;
+    --accent-soft: #E1E7F3;
+    --accent-ink: #23324F;
+    --good: #2F7A5E;
+    --good-soft: #DDEEE6;
+    --dot-off: #C3C9D6;
+    --flag: #9C5E1E;
+    --flag-soft: #F3E4CE;
+    --flag-border: #E0C39A;
+    --teal: #2C6E5F;
+    --teal-soft: #DCEEE8;
+    --gold: #8A6D1F;
+    --gold-soft: #F2E9CE;
+    --shadow: 0 1px 2px rgba(28,35,51,0.06), 0 8px 24px -12px rgba(28,35,51,0.18);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #0F1219;
+      --surface: #171B24;
+      --surface-alt: #1E2330;
+      --ink: #E7E9F0;
+      --ink-muted: #9BA2B5;
+      --ink-faint: #6E7690;
+      --border: #2A2F3D;
+      --border-strong: #363C4E;
+      --accent: #8AA0D6;
+      --accent-soft: #212B44;
+      --accent-ink: #C4D2F0;
+      --good: #6FCBA3;
+      --good-soft: #1B3229;
+      --dot-off: #3A4051;
+      --flag: #DDA05C;
+      --flag-soft: #35281A;
+      --flag-border: #4A3A24;
+      --teal: #7FD4BE;
+      --teal-soft: #16302A;
+      --gold: #E3C56C;
+      --gold-soft: #332B12;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+    }
+  }
+  :root[data-theme="dark"] {
+    --paper: #0F1219;
+    --surface: #171B24;
+    --surface-alt: #1E2330;
+    --ink: #E7E9F0;
+    --ink-muted: #9BA2B5;
+    --ink-faint: #6E7690;
+    --border: #2A2F3D;
+    --border-strong: #363C4E;
+    --accent: #8AA0D6;
+    --accent-soft: #212B44;
+    --accent-ink: #C4D2F0;
+    --good: #6FCBA3;
+    --good-soft: #1B3229;
+    --dot-off: #3A4051;
+    --flag: #DDA05C;
+    --flag-soft: #35281A;
+    --flag-border: #4A3A24;
+    --teal: #7FD4BE;
+    --teal-soft: #16302A;
+    --gold: #E3C56C;
+    --gold-soft: #332B12;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -12px rgba(0,0,0,0.5);
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--paper); color: var(--ink); font-family: 'Inter', system-ui, sans-serif; line-height: 1.5; }
+  ::selection { background: var(--accent-soft); }
+
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 40px 24px 96px; }
+
+  header.top {
+    display: flex; flex-direction: column; gap: 10px;
+    padding-bottom: 28px; margin-bottom: 32px; border-bottom: 1px solid var(--border);
+  }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace; font-size: 12px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--ink-faint);
+  }
+  h1 {
+    font-family: 'Source Serif 4', serif; font-weight: 700; font-size: clamp(28px, 4vw, 38px);
+    margin: 0; text-wrap: balance; color: var(--ink);
+  }
+  .lede { color: var(--ink-muted); font-size: 15.5px; max-width: 62ch; margin: 0; }
+
+  h2 {
+    font-family: 'Source Serif 4', serif; font-weight: 600; font-size: 23px;
+    margin: 0 0 4px; display: flex; align-items: baseline; gap: 10px; color: var(--ink);
+  }
+  h2 .num {
+    font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: var(--accent);
+    background: var(--accent-soft); padding: 2px 8px; border-radius: 5px; font-weight: 600;
+  }
+  section.block { margin-top: 52px; }
+  .section-lede { color: var(--ink-muted); font-size: 14.5px; margin: 0 0 20px; max-width: 68ch; }
+
+  /* ---- Table ---- */
+  .table-scroll {
+    overflow-x: auto; border: 1px solid var(--border); border-radius: 10px;
+    box-shadow: var(--shadow); background: var(--surface);
+  }
+  table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1900px; font-size: 13.2px; }
+  thead th {
+    position: sticky; top: 0; z-index: 2; background: var(--accent); color: #fff;
+    font-family: 'IBM Plex Mono', monospace; font-weight: 600; font-size: 11px;
+    letter-spacing: 0.02em; text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--border-strong);
+    white-space: nowrap;
+  }
+  thead th:first-child { position: sticky; left: 0; top: 0; z-index: 3; }
+  tbody td {
+    padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: top;
+    color: var(--ink); background: var(--surface);
+  }
+  tbody tr:nth-child(even) td { background: var(--surface-alt); }
+  tbody td:first-child {
+    position: sticky; left: 0; z-index: 1; font-family: 'IBM Plex Mono', monospace; font-weight: 600;
+    font-size: 12.6px; color: var(--accent-ink); border-right: 1px solid var(--border-strong);
+    background: inherit; box-shadow: 2px 0 4px -2px rgba(0,0,0,0.08);
+  }
+  tbody tr.divider td { border-top: 2px solid var(--border-strong); }
+  .mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+  .cell-muted { color: var(--ink-muted); }
+  .cell-wide { max-width: 220px; }
+  .filelist { font-family: 'IBM Plex Mono', monospace; font-size: 11.3px; color: var(--ink-muted); line-height: 1.6; }
+  .note { font-size: 11px; color: var(--ink-faint); }
+
+  /* dot indicators */
+  .dot-row { display: flex; align-items: center; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; display: inline-block; }
+  .dot.on { background: var(--good); }
+  .dot.off { background: var(--dot-off); }
+  .dot-label { font-size: 12px; }
+
+  /* category chip */
+  .chip {
+    display: inline-block; font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 20px; white-space: nowrap;
+  }
+  .chip-inizio { background: var(--surface-alt); color: var(--ink-muted); border: 1px solid var(--border-strong); }
+  .chip-studio { background: var(--accent-soft); color: var(--accent-ink); }
+  .chip-dialogo { background: var(--teal-soft); color: var(--teal); }
+  .chip-quiz { background: var(--gold-soft); color: var(--gold); }
+
+  .footnote-marker { color: var(--flag); font-weight: 700; }
+
+  /* ---- Findings lists (sections 2-4) ---- */
+  .finding {
+    display: grid; grid-template-columns: auto 1fr; gap: 4px 16px;
+    padding: 16px 18px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface); margin-bottom: 12px;
+  }
+  .finding + .finding { margin-top: 12px; }
+  .finding .f-num { font-family: 'IBM Plex Mono', monospace; color: var(--ink-faint); font-size: 12px; grid-row: 1 / 3; padding-top: 2px; }
+  .finding .f-title { font-weight: 600; font-size: 14.5px; color: var(--ink); }
+  .finding .f-body { color: var(--ink-muted); font-size: 13.5px; grid-column: 2; }
+  .finding .f-body code, .finding .f-title code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.92em; background: var(--surface-alt);
+    padding: 1px 5px; border-radius: 4px; color: var(--accent-ink);
+  }
+  .verified {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-family: 'IBM Plex Mono', monospace;
+    color: var(--good); background: var(--good-soft); padding: 2px 8px; border-radius: 20px; margin-top: 8px;
+  }
+
+  /* ---- Section 5: fragility, visually distinct band ---- */
+  .fragility-band {
+    background: var(--flag-soft); border: 1px solid var(--flag-border); border-radius: 12px;
+    padding: 26px 28px 22px;
+  }
+  .fragility-band h2 { color: var(--flag); }
+  .fragility-band h2 .num { background: rgba(0,0,0,0.06); color: var(--flag); }
+  .fragility-band .section-lede { color: var(--flag); opacity: 0.85; }
+  ol.fragility-list { margin: 0; padding: 0 0 0 1.3em; display: flex; flex-direction: column; gap: 14px; }
+  ol.fragility-list li { font-size: 14px; color: var(--ink); }
+  ol.fragility-list li::marker { font-family: 'IBM Plex Mono', monospace; color: var(--flag); font-weight: 600; }
+  ol.fragility-list .f-detail { color: var(--ink-muted); font-size: 13px; display: block; margin-top: 2px; }
+  ol.fragility-list code {
+    font-family: 'IBM Plex Mono', monospace; font-size: 0.92em; background: var(--surface);
+    padding: 1px 5px; border-radius: 4px; color: var(--accent-ink); border: 1px solid var(--border);
+  }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 18px; font-size: 12.5px; color: var(--ink-muted);
+    margin-top: 14px; align-items: center;
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+
+  footer.end {
+    margin-top: 64px; padding-top: 20px; border-top: 1px solid var(--border);
+    font-size: 12px; color: var(--ink-faint); font-family: 'IBM Plex Mono', monospace;
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="top">
+    <span class="eyebrow">base-inglese · lettura, nessuna modifica al codice</span>
+    <h1>Censimento dei 14 moduli</h1>
+    <p class="lede">Fotografia dello stato attuale, ricavata leggendo <code class="mono">index.html</code> riga per riga — configurazione, funzioni condivise, suoni, e i 24 file di test che compongono la suite di regressione.</p>
+  </header>
+
+  <section class="block">
+    <h2><span class="num">1</span> Tabella modulo per modulo</h2>
+    <p class="section-lede">Una riga per modulo, nell'ordine in cui compaiono in mappa (<code class="mono">moduleOrderDefault</code>). Le colonne sì/no sono un pallino pieno o vuoto: uno vuoto in una fila di pieni si vede subito, senza dover leggere il testo.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Chiave</th>
+            <th>Categoria</th>
+            <th>Regola di esito</th>
+            <th>Tentativo che conta</th>
+            <th>Ripasso errori</th>
+            <th>Valvola sicurezza</th>
+            <th>Colori parole</th>
+            <th>Schermata Finale</th>
+            <th>Blocca interfaccia durante l'audio</th>
+            <th>Suoni propri <span style="opacity:.7">(oltre Traguardo/Uscita universali)</span></th>
+            <th>File testi</th>
+            <th>Componenti/funzioni condivise</th>
+            <th>File di test</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td>personalizzazione</td>
+            <td><span class="chip chip-inizio">Inizio</span></td>
+            <td>CompletionRules <span class="cell-muted">(default)</span></td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td class="cell-muted">— <span class="note">(niente Schermata Finale ⇒ niente Traguardo/Uscita)</span></td>
+            <td class="mono cell-muted">— <span class="footnote-marker" title="unico modulo la cui voce in modulesById non dichiara un dataFile proprio">†¹</span></td>
+            <td class="cell-wide">buildSlotFields, personalizationTablesUsed, fillTemplate, markModuleCompleted</td>
+            <td class="filelist">batch2, batch3, batch3b, batch16</td>
+          </tr>
+
+          <tr>
+            <td>repeatAloud</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>CompletionRules</td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td class="cell-muted">—</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">renderRateButtons, toggleSpeak, renderSummaryScreen — schermata intro <b>propria</b> (ra-*), non la generica <span class="footnote-marker" title="già segnalato in-codice per un consolidamento futuro, CLAUDE.md rule 11">†²</span></td>
+            <td class="filelist">batch2, batch5, batch10, batch14, batch15, batch16, batch17, batch18</td>
+          </tr>
+
+          <tr>
+            <td>speakEasy</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>SelfScoreRules <span class="cell-muted">(solo se ci sono spiegazioni da autovalutare)</span></td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td class="cell-muted">—</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">dialogue</span></td>
+            <td class="cell-wide">renderIntroContent (generica), moduleRulesLevel, applyOutcomeSubtitle, renderSummaryScreen</td>
+            <td class="filelist">batch10, batch14, batch15, batch17</td>
+          </tr>
+
+          <tr class="divider">
+            <td>voicePractice</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>ModuleRules</td>
+            <td>lastAttempt</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div><span class="note">contatore visibile al suo posto</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div><span class="note">durante la registrazione</span></td>
+            <td>Corretto/Sbagliato <span class="cell-muted">(per parola)</span></td>
+            <td class="mono">a1-episodio1</td>
+            <td class="cell-wide">componente Voice Coach condiviso (voiceVariant='practice'), lockModuleHeader</td>
+            <td class="filelist">batch12, batch13, batch14, batch15</td>
+          </tr>
+
+          <tr>
+            <td>voiceCoach</td>
+            <td><span class="chip chip-quiz">Quiz</span></td>
+            <td>ModuleRules</td>
+            <td>firstAttempt</td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div><span class="note">durante la registrazione</span></td>
+            <td>Corretto/Sbagliato <span class="cell-muted">(per parola)</span></td>
+            <td class="mono">a1-episodio1</td>
+            <td class="cell-wide">componente Voice Coach condiviso (voiceVariant='check'), retryQueue, openAttemptPopup, lockModuleHeader</td>
+            <td class="filelist">batch3b, batch6, batch8, batch10, batch11, batch12, batch16, batch17, voicecoach</td>
+          </tr>
+
+          <tr class="divider">
+            <td>quickMatchEngIta</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>ModuleRules</td>
+            <td>firstAttempt <span class="footnote-marker" title="dichiarato in CONFIG.attemptRule ma mai letto: il conteggio 'primo tentativo' è cablato direttamente nel modulo">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td>Corretto/Sbagliato</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">buildMultipleChoiceOptions, recordMultipleChoiceResult (condivisa con Speed Round), retryQueue, openAttemptPopup</td>
+            <td class="filelist">batch2b, batch3, batch7, batch9, batch14, batch15, batch17, batch19, new_features</td>
+          </tr>
+
+          <tr>
+            <td>quickMatchItaEng</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>ModuleRules</td>
+            <td>firstAttempt <span class="footnote-marker">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td>Corretto/Sbagliato</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">stesso componente di quickMatchEngIta</td>
+            <td class="filelist">batch17, batch18, batch19 <span class="footnote-marker" title="nessun test apre direttamente questa direzione prima di batch17 — copertura più tardiva/leggera della gemella en→it">†⁴</span></td>
+          </tr>
+
+          <tr class="divider">
+            <td>dialogoAscoltaRipeti</td>
+            <td><span class="chip chip-dialogo">Studia il dialogo</span></td>
+            <td>SelfDeclarationRules <span class="cell-muted">(chiave nel codice: <code class="mono" style="font-size:.85em">selfAssessment</code>)</span></td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div><span class="note">profilo a tap libero, apposta</span></td>
+            <td class="cell-muted">— <span class="note">(Traguardo solo su "Sì, lo so")</span></td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">dialogue</span></td>
+            <td class="cell-wide">componente Dialogo condiviso (profilo ascoltaRipeti), dgPlayLine, dgLockAll, dgFinishModule</td>
+            <td class="filelist">batch3b, batch5, batch9, batch10, batch11, batch16, batch17, batch18, dialogo_extra, new_features</td>
+          </tr>
+
+          <tr>
+            <td>dialogoRipetiATempo</td>
+            <td><span class="chip chip-dialogo">Studia il dialogo</span></td>
+            <td>SelfDeclarationRules</td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div><span class="note">audio + barra a tempo</span></td>
+            <td>Countdown <span class="cell-muted">(fine barra)</span></td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">dialogue</span></td>
+            <td class="cell-wide">stesso componente Dialogo (profilo ripetiATempo), + dg-next-line-btn proprio</td>
+            <td class="filelist">batch3b, batch5, batch14, batch15, batch16, batch17, batch18, dialogo_extra</td>
+          </tr>
+
+          <tr>
+            <td>dialogoContinuo</td>
+            <td><span class="chip chip-dialogo">Studia il dialogo</span></td>
+            <td>SelfDeclarationRules</td>
+            <td class="cell-muted">—</td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div><span class="note">audio + barra + Pausa/Riprendi</span></td>
+            <td>Countdown, Ready <span class="cell-muted">(3-2-1)</span></td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">dialogue</span></td>
+            <td class="cell-wide">stesso componente Dialogo (profilo continuo), srPlayReadyCountdownSound</td>
+            <td class="filelist">batch5, batch16, new_features <span class="footnote-marker" title="il profilo con meno file che lo aprono direttamente rispetto agli altri due">†⁴</span></td>
+          </tr>
+
+          <tr class="divider">
+            <td>speedRoundEngIta</td>
+            <td><span class="chip chip-quiz">Quiz</span></td>
+            <td>ModuleRules</td>
+            <td>firstAttempt <span class="footnote-marker">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div><span class="note">barra del tempo per domanda, non audio</span></td>
+            <td>Corretto/Sbagliato, Ready <span class="cell-muted">(3-2-1 iniziale)</span></td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">recordMultipleChoiceResult (condivisa con Match Practice), lockModuleHeader (giro di questa settimana)</td>
+            <td class="filelist">batch3b, batch7, batch15, batch19, new_features</td>
+          </tr>
+
+          <tr>
+            <td>speedRoundItaEng</td>
+            <td><span class="chip chip-quiz">Quiz</span></td>
+            <td>ModuleRules</td>
+            <td>firstAttempt <span class="footnote-marker">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td>Corretto/Sbagliato, Ready</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">stesso componente di speedRoundEngIta</td>
+            <td class="filelist">solo batch19 <span class="footnote-marker" title="unica direzione/modulo aperta da un solo file su tutta la suite">†⁴</span></td>
+          </tr>
+
+          <tr class="divider">
+            <td>flashcardAEngIta</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>SelfScoreRules</td>
+            <td>firstAttempt <span class="footnote-marker">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td>Corretto/Sbagliato</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">componente Flash Card condiviso (flashcardLevel/flashcardDirection)</td>
+            <td class="filelist">batch7, batch12, batch16, batch17, batch18</td>
+          </tr>
+
+          <tr>
+            <td>flashcardAItaEng</td>
+            <td><span class="chip chip-studio">Studio</span></td>
+            <td>SelfScoreRules</td>
+            <td>firstAttempt <span class="footnote-marker">†³</span></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot on"></span></div></td>
+            <td><div class="dot-row"><span class="dot off"></span></div></td>
+            <td>Corretto/Sbagliato</td>
+            <td class="mono">a1-episodio1 → <span class="cell-muted">vocabulary</span></td>
+            <td class="cell-wide">stesso componente di flashcardAEngIta</td>
+            <td class="filelist"><span class="footnote-marker" title="nessun file la apre direttamente con openModule/data-module — solo come prerequisito nelle liste completedModules">†⁴ nessuno in modo diretto</span></td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+    <div class="legend">
+      <span><span class="dot on"></span> sì</span>
+      <span><span class="dot off"></span> no</span>
+      <span><span class="footnote-marker">†¹ †² †³ †⁴</span> rimandano ai punti 2 e 4 sotto</span>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">2</span> Incoerenze notate</h2>
+    <p class="section-lede">Solo quelle che sembrano dimenticanze, non differenze volute (i due Dialogue col countdown che bloccano l'interfaccia, Voice Practice con lastAttempt, restano fuori: hanno una ragione visibile).</p>
+
+    <div class="finding">
+      <div class="f-num">2.1</div>
+      <div class="f-title">Copertura di test più leggera sulla "direzione B" di tre coppie di moduli</div>
+      <div class="f-body">
+        <code>quickMatchItaEng</code>, <code>speedRoundItaEng</code> e <code>flashcardAItaEng</code> sono aperti direttamente da molti meno file di test della loro gemella en→it — <code>flashcardAItaEng</code> non risulta aperta da <b>nessun</b> file via <code>openModule</code>/<code>data-module</code>, solo elencata nei prerequisiti (<code>completedModules</code>) per sbloccare i moduli successivi. Non è detto sia un buco reale — molta della logica è condivisa con la direzione en→it, quindi è probabile che un bug specifico della direzione it→en passerebbe comunque inosservato se toccasse solo quel ramo (es. l'etichetta di direzione, l'ordine delle colonne del vocabolario).
+        <div class="verified">non corretto, solo segnalato</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="f-num">2.2</div>
+      <div class="f-title">Un commento nel codice cita <code>Speak Easy</code> come esempio di <code>CompletionRules</code>, ma la configurazione dice altro</div>
+      <div class="f-body">
+        Il commento sopra <code>moduleOutcomeRules</code> (riga ~425) elenca "Repeat Aloud, Speak Easy, Your Story" come esempi del comportamento di default (nessuna voce = CompletionRules). Ma <code>speakEasy</code> HA una voce esplicita: <code>selfScoreRules</code>. Il comportamento coincide oggi solo perché l'Episodio 1 non ha spiegazioni da autovalutare (confermato da un test esistente: senza spiegazioni ricade su "Completato" semplice) — ma il commento non è più accurato una volta che un episodio futuro ne avrà. Deriva probabile: Speak Easy è passato a SelfScoreRules in un giro successivo e il commento accanto non è stato aggiornato.
+        <div class="verified">non corretto, solo segnalato</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="f-num">2.3</div>
+      <div class="f-title">Il nome che uso in tabella per la regola di Dialogo non è la chiave reale nel codice</div>
+      <div class="f-body">
+        Per rispettare le colonne che avete chiesto ho scritto "SelfDeclarationRules" per i tre Dialogue, ma la chiave che il codice usa davvero in <code>moduleOutcomeRules</code> è <code>selfAssessment</code>. Non so se è una svista mia nel tradurre la vostra richiesta o se un tempo la chiave si chiamava davvero così — lo segnalo per sicurezza, non per insinuare un problema nel codice.
+        <div class="verified">nota di trascrizione, non un bug</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="f-num">2.4</div>
+      <div class="f-title"><code>personalizzazione</code> è l'unico modulo la cui voce in <code>modulesById</code> non dichiara un <code>dataFile</code> proprio</div>
+      <div class="f-body">
+        Le altre 13 voci hanno tutte <code>dataFile: 'data/a1-episodio1-inglese.json'</code> scritto esplicitamente; quella di personalizzazione no. Ho verificato il motivo: personalizzazione risolve le sue tabelle tramite <code>ensureEpisodeSlotFields(episode)</code>, che legge il <code>dataFile</code> a livello di EPISODIO, non quello del modulo — quindi non è un buco funzionale, il meccanismo è diverso di proposito. Lo lascio comunque visibile in tabella perché è l'unica riga diversa dalle altre 13 su quella colonna, e volevate vedere esattamente questo genere di cosa a colpo d'occhio.
+        <div class="verified">verificato: non è un bug</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">3</span> Codice che non fa più niente</h2>
+    <p class="section-lede">Oltre ai due casi già noti (vista <code class="mono">#view-pronunciation</code> legacy, e il ramo <code class="mono">vcVariant === 'check'</code> in <code class="mono">openAttemptPopup</code> morto dopo lo sdoppiamento di Voice) — cercati altri con una lettura mirata, non uno sweep esaustivo delle 9965 righe.</p>
+
+    <div class="finding">
+      <div class="f-num">3.1</div>
+      <div class="f-title">Non ho trovato un terzo caso comparabile</div>
+      <div class="f-body">
+        Ho cercato commenti-spia ("legacy", "non più usato", "morto", "deprecato", varianti di "non serve più") e controllato ogni ramo <code>vcVariant === 'practice'/'check'</code> rimasto: sono tutti raggiungibili, entrambi i lati attivi. Non è una garanzia assoluta su un file di ~10.000 righe letto con ricerche mirate invece che con un analizzatore statico — ma non ho trovato niente di comparabile ai due casi che già conoscevate.
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <h2><span class="num">4</span> Parametri orfani in APP_CONFIG</h2>
+    <p class="section-lede">Controllati i parametri che hanno una voce in <code class="mono">configFieldDescriptions</code> (quelli pensati per il futuro pannello Admin) contro i punti del codice che li leggono davvero.</p>
+
+    <div class="finding">
+      <div class="f-num">4.1</div>
+      <div class="f-title">Sei voci di <code>CONFIG.attemptRule</code> sono dichiarate ma non lette mai</div>
+      <div class="f-body">
+        <code>attemptRule.quickMatchEngIta</code>, <code>.quickMatchItaEng</code>, <code>.speedRoundEngIta</code>, <code>.speedRoundItaEng</code>, <code>.flashcardAEngIta</code>, <code>.flashcardAItaEng</code> valgono tutte <code>'firstAttempt'</code> — ma l'unico punto del codice che legge <code>CONFIG.attemptRule[...]</code> a runtime è il componente Voice Coach (per <code>voicePractice</code>/<code>voiceCoach</code>). Per Match Practice, Speed Match e Flash Card il comportamento "conta solo il primo tentativo" è scritto direttamente nel modulo (contatori come <code>qmFirstTryCorrectCount</code>), non letto da questa chiave. Conseguenza concreta: se in futuro qualcuno cambiasse questi sei valori dal pannello Admin (quando esisterà), non cambierebbe nulla — l'unica cosa che l'admin potrebbe davvero cambiare oggi è <code>voicePractice</code>/<code>voiceCoach</code>.
+        <div class="verified">verificato via ricerca di ogni lettura di CONFIG.attemptRule[…]</div>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="f-num">4.2</div>
+      <div class="f-title">Nessun'altra voce documentata risulta orfana</div>
+      <div class="f-body">
+        Controllate a campione anche <code>mastery.promotionStreak</code>, <code>limits.userNameMaxLength</code>, <code>CONFIG.flashcard.levels</code> e l'intero blocco <code>sound.events.*</code>: tutte lette da almeno un punto del codice. Non ho ripercorso ogni singola foglia di <code>APP_CONFIG</code> — solo quelle con una voce in <code>configFieldDescriptions</code>, cioè quelle pensate per essere visibili/modificabili dal pannello di configurazione.
+      </div>
+    </div>
+  </section>
+
+  <section class="block fragility-band">
+    <h2><span class="num">5</span> Fragilità tecniche</h2>
+    <p class="section-lede">Solo l'elenco, opinione tecnica, senza correggere né proporre soluzioni dettagliate.</p>
+    <ol class="fragility-list">
+      <li>Il prefisso <code>sr</code> indica due cose diverse nello stesso file: le variabili/funzioni proprie di Speed Round (<code>srCurrentItem</code>, <code>srDisableOptions</code>…) <b>e</b> l'intera libreria di suoni condivisa da ogni modulo (<code>srPlayCorrectSound</code>, <code>srPlayTraguardoSound</code>, <code>srPlayTone</code>…), che Speed Round non possiede più di chiunque altro.
+        <span class="f-detail">Rischio concreto: chi in futuro tocca Speed Round può leggere <code>srPlayWrongSound</code> come "roba sua" e spostarla/rinominarla, rompendo silenziosamente Match Practice, Flash Card, Dialogo e Voice Coach che la chiamano allo stesso modo.</span>
+      </li>
+      <li>La schermata di introduzione di Repeat Aloud è un'implementazione a sé (<code>raShowScreen</code>, <code>renderRaIntroContent</code>, <code>openRaIntro</code>) invece di passare dalla generica <code>renderIntroContent</code> che usano tutti gli altri moduli — già segnalata nel codice stesso come debito da consolidare, non una scoperta di oggi.
+        <span class="f-detail">Ogni futura modifica al comportamento standard delle intro (es. questa sessione, "Spiegazione sempre visibile durante l'esercizio") va replicata a mano anche qui, o rischia di disallinearsi senza che nessun test se ne accorga finché non si guarda proprio Repeat Aloud.</span>
+      </li>
+      <li>La suite di regressione cresce linearmente ed è sequenziale (un file Playwright/Chromium alla volta, nessuna parallelizzazione) — già discusso oggi: non blocca nulla adesso, ma è una crescita che vale la pena tenere d'occhio superati i 30-40 file.</li>
+      <li><code>test_batch14.js</code> (Job7b) e <code>test_batch15.js</code> (Job8) coprivano, prima della correzione di oggi, in gran parte lo stesso pulsante (<code>dg-next-line-btn</code>) con verifiche molto simili — Job7b più completo (controlla anche il doppio conteggio e la persistenza dell'uso). Non uno spreco grave, ma un candidato a un futuro accorpamento se la suite continua a crescere.</li>
+      <li>Il meccanismo di blocco dell'interfaccia non è UNO, sono tre meccanismi distinti che nella tabella qui sopra finiscono sotto la stessa colonna: <code>dgLockAll</code> (Dialogo, per audio+countdown), <code>lockModuleHeader</code> (Voice Coach, per la registrazione), e il lock del timer di Speed Match aggiunto questa settimana. Funzionano bene ciascuno per il proprio caso, ma non condividono codice tra loro — tre implementazioni parallele dello stesso concetto ("qualcosa non tollera interruzioni").</li>
+    </ol>
+  </section>
+
+  <footer class="end">Letto interamente da index.html (9965 righe) e dai 24 file della suite di test — nessuna riga modificata.</footer>
+
+</div>

@@ -28,3 +28,12 @@ completo. Per lanciare un solo file: `node tests/test_batchN.js`.
 
 Richiede Playwright installato (Node in grado di risolvere
 `require('playwright')`) e un Chromium che Playwright possa avviare.
+
+## Sottocartelle
+
+Non fanno parte della suite lanciata da `run_full_regression.sh` — vedi il
+README di ciascuna per cosa sono e perché sono state tenute:
+
+- `tools/` — script di verifica visiva (screenshot).
+- `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
+- `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
