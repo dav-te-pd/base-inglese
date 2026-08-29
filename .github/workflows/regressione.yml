@@ -1,0 +1,45 @@
+# Lancia la suite di regressione completa a ogni push su main, così un test
+# rotto si vede da solo senza dipendere dal fatto che qualcuno si ricordi di
+# lanciarla (CLAUDE.md, regole 15 e 24).
+name: Suite di regressione
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  regressione:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installa le dipendenze
+        run: npm ci
+
+      - name: Installa Chromium per Playwright
+        run: npx playwright install --with-deps chromium
+
+      # Avvia il server, lancia i 25 file, ferma il server. Esce con codice 1
+      # se anche un solo file fallisce.
+      - name: Lancia la suite
+        run: npm test
+
+      # Nel log della suite compaiono solo le ultime righe di ogni file: se
+      # qualcosa è rosso, qui c'è l'output completo di chi ha fallito, senza
+      # doverlo riprodurre in locale.
+      - name: Output completo dei file falliti
+        if: failure()
+        run: |
+          for f in tests/*.result.txt; do
+            if grep -q "FAIL" "$f" || ! grep -q "passed ===" "$f"; then
+              echo "===== $f ====="
+              cat "$f"
+            fi
+          done
