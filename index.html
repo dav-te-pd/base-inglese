@@ -95,7 +95,7 @@
     // ---- shared sound catalog — EVENTS, not buttons ----
     // Every sound in the app is a reaction to one of these events, never to
     // a specific button: a module's click handler calls the matching
-    // playXSound() function (see near srPlayTone), which reads ONLY this
+    // playXSound() function (see near sfxPlayTone), which reads ONLY this
     // catalog. The event, not the widget that triggered it, decides
     // whether — and which — sound plays.
     //   corretto   — a single right answer/attempt (Speed Round, Quick
@@ -123,8 +123,8 @@
     sound: {
       events: {
         // Same sine-wave/exponential-envelope family as every other tone
-        // (see srPlayTone) — corretto has no explicit volume, so it uses
-        // srPlayTone's own 0.15 default; sbagliato is louder on purpose
+        // (see sfxPlayTone) — corretto has no explicit volume, so it uses
+        // sfxPlayTone's own 0.15 default; sbagliato is louder on purpose
         // (see its own comment below).
         corretto: {
           freq: 880,
@@ -162,8 +162,8 @@
           durationMs: 100
         },
         // Three ascending notes, same sine-wave/exponential-envelope
-        // family as srPlayTone — built by calling it three times in
-        // sequence (see srPlayTraguardoSound), not a new synthesis
+        // family as sfxPlayTone — built by calling it three times in
+        // sequence (see sfxPlayTraguardoSound), not a new synthesis
         // technique. One octave above the previous pitch (job: "un'ottava
         // sopra"), same ascending 3-note structure and timing.
         traguardo: {
@@ -317,7 +317,7 @@
       countdownPre: 3,
       countdownStepMs: 800,
       // If true, also play the Countdown tone when a line's bar STARTS,
-      // not just when it ends. Off by default — see srPlayCountdownSound
+      // not just when it ends. Off by default — see sfxPlayCountdownSound
       // and CONFIG.sound.events.countdown; no ticking during the bar either way.
       suonoCountdownInizio: false,
       profiles: {
@@ -457,28 +457,34 @@
     },
     // ---- Which attempt counts toward a moduleRules score, keyed by
     // module id — orthogonal to moduleOutcomeRules above (that says WHAT
-    // colors the badge; this says WHICH number feeds it):
-    //   lastAttempt (LastAttemptRule) — for modules WITH a same-phrase
-    //     retry (Voice Practice's "Esercitati ancora"): the latest
-    //     attempt on each phrase always replaces the earlier one, better
-    //     or worse — training is about where you ended up, not where you
-    //     started.
-    //   firstAttempt (FirstAttemptRule) — for modules with NO same-phrase
-    //     retry, only a later ripasso pass (Voice Check, Speed Match, the
-    //     future Test): frozen at the very first pass, before the
-    //     ripasso — otherwise the ripasso (which repeats until correct)
-    //     would push every score toward 100%.
-    // A future module with its own retry mechanic picks one of the two
-    // here instead of reimplementing either scoring loop.
+    // colors the badge; this says WHICH number feeds it). Only listed
+    // here for a module that actually has a SAME-PASS retry mechanic
+    // (a way to re-attempt one item before moving on), because that's
+    // the only situation where "which attempt counts" is a real choice:
+    //   lastAttempt (LastAttemptRule) — Voice Practice's "Esercitati
+    //     ancora": the latest attempt on each phrase always replaces the
+    //     earlier one, better or worse — training is about where you
+    //     ended up, not where you started.
+    //   firstAttempt (FirstAttemptRule) — Voice Check: frozen at the
+    //     very first pass, before the later ripasso pass — otherwise the
+    //     ripasso (which repeats until correct) would push the score
+    //     toward 100%.
+    // Speed Match/Match Practice/Flash Card have NO same-pass retry (an
+    // answer is locked in the moment it's given; a wrong one only comes
+    // back in a separate ripasso pass, same freeze-before-ripasso need as
+    // Voice Check above) — firstAttempt isn't a configurable choice for
+    // them, it's the only attempt that ever exists, hardcoded into each
+    // module's own first-try counter (qmFirstTryCorrectCount and
+    // siblings). Six entries here for those three modules/6 directions
+    // used to declare 'firstAttempt' anyway, never read by anything —
+    // removed (censimento audit, job 2) rather than wired up, since
+    // wiring a read into modules with nothing to branch on would just be
+    // a second copy of "always first attempt" that could drift from the
+    // hardcoded one. A future module with its own same-pass retry picks
+    // one of the two rules here instead of reimplementing either loop.
     attemptRule: {
       voicePractice: 'lastAttempt',
-      voiceCoach: 'firstAttempt',
-      speedRoundEngIta: 'firstAttempt',
-      speedRoundItaEng: 'firstAttempt',
-      quickMatchEngIta: 'firstAttempt',
-      quickMatchItaEng: 'firstAttempt',
-      flashcardAEngIta: 'firstAttempt',
-      flashcardAItaEng: 'firstAttempt'
+      voiceCoach: 'firstAttempt'
     },
     // ---- Module display names — the ONE place a module's name/subtitle
     // is written. Keyed by module id (same keys as EPISODES.episode1.
@@ -4515,15 +4521,15 @@
      The first tone ever played through a freshly-created AudioContext
      comes out distorted (most audible on Repeat Aloud/Speak Easy, the
      first modules to touch the audio system) — a one-buffer glitch
-     while the context's pipeline spins up, not a bug in srPlayTone
+     while the context's pipeline spins up, not a bug in sfxPlayTone
      itself. Absorb that glitch on the user's first tap ANYWHERE on the
      page, silently (0 gain), instead of on the first real Corretto/
-     Traguardo sound. srGetAudioCtx()/srPlayTone are defined later in
+     Traguardo sound. sfxGetAudioCtx()/sfxPlayTone are defined later in
      this same closure (hoisted) but that's fine — this only ever runs
      from a later user-triggered event.
      ============================================================ */
   function warmAudioContextOnce() {
-    var ctx = srGetAudioCtx();
+    var ctx = sfxGetAudioCtx();
     if (!ctx) return;
     if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
     try {
@@ -4617,7 +4623,7 @@
       '<p class="sr-summary-subtitle" id="' + titleId + '-sub"></p>' +
       '</div>' +
       '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
-    document.getElementById(completeBtnId).addEventListener('click', srPlayExitSound);
+    document.getElementById(completeBtnId).addEventListener('click', sfxPlayExitSound);
   }
 
   // Schermata Ripasso: the message shown once before a new retry pass
@@ -6633,7 +6639,7 @@
     // moment every other module's Traguardo fires (reaching its own
     // Schermata Finale), never to "← Mappa" above (leaves without
     // completing) nor to the summary's own exit button below.
-    srPlayTraguardoSound();
+    sfxPlayTraguardoSound();
     raShowScreen('summary');
     applyOutcomeSubtitle('repeat-aloud-summary-title-sub', 'studioCompleteMessages', 'default');
   });
@@ -6867,7 +6873,7 @@
     // Same reasoning as Repeat Aloud's own complete button above —
     // Traguardo fires here (declaring the study done), never on "← Mappa"
     // nor on the summary's own exit button below.
-    srPlayTraguardoSound();
+    sfxPlayTraguardoSound();
     seShowScreen('summary');
     // SelfScoreRules (job 10): pct is frozen HERE, at "Ho finito" — there's
     // no separate ripasso pass for the self-check to conflict with (job
@@ -7328,7 +7334,7 @@
   }
 
   function vcFinishModule() {
-    srPlayTraguardoSound();
+    sfxPlayTraguardoSound();
     vcShowScreen('summary');
     // CONFIG.attemptRule picks which numbers feed the average: Voice
     // Check (firstAttempt) reads vcFirstAttemptPercents, frozen before
@@ -7508,7 +7514,7 @@
     // corretta"/"risposta sbagliata" event, same pass/fail bar (stars > 1)
     // used above for the retry-queue and below for the popup — reused,
     // not a second threshold.
-    if (passed) srPlayCorrectSound(); else srPlayWrongSound();
+    if (passed) sfxPlayCorrectSound(); else sfxPlayWrongSound();
 
     vcCurrentEvaluated = true;
     updateVcActionButtons();
@@ -7912,9 +7918,10 @@
   }
 
   function qmFinishModule() {
-    srPlayTraguardoSound();
+    sfxPlayTraguardoSound();
     qmShowScreen('summary');
-    // firstAttempt (CONFIG.attemptRule.quickMatchEngIta/ItaEng): qmFirstTryCorrectCount
+    // firstAttempt is the only attempt that exists here (no same-pass
+    // retry — see CONFIG.attemptRule's own comment): qmFirstTryCorrectCount
     // only ever increments on an item's very first attempt, so this pct is
     // already frozen before the ripasso pass — same number feeds both the
     // message tone here and the ModuleRules map badge (quick-match-complete-btn).
@@ -7987,13 +7994,13 @@
     var attemptNum;
     if (opt.correct) {
       btn.classList.add('is-correct');
-      srPlayCorrectSound();
+      sfxPlayCorrectSound();
       attemptNum = qmRecordResult(true);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: true };
       setTimeout(qmGoNext, CONFIG.quickMatch.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
-      srPlayWrongSound();
+      sfxPlayWrongSound();
       attemptNum = qmRecordResult(false);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
       qmShowReveal();
@@ -8013,7 +8020,7 @@
 
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
     qmDisableOptions();
-    srPlayWrongSound();
+    sfxPlayWrongSound();
     var attemptNum = qmRecordResult(false, true); // declared non-attempt -> straight to rosso
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
     qmShowReveal();
@@ -8350,7 +8357,7 @@
     var fillEl = bubble.querySelector('.sr-timerbar-fill');
     var ms = dgLineDurationMs(fillTemplate(line.english, currentEpisode, currentValues, 'en'));
     bubble.classList.add('dg-bubble-timer');
-    if (CONFIG.dialogo.suonoCountdownInizio) srPlayCountdownSound();
+    if (CONFIG.dialogo.suonoCountdownInizio) sfxPlayCountdownSound();
     dgLineTimerFillEl = fillEl;
     dgLineTimerRemainingMs = ms;
     dgLineTimerLine = line;
@@ -8398,7 +8405,7 @@
   // unlocks and suggests the next one (Ripeti a Tempo).
   function dgLineTimerFinished(bubble, line) {
     bubble.classList.remove('dg-bubble-timer');
-    srPlayCountdownSound();
+    sfxPlayCountdownSound();
     if (dgProfile.advance === 'auto') {
       var next = dgNextDialogueLine(line);
       if (next) {
@@ -8498,7 +8505,7 @@
   // self-assessment for the whole dialogue, not per-word: this module
   // never touches loadMastery/saveMastery. Traguardo plays only on verde.
   function dgFinishModule(level) {
-    if (level === 'verde') srPlayTraguardoSound();
+    if (level === 'verde') sfxPlayTraguardoSound();
     saveModuleOutcome(currentEpisode, getUserName(), dgModule.id, {
       level: level,
       linesListened: dgHeardIds.length,
@@ -8554,7 +8561,7 @@
         return;
       }
       el.textContent = n;
-      srPlayReadyCountdownSound(n === 1);
+      sfxPlayReadyCountdownSound(n === 1);
       n--;
       dgReadyTimeoutId = setTimeout(tick, CONFIG.dialogo.countdownStepMs);
     }
@@ -8733,7 +8740,12 @@
   var srCurrentOptions = [];
   var srTimeoutId = null;
   var srCountdownTimeoutId = null;
-  var srAudioCtx = null;
+  // sfxAudioCtx is NOT Speed Round's own state despite sitting in this
+  // block — it's the one shared AudioContext behind every sfxPlay*
+  // function below, used by every module (censimento audit, job 1: the
+  // old "sr" prefix on the whole sound library read as Speed-Round-only
+  // and invited exactly this kind of misplacement).
+  var sfxAudioCtx = null;
 
   function srShuffle(list) {
     var a = list.slice();
@@ -8744,11 +8756,11 @@
     return a;
   }
 
-  function srGetAudioCtx() {
-    if (!srAudioCtx) {
+  function sfxGetAudioCtx() {
+    if (!sfxAudioCtx) {
       var AC = window.AudioContext || window.webkitAudioContext;
       if (!AC) return null;
-      srAudioCtx = new AC();
+      sfxAudioCtx = new AC();
     }
     // The browser can auto-suspend an idle AudioContext (power saving,
     // backgrounding); a suspended context drops start()'d oscillators
@@ -8756,14 +8768,14 @@
     // heard" even though this function was called correctly. Every sound
     // call goes through here, so resuming here covers all of them, not
     // just the boot-time warm-up (warmAudioContextOnce).
-    if (srAudioCtx.state === 'suspended') { try { srAudioCtx.resume(); } catch (e) {} }
-    return srAudioCtx;
+    if (sfxAudioCtx.state === 'suspended') { try { sfxAudioCtx.resume(); } catch (e) {} }
+    return sfxAudioCtx;
   }
 
   // volume defaults to 0.15 (Corretto/Traguardo's own level) when omitted —
   // Sbagliato/Countdown pass their own CONFIG.sound.events.*.volume.
-  function srPlayTone(freq, durationMs, volume) {
-    var ctx = srGetAudioCtx();
+  function sfxPlayTone(freq, durationMs, volume) {
+    var ctx = sfxGetAudioCtx();
     if (!ctx) return;
     try {
       var osc = ctx.createOscillator();
@@ -8783,17 +8795,21 @@
   // comment) — every caller below names the EVENT it just had, never a
   // button; each function reads ONLY its own CONFIG.sound.events entry,
   // so retuning a pitch/volume/duration in config is the only way to
-  // change what plays, anywhere. ----
-  function srPlayCorrectSound() {
+  // change what plays, anywhere. "sfx" (not "sr"): this whole family is
+  // called from every module — Dialogo, Voice Coach, Quick Match, Flash
+  // Card, Speed Round alike — never Speed Round's own, so it needed a
+  // prefix that says "global" the moment it stopped being one module's
+  // (censimento audit, job 1). ----
+  function sfxPlayCorrectSound() {
     var cfg = CONFIG.sound.events.corretto;
-    srPlayTone(cfg.freq, cfg.durationMs);
+    sfxPlayTone(cfg.freq, cfg.durationMs);
   }
-  function srPlayWrongSound() {
+  function sfxPlayWrongSound() {
     var cfg = CONFIG.sound.events.sbagliato;
-    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
   }
 
-  // Traguardo: three ascending notes via srPlayTone in sequence (CLAUDE.md
+  // Traguardo: three ascending notes via sfxPlayTone in sequence (CLAUDE.md
   // rule 13 — no new synthesis technique), CONFIG.sound.events.traguardo's
   // own frequencies/durations/gap. Plays whenever a module closes with a
   // positive or neutral outcome — Speed Round, Quick Match and Flash
@@ -8802,19 +8818,19 @@
   // ancora" — see dgFinishModule), Voice Practice/Voice Check's own Finale
   // below, Repeat Aloud/Speak Easy's own completion button (their own
   // click IS the completion event — see CONFIG.sound's own comment).
-  function srPlayTraguardoSound() {
+  function sfxPlayTraguardoSound() {
     var cfg = CONFIG.sound.events.traguardo;
     cfg.notes.forEach(function (freq, i) {
-      setTimeout(function () { srPlayTone(freq, cfg.noteDurationMs); }, i * (cfg.noteDurationMs + cfg.noteGapMs));
+      setTimeout(function () { sfxPlayTone(freq, cfg.noteDurationMs); }, i * (cfg.noteDurationMs + cfg.noteGapMs));
     });
   }
 
   // Countdown: plays once when a Dialogo per-line timer bar finishes (see
   // dgLineTimerFinished) — never a tick during the bar itself, that time
   // is reserved for the user to speak out loud.
-  function srPlayCountdownSound() {
+  function sfxPlayCountdownSound() {
     var cfg = CONFIG.sound.events.countdown;
-    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
   }
 
   // One note per digit of a 3-2-1 "get ready" countdown — shared by Speed
@@ -8822,18 +8838,18 @@
   // (CLAUDE.md rule 13). isFinal (the last digit, "1") gets the slightly
   // higher CONFIG.sound.events.ready.finalFreq; every other digit gets the
   // same freq.
-  function srPlayReadyCountdownSound(isFinal) {
+  function sfxPlayReadyCountdownSound(isFinal) {
     var cfg = CONFIG.sound.events.ready;
-    srPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
+    sfxPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
   }
 
   // Uscita: the "Ho finito, torna alla mappa" button on every Schermata
   // Finale (job 6, 3rd collaudo) — wired once in renderSummaryScreen, not
   // per module. See CONFIG.sound.events.uscita's own comment for why it's
   // pitched below Traguardo instead of reusing it.
-  function srPlayExitSound() {
+  function sfxPlayExitSound() {
     var cfg = CONFIG.sound.events.uscita;
-    srPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
+    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
   }
 
   function srClearTimer() {
@@ -9033,7 +9049,7 @@
   function srHandleTimeout() {
     srTimeoutId = null;
     srDisableOptions();
-    srPlayWrongSound();
+    sfxPlayWrongSound();
     var attemptNum = srRecordResult(false);
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
     srShowReveal();
@@ -9043,10 +9059,12 @@
   // simplification, per explicit request) — just the completion screen.
   function srFinishModule() {
     srClearTimer();
-    srPlayTraguardoSound();
+    sfxPlayTraguardoSound();
     srShowScreen('summary');
-    // firstAttempt (CONFIG.attemptRule): frozen before the ripasso pass —
-    // same pct feeds the message tone here and the ModuleRules map badge.
+    // firstAttempt is the only attempt that exists here (no same-pass
+    // retry — see CONFIG.attemptRule's own comment): frozen before the
+    // ripasso pass — same pct feeds the message tone here and the
+    // ModuleRules map badge.
     var pct = srVocab.length ? Math.round((srFirstTryCorrectCount / srVocab.length) * 100) : 0;
     srLastAvgPct = pct;
     applyOutcomeSubtitle('sr-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
@@ -9074,7 +9092,7 @@
     function tick() {
       if (n <= 0) { srCountdownTimeoutId = null; srStartQuiz(); return; }
       el.textContent = n;
-      srPlayReadyCountdownSound(n === 1);
+      sfxPlayReadyCountdownSound(n === 1);
       n--;
       srCountdownTimeoutId = setTimeout(tick, CONFIG.speedRound.countdownStepMs);
     }
@@ -9125,13 +9143,13 @@
     var attemptNum;
     if (opt.correct) {
       btn.classList.add('is-correct');
-      srPlayCorrectSound();
+      sfxPlayCorrectSound();
       attemptNum = srRecordResult(true);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: true };
       setTimeout(srGoNext, CONFIG.speedRound.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
-      srPlayWrongSound();
+      sfxPlayWrongSound();
       attemptNum = srRecordResult(false);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
       srShowReveal();
@@ -9142,7 +9160,7 @@
     srClearTimer();
     srFreezeTimer();
     srDisableOptions();
-    srPlayWrongSound();
+    sfxPlayWrongSound();
     var attemptNum = srRecordResult(false, true); // declared non-attempt -> straight to rosso
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
     srShowReveal();
@@ -9362,10 +9380,12 @@
   function fcFinishPassCheck() {
     var wrongIds = fcPassItems.filter(function (id) { return fcPassResults[id] !== 'correct'; });
     if (wrongIds.length === 0) {
-      srPlayTraguardoSound();
+      sfxPlayTraguardoSound();
       fcShowScreen('summary');
-      // firstAttempt (CONFIG.attemptRule): frozen before the ripasso pass —
-      // same pct feeds the message tone here and the SelfScoreRules map badge.
+      // firstAttempt is the only attempt that exists here (no same-pass
+      // retry — see CONFIG.attemptRule's own comment): frozen before the
+      // ripasso pass — same pct feeds the message tone here and the
+      // SelfScoreRules map badge.
       var pct = fcVocab.length ? Math.round((fcFirstTryCorrectCount / fcVocab.length) * 100) : 0;
       fcLastAvgPct = pct;
       applyOutcomeSubtitle('fc-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
@@ -9514,10 +9534,10 @@
 
   // "Sì, la so" plays Corretto — one card of fifteen, not a completion
   // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
-  // Finale, see srPlayTraguardoSound's comment).
+  // Finale, see sfxPlayTraguardoSound's comment).
   document.getElementById('fc-know-it-btn').addEventListener('click', function () {
     var attemptNum = fcRecordResult('correct');
-    srPlayCorrectSound();
+    sfxPlayCorrectSound();
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
     fcAnswered = true;
     fcGoNext();
