@@ -8880,14 +8880,10 @@
   // Same non-attempt bug as Quick Match's qmDisableOptions (rule 13: mirrors
   // that fix exactly) — "Non lo so" must lock together with the options,
   // not separately, or a fast tap can overwrite a just-recorded correct
-  // answer with a straight-to-rosso non-attempt. This is also the single
-  // choke point every question-ending path (option tap, "Non lo so", timeout)
-  // already goes through, so it doubles as where the per-question timer's
-  // Spiegazione/Help lock (see srStartTimer) gets released again.
+  // answer with a straight-to-rosso non-attempt.
   function srDisableOptions() {
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b) { b.disabled = true; });
     document.getElementById('sr-dontknow-btn').disabled = true;
-    lockModuleHeader('speed-round', false);
   }
 
   function srShowScreen(name) {
@@ -9024,6 +9020,14 @@
     document.getElementById('sr-reveal').hidden = false;
     document.getElementById('sr-dontknow-btn').hidden = true;
     document.getElementById('sr-advance-btn').hidden = false;
+    // Spiegazione/Help release the timer lock only here — the three
+    // callers of srShowReveal (wrong tap, timeout, "Non lo so") are
+    // exactly the cases with a correct answer to read. A CORRECT tap
+    // skips this function entirely and goes straight to srGoNext, so the
+    // header stays locked through that sub-second pause instead of
+    // flashing on and off with nothing to actually read (adjustment,
+    // 9th collaudo).
+    lockModuleHeader('speed-round', false);
   }
 
   function srHandleTimeout() {
