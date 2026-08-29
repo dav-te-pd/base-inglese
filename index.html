@@ -2862,9 +2862,10 @@
   .record-toggle-btn:active { transform: scale(0.96); }
 
   /* Same disabled treatment as .btn:disabled — needed here because
-     .record-toggle-btn isn't a .btn. Covers both the permanent case (no
-     SpeechRecognition support) and the temporary one (model audio playing
-     from the listen block, Regola Azione Critica in reverse). */
+     .record-toggle-btn isn't a .btn. Covers the permanent case (no
+     SpeechRecognition support) — pressing Record while the model audio
+     plays now stops that audio instead of being disabled (correction,
+     5th collaudo). */
   .record-toggle-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -6602,20 +6603,12 @@
     var item = data && data.vocabulary.find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
     var rateAttr = btn.getAttribute('data-rate');
-    // Regola Azione Critica (job 1, 4th collaudo): only Mappa stays
-    // clickable while a word plays — every other listen/rate button and
-    // "Ho finito" lock together, same generic helpers Speak Easy/Flash
-    // Card/Quick Match now use.
-    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-      onStart: function () {
-        lockAudioControls(['#repeat-aloud-body button', '#repeat-aloud-complete'], true);
-        lockModuleHeader('repeat-aloud', true);
-      },
-      onEnd: function () {
-        lockAudioControls(['#repeat-aloud-body button', '#repeat-aloud-complete'], false);
-        lockModuleHeader('repeat-aloud', false);
-      }
-    });
+    // Correction (5th collaudo): job 1 (4th collaudo) locked every other
+    // control here, but this module has no countdown to desync — free
+    // browsing (tap any word, any order, any time) is the intended
+    // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
+    // handles switching between words safely on its own.
+    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
@@ -6634,6 +6627,11 @@
   });
 
   document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
+    // "Ho finito" moves into the Schermata Finale — stop any word still
+    // playing so it doesn't bleed into it (Regola Azione Critica: no
+    // lock needed here, just stop-on-touch, like everywhere without a
+    // countdown).
+    if (synth && synth.speaking) synth.cancel();
     // Job 4 (earlier turn): Traguardo plays on every positive/neutral
     // completion — tied to THIS event (declaring the study done), same
     // moment every other module's Traguardo fires (reaching its own
@@ -6791,19 +6789,9 @@
       if (!line) return;
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var rateAttr = listenBtn.getAttribute('data-rate');
-      // Regola Azione Critica (job 1, 4th collaudo): see Repeat Aloud's
-      // own comment — same generic lock, this module's own container/
-      // complete button.
-      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-        onStart: function () {
-          lockAudioControls(['#speak-easy-body button', '#speak-easy-complete'], true);
-          lockModuleHeader('speak-easy', true);
-        },
-        onEnd: function () {
-          lockAudioControls(['#speak-easy-body button', '#speak-easy-complete'], false);
-          lockModuleHeader('speak-easy', false);
-        }
-      });
+      // Correction (5th collaudo): see Repeat Aloud's own comment — no
+      // countdown here either, free tapping is the intended behavior.
+      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
       return;
     }
     var toggleBtn = e.target.closest('[data-toggle-translation]');
@@ -6880,6 +6868,10 @@
   });
 
   document.getElementById('speak-easy-complete').addEventListener('click', function () {
+    // Stop-on-touch, same as Repeat Aloud's own complete button — no
+    // lock needed, just don't let a still-playing line bleed into the
+    // Schermata Finale.
+    if (synth && synth.speaking) synth.cancel();
     // Same reasoning as Repeat Aloud's own complete button above —
     // Traguardo fires here (declaring the study done), never on "← Mappa"
     // nor on the summary's own exit button below.
@@ -7105,9 +7097,12 @@
     // (see the vc-record-btn click handler), not from the browser's own
     // async "recognition started" event, so the lock is instantaneous.
     // Regola Azione Critica, shared lock/unlock for "Spiegazione" + "Help"
-    // — now the same generic lockModuleHeader every module's own
-    // toggleSpeak onStart/onEnd calls into (see near toggleSpeak), instead
-    // of a Voice-Coach-only helper.
+    // (lockModuleHeader, see near toggleSpeak) — this is the RECORDING
+    // direction specifically (the mic picking up the model's own voice
+    // if it were tapped mid-recording), not the general audio-playback
+    // rule, which is stop-on-touch everywhere outside a countdown
+    // profile (correction, 5th collaudo) — this lock is the one
+    // deliberate exception left, and only while actually recording.
     lockModuleHeader('voice-coach', recording);
     document.querySelectorAll('#vc-audio-controls button').forEach(function (b) { b.disabled = recording; });
   }
@@ -7319,6 +7314,10 @@
     // safety-valve popup's "Vai avanti" also calls vcNextLine directly
     // (see the vcEvaluate call site below), bypassing the button.
     if (vcMicConfirmedProblem) return;
+    // Correction (5th collaudo): stop-on-touch, not a lock — advancing
+    // while the model was still re-reading the target shouldn't leave
+    // that audio bleeding into the next line.
+    if (synth && synth.speaking) synth.cancel();
     if (vcQueue.length === 0) {
       if (vcRetryQueue.length > 0) {
         vcQueue = srShuffle(vcRetryQueue);
@@ -7541,36 +7540,12 @@
     var btn = e.target.closest('[data-say]');
     if (!btn) return;
     var rateAttr = btn.getAttribute('data-rate');
-    // Regola Azione Critica, in the opposite direction from setVcState's
-    // recording-disables-listen-block: while the model audio is playing,
-    // disable Record too, so the mic can't pick up the model's own voice
-    // and skew the pronunciation grading.
-    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-      // Regola Azione Critica (listening direction, mirrors setVcState's
-      // recording direction above): Spiegazione + Help + Record all lock
-      // together, instantly (see toggleSpeak's onStart — fires
-      // synchronously, not from the engine's own async "started" event).
-      // Job 1 (4th collaudo): Avanti/Riprova now lock too — re-listening
-      // to the target after an attempt was already evaluated left both
-      // clickable, so tapping one mid-playback could advance/retry while
-      // the model's own audio was still speaking.
-      onStart: function () {
-        lockModuleHeader('voice-coach', true);
-        document.getElementById('vc-record-btn').disabled = true;
-        document.getElementById('vc-next-btn').disabled = true;
-        document.getElementById('voice-coach-retry-btn').disabled = true;
-      },
-      onEnd: function () {
-        lockModuleHeader('voice-coach', false);
-        // Only re-enable Record if recording is actually supported here —
-        // openVoiceCoach permanently disables it when the browser has no
-        // SpeechRecognition, and this must not undo that.
-        document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
-        // Avanti/Riprova go back to whatever updateVcActionButtons already
-        // decided (evaluated? attempts left?), not unconditionally enabled.
-        updateVcActionButtons();
-      }
-    });
+    // Correction (5th collaudo): no countdown here — Spiegazione, Help,
+    // Avanti, Riprova and Record all stay clickable while the model
+    // audio plays (job 1, 4th collaudo, over-applied the lock here).
+    // Record keeps its own guard below (mic bleed), just as a
+    // stop-on-touch instead of a block.
+    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('vc-record-btn').addEventListener('click', function () {
@@ -7580,6 +7555,12 @@
       return;
     }
     if (vcState !== 'idle') return;
+    // Correction (5th collaudo): Record used to be disabled while the
+    // model audio played (mic-bleed protection); the intended shape is
+    // stop-on-touch like everywhere else instead of a block — pressing
+    // Record now stops the model audio immediately, same guard as
+    // everywhere else in this module.
+    if (synth && synth.speaking) synth.cancel();
     vcLatestTranscript = '';
     vcHeardAnySpeech = false;
     document.getElementById('vc-silence-warning').hidden = true;
@@ -7624,6 +7605,8 @@
   });
 
   document.getElementById('voice-coach-retry-btn').addEventListener('click', function () {
+    // Correction (5th collaudo): same stop-on-touch as vcNextLine above.
+    if (synth && synth.speaking) synth.cancel();
     var nextAttempt = (vcAttempts[vcCurrentLine().id] || 0) + 1;
     vcSetAttemptLabel(nextAttempt);
     setVcState('idle');
@@ -8028,24 +8011,11 @@
     var say = e.target.closest('[data-say]');
     if (!say) return;
     var rateAttr = say.getAttribute('data-rate');
-    // Regola Azione Critica (job 1, 4th collaudo): answer options + "Non
-    // lo so" lock while the prompt plays — nothing stopped an option tap
-    // mid-playback before, which could submit an answer while the prompt
-    // was still being read.
-    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-      onStart: function () {
-        lockAudioControls(['#qm-options .sr-option', '#qm-dontknow-btn'], true);
-        lockModuleHeader('quick-match', true);
-      },
-      onEnd: function () {
-        // qmDisableOptions is a one-way permanent lock once an answer is
-        // chosen — don't undo it if the question got answered meanwhile.
-        if (!document.querySelector('#qm-options .is-correct, #qm-options .is-wrong')) {
-          lockAudioControls(['#qm-options .sr-option', '#qm-dontknow-btn'], false);
-        }
-        lockModuleHeader('quick-match', false);
-      }
-    });
+    // Correction (5th collaudo): no countdown here — answering while the
+    // prompt reads isn't blocked, it stops the prompt (see the
+    // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
+    // which stays).
+    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
@@ -8214,21 +8184,29 @@
   // scratch each call (rather than only touching the previously-active
   // one) so a chained dgPlayLine -> dgPlayLine (Dialogo Continuo) can't
   // leave a stale is-active on the bubble it just moved on from.
+  // Correction (5th collaudo): the Regola Azione Critica lockdown only
+  // ever belongs to profiles with a per-line countdown (Ripeti a Tempo,
+  // Continuo) — interrupting THOSE desyncs the countdown from the audio.
+  // Ascolta e Ripeti has no countdown, nothing to desync, and its own
+  // instructions promise free tapping in any order — dgProfile.countdown
+  // (the same flag dgPlayLine already reads to decide whether to start
+  // one) gates the whole disabling sweep here too. is-active keeps
+  // applying regardless of profile — it's the visual lift, not a lock.
   function dgLockAll(locked, activeBubble) {
-    document.getElementById('dialogo-watch-btn').disabled = locked;
-    document.getElementById('dialogo-help-btn').disabled = locked;
+    var disable = locked && dgProfile.countdown;
+    document.getElementById('dialogo-watch-btn').disabled = disable;
+    document.getElementById('dialogo-help-btn').disabled = disable;
     var translationsToggle = document.getElementById('dg-translations-toggle');
-    if (translationsToggle) translationsToggle.disabled = locked;
+    if (translationsToggle) translationsToggle.disabled = disable;
     document.querySelectorAll('#dg-list .dg-bubble').forEach(function (b) {
-      b.classList.toggle('is-locked', locked && b !== activeBubble);
+      b.classList.toggle('is-locked', disable && b !== activeBubble);
       b.classList.toggle('is-active', locked && b === activeBubble);
     });
-    // While a line is actively playing, the choice box is always locked
-    // (same as before). Once idle, it only unlocks once every line has
-    // been heard — see dgUpdateChoiceBoxLock — so it behaves the same
-    // way in all three profiles, not just Dialogo Continuo (where this
-    // was already true as a side effect of it never going idle early).
-    if (locked) {
+    // While a line is actively playing WITH a countdown behind it, the
+    // choice box is always locked. Once idle (or in Ascolta e Ripeti,
+    // always), it only unlocks once every line has been heard — see
+    // dgUpdateChoiceBoxLock.
+    if (disable) {
       document.querySelectorAll('#dg-choice-row button').forEach(function (b) { b.disabled = true; });
     } else {
       dgUpdateChoiceBoxLock();
@@ -8461,30 +8439,48 @@
     dgUpdateToolbarButtonState();
   }
 
-  // The one play cycle every profile shares (CLAUDE.md rule 13): lock
-  // everything but Mappa and lift the bubble, play its audio, mark it
-  // heard, then either start the per-line countdown bar
-  // (dgProfile.countdown) or unlock immediately (Ascolta e Ripeti has
-  // none). What happens after the bar is dgLineTimerFinished's job, not
-  // this function's. Job 2 (3rd collaudo): Pausa is no longer exempt
-  // like Mappa — audio playback (synth.pause() mid-utterance) is
-  // unreliable and used to hang the whole dialogue, so
-  // dgUpdateToolbarButtonState disables Pausa/Prossima frase for the
-  // whole time audio is speaking, same as it already did for the
-  // countdown-only window.
+  // The one play cycle every profile shares (CLAUDE.md rule 13): lift
+  // the bubble, play its audio, mark it heard, then either start the
+  // per-line countdown bar (dgProfile.countdown) or move on immediately
+  // (Ascolta e Ripeti has none). What happens after the bar is
+  // dgLineTimerFinished's job, not this function's. dgLockAll's own
+  // disabling sweep (correction, 5th collaudo) only actually locks
+  // anything for the countdown profiles — Ascolta e Ripeti calls it too
+  // (for the is-active lift) but it's a no-op beyond that, per the
+  // module's own free-tapping promise. Job 2 (3rd collaudo): Pausa is
+  // not exempt like Mappa on a countdown profile — audio playback
+  // (synth.pause() mid-utterance) is unreliable and used to hang the
+  // whole dialogue, so dgUpdateToolbarButtonState disables Pausa/
+  // Prossima frase for the whole time audio is speaking there, same as
+  // it already did for the countdown-only window.
   function dgPlayLine(line) {
     var bubble = document.querySelector('.dg-bubble[data-line-id="' + line.id + '"]');
     if (!bubble) return;
     dgClearSuggestion();
-    dgLockAll(true, bubble);
-    dgUpdateToolbarButtonState();
     var lineIndex = dgDialogue.findIndex(function (l) { return l.id === line.id; });
     if (lineIndex > dgFurthestIndex) {
       dgFurthestIndex = lineIndex;
       dgApplySequenceLock();
     }
     var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
+    // Correction (5th collaudo): dgLockAll(true, bubble) used to run
+    // BEFORE toggleSpeak, eagerly. That's fine when nothing else was
+    // playing, but Ascolta e Ripeti now allows switching straight from
+    // one line to another (no lock to stop it) — toggleSpeak's own
+    // internal cancel() of the OLD utterance fires that line's onEnd
+    // SYNCHRONOUSLY (dgLockAll(false, oldBubble)), and if the new
+    // bubble's is-active was already set by then, that call wiped it
+    // right back off. Moving it into onStart — which toggleSpeak only
+    // calls AFTER its own cancel has resolved — puts the ordering back
+    // the right way round, and still doesn't fire at all on a same-
+    // bubble retap (toggleSpeak returns before onStart when the tapped
+    // bubble was the one already speaking, which is exactly the "tap to
+    // stop" case, not a restart).
     toggleSpeak(english, bubble, undefined, {
+      onStart: function () {
+        dgLockAll(true, bubble);
+        dgUpdateToolbarButtonState();
+      },
       onEnd: function () {
         dgMarkHeard(line.id);
         if (dgProfile.countdown) {
@@ -8657,14 +8653,18 @@
   document.getElementById('dg-list').addEventListener('click', function (e) {
     if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
-    // Job 1 (4th collaudo): is-active was exempt from is-locked on purpose
-    // (so the playing bubble can visually lift), but that also left it
-    // clickable through its own audio AND countdown — re-tapping it
-    // called dgPlayLine again on the SAME line while the original
-    // countdown timer was still ticking in the background, so two lines
-    // ended up playing/counting down at once. The active bubble is now
-    // excluded here too: nothing but Mappa responds while one is playing.
-    if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked') || bubble.classList.contains('is-active')) return;
+    if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked')) return;
+    // Job 1 (4th collaudo) + correction (5th collaudo): re-tapping the
+    // ACTIVE bubble only needs blocking where a countdown is running
+    // behind it (Ripeti a Tempo) — there, re-tapping called dgPlayLine
+    // again on the SAME line while the ORIGINAL countdown timer kept
+    // ticking in the background, so two lines ended up playing/counting
+    // down at once. Ascolta e Ripeti has no countdown to desync, and its
+    // own instructions promise free tapping in any order, including the
+    // line currently playing — toggleSpeak's own toggle behavior (same
+    // button while .speaking -> stop, not restart) already handles that
+    // re-tap safely there.
+    if (dgProfile.countdown && bubble.classList.contains('is-active')) return;
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
@@ -9313,7 +9313,17 @@
   // already use to interrupt whatever's mid-utterance.
   function fcFlip() {
     if (fcNavLocked || fcAnswered) return;
-    if (synth && synth.speaking) synth.cancel();
+    if (synth && synth.speaking) {
+      synth.cancel();
+      // Belt and braces (correction, 5th collaudo): cancel() calling the
+      // utterance's own onend/onerror to clear its button's "speaking"
+      // class isn't guaranteed across engines — if it doesn't, the next
+      // tap on that same listen button reads as "already speaking" and
+      // silently no-ops instead of starting. Clearing it here directly
+      // guarantees the listen button works again right after a flip.
+      var speakingBtn = document.querySelector('#fc-card .speaking');
+      if (speakingBtn) speakingBtn.classList.remove('speaking');
+    }
     fcFlipped = !fcFlipped;
     document.getElementById('fc-card').classList.toggle('is-flipped', fcFlipped);
     // The Doppia Scelta box only makes sense with the back showing.
@@ -9446,22 +9456,10 @@
       var isBack = !!e.target.closest('.fc-card-back');
       var text = isBack ? fcBackText() : fcFrontText();
       var rateAttr = sayBtn.getAttribute('data-rate');
-      // Regola Azione Critica (job 1, 4th collaudo): Sì/Non ancora — not
-      // the card itself, which already has its own stop-on-flip rule
-      // (fcFlip) — lock during playback: answering while the OLD card's
-      // audio was still speaking used to advance to the NEXT card while
-      // that audio kept going, bleeding into it (fcRenderCard replaces
-      // the listen buttons, so the playing utterance was never cancelled).
-      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined, {
-        onStart: function () {
-          lockAudioControls(['#fc-choice-row button'], true);
-          lockModuleHeader('flashcard', true);
-        },
-        onEnd: function () {
-          lockAudioControls(['#fc-choice-row button'], false);
-          lockModuleHeader('flashcard', false);
-        }
-      });
+      // Correction (5th collaudo): no countdown here — Sì/Non ancora
+      // (their own click handlers below) stop the card's audio on touch
+      // instead of being locked out during it.
+      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
       return;
     }
     fcFlip();
@@ -9479,6 +9477,11 @@
   // still-learning card is expected here, not an error, so the generic
   // sbagliato tone would misread as a small failure on every other card.
   document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
+    // Correction (5th collaudo): stop-on-touch — answering advances to
+    // the next card (fcRenderCard replaces this card's own listen
+    // buttons), so any audio still playing must stop here first instead
+    // of bleeding into it.
+    if (synth && synth.speaking) synth.cancel();
     var attemptNum = fcRecordResult('wrong');
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
     fcAnswered = true;
@@ -9489,6 +9492,8 @@
   // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
   // Finale, see srPlayTraguardoSound's comment).
   document.getElementById('fc-know-it-btn').addEventListener('click', function () {
+    // Correction (5th collaudo): same stop-on-touch as "Non ancora" above.
+    if (synth && synth.speaking) synth.cancel();
     var attemptNum = fcRecordResult('correct');
     srPlayCorrectSound();
     if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
@@ -9735,37 +9740,30 @@
     return langVoices.find(looksLikeMaleVoice) || langVoices[0];
   }
 
-  // Regola Azione Critica, generic form (3rd collaudo, job 1: the same
-  // problem kept resurfacing one control at a time — Pausa in Real
-  // Dialogue, the card flip in Flash Card, now a dialogue bubble tap —
-  // because each fix only covered the ONE control just reported, not the
-  // rule itself: while a module's own audio is speaking, the only thing
-  // that should still respond is Mappa). Two small generic pieces every
-  // module's own toggleSpeak onStart/onEnd calls into, instead of a
-  // fifth/sixth hand-rolled copy of the same disable/enable sweep:
-  //   - lockModuleHeader(prefix, locked): Spiegazione+Help, identical
-  //     shape in every module's header (id pattern "{prefix}-watch-btn"/
-  //     "{prefix}-help-btn") — generalizes what used to be Voice Coach's
-  //     own vcLockSpiegazioneHelp.
-  //   - lockAudioControls(selectors, locked): disables every button
-  //     matching the given selectors — each module passes its own
-  //     content container + control buttons, since their shapes differ
-  //     (a word list, a chat, a quiz, a card), Mappa's own id never
-  //     included.
-  // Dialogo keeps its own dgLockAll (bubbles/choice box/translations
-  // toggle need per-element bookkeeping beyond a flat disable sweep,
-  // e.g. is-locked/is-active styling) rather than switching to this.
+  // Regola Azione Critica, generic form. Correction (5th collaudo): a
+  // prior round locked every OTHER control while any module's audio
+  // played, everywhere — too broad. That rule only actually applies to
+  // profiles with a countdown behind the audio (Dialogo Ripeti a Tempo/
+  // Continuo, both still fully locked via dgLockAll — see near
+  // dgPlayLine). Everywhere else, nothing is disabled: interrupting is
+  // harmless without a countdown to desync, and several modules (Ascolta
+  // e Ripeti's own instructions, for one) explicitly promise free
+  // tapping. What stays universal instead is stop-on-touch — a critical
+  // action (flipping a card, answering, advancing, pressing Record)
+  // cancels any audio already playing rather than being blocked by it
+  // (see each module's own click handlers — Flash Card's fcFlip, Quick
+  // Match's .sr-option/qm-dontknow-btn, Voice Coach's vc-record-btn/
+  // vcNextLine/voice-coach-retry-btn, Repeat Aloud/Speak Easy's own
+  // complete buttons).
+  // lockModuleHeader(prefix, locked) is the one piece that's still a
+  // real lock, kept for Voice Coach's RECORDING direction only (setVcState
+  // below) — a genuinely different concern (the mic picking up the
+  // model's own voice), not this audio-playback rule.
   function lockModuleHeader(prefix, locked) {
     var watchBtn = document.getElementById(prefix + '-watch-btn');
     if (watchBtn) watchBtn.disabled = locked;
     var helpBtn = document.getElementById(prefix + '-help-btn');
     if (helpBtn) helpBtn.disabled = locked;
-  }
-
-  function lockAudioControls(selectors, locked) {
-    selectors.forEach(function (sel) {
-      document.querySelectorAll(sel).forEach(function (el) { el.disabled = locked; });
-    });
   }
 
   // Shared text-to-speech helper: used by the full-sentence speak button
