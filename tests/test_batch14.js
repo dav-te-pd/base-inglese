@@ -1,5 +1,10 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { loadEpisode, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
+
+// Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
+// pulsanti: vedi tests/quiz-driver.js.
+const VOCABULARY = loadEpisode().vocabulary;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -185,36 +190,17 @@ async function run() {
     await page.waitForTimeout(150);
     const badgeHiddenMainPass = await page.evaluate(() => document.getElementById('qm-ripasso-badge').hidden);
     log('[Job4] "Ripasso" badge hidden during the main pass', badgeHiddenMainPass);
-    // Answer every question wrong to force everything into the retry queue.
-    let guard = 0;
+    // Ogni risposta sbagliata, così tutto finisce nella coda di ripasso e il
+    // giro di Ripasso viene davvero attraversato. Prima il ciclo cliccava
+    // sempre data-qm-index="0": essendo le opzioni mescolate era quella
+    // giusta una volta su quattro, quindi "ogni risposta sbagliata" non era
+    // vero.
     let sawRipassoBadge = false;
-    while (guard++ < 60) {
-      const state = await page.evaluate(() => ({
-        quiz: document.getElementById('qm-quiz-screen') && !document.getElementById('qm-quiz-screen').hidden,
-        reveal: document.getElementById('qm-reveal') && !document.getElementById('qm-reveal').hidden,
-        retryIntro: document.getElementById('qm-retry-intro-screen') && !document.getElementById('qm-retry-intro-screen').hidden,
-        summary: document.getElementById('qm-summary-screen') && !document.getElementById('qm-summary-screen').hidden,
-        popupOpen: document.getElementById('attempt-popup').classList.contains('is-open')
-      }));
-      if (state.summary) break;
-      if (state.popupOpen) { await page.evaluate(() => document.getElementById('attempt-popup-next').click()); await page.waitForTimeout(80); continue; }
-      if (state.retryIntro) { await page.evaluate(() => document.getElementById('qm-retry-continue-btn').click()); await page.waitForTimeout(80); continue; }
-      if (state.reveal) {
-        const badgeHidden = await page.evaluate(() => document.getElementById('qm-ripasso-badge').hidden);
-        if (!badgeHidden) sawRipassoBadge = true;
-        await page.evaluate(() => document.getElementById('qm-advance-btn').click());
-        await page.waitForTimeout(80);
-        continue;
-      }
-      if (state.quiz) {
-        const badgeHidden = await page.evaluate(() => document.getElementById('qm-ripasso-badge').hidden);
-        if (!badgeHidden) sawRipassoBadge = true;
-        const clicked = await page.evaluate(() => { var b = document.querySelector('#qm-options .sr-option[data-qm-index="0"]:not([disabled])'); if (b) { b.click(); return true; } return false; });
-        await page.waitForTimeout(clicked ? 120 : 400);
-        continue;
-      }
-      await page.waitForTimeout(80);
-    }
+    await playThroughQuiz(page, 'qm', {
+      vocabulary: VOCABULARY,
+      answerFor: function () { return 'wrong'; },
+      onState: function (st) { if (st.inRetryPass) sawRipassoBadge = true; }
+    });
     log('[Job4] "Ripasso" badge appears at some point during the retry pass', sawRipassoBadge);
     log('[Job4] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

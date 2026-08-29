@@ -1,5 +1,10 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { loadEpisode, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
+
+// Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
+// pulsanti: vedi tests/quiz-driver.js.
+const VOCABULARY = loadEpisode().vocabulary;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -135,32 +140,23 @@ async function run() {
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);
-    // Answer every question correctly by reading the right option from qmCurrentOptions.
-    for (let i = 0; i < 200; i++) {
-      const state = await page.evaluate(() => ({
-        done: document.getElementById('qm-summary-screen') && !document.getElementById('qm-summary-screen').hidden,
-        quiz: document.getElementById('qm-quiz-screen') && !document.getElementById('qm-quiz-screen').hidden,
-        reveal: document.getElementById('qm-reveal') && !document.getElementById('qm-reveal').hidden,
-        retryIntro: document.getElementById('qm-retry-intro-screen') && !document.getElementById('qm-retry-intro-screen').hidden,
-        popupOpen: document.getElementById('attempt-popup').classList.contains('is-open')
-      }));
-      if (state.done) break;
-      // The safety-valve popup (job 3/4) is a real modal overlay — dismiss
-      // it via its own button first, same as a real user would, instead of
-      // clicking straight through it (which used to leave it visually
-      // "stuck open" since nothing ever called closeAttemptPopup()).
-      if (state.popupOpen) { await page.evaluate(() => document.getElementById('attempt-popup-next').click()); await page.waitForTimeout(80); continue; }
-      if (state.retryIntro) { await page.evaluate(() => document.getElementById('qm-retry-continue-btn').click()); await page.waitForTimeout(80); continue; }
-      if (state.reveal) { await page.evaluate(() => document.getElementById('qm-advance-btn').click()); await page.waitForTimeout(80); continue; }
-      if (state.quiz) {
-        const clicked = await page.evaluate(() => { var b = document.querySelector('#qm-options [data-qm-index="0"]:not([disabled])'); if (b) { b.click(); return true; } return false; });
-        await page.waitForTimeout(clicked ? 120 : 700);
-        continue;
-      }
-      await page.waitForTimeout(80);
-    }
+    // Ogni risposta corretta, fino alla Schermata Finale. È quello che il
+    // commento diceva da sempre ("reading the right option"), ma il codice
+    // cliccava data-qm-index="0" senza leggere niente: essendo le opzioni
+    // mescolate era quella giusta solo una volta su quattro.
+    await playThroughQuiz(page, 'qm', {
+      vocabulary: VOCABULARY,
+      answerFor: function () { return 'correct'; }
+    });
     await page.waitForFunction(() => document.getElementById('qm-summary-screen') && !document.getElementById('qm-summary-screen').hidden, { timeout: 5000 });
-    await page.waitForTimeout(600); // let the 3 async Traguardo notes (setTimeout-staggered) finish
+    // Le tre note del Traguardo sono sfasate da setTimeout: si aspetta che
+    // siano state suonate davvero, invece di dare loro 600 ms a occhio
+    // (CLAUDE.md regola 19). Il catch lascia comunque fallire l'asserzione
+    // qui sotto, invece di far esplodere l'intero file, se non arrivano.
+    await page.waitForFunction(() => {
+      var t = window.__playedTones || [];
+      return t.filter(x => x.freq === 1046 || x.freq === 1318 || x.freq === 1568).length >= 3;
+    }, null, { timeout: 20000 }).catch(() => {});
     const tones = await page.evaluate(() => window.__playedTones || []);
     const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
     log('[3] Quick Match completion now plays the Traguardo sound (3 ascending notes)', traguardoTones.length >= 3);

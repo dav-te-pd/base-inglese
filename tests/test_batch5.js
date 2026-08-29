@@ -86,20 +86,37 @@ async function run() {
     await page.waitForTimeout(300);
     const startBtnVisible = await page.isVisible('#dg-start-btn').catch(() => false);
     if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(50); }
-    // 3-2-1 ready countdown is countdownPre(3) * countdownStepMs(800) = 2400ms,
-    // then dgPlayLine(dgDialogue[0]) fires immediately — check shortly after
-    // that, well within the mock's 400ms simulated playback window.
-    await page.waitForTimeout(2650);
-    const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
+    // Dopo il 3-2-1 parte subito l'audio della prima battuta. Prima qui si
+    // aspettavano 2650 ms calcolati a mano (countdownPre * countdownStepMs +
+    // un margine) sperando di cadere dentro la finestra di riproduzione
+    // simulata, lunga 400 ms: su una macchina più lenta la finestra si
+    // perdeva e il test falliva. Ora si aspetta la condizione vera
+    // (CLAUDE.md regola 19).
+    await page.waitForFunction(() => window.speechSynthesis.speaking === true, null, { timeout: 20000 }).catch(() => {});
+
+    // Uscita dal modulo a metà battuta. Click e letture stanno in un'unica
+    // chiamata sincrona: JS è a thread singolo, quindi l'onend simulato non
+    // può scattare mentre questa funzione gira, e i tre valori descrivono
+    // davvero lo stesso istante invece di tre round-trip separati (stessa
+    // correzione già applicata a test_batch15.js Job8).
+    const leaving = await page.evaluate(() => {
+      var speakingBefore = window.speechSynthesis.speaking;
+      var logLenBefore = window.__speakLog.length;
+      document.getElementById('dialogo-back-map').click();
+      return { speakingBefore: speakingBefore, logLenBefore: logLenBefore, stillSpeaking: window.speechSynthesis.speaking };
+    });
+    const speakingBefore = leaving.speakingBefore;
+    const logLenBefore = leaving.logLenBefore;
+    const stillSpeaking = leaving.stillSpeaking;
     log('[Job1] Dialogo Continuo is actively speaking a line', speakingBefore);
-    const logLenBefore = await page.evaluate(() => window.__speakLog.length);
-
-    // Leave the module mid-utterance via Mappa
-    await page.click('#dialogo-back-map');
-    await page.waitForTimeout(600); // long enough for the fake onerror + any onend chain to fire
-
-    const stillSpeaking = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1] speechSynthesis is NOT speaking right after leaving the module', !stillSpeaking);
+
+    // Questa resta un'attesa a tempo di proposito: l'asserzione che segue è
+    // negativa (nessuna NUOVA battuta accodata), e per un evento che non deve
+    // accadere non esiste una condizione da aspettare — si lascia una
+    // finestra e si verifica che sia rimasta vuota. Se la macchina è lenta il
+    // rischio è un verde generoso, non un rosso casuale.
+    await page.waitForTimeout(600);
     const logLenAfter = await page.evaluate(() => window.__speakLog.length);
     log('[Job1] No NEW utterance was queued after leaving (sequence did not continue)', logLenAfter === logLenBefore);
     log('[Job1] No JS errors', errors.length === 0);

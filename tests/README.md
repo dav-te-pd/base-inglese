@@ -68,9 +68,19 @@ README di ciascuna per cosa sono e perché sono state tenute:
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
 
+## Punti fragili noti
+
+`ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
+millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
+intermittente, si guarda lì prima di sospettare una regressione dell'app.
+
 ## File di servizio
 
 - `test-env.js` — Playwright, indirizzo dell'app e percorsi, condivisi da
   tutti i file di test.
 - `serve.js` — server statico senza dipendenze, usato da `npm run serve` e
   da `run_full_regression.sh`.
+- `quiz-driver.js` — pilotaggio condiviso dei moduli a scelta multipla (Speed
+  Round, Quick Match): sceglie le risposte dai dati dell'episodio invece che
+  dalla posizione dei pulsanti, e avanza aspettando cambiamenti di stato
+  invece di tempi fissi.
