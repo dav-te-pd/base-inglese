@@ -1,6 +1,6 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { launchBrowser, APP_URL } = require('../test-env');
 
-const BASE = 'http://localhost:8793/index.html';
+const BASE = APP_URL;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -27,7 +27,7 @@ async function bootAsUser(page, userName, completedModules) {
 }
 
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 

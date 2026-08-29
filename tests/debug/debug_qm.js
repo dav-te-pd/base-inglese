@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8955/index.html';
+const { launchBrowser, APP_URL } = require('../test-env');
+const BASE = APP_URL;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart=null; this.onend=null; this.onerror=null; } }
@@ -14,7 +14,7 @@ const mockInit = () => {
 };
 
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
   page.on('pageerror', e => console.log('PAGEERROR:', e.message));
   await page.addInitScript(mockInit);

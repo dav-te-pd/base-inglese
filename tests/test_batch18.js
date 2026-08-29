@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8955/index.html';
+const { launchBrowser, APP_URL } = require('./test-env');
+const BASE = APP_URL;
 
 // This mock deliberately fires cancel()'s onerror ASYNCHRONOUSLY (via
 // setTimeout), unlike earlier batches' synchronous mock — real speech
@@ -61,7 +61,7 @@ const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashca
 const ALL_BEFORE_DG = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice'];
 
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 

@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8955/index.html';
+const { launchBrowser, APP_URL } = require('./test-env');
+const BASE = APP_URL;
 
 const mockInit = () => {
   window.__consoleWarnings = [];
@@ -151,7 +151,7 @@ async function vcCompleteModule(page, wrongAtIndex, wrongRounds, maxLines) {
 }
 
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 

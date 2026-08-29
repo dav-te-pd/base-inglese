@@ -4,11 +4,11 @@
 // every existing test on these modules checks behavior (locks, disabled
 // states, scoring) but none reads the prompt/answer/front/back text
 // itself, so a swapped en-it/it-en ternary would go completely unnoticed.
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const fs = require('fs');
-const BASE = 'http://localhost:8955/index.html';
+const BASE = APP_URL;
 
-const EPISODE_DATA = JSON.parse(fs.readFileSync('/home/user/base-inglese/data/a1-episodio1-inglese.json', 'utf8'));
+const EPISODE_DATA = JSON.parse(fs.readFileSync(repoPath('data', 'a1-episodio1-inglese.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -45,7 +45,7 @@ async function openModule(page, moduleId) {
 }
 
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 

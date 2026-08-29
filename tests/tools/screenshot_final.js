@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8931/index.html';
+const { launchBrowser, APP_URL, outputPath } = require('../test-env');
+const BASE = APP_URL;
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
   const fakeSynth = { speak(u){if(u.onstart)u.onstart();setTimeout(()=>{if(u.onend)u.onend();},20);}, cancel(){}, getVoices(){return[{name:'Fake Male Voice',lang:'en-US'}];}, onvoiceschanged:null };
@@ -7,7 +7,7 @@ const mockInit = () => {
   window.SpeechSynthesisUtterance = FakeUtterance;
 };
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 400, height: 950 } });
   await page.addInitScript(mockInit);
   await page.goto(BASE);
@@ -22,10 +22,10 @@ async function run() {
   }, 'ScreenshotUser');
   await page.click('#go-episode');
   await page.waitForTimeout(200);
-  await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/map-viaggio.png' });
+  await page.screenshot({ path: outputPath('map-viaggio.png') });
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'notte'));
   await page.waitForTimeout(100);
-  await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/map-notte.png' });
+  await page.screenshot({ path: outputPath('map-notte.png') });
   await page.evaluate(() => document.documentElement.setAttribute('data-theme', 'viaggio'));
 
   // Config panel screenshot
@@ -38,7 +38,7 @@ async function run() {
     if (g) g.open = true;
   });
   await page.waitForTimeout(80);
-  await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/config-reorder.png' });
+  await page.screenshot({ path: outputPath('config-reorder.png') });
 
   await browser.close();
   console.log('done');

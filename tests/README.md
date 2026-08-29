@@ -9,31 +9,68 @@ modulo.
 
 ## Come lanciarla
 
-Serve `index.html` raggiungibile su `http://localhost:8955/index.html`:
+Dalla cartella principale del repository, la prima volta:
 
 ```bash
-# dalla cartella principale del repository
-python3 -m http.server 8955
+npm install              # Playwright (versione fissata in package.json)
+npm run setup:browser    # scarica il Chromium che Playwright userà
 ```
 
-poi, in un altro terminale:
+poi, per ogni giro:
 
 ```bash
-cd tests
-./run_full_regression.sh
+npm test
 ```
+
+`npm test` esegue `run_full_regression.sh`, che avvia da solo il server
+statico sulla porta 8955, lancia i 25 file in ordine e ferma il server alla
+fine. Se un server risponde già su quella porta, lo riusa invece di
+avviarne un altro.
 
 Ogni file produce anche il proprio `test_batchN.result.txt` con l'output
-completo. Per lanciare un solo file: `node tests/test_batchN.js`.
+completo (ignorati da git). Per lanciare un solo file, con il server già
+attivo (`npm run serve` in un altro terminale):
 
-Richiede Playwright installato (Node in grado di risolvere
-`require('playwright')`) e un Chromium che Playwright possa avviare.
+```bash
+node tests/test_batch10.js
+```
+
+## Niente percorsi di macchina
+
+Nessun file di test contiene percorsi assoluti: Playwright, l'indirizzo
+dell'app e le cartelle di output arrivano tutti da `test-env.js`. Si
+pilotano con variabili d'ambiente, tutte facoltative:
+
+| variabile | a cosa serve |
+|---|---|
+| `APP_PORT` | porta del server statico (default `8955`) |
+| `APP_URL` | indirizzo completo della pagina, se non è `localhost` |
+| `PLAYWRIGHT_MODULE` | un'installazione di Playwright già presente sulla macchina, invece di quella in `node_modules` |
+| `CHROMIUM_PATH` | binario del browser, quando Playwright non ha un Chromium proprio |
+| `TEST_OUTPUT_DIR` | dove finiscono gli screenshot (default `tests/output/`) |
+
+Esempio, su una macchina con Playwright installato globalmente e nessun
+Chromium scaricato da Playwright:
+
+```bash
+PLAYWRIGHT_MODULE=/usr/lib/node_modules/playwright \
+CHROMIUM_PATH=/usr/bin/chromium \
+npm test
+```
 
 ## Sottocartelle
 
 Non fanno parte della suite lanciata da `run_full_regression.sh` — vedi il
 README di ciascuna per cosa sono e perché sono state tenute:
 
-- `tools/` — script di verifica visiva (screenshot).
+- `tools/` — script di verifica visiva (screenshot). Scrivono in
+  `tests/output/`.
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
+
+## File di servizio
+
+- `test-env.js` — Playwright, indirizzo dell'app e percorsi, condivisi da
+  tutti i file di test.
+- `serve.js` — server statico senza dipendenze, usato da `npm run serve` e
+  da `run_full_regression.sh`.

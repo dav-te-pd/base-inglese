@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8931/index.html';
+const { launchBrowser, APP_URL, outputPath } = require('../test-env');
+const BASE = APP_URL;
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
   const fakeSynth = { speak(u){if(u.onstart)u.onstart();setTimeout(()=>{if(u.onend)u.onend();},20);}, cancel(){}, getVoices(){return[{name:'Fake Male Voice',lang:'en-US'}];}, onvoiceschanged:null };
@@ -7,7 +7,7 @@ const mockInit = () => {
   window.SpeechSynthesisUtterance = FakeUtterance;
 };
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const page = await browser.newPage({ viewport: { width: 400, height: 950 } });
   await page.addInitScript(mockInit);
   await page.goto(BASE);
@@ -33,7 +33,7 @@ async function run() {
   });
   console.log('found moduleOrderDefault group:', found);
   await page.waitForTimeout(150);
-  await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/config-reorder2.png' });
+  await page.screenshot({ path: outputPath('config-reorder2.png') });
   await browser.close();
 }
 run().catch(e => { console.error(e); process.exit(1); });

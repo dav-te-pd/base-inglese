@@ -1,5 +1,5 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
-const BASE = 'http://localhost:8955/index.html';
+const { launchBrowser, APP_URL, outputPath } = require('../test-env');
+const BASE = APP_URL;
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
   const fakeSynth = { speak(u){if(u.onstart)u.onstart();setTimeout(()=>{if(u.onend)u.onend();},20);}, cancel(){}, getVoices(){return[{name:'Fake Male Voice',lang:'en-US'}];}, onvoiceschanged:null };
@@ -7,7 +7,7 @@ const mockInit = () => {
   window.SpeechSynthesisUtterance = FakeUtterance;
 };
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
 
   // Danger panel + two-row title
   {
@@ -26,7 +26,7 @@ async function run() {
     await page.waitForTimeout(150);
     await page.click('[data-module="personalizzazione"]');
     await page.waitForTimeout(200);
-    await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/danger-panel-new.png' });
+    await page.screenshot({ path: outputPath('danger-panel-new.png') });
     await context.close();
   }
 
@@ -47,7 +47,7 @@ async function run() {
     await page.waitForTimeout(150);
     await page.click('[data-module="repeatAloud"]');
     await page.waitForTimeout(200);
-    await page.screenshot({ path: '/tmp/claude-0/-home-user-base-inglese/6f1aee09-70d5-5e15-b1c2-7237e3d6581e/scratchpad/spiegazione-title-new.png' });
+    await page.screenshot({ path: outputPath('spiegazione-title-new.png') });
     await context.close();
   }
 

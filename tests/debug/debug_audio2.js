@@ -1,6 +1,6 @@
-const { chromium } = require('/opt/node22/lib/node_modules/playwright');
+const { launchBrowser, APP_URL } = require('../test-env');
 async function run() {
-  const browser = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
+  const browser = await launchBrowser();
   const page = await browser.newPage();
   await page.goto('about:blank');
   const result = await page.evaluate(() => {
