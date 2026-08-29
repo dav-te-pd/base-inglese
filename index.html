@@ -3787,25 +3787,24 @@
             </div>
           </div>
 
-          <!-- INTRO SCREEN (trial: Repeat Aloud only, see CLAUDE.md notes
-               before extending this pattern to other modules). Shown
-               automatically until the user checks "don't show again";
-               the header's "Spiegazione" button always reopens
-               this same screen regardless of that saved preference. -->
-          <div id="repeat-aloud-intro-screen" hidden>
+          <!-- INTRO SCREEN: shown automatically until "don't show again" is
+               checked; the header's "Spiegazione" always reopens the
+               same content afterward as a popup instead (see
+               openHowItWorksOverlay), never this screen again. -->
+          <div id="repeat-aloud-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="ra-intro-title">Spiegazione</h1>
+              <h1 id="repeat-aloud-intro-title">Spiegazione</h1>
             </header>
-            <div class="overlay-text panel" id="ra-intro-body"></div>
+            <div class="overlay-text panel" id="repeat-aloud-intro-body"></div>
             <label class="ra-intro-checkbox">
-              <input type="checkbox" id="ra-intro-dont-show-again">
+              <input type="checkbox" id="repeat-aloud-intro-dont-show-again">
               <span>Non mostrarmi più questa schermata</span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="ra-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-intro-start-btn">Ho capito, inizia</button>
           </div>
 
           <!-- MAIN SCREEN -->
-          <div id="repeat-aloud-main-screen">
+          <div id="repeat-aloud-main-screen" class="module-screen">
             <header class="app-header">
               <h1 id="repeat-aloud-title">Repeat Aloud</h1>
               <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
@@ -4397,9 +4396,9 @@
 
   <!-- ============ SHARED: MODULE HELP OVERLAY ============
        One overlay, reused by every module's "Help" button (menu +
-       clarify/urgent forms), and by "Spiegazione" for every
-       module except Repeat Aloud, which is trialing the dedicated
-       full-screen intro + simple overlay below instead. -->
+       clarify/urgent forms), and by "Spiegazione" once its own
+       full-screen intro has already been dismissed (see the popup
+       overlay below). -->
   <div class="overlay" id="help-overlay">
     <button type="button" class="overlay-backdrop" id="help-overlay-backdrop" aria-label="Chiudi"></button>
     <div class="overlay-panel card">
@@ -6505,9 +6504,9 @@
   // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
   // "Spiegazione" kicker (never varies — see .spiegazione-title-kicker),
   // row 2 is the module's own name in evidence. Used by every module's
-  // full-screen intro (renderIntroContent below, Repeat Aloud's own
-  // renderRaIntroContent) and by the "Spiegazione" popup overlay
-  // (openHowItWorksOverlay) — the only three places this title appears.
+  // full-screen intro (renderIntroContent below) and by the
+  // "Spiegazione" popup overlay (openHowItWorksOverlay) — the only two
+  // places this title appears.
   // Previously a single "Spiegazione — X" string from istruzioni-moduli.
   // json; the em dash wrapped awkwardly on narrow screens, so the JSON's
   // own title is now just the module name and this always adds the
@@ -6518,9 +6517,8 @@
   }
 
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
-  // for the given kind — the same content Repeat Aloud's renderRaIntroContent
-  // loads, generalized so every module's intro screen shares one loader
-  // instead of repeating it per module. moduleLabel is the module's own
+  // for the given kind — one shared loader for every module's intro
+  // screen instead of a copy per module. moduleLabel is the module's own
   // name (row 2, shown immediately — the JSON's own title, once loaded,
   // is preferred if it differs, but every caller's own label is already
   // correct so this only ever matters as the pre-load placeholder).
@@ -6540,14 +6538,14 @@
     });
   }
 
-  // ---- Repeat Aloud intro screen (trial — see the request that added
-  // this before extending the pattern to other modules). howItWorks
+  // ---- Repeat Aloud intro screen — was its own trial implementation
+  // (renderRaIntroContent/openRaIntro, a near-verbatim duplicate of
+  // renderIntroContent/the inline branch every other module uses);
+  // aligned to the generic shape (censimento audit, follow-up) now that
+  // the pattern has long since extended past this one module. howItWorks
   // still comes only from istruzioni-moduli.json (CLAUDE.md rule 8);
-  // this just changes WHERE it's shown for this one module, not what
-  // owns the text. Dismissal now goes through the same generic
-  // isIntroDismissed/setIntroDismissed('repeatAloud', ...) every other
-  // module uses (job: backlog item — this used to be its own separate
-  // key, silently exempt from any future change to that generic pattern). ----
+  // dismissal goes through the same generic isIntroDismissed/
+  // setIntroDismissed('repeatAloud', ...) every other module uses. ----
   function raShowScreen(name) {
     document.getElementById('repeat-aloud-intro-screen').hidden = name !== 'intro';
     document.getElementById('repeat-aloud-main-screen').hidden = name !== 'main';
@@ -6556,30 +6554,6 @@
     // there (CLAUDE.md rule 10, same as every other module's Schermata
     // Finale); Help stays available everywhere.
     document.getElementById('repeat-aloud-watch-btn').hidden = name === 'summary';
-  }
-
-  function renderRaIntroContent() {
-    var titleEl = document.getElementById('ra-intro-title');
-    renderSpiegazioneTitle(titleEl, currentRepeatAloudModule && currentRepeatAloudModule.label);
-    document.getElementById('ra-intro-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    loadModuleInstructions().then(function (data) {
-      var entry = data.repeatAloud && data.repeatAloud.howItWorks;
-      renderSpiegazioneTitle(titleEl, (entry && entry.title) || (currentRepeatAloudModule && currentRepeatAloudModule.label));
-      document.getElementById('ra-intro-body').innerHTML = entry
-        ? entry.body
-        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
-    }).catch(function () {
-      document.getElementById('ra-intro-body').innerHTML =
-        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
-    });
-  }
-
-  // Always the same screen regardless of the saved preference — the
-  // checkbox just starts pre-set to whatever that preference currently is.
-  function openRaIntro() {
-    document.getElementById('ra-intro-dont-show-again').checked = isIntroDismissed('repeatAloud', getUserName());
-    renderRaIntroContent();
-    raShowScreen('intro');
   }
 
   function openRepeatAloud(module) {
@@ -6591,7 +6565,9 @@
     if (isIntroDismissed('repeatAloud', getUserName())) {
       raShowScreen('main');
     } else {
-      openRaIntro();
+      document.getElementById('repeat-aloud-intro-dont-show-again').checked = false;
+      renderIntroContent('repeatAloud', 'repeat-aloud-intro-title', 'repeat-aloud-intro-body', currentRepeatAloudModule.label);
+      raShowScreen('intro');
     }
     loadEpisodeData(module).then(function (data) {
       if (currentRepeatAloudModule !== module) return;
@@ -6624,8 +6600,8 @@
     openHowItWorksOverlay(currentRepeatAloudModule, { dismissPref: introDismissPref('repeatAloud') });
   });
 
-  document.getElementById('ra-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed('repeatAloud', getUserName(), document.getElementById('ra-intro-dont-show-again').checked);
+  document.getElementById('repeat-aloud-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('repeatAloud', getUserName(), document.getElementById('repeat-aloud-intro-dont-show-again').checked);
     raShowScreen('main');
   });
 

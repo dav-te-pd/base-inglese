@@ -45,6 +45,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     Se non c'è nulla, scrivere "nulla da registrare". Mai diluire queste informazioni nella prosa del riepilogo.
 
+15. **Dopo aver scritto una modifica, guardare cosa si è effettivamente toccato — non cosa era stato chiesto — per decidere quali test lanciare.** Se la modifica resta dentro codice specifico di un modulo, bastano i test di quel modulo. Se tocca anche una sola riga di codice condiviso — un componente, una funzione, un parametro usato altrove — va lanciata la suite di regressione completa. Nel dubbio, la suite completa. Il criterio è il diff reale una volta fatta la modifica, non l'intenzione dichiarata nella richiesta: una richiesta piccola può finire per toccare qualcosa di condiviso, e lo si scopre solo dopo aver scritto il codice.
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese`
