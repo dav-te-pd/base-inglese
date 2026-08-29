@@ -41,11 +41,24 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 14. **Chiudere ogni risposta con una sezione fissa "⚠️ DA REGISTRARE"** contenente:
     - funzioni e componenti nuovi o generalizzati, con il nome esatto;
     - parametri aggiunti ad `APP_CONFIG`, con nome e valore;
-    - duplicazioni notate e non corrette.
+    - duplicazioni notate e non corrette;
+    - quali file di test sono stati lanciati e perché — se la suite completa, quale codice condiviso l'ha resa necessaria; se un sottoinsieme, perché la modifica era contenuta a quel modulo.
 
     Se non c'è nulla, scrivere "nulla da registrare". Mai diluire queste informazioni nella prosa del riepilogo.
 
 15. **Dopo aver scritto una modifica, guardare cosa si è effettivamente toccato — non cosa era stato chiesto — per decidere quali test lanciare.** Se la modifica resta dentro codice specifico di un modulo, bastano i test di quel modulo. Se tocca anche una sola riga di codice condiviso — un componente, una funzione, un parametro usato altrove — va lanciata la suite di regressione completa. Nel dubbio, la suite completa. Il criterio è il diff reale una volta fatta la modifica, non l'intenzione dichiarata nella richiesta: una richiesta piccola può finire per toccare qualcosa di condiviso, e lo si scopre solo dopo aver scritto il codice.
+
+16. **Il Blocco Ascolto non blocca l'interfaccia: è l'audio a interrompersi quando l'utente tocca qualcos'altro** (Regola Azione Critica), garantito in un unico punto — un listener sul `document` in fase di cattura — mai dichiarato pulsante per pulsante. Unica eccezione: i profili Dialogo con countdown (Ripeti a Tempo, Dialogo Continuo), dove interrompere l'audio a metà sfaserebbe il timer — lì l'interfaccia resta davvero bloccata per la durata di audio+conto alla rovescia.
+
+17. **Ogni modulo ha la Schermata Finale, nessuna eccezione — anche ogni modulo futuro.** Stesso pulsante = stessa funzione = stesso suono in ogni punto in cui compare (es. `renderSummaryScreen`, i suoni Traguardo/Uscita): se un pulsante ha bisogno di comportarsi diversamente a seconda del contesto, non è più lo stesso pulsante — va trattato come un elemento a sé, non come un caso speciale dentro quello condiviso.
+
+18. **Quando un valore o una funzione smette di appartenere a un solo modulo e diventa condiviso, il nome deve diventare condiviso nello stesso momento** — mai un prefisso ereditato dal primo modulo che l'ha introdotto. Un elemento che sembra ancora "di un modulo" mentre è usato da tutti è un invito a spostarlo per sbaglio in futuro, rompendo tutti gli altri in silenzio.
+
+19. **Un test non deve mai dipendere da quanto è veloce la macchina che lo esegue.** Se verifica uno stato transitorio, legge lo stato interno dentro un'unica chiamata sincrona invece di correre contro un timer con round-trip separati. Un mock che semplifica troppo la realtà (es. una sintesi vocale che finisce all'istante invece che in modo asincrono come quella vera) dà una sicurezza falsa — nasconde proprio i bug che dipendono da un ordine di eventi asincrono.
+
+20. **Quando si blocca un'azione, il blocco vive nella funzione che la esegue, non solo nel pulsante o listener che la richiama** — i punti da cui si può richiamare una funzione si moltiplicano nel tempo, la funzione resta una sola.
+
+21. **`stopAllModuleActivity()` è il punto unico di pulizia quando si lascia un modulo.** Timer, registrazioni, sequenze in corso di qualunque modulo — presente o futuro — si azzerano lì (chiamata da `showView()`), mai dentro il singolo pulsante "← Mappa" di un modulo.
 
 ## Riferimenti operativi
 
