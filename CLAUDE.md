@@ -42,7 +42,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     - funzioni e componenti nuovi o generalizzati, con il nome esatto;
     - parametri aggiunti ad `APP_CONFIG`, con nome e valore;
     - duplicazioni notate e non corrette;
-    - quali file di test sono stati lanciati e perché — se la suite completa, quale codice condiviso l'ha resa necessaria; se un sottoinsieme, perché la modifica era contenuta a quel modulo.
+    - quali file di test sono stati lanciati e perché — se la suite completa, quale codice condiviso l'ha resa necessaria; se un sottoinsieme, perché la modifica era contenuta a quel modulo;
+    - **file creati in questo turno e non committati**, con il motivo esplicito per cui sono rimasti fuori dal repository. Se sono stati committati tutti, dirlo. Il silenzio su questo punto non va letto come "è tutto salvato" (regola 22).
 
     Se non c'è nulla, scrivere "nulla da registrare". Mai diluire queste informazioni nella prosa del riepilogo.
 
@@ -59,6 +60,16 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 20. **Quando si blocca un'azione, il blocco vive nella funzione che la esegue, non solo nel pulsante o listener che la richiama** — i punti da cui si può richiamare una funzione si moltiplicano nel tempo, la funzione resta una sola.
 
 21. **`stopAllModuleActivity()` è il punto unico di pulizia quando si lascia un modulo.** Timer, registrazioni, sequenze in corso di qualunque modulo — presente o futuro — si azzerano lì (chiamata da `showView()`), mai dentro il singolo pulsante "← Mappa" di un modulo.
+
+22. **Niente di utile vive solo nel container.** Qualunque cosa prodotta durante il lavoro e che serva anche dopo — test, script, strumenti, documenti, dati — va committata nel repository **nello stesso turno in cui viene creata**: non a fine lavoro, non "quando sarà stabile", non "alla prossima occasione". Il container è temporaneo per definizione: quello che resta solo lì è già perso, semplicemente non lo sappiamo ancora. Unica eccezione, i file davvero usa-e-getta. Nel dubbio si committa — un file inutile in più costa nulla, un file utile perso costa giorni.
+
+    *Perché c'è: i 25 file della suite di regressione sono esistiti per giorni solo dentro il container, dando l'impressione di un progetto protetto da una rete di sicurezza che nel repository non c'era. Si sono salvati per un soffio.*
+
+23. **Un test nasce insieme al codice che verifica.** Ogni test nuovo va committato **nello stesso commit** della modifica che verifica, mai lasciato in sospeso in attesa di un giro di pulizia. Un test che esiste ma non è nel repository non protegge nessuno: non lo trova chi arriva dopo, non lo lancia nessuna verifica, e sparisce insieme all'ambiente in cui è stato scritto.
+
+24. **Quello che si salva nel repository deve funzionare anche fuori da qui.** Un file committato ma legato all'ambiente in cui è nato — percorsi assoluti della macchina, versioni installate a mano, un server dato per già acceso, una porta che risponde solo oggi — è salvato a metà: c'è, ma non riparte altrove. Prima di considerare committata una cosa, va verificato che le sue dipendenze siano dichiarate (in `package.json`) e che i suoi percorsi siano relativi al repository o pilotabili da variabili d'ambiente, non incollati dentro il codice.
+
+    *Perché c'è: i 44 file sotto `tests/` avevano dentro il percorso dell'installazione di Playwright del container e il numero di build di Chromium. Erano nel repository e sembravano al sicuro, ma su qualunque altra macchina non partivano — e sarebbero morti tutti insieme al primo aggiornamento del browser. Da qui `tests/test-env.js`, il punto unico da cui i test prendono Playwright, l'indirizzo dell'app e i percorsi su disco.*
 
 ## Riferimenti operativi
 
