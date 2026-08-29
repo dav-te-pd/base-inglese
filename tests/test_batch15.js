@@ -1,5 +1,14 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const fs = require('fs');
 const BASE = APP_URL;
+
+// Il vocabolario dell'episodio, letto dalla stessa fonte che usa l'app: così
+// il test sa qual è la risposta giusta a ogni domanda invece di indovinarla
+// dalla posizione del pulsante (CLAUDE.md regola 19 — vedi srAnswerQuestion).
+const EPISODE = JSON.parse(fs.readFileSync(repoPath('data', 'a1-episodio1-inglese.json'), 'utf8'));
+// Direzione en-it: la domanda è l'inglese, la risposta corretta l'italiano.
+const SR_CORRECT_BY_PROMPT = {};
+EPISODE.vocabulary.forEach(function (v) { SR_CORRECT_BY_PROMPT[v.english.trim()] = v.italian.trim(); });
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -92,6 +101,147 @@ async function dismissAttemptPopupIfOpen(page) {
     return true;
   }
   return false;
+}
+
+// ---- Speed Round: pilotaggio basato sullo stato, non sui millisecondi ----
+// (CLAUDE.md regola 19)
+//
+// Legge tutto lo stato che serve in un'unica valutazione sincrona dentro la
+// pagina, invece di interrogare il DOM un pezzo alla volta con round-trip
+// separati: fra la lettura della domanda e il click non c'è una finestra in
+// cui il conto alla rovescia possa cambiare la schermata sotto i piedi al
+// test.
+function srReadState(page) {
+  return page.evaluate(function () {
+    // Visibilità reale a schermo, non solo l'attributo hidden: una classe
+    // con un proprio display può batterlo (CLAUDE.md regola 12).
+    var vis = function (id) { var el = document.getElementById(id); return !!el && el.getClientRects().length > 0; };
+    var popup = document.getElementById('attempt-popup');
+    var prompt = document.getElementById('sr-prompt');
+    return {
+      popupOpen: !!popup && popup.classList.contains('is-open'),
+      screen: vis('sr-summary-screen') ? 'summary'
+        : vis('sr-retry-intro-screen') ? 'retryIntro'
+        : vis('sr-quiz-screen') ? 'quiz'
+        : vis('sr-countdown-screen') ? 'countdown'
+        : vis('sr-start-screen') ? 'start' : 'altro',
+      inRetryPass: vis('sr-ripasso-badge'),
+      prompt: prompt ? prompt.textContent.trim() : '',
+      options: Array.prototype.map.call(document.querySelectorAll('#sr-options .sr-option'), function (b) {
+        return { text: b.textContent.trim(), disabled: b.disabled };
+      }),
+      advanceVisible: vis('sr-advance-btn')
+    };
+  });
+}
+
+// Attende che lo stato di Speed Round cambi davvero, descritto da un
+// predicato valutato dentro la pagina. Nessun waitForTimeout: se la macchina
+// è lenta aspetta di più, se è veloce prosegue subito.
+function srWaitFor(page, predicate, arg) {
+  return page.waitForFunction(predicate, arg, { timeout: 20000 });
+}
+
+// Attraversa il modulo rispondendo secondo `answer`: 'wrong' al primo giro e
+// 'correct' al ripasso, o quello che gli si passa. Torna quando compare la
+// Schermata Finale. Sceglie il pulsante confrontando il testo delle opzioni
+// con la traduzione vera presa dal file dell'episodio — prima cliccava sempre
+// la prima opzione, che essendo mescolata è quella giusta una volta su
+// quattro: il "primo giro tutto sbagliato" non era garantito, ed è questo che
+// rendeva il test intermittente.
+async function srPlayThroughModule(page, answerFor) {
+  for (var guard = 0; guard < 300; guard++) {
+    var st = await srReadState(page);
+
+    if (st.popupOpen) {
+      await page.locator('#attempt-popup-next').click();
+      await srWaitFor(page, function () {
+        var p = document.getElementById('attempt-popup');
+        return !p || !p.classList.contains('is-open');
+      });
+      continue;
+    }
+
+    if (st.screen === 'summary') return true;
+
+    if (st.screen === 'start') {
+      await page.locator('#sr-ready-btn').click();
+      await srWaitFor(page, function () {
+        var e = document.getElementById('sr-start-screen');
+        return !e || e.getClientRects().length === 0;
+      });
+      continue;
+    }
+
+    if (st.screen === 'countdown') {
+      // Il 3-2-1 iniziale: si aspetta che finisca da solo, senza indovinarne
+      // la durata.
+      await srWaitFor(page, function () {
+        var e = document.getElementById('sr-quiz-screen');
+        return !!e && e.getClientRects().length > 0;
+      });
+      continue;
+    }
+
+    if (st.screen === 'retryIntro') {
+      await page.locator('#sr-retry-continue-btn').click();
+      await srWaitFor(page, function () {
+        var e = document.getElementById('sr-retry-intro-screen');
+        return !e || e.getClientRects().length === 0;
+      });
+      continue;
+    }
+
+    if (st.screen !== 'quiz') {
+      await srWaitFor(page, function () {
+        var e = document.getElementById('sr-quiz-screen');
+        return !!e && e.getClientRects().length > 0;
+      });
+      continue;
+    }
+
+    // "Avanti" dopo una risposta sbagliata o un tempo scaduto.
+    if (st.advanceVisible) {
+      await page.locator('#sr-advance-btn').click();
+      await srWaitFor(page, function () {
+        var e = document.getElementById('sr-advance-btn');
+        return !e || e.getClientRects().length === 0;
+      });
+      continue;
+    }
+
+    if (!st.options.length) {
+      await srWaitFor(page, function () { return document.querySelectorAll('#sr-options .sr-option').length > 0; });
+      continue;
+    }
+
+    var correctText = SR_CORRECT_BY_PROMPT[st.prompt];
+    if (correctText === undefined) throw new Error('Domanda non presente nel vocabolario dell\'episodio: "' + st.prompt + '"');
+    var wantCorrect = answerFor(st) === 'correct';
+    var index = -1;
+    for (var i = 0; i < st.options.length; i++) {
+      var isCorrect = st.options[i].text === correctText;
+      if (wantCorrect ? isCorrect : !isCorrect) { index = i; break; }
+    }
+    if (index === -1) throw new Error('Nessuna opzione ' + (wantCorrect ? 'corretta' : 'sbagliata') + ' per "' + st.prompt + '"');
+
+    await page.locator('#sr-options .sr-option').nth(index).click();
+    // Dopo il click la schermata cambia in uno di questi modi: compare
+    // "Avanti" (sbagliata o tempo scaduto), cambia la domanda, si apre il
+    // popup dei tentativi, o si arriva al ripasso/riepilogo. Si aspetta che
+    // sia successo qualcosa, non un tempo fisso.
+    await srWaitFor(page, function (prev) {
+      var vis = function (id) { var el = document.getElementById(id); return !!el && el.getClientRects().length > 0; };
+      var popup = document.getElementById('attempt-popup');
+      var prompt = document.getElementById('sr-prompt');
+      return vis('sr-advance-btn')
+        || vis('sr-summary-screen')
+        || vis('sr-retry-intro-screen')
+        || (!!popup && popup.classList.contains('is-open'))
+        || (!!prompt && prompt.textContent.trim() !== prev);
+    }, st.prompt);
+  }
+  throw new Error('Speed Round non ha raggiunto la Schermata Finale entro il limite di passi');
 }
 
 const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
@@ -457,27 +607,17 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job11', ALL_BEFORE_SR);
     await openModule(page, 'speedRoundEngIta');
-    var srStart = await page.isVisible('#sr-ready-btn').catch(() => false);
-    if (srStart) { await page.click('#sr-ready-btn'); }
-    // Answer everything WRONG on the first pass, then correctly on retry -> first-pass pct must be 0, not inflated.
-    for (let i = 0; i < 60; i++) {
-      if (await dismissAttemptPopupIfOpen(page)) continue;
-      const summaryVisible = await page.isVisible('#sr-summary-screen').catch(() => false);
-      if (summaryVisible) break;
-      const retryVisible = await page.isVisible('#sr-retry-intro-screen').catch(() => false);
-      if (retryVisible) { await page.click('#sr-retry-continue-btn', { timeout: 1000 }).catch(() => {}); await page.waitForTimeout(150); continue; }
-      const quizVisible = await page.isVisible('#sr-quiz-screen').catch(() => false);
-      if (!quizVisible) { await page.waitForTimeout(300); continue; }
-      const optionCount = await page.locator('#sr-options .sr-option').count();
-      if (!optionCount) { await page.waitForTimeout(150); continue; }
-      await page.locator('#sr-options .sr-option').first().click({ timeout: 1000 }).catch(() => {});
-      await page.waitForTimeout(150);
-      const advanceVisible = await page.isVisible('#sr-advance-btn').catch(() => false);
-      if (advanceVisible) { await page.click('#sr-advance-btn', { timeout: 1000 }).catch(() => {}); await page.waitForTimeout(150); }
-    }
-    await page.waitForTimeout(200);
-    await page.click('#sr-complete-btn', { timeout: 2000 }).catch(() => {});
-    await page.waitForTimeout(200);
+    // Tutto sbagliato al primo giro, tutto giusto al ripasso: il punteggio
+    // salvato deve restare quello del primo giro (rosso), non essere gonfiato
+    // dal ripasso. Prima il test cliccava alla cieca la prima opzione in
+    // entrambi i giri, quindi non verificava davvero quello che il suo nome
+    // dice — ora la scelta viene dai dati dell'episodio.
+    await srPlayThroughModule(page, function (st) { return st.inRetryPass ? 'correct' : 'wrong'; });
+    await page.locator('#sr-complete-btn').click();
+    await page.waitForFunction(() => {
+      var row = document.querySelector('[data-module="speedRoundEngIta"]');
+      return !!row && /outcome-/.test(row.className);
+    }, null, { timeout: 20000 });
     const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedRoundEngIta"]').className);
     log('[Job11] Speed Round: first-pass-all-wrong-then-fixed-in-retry still saves rosso (not inflated by the retry pass)', rowClass11.indexOf('outcome-rosso') !== -1);
     log('[Job11] No JS errors', errors.length === 0);
