@@ -73,6 +73,10 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     *Perché c'è: i 44 file sotto `tests/` avevano dentro il percorso dell'installazione di Playwright del container e il numero di build di Chromium. Erano nel repository e sembravano al sicuro, ma su qualunque altra macchina non partivano — e sarebbero morti tutti insieme al primo aggiornamento del browser. Da qui `tests/test-env.js`, il punto unico da cui i test prendono Playwright, l'indirizzo dell'app e i percorsi su disco.*
 
+25. **Tutto editabile e separato, sempre.** Un contenuto che sembra un blocco unico va comunque scomposto nei suoi pezzi: un titolo e un testo sono due campi, non una stringa sola; tre risposte possibili sono tre voci con la propria etichetta, non tre stringhe scritte nel codice. Vale per i file di dati e per i testi dell'interfaccia allo stesso modo. Costa poche righe quando la struttura nasce; unire e poi separare significa rifare da capo il contenuto già scritto.
+
+    *Perché c'è: `whatYouLearn` era nato come stringa unica. Le undici spiegazioni dell'Episodio 1 hanno un titolo e un corpo, e il grassetto serve DENTRO il corpo per evidenziare le parole — con una stringa sola il titolo sarebbe stato grassetto anche lui, indistinguibile dal resto. Separarlo prima di scrivere il contenuto è costato cinque righe.*
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese` — ramo di lavoro e di pubblicazione: `main`

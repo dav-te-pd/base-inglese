@@ -1,8 +1,8 @@
 # Suite di regressione
 
-26 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+27 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
-`test_voicecoach.js`, `test_fallbacks.js`). Insieme costituiscono la suite di regressione completa
+`test_voicecoach.js`, `test_speakeasy.js`, `test_fallbacks.js`). Insieme costituiscono la suite di regressione completa
 citata da CLAUDE.md (regola 15): quando una modifica tocca codice condiviso
 va lanciata tutta, quando resta dentro un modulo bastano i file di quel
 modulo.
@@ -23,7 +23,7 @@ npm test
 ```
 
 `npm test` esegue `run_full_regression.sh`, che avvia da solo il server
-statico sulla porta 8955, lancia i 26 file in ordine e ferma il server alla
+statico sulla porta 8955, lancia i 27 file in ordine e ferma il server alla
 fine. Se un server risponde già su quella porta, lo riusa invece di
 avviarne un altro.
 

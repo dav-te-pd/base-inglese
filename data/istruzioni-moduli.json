@@ -50,6 +50,30 @@
       "title": "Come funziona, in breve",
       "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Dove trovi \"Cosa imparo qui\", leggila e dì se ti è chiara.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito\".</p>"
     },
+    "completeHint": "Si attiva quando hai aperto e dichiarato tutte le spiegazioni.",
+    "selfCheck": {
+      "question": "Hai capito la spiegazione?",
+      "answers": [
+        {
+          "value": "nonChiara",
+          "button": "Non mi è chiara",
+          "short": "Non chiara",
+          "primary": false
+        },
+        {
+          "value": "nonAncora",
+          "button": "Non ancora, la ripasserò",
+          "short": "Da ripassare",
+          "primary": false
+        },
+        {
+          "value": "chiara",
+          "button": "Sì, mi è chiara",
+          "short": "Chiara",
+          "primary": true
+        }
+      ]
+    },
     "selfCheckMessages": {
       "nonChiara": {
         "title": "Va bene così",
