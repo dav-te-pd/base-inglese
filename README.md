@@ -71,11 +71,25 @@ può pilotare con `APP_PORT`, `APP_URL`, `PLAYWRIGHT_MODULE`, `CHROMIUM_PATH`,
 
 ## Dov'è pubblicata
 
-Come artifact su claude.ai:
-<https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621>
+Due indirizzi, che servono a cose diverse:
 
-Ogni modifica va pubblicata lì, ripubblicando **lo stesso** artifact — non
-creandone uno nuovo (`CLAUDE.md`, regola 6).
+| dove | indirizzo | come si aggiorna |
+|---|---|---|
+| **GitHub Pages** | <https://dav-te-pd.github.io/base-inglese/> | da solo, a ogni push su `main` |
+| **Artifact claude.ai** | <https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621> | a mano, ripubblicando **lo stesso** artifact (`CLAUDE.md`, regola 6) |
+
+**Non sono la stessa cosa.** Su Pages i file `data/*.json` esistono, quindi
+l'app li carica: è la sua forma completa. L'artifact è una pagina singola —
+il `fetch` dei dati fallisce e `index.html` ricade sulle copie di sicurezza
+che tiene al proprio interno. Finché quelle copie non coincidono con i file
+in `data/`, i due indirizzi mostrano contenuti diversi:
+
+```bash
+node tests/tools/check-fallbacks.js   # con il server attivo
+```
+
+verifica che coincidano, ed esce con codice 1 elencando le sezioni che
+divergono.
 
 ## Prima di modificare
 

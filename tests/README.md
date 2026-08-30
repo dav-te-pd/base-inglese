@@ -63,8 +63,11 @@ npm test
 Non fanno parte della suite lanciata da `run_full_regression.sh` — vedi il
 README di ciascuna per cosa sono e perché sono state tenute:
 
-- `tools/` — script di verifica visiva (screenshot). Scrivono in
-  `tests/output/`.
+- `tools/` — script di verifica visiva (screenshot, scrivono in
+  `tests/output/`) e `check-fallbacks.js`, che verifica che le copie di
+  sicurezza dentro `index.html` (`window.FALLBACK_*`) coincidano con i file
+  in `data/` — se divergono, il sito su GitHub Pages e l'artifact mostrano
+  contenuti diversi.
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
 

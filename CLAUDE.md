@@ -21,8 +21,10 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 5. **Mantenere la tipografia e lo stile del design system esistente**: Source Serif 4 (titoli/frase d'esercizio), Inter (testo/UI), IBM Plex Mono (badge/etichette); componenti `.btn-primary` / `.btn-secondary` / `.card` / `.panel` / `.badge` già definiti — riusarli invece di crearne varianti nuove per la stessa funzione.
 
 6. **Pubblicare sempre il sito aggiornato dopo ogni modifica**, mantenendo intatto il resto:
-   - commit + push sul branch di lavoro corrente;
+   - commit + push su `main` (GitHub Pages si aggiorna da solo da lì);
    - ripubblicare l'artifact esistente passando lo stesso `url` (mai crearne uno nuovo per un aggiornamento).
+
+   I due indirizzi non mostrano la stessa cosa, ed è una differenza che va tenuta a mente. Su Pages i file `data/*.json` esistono e l'app li carica: è la sua forma completa. L'artifact è una pagina singola, il `fetch` fallisce e `index.html` ricade sulle copie di sicurezza (`window.FALLBACK_*`) che tiene al proprio interno. **Chi modifica un file in `data/` deve aggiornare la copia corrispondente in `index.html` nello stesso commit**, altrimenti i due indirizzi divergono in silenzio: `node tests/tools/check-fallbacks.js` lo verifica ed esce con codice 1 elencando le sezioni diverse.
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
@@ -73,5 +75,6 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 ## Riferimenti operativi
 
-- Repo: `dav-te-pd/base-inglese`
-- Artifact pubblicato: https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621
+- Repo: `dav-te-pd/base-inglese` — ramo di lavoro e di pubblicazione: `main`
+- Sito pubblicato (GitHub Pages, forma completa): https://dav-te-pd.github.io/base-inglese/
+- Artifact pubblicato (pagina singola, copie di sicurezza): https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621
