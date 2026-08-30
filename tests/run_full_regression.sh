@@ -34,7 +34,7 @@ fi
 cleanup() { [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null; }
 trap cleanup EXIT
 
-FILES="test_batch2.js test_batch2b.js test_batch3.js test_batch3b.js test_batch4.js test_batch4b.js test_batch5.js test_batch6.js test_batch7.js test_batch8.js test_batch9.js test_batch10.js test_batch11.js test_batch12.js test_batch13.js test_batch14.js test_batch15.js test_batch16.js test_batch17.js test_batch18.js test_batch19.js test_batch20.js test_dialogo_extra.js test_new_features.js test_voicecoach.js"
+FILES="test_batch2.js test_batch2b.js test_batch3.js test_batch3b.js test_batch4.js test_batch4b.js test_batch5.js test_batch6.js test_batch7.js test_batch8.js test_batch9.js test_batch10.js test_batch11.js test_batch12.js test_batch13.js test_batch14.js test_batch15.js test_batch16.js test_batch17.js test_batch18.js test_batch19.js test_batch20.js test_dialogo_extra.js test_new_features.js test_voicecoach.js test_fallbacks.js"
 OVERALL_OK=1
 for f in $FILES; do
   echo "=== $f ==="

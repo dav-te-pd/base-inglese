@@ -1,8 +1,8 @@
 # Suite di regressione
 
-25 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+26 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
-`test_voicecoach.js`). Insieme costituiscono la suite di regressione completa
+`test_voicecoach.js`, `test_fallbacks.js`). Insieme costituiscono la suite di regressione completa
 citata da CLAUDE.md (regola 15): quando una modifica tocca codice condiviso
 va lanciata tutta, quando resta dentro un modulo bastano i file di quel
 modulo.
@@ -23,7 +23,7 @@ npm test
 ```
 
 `npm test` esegue `run_full_regression.sh`, che avvia da solo il server
-statico sulla porta 8955, lancia i 25 file in ordine e ferma il server alla
+statico sulla porta 8955, lancia i 26 file in ordine e ferma il server alla
 fine. Se un server risponde già su quella porta, lo riusa invece di
 avviarne un altro.
 
@@ -63,11 +63,8 @@ npm test
 Non fanno parte della suite lanciata da `run_full_regression.sh` — vedi il
 README di ciascuna per cosa sono e perché sono state tenute:
 
-- `tools/` — script di verifica visiva (screenshot, scrivono in
-  `tests/output/`) e `check-fallbacks.js`, che verifica che le copie di
-  sicurezza dentro `index.html` (`window.FALLBACK_*`) coincidano con i file
-  in `data/` — se divergono, il sito su GitHub Pages e l'artifact mostrano
-  contenuti diversi.
+- `tools/` — script di verifica visiva (screenshot). Scrivono in
+  `tests/output/`.
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
 
@@ -76,6 +73,16 @@ README di ciascuna per cosa sono e perché sono state tenute:
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
 millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
 intermittente, si guarda lì prima di sospettare una regressione dell'app.
+
+## `test_fallbacks.js` — perché è nella suite
+
+Non prova un modulo: verifica che le copie di sicurezza dentro `index.html`
+(`window.FALLBACK_*`) coincidano con i file in `data/`. Se divergono, il sito
+su GitHub Pages (che carica i file veri) e l'artifact (che ricade sulle copie)
+mostrano contenuti diversi — è già successo, e nessun test se n'era accorto
+perché i test girano solo dove i file veri esistono. Sta nella suite e non fra
+gli strumenti proprio perché la divergenza si ripresenta ogni volta che si
+tocca un file in `data/`, cioè spesso.
 
 ## File di servizio
 

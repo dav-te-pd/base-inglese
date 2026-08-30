@@ -13,7 +13,7 @@
 //
 //   node tests/tools/check-fallbacks.js     (con il server attivo)
 
-const { launchBrowser, APP_URL } = require('../test-env');
+const { launchBrowser, APP_URL } = require('./test-env');
 
 // Confronto strutturale indipendente dall'ordine delle chiavi: due file
 // uguali nel contenuto ma scritti in ordine diverso non sono una divergenza.

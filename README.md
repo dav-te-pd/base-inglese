@@ -51,7 +51,7 @@ I valori regolabili — soglie, tempi, liste, percentuali — stanno tutti in
 
 ## I test
 
-25 file Playwright, uno per giro di lavoro o argomento. Vanno lanciati tutti
+26 file Playwright, uno per giro di lavoro o argomento. Vanno lanciati tutti
 quando una modifica tocca codice condiviso; se resta dentro un modulo bastano i
 file di quel modulo (`CLAUDE.md`, regola 15).
 
@@ -84,12 +84,8 @@ il `fetch` dei dati fallisce e `index.html` ricade sulle copie di sicurezza
 che tiene al proprio interno. Finché quelle copie non coincidono con i file
 in `data/`, i due indirizzi mostrano contenuti diversi:
 
-```bash
-node tests/tools/check-fallbacks.js   # con il server attivo
-```
-
-verifica che coincidano, ed esce con codice 1 elencando le sezioni che
-divergono.
+`tests/test_fallbacks.js` verifica che coincidano, ed è dentro la suite: una
+divergenza fa fallire la CI come qualunque altra regressione.
 
 ## Prima di modificare
 
