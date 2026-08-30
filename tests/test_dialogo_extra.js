@@ -1,5 +1,14 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
+
+// Gli id delle battute vengono dai dati, non scritti a mano: erano fissati a
+// "d1"/"d2" e si sono rotti tutti insieme appena il file episodio è passato
+// alla struttura a gradi. Il primo e il secondo elemento del grado D sono
+// quello che a questi test serve davvero.
+const BATTUTE = loadGrade('D');
+const D1 = BATTUTE[0].id;
+const D2 = BATTUTE[1].id;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -79,7 +88,7 @@ async function run() {
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
     await page.waitForTimeout(150);
-    await page.click('.dg-bubble[data-line-id="d1"]');
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
     await page.waitForTimeout(40); // audio ends, bar starts (fast config)
     const tonesBeforeBarEnds = await page.evaluate(() => window.__playedTones.length);
     // d1 = 10 words -> pausaBase(200) + 10*pausaPerParola(10) = 300ms bar.
@@ -111,24 +120,24 @@ async function run() {
     const toolbarVisible = await page.evaluate(() => !document.getElementById('dg-toolbar').hidden);
     const toggleExists = await page.evaluate(() => !!document.getElementById('dg-translations-toggle'));
     log('[Regression] Mod1 still shows the translations toggle', toolbarVisible && toggleExists);
-    await page.click('.dg-bubble[data-line-id="d1"]');
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
     await page.waitForTimeout(10);
-    const midAudio = await page.evaluate(() => {
-      var b1 = document.querySelector('.dg-bubble[data-line-id="d1"]');
-      var b2 = document.querySelector('.dg-bubble[data-line-id="d2"]');
+    const midAudio = await page.evaluate(([id1, id2]) => {
+      var b1 = document.querySelector('.dg-bubble[data-line-id="' + id1 + '"]');
+      var b2 = document.querySelector('.dg-bubble[data-line-id="' + id2 + '"]');
       return { b1Active: b1.classList.contains('is-active'), b2Locked: b2.classList.contains('is-locked') };
-    });
+    }, [D1, D2]);
     // Correction (5th collaudo): Ascolta e Ripeti has no countdown to
     // desync, and its own instructions promise free tapping in any order
     // — dgLockAll no longer locks OTHER bubbles for this profile (only
     // Ripeti a Tempo/Continuo still do). b1 still lifts (is-active).
     log('[Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile)', midAudio.b1Active && !midAudio.b2Locked);
     await page.waitForTimeout(60);
-    const afterAudio = await page.evaluate(() => {
-      var b1 = document.querySelector('.dg-bubble[data-line-id="d1"]');
-      var check = document.getElementById('dg-heard-d1');
+    const afterAudio = await page.evaluate((id1) => {
+      var b1 = document.querySelector('.dg-bubble[data-line-id="' + id1 + '"]');
+      var check = document.getElementById('dg-heard-' + id1);
       return { b1Active: b1.classList.contains('is-active'), b1Timer: b1.classList.contains('dg-bubble-timer'), checkVisible: check && !check.hidden };
-    });
+    }, D1);
     log('[Regression] Mod1 unlocks right after audio (no countdown bar, countdown:false)', !afterAudio.b1Active && !afterAudio.b1Timer);
     log('[Regression] Mod1 checkmark still appears', afterAudio.checkVisible);
     await page.click('#dg-translations-toggle');

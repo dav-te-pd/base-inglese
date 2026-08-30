@@ -122,10 +122,10 @@ async function run() {
     await page.waitForTimeout(200);
     // d1 = "Hello everyone! Nice to meet you. Can you introduce yourselves?" = 10 words.
     // pausaBase(2000) + 10*pausaPerParola(900) = 11000ms, under pausaMassima(12000).
-    await page.click('.dg-bubble[data-line-id="d1"]');
+    await page.click('.dg-bubble[data-line-id="d-1"]');
     await page.waitForTimeout(60); // let the (fast, mocked) audio finish and the bar start
     const transitionDuration = await page.evaluate(() => {
-      var bubble = document.querySelector('.dg-bubble[data-line-id="d1"]');
+      var bubble = document.querySelector('.dg-bubble[data-line-id="d-1"]');
       var fill = bubble.querySelector('.sr-timerbar-fill');
       return getComputedStyle(fill).transitionDuration;
     });
@@ -175,12 +175,12 @@ async function run() {
     log('Mod2 has NO Avanti/Salta button', !hasAvantiSalta);
 
     // Click first bubble: lock everything except Mappa.
-    const firstBubble = await page.$('.dg-bubble[data-line-id="d1"]');
+    const firstBubble = await page.$('.dg-bubble[data-line-id="d-1"]');
     await firstBubble.click();
     await page.waitForTimeout(10);
     const midAudio = await page.evaluate(() => {
-      var b1 = document.querySelector('.dg-bubble[data-line-id="d1"]');
-      var b2 = document.querySelector('.dg-bubble[data-line-id="d2"]');
+      var b1 = document.querySelector('.dg-bubble[data-line-id="d-1"]');
+      var b2 = document.querySelector('.dg-bubble[data-line-id="d-2"]');
       return {
         b1Active: b1.classList.contains('is-active'),
         b2Locked: b2.classList.contains('is-locked'),
@@ -192,19 +192,19 @@ async function run() {
     log('Mod2: Mappa stays clickable during audio (never disabled)', backEnabledMidAudio);
 
     await page.waitForTimeout(60); // audio ends (mocked ~25ms)
-    const timerVisible = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d1"]').classList.contains('dg-bubble-timer'));
+    const timerVisible = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-1"]').classList.contains('dg-bubble-timer'));
     log('Mod2: after audio, the per-line countdown bar starts inside the bubble', timerVisible);
-    const captionText = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d1"] .dg-line-timer-caption').textContent);
+    const captionText = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-1"] .dg-line-timer-caption').textContent);
     log('Mod2: countdown bar caption reads "Ripeti ad alta voce"', captionText.trim() === 'Ripeti ad alta voce');
-    const stillLockedDuringBar = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d2"]').classList.contains('is-locked'));
+    const stillLockedDuringBar = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-2"]').classList.contains('is-locked'));
     log('Mod2: still locked (except Mappa) during the countdown bar', stillLockedDuringBar);
 
     // Wait for the (shrunk) bar to finish.
     await page.waitForTimeout(400);
     const afterBar = await page.evaluate(() => {
-      var b1 = document.querySelector('.dg-bubble[data-line-id="d1"]');
-      var b2 = document.querySelector('.dg-bubble[data-line-id="d2"]');
-      var check = document.getElementById('dg-heard-d1');
+      var b1 = document.querySelector('.dg-bubble[data-line-id="d-1"]');
+      var b2 = document.querySelector('.dg-bubble[data-line-id="d-2"]');
+      var check = document.getElementById('dg-heard-d-1');
       return {
         b1Timer: b1.classList.contains('dg-bubble-timer'),
         b1Locked: b1.classList.contains('is-locked'),
@@ -216,18 +216,18 @@ async function run() {
     log('Mod2: after the bar ends, timer bar hides and everything unlocks', !afterBar.b1Timer && !afterBar.b1Locked && !afterBar.b2Locked);
     log('Mod2: checkmark appears on the heard line', afterBar.checkVisible);
     log('Mod2: the NEXT line (d2) is suggested right after unlocking', afterBar.b2Suggested);
-    const b2PulsingEarly = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d2"]').classList.contains('is-pulsing'));
+    const b2PulsingEarly = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-2"]').classList.contains('is-pulsing'));
     log('Mod2: suggested line is NOT pulsing yet (before inactivity delay)', !b2PulsingEarly);
 
     // Wait past pulsareDopoInattivita (shrunk to 400ms).
     await page.waitForTimeout(450);
-    const b2Pulsing = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d2"]').classList.contains('is-pulsing'));
+    const b2Pulsing = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-2"]').classList.contains('is-pulsing'));
     log('Mod2: suggested line starts pulsing after the inactivity delay', b2Pulsing);
 
     // Redo an already-heard line (d1) — must still work.
-    await page.click('.dg-bubble[data-line-id="d1"]');
+    await page.click('.dg-bubble[data-line-id="d-1"]');
     await page.waitForTimeout(10);
-    const suggestionCleared = await page.evaluate(() => !document.querySelector('.dg-bubble[data-line-id="d2"]').classList.contains('is-pulsing') && !document.querySelector('.dg-bubble[data-line-id="d2"]').classList.contains('is-suggested'));
+    const suggestionCleared = await page.evaluate(() => !document.querySelector('.dg-bubble[data-line-id="d-2"]').classList.contains('is-pulsing') && !document.querySelector('.dg-bubble[data-line-id="d-2"]').classList.contains('is-suggested'));
     log('Mod2: starting a new play clears any pending suggestion/pulse', suggestionCleared);
     await page.waitForTimeout(500); // let d1's full audio+bar finish again
 
@@ -281,18 +281,18 @@ async function run() {
 
     // It should be playing d1 automatically without any click.
     await page.waitForTimeout(10);
-    const d1Active = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d1"]').classList.contains('is-active'));
+    const d1Active = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-1"]').classList.contains('is-active'));
     log('Mod3: first line starts playing automatically (no click)', d1Active);
 
     // Clicking a bubble must do nothing (advance is fully automatic) —
     // click the LAST line (d7, far from being naturally reached yet)
     // while d1 is confirmed still active, then confirm d1 is STILL the
     // one playing right after (i.e. the click did not jump the chain).
-    const d1StillActiveBeforeClick = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d1"]').classList.contains('is-active'));
+    const d1StillActiveBeforeClick = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-1"]').classList.contains('is-active'));
     await page.click('.dg-bubble[data-line-id="d7"]', { force: true }).catch(() => {});
     await page.waitForTimeout(5);
     const d7GotActive = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d7"]').classList.contains('is-active'));
-    const d1StillActiveAfterClick = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d1"]').classList.contains('is-active'));
+    const d1StillActiveAfterClick = await page.evaluate(() => document.querySelector('.dg-bubble[data-line-id="d-1"]').classList.contains('is-active'));
     log('Mod3: clicking a bubble has no effect (fully automatic, chain not interrupted/jumped)',
       d1StillActiveBeforeClick && !d7GotActive && d1StillActiveAfterClick);
 

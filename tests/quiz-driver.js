@@ -33,6 +33,14 @@ function loadEpisode(parts) {
   return JSON.parse(fs.readFileSync(repoPath.apply(null, parts || DEFAULT_EPISODE), 'utf8'));
 }
 
+// Le voci di un grado dell'episodio — la stessa domanda che l'app fa a
+// episodeGrade(). I test non raggiungono levels.X.items a mano, così se la
+// forma del file cambia ancora c'è un punto solo da aggiornare anche qui.
+function loadGrade(grade, parts) {
+  const entry = loadEpisode(parts).levels[grade];
+  return (entry && entry.items) || [];
+}
+
 // La risposta corretta per la domanda mostrata, senza sapere la direzione:
 // se la domanda è l'inglese di una voce la risposta è il suo italiano, e
 // viceversa. Torna null se la domanda non è nel vocabolario.
@@ -204,4 +212,4 @@ async function playThroughQuiz(page, prefix, options) {
   throw new Error('Il modulo "' + prefix + '" non ha raggiunto la Schermata Finale entro ' + maxSteps + ' passi');
 }
 
-module.exports = { loadEpisode, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz };
+module.exports = { loadEpisode, loadGrade, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz };

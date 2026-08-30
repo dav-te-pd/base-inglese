@@ -38,7 +38,7 @@ Dentro `data/`:
 
 | file | cosa contiene |
 |---|---|
-| `a1-episodio1-inglese.json` | l'episodio: `dialogue` e `vocabulary`, condivisi fra tutti i moduli |
+| `a1-episodio1-inglese.json` | l'episodio, organizzato in gradi: `levels.A` parole, `levels.B` chunk, `levels.C` frasi, `levels.D` battute |
 | `istruzioni-moduli.json` | i testi "Guarda come si fa" e i promemoria del pannello Help, per tipo di modulo |
 | `messaggi-feedback.json` | i messaggi di esito mostrati all'utente |
 

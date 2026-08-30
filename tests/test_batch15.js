@@ -1,10 +1,10 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { loadEpisode, playThroughQuiz } = require('./quiz-driver');
+const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
 // pulsanti: vedi tests/quiz-driver.js.
-const VOCABULARY = loadEpisode().vocabulary;
+const VOCABULARY = loadGrade('A');
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -119,7 +119,7 @@ async function run() {
     await openModule(page, 'quickMatchEngIta');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
-    const vocab = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.vocabulary));
+    const vocab = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
     const engToIta = {}; vocab.forEach(v => { engToIta[v.english] = v.italian; });
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
@@ -173,7 +173,7 @@ async function run() {
     await openModule(page, 'quickMatchEngIta');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
-    const vocab2 = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.vocabulary));
+    const vocab2 = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
     const engToIta2 = {}; vocab2.forEach(v => { engToIta2[v.english] = v.italian; });
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);

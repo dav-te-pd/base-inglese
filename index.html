@@ -277,23 +277,6 @@
     quickMatch: {
       feedbackPauseMs: 600
     },
-    // ---- Flash Card decks. One entry per level (today just "a"); each
-    // module descriptor (see EPISODES) points at a level key + a
-    // direction, so the component always reads its label/data source
-    // from here instead of hardcoding "Livello A" — adding level B/C
-    // later is just a new key here plus two more module descriptors. ----
-    flashcard: {
-      levels: {
-        a: {
-          label: 'LIVELLO A · PAROLE SINGOLE',
-          // Key into the episode data file's own object (CLAUDE.md rule 4).
-          vocabKey: 'flashcardLevelA'
-        }
-      }
-      // Retry-queue safety valve threshold lives in CONFIG.retryQueue.
-      // maxAttempts (shared across every module with this mechanic), not
-      // duplicated here.
-    },
     // ---- Dialogo modules: ONE parametrized component, three profiles ----
     // "Dialogo Completo" is three consecutive map modules over the same
     // dialogue content — Ascolta e Ripeti (free, no timer), Ripeti a
@@ -694,50 +677,49 @@
         { key: 'partenza', label: 'Città di partenza', type: 'select', table: 'places.departures', default: 'mondovi' },
         { key: 'destinazione', label: 'Destinazione', type: 'select', table: 'places.destinations', default: 'cina' }
       ],
-      dialogue: [
-        { id: 'd1', speaker: 'guide', ruolo: 'esterno', english: 'Hello everyone! Nice to meet you. Can you introduce yourselves?', italian: 'Ciao a tutti! Piacere di conoscervi. Potete presentarvi?' },
-        { id: 'd2', speaker: 'papa', ruolo: 'famiglia', english: 'Hello, I\'m {{papa}}. I\'m from {{partenza}}, Italy.', italian: 'Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia.' },
-        { id: 'd3', speaker: 'guide', ruolo: 'esterno', english: 'Nice to meet you, {{papa}}. And you?', italian: 'Piacere, {{papa}}. E tu?' },
-        { id: 'd4', speaker: 'mamma', ruolo: 'famiglia', english: 'Hi, I\'m {{mamma}}. I\'m {{papa}}\'s wife.', italian: 'Ciao, sono {{mamma}}. Sono la moglie di {{papa}}.' },
-        { id: 'd5', speaker: 'figlia', ruolo: 'famiglia', english: 'Hi, I\'m {{figliaNome}}. I\'m {{figliaEta}} years old.', italian: 'Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni.' },
-        { id: 'd6', speaker: 'figlio', ruolo: 'famiglia', english: 'Hello, I\'m {{figlioNome}}. I\'m {{figlioEta}}.', italian: 'Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni.' },
-        { id: 'd7', speaker: 'guide', ruolo: 'esterno', english: 'Great! Welcome to the trip, {{papa}}\'s family!', italian: 'Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!' }
-      ],
-      vocabulary: [
-        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.', grammarCategory: 'interiezione/saluto' },
-        { id: 'everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.', grammarCategory: 'pronome indefinito' },
-        { id: 'nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".', grammarCategory: 'espressione idiomatica' },
-        { id: 'can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.', grammarCategory: 'verbo modale' },
-        { id: 'introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".', grammarCategory: 'verbo' },
-        { id: 'yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".', grammarCategory: 'pronome riflessivo' },
-        { id: 'im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.', grammarCategory: 'pronome + verbo essere' },
-        { id: 'from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".', grammarCategory: 'preposizione' },
-        { id: 'hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".', grammarCategory: 'interiezione/saluto' },
-        { id: 'wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.', grammarCategory: 'sostantivo' },
-        { id: 'years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".', grammarCategory: 'espressione per età' },
-        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.', grammarCategory: 'aggettivo' },
-        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.', grammarCategory: 'interiezione/saluto' },
-        { id: 'trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.', grammarCategory: 'sostantivo' },
-        { id: 'family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".', grammarCategory: 'sostantivo' }
-      ],
+      levels: {
+        A: {
+          label: 'Parole singole',
+          items: [
+            { id: 'a-hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.', grammarCategory: 'interiezione/saluto' },
+            { id: 'a-everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.', grammarCategory: 'pronome indefinito' },
+            { id: 'a-nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".', grammarCategory: 'espressione idiomatica' },
+            { id: 'a-can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.', grammarCategory: 'verbo modale' },
+            { id: 'a-introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".', grammarCategory: 'verbo' },
+            { id: 'a-yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".', grammarCategory: 'pronome riflessivo' },
+            { id: 'a-im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.', grammarCategory: 'pronome + verbo essere' },
+            { id: 'a-from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".', grammarCategory: 'preposizione' },
+            { id: 'a-hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".', grammarCategory: 'interiezione/saluto' },
+            { id: 'a-wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.', grammarCategory: 'sostantivo' },
+            { id: 'a-years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".', grammarCategory: 'espressione per età' },
+            { id: 'a-great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.', grammarCategory: 'aggettivo' },
+            { id: 'a-welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.', grammarCategory: 'interiezione/saluto' },
+            { id: 'a-trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.', grammarCategory: 'sostantivo' },
+            { id: 'a-family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".', grammarCategory: 'sostantivo' }
+          ]
+        },
+        B: {
+          label: 'Chunk',
+          items: []
+        },
+        C: {
+          label: 'Frasi',
+          items: []
+        },
+        D: {
+          label: 'Battute',
+          items: [
+            { id: 'd-1', speaker: 'guide', ruolo: 'esterno', english: 'Hello everyone! Nice to meet you. Can you introduce yourselves?', italian: 'Ciao a tutti! Piacere di conoscervi. Potete presentarvi?' },
+            { id: 'd-2', speaker: 'papa', ruolo: 'famiglia', english: 'Hello, I\'m {{papa}}. I\'m from {{partenza}}, Italy.', italian: 'Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia.' },
+            { id: 'd-3', speaker: 'guide', ruolo: 'esterno', english: 'Nice to meet you, {{papa}}. And you?', italian: 'Piacere, {{papa}}. E tu?' },
+            { id: 'd-4', speaker: 'mamma', ruolo: 'famiglia', english: 'Hi, I\'m {{mamma}}. I\'m {{papa}}\'s wife.', italian: 'Ciao, sono {{mamma}}. Sono la moglie di {{papa}}.' },
+            { id: 'd-5', speaker: 'figlia', ruolo: 'famiglia', english: 'Hi, I\'m {{figliaNome}}. I\'m {{figliaEta}} years old.', italian: 'Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni.' },
+            { id: 'd-6', speaker: 'figlio', ruolo: 'famiglia', english: 'Hello, I\'m {{figlioNome}}. I\'m {{figlioEta}}.', italian: 'Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni.' },
+            { id: 'd-7', speaker: 'guide', ruolo: 'esterno', english: 'Great! Welcome to the trip, {{papa}}\'s family!', italian: 'Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!' }
+          ]
+        }
+      },
       generalRule: 'La "e" finale in inglese non si legge quasi mai.',
-      flashcardLevelA: [
-        { id: 'hello', english: 'Hello', italian: 'Ciao / Salve' },
-        { id: 'everyone', english: 'everyone', italian: 'tutti' },
-        { id: 'nice', english: 'Nice', italian: 'Piacevole' },
-        { id: 'meet', english: 'meet', italian: 'conoscere/incontrare' },
-        { id: 'you', english: 'you', italian: 'tu / voi' },
-        { id: 'can', english: 'Can', italian: 'Puoi / Potete' },
-        { id: 'introduce', english: 'introduce', italian: 'presentare' },
-        { id: 'wife', english: 'wife', italian: 'moglie' },
-        { id: 'years', english: 'years', italian: 'anni' },
-        { id: 'old', english: 'old', italian: 'vecchio (età)' },
-        { id: 'great', english: 'Great', italian: 'Ottimo / Fantastico' },
-        { id: 'welcome', english: 'Welcome', italian: 'Benvenuto/i' },
-        { id: 'trip', english: 'trip', italian: 'viaggio' },
-        { id: 'family', english: 'family', italian: 'famiglia' },
-        { id: 'from', english: 'from', italian: 'da / di' }
-      ],
       ageOptions: {
         figlia: [8, 10, 16],
         figlio: [6, 8, 10]
@@ -4338,8 +4320,8 @@
 
     <!-- ============ VIEW: FLASH CARD MODULES ============
          One shared view/component for every level+direction combo —
-         module.flashcardLevel/flashcardDirection (see EPISODES) pick the
-         level config and data, nothing here is level-specific. Unlike
+         module.grade/flashcardDirection (see EPISODES) pick which grade's
+         items to show and in which direction; nothing here is grade-specific. Unlike
          Speed Round this reuses the standard header-actions + Help
          pattern, always visible except Guarda on the summary screen
          (CLAUDE.md rule 10). -->
@@ -5580,8 +5562,8 @@
         // type's own label with typeLabel instead of needing a whole
         // category just for one module.
         personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
+        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', type: 'studio' },
         // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
@@ -5590,34 +5572,35 @@
         // LastAttemptRule instead of Voice Check's FirstAttemptRule —
         // own kind for its own howItWorks/helpReminder text and
         // intro-dismiss flag (data/istruzioni-moduli.json).
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', voiceVariant: 'practice', type: 'studio' },
         // Check: same id ('voiceCoach') the single pre-split module had —
         // still the ONE place ModuleRules/the retry-queue ripasso live,
         // unchanged from before the split.
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', voiceVariant: 'check', type: 'quiz' },
         // Match Practice: studio, not quiz (job: sei etichette) — no time
         // pressure, self-paced, same as Flash Card.
-        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
         // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
         // share their own category (job: sei etichette) — distinct from
         // plain "studio" since a dialogue plays out with its own pacing.
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studiaDialogo' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'continuo', type: 'studiaDialogo' },
         // Speed Match: quiz, not a separate "a tempo" category (job: sei
         // etichette) — the time pressure IS what makes it a quiz here.
-        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'quiz' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
-        // flashcardLevel/flashcardDirection tell the shared component what
-        // to load — see CONFIG.flashcard.levels — so adding Level B/C later
-        // never touches the component itself, only this dictionary + that config.
+        // grade/flashcardDirection tell the shared component what to load:
+        // il grado dice QUALI voci, la direzione da che verso mostrarle —
+        // aggiungere una direzione o cambiare grado non tocca il componente,
+        // solo questo dizionario.
         // studio, not quiz (job: sei etichette) — self-paced, no time
         // pressure, same as Repeat Aloud/Speak Easy/Match Practice.
-        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardLevel: 'a', flashcardDirection: 'it-en', type: 'studio' }
+        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', flashcardDirection: 'it-en', type: 'studio' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value. Episode 1's own placeholder names are
@@ -6421,7 +6404,7 @@
     else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
     else if (module.dialogoProfile) openDialogo(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
-    else if (module.flashcardLevel) openFlashcard(module);
+    else if (module.flashcardDirection) openFlashcard(module);
   }
 
   document.getElementById('module-list').addEventListener('click', function (e) {
@@ -6489,6 +6472,31 @@
       });
   }
 
+  // L'UNICO modo di prendere il contenuto di un grado da un episodio.
+  // Prima ogni modulo aveva la sua strada — data.vocabulary per Repeat
+  // Aloud/Match Practice/Speed Match, data[CONFIG.flashcard.levels[…].vocabKey]
+  // per Flash Card, data.dialogue per Speak Easy/Voice Coach/Dialogo — tre nomi per
+  // la stessa domanda: "dammi le voci su cui lavora questo modulo". Ora la
+  // domanda è una, e la risposta la decide il grado dichiarato dal modulo
+  // (module.grade, in attesa che a deciderlo sia moduleOrder a coppie).
+  // Un grado assente o vuoto torna una lista vuota, non un errore: i gradi
+  // B e C esistono nella struttura prima di avere contenuto.
+  function episodeGrade(data, grade) {
+    var entry = data.levels && data.levels[grade];
+    return (entry && entry.items) || [];
+  }
+
+  // Il testo di una voce nella lingua chiesta, con i segnaposto già
+  // riempiti. Serve perché i gradi C (frasi) e D (battute) contengono
+  // {{papa}}, {{partenza}} e simili: un quiz su quei gradi mostrerebbe il
+  // segnaposto grezzo, come faceva Speak Easy prima che le battute
+  // passassero da fillTemplate. Sui gradi A e B, che segnaposto non ne
+  // hanno, è un passaggio a vuoto — quindi si applica sempre, invece di
+  // ricordarsi caso per caso quale grado ne ha bisogno.
+  function itemText(item, lang) {
+    return fillTemplate(lang === 'en' ? item.english : item.italian, currentEpisode, currentValues, lang);
+  }
+
   function renderRateButtons(itemId) {
     return CONFIG.speech.rateOptions.map(function (rate) {
       var pct = Math.round(rate * 100) + '%';
@@ -6501,16 +6509,16 @@
     var ruleHtml = data.generalRule
       ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
       : '';
-    var itemsHtml = data.vocabulary.map(function (item) {
+    var itemsHtml = episodeGrade(data, currentRepeatAloudModule.grade).map(function (item) {
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
-        '<span class="repeat-item-english">' + item.english + '</span>' +
+        '<span class="repeat-item-english">' + itemText(item, 'en') + '</span>' +
         '<div class="repeat-item-audio">' +
         '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(item.id) + '</div>' +
         '</div>' +
         '</div>' +
-        '<span class="repeat-item-italian">' + item.italian + '</span>' +
+        '<span class="repeat-item-italian">' + itemText(item, 'it') + '</span>' +
         '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
         '</div>';
     }).join('');
@@ -6659,7 +6667,7 @@
     var btn = e.target.closest('[data-say]');
     if (!btn) return;
     var data = episodeDataCache[currentRepeatAloudModule.dataFile];
-    var item = data && data.vocabulary.find(function (it) { return it.id === btn.getAttribute('data-say'); });
+    var item = data && episodeGrade(data, currentRepeatAloudModule.grade).find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
     var rateAttr = btn.getAttribute('data-rate');
     // Correction (5th collaudo): job 1 (4th collaudo) locked every other
@@ -6667,7 +6675,7 @@
     // browsing (tap any word, any order, any time) is the intended
     // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
     // handles switching between words safely on its own.
-    toggleSpeak(item.english, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    toggleSpeak(itemText(item, 'en'), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
@@ -6811,7 +6819,7 @@
   // given, so re-toggling the block open/closed doesn't lose it.
   function renderSpeakEasy(data) {
     var lineIds = [];
-    var itemsHtml = data.dialogue.map(function (line) {
+    var itemsHtml = episodeGrade(data, currentSpeakEasyModule.grade).map(function (line) {
       var align = dialogueLineAlign(line);
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
@@ -6994,7 +7002,7 @@
     var listenBtn = e.target.closest('[data-say]');
     if (listenBtn) {
       var data = episodeDataCache[currentSpeakEasyModule.dataFile];
-      var line = data && data.dialogue.find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
+      var line = data && episodeGrade(data, currentSpeakEasyModule.grade).find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
       if (!line) return;
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var rateAttr = listenBtn.getAttribute('data-rate');
@@ -7632,7 +7640,7 @@
     }
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
       if (vcModule !== module) return;
-      vcLines = results[0].dialogue;
+      vcLines = episodeGrade(results[0], module.grade);
       vcQueue = vcLines.map(function (l) { return l.id; });
       vcPassTotal = vcQueue.length;
       vcInRetryPass = false;
@@ -7903,10 +7911,10 @@
   var DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
 
   function buildMultipleChoiceOptions(item, direction, vocabPool) {
-    var correctText = direction === 'en-it' ? item.italian : item.english;
+    var correctText = itemText(item, direction === 'en-it' ? 'it' : 'en');
     var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
     var distractors = srShuffle(pool).slice(0, 3).map(function (v) {
-      return direction === 'en-it' ? v.italian : v.english;
+      return itemText(v, direction === 'en-it' ? 'it' : 'en');
     });
     var options = distractors.map(function (text) { return { text: text, correct: false }; });
     options.push({ text: correctText, correct: true });
@@ -8063,7 +8071,7 @@
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
     document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
     document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
-    var promptText = qmDirection === 'en-it' ? qmCurrentItem.english : qmCurrentItem.italian;
+    var promptText = itemText(qmCurrentItem, qmDirection === 'en-it' ? 'en' : 'it');
     document.getElementById('qm-prompt').textContent = promptText;
 
     var audioEl = document.getElementById('qm-prompt-audio');
@@ -8186,7 +8194,7 @@
     showView('quickMatch');
     loadEpisodeData(module).then(function (data) {
       if (qmModule !== module) return;
-      qmVocab = data.vocabulary;
+      qmVocab = episodeGrade(data, module.grade);
     }).catch(function () {
       if (qmModule !== module) return;
       document.getElementById('qm-start-body').hidden = false;
@@ -8244,7 +8252,7 @@
     // prompt reads isn't blocked, it stops the prompt (see the
     // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
     // which stays).
-    toggleSpeak(qmCurrentItem.english, say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    toggleSpeak(itemText(qmCurrentItem, 'en'), say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   });
 
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
@@ -8845,7 +8853,7 @@
     showView('dialogo');
     loadEpisodeData(module).then(function (data) {
       if (dgModule !== module) return;
-      dgDialogue = data.dialogue;
+      dgDialogue = episodeGrade(data, module.grade);
     }).catch(function () {
       if (dgModule !== module) return;
       document.getElementById('dg-start-body').hidden = false;
@@ -9205,7 +9213,7 @@
     document.getElementById('sr-dontknow-btn').disabled = false;
     document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
     document.getElementById('sr-ripasso-badge').hidden = !srInRetryPass;
-    var promptText = srDirection === 'en-it' ? srCurrentItem.english : srCurrentItem.italian;
+    var promptText = itemText(srCurrentItem, srDirection === 'en-it' ? 'en' : 'it');
     document.getElementById('sr-prompt').textContent = promptText;
     srCurrentOptions = srBuildOptions(srCurrentItem);
     document.getElementById('sr-options').innerHTML = srCurrentOptions.map(function (opt, i) {
@@ -9257,7 +9265,7 @@
   // answer and wait for an explicit "Avanti" instead of auto-advancing,
   // so the user reads and memorizes it (CLAUDE.md-style deliberate pacing).
   function srShowReveal() {
-    var correctText = srDirection === 'en-it' ? srCurrentItem.italian : srCurrentItem.english;
+    var correctText = itemText(srCurrentItem, srDirection === 'en-it' ? 'it' : 'en');
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b, i) {
       if (srCurrentOptions[i] && srCurrentOptions[i].correct) b.classList.add('is-correct');
     });
@@ -9341,7 +9349,7 @@
     showView('speedRound');
     loadEpisodeData(module).then(function (data) {
       if (srModule !== module) return;
-      srVocab = data.vocabulary;
+      srVocab = episodeGrade(data, module.grade);
     }).catch(function () {
       if (srModule !== module) return;
       document.getElementById('sr-start-body').hidden = false;
@@ -9423,12 +9431,11 @@
      MODULES: FLASH CARD (Level A Eng-Ita / Level A Ita-Eng, more
      levels later)
      One shared component for every level+direction combo. module.
-     flashcardLevel picks the CONFIG.flashcard.levels entry (label +
-     which key of the episode data file to read) and module.
-     flashcardDirection picks front/back — nothing about "Level A" is
-     hardcoded here, so a future level is just a new CONFIG.flashcard.
-     levels entry plus two more module descriptors, no component
-     changes. Standard Guarda+Help (top-row, always present except
+     module.grade dice quale grado dell'episodio leggere (episodeGrade) e
+     module.flashcardDirection quale faccia mostrare per prima — niente di
+     "Livello A" è scritto qui dentro, quindi un grado nuovo è solo una voce
+     in più nel file episodio più due descrittori, senza toccare il
+     componente. Standard Guarda+Help (top-row, always present except
      Guarda on the summary screen — CLAUDE.md rule 10), unlike Speed
      Round. One shuffled pass over every card; every card gets a real
      attempt — flip it, then Sì/Non ancora, which now advances straight
@@ -9446,7 +9453,7 @@
 
   var fcModule = null;
   var fcIntroPending = false;
-  var fcLevel = 'a';
+  var fcGrade = 'A';
   var fcDirection = 'en-it';
   var fcVocab = [];
   var fcPassItems = [];
@@ -9464,8 +9471,8 @@
   var fcNavLocked = false;
   var fcNavTimeoutId = null;
 
-  function fcFrontText() { return fcDirection === 'en-it' ? fcCurrentItem.english : fcCurrentItem.italian; }
-  function fcBackText() { return fcDirection === 'en-it' ? fcCurrentItem.italian : fcCurrentItem.english; }
+  function fcFrontText() { return itemText(fcCurrentItem, fcDirection === 'en-it' ? 'en' : 'it'); }
+  function fcBackText() { return itemText(fcCurrentItem, fcDirection === 'en-it' ? 'it' : 'en'); }
 
   function fcShowScreen(name) {
     document.getElementById('fc-intro-screen').hidden = name !== 'intro';
@@ -9501,7 +9508,7 @@
   // Round/Quick Match's recordMultipleChoiceResult.
   function fcRecordResult(result) {
     fcPassResults[fcCurrentItem.id] = result;
-    var unitId = 'flashcard-' + fcLevel + ':' + fcCurrentItem.id + ':' + fcDirection;
+    var unitId = 'flashcard-' + fcGrade + ':' + fcCurrentItem.id + ':' + fcDirection;
     var userName = getUserName();
     var mastery = loadMastery(currentEpisode.id, userName);
     mastery[unitId] = applyMasteryResult(mastery[unitId], result);
@@ -9699,9 +9706,8 @@
   function openFlashcard(module) {
     fcModule = module;
     fcClearNavTimeout();
-    fcLevel = module.flashcardLevel;
+    fcGrade = module.grade;
     fcDirection = module.flashcardDirection;
-    var levelConfig = CONFIG.flashcard.levels[fcLevel];
     document.getElementById('flashcard-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('flashcard-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
@@ -9719,7 +9725,7 @@
     showView('flashcard');
     loadEpisodeData(module).then(function (data) {
       if (fcModule !== module) return;
-      fcVocab = data[levelConfig.vocabKey] || [];
+      fcVocab = episodeGrade(data, module.grade);
       fcStartDeck();
     }).catch(function () {
       if (fcModule !== module) return;

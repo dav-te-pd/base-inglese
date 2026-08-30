@@ -135,8 +135,8 @@ async function run() {
     await page.route('**/data/a1-episodio1-inglese.json', async (route) => {
       const response = await route.fetch();
       const json = await response.json();
-      if (json.dialogue && json.dialogue.length) {
-        json.dialogue[0].english = json.dialogue[0].english + ' {{nonExistentSlot}}';
+      if (json.levels.D.items && json.levels.D.items.length) {
+        json.levels.D.items[0].english = json.levels.D.items[0].english + ' {{nonExistentSlot}}';
       }
       await route.fulfill({ response, json });
     });

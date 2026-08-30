@@ -3,68 +3,255 @@
   "episodeId": 1,
   "episodeTitle": "Presentarsi",
   "language": "inglese",
-
   "personalizationTablesUsed": [
-    { "key": "papa", "label": "Nome del papà / utente", "type": "select", "table": "people.papa", "default": "giancarlo" },
-    { "key": "mamma", "label": "Nome della mamma", "type": "select", "table": "people.mamma", "default": "giulia" },
-    { "key": "figliaNome", "label": "Nome della figlia", "type": "select", "table": "people.figlia", "default": "sofia", "group": "figlia" },
-    { "key": "figliaEta", "label": "Età della figlia", "type": "select", "table": "episode.ageOptions.figlia", "default": "16", "group": "figlia", "narrow": true },
-    { "key": "figlioNome", "label": "Nome del figlio", "type": "select", "table": "people.figlio", "default": "leo", "group": "figlio" },
-    { "key": "figlioEta", "label": "Età del figlio", "type": "select", "table": "episode.ageOptions.figlio", "default": "10", "group": "figlio", "narrow": true },
-    { "key": "partenza", "label": "Città di partenza", "type": "select", "table": "places.departures", "default": "mondovi" },
-    { "key": "destinazione", "label": "Destinazione", "type": "select", "table": "places.destinations", "default": "cina" }
+    {
+      "key": "papa",
+      "label": "Nome del papà / utente",
+      "type": "select",
+      "table": "people.papa",
+      "default": "giancarlo"
+    },
+    {
+      "key": "mamma",
+      "label": "Nome della mamma",
+      "type": "select",
+      "table": "people.mamma",
+      "default": "giulia"
+    },
+    {
+      "key": "figliaNome",
+      "label": "Nome della figlia",
+      "type": "select",
+      "table": "people.figlia",
+      "default": "sofia",
+      "group": "figlia"
+    },
+    {
+      "key": "figliaEta",
+      "label": "Età della figlia",
+      "type": "select",
+      "table": "episode.ageOptions.figlia",
+      "default": "16",
+      "group": "figlia",
+      "narrow": true
+    },
+    {
+      "key": "figlioNome",
+      "label": "Nome del figlio",
+      "type": "select",
+      "table": "people.figlio",
+      "default": "leo",
+      "group": "figlio"
+    },
+    {
+      "key": "figlioEta",
+      "label": "Età del figlio",
+      "type": "select",
+      "table": "episode.ageOptions.figlio",
+      "default": "10",
+      "group": "figlio",
+      "narrow": true
+    },
+    {
+      "key": "partenza",
+      "label": "Città di partenza",
+      "type": "select",
+      "table": "places.departures",
+      "default": "mondovi"
+    },
+    {
+      "key": "destinazione",
+      "label": "Destinazione",
+      "type": "select",
+      "table": "places.destinations",
+      "default": "cina"
+    }
   ],
-
-  "dialogue": [
-    { "id": "d1", "speaker": "guide", "ruolo": "esterno", "english": "Hello everyone! Nice to meet you. Can you introduce yourselves?", "italian": "Ciao a tutti! Piacere di conoscervi. Potete presentarvi?" },
-    { "id": "d2", "speaker": "papa", "ruolo": "famiglia", "english": "Hello, I'm {{papa}}. I'm from {{partenza}}, Italy.", "italian": "Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia." },
-    { "id": "d3", "speaker": "guide", "ruolo": "esterno", "english": "Nice to meet you, {{papa}}. And you?", "italian": "Piacere, {{papa}}. E tu?" },
-    { "id": "d4", "speaker": "mamma", "ruolo": "famiglia", "english": "Hi, I'm {{mamma}}. I'm {{papa}}'s wife.", "italian": "Ciao, sono {{mamma}}. Sono la moglie di {{papa}}." },
-    { "id": "d5", "speaker": "figlia", "ruolo": "famiglia", "english": "Hi, I'm {{figliaNome}}. I'm {{figliaEta}} years old.", "italian": "Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni." },
-    { "id": "d6", "speaker": "figlio", "ruolo": "famiglia", "english": "Hello, I'm {{figlioNome}}. I'm {{figlioEta}}.", "italian": "Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni." },
-    { "id": "d7", "speaker": "guide", "ruolo": "esterno", "english": "Great! Welcome to the trip, {{papa}}'s family!", "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!" }
-  ],
-
-  "vocabulary": [
-    { "id": "hello", "english": "Hello", "italian": "Ciao / Salve", "pronunciationTip": "L'accento cade sulla seconda sillaba: \"hel-LOU\", non \"E-lo\". La \"h\" si sente appena, un soffio.", "grammarCategory": "interiezione/saluto" },
-    { "id": "everyone", "english": "everyone", "italian": "tutti", "pronunciationTip": "\"EV-ri-uan\", accento sulla prima sillaba.", "grammarCategory": "pronome indefinito" },
-    { "id": "nice-to-meet-you", "english": "Nice to meet you", "italian": "Piacere di conoscerti/vi", "pronunciationTip": "La \"ee\" di \"meet\" è lunga e tesa (non \"mit\" secco all'italiana): \"nais tu MIIT yu\".", "grammarCategory": "espressione idiomatica" },
-    { "id": "can", "english": "Can", "italian": "Puoi / Potete", "pronunciationTip": "La \"a\" è aperta, quasi come \"kan\" ma più schiacciata.", "grammarCategory": "verbo modale" },
-    { "id": "introduce", "english": "introduce", "italian": "presentare", "pronunciationTip": "Accento sull'ultima sillaba: \"in-tro-DIUS\".", "grammarCategory": "verbo" },
-    { "id": "yourselves", "english": "yourselves", "italian": "voi stessi", "pronunciationTip": "\"yor-SELVZ\", la \"s\" finale suona \"z\".", "grammarCategory": "pronome riflessivo" },
-    { "id": "im", "english": "I'm", "italian": "Sono / Mi chiamo", "pronunciationTip": "È la contrazione di \"I am\", si pronuncia tutta attaccata: \"aim\", mai \"ai-em\" staccato.", "grammarCategory": "pronome + verbo essere" },
-    { "id": "from", "english": "from", "italian": "da / di", "pronunciationTip": "La \"o\" è una via di mezzo tra \"a\" e \"o\" aperta, non la \"o\" chiusa italiana: suona quasi \"fram\".", "grammarCategory": "preposizione" },
-    { "id": "hi", "english": "Hi", "italian": "Ciao", "pronunciationTip": "Dittongo lungo \"hai\", più informale di \"Hello\".", "grammarCategory": "interiezione/saluto" },
-    { "id": "wife", "english": "wife", "italian": "moglie", "pronunciationTip": "\"uaif\" — la \"w\" è un suono labiale che non esiste in italiano.", "grammarCategory": "sostantivo" },
-    { "id": "years-old", "english": "years old", "italian": "... anni", "pronunciationTip": "\"years\" parte quasi come \"ie-ars\"; \"old\" ha la \"o\" lunga: \"ould\".", "grammarCategory": "espressione per età" },
-    { "id": "great", "english": "Great", "italian": "Ottimo / Fantastico", "pronunciationTip": "Si legge \"greit\", non \"great\" all'italiana.", "grammarCategory": "aggettivo" },
-    { "id": "welcome", "english": "Welcome", "italian": "Benvenuto/i", "pronunciationTip": "L'accento è tutto sulla prima sillaba: \"WEL-com\", la seconda parte si \"mangia\" leggermente.", "grammarCategory": "interiezione/saluto" },
-    { "id": "trip", "english": "trip", "italian": "viaggio", "pronunciationTip": "La \"r\" è morbida, non arrotata come in italiano.", "grammarCategory": "sostantivo" },
-    { "id": "family", "english": "family", "italian": "famiglia", "pronunciationTip": "Accento sulla prima sillaba: \"FA-mi-li\".", "grammarCategory": "sostantivo" }
-  ],
-
+  "levels": {
+    "A": {
+      "label": "Parole singole",
+      "items": [
+        {
+          "id": "a-hello",
+          "english": "Hello",
+          "italian": "Ciao / Salve",
+          "pronunciationTip": "L'accento cade sulla seconda sillaba: \"hel-LOU\", non \"E-lo\". La \"h\" si sente appena, un soffio.",
+          "grammarCategory": "interiezione/saluto"
+        },
+        {
+          "id": "a-everyone",
+          "english": "everyone",
+          "italian": "tutti",
+          "pronunciationTip": "\"EV-ri-uan\", accento sulla prima sillaba.",
+          "grammarCategory": "pronome indefinito"
+        },
+        {
+          "id": "a-nice-to-meet-you",
+          "english": "Nice to meet you",
+          "italian": "Piacere di conoscerti/vi",
+          "pronunciationTip": "La \"ee\" di \"meet\" è lunga e tesa (non \"mit\" secco all'italiana): \"nais tu MIIT yu\".",
+          "grammarCategory": "espressione idiomatica"
+        },
+        {
+          "id": "a-can",
+          "english": "Can",
+          "italian": "Puoi / Potete",
+          "pronunciationTip": "La \"a\" è aperta, quasi come \"kan\" ma più schiacciata.",
+          "grammarCategory": "verbo modale"
+        },
+        {
+          "id": "a-introduce",
+          "english": "introduce",
+          "italian": "presentare",
+          "pronunciationTip": "Accento sull'ultima sillaba: \"in-tro-DIUS\".",
+          "grammarCategory": "verbo"
+        },
+        {
+          "id": "a-yourselves",
+          "english": "yourselves",
+          "italian": "voi stessi",
+          "pronunciationTip": "\"yor-SELVZ\", la \"s\" finale suona \"z\".",
+          "grammarCategory": "pronome riflessivo"
+        },
+        {
+          "id": "a-im",
+          "english": "I'm",
+          "italian": "Sono / Mi chiamo",
+          "pronunciationTip": "È la contrazione di \"I am\", si pronuncia tutta attaccata: \"aim\", mai \"ai-em\" staccato.",
+          "grammarCategory": "pronome + verbo essere"
+        },
+        {
+          "id": "a-from",
+          "english": "from",
+          "italian": "da / di",
+          "pronunciationTip": "La \"o\" è una via di mezzo tra \"a\" e \"o\" aperta, non la \"o\" chiusa italiana: suona quasi \"fram\".",
+          "grammarCategory": "preposizione"
+        },
+        {
+          "id": "a-hi",
+          "english": "Hi",
+          "italian": "Ciao",
+          "pronunciationTip": "Dittongo lungo \"hai\", più informale di \"Hello\".",
+          "grammarCategory": "interiezione/saluto"
+        },
+        {
+          "id": "a-wife",
+          "english": "wife",
+          "italian": "moglie",
+          "pronunciationTip": "\"uaif\" — la \"w\" è un suono labiale che non esiste in italiano.",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-years-old",
+          "english": "years old",
+          "italian": "... anni",
+          "pronunciationTip": "\"years\" parte quasi come \"ie-ars\"; \"old\" ha la \"o\" lunga: \"ould\".",
+          "grammarCategory": "espressione per età"
+        },
+        {
+          "id": "a-great",
+          "english": "Great",
+          "italian": "Ottimo / Fantastico",
+          "pronunciationTip": "Si legge \"greit\", non \"great\" all'italiana.",
+          "grammarCategory": "aggettivo"
+        },
+        {
+          "id": "a-welcome",
+          "english": "Welcome",
+          "italian": "Benvenuto/i",
+          "pronunciationTip": "L'accento è tutto sulla prima sillaba: \"WEL-com\", la seconda parte si \"mangia\" leggermente.",
+          "grammarCategory": "interiezione/saluto"
+        },
+        {
+          "id": "a-trip",
+          "english": "trip",
+          "italian": "viaggio",
+          "pronunciationTip": "La \"r\" è morbida, non arrotata come in italiano.",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-family",
+          "english": "family",
+          "italian": "famiglia",
+          "pronunciationTip": "Accento sulla prima sillaba: \"FA-mi-li\".",
+          "grammarCategory": "sostantivo"
+        }
+      ]
+    },
+    "B": {
+      "label": "Chunk",
+      "items": []
+    },
+    "C": {
+      "label": "Frasi",
+      "items": []
+    },
+    "D": {
+      "label": "Battute",
+      "items": [
+        {
+          "id": "d-1",
+          "speaker": "guide",
+          "ruolo": "esterno",
+          "english": "Hello everyone! Nice to meet you. Can you introduce yourselves?",
+          "italian": "Ciao a tutti! Piacere di conoscervi. Potete presentarvi?"
+        },
+        {
+          "id": "d-2",
+          "speaker": "papa",
+          "ruolo": "famiglia",
+          "english": "Hello, I'm {{papa}}. I'm from {{partenza}}, Italy.",
+          "italian": "Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia."
+        },
+        {
+          "id": "d-3",
+          "speaker": "guide",
+          "ruolo": "esterno",
+          "english": "Nice to meet you, {{papa}}. And you?",
+          "italian": "Piacere, {{papa}}. E tu?"
+        },
+        {
+          "id": "d-4",
+          "speaker": "mamma",
+          "ruolo": "famiglia",
+          "english": "Hi, I'm {{mamma}}. I'm {{papa}}'s wife.",
+          "italian": "Ciao, sono {{mamma}}. Sono la moglie di {{papa}}."
+        },
+        {
+          "id": "d-5",
+          "speaker": "figlia",
+          "ruolo": "famiglia",
+          "english": "Hi, I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
+          "italian": "Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni."
+        },
+        {
+          "id": "d-6",
+          "speaker": "figlio",
+          "ruolo": "famiglia",
+          "english": "Hello, I'm {{figlioNome}}. I'm {{figlioEta}}.",
+          "italian": "Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni."
+        },
+        {
+          "id": "d-7",
+          "speaker": "guide",
+          "ruolo": "esterno",
+          "english": "Great! Welcome to the trip, {{papa}}'s family!",
+          "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!"
+        }
+      ]
+    }
+  },
   "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
-
-  "flashcardLevelA": [
-    { "id": "hello", "english": "Hello", "italian": "Ciao / Salve" },
-    { "id": "everyone", "english": "everyone", "italian": "tutti" },
-    { "id": "nice", "english": "Nice", "italian": "Piacevole" },
-    { "id": "meet", "english": "meet", "italian": "conoscere/incontrare" },
-    { "id": "you", "english": "you", "italian": "tu / voi" },
-    { "id": "can", "english": "Can", "italian": "Puoi / Potete" },
-    { "id": "introduce", "english": "introduce", "italian": "presentare" },
-    { "id": "wife", "english": "wife", "italian": "moglie" },
-    { "id": "years", "english": "years", "italian": "anni" },
-    { "id": "old", "english": "old", "italian": "vecchio (età)" },
-    { "id": "great", "english": "Great", "italian": "Ottimo / Fantastico" },
-    { "id": "welcome", "english": "Welcome", "italian": "Benvenuto/i" },
-    { "id": "trip", "english": "trip", "italian": "viaggio" },
-    { "id": "family", "english": "family", "italian": "famiglia" },
-    { "id": "from", "english": "from", "italian": "da / di" }
-  ],
-
   "ageOptions": {
-    "figlia": [8, 10, 16],
-    "figlio": [6, 8, 10]
+    "figlia": [
+      8,
+      10,
+      16
+    ],
+    "figlio": [
+      6,
+      8,
+      10
+    ]
   }
 }

@@ -19,7 +19,7 @@ const BEFORE_SE = ['personalizzazione', 'repeatAloud'];
 // quante ne avrà l'episodio finito.
 function episodeConSpiegazioni(episode, quante) {
   const copia = JSON.parse(JSON.stringify(episode));
-  copia.dialogue.slice(0, quante).forEach(function (line, i) {
+  copia.levels.D.items.slice(0, quante).forEach(function (line, i) {
     line.whatYouLearn = {
       title: 'Titolo spiegazione ' + (i + 1),
       body: 'Corpo con <b>una parola in grassetto</b> numero ' + (i + 1) + '.'
@@ -135,22 +135,22 @@ async function run() {
     // sono solo nascosti), quindi se ne contano tre.
     log('[B] Il titolo ha un elemento suo, distinto dal corpo', st.titoli.length === 3 && st.titoli[0] === 'Titolo spiegazione 1');
     log('[B] Il corpo accetta HTML (il grassetto arriva come <b>)', st.grassettiNelCorpo === 3);
-    log('[B] La prima spiegazione si apre da sola', st.aperte.length === 1 && st.aperte[0] === conTre.dialogue[0].id);
+    log('[B] La prima spiegazione si apre da sola', st.aperte.length === 1 && st.aperte[0] === conTre.levels.D.items[0].id);
     log('[B] Le due successive sono bloccate', st.toggleDisabilitati === 2);
     log('[B] "Ho finito" è bloccato', st.completaDisabilitato === true);
     log('[B] La riga che spiega il blocco è visibile e viene dai dati', st.hintVisibile === true && st.hintTesto.length > 0);
     log('[B] "Esci e riprendi dopo" è disponibile', st.riprendiVisibile === true);
 
-    await dichiara(page, conTre.dialogue[0].id, 'chiara');
+    await dichiara(page, conTre.levels.D.items[0].id, 'chiara');
     st = await readState(page);
-    log('[B] Dichiarata la prima, si apre la seconda', st.aperte.length === 1 && st.aperte[0] === conTre.dialogue[1].id);
+    log('[B] Dichiarata la prima, si apre la seconda', st.aperte.length === 1 && st.aperte[0] === conTre.levels.D.items[1].id);
     log('[B] Una sola spiegazione aperta per volta', st.aperte.length === 1);
     log('[B] Resta bloccata solo la terza', st.toggleDisabilitati === 1);
     log('[B] La spunta mostra la dichiarazione fatta', st.spunte.length === 1 && st.spunte[0].indexOf('Chiara') !== -1);
     log('[B] "Ho finito" ancora bloccato con una su tre', st.completaDisabilitato === true);
 
-    await dichiara(page, conTre.dialogue[1].id, 'nonAncora');
-    await dichiara(page, conTre.dialogue[2].id, 'chiara');
+    await dichiara(page, conTre.levels.D.items[1].id, 'nonAncora');
+    await dichiara(page, conTre.levels.D.items[2].id, 'chiara');
     st = await readState(page);
     log('[B] Dichiarate tutte, "Ho finito" si sblocca', st.completaDisabilitato === false);
     log('[B] Dichiarate tutte, la riga del blocco sparisce', st.hintVisibile === false);
@@ -170,15 +170,15 @@ async function run() {
     await bootAsUser(page, 'SE_Uscite', BEFORE_SE);
 
     await openSpeakEasy(page);
-    await dichiara(page, conTre.dialogue[0].id, 'chiara');
+    await dichiara(page, conTre.levels.D.items[0].id, 'chiara');
     await page.locator('#speak-easy-back-map').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     await openSpeakEasy(page);
     let st = await readState(page);
     log('[C] Uscire da "← Mappa" non salva la dichiarazione', st.spunte.length === 0);
 
-    await dichiara(page, conTre.dialogue[0].id, 'chiara');
-    await dichiara(page, conTre.dialogue[1].id, 'nonChiara');
+    await dichiara(page, conTre.levels.D.items[0].id, 'chiara');
+    await dichiara(page, conTre.levels.D.items[1].id, 'nonChiara');
     await page.locator('#speak-easy-resume-later').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const completato = await page.evaluate(() =>
@@ -188,7 +188,7 @@ async function run() {
     await openSpeakEasy(page);
     st = await readState(page);
     log('[C] Rientrando si riprende da dove si era arrivati', st.spunte.length === 2);
-    log('[C] La lezione riparte dalla prima non dichiarata', st.aperte.length === 1 && st.aperte[0] === conTre.dialogue[2].id);
+    log('[C] La lezione riparte dalla prima non dichiarata', st.aperte.length === 1 && st.aperte[0] === conTre.levels.D.items[2].id);
     log('[C] Nessun errore JS', errors.length === 0);
     await page.close();
   }
@@ -205,7 +205,7 @@ async function run() {
 
     // Primo giro completo: tutte chiare -> 100% -> verde.
     await openSpeakEasy(page);
-    for (const line of conTre.dialogue.slice(0, 3)) await dichiara(page, line.id, 'chiara');
+    for (const line of conTre.levels.D.items.slice(0, 3)) await dichiara(page, line.id, 'chiara');
     await page.locator('#speak-easy-complete').click();
     await page.waitForFunction(() => {
       const el = document.getElementById('speak-easy-summary-screen');
@@ -226,8 +226,8 @@ async function run() {
     log('[D] Al ripasso "Esci e riprendi dopo" non compare', st.riprendiVisibile === false);
 
     // Cambiare idea su una: 2 chiare su 3 -> 67% -> giallo, sovrascrive.
-    await page.locator('[data-toggle-explanation="' + conTre.dialogue[0].id + '"]').click();
-    await dichiara(page, conTre.dialogue[0].id, 'nonChiara');
+    await page.locator('[data-toggle-explanation="' + conTre.levels.D.items[0].id + '"]').click();
+    await dichiara(page, conTre.levels.D.items[0].id, 'nonChiara');
     st = await readState(page);
     log('[D] Al ripasso si può cambiare la dichiarazione', st.spunte.filter(t => t.indexOf('Non chiara') !== -1).length === 1);
     await page.locator('#speak-easy-complete').click();

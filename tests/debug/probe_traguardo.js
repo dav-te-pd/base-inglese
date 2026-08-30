@@ -72,7 +72,7 @@ async function run() {
   console.log('start btn visible:', startVisible);
   if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
 
-  const vocab = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.vocabulary));
+  const vocab = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
   const engToIta = {}; const itaToEng = {};
   vocab.forEach(v => { engToIta[v.english] = v.italian; itaToEng[v.italian] = v.english; });
 

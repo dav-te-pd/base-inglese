@@ -158,7 +158,7 @@ async function run() {
   const LINE_COUNT = await (async () => {
     const p = await browser.newPage();
     await p.goto(BASE);
-    const n = await p.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.dialogue.length));
+    const n = await p.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
     await p.close();
     return n;
   })();

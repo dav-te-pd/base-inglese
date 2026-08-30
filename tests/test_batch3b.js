@@ -1,5 +1,14 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
+
+// Gli id delle battute vengono dai dati, non scritti a mano: erano fissati a
+// "d1"/"d2" e si sono rotti tutti insieme appena il file episodio è passato
+// alla struttura a gradi. Il primo e il secondo elemento del grado D sono
+// quello che a questi test serve davvero.
+const BATTUTE = loadGrade('D');
+const D1 = BATTUTE[0].id;
+const D2 = BATTUTE[1].id;
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -140,7 +149,7 @@ async function run() {
     await page.route('**/data/a1-episodio1-inglese.json', async (route) => {
       const res = await route.fetch();
       const json = await res.json();
-      json.dialogue[0].pronunciationTip = 'hel-LOU EV-ri-uan';
+      json.levels.D.items[0].pronunciationTip = 'hel-LOU EV-ri-uan';
       await route.fulfill({ response: res, json });
     });
     await bootAsUser(page, 'T6WithData', ALL_BEFORE_VC);
@@ -174,7 +183,7 @@ async function run() {
     const disabledAtStart = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[7] "Sì, lo so" starts disabled before any line is heard (Ascolta e Ripeti)', disabledAtStart);
     // Play just the first line.
-    await page.click('.dg-bubble[data-line-id="d1"]');
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
     await page.waitForTimeout(80);
     const stillDisabledAfterOne = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[7] Still disabled after hearing only ONE of several lines', stillDisabledAfterOne);

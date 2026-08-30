@@ -1,10 +1,10 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { loadEpisode, playThroughQuiz } = require('./quiz-driver');
+const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
 // pulsanti: vedi tests/quiz-driver.js.
-const VOCABULARY = loadEpisode().vocabulary;
+const VOCABULARY = loadGrade('A');
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
