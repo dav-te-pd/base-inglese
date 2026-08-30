@@ -340,37 +340,54 @@
         }
       }
     },
+    // ---- I gradi dell'episodio, nell'ordine in cui si presentano nel
+    // pannello — le lettere delle sezioni di levels nei file
+    // data/{livello}-episodioN-{lingua}.json (CLAUDE.md regola 4). Il
+    // nome esteso di ciascun grado (levels.A.label) sta nel file
+    // episodio, non qui: questa è solo la lista da cui la vista di
+    // riordino fa scegliere, e da cui il pulsante del grado cicla. ----
+    grades: ['A', 'B', 'C', 'D'],
     // ---- Module step order — the ONLY place that decides module
-    // sequence. moduleOrderDefault is the ONE sequence every episode uses
-    // unless it declares its own CONFIG.episodes.<id>.moduleOrder below
-    // (none does today — episode1 reads this default). Reordering a step
-    // (moving Dialogo, Speed Round, a whole group of steps, ...) for
-    // every episode at once means moving a line in THIS array; nothing
-    // else needs to change — each module's own data (kind/label/
-    // dataFile/dialogoProfile/type/...) lives unordered in EPISODES.
-    // episode1.modulesById, keyed by these same ids (see EPISODES near
-    // moduleProgressKey). Also editable live from the hidden config
-    // panel's reorder view (see near renderModuleOrderField), which
-    // writes back here the same way any other override does. Kept as a
-    // flat list of ids for now — a future episode needing sections (a
-    // named group of steps) is the shape to extend this into later (e.g.
-    // mixing plain id strings with { section, moduleIds } entries), not
-    // something to build yet. ----
+    // sequence AND which grade of the episode each step reads.
+    // moduleOrderDefault is the ONE sequence every episode uses unless it
+    // declares its own CONFIG.episodes.<id>.moduleOrder below (none does
+    // today — episode1 reads this default).
+    //
+    // Ogni voce è una COPPIA { module, grade }: quale modulo, e su quale
+    // grado dell'episodio lavora. Lo stesso modulo può quindi comparire
+    // più volte su gradi diversi (Flash Card sul grado A e sul grado B);
+    // il grado NON vive più nel descrittore del modulo (EPISODES.
+    // episode1.modulesById), che resta uguale per tutte le sue apparizioni.
+    // Un modulo che non legge contenuto dall'episodio (Personalizza) non
+    // ha grade.
+    //
+    // Reordering a step (moving Dialogo, Speed Round, a whole group of
+    // steps, ...) for every episode at once means moving a line in THIS
+    // array; nothing else needs to change — each module's own data
+    // (kind/label/dataFile/dialogoProfile/type/...) lives unordered in
+    // EPISODES.episode1.modulesById, keyed by these same module ids (see
+    // EPISODES near moduleProgressKey). Also editable live from the
+    // hidden config panel's reorder view (see near renderModuleOrderField),
+    // which writes back here the same way any other override does — su/giù
+    // per l'ordine, il pulsante con la lettera per il grado. A future
+    // episode needing sections (a named group of steps) is the shape to
+    // extend this into later (e.g. adding a { section } key to a pair),
+    // not something to build yet. ----
     moduleOrderDefault: [
-      'personalizzazione',
-      'repeatAloud',
-      'speakEasy',
-      'flashcardAEngIta',
-      'flashcardAItaEng',
-      'quickMatchEngIta',
-      'quickMatchItaEng',
-      'voicePractice',
-      'dialogoAscoltaRipeti',
-      'dialogoRipetiATempo',
-      'dialogoContinuo',
-      'speedRoundEngIta',
-      'speedRoundItaEng',
-      'voiceCoach'
+      { module: 'personalizzazione' },
+      { module: 'repeatAloud', grade: 'A' },
+      { module: 'speakEasy', grade: 'D' },
+      { module: 'flashcardAEngIta', grade: 'A' },
+      { module: 'flashcardAItaEng', grade: 'A' },
+      { module: 'quickMatchEngIta', grade: 'A' },
+      { module: 'quickMatchItaEng', grade: 'A' },
+      { module: 'voicePractice', grade: 'D' },
+      { module: 'dialogoAscoltaRipeti', grade: 'D' },
+      { module: 'dialogoRipetiATempo', grade: 'D' },
+      { module: 'dialogoContinuo', grade: 'D' },
+      { module: 'speedRoundEngIta', grade: 'A' },
+      { module: 'speedRoundItaEng', grade: 'A' },
+      { module: 'voiceCoach', grade: 'D' }
     ],
     // Per-episode override of moduleOrderDefault above — an episode only
     // needs an entry here if its own step sequence differs from the
@@ -573,6 +590,8 @@
     // implementation detail, with a sensible range where one exists.
     // Purely descriptive — never read by anything except the panel. ----
     configFieldDescriptions: {
+      'moduleOrderDefault': 'Ordine di default dei passi, usato da ogni episodio che non ne dichiara uno proprio. Ogni riga è un modulo con il grado su cui lavora: le frecce spostano il passo, il pulsante con la lettera cambia grado (A → B → C → D). Ricarica la pagina per vedere l\'effetto in mappa.',
+      'grades': 'Lettere dei gradi dell\'episodio, nell\'ordine in cui il pulsante del grado le fa girare nella vista di riordino.',
       'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
       'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi inglesi.',
       'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
@@ -1794,6 +1813,16 @@
     display: flex;
     gap: 4px;
     flex-shrink: 0;
+  }
+
+  /* Il grado della riga: stesso .btn.btn-secondary.btn-sm delle frecce
+     (CLAUDE.md regola 5), con una larghezza fissa perché la colonna non
+     salti passando da "A" a "–". Nessun display proprio, quindi niente
+     override [hidden] da aggiungere (CLAUDE.md regola 12). */
+  .config-module-order-grade {
+    min-width: 30px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
   }
 
   /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
@@ -5249,12 +5278,37 @@
     return (meta && meta.name) || id;
   }
 
+  // Un modulo "legge un grado" se il suo contenuto viene dal file
+  // episodio: è il dataFile del descrittore a dirlo, non un elenco a parte
+  // da tenere allineato a mano. Personalizza non ne ha, quindi la sua riga
+  // non mostra il pulsante del grado. Guarda tutti gli episodi perché
+  // moduleOrderDefault è la sequenza condivisa, non quella di uno solo.
+  function moduleUsesGrade(moduleId) {
+    return Object.keys(EPISODES).some(function (episodeId) {
+      var entry = EPISODES[episodeId].modulesById[moduleId];
+      return !!(entry && entry.dataFile);
+    });
+  }
+
+  // Il grado successivo nel giro CONFIG.grades (A → B → C → D → A). Un
+  // solo tocco cambia grado: niente menu a tendina né finestre, così la
+  // vista resta veloce da usare quando si prova un ordine diverso.
+  function nextGrade(grade) {
+    var grades = CONFIG.grades;
+    var i = grades.indexOf(grade);
+    return grades[(i + 1) % grades.length];
+  }
+
   function renderModuleOrderRows(list) {
     var order = window.APP_CONFIG.moduleOrderDefault;
-    list.innerHTML = order.map(function (id, i) {
+    list.innerHTML = order.map(function (pair, i) {
+      var gradeBtn = moduleUsesGrade(pair.module)
+        ? '<button type="button" class="btn btn-secondary btn-sm config-module-order-grade" data-order-grade="' + i + '" aria-label="Cambia grado">' + (pair.grade || '–') + '</button>'
+        : '';
       return '<div class="config-module-order-row">' +
-        '<span class="config-module-order-label">' + moduleOrderRowLabel(id) + '</span>' +
+        '<span class="config-module-order-label">' + moduleOrderRowLabel(pair.module) + '</span>' +
         '<div class="config-module-order-controls">' +
+        gradeBtn +
         '<button type="button" class="btn btn-secondary btn-sm" data-order-move="up" data-order-index="' + i + '"' + (i === 0 ? ' disabled' : '') + ' aria-label="Sposta su">' + icon('chevron-up') + '</button>' +
         '<button type="button" class="btn btn-secondary btn-sm" data-order-move="down" data-order-index="' + i + '"' + (i === order.length - 1 ? ' disabled' : '') + ' aria-label="Sposta giù">' + icon('chevron-down') + '</button>' +
         '</div></div>';
@@ -5264,10 +5318,9 @@
   function renderModuleOrderField() {
     var wrap = document.createElement('div');
     wrap.className = 'config-field';
-    var hint = document.createElement('p');
-    hint.className = 'config-field-hint';
-    hint.textContent = 'Ordine di default dei moduli, usato da ogni episodio che non ne dichiara uno proprio. Sposta su/giù; ricarica la pagina per vedere l\'effetto in mappa.';
-    wrap.appendChild(hint);
+    // Il testo della spiegazione sta in CONFIG.configFieldDescriptions come
+    // quello di ogni altro parametro (CLAUDE.md regola 25), non scritto qui.
+    wrap.innerHTML = configFieldDescriptionHtml(['moduleOrderDefault']);
     var list = document.createElement('div');
     list.className = 'config-module-order-list';
     wrap.appendChild(list);
@@ -5276,16 +5329,28 @@
   }
 
   configPanelBodyEl.addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-order-move]');
-    if (!btn) return;
-    var index = Number(btn.getAttribute('data-order-index'));
-    var dir = btn.getAttribute('data-order-move');
     var order = window.APP_CONFIG.moduleOrderDefault;
-    var swapWith = dir === 'up' ? index - 1 : index + 1;
-    if (swapWith < 0 || swapWith >= order.length) return;
-    var tmp = order[index]; order[index] = order[swapWith]; order[swapWith] = tmp;
+    var list = null;
+
+    var gradeBtn = e.target.closest('[data-order-grade]');
+    if (gradeBtn) {
+      var pair = order[Number(gradeBtn.getAttribute('data-order-grade'))];
+      if (!pair) return;
+      pair.grade = nextGrade(pair.grade);
+      list = gradeBtn.closest('.config-module-order-list');
+    } else {
+      var btn = e.target.closest('[data-order-move]');
+      if (!btn) return;
+      var index = Number(btn.getAttribute('data-order-index'));
+      var dir = btn.getAttribute('data-order-move');
+      var swapWith = dir === 'up' ? index - 1 : index + 1;
+      if (swapWith < 0 || swapWith >= order.length) return;
+      var tmp = order[index]; order[index] = order[swapWith]; order[swapWith] = tmp;
+      list = btn.closest('.config-module-order-list');
+    }
+
     persistConfigSection('moduleOrderDefault');
-    renderModuleOrderRows(btn.closest('.config-module-order-list'));
+    renderModuleOrderRows(list);
   });
 
   function renderConfigPanel() {
@@ -5552,6 +5617,9 @@
       // `type` (studio/quiz/test) is purely declarative for now — shown
       // next to the module on the map (see MODULE_TYPE_LABEL) but not
       // yet wired to map colors or to the valvola/richiamo mechanics.
+      // Il grado NON si dichiara qui: lo decide la coppia { module, grade }
+      // in CONFIG.moduleOrderDefault, così lo stesso descrittore serve tutte
+      // le apparizioni dello stesso modulo su gradi diversi.
       // label/subtitle are NOT declared per-entry here — they're read from
       // CONFIG.moduleLabels[id] (see the Object.keys(EPISODES).forEach
       // computed-modules block below), keyed by these same ids, so the
@@ -5562,8 +5630,8 @@
         // type's own label with typeLabel instead of needing a whole
         // category just for one module.
         personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
-        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', type: 'studio' },
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
@@ -5572,35 +5640,36 @@
         // LastAttemptRule instead of Voice Check's FirstAttemptRule —
         // own kind for its own howItWorks/helpReminder text and
         // intro-dismiss flag (data/istruzioni-moduli.json).
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', voiceVariant: 'practice', type: 'studio' },
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
         // Check: same id ('voiceCoach') the single pre-split module had —
         // still the ONE place ModuleRules/the retry-queue ripasso live,
         // unchanged from before the split.
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', voiceVariant: 'check', type: 'quiz' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
         // Match Practice: studio, not quiz (job: sei etichette) — no time
         // pressure, self-paced, same as Flash Card.
-        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'studio' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
         // share their own category (job: sei etichette) — distinct from
         // plain "studio" since a dialogue plays out with its own pacing.
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', grade: 'D', dialogoProfile: 'continuo', type: 'studiaDialogo' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studiaDialogo' },
         // Speed Match: quiz, not a separate "a tempo" category (job: sei
         // etichette) — the time pressure IS what makes it a quiz here.
-        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'quiz' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', type: 'quiz' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
-        // grade/flashcardDirection tell the shared component what to load:
-        // il grado dice QUALI voci, la direzione da che verso mostrarle —
-        // aggiungere una direzione o cambiare grado non tocca il componente,
-        // solo questo dizionario.
+        // Il grado dice QUALI voci, la direzione da che verso mostrarle:
+        // la direzione sta qui, il grado sta nella coppia di
+        // CONFIG.moduleOrderDefault (module.grade arriva da lì, vedi il
+        // blocco che calcola episode.modules) — cambiare grado non tocca
+        // né il componente né questo dizionario.
         // studio, not quiz (job: sei etichette) — self-paced, no time
         // pressure, same as Repeat Aloud/Speak Easy/Match Practice.
-        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', grade: 'A', flashcardDirection: 'it-en', type: 'studio' }
+        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/a1-episodio1-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value. Episode 1's own placeholder names are
@@ -5650,7 +5719,8 @@
   // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,
   // when it declares none (every episode today), the shared CONFIG.
   // moduleOrderDefault — against that episode's own modulesById into the
-  // ordered "modules" array every other function already reads
+  // ordered "modules" array every other function already reads, portando
+  // su ogni modulo il grado dichiarato dalla sua coppia
   // (renderModuleList, moduleStatus, openModuleByKind,
   // ensureEpisodeSlotFields, ...) — none of them change: reordering a
   // step for one episode is moving a line in its own moduleOrder;
@@ -5660,13 +5730,30 @@
   // displayed name lives — onto every module object, so every existing
   // reader of module.label (map, Spiegazione title, module headers) picks
   // up the new name without itself changing.
+  // L'id del passo, dato l'id del modulo e quante volte lo stesso modulo è
+  // già comparso più su nella sequenza. La prima apparizione tiene l'id
+  // nudo del modulo — così i progressi già salvati (moduleProgressKey) e
+  // ogni riferimento esistente restano validi finché un modulo compare una
+  // volta sola, che è il caso di oggi; una seconda apparizione dello stesso
+  // modulo su un altro grado prende un id proprio, invece di sovrascrivere
+  // in silenzio i progressi della prima.
+  function moduleStepId(moduleId, seenBefore) {
+    return seenBefore ? moduleId + '-' + (seenBefore + 1) : moduleId;
+  }
+
   Object.keys(EPISODES).forEach(function (episodeId) {
     var episode = EPISODES[episodeId];
     var order = (CONFIG.episodes[episodeId] && CONFIG.episodes[episodeId].moduleOrder) || CONFIG.moduleOrderDefault;
-    episode.modules = order.map(function (id) {
-      var module = Object.assign({ id: id }, episode.modulesById[id]);
-      var labelInfo = CONFIG.moduleLabels[id];
-      module.label = (labelInfo && labelInfo.name) || id;
+    var seen = {};
+    episode.modules = order.map(function (pair) {
+      var moduleId = pair.module;
+      var module = Object.assign({ id: moduleStepId(moduleId, seen[moduleId] || 0), moduleId: moduleId }, episode.modulesById[moduleId]);
+      seen[moduleId] = (seen[moduleId] || 0) + 1;
+      // Il grado arriva dalla coppia, non dal descrittore: è l'unica cosa
+      // che distingue due apparizioni dello stesso modulo.
+      if (pair.grade) module.grade = pair.grade;
+      var labelInfo = CONFIG.moduleLabels[moduleId];
+      module.label = (labelInfo && labelInfo.name) || moduleId;
       module.subtitle = labelInfo && labelInfo.subtitle;
       return module;
     });

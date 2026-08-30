@@ -72,7 +72,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'OrderTester', []);
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
-    const expected = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault);
+    const expected = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.map(p => p.module));
     log('[A] Rendered module order matches CONFIG.episodes.episode1.moduleOrder', JSON.stringify(order) === JSON.stringify(expected));
     log('[A] No JS errors on map render', errors.length === 0);
     await page.close();

@@ -103,7 +103,10 @@ async function run() {
     const episodesOverride = await page.evaluate(() => window.APP_CONFIG.episodes.episode1.moduleOrder);
     log('[1] episode1 declares no own moduleOrder (reads the global default)', episodesOverride === undefined);
     const globalOrder = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.slice());
-    log('[1] moduleOrderDefault exists with personalizzazione first', globalOrder[0] === 'personalizzazione');
+    // Ogni voce è una coppia { module, grade } (CONFIG.moduleOrderDefault):
+    // il grado sta lì, non più nel descrittore del modulo.
+    log('[1] moduleOrderDefault exists with personalizzazione first', globalOrder[0].module === 'personalizzazione');
+    log('[1] Le voci sono coppie modulo+grado', globalOrder.every(p => typeof p.module === 'string') && globalOrder.some(p => typeof p.grade === 'string'));
 
     // Open the config panel, find the moduleOrderDefault group, move row 1 down.
     await page.click('body');
@@ -121,9 +124,46 @@ async function run() {
     await page.click('.config-module-order-row:nth-child(1) [data-order-move="down"]');
     await page.waitForTimeout(50);
     const newOrder = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.slice());
-    log('[1] Clicking "down" swaps the first two entries live in APP_CONFIG', newOrder[0] === globalOrder[1] && newOrder[1] === globalOrder[0]);
+    log('[1] Clicking "down" swaps the first two entries live in APP_CONFIG', newOrder[0].module === globalOrder[1].module && newOrder[1].module === globalOrder[0].module);
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
     log('[1] Reorder persists to the config overrides in localStorage', JSON.stringify(stored.moduleOrderDefault) === JSON.stringify(newOrder));
+
+    // Il grado si modifica dalla stessa riga, con un tocco solo: il
+    // pulsante con la lettera cicla CONFIG.grades. Compare solo per i
+    // moduli che leggono contenuto dall'episodio — Personalizza non ne ha.
+    const gradeState = await page.evaluate(() => {
+      var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var order = window.APP_CONFIG.moduleOrderDefault;
+      return rows.map(function (row, i) {
+        var btn = row.querySelector('[data-order-grade]');
+        return { module: order[i].module, grade: order[i].grade, chip: btn ? btn.textContent.trim() : null };
+      });
+    });
+    const personal = gradeState.find(r => r.module === 'personalizzazione');
+    const withGrade = gradeState.filter(r => r.chip !== null);
+    log('[1] Personalizza non mostra il pulsante del grado', !!personal && personal.chip === null);
+    log('[1] Ogni altra riga mostra il grado della sua coppia', withGrade.length === gradeState.length - 1 && withGrade.every(r => r.chip === r.grade));
+
+    const cycled = await page.evaluate(() => {
+      var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var i = rows.findIndex(function (row) { return !!row.querySelector('[data-order-grade]'); });
+      var before = window.APP_CONFIG.moduleOrderDefault[i].grade;
+      rows[i].querySelector('[data-order-grade]').click();
+      var after = window.APP_CONFIG.moduleOrderDefault[i].grade;
+      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      return {
+        index: i,
+        before: before,
+        after: after,
+        expected: window.APP_CONFIG.grades[(window.APP_CONFIG.grades.indexOf(before) + 1) % window.APP_CONFIG.grades.length],
+        chip: document.querySelectorAll('.config-module-order-row')[i].querySelector('[data-order-grade]').textContent.trim(),
+        stored: overrides.moduleOrderDefault[i].grade
+      };
+    });
+    log('[1] Un tocco sul grado passa al successivo di CONFIG.grades', cycled.after === cycled.expected && cycled.after !== cycled.before);
+    log('[1] La riga si aggiorna subito con il nuovo grado', cycled.chip === cycled.after);
+    log('[1] Il grado cambiato finisce negli override in localStorage', cycled.stored === cycled.after);
+
     log('[1] No JS errors', errors.length === 0);
     await page.close();
   }

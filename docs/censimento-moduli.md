@@ -18,7 +18,7 @@ Colonne sì/no: "sì" o "no" secco. I marcatori `†1`–`†3` rimandano alle n
 | dialogoContinuo | Studia il dialogo | SelfDeclarationRules | — | no | no | no | sì | sì (audio + barra + Pausa/Riprendi) | Countdown, Ready (3-2-1) | a1-episodio1 → grado D | stesso componente Dialogo (profilo continuo), sfxPlayReadyCountdownSound | batch5, batch16, new_features †3 |
 | speedRoundEngIta | Quiz | ModuleRules | firstAttempt †2 | sì | sì | sì | sì | sì (barra del tempo per domanda, non audio) | Corretto/Sbagliato, Ready (3-2-1 iniziale) | a1-episodio1 → grado A | recordMultipleChoiceResult (condivisa con Match Practice), lockModuleHeader | batch3b, batch7, batch15, batch19, new_features |
 | speedRoundItaEng | Quiz | ModuleRules | firstAttempt †2 | sì | sì | sì | sì | sì | Corretto/Sbagliato, Ready | a1-episodio1 → grado A | stesso componente di speedRoundEngIta | solo batch19 †3 |
-| flashcardAEngIta | Studio | SelfScoreRules | firstAttempt †2 | sì | sì | sì | sì | no | Corretto/Sbagliato | a1-episodio1 → grado A | componente Flash Card condiviso (grade/flashcardDirection) | batch7, batch12, batch16, batch17, batch18 |
+| flashcardAEngIta | Studio | SelfScoreRules | firstAttempt †2 | sì | sì | sì | sì | no | Corretto/Sbagliato | a1-episodio1 → grado A | componente Flash Card condiviso (grado dalla coppia in moduleOrderDefault, flashcardDirection dal descrittore) | batch7, batch12, batch16, batch17, batch18 |
 | flashcardAItaEng | Studio | SelfScoreRules | firstAttempt †2 | sì | sì | sì | sì | no | Corretto/Sbagliato | a1-episodio1 → grado A | stesso componente di flashcardAEngIta | batch20 (contenuto) †3 |
 
 ## Note
