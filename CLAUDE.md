@@ -21,19 +21,30 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 5. **Mantenere la tipografia e lo stile del design system esistente**: Source Serif 4 (titoli/frase d'esercizio), Inter (testo/UI), IBM Plex Mono (badge/etichette); componenti `.btn-primary` / `.btn-secondary` / `.card` / `.panel` / `.badge` già definiti — riusarli invece di crearne varianti nuove per la stessa funzione.
 
-6. **Pubblicare sempre il sito aggiornato dopo ogni modifica**, mantenendo intatto il resto:
-   - commit + push su `main` (GitHub Pages si aggiorna da solo da lì);
-   - ripubblicare l'artifact esistente passando lo stesso `url` (mai crearne uno nuovo per un aggiornamento).
+6. **L'app vive su due indirizzi, e vanno aggiornati entrambi dopo ogni modifica**, mantenendo intatto il resto. Sono due copie della stessa app: se una resta indietro, si finisce per collaudare una versione e mostrarne un'altra.
 
-   I due indirizzi non mostrano la stessa cosa, ed è una differenza che va tenuta a mente. Su Pages i file `data/*.json` esistono e l'app li carica: è la sua forma completa. L'artifact è una pagina singola, il `fetch` fallisce e `index.html` ricade sulle copie di sicurezza (`window.FALLBACK_*`) che tiene al proprio interno. **Chi modifica un file in `data/` deve aggiornare la copia corrispondente in `index.html` nello stesso commit**, altrimenti i due indirizzi divergono in silenzio: `tests/test_fallbacks.js` lo verifica, ed è dentro la suite di regressione — una divergenza fa fallire la CI.
+   | | Come si aggiorna | Cosa serve fare |
+   |---|---|---|
+   | **GitHub Pages** — https://dav-te-pd.github.io/base-inglese/ | Da solo, a ogni push su `main` | Solo commit + push: il deploy parte da sé |
+   | **Artifact** — pagina singola su claude.ai | Mai da solo | **Ripubblicarlo a mano** dopo ogni modifica a `index.html`, passando lo stesso `url` (mai crearne uno nuovo per un aggiornamento) |
+
+   Quello che richiede un'azione è quindi l'artifact: il push copre Pages e basta. Un push senza ripubblicazione lascia l'artifact fermo alla versione precedente, in silenzio.
+
+   **I due non mostrano la stessa cosa**, ed è una differenza da tenere a mente. Su Pages i file `data/*.json` esistono e l'app li carica: è la sua forma completa. L'artifact è una pagina sola, il `fetch` fallisce e `index.html` ricade sulle copie di sicurezza (`window.FALLBACK_*`) che tiene al proprio interno. **Chi modifica un file in `data/` deve aggiornare la copia corrispondente in `index.html` nello stesso commit**, altrimenti i due indirizzi divergono in silenzio: `tests/test_fallbacks.js` lo verifica, ed è dentro la suite di regressione — una divergenza fa fallire la CI.
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
 8. **I testi "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`) vivono sempre in `data/istruzioni-moduli.json`**, mai scritti nel codice del componente. Struttura: un oggetto per ogni tipo di modulo (chiave = `kind` del modulo, es. `repeatAloud`, `speakEasy`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento). Sono condivisi tra episodi — non sono contenuto specifico di un episodio, quindi non vivono nel file `{livello}-episodioN-{lingua}.json` della regola 4. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 
-9. **Il pulsante "Help" va sempre nella riga di intestazione in alto**, insieme al pulsante "← Mappa" e al tag/badge del modulo — mai in basso vicino al pulsante di completamento ("Ho finito, torna alla mappa" o simile), perché lì causa click accidentali quando si scorre per finire l'esercizio. Vale per ogni modulo, presente e futuro.
+9. **Il pulsante "Help" va sempre nella riga di intestazione in alto**, insieme a "← Mappa" e a "Spiegazione" — mai in basso vicino al pulsante di completamento ("Ho finito, torna alla mappa" o simile), perché lì causa click accidentali quando si scorre per finire l'esercizio. Vale per ogni modulo, presente e futuro.
 
-10. **Nella Schermata Finale di un modulo valutativo (quiz, ripasso, esercizio a passaggi) non va mostrata la barra "🎥 Guarda come si fa"** — a quel punto non c'è più nulla da spiegare. Vale per ogni modulo, presente e futuro: chi costruisce una schermata finale la tiene priva della watch-bar, mostrando solo l'esito/il messaggio di completamento e le azioni di uscita (Help se previsto, "Ho finito, torna alla mappa").
+    L'intestazione condivisa (`.header-2row`) è su due righe, e un modulo nuovo la ottiene riusando quelle classi invece di scriversi la propria:
+    - **riga 1** (`.header-badge-row`) — nome del modulo e sua categoria (Studio, Quiz, ...), testo non cliccabile;
+    - **riga 2** (`.header-actions-row`) — "← Mappa" a sinistra, "Spiegazione" al centro, "Help" a destra.
+
+    Se uno dei tre pulsanti viene nascosto in una schermata (per esempio "Spiegazione" nella Schermata Finale, regola 10), gli altri restano esattamente dove sono: le posizioni sono fissate a colonna, non redistribuite.
+
+10. **Nella Schermata Finale non va mostrata la barra "🎥 Guarda come si fa"** — a quel punto non c'è più nulla da spiegare. Riguarda i moduli che una Schermata Finale ce l'hanno, cioè le categorie **Studio, Studia il dialogo, Quiz e Verifica finale** (regola 17); Inizio e Fine non ne hanno una. Vale per ogni modulo, presente e futuro: chi costruisce una schermata finale la tiene priva della watch-bar, mostrando solo l'esito/il messaggio di completamento e le azioni di uscita (Help se previsto, "Ho finito, torna alla mappa").
 
 11. **Prima di costruire un nuovo elemento di interfaccia, verificare se esiste già un componente riusabile che serve allo scopo** (es. i pannelli/box/schermate già presenti nel progetto) ed estenderlo invece di duplicarlo. Se durante un lavoro noti duplicazioni già esistenti nel codice, segnalale nel riepilogo finale invece di correggerle silenziosamente — verranno affrontate in una revisione dedicata.
 
@@ -85,6 +96,12 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 25. **Tutto editabile e separato, sempre.** Un contenuto che sembra un blocco unico va comunque scomposto nei suoi pezzi: un titolo e un testo sono due campi, non una stringa sola; tre risposte possibili sono tre voci con la propria etichetta, non tre stringhe scritte nel codice. Vale per i file di dati e per i testi dell'interfaccia allo stesso modo. Costa poche righe quando la struttura nasce; unire e poi separare significa rifare da capo il contenuto già scritto.
 
     *Perché c'è: `whatYouLearn` era nato come stringa unica. Le undici spiegazioni dell'Episodio 1 hanno un titolo e un corpo, e il grassetto serve DENTRO il corpo per evidenziare le parole — con una stringa sola il titolo sarebbe stato grassetto anche lui, indistinguibile dal resto. Separarlo prima di scrivere il contenuto è costato cinque righe.*
+
+26. **Il contenuto di un episodio nasce in `docs/episodio-N.md`, uno per episodio.** Da lì viene scritto `data/{livello}-episodio{N}-{lingua}.json`, che è la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
+
+    **Le istruzioni su cosa fare stanno DENTRO il file, mai nel messaggio che lo accompagna**: il file è la fonte e deve bastare da solo. Una sessione futura riceve il markdown, non la conversazione in cui è nato.
+
+    La richiesta dichiara sempre **i numeri attesi** (quante voci per grado, quante skill, quanti slot di personalizzazione). Sono un controllo, non una decorazione: **se i conti non tornano, fermarsi e segnalarlo prima di scrivere**, invece di completare a intuito e consegnare un file che sembra giusto.
 
 ## Riferimenti operativi
 

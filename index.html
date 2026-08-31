@@ -1467,14 +1467,6 @@
     transform: none;
   }
 
-  /* Same [hidden]-vs-own-"display" fix as elsewhere in the file: .btn's
-     own "display: inline-flex" beats the browser's default
-     [hidden]{display:none} regardless of specificity, so any button
-     toggled via the hidden attribute (Speed Round's "Non lo so"/"Avanti",
-     the "Guarda come si fa" buttons on a summary screen, …) stayed
-     visibly on screen despite hidden=true until this was added. */
-  .btn[hidden] { display: none; }
-
   .btn-primary {
     background: var(--accent);
     color: var(--accent-ink);
@@ -1545,11 +1537,6 @@
     color: var(--accent);
     white-space: nowrap;
   }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why this exists even though nothing toggles .badge
-     via hidden today. */
-  .badge[hidden] { display: none; }
 
   input[type="text"], select, textarea {
     font-family: var(--font-body);
@@ -1701,18 +1688,6 @@
     gap: 10px;
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12): every class above that
-     sets its own "display" gets the matching [hidden]{display:none}
-     override here, regardless of whether anything toggles it via the
-     hidden attribute today — so a future module reusing one of these
-     classes can't reintroduce this bug class by surprise. */
-  .overlay.is-open[hidden],
-  .overlay-panel[hidden],
-  .overlay-header[hidden],
-  .overlay-close[hidden],
-  .help-menu[hidden],
-  .overlay-actions[hidden] { display: none; }
-
   /* ---------- hidden config panel (embryo of the future Admin panel) ----------
      Reuses .overlay/.overlay-panel-wide/.overlay-header/.overlay-close/
      .overlay-actions/input[type=text]/textarea verbatim (CLAUDE.md rule
@@ -1848,22 +1823,12 @@
 
   /* Il grado della riga: stesso .btn.btn-secondary.btn-sm delle frecce
      (CLAUDE.md regola 5), con una larghezza fissa perché la colonna non
-     salti passando da "A" a "–". Nessun display proprio, quindi niente
-     override [hidden] da aggiungere (CLAUDE.md regola 12). */
+     salti passando da "A" a "–". */
   .config-module-order-grade {
     min-width: 30px;
     font-family: 'IBM Plex Mono', monospace;
     font-weight: 600;
   }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
-     nothing toggles these via "hidden" today. */
-  .config-panel-body[hidden],
-  .config-group[hidden],
-  .config-field[hidden],
-  .config-field-error[hidden],
-  .config-module-order-list[hidden],
-  .config-module-order-row[hidden] { display: none; }
 
   /* ============================================================
      APP SHELL
@@ -1891,25 +1856,12 @@
     .card-body { padding: 40px; }
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     above for why these exist even though nothing toggles them via
-     hidden today. */
-  .view.is-active[hidden],
-  .card-body[hidden] { display: none; }
-
   header.app-header {
     display: flex;
     flex-direction: column;
     gap: 6px;
     text-align: center;
   }
-
-  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card's
-     #fc-meta-header is the first app-header actually hidden via the
-     [hidden] attribute (during its intro screen), and its own
-     "display: flex" would otherwise win over the browser's default
-     [hidden]{display:none}. */
-  header.app-header[hidden] { display: none; }
 
   /* "Spiegazione" title (renderSpiegazioneTitle): row 1 is the fixed
      kicker, small and secondary; row 2 is the module's own name, in
@@ -1980,10 +1932,6 @@
 
   .danger-panel-body p { margin: 0 0 10px; }
   .danger-panel-body p:last-child { margin-bottom: 0; }
-
-  .danger-panel[hidden],
-  .danger-panel-icon[hidden],
-  .danger-panel-body[hidden] { display: none; }
 
   /* Neutral variant of .danger-panel — same shape (icon up top, thick
      border, centered title) for an attention message that is NOT
@@ -2106,13 +2054,6 @@
     }
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12) — .top-row included even
-     though only the legacy, unreachable view-pronunciation still uses it. */
-  .top-row[hidden],
-  .header-2row[hidden],
-  .header-badge-row[hidden],
-  .header-actions-row[hidden] { display: none; }
-
   /* ---------- onboarding ---------- */
   #view-onboarding .card-body { align-items: center; text-align: center; }
   #onboarding-form {
@@ -2175,14 +2116,6 @@
     flex-direction: column;
     gap: 10px;
   }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .theme-picker[hidden],
-  .theme-swatch[hidden],
-  .swatch-dot[hidden],
-  .home-actions[hidden] { display: none; }
 
   .switch-user {
     text-align: center;
@@ -2278,18 +2211,6 @@
   .request-field-feedback.is-warning { color: var(--wrong-ink); }
   .request-field-feedback.is-success { color: var(--correct-ink); }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .slot-grid[hidden],
-  .slot-card[hidden],
-  .slot-card-fields[hidden],
-  .slot-field[hidden],
-  .request-box[hidden],
-  .request-fields[hidden],
-  .request-field-row[hidden],
-  .request-field-input-row[hidden] { display: none; }
-
   /* ---------- pronunciation view ---------- */
   .phrase {
     font-family: var(--font-display);
@@ -2368,10 +2289,7 @@
   }
 
   /* Same wrong/error tone as .module-status-text.is-error — reused, not a
-     new color (job 6b: Voice Coach's silence-timeout warning). .status-
-     text itself sets no "display", so the browser's default
-     [hidden]{display:none} already applies — no CLAUDE.md rule 12
-     override needed here. */
+     new color (job 6b: Voice Coach's silence-timeout warning). */
   .status-text.is-error { color: var(--wrong-ink); opacity: 1; }
 
   .transcript-box {
@@ -2417,15 +2335,6 @@
   }
 
   .edit-custom-link:hover { opacity: 1; color: var(--accent); }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
-     view-pronunciation (legacy, unreachable from the current UI) is the
-     only consumer of these. */
-  .listen-row[hidden],
-  .controls[hidden],
-  .mic-btn[hidden],
-  .legend[hidden],
-  .dot[hidden] { display: none; }
 
   /* ---------- episode map view ---------- */
   .module-list {
@@ -2567,16 +2476,6 @@
   .module-row.outcome-rosso .module-status-icon { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
   .module-row.outcome-rosso .module-state-badge { background: var(--wrong-bg); color: var(--wrong-ink); }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .module-list[hidden],
-  .module-row[hidden],
-  .module-row-label[hidden],
-  .module-row-label-text[hidden],
-  .module-row-type[hidden],
-  .module-status-icon[hidden] { display: none; }
-
   /* ---------- repeat aloud module view ---------- */
   .module-status-text {
     text-align: center;
@@ -2620,13 +2519,6 @@
     flex-wrap: wrap;
     justify-content: flex-end;
   }
-
-  /* Same [hidden]-vs-own-"display" fix as elsewhere: Flash Card is the
-     first to actually hide one of these (the Italian side's listen block
-     — see fcRenderCard), and its own "display: flex" would otherwise win
-     over the browser's default [hidden]{display:none}, also leaving a
-     stray flex-gap on the card face where the empty block used to be. */
-  .repeat-item-audio[hidden] { display: none; }
 
   .repeat-listen-btn.speaking { border-color: var(--accent); color: var(--accent); }
 
@@ -2676,8 +2568,7 @@
 
   /* Repeat Aloud's intro screen and its main content each need their own
      flex column (with the .card-body's usual gap) now that they're one
-     level deeper than direct .card-body children — same [hidden]-vs-
-     "display" fix as elsewhere, since both set their own "display". */
+     level deeper than direct .card-body children. */
   #repeat-aloud-intro-screen,
   #repeat-aloud-main-screen {
     display: flex;
@@ -2685,14 +2576,11 @@
     gap: 26px;
   }
 
-  #repeat-aloud-intro-screen[hidden],
-  #repeat-aloud-main-screen[hidden] { display: none; }
-
   /* Shared by every module's intro/main screen div added after Repeat
      Aloud's (Speak Easy, Voice Coach, Flash Card): each is one level
      deeper than direct .card-body children, so needs the same flex
-     column + gap .card-body already gives its own direct children,
-     plus the same [hidden]-vs-"display" fix. Repeat Aloud's own pair
+     column + gap .card-body already gives its own direct children.
+     Repeat Aloud's own pair
      above predates this shared class and still works standalone —
      see CLAUDE.md rule 11, flagged for a future consolidation pass
      rather than touched here. */
@@ -2702,8 +2590,6 @@
     gap: var(--space-xl);
   }
 
-  .module-screen[hidden] { display: none; }
-
   .ra-intro-checkbox {
     display: flex;
     align-items: center;
@@ -2711,10 +2597,6 @@
     font-size: 0.9rem;
     cursor: pointer;
   }
-
-  /* Reused (unhidden dynamically) inside the simple overlay too — same
-     [hidden]-vs-"display" fix as elsewhere. */
-  .ra-intro-checkbox[hidden] { display: none; }
 
   .ra-intro-checkbox input[type="checkbox"] {
     width: 18px;
@@ -2744,15 +2626,6 @@
     color: var(--accent);
     margin-bottom: 8px;
   }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .repeat-list[hidden],
-  .repeat-item[hidden],
-  .repeat-item-top[hidden],
-  .rate-group[hidden],
-  .general-rule-label[hidden] { display: none; }
 
   /* ---------- speak easy view (chat bubbles) ---------- */
   .chat-list {
@@ -2814,13 +2687,6 @@
     outline-offset: 2px;
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .chat-list[hidden],
-  .chat-row[hidden],
-  .chat-bubble[hidden] { display: none; }
-
   /* Job 10 (2nd collaudo): "Cosa imparo qui" — row holding "Mostra
      traduzione" and (when the line has one) the explanation toggle,
      side by side like the audio controls above them. */
@@ -2840,8 +2706,6 @@
     gap: 10px;
     padding: 12px 14px;
   }
-
-  .se-explanation[hidden] { display: none; }
 
   /* Titolo della spiegazione: ha un posto suo (whatYouLearn.title), non è
      grassetto dentro il corpo — il corpo il grassetto lo usa per
@@ -2876,8 +2740,6 @@
 
   .se-declared svg { width: 13px; height: 13px; }
 
-  .se-declared[hidden] { display: none; }
-
   /* Le due uscite del modulo, una sotto l'altra: completamento e — solo
      durante un primo giro non ancora finito — "Esci e riprendi dopo". */
   .se-complete-row {
@@ -2885,8 +2747,6 @@
     flex-direction: column;
     gap: 10px;
   }
-
-  .se-complete-row[hidden] { display: none; }
 
   .se-selfcheck-question {
     font-family: var(--font-mono);
@@ -2908,8 +2768,6 @@
     opacity: 0.85;
     margin: 0;
   }
-
-  .se-selfcheck-followup[hidden] { display: none; }
 
   /* ---------- voice coach view ---------- */
   /* job 8 (3rd collaudo): the "1 / 7" progress counter used to have its
@@ -2961,14 +2819,6 @@
     box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--correct-ink) 60%, transparent);
     transition: transform 0.15s ease, background 0.15s ease;
   }
-
-  /* The three record states (idle/recording mic, pending confirm, result)
-     toggle via the "hidden" attribute — these [hidden] overrides are
-     required because the classes above set their own "display", which
-     would otherwise win the cascade over the browser's default
-     [hidden]{display:none} and leave two states visible at once. */
-  .record-toggle-btn[hidden],
-  .vc-confirm-area[hidden] { display: none; }
 
   .record-toggle-btn:hover { transform: scale(1.05); }
   .record-toggle-btn:active { transform: scale(0.96); }
@@ -3087,15 +2937,6 @@
 
   #attempt-popup .overlay-backdrop { cursor: default; }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .vc-mic-area[hidden],
-  .vc-retry-row[hidden],
-  .vc-confirm-box[hidden],
-  .pending-actions[hidden],
-  .vc-stars[hidden] { display: none; }
-
   /* ---------- quick match view ----------
      Screens/prompt/options/reveal/summary all reuse Speed Round's own
      #qm-*-screen ids (own, since they're different DOM elements) but
@@ -3110,11 +2951,6 @@
     flex-direction: column;
     gap: 18px;
   }
-
-  #qm-start-screen[hidden],
-  #qm-retry-intro-screen[hidden],
-  #qm-quiz-screen[hidden],
-  #qm-summary-screen[hidden] { display: none; }
 
   /* Ita-Eng only: pairs each option's answer button with its own compact
      icon-only listen button, so tapping the icon plays the audio instead
@@ -3143,10 +2979,6 @@
     flex-direction: column;
     gap: 18px;
   }
-
-  #dg-start-screen[hidden],
-  #dg-main-screen[hidden],
-  #dg-summary-screen[hidden] { display: none; }
 
   /* Job 9 (2nd collaudo): stays fixed at the top of the viewport while
      scrolling through a long dialogue — Pausa/Riprendi and Prossima
@@ -3291,7 +3123,7 @@
      shown inside the bubble once its audio finishes (reuses Speed
      Round's own .sr-timerbar-track/.sr-timerbar-fill verbatim, CLAUDE.md
      rule 13/5 — see dgStartLineTimer). Toggled via a class on the
-     bubble, not the "hidden" attribute, so no rule-12 override needed. */
+     bubble, not the "hidden" attribute. */
   .dg-line-timer {
     display: none;
     flex-direction: column;
@@ -3338,17 +3170,6 @@
     cursor: not-allowed;
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12) — included even though
-     nothing toggles these via "hidden" today (dg-heard-check used to,
-     before job 3 made it always-visible — filled check vs. empty circle
-     — but the override stays as defensive coverage for its own display). */
-  .dg-toolbar[hidden],
-  .dg-list[hidden],
-  .dg-row[hidden],
-  .dg-bubble[hidden],
-  .dg-heard-check[hidden],
-  .dg-translation[hidden] { display: none; }
-
   /* ---------- speed round view ---------- */
   #sr-start-screen,
   #sr-retry-intro-screen,
@@ -3367,18 +3188,6 @@
     justify-content: center;
     padding: 40px 0;
   }
-
-  /* The four screens toggle via the "hidden" attribute, but the ID rules
-     above/below set their own "display" — same bug class fixed on Voice
-     Coach's mic/confirm/result states: an ID selector's "display" beats
-     the browser's default [hidden]{display:none} on specificity alone,
-     so without this override every screen stays visible at once. */
-  #sr-start-screen[hidden],
-  #sr-countdown-screen[hidden],
-  #dg-ready-screen[hidden],
-  #sr-retry-intro-screen[hidden],
-  #sr-quiz-screen[hidden],
-  #sr-summary-screen[hidden] { display: none; }
 
   .sr-countdown-number {
     font-family: var(--font-display);
@@ -3504,13 +3313,6 @@
     margin: 0;
   }
 
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .sr-options[hidden],
-  .sr-summary[hidden],
-  .retry-intro[hidden] { display: none; }
-
   /* Small persistent tag shown next to a question/sentence for as long as
      the RETRY pass lasts (Match Practice, Speed Match, Voice Check) —
      without it, seeing the same item again reads as an app glitch rather
@@ -3536,8 +3338,6 @@
     background: var(--similar-bg);
     color: var(--similar-ink);
   }
-
-  .ripasso-badge[hidden] { display: none; }
 
   /* ---------- flash card view ---------- */
   /* The two-row header itself now lives in the shared .header-2row/
@@ -3567,15 +3367,6 @@
     flex-direction: column;
     gap: 18px;
   }
-
-  /* Same [hidden]-vs-own-"display" bug class fixed on Voice Coach and
-     Speed Round: any of these rules setting "display" beats the
-     browser's default [hidden]{display:none}, so every screen/box
-     needs its own override or several can end up visible at once. */
-  #fc-card-screen[hidden],
-  #fc-retry-intro-screen[hidden],
-  #fc-summary-screen[hidden],
-  .fc-choice-row[hidden] { display: none; }
 
   .fc-card {
     position: relative;
@@ -3696,12 +3487,6 @@
     opacity: 0.7;
     margin: 0;
   }
-
-  /* One-time mechanical audit (CLAUDE.md rule 12), see the overlay block
-     near .top-row for why these exist even though nothing toggles them
-     via hidden today. */
-  .fc-card[hidden],
-  .fc-card-face[hidden] { display: none; }
 
   .warning {
     background: var(--wrong-bg);
