@@ -60,7 +60,11 @@ Nello specifico:
 
 ## Le 11 skill
 
-Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `whatYouLearn`, con `title` e `body`. HTML consentito nel corpo, niente `<p>`, `<br>` per andare a capo. I segnaposto NON vengono sostituiti nelle skill.
+Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `whatYouLearn`, ed è una **lista**: una battuta può portare più di una skill (d1 ne ha due). Ogni skill ha `title` e `body`. HTML consentito nel corpo, niente `<p>`, `<br>` per andare a capo.
+
+**I segnaposto nelle skill vengono sostituiti**, come in ogni altro testo dell'episodio: lo studente legge il valore che ha scelto, non `{partenza}`. Nel JSON si scrivono nella forma `{{chiave}}`.
+
+Una skill è scritta in italiano ma cita la frase inglese del dialogo, e le due lingue possono volere valori diversi — "China" nella citazione, "Cina" nella spiegazione. La citazione inglese chiede quindi la propria lingua con il suffisso `:en` (`{{destinazione:en}}`); senza suffisso vale l'italiano. I nomi di persona non si traducono mai, quindi lì il suffisso non serve.
 
 **1 — su d1 "Hello!" — Hello e Hi**
 > Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.
@@ -69,7 +73,7 @@ Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `w
 > Se sei in dubbio, "Hello" va bene sempre, con chiunque.
 
 **2 — su d7 "Hi! I'm {figlia}." — I am e I'm**
-> Il papà dice "I am {papà}", la figlia dice "I'm {figlia}". Sono la stessa cosa: "I'm" è solo la forma corta.
+> Il papà dice "I am {{papa}}", la figlia dice "I'm {{figliaNome}}". Sono la stessa cosa: "I'm" è solo la forma corta.
 > Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".
 > Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.
 
@@ -80,14 +84,14 @@ Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `w
 > Ricordatelo, perché è la differenza più grande con l'italiano.
 
 **4 — su d4 "I am from {partenza}." — Dire da dove vieni**
-> "I am from {partenza}" vuol dire "vengo da {partenza}".
+> "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".
 > Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".
 > "From" significa "da". La userai tantissimo.
 
 **5 — su d3 "Where are you from?" — Chiedere da dove viene qualcuno**
 > "Where are you from?" vuol dire "di dove sei?".
 > "Where" significa "dove". E ritrovi già "are you", che è la domanda del verbo essere.
-> Il papà risponde "I am from {partenza}" — la stessa struttura, girata.
+> Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.
 > Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra.
 
 **6 — su d1 "Nice to meet you." — Nice to meet you**
@@ -112,13 +116,13 @@ Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `w
 > Nota che in inglese il cognome va **prima** della parola "family", al contrario dell'italiano.
 
 **10 — su d11 "We are going to {destinazione}!" — Dire dove stai andando** *(media)*
-> "We are going to {destinazione}" vuol dire "andiamo in {destinazione}".
+> "We are going to {{destinazione:en}}" vuol dire "andiamo in {{destinazione}}".
 > Ritrovi "we are", che hai appena visto. Qui però non finisce lì: "we are **going**" vuol dire che l'azione sta succedendo adesso, o che è già decisa.
 > "To" indica la direzione: verso dove.
 > Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio.
 
 **11 — su d12 "Welcome to {destinazione}!" — Welcome**
-> "Welcome" vuol dire "benvenuto". Con "to" davanti al posto: "Welcome to {destinazione}", benvenuti in {destinazione}.
+> "Welcome" vuol dire "benvenuto". Con "to" davanti al posto: "Welcome to {{destinazione:en}}", benvenuti in {{destinazione}}.
 > Ritrovi "to" della frase di prima: la stessa parolina per dire verso dove.
 > Non cambia se sei uno o siete in tanti: "welcome" va bene per tutti.
 

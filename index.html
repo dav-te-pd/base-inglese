@@ -1161,7 +1161,7 @@
                 {
                   "title": "Chiedere da dove viene qualcuno",
                   "difficulty": "facile",
-                  "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {partenza}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+                  "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {{partenza:en}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
                 }
               ]
             },
@@ -1175,7 +1175,7 @@
                 {
                   "title": "Dire da dove vieni",
                   "difficulty": "facile",
-                  "body": "\"I am from {partenza}\" vuol dire \"vengo da {partenza}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+                  "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
                 }
               ]
             },
@@ -1210,7 +1210,7 @@
                 {
                   "title": "I am e I'm",
                   "difficulty": "facile",
-                  "body": "Il papà dice \"I am {papà}\", la figlia dice \"I'm {figlia}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
+                  "body": "Il papà dice \"I am {{papa}}\", la figlia dice \"I'm {{figliaNome}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
                 }
               ]
             },
@@ -1266,7 +1266,7 @@
                 {
                   "title": "Dire dove stai andando",
                   "difficulty": "media",
-                  "body": "\"We are going to {destinazione}\" vuol dire \"andiamo in {destinazione}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
+                  "body": "\"We are going to {{destinazione:en}}\" vuol dire \"andiamo in {{destinazione}}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
                 }
               ]
             },
@@ -1280,7 +1280,7 @@
                 {
                   "title": "Welcome",
                   "difficulty": "facile",
-                  "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {destinazione}\", benvenuti in {destinazione}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
+                  "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {{destinazione:en}}\", benvenuti in {{destinazione}}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
                 }
               ]
             }
@@ -6460,15 +6460,22 @@
   // placeholders are left untouched rather than breaking the line — but
   // logged, since a silently-unfilled {{token}} left on screen used to be
   // the only sign something was missing.
+  // Un segnaposto può chiedere una lingua sua, con {{chiave:en}} o
+  // {{chiave:it}}, invece di seguire quella della chiamata. Serve dove un
+  // testo mescola le due lingue: una skill è scritta in italiano ma cita la
+  // frase inglese del dialogo, quindi "We are going to {{destinazione:en}}"
+  // vuol dire "andiamo in {{destinazione}}" deve dare "China" nella citazione
+  // e "Cina" nella spiegazione. Senza suffisso vale la lingua della chiamata,
+  // come prima: nessun testo esistente cambia comportamento.
   function fillTemplate(text, episode, values, lang) {
-    return text.replace(/\{\{(\w+)\}\}/g, function (match, varName) {
+    return text.replace(/\{\{(\w+)(?::(\w+))?\}\}/g, function (match, varName, forcedLang) {
       var slotKey = episode.dialoguePlaceholderMap && episode.dialoguePlaceholderMap[varName];
       if (!slotKey) {
         console.warn('fillTemplate: placeholder "' + varName + '" has no dialoguePlaceholderMap entry in episode "' + episode.id + '"');
         return match;
       }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
-      return resolveSlotValue(episode, slotKey, rawValue, lang);
+      return resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang);
     });
   }
 
@@ -7373,15 +7380,21 @@
         skillIds.push(skillId);
         // L'etichetta del pulsante è il titolo della skill: su una battuta
         // con due skill, due pulsanti uguali non direbbero quale si apre.
-        buttonsHtml += '<button type="button" class="translation-toggle" data-toggle-explanation="' + skillId + '" aria-expanded="false">' + skill.title + '</button>' +
+        // Le skill contengono segnaposto come ogni altro testo dell'episodio:
+        // lo studente deve leggere il valore che ha scelto, non "{{partenza}}".
+        // La lingua di base è l'italiano (la spiegazione è scritta in
+        // italiano); le citazioni inglesi chiedono la propria con :en.
+        var skillTitle = fillTemplate(skill.title, currentEpisode, currentValues, 'it');
+        var skillBody = fillTemplate(skill.body, currentEpisode, currentValues, 'it');
+        buttonsHtml += '<button type="button" class="translation-toggle" data-toggle-explanation="' + skillId + '" aria-expanded="false">' + skillTitle + '</button>' +
           '<span class="se-declared" id="se-declared-' + skillId + '" hidden></span>';
         var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
           return '<button type="button" class="btn ' + (a.primary ? 'btn-primary' : 'btn-secondary') +
             ' btn-sm" data-se-answer="' + a.value + '" data-skill="' + skillId + '">' + a.button + '</button>';
         }).join('');
         blocksHtml += '<div class="se-explanation panel" id="se-explanation-' + skillId + '" hidden>' +
-          '<p class="se-explanation-title">' + skill.title + '</p>' +
-          '<p class="se-explanation-text">' + skill.body + '</p>' +
+          '<p class="se-explanation-title">' + skillTitle + '</p>' +
+          '<p class="se-explanation-text">' + skillBody + '</p>' +
           '<div class="se-selfcheck" data-se-skill="' + skillId + '">' +
           '<p class="se-selfcheck-question">' + ((seSelfCheck && seSelfCheck.question) || '') + '</p>' +
           '<div class="se-selfcheck-actions">' + answersHtml + '</div>' +

@@ -18,7 +18,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` chunk (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`. Le voci di A e B portano `pronunciationTip` e `grammarCategory`; quelle di C portano `fromLine`, cioè da quale battuta sono state ricavate; quelle di D portano `speaker`, `ruolo` e l'eventuale `whatYouLearn`. Le battute NON esistono anche altrove: il grado D *è* il dialogo, non una sua copia.
 
-     **Le "skill" sono i `whatYouLearn`.** Quando se ne parla a voce o in una richiesta si chiamano *skill*; nel JSON il campo si chiama `whatYouLearn` e non ha altri nomi. Una skill è **una spiegazione agganciata a una battuta del grado D**, fatta di `title` e `body` (due campi separati, regola 25).
+     **Le "skill" sono i `whatYouLearn`.** Quando se ne parla a voce o in una richiesta si chiamano *skill*; nel JSON il campo si chiama `whatYouLearn` e non ha altri nomi. Una skill è **una spiegazione agganciata a una battuta del grado D**, fatta di `title` e `body` (due campi separati, regola 25). I segnaposto nelle skill vengono sostituiti come in ogni altro testo dell'episodio: una skill è scritta in italiano ma cita la frase inglese del dialogo, quindi la citazione chiede la propria lingua con `{{chiave:en}}` — senza suffisso vale la lingua della chiamata.
 
      **`whatYouLearn` è una lista, sempre**, anche quando la skill è una sola: una battuta lunga può introdurre due strutture diverse, ed è normale. Forzarne una sola per battuta significherebbe, prima o poi, spostare una spiegazione per far quadrare la struttura invece che per ragioni didattiche. Una battuta con una skill sola ha una lista di un elemento: il caso semplice non si complica.
 
@@ -117,7 +117,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     *Perché c'è: `CLAUDE.md` è l'unico file che governa il lavoro e che non si vede usando l'app. Il codice si prova, i dati compaiono negli esercizi, le regole no. Se cambiano in silenzio, il documento di progetto che le rispecchia si disallinea senza che nessuno se ne accorga. Vale anche quando la modifica è stata chiesta: il riepilogo serve a ricordare cosa si è toccato, non a chiedere il permesso.*
 
-28. **Un file in `docs/` non rimanda mai a un documento che non è nel repository.** Se un dato serve a fare il lavoro, sta lì dentro. Un rimando esterno rende il file incompleto proprio nel momento in cui qualcuno lo usa da solo — che è la ragione per cui esiste.
+28. **Un file in `docs/` non rimanda mai fuori dal repository per un DATO che serve a fare il lavoro.** Se un dato serve, sta lì dentro: un rimando esterno rende il file incompleto proprio nel momento in cui qualcuno lo usa da solo — che è la ragione per cui esiste.
+
+    **Il rimando al metodo è un'altra cosa, ed è ammesso**: dire dove sta scritto il ragionamento (il workflow, i criteri con cui una scelta è stata presa) non lascia buchi nel lavoro, perché non è un dato mancante. La distinzione è questa: se senza quel documento non puoi *scrivere* il file dati, allora è un dato e va portato dentro; se senza puoi comunque scriverlo e ti perdi solo il perché, è un rimando al metodo e può restare.
 
 29. **Quando un file dichiara dei numeri attesi, contali sul contenuto vero prima di usarlo**, senza fidarti della dichiarazione. Se non tornano, fermarsi e segnalarlo prima di scrivere.
 

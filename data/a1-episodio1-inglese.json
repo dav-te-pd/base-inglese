@@ -396,7 +396,7 @@
             {
               "title": "Chiedere da dove viene qualcuno",
               "difficulty": "facile",
-              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {partenza}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {{partenza:en}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
             }
           ]
         },
@@ -410,7 +410,7 @@
             {
               "title": "Dire da dove vieni",
               "difficulty": "facile",
-              "body": "\"I am from {partenza}\" vuol dire \"vengo da {partenza}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
             }
           ]
         },
@@ -445,7 +445,7 @@
             {
               "title": "I am e I'm",
               "difficulty": "facile",
-              "body": "Il papà dice \"I am {papà}\", la figlia dice \"I'm {figlia}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
+              "body": "Il papà dice \"I am {{papa}}\", la figlia dice \"I'm {{figliaNome}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
             }
           ]
         },
@@ -501,7 +501,7 @@
             {
               "title": "Dire dove stai andando",
               "difficulty": "media",
-              "body": "\"We are going to {destinazione}\" vuol dire \"andiamo in {destinazione}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
+              "body": "\"We are going to {{destinazione:en}}\" vuol dire \"andiamo in {{destinazione}}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
             }
           ]
         },
@@ -515,7 +515,7 @@
             {
               "title": "Welcome",
               "difficulty": "facile",
-              "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {destinazione}\", benvenuti in {destinazione}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
+              "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {{destinazione:en}}\", benvenuti in {{destinazione}}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
             }
           ]
         }

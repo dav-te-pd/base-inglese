@@ -83,6 +83,11 @@ function readState(page) {
       hintTesto: (document.getElementById('speak-easy-complete-hint') || {}).textContent || '',
       riprendiVisibile: vis('speak-easy-resume-later'),
       titoli: Array.from(document.querySelectorAll('.se-explanation-title')).map(el => el.textContent),
+      // Nelle skill i segnaposto vanno sostituiti come nel resto
+      // dell'episodio: lo studente deve leggere il valore che ha scelto.
+      skillConSegnaposto: Array.from(document.querySelectorAll('.se-explanation-text, .se-explanation-title'))
+        .filter(el => /\{\{|\{[a-zA-Z]/.test(el.textContent)).length,
+      corpiSkill: Array.from(document.querySelectorAll('.se-explanation-text')).map(el => el.textContent),
       segnapostoGrezzi: Array.from(document.querySelectorAll('.chat-english, .chat-italian')).filter(el => /\{\{/.test(el.textContent)).length
     };
   });
@@ -153,6 +158,15 @@ async function run() {
     log('[B] "Ho finito" è bloccato', st.completaDisabilitato === true);
     log('[B] La riga che spiega il blocco è visibile e viene dai dati', st.hintVisibile === true && st.hintTesto.length > 0);
     log('[B] "Esci e riprendi dopo" è disponibile', st.riprendiVisibile === true);
+
+    // I segnaposto delle skill: sostituiti, e ciascuno nella lingua del pezzo
+    // in cui sta. La citazione inglese dice "China", la spiegazione italiana
+    // "Cina" — sono lo stesso slot, e senza una lingua per segnaposto uno dei
+    // due sarebbe per forza sbagliato.
+    log('[B] Nessun segnaposto rimasto grezzo nelle skill', st.skillConSegnaposto === 0);
+    const skillDestinazione = st.corpiSkill.find(t => t.indexOf('vuol dire "andiamo in') !== -1) || '';
+    log('[B] La citazione inglese usa il valore inglese ("China")', skillDestinazione.indexOf('We are going to China') !== -1);
+    log('[B] La spiegazione italiana usa il valore italiano ("Cina")', skillDestinazione.indexOf('andiamo in Cina') !== -1);
 
     // La seconda skill della PRIMA battuta: dichiarare la prima non deve
     // valere anche per lei — è il motivo per cui ha un id proprio.
