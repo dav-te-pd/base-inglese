@@ -63,15 +63,34 @@ function matchesTemplate(template, text) {
 // viceversa. Torna il MODELLO della risposta (non il testo finito, che
 // dipende dalle scelte dell'utente), da confrontare con matchesTemplate.
 // Torna null se la domanda non è nel vocabolario.
-function correctAnswerFor(vocabulary, prompt) {
+//
+// Due voci possono avere la STESSA forma una volta tolti i segnaposto — nel
+// grado C "I'm {{figliaNome}}." e "I'm {{figlioEta}}." diventano entrambe
+// "I'm .+\." — e allora il modello da solo non basta a dire da quale voce
+// venga la domanda mostrata. Le opzioni a schermo sciolgono il dubbio: la
+// voce giusta è quella la cui risposta è davvero fra le quattro. Senza
+// opzioni (chiamata diretta dai test) vale la prima che combacia, come
+// prima.
+function correctAnswerFor(vocabulary, prompt, optionTexts) {
   const p = String(prompt || '').trim();
+  const options = optionTexts || [];
+  const candidates = [];
   for (let i = 0; i < vocabulary.length; i++) {
-    if (matchesTemplate(vocabulary[i].english, p)) return vocabulary[i].italian.trim();
+    if (matchesTemplate(vocabulary[i].english, p)) candidates.push(vocabulary[i].italian.trim());
   }
-  for (let i = 0; i < vocabulary.length; i++) {
-    if (matchesTemplate(vocabulary[i].italian, p)) return vocabulary[i].english.trim();
+  if (!candidates.length) {
+    for (let i = 0; i < vocabulary.length; i++) {
+      if (matchesTemplate(vocabulary[i].italian, p)) candidates.push(vocabulary[i].english.trim());
+    }
   }
-  return null;
+  if (!candidates.length) return null;
+  if (candidates.length > 1 && options.length) {
+    const shown = candidates.filter(function (answer) {
+      return options.some(function (t) { return matchesTemplate(answer, t); });
+    });
+    if (shown.length === 1) return shown[0];
+  }
+  return candidates[0];
 }
 
 // Tutto lo stato che serve, in una sola valutazione sincrona dentro la
@@ -202,7 +221,7 @@ async function playThroughQuiz(page, prefix, options) {
       continue;
     }
 
-    const correctText = correctAnswerFor(vocabulary, st.prompt);
+    const correctText = correctAnswerFor(vocabulary, st.prompt, st.options.map(function (o) { return o.text; }));
     if (correctText === null) throw new Error('Domanda non presente nel vocabolario dell\'episodio: "' + st.prompt + '"');
     const wantCorrect = answerFor(st) === 'correct';
     let index = -1;
