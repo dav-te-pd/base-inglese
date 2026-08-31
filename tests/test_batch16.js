@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -64,7 +65,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -90,9 +91,9 @@ async function dismissAttemptPopupIfOpen(page) {
   return false;
 }
 
-const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const ALL_BEFORE_DG = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice'];
-const ALL_BEFORE_VC = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta', 'speedRoundItaEng'];
+const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
+const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
 async function run() {
   const browser = await launchBrowser();

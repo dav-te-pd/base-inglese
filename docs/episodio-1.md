@@ -223,6 +223,17 @@ Nove slot. I **nomi di persona non si traducono mai** nel dialogo: la colonna in
 
 **Città di partenza:** Mondovì (predefinito) · Torino/Turin · Milano/Milan
 
-**Destinazione:** vedi il file `riferimenti-lingua` per la tabella completa e il criterio di ammissione.
+**Destinazione** — sei, predefinito **Cina**:
+
+| Chiave | Italiano | Inglese |
+|---|---|---|
+| cina | **Cina** | China |
+| giappone | Giappone | Japan |
+| spagna | Spagna | Spain |
+| francia | Francia | France |
+| germania | Germania | Germany |
+| irlanda | Irlanda | Ireland |
+
+*Criterio di ammissione: solo paesi che in italiano vogliono la preposizione "in" (vedi la nota 9). "We are going to {destinazione}" si traduce "Andiamo in ...", e una riga della tabella non può portarsi dietro una preposizione propria senza complicare il testo: "negli Stati Uniti" non entra, e per questo gli Stati Uniti non ci sono.*
 
 ---

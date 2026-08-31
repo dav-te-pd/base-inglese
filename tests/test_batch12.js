@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -58,7 +59,12 @@ const mockInit = () => {
   }
 };
 
-const ALL_MODULES = ['personalizzazione','repeatAloud','speakEasy','flashcardAEngIta','flashcardAItaEng','quickMatchEngIta','quickMatchItaEng','voicePractice','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo','speedRoundEngIta','speedRoundItaEng','voiceCoach'];
+// I passi della mappa, calcolati dall'ordine vero (CONFIG.moduleOrderDefault)
+// invece che riscritti qui: un riordino non deve piu' rompere questo file.
+const ALL_MODULES = allSteps();
+// Le chiavi introDismissed sono i KIND dei moduli, non gli id dei passi:
+// due apparizioni dello stesso modulo condividono lo stesso kind.
+const ALL_KINDS = ALL_MODULES.map(id => id.replace(/-\d+$/, ''));
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);
@@ -74,7 +80,7 @@ async function bootAsUser(page, userName, completedModules) {
     kinds.concat(['mappaEpisodio', 'flashcardLevelA']).forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
-  }, { userName, completedModules, kinds: ALL_MODULES });
+  }, { userName, completedModules, kinds: ALL_KINDS });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
 }
@@ -259,22 +265,32 @@ async function run() {
       };
     }));
     const ids = rows.map(r => r.id);
-    log('[Job7] Map order matches the new spec (14 modules, voicePractice before Dialogo, voiceCoach last)',
+    log('[Job7] L\'ordine in mappa e\' quello di CONFIG.moduleOrderDefault',
       JSON.stringify(ids) === JSON.stringify(ALL_MODULES));
-    log('[Job7] Row 6/7 renamed to "Match Practice en/it→..."', rows[5].title.indexOf('Match Practice') === 0 && rows[6].title.indexOf('Match Practice') === 0);
-    log('[Job7] Row 8 is "Voice Practice"', rows[7].title === 'Voice Practice');
-    log('[Job7] Row 14 is "Voice Check"', rows[13].title === 'Voice Check');
-    log('[Job7] Dialogue: Real Dialogue renamed (was "Full Dialogue")', rows[10].title === 'Dialogue: Real Dialogue');
-    log('[Job7] Speed Round renamed to "Speed Match"', rows[11].title.indexOf('Speed Match') === 0 && rows[12].title.indexOf('Speed Match') === 0);
+    // I nomi e le categorie si cercano per id del passo, non per posizione:
+    // la posizione cambia a ogni riordino, l'identita' del passo no.
+    const row = id => rows[ids.indexOf(id)] || {};
+    log('[Job7] Match Practice si chiama cosi\' in entrambe le direzioni',
+      row('quickMatchEngIta').title.indexOf('Match Practice') === 0 && row('quickMatchItaEng').title.indexOf('Match Practice') === 0);
+    log('[Job7] Voice Practice e Voice Check hanno i loro nomi',
+      row('voicePractice').title === 'Voice Practice' && row('voiceCoach').title === 'Voice Check');
+    log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === 'Dialogue: Real Dialogue');
+    log('[Job7] Speed Round si chiama Speed Match in entrambe le direzioni',
+      row('speedRoundEngIta').title.indexOf('Speed Match') === 0 && row('speedRoundItaEng').title.indexOf('Speed Match') === 0);
+    // I due moduli nati dal componente della storia: nomi nuovi, stessa
+    // categoria Studio.
+    log('[Job7] Meet the Story e Why We Say It hanno i loro nomi',
+      row('meetTheStory').title === 'Meet the Story' && row('whyWeSayIt').title === 'Why We Say It');
+    log('[Job7] "Speak Easy" non compare piu\' in mappa', rows.every(r => r.title !== 'Speak Easy'));
     // Six-label job (later turn) replaced these four categories — all
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are
     // "Quiz".
-    log('[Job7] Dialogue: Listen & Repeat shows "Studia il dialogo"', rows[8].type === 'Studia il dialogo');
-    log('[Job7] Dialogue: Repeat in Time shows "Studia il dialogo" too', rows[9].type === 'Studia il dialogo');
-    log('[Job7] Dialogue: Real Dialogue shows "Studia il dialogo" too', rows[10].type === 'Studia il dialogo');
-    log('[Job7] Voice Practice is "Studio"', rows[7].type === 'Studio');
-    log('[Job7] Voice Check is "Quiz"', rows[13].type === 'Quiz');
+    log('[Job7] Dialogue: Listen & Repeat shows "Studia il dialogo"', row('dialogoAscoltaRipeti').type === 'Studia il dialogo');
+    log('[Job7] Dialogue: Repeat in Time shows "Studia il dialogo" too', row('dialogoRipetiATempo').type === 'Studia il dialogo');
+    log('[Job7] Dialogue: Real Dialogue shows "Studia il dialogo" too', row('dialogoContinuo').type === 'Studia il dialogo');
+    log('[Job7] Voice Practice is "Studio"', row('voicePractice').type === 'Studio');
+    log('[Job7] Voice Check is "Quiz"', row('voiceCoach').type === 'Quiz');
     log('[Job7] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore, stepIds } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -86,7 +87,7 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_BEFORE_SR = ['personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'];
+  const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
 
   // ============ TASK 6: Personalizzazione visible in map, first, unlocked ============
   {
@@ -116,8 +117,12 @@ async function run() {
     await page.waitForTimeout(150);
     const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T6NewUser');
     log('[6a] Completing Personalizzazione marks it via markModuleCompleted', completed && completed.indexOf('personalizzazione') !== -1);
-    const repeatAloudNowClickable = await page.$eval('[data-module="repeatAloud"]', el => el.disabled);
-    log('[6a] repeatAloud unlocks right after Personalizzazione completes', !repeatAloudNowClickable);
+    // Il passo che si sblocca è quello SUCCESSIVO nell'ordine, qualunque
+    // sia: prenderlo dall'ordine vero invece di nominarlo qui significa che
+    // un riordino non rende più bugiarda questa asserzione.
+    const nextStep = stepIds()[1];
+    const nextNowClickable = await page.$eval('[data-module="' + nextStep + '"]', el => el.disabled);
+    log('[6a] Il passo dopo Personalizzazione (' + nextStep + ') si sblocca appena è completata', !nextNowClickable);
     log('[6] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -128,10 +133,12 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T6Started', ['personalizzazione', 'repeatAloud']);
+    // Serve del progresso OLTRE Personalizza — è quello che fa comparire
+    // l'avviso — quindi i primi due passi, non "quelli prima di Personalizza".
+    await bootAsUser(page, 'T6Started', stepIds().slice(0, 2));
     await openModule(page, 'personalizzazione');
     const warningVisible = await page.evaluate(() => !document.getElementById('customize-warning-screen').hidden);
-    log('[6b] Reopening Personalizzazione after repeatAloud is done shows the warning', warningVisible);
+    log('[6b] Riaprire Personalizza con un altro passo già fatto mostra l\'avviso', warningVisible);
     const confirmBtnDisabled = await page.$eval('#customize-warning-confirm-btn', el => el.disabled);
     log('[6b] Confirm button starts disabled', confirmBtnDisabled);
     await page.fill('#customize-warning-confirm-input', 'non è la frase giusta');
@@ -158,7 +165,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T6OnlyCustomize', ['personalizzazione']);
+    await bootAsUser(page, 'T6OnlyCustomize', stepsBefore('personalizzazione'));
     await openModule(page, 'personalizzazione');
     const mainVisible = await page.evaluate(() => !document.getElementById('customize-main-screen').hidden);
     log('[6b] Only Personalizzazione done (nothing else started): no warning', mainVisible);
@@ -167,7 +174,7 @@ async function run() {
     const page2 = await browser.newPage({ viewport: { width: 400, height: 900 } });
     page2.on('pageerror', e => errors.push(e.message));
     await page2.addInitScript(mockInit);
-    await bootAsUser(page2, 'T6Cancel', ['personalizzazione', 'repeatAloud']);
+    await bootAsUser(page2, 'T6Cancel', stepIds().slice(0, 2));
     await openModule(page2, 'personalizzazione');
     await page2.click('#customize-warning-cancel-btn');
     await page2.waitForTimeout(150);
@@ -185,7 +192,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T6Migrate', ['repeatAloud', 'speakEasy'], {
+    // Progresso di un utente vecchio: due passi qualsiasi gia' fatti, presi
+    // dall'ordine invece che nominati qui.
+    await bootAsUser(page, 'T6Migrate', stepIds().slice(1, 3), {
       'baseinglese:episode1:customizeSeen:T6Migrate': '1'
     });
     const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T6Migrate');

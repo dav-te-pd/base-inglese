@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -33,7 +34,7 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_MODULES = ['personalizzazione','repeatAloud','speakEasy','flashcardAEngIta','flashcardAItaEng','quickMatchEngIta','quickMatchItaEng','voicePractice','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo','speedRoundEngIta','speedRoundItaEng','voiceCoach'];
+  const ALL_MODULES = allSteps();
 
   const checks = [
     ['repeatAloud', '#repeat-aloud-intro-title', 'Repeat Aloud'],

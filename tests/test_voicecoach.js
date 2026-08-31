@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -94,7 +95,7 @@ async function run() {
   await page.addInitScript(mockInit);
   // voiceCoach (job 5: Voice Check) is now LAST in the order — needs every
   // other module completed first.
-  await bootAsUser(page, 'VCTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta', 'speedRoundItaEng']);
+  await bootAsUser(page, 'VCTester', stepsBefore('voiceCoach'));
   await page.evaluate(toneCapture);
   await page.click('[data-module="voiceCoach"]');
   await page.waitForTimeout(250);

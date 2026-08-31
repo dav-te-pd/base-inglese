@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -68,7 +69,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
     // Repeat Aloud alone uses its own separate localStorage key
@@ -85,7 +86,7 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_MODULES = ['personalizzazione','repeatAloud','speakEasy','flashcardAEngIta','flashcardAItaEng','quickMatchEngIta','quickMatchItaEng','voicePractice','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo','speedRoundEngIta','speedRoundItaEng','voiceCoach'];
+const ALL_MODULES = allSteps();
 
 async function run() {
   const browser = await launchBrowser();
@@ -140,9 +141,9 @@ async function run() {
       }
       await route.fulfill({ response, json });
     });
-    const idx = ALL_MODULES.indexOf('speakEasy');
+    const idx = ALL_MODULES.indexOf('whyWeSayIt');
     await bootAsUser(page, 'T10Warn', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'speakEasy');
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(400);
     const warnings = await page.evaluate(() => window.__consoleWarnings || []);
     const hasWarning = warnings.some(w => w.indexOf('nonExistentSlot') !== -1);
@@ -158,9 +159,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('speakEasy');
+    const idx = ALL_MODULES.indexOf('whyWeSayIt');
     await bootAsUser(page, 'T10NoWarn', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'speakEasy');
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(400);
     const warnings = await page.evaluate(() => window.__consoleWarnings || []);
     log('[Job2b] Speak Easy (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere', warnings.length === 0);
@@ -229,9 +230,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('speakEasy');
+    const idx = ALL_MODULES.indexOf('whyWeSayIt');
     await bootAsUser(page, 'T10SE', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'speakEasy');
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(300);
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(400);

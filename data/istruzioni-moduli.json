@@ -21,34 +21,24 @@
       "cancelButton": "Annulla, torna alla mappa"
     }
   },
-  "mappaEpisodio": {
+  "meetTheStory": {
     "howItWorks": {
-      "title": "Mappa dell'episodio",
-      "body": "<p>Questa è la mappa dell'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>"
+      "title": "Meet the Story",
+      "body": "<p>È il tuo primo incontro con la storia dell'episodio: qui si ascolta, non si studia.</p><p>Ogni battuta ha il pulsante 🔊 per sentirla, e puoi scegliere la velocità se va troppo veloce. La traduzione è già lì sotto, sempre visibile: a questo punto non hai ancora studiato niente, quindi non ha senso nasconderla.</p><p>Ascolta il dialogo tutte le volte che vuoi. Non devi ricordare niente adesso: le parole, le frasi e le regole arrivano nei moduli successivi.</p><p>Quando ti sei fatto un'idea della storia, premi \"Ho finito\".</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
+      "body": "<p>Ascolta le battute con 🔊, alla velocità che preferisci. La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi \"Ho finito\".</p>"
     }
   },
-  "repeatAloud": {
+  "whyWeSayIt": {
     "howItWorks": {
-      "title": "Repeat Aloud",
-      "body": "<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi \"Ho finito, torna alla mappa\".</p><p>Se non lo vuoi fare adesso, clicca semplicemente \"Mappa\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      "title": "Why We Say It",
+      "body": "<p>Il dialogo lo conosci già: qui si guarda <em>perché</em> si dice così.</p><p>Su quasi ogni battuta trovi uno o più pulsanti con il nome di una regola. Al primo giro si aprono in ordine, una alla volta: leggila e poi dì se ti è chiara — non c'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere. Dichiarata quella, si apre la successiva.</p><p>Puoi ascoltare ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e aprire \"Mostra traduzione\" se ti serve una mano.</p><p>Quando le hai viste tutte, premi \"Ho finito\". Se devi interrompere, \"Esci e riprendi dopo\" tiene il punto in cui sei arrivato.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
-      "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
-    }
-  },
-  "speakEasy": {
-    "howItWorks": {
-      "title": "Speak Easy",
-      "body": "<p>Leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri \"Mostra traduzione\" se ti serve una mano.</p><p>Su alcune battute trovi anche \"Cosa imparo qui\": spiega perché quella frase si costruisce proprio così. Leggila e poi dì se ti è chiara — non c'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere.</p><p>Alla fine dovresti riuscire a capire il dialogo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi \"Ho finito\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire \"Mostra traduzione\". Dove trovi \"Cosa imparo qui\", leggila e dì se ti è chiara.</p><p>Quando hai seguito tutto il dialogo, premi \"Ho finito\".</p>"
+      "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara.</p><p>Quando le hai viste tutte, premi \"Ho finito\".</p>"
     },
     "completeHint": "Si attiva quando hai aperto e dichiarato tutte le spiegazioni.",
     "selfCheck": {
@@ -83,6 +73,26 @@
         "title": "Nessun problema",
         "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
       }
+    }
+  },
+  "mappaEpisodio": {
+    "howItWorks": {
+      "title": "Mappa dell'episodio",
+      "body": "<p>Questa è la mappa dell'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
+    }
+  },
+  "repeatAloud": {
+    "howItWorks": {
+      "title": "Repeat Aloud",
+      "body": "<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi \"Ho finito, torna alla mappa\".</p><p>Se non lo vuoi fare adesso, clicca semplicemente \"Mappa\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
     }
   },
   "speedRoundEngIta": {

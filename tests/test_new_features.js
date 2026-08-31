@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore, allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -62,7 +63,7 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_COMPLETE = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta', 'speedRoundItaEng', 'voiceCoach'];
+  const ALL_COMPLETE = allSteps();
 
   // ============ A: default module order matches CONFIG.episodes.episode1.moduleOrder ============
   {
@@ -119,7 +120,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'ClickRegression', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice']);
+    await bootAsUser(page, 'ClickRegression', stepsBefore('dialogoAscoltaRipeti'));
     await openModule(page, 'dialogoAscoltaRipeti');
     const started = await page.isVisible('#dg-start-btn');
     log('[A] Module click still opens Dialogo Ascolta e Ripeti', started);
@@ -133,7 +134,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRSoundTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await bootAsUser(page, 'SRSoundTester', stepsBefore('speedRoundEngIta'));
     await page.evaluate(() => { window.APP_CONFIG.speedRound.countdownStepMs = 60; });
     await page.evaluate(toneCapture);
     await openModule(page, 'speedRoundEngIta');
@@ -155,7 +156,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'DGSoundTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo']);
+    await bootAsUser(page, 'DGSoundTester', stepsBefore('dialogoContinuo'));
     await page.evaluate(() => { window.APP_CONFIG.dialogo.countdownStepMs = 60; });
     await page.evaluate(toneCapture);
     await openModule(page, 'dialogoContinuo');
@@ -284,7 +285,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FullRegression', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng']);
+    await bootAsUser(page, 'FullRegression', stepsBefore('quickMatchEngIta'));
     await openModule(page, 'quickMatchEngIta');
     const qmVisible = await page.evaluate(() => {
       var view = document.getElementById('view-quick-match');

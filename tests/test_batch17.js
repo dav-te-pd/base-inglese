@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -62,7 +63,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -75,9 +76,9 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const ALL_BEFORE_DG = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice'];
-const ALL_BEFORE_VC = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta', 'speedRoundItaEng'];
+const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
+const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
 async function run() {
   const browser = await launchBrowser();
@@ -150,7 +151,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1b', ['personalizzazione']);
+    await bootAsUser(page, 'T17Job1b', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#repeat-aloud-body .repeat-listen-btn, #repeat-aloud-body [data-say]');
@@ -180,8 +181,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1c', ['personalizzazione', 'repeatAloud']);
-    await openModule(page, 'speakEasy');
+    await bootAsUser(page, 'T17Job1c', stepsBefore('whyWeSayIt'));
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#speak-easy-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }

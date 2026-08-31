@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -70,7 +71,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -99,10 +100,10 @@ async function dismissAttemptPopupIfOpen(page) {
   return false;
 }
 
-const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const ALL_BEFORE_VP = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng'];
-const ALL_BEFORE_DG_TEMPO = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti'];
-const ALL_BEFORE_SR = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'];
+const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_VP = stepsBefore('voicePractice');
+const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
+const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
 
 async function run() {
   const browser = await launchBrowser();
@@ -157,8 +158,8 @@ async function run() {
       window.APP_CONFIG.moduleOutcomeRules.speedRoundEngIta === 'moduleRules'));
     log('[Job2 config] moduleOutcomeRules.flashcardAEngIta = selfScoreRules', await page.evaluate(() =>
       window.APP_CONFIG.moduleOutcomeRules.flashcardAEngIta === 'selfScoreRules'));
-    log('[Job2 config] moduleOutcomeRules.speakEasy = selfScoreRules', await page.evaluate(() =>
-      window.APP_CONFIG.moduleOutcomeRules.speakEasy === 'selfScoreRules'));
+    log('[Job2 config] moduleOutcomeRules.whyWeSayIt = selfScoreRules', await page.evaluate(() =>
+      window.APP_CONFIG.moduleOutcomeRules.whyWeSayIt === 'selfScoreRules'));
     log('[Job2] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -413,7 +414,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job10', ALL_BEFORE_QM);
-    await openModule(page, 'speakEasy');
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(200);
     const explanationButtonCount = await page.evaluate(() => document.querySelectorAll('[data-toggle-explanation]').length);
     log('[Job10] "Cosa imparo qui" does not appear anywhere (episode 1 has no whatYouLearn lines)', explanationButtonCount === 0);
@@ -424,7 +425,7 @@ async function run() {
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
     await page.click('#speak-easy-complete-btn');
     await page.waitForTimeout(150);
-    const rowClass10 = await page.evaluate(() => document.querySelector('[data-module="speakEasy"]').className);
+    const rowClass10 = await page.evaluate(() => document.querySelector('[data-module="whyWeSayIt"]').className);
     log('[Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato)', !/outcome-(verde|giallo|rosso)/.test(rowClass10));
     log('[Job10] No JS errors', errors.length === 0);
     await page.close();

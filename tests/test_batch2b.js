@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -83,10 +84,10 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const BEFORE_VC = ['personalizzazione', 'repeatAloud', 'speakEasy'];
-const BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const BEFORE_SR = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'];
-const BEFORE_FC = ['personalizzazione', 'repeatAloud', 'speakEasy'];
+const BEFORE_VC = stepsBefore('flashcardAEngIta');
+const BEFORE_QM = stepsBefore('quickMatchEngIta');
+const BEFORE_SR = stepsBefore('speedRoundEngIta');
+const BEFORE_FC = stepsBefore('flashcardAEngIta');
 
 async function run() {
   const browser = await launchBrowser();
@@ -164,7 +165,72 @@ async function run() {
     log('[1] La riga si aggiorna subito con il nuovo grado', cycled.chip === cycled.after);
     log('[1] Il grado cambiato finisce negli override in localStorage', cycled.stored === cycled.after);
 
+    // L'interruttore acceso/spento: serve a provare varianti dell'episodio
+    // senza chiedere modifiche, quindi un passo spento deve SPARIRE dalla
+    // mappa, non restare grigio — l'obiettivo è vedere l'episodio come lo
+    // vedrà lo studente.
+    const spegni = await page.evaluate(() => {
+      var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var order = window.APP_CONFIG.moduleOrderDefault;
+      var prima = order.length;
+      righe[1].querySelector('[data-order-onoff]').click();
+      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      return {
+        prima: prima,
+        off: !!window.APP_CONFIG.moduleOrderDefault[1].off,
+        restaInLista: document.querySelectorAll('.config-module-order-row').length === prima,
+        rigaSegnata: document.querySelectorAll('.config-module-order-row.is-off').length === 1,
+        salvato: !!overrides.moduleOrderDefault[1].off
+      };
+    });
+    log('[1] Un tocco spegne il passo', spegni.off === true);
+    log('[1] Il passo spento resta nella vista di riordino, segnato', spegni.restaInLista && spegni.rigaSegnata);
+    log('[1] Lo stato spento finisce negli override in localStorage', spegni.salvato === true);
+
+    const riacceso = await page.evaluate(() => {
+      var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
+      righe[1].querySelector('[data-order-onoff]').click();
+      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      return { off: !!window.APP_CONFIG.moduleOrderDefault[1].off, salvato: !!overrides.moduleOrderDefault[1].off };
+    });
+    log('[1] Un secondo tocco lo riaccende', riacceso.off === false && riacceso.salvato === false);
+
     log('[1] No JS errors', errors.length === 0);
+    await page.close();
+  }
+
+  // ============ TASK 1b: un passo spento sparisce davvero dalla mappa ============
+  {
+    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    // Niente addInitScript per gli override qui: rigirerebbe anche al
+    // reload, azzerandoli prima che il boot li legga. L'override si scrive
+    // a pagina caricata e poi si ricarica — episode.modules si calcola una
+    // volta sola, al caricamento dello script.
+    await bootAsUser(page, 'T1Off', []);
+    const conteggi = await page.evaluate(() => {
+      var order = window.APP_CONFIG.moduleOrderDefault.map(function (p) {
+        return p.module === 'repeatAloud' ? Object.assign({}, p, { off: true }) : p;
+      });
+      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      overrides.moduleOrderDefault = order;
+      localStorage.setItem('baseinglese:configOverrides', JSON.stringify(overrides));
+      return {
+        totale: window.APP_CONFIG.moduleOrderDefault.length,
+        spenti: order.filter(function (p) { return p.off; }).length
+      };
+    });
+    // Ricaricare riporta alla home: la mappa si riapre come farebbe l'utente.
+    await page.reload();
+    await page.waitForSelector('#go-episode', { timeout: 20000 });
+    await page.click('#go-episode');
+    await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0, null, { timeout: 20000 });
+    const inMappa = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
+    log('[1b] I passi spenti spariscono dalla mappa', inMappa.length === conteggi.totale - conteggi.spenti);
+    log('[1b] Nessuna riga grigia rimasta: il modulo spento non c\'è proprio', inMappa.every(id => id.indexOf('repeatAloud') !== 0));
+    log('[1b] No JS errors', errors.length === 0);
     await page.close();
   }
 

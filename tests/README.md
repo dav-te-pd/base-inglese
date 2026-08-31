@@ -2,7 +2,7 @@
 
 28 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
-`test_voicecoach.js`, `test_speakeasy.js`, `test_fallbacks.js`,
+`test_voicecoach.js`, `test_story_modules.js`, `test_fallbacks.js`,
 `test_hidden_guard.js`). Insieme costituiscono la suite di regressione completa
 citata da CLAUDE.md (regola 15): quando una modifica tocca codice condiviso
 va lanciata tutta, quando resta dentro un modulo bastano i file di quel
@@ -74,6 +74,22 @@ README di ciascuna per cosa sono e perché sono state tenute:
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
 millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
 intermittente, si guarda lì prima di sospettare una regressione dell'app.
+
+## `tests/module-order.js` — perché esiste
+
+I test devono aprire un modulo, e la mappa non lo lascia aprire finché i passi
+precedenti non risultano completati. Ogni test si scriveva quindi a mano la
+lista dei moduli da segnare come fatti: una fotografia dell'ordine del giorno
+in cui il test era stato scritto. Al primo riordino vero (da 14 a 22 passi)
+sono cadute quasi tutte insieme — 15 file su 28 — e nessuna diceva perché:
+solo "timeout aspettando un modulo".
+
+`module-order.js` calcola quelle liste da `CONFIG.moduleOrderDefault`, che è
+l'unico posto che decide la sequenza: `stepIds()` (tutti i passi in ordine),
+`stepsBefore(id)` (cosa completare per aprirne uno), `gradeOf(id)` (su quale
+grado lavora, per i test che iniettano contenuto), `allSteps()`. Legge
+`index.html` come testo, quindi le liste sono disponibili prima ancora di
+aprire il browser. Un riordino futuro non tocca più nessun test.
 
 ## `test_hidden_guard.js` — perché è nella suite
 

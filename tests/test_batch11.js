@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -67,7 +68,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
     localStorage.setItem('baseinglese:repeatAloudIntroDismissed:' + userName, '1');
@@ -81,7 +82,7 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_MODULES = ['personalizzazione','repeatAloud','speakEasy','flashcardAEngIta','flashcardAItaEng','quickMatchEngIta','quickMatchItaEng','voicePractice','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo','speedRoundEngIta','speedRoundItaEng','voiceCoach'];
+const ALL_MODULES = allSteps();
 
 // ---- Voice Coach driving helpers ----
 
@@ -180,9 +181,9 @@ async function run() {
     const rules = await page.evaluate(() => window.APP_CONFIG.moduleOutcomeRules);
     log('[Config] moduleOutcomeRules.voiceCoach === "moduleRules"', rules && rules.voiceCoach === 'moduleRules');
     log('[Config] moduleOutcomeRules declares selfAssessment for the 3 Dialogo modules', rules && rules.dialogoAscoltaRipeti === 'selfAssessment' && rules.dialogoRipetiATempo === 'selfAssessment' && rules.dialogoContinuo === 'selfAssessment');
-    // speakEasy now declares 'selfScoreRules' (job 10, 2nd collaudo) —
+    // whyWeSayIt (ex speakEasy) declares 'selfScoreRules' —
     // repeatAloud stays undefined (default completionRules, unchanged).
-    log('[Config] repeatAloud has no entry (default = completionRules); speakEasy = selfScoreRules', rules && rules.repeatAloud === undefined && rules.speakEasy === 'selfScoreRules');
+    log('[Config] repeatAloud has no entry (default = completionRules); whyWeSayIt = selfScoreRules', rules && rules.repeatAloud === undefined && rules.whyWeSayIt === 'selfScoreRules');
     await page.close();
   }
 

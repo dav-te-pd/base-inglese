@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 // This mock deliberately fires cancel()'s onerror ASYNCHRONOUSLY (via
@@ -44,7 +45,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -57,8 +58,8 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const ALL_BEFORE_DG = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice'];
+const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
 
 async function run() {
   const browser = await launchBrowser();
@@ -151,7 +152,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInitAsync);
-    await bootAsUser(page, 'T18Job1a', ['personalizzazione']);
+    await bootAsUser(page, 'T18Job1a', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#repeat-aloud-body [data-say]');
@@ -195,7 +196,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInitAsync);
-    await bootAsUser(page, 'T18Job1c', ['personalizzazione']);
+    await bootAsUser(page, 'T18Job1c', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(200);
     const listenBtns = await page.$$('#repeat-aloud-body [data-say]');

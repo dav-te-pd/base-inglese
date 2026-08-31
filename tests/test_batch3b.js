@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { gradeOf, stepIds, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -88,10 +89,10 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_SR = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'];
+const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
 // voiceCoach (job 5: Voice Check) is now LAST in the order — needs every
 // other module completed first.
-const ALL_BEFORE_VC = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta', 'speedRoundItaEng'];
+const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
 async function run() {
   const browser = await launchBrowser();
@@ -104,7 +105,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T5Danger', ['personalizzazione', 'repeatAloud']);
+    // Serve progresso OLTRE Personalizza, che e' cio' che fa comparire
+    // l'avviso: i primi due passi dell'ordine.
+    await bootAsUser(page, 'T5Danger', stepIds().slice(0, 2));
     await openModule(page, 'personalizzazione');
     await page.waitForTimeout(200);
     const hasDangerPanel = await page.isVisible('.danger-panel');
@@ -149,7 +152,10 @@ async function run() {
     await page.route('**/data/a1-episodio1-inglese.json', async (route) => {
       const res = await route.fetch();
       const json = await res.json();
-      json.levels.D.items[0].pronunciationTip = 'hel-LOU EV-ri-uan';
+      // Nel grado che Voice Check legge DAVVERO (la lettera della sua coppia
+      // in moduleOrderDefault), non in quello che leggeva quando questo test
+      // è stato scritto.
+      json.levels[gradeOf('voiceCoach')].items[0].pronunciationTip = 'hel-LOU EV-ri-uan';
       await route.fulfill({ response: res, json });
     });
     await bootAsUser(page, 'T6WithData', ALL_BEFORE_VC);
@@ -175,7 +181,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T7Gate', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice']);
+    await bootAsUser(page, 'T7Gate', stepsBefore('dialogoAscoltaRipeti'));
     await openModule(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
@@ -207,7 +213,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await page.evaluate; // noop just to keep structure consistent
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T7GateTimed', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'T7GateTimed', stepsBefore('dialogoRipetiATempo'));
     await page.evaluate(() => {
       window.APP_CONFIG.dialogo.pausaBase = 150;
       window.APP_CONFIG.dialogo.pausaPerParola = 5;

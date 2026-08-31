@@ -5,6 +5,7 @@
 // states, scoring) but none reads the prompt/answer/front/back text
 // itself, so a swapped en-it/it-en ternary would go completely unnoticed.
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const BASE = APP_URL;
 
@@ -31,7 +32,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.evaluate(({ userName, completedModules }) => {
     localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -58,7 +59,7 @@ async function run() {
     // NOT the intro-dismiss shortcut used elsewhere here — we want a
     // deterministic first card, and the intro-dismiss list already
     // covers flashcardLevelA regardless of direction.
-    await bootAsUser(page, 'ContentFCItaEng', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta']);
+    await bootAsUser(page, 'ContentFCItaEng', stepsBefore('flashcardAItaEng'));
     await openModule(page, 'flashcardAItaEng');
     await page.waitForTimeout(200);
     const startVisible = await page.isVisible('#fc-intro-start-btn').catch(() => false);
@@ -91,7 +92,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'ContentQMItaEng', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta']);
+    await bootAsUser(page, 'ContentQMItaEng', stepsBefore('quickMatchItaEng'));
     await openModule(page, 'quickMatchItaEng');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200);

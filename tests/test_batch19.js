@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -23,7 +24,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.evaluate(({ userName, completedModules }) => {
     localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -47,7 +48,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMDontKnowTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng']);
+    await bootAsUser(page, 'QMDontKnowTester', stepsBefore('quickMatchEngIta'));
     await openModule(page, 'quickMatchEngIta');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200);
@@ -89,7 +90,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMHeaderTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta']);
+    await bootAsUser(page, 'QMHeaderTester', stepsBefore('quickMatchItaEng'));
     await openModule(page, 'quickMatchItaEng');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200);
@@ -121,7 +122,7 @@ async function run() {
       // Speed up the per-question timer + 3-2-1 so the test stays fast.
       window.__preConfigOverride = true;
     });
-    await bootAsUser(page, 'SRDontKnowTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await bootAsUser(page, 'SRDontKnowTester', stepsBefore('speedRoundEngIta'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 30; // long enough that the timeout never fires mid-test
       window.APP_CONFIG.speedRound.countdownSeconds = 1;
@@ -164,7 +165,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRHeaderTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta']);
+    await bootAsUser(page, 'SRHeaderTester', stepsBefore('speedRoundItaEng'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
       window.APP_CONFIG.speedRound.countdownSeconds = 1;
@@ -228,7 +229,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRCorrectNoFlickerTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta']);
+    await bootAsUser(page, 'SRCorrectNoFlickerTester', stepsBefore('speedRoundEngIta'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
       window.APP_CONFIG.speedRound.countdownSeconds = 1;
@@ -269,7 +270,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRDontKnowUnlocksTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo', 'speedRoundEngIta']);
+    await bootAsUser(page, 'SRDontKnowUnlocksTester', stepsBefore('speedRoundItaEng'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
       window.APP_CONFIG.speedRound.countdownSeconds = 1;
@@ -295,7 +296,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRTimeoutUnlocksTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await bootAsUser(page, 'SRTimeoutUnlocksTester', stepsBefore('speedRoundEngIta'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 0.2; // let it expire quickly
       window.APP_CONFIG.speedRound.countdownSeconds = 1;
@@ -318,7 +319,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRLeaveMidTimerTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await bootAsUser(page, 'SRLeaveMidTimerTester', stepsBefore('speedRoundEngIta'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
       window.APP_CONFIG.speedRound.countdownSeconds = 1;

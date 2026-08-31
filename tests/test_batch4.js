@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -29,7 +30,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, extraStorage }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcardLevelA','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
@@ -48,11 +49,12 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  const ALL_MODULES = ['personalizzazione','repeatAloud','speakEasy','flashcardAEngIta','flashcardAItaEng','quickMatchEngIta','quickMatchItaEng','voicePractice','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo','speedRoundEngIta','speedRoundItaEng','voiceCoach'];
+  const ALL_MODULES = allSteps();
   const EXPECTED = {
     personalizzazione: { name: 'Your Story', subtitle: 'Personalizza la tua storia' },
     repeatAloud: { name: 'Repeat Aloud', subtitle: 'Ripeti ad alta voce' },
-    speakEasy: { name: 'Speak Easy', subtitle: 'Leggi e ascolta' },
+    meetTheStory: { name: 'Meet the Story', subtitle: 'Ascolta la storia' },
+    whyWeSayIt: { name: 'Why We Say It', subtitle: 'Perché si dice così' },
     voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
     voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
     quickMatchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
@@ -133,7 +135,10 @@ async function run() {
     await bootAsUser(page, 'T4User', []);
 
     for (const id of ALL_MODULES) {
-      const exp = EXPECTED[id];
+      // Un modulo puo' comparire piu' volte su gradi diversi: il nome
+      // mostrato e' quello del MODULO, quindi si toglie il suffisso che
+      // moduleStepId() da' alle apparizioni successive.
+      const exp = EXPECTED[id.replace(/-\d+$/, '')];
       const rowText = await page.$eval('[data-module="' + id + '"] .module-row-title', el => el.textContent).catch(() => null);
       log('[T2] map row title for ' + id + ' = "' + exp.name + '"', rowText === exp.name);
       const subText = await page.$eval('[data-module="' + id + '"] .module-row-subtitle', el => el.textContent).catch(() => null);
@@ -160,7 +165,8 @@ async function run() {
   {
     const checks = [
       ['repeatAloud', '#repeat-aloud-title', 'Repeat Aloud'],
-      ['speakEasy', '#speak-easy-title', 'Speak Easy'],
+      ['meetTheStory', '#speak-easy-title', 'Meet the Story'],
+      ['whyWeSayIt', '#speak-easy-title', 'Why We Say It'],
       ['quickMatchEngIta', '#quick-match-badge', 'Match Practice en→it'],
       ['dialogoAscoltaRipeti', '#dialogo-badge', 'Dialogue: Listen & Repeat'],
       ['speedRoundEngIta', '#speed-round-badge', 'Speed Match en→it'],

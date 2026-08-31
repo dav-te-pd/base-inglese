@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -48,7 +49,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'CountdownSoundTester', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'CountdownSoundTester', stepsBefore('dialogoRipetiATempo'));
     await page.evaluate(() => {
       window.APP_CONFIG.dialogo.pausaBase = 200;
       window.APP_CONFIG.dialogo.pausaPerParola = 10;
@@ -109,7 +110,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'Mod1Regression', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice']);
+    await bootAsUser(page, 'Mod1Regression', stepsBefore('dialogoAscoltaRipeti'));
     await openModule(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');

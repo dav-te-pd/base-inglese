@@ -282,6 +282,30 @@
     // dialogue content — Ascolta e Ripeti (free, no timer), Ripeti a
     // Tempo (timed, manual advance), Dialogo Continuo (timed, automatic
     // advance) — sharing one component (openDialogo and friends).
+    // ---- I due profili del componente della storia (Meet the Story,
+    // Why We Say It) — stessa forma di CONFIG.dialogo.profiles: un modulo
+    // dichiara storyProfile nel proprio descrittore e il componente legge
+    // di qui come comportarsi, senza sapere quale dei due sta disegnando. ----
+    story: {
+      profiles: {
+        // Primo contatto con la storia. Le traduzioni sono SEMPRE visibili:
+        // qui non c'e' ancora niente di studiato da cui dedurre il senso, e
+        // nasconderle non allenerebbe nessuno — renderebbe solo il dialogo
+        // incomprensibile. Nessuna skill: si ascolta e si guarda, non si
+        // studiano le regole.
+        meet: {
+          translations: 'always',
+          skills: false
+        },
+        // Il modulo delle regole. Le traduzioni tornano dietro il pulsante
+        // (a questo punto i pezzi si conoscono) e le skill ci sono: al primo
+        // giro in sequenza, una alla volta.
+        why: {
+          translations: 'onDemand',
+          skills: true
+        }
+      }
+    },
     dialogo: {
       // Per-line countdown-bar duration (Ripeti a Tempo / Dialogo
       // Continuo only): pausaBase + numeroParole * pausaPerParola,
@@ -375,19 +399,27 @@
     // not something to build yet. ----
     moduleOrderDefault: [
       { module: 'personalizzazione' },
+      { module: 'meetTheStory', grade: 'D' },
       { module: 'repeatAloud', grade: 'A' },
-      { module: 'speakEasy', grade: 'D' },
       { module: 'flashcardAEngIta', grade: 'A' },
       { module: 'flashcardAItaEng', grade: 'A' },
       { module: 'quickMatchEngIta', grade: 'A' },
       { module: 'quickMatchItaEng', grade: 'A' },
-      { module: 'voicePractice', grade: 'D' },
+      { module: 'repeatAloud', grade: 'B' },
+      { module: 'flashcardAEngIta', grade: 'B' },
+      { module: 'quickMatchEngIta', grade: 'B' },
+      { module: 'quickMatchItaEng', grade: 'B' },
+      { module: 'voicePractice', grade: 'B' },
+      { module: 'whyWeSayIt', grade: 'D' },
+      { module: 'quickMatchEngIta', grade: 'C' },
+      { module: 'quickMatchItaEng', grade: 'C' },
+      { module: 'voicePractice', grade: 'C' },
       { module: 'dialogoAscoltaRipeti', grade: 'D' },
       { module: 'dialogoRipetiATempo', grade: 'D' },
       { module: 'dialogoContinuo', grade: 'D' },
-      { module: 'speedRoundEngIta', grade: 'A' },
-      { module: 'speedRoundItaEng', grade: 'A' },
-      { module: 'voiceCoach', grade: 'D' }
+      { module: 'speedRoundEngIta', grade: 'C' },
+      { module: 'speedRoundItaEng', grade: 'C' },
+      { module: 'voiceCoach', grade: 'C' }
     ],
     // Per-episode override of moduleOrderDefault above — an episode only
     // needs an entry here if its own step sequence differs from the
@@ -450,7 +482,10 @@
       speedRoundItaEng: 'moduleRules',
       flashcardAEngIta: 'selfScoreRules',
       flashcardAItaEng: 'selfScoreRules',
-      speakEasy: 'selfScoreRules',
+      // Meet the Story non compare qui: e' il primo contatto con la
+      // storia, non ha skill da autovalutare, quindi resta su
+      // completionRules come Repeat Aloud e Your Story.
+      whyWeSayIt: 'selfScoreRules',
       dialogoAscoltaRipeti: 'selfAssessment',
       dialogoRipetiATempo: 'selfAssessment',
       dialogoContinuo: 'selfAssessment'
@@ -501,7 +536,10 @@
     moduleLabels: {
       personalizzazione: { name: 'Your Story', subtitle: 'Personalizza la tua storia' },
       repeatAloud: { name: 'Repeat Aloud', subtitle: 'Ripeti ad alta voce' },
-      speakEasy: { name: 'Speak Easy', subtitle: 'Leggi e ascolta' },
+      // I due moduli nati dallo stesso componente (CONFIG.story.profiles):
+      // "Speak Easy" non descriveva piu' nessuno dei due.
+      meetTheStory: { name: 'Meet the Story', subtitle: 'Ascolta la storia' },
+      whyWeSayIt: { name: 'Why We Say It', subtitle: 'Perché si dice così' },
       // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — two map
       // modules, one shared component (see the JS "MODULE: VOICE COACH"
       // comment); voiceCoach is the SAME id the single module used to
@@ -539,24 +577,58 @@
     // picker has more than one option to test.
     people: {
       papa: [
-        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' },
         { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
-        { value: 'francesco', it: 'Francesco', en: 'Francis', fr: '', es: '', de: '' }
+        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' },
+        { value: 'francesco', it: 'Francesco', en: 'Francis', fr: '', es: '', de: '' },
+        { value: 'andrea', it: 'Andrea', en: 'Andrew', fr: '', es: '', de: '' },
+        { value: 'luca', it: 'Luca', en: 'Luke', fr: '', es: '', de: '' },
+        { value: 'paolo', it: 'Paolo', en: 'Paul', fr: '', es: '', de: '' },
+        { value: 'stefano', it: 'Stefano', en: 'Steven', fr: '', es: '', de: '' },
+        { value: 'davide', it: 'Davide', en: 'David', fr: '', es: '', de: '' }
       ],
       mamma: [
         { value: 'giulia', it: 'Giulia', en: 'Julia', fr: '', es: '', de: '' },
         { value: 'anna', it: 'Anna', en: 'Anna', fr: '', es: '', de: '' },
-        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' }
+        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' },
+        { value: 'nicoletta', it: 'Nicoletta', en: 'Nicole', fr: '', es: '', de: '' },
+        { value: 'laura', it: 'Laura', en: 'Laura', fr: '', es: '', de: '' },
+        { value: 'elena', it: 'Elena', en: 'Helen', fr: '', es: '', de: '' },
+        { value: 'silvia', it: 'Silvia', en: 'Sylvia', fr: '', es: '', de: '' },
+        { value: 'francesca', it: 'Francesca', en: 'Frances', fr: '', es: '', de: '' }
       ],
       figlia: [
-        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' },
         { value: 'emma', it: 'Emma', en: 'Emma', fr: '', es: '', de: '' },
-        { value: 'alice', it: 'Alice', en: 'Alice', fr: '', es: '', de: '' }
+        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' },
+        { value: 'alice', it: 'Alice', en: 'Alice', fr: '', es: '', de: '' },
+        { value: 'giorgia', it: 'Giorgia', en: 'Georgia', fr: '', es: '', de: '' },
+        { value: 'martina', it: 'Martina', en: 'Martina', fr: '', es: '', de: '' },
+        { value: 'sara', it: 'Sara', en: 'Sarah', fr: '', es: '', de: '' },
+        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' },
+        { value: 'beatrice', it: 'Beatrice', en: 'Beatrice', fr: '', es: '', de: '' }
       ],
       figlio: [
+        { value: 'tommaso', it: 'Tommaso', en: 'Thomas', fr: '', es: '', de: '' },
         { value: 'leo', it: 'Leo', en: 'Leo', fr: '', es: '', de: '' },
         { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
-        { value: 'tommaso', it: 'Tommaso', en: 'Thomas', fr: '', es: '', de: '' }
+        { value: 'giorgio', it: 'Giorgio', en: 'George', fr: '', es: '', de: '' },
+        { value: 'matteo', it: 'Matteo', en: 'Matthew', fr: '', es: '', de: '' },
+        { value: 'lorenzo', it: 'Lorenzo', en: 'Lawrence', fr: '', es: '', de: '' },
+        { value: 'simone', it: 'Simone', en: 'Simon', fr: '', es: '', de: '' },
+        { value: 'filippo', it: 'Filippo', en: 'Philip', fr: '', es: '', de: '' }
+      ],
+      // Il cognome non ha una forma inglese: la colonna en e' identica per
+      // costruzione, non per svista (docs/episodio-1.md). Sta qui e non nel
+      // file episodio perche' e' una tabella di personalizzazione, condivisa
+      // fra episodi e lingue (CLAUDE.md regola 4).
+      cognome: [
+        { value: 'rossi', it: 'Rossi', en: 'Rossi', fr: '', es: '', de: '' },
+        { value: 'bianchi', it: 'Bianchi', en: 'Bianchi', fr: '', es: '', de: '' },
+        { value: 'ferrari', it: 'Ferrari', en: 'Ferrari', fr: '', es: '', de: '' },
+        { value: 'russo', it: 'Russo', en: 'Russo', fr: '', es: '', de: '' },
+        { value: 'costa', it: 'Costa', en: 'Costa', fr: '', es: '', de: '' },
+        { value: 'marino', it: 'Marino', en: 'Marino', fr: '', es: '', de: '' },
+        { value: 'barberis', it: 'Barberis', en: 'Barberis', fr: '', es: '', de: '' },
+        { value: 'ambruosi', it: 'Ambruosi', en: 'Ambruosi', fr: '', es: '', de: '' }
       ]
     },
     // ---- predefined place tables: same { value, it, en, fr, es, de }
@@ -567,12 +639,22 @@
         { value: 'torino', it: 'Torino', en: 'Turin', fr: '', es: '', de: '' },
         { value: 'milano', it: 'Milano', en: 'Milan', fr: '', es: '', de: '' }
       ],
+      // Criterio di ammissione delle destinazioni: solo paesi che in
+      // italiano vogliono la preposizione "in" (docs/episodio-1.md, nota 9).
+      // "We are going to {{destinazione}}" si traduce "Andiamo in ...", e una
+      // riga della tabella non puo' portarsi dietro una preposizione propria
+      // senza complicare il testo: "negli Stati Uniti" non entra, e per
+      // questo gli Stati Uniti non ci sono.
       destinations: [
         { value: 'cina', it: 'Cina', en: 'China', fr: '', es: '', de: '' },
         { value: 'giappone', it: 'Giappone', en: 'Japan', fr: '', es: '', de: '' },
-        { value: 'stati-uniti', it: 'Stati Uniti', en: 'United States', fr: '', es: '', de: '' }
+        { value: 'spagna', it: 'Spagna', en: 'Spain', fr: '', es: '', de: '' },
+        { value: 'francia', it: 'Francia', en: 'France', fr: '', es: '', de: '' },
+        { value: 'germania', it: 'Germania', en: 'Germany', fr: '', es: '', de: '' },
+        { value: 'irlanda', it: 'Irlanda', en: 'Ireland', fr: '', es: '', de: '' }
       ]
     },
+
     // Age choices (figlia/figlio) used to live here as a shared CONFIG.ages
     // table; they're episode-specific now (a story's plausible age range
     // isn't a reusable name/place), read from each episode's own
@@ -681,67 +763,548 @@
      for real changes — this block should mirror it, never diverge.
      ============================================================ */
   window.FALLBACK_EPISODE_DATA = {
-    'data/a1-episodio1-inglese.json': {
-      level: 'A1',
-      episodeId: 1,
-      episodeTitle: 'Presentarsi',
-      language: 'inglese',
-      personalizationTablesUsed: [
-        { key: 'papa', label: 'Nome del papà / utente', type: 'select', table: 'people.papa', default: 'giancarlo' },
-        { key: 'mamma', label: 'Nome della mamma', type: 'select', table: 'people.mamma', default: 'giulia' },
-        { key: 'figliaNome', label: 'Nome della figlia', type: 'select', table: 'people.figlia', default: 'sofia', group: 'figlia' },
-        { key: 'figliaEta', label: 'Età della figlia', type: 'select', table: 'episode.ageOptions.figlia', default: '16', group: 'figlia', narrow: true },
-        { key: 'figlioNome', label: 'Nome del figlio', type: 'select', table: 'people.figlio', default: 'leo', group: 'figlio' },
-        { key: 'figlioEta', label: 'Età del figlio', type: 'select', table: 'episode.ageOptions.figlio', default: '10', group: 'figlio', narrow: true },
-        { key: 'partenza', label: 'Città di partenza', type: 'select', table: 'places.departures', default: 'mondovi' },
-        { key: 'destinazione', label: 'Destinazione', type: 'select', table: 'places.destinations', default: 'cina' }
+    "data/a1-episodio1-inglese.json": {
+      "level": "A1",
+      "episodeId": "episode1",
+      "episodeTitle": "Presentarsi",
+      "language": "inglese",
+      "personalizationTablesUsed": [
+        {
+          "key": "papa",
+          "label": "Nome del papà / utente",
+          "type": "select",
+          "table": "people.papa",
+          "default": "marco"
+        },
+        {
+          "key": "mamma",
+          "label": "Nome della mamma",
+          "type": "select",
+          "table": "people.mamma",
+          "default": "giulia"
+        },
+        {
+          "key": "cognome",
+          "label": "Cognome della famiglia",
+          "type": "select",
+          "table": "people.cognome",
+          "default": "rossi"
+        },
+        {
+          "key": "figliaNome",
+          "label": "Nome della figlia",
+          "type": "select",
+          "table": "people.figlia",
+          "default": "emma",
+          "group": "figlia"
+        },
+        {
+          "key": "figliaEta",
+          "label": "Età della figlia",
+          "type": "select",
+          "table": "episode.ageOptions.figlia",
+          "default": "16",
+          "group": "figlia",
+          "narrow": true
+        },
+        {
+          "key": "figlioNome",
+          "label": "Nome del figlio",
+          "type": "select",
+          "table": "people.figlio",
+          "default": "tommaso",
+          "group": "figlio"
+        },
+        {
+          "key": "figlioEta",
+          "label": "Età del figlio",
+          "type": "select",
+          "table": "episode.ageOptions.figlio",
+          "default": "8",
+          "group": "figlio",
+          "narrow": true
+        },
+        {
+          "key": "partenza",
+          "label": "Città di partenza",
+          "type": "select",
+          "table": "places.departures",
+          "default": "mondovi"
+        },
+        {
+          "key": "destinazione",
+          "label": "Destinazione",
+          "type": "select",
+          "table": "places.destinations",
+          "default": "cina"
+        }
       ],
-      levels: {
-        A: {
-          label: 'Parole singole',
-          items: [
-            { id: 'a-hello', english: 'Hello', italian: 'Ciao / Salve', pronunciationTip: 'L\'accento cade sulla seconda sillaba: "hel-LOU", non "E-lo". La "h" si sente appena, un soffio.', grammarCategory: 'interiezione/saluto' },
-            { id: 'a-everyone', english: 'everyone', italian: 'tutti', pronunciationTip: '"EV-ri-uan", accento sulla prima sillaba.', grammarCategory: 'pronome indefinito' },
-            { id: 'a-nice-to-meet-you', english: 'Nice to meet you', italian: 'Piacere di conoscerti/vi', pronunciationTip: 'La "ee" di "meet" è lunga e tesa (non "mit" secco all\'italiana): "nais tu MIIT yu".', grammarCategory: 'espressione idiomatica' },
-            { id: 'a-can', english: 'Can', italian: 'Puoi / Potete', pronunciationTip: 'La "a" è aperta, quasi come "kan" ma più schiacciata.', grammarCategory: 'verbo modale' },
-            { id: 'a-introduce', english: 'introduce', italian: 'presentare', pronunciationTip: 'Accento sull\'ultima sillaba: "in-tro-DIUS".', grammarCategory: 'verbo' },
-            { id: 'a-yourselves', english: 'yourselves', italian: 'voi stessi', pronunciationTip: '"yor-SELVZ", la "s" finale suona "z".', grammarCategory: 'pronome riflessivo' },
-            { id: 'a-im', english: 'I\'m', italian: 'Sono / Mi chiamo', pronunciationTip: 'È la contrazione di "I am", si pronuncia tutta attaccata: "aim", mai "ai-em" staccato.', grammarCategory: 'pronome + verbo essere' },
-            { id: 'a-from', english: 'from', italian: 'da / di', pronunciationTip: 'La "o" è una via di mezzo tra "a" e "o" aperta, non la "o" chiusa italiana: suona quasi "fram".', grammarCategory: 'preposizione' },
-            { id: 'a-hi', english: 'Hi', italian: 'Ciao', pronunciationTip: 'Dittongo lungo "hai", più informale di "Hello".', grammarCategory: 'interiezione/saluto' },
-            { id: 'a-wife', english: 'wife', italian: 'moglie', pronunciationTip: '"uaif" — la "w" è un suono labiale che non esiste in italiano.', grammarCategory: 'sostantivo' },
-            { id: 'a-years-old', english: 'years old', italian: '... anni', pronunciationTip: '"years" parte quasi come "ie-ars"; "old" ha la "o" lunga: "ould".', grammarCategory: 'espressione per età' },
-            { id: 'a-great', english: 'Great', italian: 'Ottimo / Fantastico', pronunciationTip: 'Si legge "greit", non "great" all\'italiana.', grammarCategory: 'aggettivo' },
-            { id: 'a-welcome', english: 'Welcome', italian: 'Benvenuto/i', pronunciationTip: 'L\'accento è tutto sulla prima sillaba: "WEL-com", la seconda parte si "mangia" leggermente.', grammarCategory: 'interiezione/saluto' },
-            { id: 'a-trip', english: 'trip', italian: 'viaggio', pronunciationTip: 'La "r" è morbida, non arrotata come in italiano.', grammarCategory: 'sostantivo' },
-            { id: 'a-family', english: 'family', italian: 'famiglia', pronunciationTip: 'Accento sulla prima sillaba: "FA-mi-li".', grammarCategory: 'sostantivo' }
+      "levels": {
+        "A": {
+          "label": "Parole singole",
+          "items": [
+            {
+              "id": "a-hello",
+              "english": "Hello",
+              "italian": "Ciao / Salve",
+              "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
+              "grammarCategory": "saluto"
+            },
+            {
+              "id": "a-hi",
+              "english": "Hi",
+              "italian": "Ciao",
+              "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
+              "grammarCategory": "saluto"
+            },
+            {
+              "id": "a-nice",
+              "english": "nice",
+              "italian": "bello / piacevole",
+              "pronunciationTip": "nais",
+              "grammarCategory": "aggettivo"
+            },
+            {
+              "id": "a-to",
+              "english": "to",
+              "italian": "a / verso",
+              "pronunciationTip": "tu — corta",
+              "grammarCategory": "preposizione"
+            },
+            {
+              "id": "a-meet",
+              "english": "meet",
+              "italian": "incontrare",
+              "pronunciationTip": "miit — la \"i\" è lunga e tesa, non \"mit\"",
+              "grammarCategory": "verbo"
+            },
+            {
+              "id": "a-you",
+              "english": "you",
+              "italian": "tu / voi",
+              "pronunciationTip": "iu",
+              "grammarCategory": "pronome"
+            },
+            {
+              "id": "a-i",
+              "english": "I",
+              "italian": "io",
+              "pronunciationTip": "ai — sempre maiuscola in inglese",
+              "grammarCategory": "pronome"
+            },
+            {
+              "id": "a-am",
+              "english": "am",
+              "italian": "sono",
+              "pronunciationTip": "am",
+              "grammarCategory": "verbo essere"
+            },
+            {
+              "id": "a-im",
+              "english": "I'm",
+              "italian": "io sono",
+              "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
+              "grammarCategory": "pronome + verbo essere"
+            },
+            {
+              "id": "a-where",
+              "english": "where",
+              "italian": "dove",
+              "pronunciationTip": "UEAR — la \"wh\" è un soffio, non \"vu\"",
+              "grammarCategory": "avverbio interrogativo"
+            },
+            {
+              "id": "a-are",
+              "english": "are",
+              "italian": "sei / siamo / siete / sono",
+              "pronunciationTip": "ar",
+              "grammarCategory": "verbo essere"
+            },
+            {
+              "id": "a-from",
+              "english": "from",
+              "italian": "da / di",
+              "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
+              "grammarCategory": "preposizione"
+            },
+            {
+              "id": "a-italy",
+              "english": "Italy",
+              "italian": "Italia",
+              "pronunciationTip": "I-ta-li — accento sulla prima",
+              "grammarCategory": "nome di paese"
+            },
+            {
+              "id": "a-and",
+              "english": "and",
+              "italian": "e",
+              "pronunciationTip": "and — la \"d\" finale si sente appena",
+              "grammarCategory": "congiunzione"
+            },
+            {
+              "id": "a-years",
+              "english": "years",
+              "italian": "anni",
+              "pronunciationTip": "i-ars — parte con un suono di \"i\"",
+              "grammarCategory": "sostantivo"
+            },
+            {
+              "id": "a-old",
+              "english": "old",
+              "italian": "vecchio (di età)",
+              "pronunciationTip": "ould — la \"o\" è lunga",
+              "grammarCategory": "aggettivo"
+            },
+            {
+              "id": "a-we",
+              "english": "we",
+              "italian": "noi",
+              "pronunciationTip": "ui",
+              "grammarCategory": "pronome"
+            },
+            {
+              "id": "a-the",
+              "english": "the",
+              "italian": "il / la / i / le",
+              "pronunciationTip": "de — la lingua tra i denti, non \"ze\"",
+              "grammarCategory": "articolo"
+            },
+            {
+              "id": "a-family",
+              "english": "family",
+              "italian": "famiglia",
+              "pronunciationTip": "FA-mi-li — accento sulla prima",
+              "grammarCategory": "sostantivo"
+            },
+            {
+              "id": "a-going",
+              "english": "going",
+              "italian": "andando",
+              "pronunciationTip": "GO-in — la \"g\" finale si sente appena",
+              "grammarCategory": "verbo"
+            },
+            {
+              "id": "a-welcome",
+              "english": "Welcome",
+              "italian": "Benvenuto",
+              "pronunciationTip": "UEL-com — accento sulla prima",
+              "grammarCategory": "saluto"
+            }
           ]
         },
-        B: {
-          label: 'Chunk',
-          items: []
+        "B": {
+          "label": "Chunk",
+          "items": [
+            {
+              "id": "b-nice-to-meet-you",
+              "english": "Nice to meet you",
+              "italian": "Piacere di conoscerti / conoscervi",
+              "pronunciationTip": "nais tu MIIT iu",
+              "grammarCategory": "espressione idiomatica"
+            },
+            {
+              "id": "b-where-are-you",
+              "english": "Where are you",
+              "italian": "Dove sei / Dove siete",
+              "pronunciationTip": "UEAR ar iu — tutto legato",
+              "grammarCategory": "struttura interrogativa"
+            },
+            {
+              "id": "b-i-am-from",
+              "english": "I am from",
+              "italian": "Vengo da / Sono di",
+              "pronunciationTip": "ai am fram",
+              "grammarCategory": "pronome + verbo essere + preposizione"
+            },
+            {
+              "id": "b-and-you",
+              "english": "And you?",
+              "italian": "E tu? / E voi?",
+              "pronunciationTip": "and IU — accento su \"you\"",
+              "grammarCategory": "espressione"
+            },
+            {
+              "id": "b-years-old",
+              "english": "years old",
+              "italian": "anni (di età)",
+              "pronunciationTip": "i-ars OULD",
+              "grammarCategory": "espressione per l'età"
+            },
+            {
+              "id": "b-going-to",
+              "english": "going to",
+              "italian": "andando a / verso",
+              "pronunciationTip": "GO-in tu — nel parlato veloce diventa quasi \"gonna\"",
+              "grammarCategory": "verbo + preposizione"
+            }
+          ]
         },
-        C: {
-          label: 'Frasi',
-          items: []
+        "C": {
+          "label": "Frasi",
+          "items": [
+            {
+              "id": "c-1",
+              "english": "Nice to meet you.",
+              "italian": "Piacere di conoscervi.",
+              "fromLine": "d-1"
+            },
+            {
+              "id": "c-2",
+              "english": "I am {{papa}}.",
+              "italian": "Sono {{papa}}.",
+              "fromLine": "d-2"
+            },
+            {
+              "id": "c-3",
+              "english": "Where are you from?",
+              "italian": "Di dove sei?",
+              "fromLine": "d-3"
+            },
+            {
+              "id": "c-4",
+              "english": "I am from {{partenza}}, Italy.",
+              "italian": "Vengo da {{partenza}}, in Italia.",
+              "fromLine": "d-4"
+            },
+            {
+              "id": "c-5",
+              "english": "And you?",
+              "italian": "E tu?",
+              "fromLine": "d-5"
+            },
+            {
+              "id": "c-6",
+              "english": "I am {{mamma}}.",
+              "italian": "Sono {{mamma}}.",
+              "fromLine": "d-6"
+            },
+            {
+              "id": "c-7",
+              "english": "I'm {{figliaNome}}.",
+              "italian": "Sono {{figliaNome}}.",
+              "fromLine": "d-7"
+            },
+            {
+              "id": "c-8",
+              "english": "I'm {{figliaEta}} years old.",
+              "italian": "Ho {{figliaEta}} anni.",
+              "fromLine": "d-7"
+            },
+            {
+              "id": "c-9",
+              "english": "I'm {{figlioEta}}.",
+              "italian": "Ho {{figlioEta}} anni.",
+              "fromLine": "d-8"
+            },
+            {
+              "id": "c-10",
+              "english": "We are the {{cognome}} family!",
+              "italian": "Siamo la famiglia {{cognome}}!",
+              "fromLine": "d-9"
+            },
+            {
+              "id": "c-11",
+              "english": "Where are you going?",
+              "italian": "Dove state andando?",
+              "fromLine": "d-10"
+            },
+            {
+              "id": "c-12",
+              "english": "We are going to {{destinazione}}!",
+              "italian": "Andiamo in {{destinazione}}!",
+              "fromLine": "d-11"
+            },
+            {
+              "id": "c-13",
+              "english": "Welcome to {{destinazione}}!",
+              "italian": "Benvenuti in {{destinazione}}!",
+              "fromLine": "d-12"
+            }
+          ]
         },
-        D: {
-          label: 'Battute',
-          items: [
-            { id: 'd-1', speaker: 'guide', ruolo: 'esterno', english: 'Hello everyone! Nice to meet you. Can you introduce yourselves?', italian: 'Ciao a tutti! Piacere di conoscervi. Potete presentarvi?' },
-            { id: 'd-2', speaker: 'papa', ruolo: 'famiglia', english: 'Hello, I\'m {{papa}}. I\'m from {{partenza}}, Italy.', italian: 'Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia.' },
-            { id: 'd-3', speaker: 'guide', ruolo: 'esterno', english: 'Nice to meet you, {{papa}}. And you?', italian: 'Piacere, {{papa}}. E tu?' },
-            { id: 'd-4', speaker: 'mamma', ruolo: 'famiglia', english: 'Hi, I\'m {{mamma}}. I\'m {{papa}}\'s wife.', italian: 'Ciao, sono {{mamma}}. Sono la moglie di {{papa}}.' },
-            { id: 'd-5', speaker: 'figlia', ruolo: 'famiglia', english: 'Hi, I\'m {{figliaNome}}. I\'m {{figliaEta}} years old.', italian: 'Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni.' },
-            { id: 'd-6', speaker: 'figlio', ruolo: 'famiglia', english: 'Hello, I\'m {{figlioNome}}. I\'m {{figlioEta}}.', italian: 'Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni.' },
-            { id: 'd-7', speaker: 'guide', ruolo: 'esterno', english: 'Great! Welcome to the trip, {{papa}}\'s family!', italian: 'Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!' }
+        "D": {
+          "label": "Battute",
+          "items": [
+            {
+              "id": "d-1",
+              "speaker": "guide",
+              "ruolo": "esterno",
+              "english": "Hello! Nice to meet you.",
+              "italian": "Ciao! Piacere di conoscervi.",
+              "whatYouLearn": [
+                {
+                  "title": "Hello e Hi",
+                  "difficulty": "facile",
+                  "body": "Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>\"Hello\" è un po' più educato, \"Hi\" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono \"Hello\", i figli dicono \"Hi\".<br>È come in italiano — \"Buongiorno\" a chi non conosci, \"Ciao\" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, \"Hello\" va bene sempre, con chiunque."
+                },
+                {
+                  "title": "Nice to meet you",
+                  "difficulty": "facile",
+                  "body": "Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro \"piacere di conoscerti\".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta \"Hello!\"."
+                }
+              ]
+            },
+            {
+              "id": "d-2",
+              "speaker": "papa",
+              "ruolo": "famiglia",
+              "english": "Hello! I am {{papa}}.",
+              "italian": "Ciao! Sono {{papa}}."
+            },
+            {
+              "id": "d-3",
+              "speaker": "guide",
+              "ruolo": "esterno",
+              "english": "Where are you from, {{papa}}?",
+              "italian": "Di dove sei, {{papa}}?",
+              "whatYouLearn": [
+                {
+                  "title": "Chiedere da dove viene qualcuno",
+                  "difficulty": "facile",
+                  "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {partenza}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+                }
+              ]
+            },
+            {
+              "id": "d-4",
+              "speaker": "papa",
+              "ruolo": "famiglia",
+              "english": "I am from {{partenza}}, Italy.",
+              "italian": "Vengo da {{partenza}}, in Italia.",
+              "whatYouLearn": [
+                {
+                  "title": "Dire da dove vieni",
+                  "difficulty": "facile",
+                  "body": "\"I am from {partenza}\" vuol dire \"vengo da {partenza}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+                }
+              ]
+            },
+            {
+              "id": "d-5",
+              "speaker": "guide",
+              "ruolo": "esterno",
+              "english": "And you?",
+              "italian": "E tu?",
+              "whatYouLearn": [
+                {
+                  "title": "And you?",
+                  "difficulty": "facile",
+                  "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo la guida l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente."
+                }
+              ]
+            },
+            {
+              "id": "d-6",
+              "speaker": "mamma",
+              "ruolo": "famiglia",
+              "english": "Hello! I am {{mamma}}.",
+              "italian": "Ciao! Sono {{mamma}}."
+            },
+            {
+              "id": "d-7",
+              "speaker": "figlia",
+              "ruolo": "famiglia",
+              "english": "Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
+              "italian": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
+              "whatYouLearn": [
+                {
+                  "title": "I am e I'm",
+                  "difficulty": "facile",
+                  "body": "Il papà dice \"I am {papà}\", la figlia dice \"I'm {figlia}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
+                }
+              ]
+            },
+            {
+              "id": "d-8",
+              "speaker": "figlio",
+              "ruolo": "famiglia",
+              "english": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
+              "italian": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
+              "whatYouLearn": [
+                {
+                  "title": "Dire quanti anni hai",
+                  "difficulty": "facile",
+                  "body": "La figlia dice \"I'm sixteen <strong>years old</strong>\". Il figlio dice solo \"I'm ten\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+                }
+              ]
+            },
+            {
+              "id": "d-9",
+              "speaker": "tutti",
+              "ruolo": "famiglia",
+              "english": "We are the {{cognome}} family!",
+              "italian": "Siamo la famiglia {{cognome}}!",
+              "whatYouLearn": [
+                {
+                  "title": "We are",
+                  "difficulty": "facile",
+                  "body": "\"We are\" vuol dire \"noi siamo\".<br>Conosci già \"I am\" — io sono. Quando si parla in più di uno diventa \"we are\": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola \"family\", al contrario dell'italiano."
+                }
+              ]
+            },
+            {
+              "id": "d-10",
+              "speaker": "guide",
+              "ruolo": "esterno",
+              "english": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... where are you going?",
+              "italian": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... dove state andando?",
+              "whatYouLearn": [
+                {
+                  "title": "Una parola per \"tu\" e per \"voi\"",
+                  "difficulty": "facile",
+                  "body": "Prima la guida ha chiesto al papà: \"Where are you from?\" — lì \"you\" vuol dire <strong>tu</strong>.<br>Ora chiede a tutta la famiglia: \"Where are you going?\" — e qui \"you\" vuol dire <strong>voi</strong>.<br>In inglese è la stessa parola. Capisci a chi si parla guardando la situazione, non la parola.<br>Non è un problema: ci si abitua prestissimo, e ti risparmia di imparare due forme diverse come in italiano."
+                }
+              ]
+            },
+            {
+              "id": "d-11",
+              "speaker": "papa",
+              "ruolo": "famiglia",
+              "english": "We are going to {{destinazione}}!",
+              "italian": "Andiamo in {{destinazione}}!",
+              "whatYouLearn": [
+                {
+                  "title": "Dire dove stai andando",
+                  "difficulty": "media",
+                  "body": "\"We are going to {destinazione}\" vuol dire \"andiamo in {destinazione}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
+                }
+              ]
+            },
+            {
+              "id": "d-12",
+              "speaker": "guide",
+              "ruolo": "esterno",
+              "english": "Welcome to {{destinazione}}, {{cognome}} family!",
+              "italian": "Benvenuti in {{destinazione}}, famiglia {{cognome}}!",
+              "whatYouLearn": [
+                {
+                  "title": "Welcome",
+                  "difficulty": "facile",
+                  "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {destinazione}\", benvenuti in {destinazione}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
+                }
+              ]
+            }
           ]
         }
       },
-      generalRule: 'La "e" finale in inglese non si legge quasi mai.',
-      ageOptions: {
-        figlia: [8, 10, 16],
-        figlio: [6, 8, 10]
+      "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
+      "ageOptions": {
+        "figlia": [
+          13,
+          14,
+          15,
+          16,
+          17
+        ],
+        "figlio": [
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ]
       }
     }
   };
@@ -749,450 +1312,442 @@
   // Mirrors data/istruzioni-moduli.json (howItWorks/helpReminder per module
   // kind, CLAUDE.md rule 8) — same resilience-net role as the block above.
   window.FALLBACK_MODULE_INSTRUCTIONS = {
-    personalizzazione: {
-      pageDescription: 'Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.',
-      requestBoxLabel: 'Non trovi il nome, la città o la parola che ti serve?',
-      requestBoxExample: 'Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso.',
-      requestBoxDuplicateWarning: 'Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.',
-      howItWorks: {
-        title: 'Your Story',
-        body: '<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante \'Reset\' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l\'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l\'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi \'Inizia l\'episodio\'.</p>'
+    "personalizzazione": {
+      "pageDescription": "Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.",
+      "requestBoxLabel": "Non trovi il nome, la città o la parola che ti serve?",
+      "requestBoxExample": "Esempio: se vai a Parigi invece che in Cina, scrivi \"Parigi\" nel campo Destinazione qui sotto — valuteremo di adattare il corso.",
+      "requestBoxDuplicateWarning": "Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.",
+      "howItWorks": {
+        "title": "Your Story",
+        "body": "<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante 'Reset' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi 'Inizia l'episodio'.</p>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Tocca un campo per personalizzarlo, o lascialo com\'è. Le scelte valgono per tutto l\'episodio — per cambiarle dopo, si riparte da capo. \'Reset\' torna al default.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. Le scelte valgono per tutto l'episodio — per cambiarle dopo, si riparte da capo. 'Reset' torna al default.</p>"
       },
-      midEpisodeWarning: {
-        title: 'Stai per cancellare i tuoi progressi',
-        body: '<p>Hai già iniziato questo episodio. Se cambi ora i nomi e i luoghi della storia, tutto quello che hai fatto finora smette di avere senso: si riferiva alle parole che stai per sostituire.</p><p>Per continuare, <b>perderai tutti i progressi fatti in questo episodio</b> — dovrai rifare da capo gli esercizi che avevi già completato.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>',
-        confirmPhrase: 'cancella episodio',
-        confirmLabel: 'Scrivi "cancella episodio" per confermare',
-        confirmButton: 'Cancella i progressi e modifica',
-        cancelButton: 'Annulla, torna alla mappa'
+      "midEpisodeWarning": {
+        "title": "Stai per cancellare i tuoi progressi",
+        "body": "<p>Hai già iniziato questo episodio. Se cambi ora i nomi e i luoghi della storia, tutto quello che hai fatto finora smette di avere senso: si riferiva alle parole che stai per sostituire.</p><p>Per continuare, <b>perderai tutti i progressi fatti in questo episodio</b> — dovrai rifare da capo gli esercizi che avevi già completato.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>",
+        "confirmPhrase": "cancella episodio",
+        "confirmLabel": "Scrivi \"cancella episodio\" per confermare",
+        "confirmButton": "Cancella i progressi e modifica",
+        "cancelButton": "Annulla, torna alla mappa"
       }
     },
-    mappaEpisodio: {
-      howItWorks: {
-        title: 'Mappa dell\'episodio',
-        body: '<p>Questa è la mappa dell\'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>'
+    "meetTheStory": {
+      "howItWorks": {
+        "title": "Meet the Story",
+        "body": "<p>È il tuo primo incontro con la storia dell'episodio: qui si ascolta, non si studia.</p><p>Ogni battuta ha il pulsante 🔊 per sentirla, e puoi scegliere la velocità se va troppo veloce. La traduzione è già lì sotto, sempre visibile: a questo punto non hai ancora studiato niente, quindi non ha senso nasconderla.</p><p>Ascolta il dialogo tutte le volte che vuoi. Non devi ricordare niente adesso: le parole, le frasi e le regole arrivano nei moduli successivi.</p><p>Quando ti sei fatto un'idea della storia, premi \"Ho finito\".</p>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Ascolta le battute con 🔊, alla velocità che preferisci. La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi \"Ho finito\".</p>"
       }
     },
-    repeatAloud: {
-      howItWorks: {
-        title: 'Repeat Aloud',
-        body: '<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi "Ho finito, torna alla mappa".</p><p>Se non lo vuoi fare adesso, clicca semplicemente "Mappa".</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+    "whyWeSayIt": {
+      "howItWorks": {
+        "title": "Why We Say It",
+        "body": "<p>Il dialogo lo conosci già: qui si guarda <em>perché</em> si dice così.</p><p>Su quasi ogni battuta trovi uno o più pulsanti con il nome di una regola. Al primo giro si aprono in ordine, una alla volta: leggila e poi dì se ti è chiara — non c'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere. Dichiarata quella, si apre la successiva.</p><p>Puoi ascoltare ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e aprire \"Mostra traduzione\" se ti serve una mano.</p><p>Quando le hai viste tutte, premi \"Ho finito\". Se devi interrompere, \"Esci e riprendi dopo\" tiene il punto in cui sei arrivato.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi "Ho finito, torna alla mappa".</p>'
-      }
-    },
-    speakEasy: {
-      howItWorks: {
-        title: 'Speak Easy',
-        body: '<p>Leggi il dialogo battuta per battuta, ascolta ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e apri "Mostra traduzione" se ti serve una mano.</p><p>Su alcune battute trovi anche "Cosa imparo qui": spiega perché quella frase si costruisce proprio così. Leggila e poi dì se ti è chiara — non c\'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere.</p><p>Alla fine dovresti riuscire a capire il dialogo senza cliccare sulla traduzione, e inizierai così a memorizzare i dialoghi, le parole, come si comunica.</p><p>Quando hai seguito tutte le battute, premi "Ho finito".</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara.</p><p>Quando le hai viste tutte, premi \"Ho finito\".</p>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Ascolta ogni battuta con 🔊, prova a capirla prima di aprire "Mostra traduzione". Dove trovi "Cosa imparo qui", leggila e dì se ti è chiara.</p><p>Quando hai seguito tutto il dialogo, premi "Ho finito".</p>'
-      },
-      completeHint: 'Si attiva quando hai aperto e dichiarato tutte le spiegazioni.',
-      selfCheck: {
-        question: 'Hai capito la spiegazione?',
-        answers: [
+      "completeHint": "Si attiva quando hai aperto e dichiarato tutte le spiegazioni.",
+      "selfCheck": {
+        "question": "Hai capito la spiegazione?",
+        "answers": [
           {
-            value: 'nonChiara',
-            button: 'Non mi è chiara',
-            short: 'Non chiara',
-            primary: false
+            "value": "nonChiara",
+            "button": "Non mi è chiara",
+            "short": "Non chiara",
+            "primary": false
           },
           {
-            value: 'nonAncora',
-            button: 'Non ancora, la ripasserò',
-            short: 'Da ripassare',
-            primary: false
+            "value": "nonAncora",
+            "button": "Non ancora, la ripasserò",
+            "short": "Da ripassare",
+            "primary": false
           },
           {
-            value: 'chiara',
-            button: 'Sì, mi è chiara',
-            short: 'Chiara',
-            primary: true
+            "value": "chiara",
+            "button": "Sì, mi è chiara",
+            "short": "Chiara",
+            "primary": true
           }
         ]
       },
-      // Job 10 (2nd collaudo): text shown under "Hai capito la
-      // spiegazione?" once answered "Non mi è chiara"/"Non ancora, la
-      // ripasserò" — "Sì, mi è chiara" shows nothing (see the JS
-      // handler). CLAUDE.md rule 8's own howItWorks/helpReminder shape
-      // reused for a third kind of module text, same file, same module
-      // entry — not a new place to keep it.
-      selfCheckMessages: {
-        nonChiara: {
-          title: 'Va bene così',
-          body: 'È normale non capire tutto subito: prova ad andare avanti con gli esercizi e torna qui più tardi. Se dopo un po\' resta poco chiara, usa il tasto Help in alto.'
+      "selfCheckMessages": {
+        "nonChiara": {
+          "title": "Va bene così",
+          "body": "È normale non capire tutto subito: prova ad andare avanti con gli esercizi e torna qui più tardi. Se dopo un po' resta poco chiara, usa il tasto Help in alto."
         },
-        nonAncora: {
-          title: 'Nessun problema',
-          body: 'Capita, tornaci con calma quando vuoi: la ripasserai più avanti.'
+        "nonAncora": {
+          "title": "Nessun problema",
+          "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
         }
       }
     },
-    speedRoundEngIta: {
-      howItWorks: {
-        title: 'Speed Match en→it',
-        body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "mappaEpisodio": {
+      "howItWorks": {
+        "title": "Mappa dell'episodio",
+        "body": "<p>Questa è la mappa dell'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
       }
     },
-    speedRoundItaEng: {
-      howItWorks: {
-        title: 'Speed Match it→en',
-        body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca "Non lo so" se non la ricordi.</p><p>L\'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "repeatAloud": {
+      "howItWorks": {
+        "title": "Repeat Aloud",
+        "body": "<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi \"Ho finito, torna alla mappa\".</p><p>Se non lo vuoi fare adesso, clicca semplicemente \"Mappa\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. "Non lo so" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
       }
     },
-    flashcardLevelA: {
-      howItWorks: {
-        title: 'Flash Card',
-        body: '<p>Guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente \'Non ancora\', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici \'non ancora\', te la riproporremo finché non la impari davvero.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+    "speedRoundEngIta": {
+      "howItWorks": {
+        "title": "Speed Match en→it",
+        "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
       }
     },
-    voicePractice: {
-      howItWorks: {
-        title: 'Voice Practice',
-        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Con "Esercitati ancora" puoi riprovare la stessa frase più volte — il contatore ti mostra sempre quante te ne restano; esaurite, si va avanti comunque.</p><p>Qui non c\'è un ripasso finale delle frasi andate meno bene: è uno spazio libero per allenarti, non una verifica.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "speedRoundItaEng": {
+      "howItWorks": {
+        "title": "Speed Match it→en",
+        "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. "Esercitati ancora" per riprovare la stessa frase (il contatore mostra quante volte ti restano), "Avanti" per la prossima.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
       }
     },
-    voiceCoach: {
-      howItWorks: {
-        title: 'Voice Check',
-        body: '<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla — prima di inviare puoi sempre cambiare idea.</p><p>Dopo l\'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Una sola registrazione conta per ogni frase: come sempre, a fine esercizio ti verranno riproposte le frasi andate meno bene, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "flashcardLevelA": {
+      "howItWorks": {
+        "title": "Flash Card",
+        "body": "<p>Guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente 'Non ancora', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare la registrazione.</p><p>Dopo l\'invio guarda i colori e le stelle, poi tocca "Avanti": una sola registrazione conta per frase, quelle andate meno bene torneranno a fine esercizio.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
       }
     },
-    dialogoAscoltaRipeti: {
-      howItWorks: {
-        title: 'Dialogue: Listen & Repeat',
-        body: '<p>Questo è il dialogo intero dell\'episodio, dall\'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell\'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l\'inglese senza appoggiarsi all\'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+    "voicePractice": {
+      "howItWorks": {
+        "title": "Voice Practice",
+        "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Con \"Esercitati ancora\" puoi riprovare la stessa frase più volte — il contatore ti mostra sempre quante te ne restano; esaurite, si va avanti comunque.</p><p>Qui non c'è un ripasso finale delle frasi andate meno bene: è uno spazio libero per allenarti, non una verifica.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. \"Esercitati ancora\" per riprovare la stessa frase (il contatore mostra quante volte ti restano), \"Avanti\" per la prossima.</p>"
       }
     },
-    dialogoRipetiATempo: {
-      howItWorks: {
-        title: 'Dialogue: Repeat in Time',
-        body: '<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient\'altro: serve a farti fare davvero l\'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai "Ascolta e ripeti".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "voiceCoach": {
+      "howItWorks": {
+        "title": "Voice Check",
+        "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla — prima di inviare puoi sempre cambiare idea.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Una sola registrazione conta per ogni frase: come sempre, a fine esercizio ti verranno riproposte le frasi andate meno bene, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra.</p><p>Durante l\'ascolto e la barra tutto il resto è bloccato. Finita la barra, tocca tu la battuta successiva.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare la registrazione.</p><p>Dopo l'invio guarda i colori e le stelle, poi tocca \"Avanti\": una sola registrazione conta per frase, quelle andate meno bene torneranno a fine esercizio.</p>"
       }
     },
-    dialogoContinuo: {
-      howItWorks: {
-        title: 'Dialogue: Real Dialogue',
-        body: '<p>Questa è la prova generale: il dialogo intero scorre da solo, dall\'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Qui non serve scrivere: l\'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>'
+    "dialogoAscoltaRipeti": {
+      "howItWorks": {
+        "title": "Dialogue: Listen & Repeat",
+        "body": "<p>Questo è il dialogo intero dell'episodio, dall'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l'inglese senza appoggiarsi all'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>"
       }
     },
-    quickMatchEngIta: {
-      howItWorks: {
-        title: 'Match Practice en→it',
-        body: '<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+    "dialogoRipetiATempo": {
+      "howItWorks": {
+        "title": "Dialogue: Repeat in Time",
+        "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra.</p><p>Durante l'ascolto e la barra tutto il resto è bloccato. Finita la barra, tocca tu la battuta successiva.</p>"
       }
     },
-    quickMatchItaEng: {
-      howItWorks: {
-        title: 'Match Practice it→en',
-        body: '<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c\'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>'
+    "dialogoContinuo": {
+      "howItWorks": {
+        "title": "Dialogue: Real Dialogue",
+        "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
       },
-      helpReminder: {
-        title: 'Come funziona, in breve',
-        body: '<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>'
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>"
       }
     },
-    dialogoShared: {
-      choiceBoxHint: 'Si attiva quando hai ascoltato tutte le battute del dialogo.'
+    "quickMatchEngIta": {
+      "howItWorks": {
+        "title": "Match Practice en→it",
+        "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      },
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
+      }
+    },
+    "quickMatchItaEng": {
+      "howItWorks": {
+        "title": "Match Practice it→en",
+        "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      },
+      "helpReminder": {
+        "title": "Come funziona, in breve",
+        "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
+      }
+    },
+    "dialogoShared": {
+      "choiceBoxHint": "Si attiva quando hai ascoltato tutte le battute del dialogo."
     }
   };
 
   window.FALLBACK_FEEDBACK_MESSAGES = {
-    percentageRule: {
-      rule: 'basata sulla percentuale di risposte/parole corrette sul totale',
-      '0': {
-        range: '0%',
-        showMessage: false,
-        note: 'nessun messaggio mostrato'
+    "percentageRule": {
+      "rule": "basata sulla percentuale di risposte/parole corrette sul totale",
+      "0": {
+        "range": "0%",
+        "showMessage": false,
+        "note": "nessun messaggio mostrato"
       },
-      '1': {
-        range: '1-49%',
-        messageKey: 'basso'
+      "1": {
+        "range": "1-49%",
+        "messageKey": "basso"
       },
-      '2': {
-        range: '50-79%',
-        messageKey: 'medio'
+      "2": {
+        "range": "50-79%",
+        "messageKey": "medio"
       },
-      '3': {
-        range: '80-100%',
-        messageKey: 'alto'
+      "3": {
+        "range": "80-100%",
+        "messageKey": "alto"
       }
     },
-    voiceCoachMessages: {
-      alto: [
-        'Perfetto! Pronuncia impeccabile.',
-        'Wow, sembri già un madrelingua!',
-        'Eccellente, continua così!',
-        'Fantastico, hai centrato tutto.',
-        'Bravissimo, non c\'è nulla da correggere.'
+    "voiceCoachMessages": {
+      "alto": [
+        "Perfetto! Pronuncia impeccabile.",
+        "Wow, sembri già un madrelingua!",
+        "Eccellente, continua così!",
+        "Fantastico, hai centrato tutto.",
+        "Bravissimo, non c'è nulla da correggere."
       ],
-      medio: [
-        'Bene, ci sei quasi!',
-        'Buon lavoro, qualche dettaglio da limare.',
-        'Sulla strada giusta, continua a esercitarti.',
-        'Non male! Un altro paio di tentativi e sarà perfetto.',
-        'Ci sei quasi, un piccolo sforzo in più.'
+      "medio": [
+        "Bene, ci sei quasi!",
+        "Buon lavoro, qualche dettaglio da limare.",
+        "Sulla strada giusta, continua a esercitarti.",
+        "Non male! Un altro paio di tentativi e sarà perfetto.",
+        "Ci sei quasi, un piccolo sforzo in più."
       ],
-      basso: [
-        'Va bene così, l\'importante è provarci.',
-        'Ci vuole pratica, e tu la stai facendo — bravo.',
-        'Ogni tentativo ti avvicina di più, continua.',
-        'Nessun problema, ripasseremo insieme questa frase.',
-        'Va tutto bene, è normale all\'inizio.'
+      "basso": [
+        "Va bene così, l'importante è provarci.",
+        "Ci vuole pratica, e tu la stai facendo — bravo.",
+        "Ogni tentativo ti avvicina di più, continua.",
+        "Nessun problema, ripasseremo insieme questa frase.",
+        "Va tutto bene, è normale all'inizio."
       ]
     },
-    speedRoundMessages: {
-      alto: [
-        'Ottimo punteggio, hai davvero le idee chiare!',
-        'Wow, quasi tutte corrette!',
-        'Eccellente memoria!',
-        'Complimenti, sei quasi al massimo!',
-        'Fantastico lavoro su questo blocco.'
+    "speedRoundMessages": {
+      "alto": [
+        "Ottimo punteggio, hai davvero le idee chiare!",
+        "Wow, quasi tutte corrette!",
+        "Eccellente memoria!",
+        "Complimenti, sei quasi al massimo!",
+        "Fantastico lavoro su questo blocco."
       ],
-      medio: [
-        'Buon punteggio, si vede che stai imparando.',
-        'Bene così, continua a esercitarti.',
-        'Ci sei quasi: ripassa le parole che ti sono sfuggite.',
-        'Non male, un altro giro e migliori ancora.',
-        'Buon ritmo, tieni duro.'
+      "medio": [
+        "Buon punteggio, si vede che stai imparando.",
+        "Bene così, continua a esercitarti.",
+        "Ci sei quasi: ripassa le parole che ti sono sfuggite.",
+        "Non male, un altro giro e migliori ancora.",
+        "Buon ritmo, tieni duro."
       ],
-      basso: [
-        'Va bene così, ora sai quali parole ripassare.',
-        'L\'importante è essersi messi alla prova.',
-        'Ripasseremo insieme le parole più difficili.',
-        'È solo l\'inizio, andrà meglio.',
-        'Nessun problema, il ripasso è fatto apposta per questo.'
+      "basso": [
+        "Va bene così, ora sai quali parole ripassare.",
+        "L'importante è essersi messi alla prova.",
+        "Ripasseremo insieme le parole più difficili.",
+        "È solo l'inizio, andrà meglio.",
+        "Nessun problema, il ripasso è fatto apposta per questo."
       ]
     },
-    valvolaSicurezzaMessages: {
-      nonRiuscita: {
-        title: 'Tranquillo, capita!',
-        bodies: [
-          'Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale.',
-          'Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l\'esercizio, la ritroverai più avanti nei ripassi mirati.',
-          'A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi.',
-          'Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve.',
-          'Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell\'esercizio.'
+    "valvolaSicurezzaMessages": {
+      "nonRiuscita": {
+        "title": "Tranquillo, capita!",
+        "bodies": [
+          "Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale.",
+          "Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l'esercizio, la ritroverai più avanti nei ripassi mirati.",
+          "A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi.",
+          "Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve.",
+          "Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell'esercizio."
         ]
       },
-      riuscita: {
-        title: 'Ce l\'hai fatta!',
-        bodies: [
-          'Ce l\'hai fatta, e si vede che i tentativi hanno aiutato: hai insistito ed è servito. Vai avanti con lo stesso spirito.',
-          'Alla fine ci sei arrivato — i primi tentativi non erano andati benissimo, ma hai corretto la mira. Proprio questo è il modo in cui si impara.',
-          'Bel recupero: non era venuta bene subito, ma hai continuato a provarci e ora è a posto. Continua così.',
-          'Hai insistito su questa frase ed è servito: adesso la sai fare meglio di prima. È esattamente il senso del ripasso.',
-          'Ci sei riuscito dopo qualche tentativo in più, e va benissimo così — vuol dire che il ripasso sta funzionando.'
-        ]
-      }
-    },
-    moduleCompleteMessages: {
-      alto: [
-        'Hai risposto bene quasi a tutto: si vede che il lavoro fatto finora paga.',
-        'Risultato pieno, o quasi — complimenti per la precisione.',
-        'Prova solida dall\'inizio alla fine, senza bisogno di ripassi.',
-        'Hai portato a casa quasi tutte le risposte giuste: ottimo lavoro.',
-        'Punteggio alto, pronuncia e memoria sono già a buon punto.'
-      ],
-      medio: [
-        'Buon punteggio, con qualche punto da ripassare quando vuoi.',
-        'Ci sei quasi: un altro passaggio sulle parole più incerte e sarà solido.',
-        'Bel lavoro nel complesso, vale la pena tornare sulle risposte sbagliate.',
-        'Sei sulla strada giusta — un ripasso mirato completa il quadro.',
-        'Discreto risultato, ripassa le parole più difficili e migliorerà ancora.'
-      ],
-      basso: [
-        'Va bene così, ora sai su cosa concentrarti nei prossimi ripassi.',
-        'Nessun problema: è normale all\'inizio, il ripasso è pensato apposta per questo.',
-        'Ogni tentativo aiuta a fissare qualcosa in più — vale la pena rivedere queste parole.',
-        'Non è andata benissimo, ma è solo un punto di partenza: ripassiamo insieme.',
-        'Capita, specialmente all\'inizio — tornaci sopra con calma quando vuoi.'
-      ]
-    },
-    studioCompleteMessages: {
-      default: [
-        'Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno.',
-        'Fatto: continuare a esercitarti così è esattamente il modo giusto.',
-        'Sessione completata — la pronuncia si allena anche così, un po\' alla volta.',
-        'Ottimo: più lo ripeti, più ti resterà naturale.',
-        'Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi.'
-      ]
-    },
-    // Job 10 (2nd collaudo): Speak Easy's own Schermata Finale message,
-    // bucketed by percentageBucket() like moduleCompleteMessages — but
-    // about "spiegazioni chiare", not "risposte corrette", so it needed
-    // its own pool rather than reusing that one (CLAUDE.md: dedicated to
-    // this module). Only read when the episode actually has explanations
-    // (seHasExplanations) — otherwise Speak Easy falls back to
-    // studioCompleteMessages.default, same as before this job.
-    speakEasyCompleteMessages: {
-      alto: [
-        'Le spiegazioni ti sono quasi tutte chiare: le strutture nuove stanno andando a segno.',
-        'Ottimo, hai capito quasi tutto al primo giro.',
-        'Le costruzioni di questo dialogo ti sono chiare fin da subito, complimenti.',
-        'Buon segno: capisci già bene perché le frasi si dicono così.',
-        'Quasi tutto chiaro al primo colpo — le strutture stanno entrando bene.'
-      ],
-      medio: [
-        'Buona parte delle spiegazioni ti è chiara, qualcuna la ripasserai con calma.',
-        'Ci sei quasi: qualche spiegazione va ripresa, il resto è già acquisito.',
-        'Bel lavoro nel complesso, con qualche struttura ancora da consolidare.',
-        'Sei sulla strada giusta — torna con calma sulle spiegazioni meno chiare.',
-        'Discreto risultato, alcune costruzioni meritano un altro sguardo.'
-      ],
-      basso: [
-        'Va bene così, capita che le spiegazioni servano più di un passaggio.',
-        'Nessun problema: sono concetti nuovi, ci vuole tempo per fissarli.',
-        'Non è andata benissimo, ma è un buon punto di partenza per riprenderle.',
-        'Capita, specialmente all\'inizio — potrai rivederle con calma.',
-        'Ogni spiegazione riletta aiuta a fissare qualcosa in più.'
-      ]
-    },
-    dialogoCompleteMessages: {
-      siLoSo: [
-        'Hai seguito tutto il dialogo con sicurezza — bel lavoro.',
-        'Lo conosci bene: si sente che l\'hai ascoltato con attenzione.',
-        'Padronanza netta di questo dialogo, complimenti.',
-        'L\'hai fatto tuo: pronuncia e ritmo erano solidi.',
-        'Dialogo acquisito — un buon passo avanti nel percorso.'
-      ],
-      nonAncora: [
-        'Va bene rifarlo con calma: ogni ripasso aiuta a fissarlo meglio.',
-        'Nessuna fretta — puoi riascoltarlo quando vuoi, senza pressione.',
-        'Capita di non essere ancora sicuri: tornaci sopra con tranquillità.',
-        'Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo.',
-        'Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta.'
-      ]
-    },
-    // Job 4 (2nd collaudo): two distinct pools — "first" for the very
-    // first retry pass, "last" for the one right before the module
-    // actually finishes (CONFIG.retryQueue.maxAttempts caps it at two
-    // passes total, see applyRetryIntroContent) — so the screen never
-    // repeats itself identically between passes.
-    retryIntroMessages: {
-      first: {
-        titles: [
-          'Il quiz è finito',
-          'Primo giro completato',
-          'Hai finito il giro principale',
-          'Bene, si passa al ripasso',
-          'Round terminato'
-        ],
-        bodies: [
-          'Da qui in poi si ripassano solo le voci che ti sono sfuggite.',
-          'Ora torniamo solo su quello che ti serve rivedere.',
-          'Ripassiamo insieme solo le voci che non sono ancora andate a segno.',
-          'Il resto è già acquisito: ci concentriamo solo su quello che manca.',
-          'Ripasso mirato: solo le voci da rivedere, niente di più.'
-        ]
-      },
-      last: {
-        titles: [
-          'Ultimo ripasso',
-          'Ultimo giro',
-          'Ci siamo quasi, ultimo passaggio',
-          'Un\'ultima ripassata',
-          'Ultimo richiamo'
-        ],
-        bodies: [
-          'Dopo questo giro si passa all\'esercizio successivo.',
-          'Finito questo ripasso, si va avanti con il prossimo esercizio.',
-          'Ancora questo giro, poi si prosegue con il resto del percorso.',
-          'Un\'ultima volta su queste voci, poi via al prossimo esercizio.',
-          'Completa questo giro e si passa oltre.'
+      "riuscita": {
+        "title": "Ce l'hai fatta!",
+        "bodies": [
+          "Ce l'hai fatta, e si vede che i tentativi hanno aiutato: hai insistito ed è servito. Vai avanti con lo stesso spirito.",
+          "Alla fine ci sei arrivato — i primi tentativi non erano andati benissimo, ma hai corretto la mira. Proprio questo è il modo in cui si impara.",
+          "Bel recupero: non era venuta bene subito, ma hai continuato a provarci e ora è a posto. Continua così.",
+          "Hai insistito su questa frase ed è servito: adesso la sai fare meglio di prima. È esattamente il senso del ripasso.",
+          "Ci sei riuscito dopo qualche tentativo in più, e va benissimo così — vuol dire che il ripasso sta funzionando."
         ]
       }
     },
-    episodeFinalMessages: {
-      tuttiVerdi: {
-        compliments: [
-          'Episodio completato alla grande — tutti i moduli sono andati bene!',
-          'Ottimo lavoro su tutto l\'episodio, davvero solido dall\'inizio alla fine.',
-          'Ce l\'hai fatta su ogni modulo: complimenti per la costanza.',
-          'Episodio superato in pieno, senza punti deboli.',
-          'Un episodio impeccabile — hai il controllo di tutto quello che hai imparato.'
+    "moduleCompleteMessages": {
+      "alto": [
+        "Hai risposto bene quasi a tutto: si vede che il lavoro fatto finora paga.",
+        "Risultato pieno, o quasi — complimenti per la precisione.",
+        "Prova solida dall'inizio alla fine, senza bisogno di ripassi.",
+        "Hai portato a casa quasi tutte le risposte giuste: ottimo lavoro.",
+        "Punteggio alto, pronuncia e memoria sono già a buon punto."
+      ],
+      "medio": [
+        "Buon punteggio, con qualche punto da ripassare quando vuoi.",
+        "Ci sei quasi: un altro passaggio sulle parole più incerte e sarà solido.",
+        "Bel lavoro nel complesso, vale la pena tornare sulle risposte sbagliate.",
+        "Sei sulla strada giusta — un ripasso mirato completa il quadro.",
+        "Discreto risultato, ripassa le parole più difficili e migliorerà ancora."
+      ],
+      "basso": [
+        "Va bene così, ora sai su cosa concentrarti nei prossimi ripassi.",
+        "Nessun problema: è normale all'inizio, il ripasso è pensato apposta per questo.",
+        "Ogni tentativo aiuta a fissare qualcosa in più — vale la pena rivedere queste parole.",
+        "Non è andata benissimo, ma è solo un punto di partenza: ripassiamo insieme.",
+        "Capita, specialmente all'inizio — tornaci sopra con calma quando vuoi."
+      ]
+    },
+    "studioCompleteMessages": {
+      "default": [
+        "Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno.",
+        "Fatto: continuare a esercitarti così è esattamente il modo giusto.",
+        "Sessione completata — la pronuncia si allena anche così, un po' alla volta.",
+        "Ottimo: più lo ripeti, più ti resterà naturale.",
+        "Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi."
+      ]
+    },
+    "speakEasyCompleteMessages": {
+      "alto": [
+        "Le spiegazioni ti sono quasi tutte chiare: le strutture nuove stanno andando a segno.",
+        "Ottimo, hai capito quasi tutto al primo giro.",
+        "Le costruzioni di questo dialogo ti sono chiare fin da subito, complimenti.",
+        "Buon segno: capisci già bene perché le frasi si dicono così.",
+        "Quasi tutto chiaro al primo colpo — le strutture stanno entrando bene."
+      ],
+      "medio": [
+        "Buona parte delle spiegazioni ti è chiara, qualcuna la ripasserai con calma.",
+        "Ci sei quasi: qualche spiegazione va ripresa, il resto è già acquisito.",
+        "Bel lavoro nel complesso, con qualche struttura ancora da consolidare.",
+        "Sei sulla strada giusta — torna con calma sulle spiegazioni meno chiare.",
+        "Discreto risultato, alcune costruzioni meritano un altro sguardo."
+      ],
+      "basso": [
+        "Va bene così, capita che le spiegazioni servano più di un passaggio.",
+        "Nessun problema: sono concetti nuovi, ci vuole tempo per fissarli.",
+        "Non è andata benissimo, ma è un buon punto di partenza per riprenderle.",
+        "Capita, specialmente all'inizio — potrai rivederle con calma.",
+        "Ogni spiegazione riletta aiuta a fissare qualcosa in più."
+      ]
+    },
+    "dialogoCompleteMessages": {
+      "siLoSo": [
+        "Hai seguito tutto il dialogo con sicurezza — bel lavoro.",
+        "Lo conosci bene: si sente che l'hai ascoltato con attenzione.",
+        "Padronanza netta di questo dialogo, complimenti.",
+        "L'hai fatto tuo: pronuncia e ritmo erano solidi.",
+        "Dialogo acquisito — un buon passo avanti nel percorso."
+      ],
+      "nonAncora": [
+        "Va bene rifarlo con calma: ogni ripasso aiuta a fissarlo meglio.",
+        "Nessuna fretta — puoi riascoltarlo quando vuoi, senza pressione.",
+        "Capita di non essere ancora sicuri: tornaci sopra con tranquillità.",
+        "Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo.",
+        "Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta."
+      ]
+    },
+    "retryIntroMessages": {
+      "first": {
+        "titles": [
+          "Il quiz è finito",
+          "Primo giro completato",
+          "Hai finito il giro principale",
+          "Bene, si passa al ripasso",
+          "Round terminato"
         ],
-        tip: []
-      },
-      gialloNoRosso: {
-        compliments: [
-          'Hai completato l\'intero episodio, complimenti!',
-          'Bel lavoro: hai portato a termine tutti i moduli dell\'episodio.',
-          'Episodio finito, con buoni risultati su gran parte dei moduli.',
-          'Ottimo impegno su tutto l\'episodio, si vede che hai lavorato bene.',
-          'Complimenti per aver completato l\'intero episodio.'
-        ],
-        tip: [
-          'Se vuoi, un ripasso veloce sui moduli gialli non fa mai male.',
-          'Quando ti va, dai un\'altra occhiata ai moduli da rivedere.',
-          'Nessuna fretta, ma un ripasso dei moduli gialli può aiutare.',
-          'I moduli da rivedere restano lì per quando avrai voglia di ripassarli.',
-          'Un ripasso dei moduli segnati in giallo, quando capita, li rende ancora più solidi.'
+        "bodies": [
+          "Da qui in poi si ripassano solo le voci che ti sono sfuggite.",
+          "Ora torniamo solo su quello che ti serve rivedere.",
+          "Ripassiamo insieme solo le voci che non sono ancora andate a segno.",
+          "Il resto è già acquisito: ci concentriamo solo su quello che manca.",
+          "Ripasso mirato: solo le voci da rivedere, niente di più."
         ]
       },
-      almenoUnRosso: {
-        compliments: [
-          'Hai completato l\'intero episodio, complimenti per esserci arrivato in fondo!',
-          'Bel lavoro: hai portato a termine tutti i moduli, dall\'inizio alla fine.',
-          'Episodio finito — non è per niente scontato arrivare fino in fondo.',
-          'Complimenti per aver completato tutto l\'episodio.',
-          'Ottimo impegno: hai chiuso l\'intero episodio.'
+      "last": {
+        "titles": [
+          "Ultimo ripasso",
+          "Ultimo giro",
+          "Ci siamo quasi, ultimo passaggio",
+          "Un'ultima ripassata",
+          "Ultimo richiamo"
         ],
-        tip: [
-          'Vale la pena rifare i moduli segnati in rosso: ti aiuteranno a fissare meglio queste parti.',
-          'I moduli in rosso meritano un altro giro: sono lì apposta per essere ripresi.',
-          'Conviene tornare sui moduli rossi quando puoi: aiuta più di quanto sembri.',
-          'Dai un\'altra possibilità ai moduli rossi: rifarli è il modo più veloce per migliorarli.',
-          'I moduli rossi sono un buon punto da cui ripartire con un ripasso.'
+        "bodies": [
+          "Dopo questo giro si passa all'esercizio successivo.",
+          "Finito questo ripasso, si va avanti con il prossimo esercizio.",
+          "Ancora questo giro, poi si prosegue con il resto del percorso.",
+          "Un'ultima volta su queste voci, poi via al prossimo esercizio.",
+          "Completa questo giro e si passa oltre."
+        ]
+      }
+    },
+    "episodeFinalMessages": {
+      "tuttiVerdi": {
+        "compliments": [
+          "Episodio completato alla grande — tutti i moduli sono andati bene!",
+          "Ottimo lavoro su tutto l'episodio, davvero solido dall'inizio alla fine.",
+          "Ce l'hai fatta su ogni modulo: complimenti per la costanza.",
+          "Episodio superato in pieno, senza punti deboli.",
+          "Un episodio impeccabile — hai il controllo di tutto quello che hai imparato."
+        ],
+        "tip": []
+      },
+      "gialloNoRosso": {
+        "compliments": [
+          "Hai completato l'intero episodio, complimenti!",
+          "Bel lavoro: hai portato a termine tutti i moduli dell'episodio.",
+          "Episodio finito, con buoni risultati su gran parte dei moduli.",
+          "Ottimo impegno su tutto l'episodio, si vede che hai lavorato bene.",
+          "Complimenti per aver completato l'intero episodio."
+        ],
+        "tip": [
+          "Se vuoi, un ripasso veloce sui moduli gialli non fa mai male.",
+          "Quando ti va, dai un'altra occhiata ai moduli da rivedere.",
+          "Nessuna fretta, ma un ripasso dei moduli gialli può aiutare.",
+          "I moduli da rivedere restano lì per quando avrai voglia di ripassarli.",
+          "Un ripasso dei moduli segnati in giallo, quando capita, li rende ancora più solidi."
+        ]
+      },
+      "almenoUnRosso": {
+        "compliments": [
+          "Hai completato l'intero episodio, complimenti per esserci arrivato in fondo!",
+          "Bel lavoro: hai portato a termine tutti i moduli, dall'inizio alla fine.",
+          "Episodio finito — non è per niente scontato arrivare fino in fondo.",
+          "Complimenti per aver completato tutto l'episodio.",
+          "Ottimo impegno: hai chiuso l'intero episodio."
+        ],
+        "tip": [
+          "Vale la pena rifare i moduli segnati in rosso: ti aiuteranno a fissare meglio queste parti.",
+          "I moduli in rosso meritano un altro giro: sono lì apposta per essere ripresi.",
+          "Conviene tornare sui moduli rossi quando puoi: aiuta più di quanto sembri.",
+          "Dai un'altra possibilità ai moduli rossi: rifarli è il modo più veloce per migliorarli.",
+          "I moduli rossi sono un buon punto da cui ripartire con un ripasso."
         ]
       }
     }
@@ -1824,6 +2379,13 @@
   /* Il grado della riga: stesso .btn.btn-secondary.btn-sm delle frecce
      (CLAUDE.md regola 5), con una larghezza fissa perché la colonna non
      salti passando da "A" a "–". */
+  /* Riga spenta: si vede che c'e' ma si legge come "fuori dall'episodio",
+     senza sparire dalla vista di riordino — e' li' che la si riaccende. */
+  .config-module-order-row.is-off .config-module-order-label {
+    opacity: 0.45;
+    text-decoration: line-through;
+  }
+
   .config-module-order-grade {
     min-width: 30px;
     font-family: 'IBM Plex Mono', monospace;
@@ -2711,6 +3273,12 @@
      grassetto dentro il corpo — il corpo il grassetto lo usa per
      evidenziare le parole di cui si parla, e i due usi non devono
      assomigliarsi. Stesso font dei titoli del progetto. */
+  /* Skill aperta: l'etichetta resta il titolo (vedi seSetExplanationOpen),
+     quindi lo stato aperto si vede dal peso del testo, non dalle parole. */
+  .translation-toggle[aria-expanded="true"] {
+    font-weight: 700;
+  }
+
   .se-explanation-title {
     font-family: var(--font-display);
     font-weight: 600;
@@ -4460,6 +5028,11 @@
     'square': '<rect width="18" height="18" x="3" y="3" rx="2"/>',
     'x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
     'check': '<path d="M20 6 9 17l-5-5"/>',
+    // Acceso/spento di un passo nella vista di riordino del Pannello Admin:
+    // l'occhio dice "lo studente lo vede / non lo vede", che e' esattamente
+    // cosa fa l'interruttore (il passo sparisce dalla mappa, non si ingrigisce).
+    'eye': '<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/>',
+    'eye-off': '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.8 10.8 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
     'lock': '<rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     'play': '<path d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"/>',
     'pencil': '<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
@@ -5121,8 +5694,14 @@
       var gradeBtn = moduleUsesGrade(pair.module)
         ? '<button type="button" class="btn btn-secondary btn-sm config-module-order-grade" data-order-grade="' + i + '" aria-label="Cambia grado">' + (pair.grade || '–') + '</button>'
         : '';
-      return '<div class="config-module-order-row">' +
+      // Acceso/spento: un tocco, stessa riga, nessuna finestra — serve a
+      // provare varianti dell'episodio a raffica.
+      var onOffBtn = '<button type="button" class="btn btn-secondary btn-sm config-module-order-onoff" data-order-onoff="' + i + '"' +
+        ' aria-pressed="' + (pair.off ? 'false' : 'true') + '" aria-label="' + (pair.off ? 'Attiva' : 'Disattiva') + ' questo passo">' +
+        icon(pair.off ? 'eye-off' : 'eye') + '</button>';
+      return '<div class="config-module-order-row' + (pair.off ? ' is-off' : '') + '">' +
         '<span class="config-module-order-label">' + moduleOrderRowLabel(pair.module) + '</span>' +
+        onOffBtn +
         '<div class="config-module-order-controls">' +
         gradeBtn +
         '<button type="button" class="btn btn-secondary btn-sm" data-order-move="up" data-order-index="' + i + '"' + (i === 0 ? ' disabled' : '') + ' aria-label="Sposta su">' + icon('chevron-up') + '</button>' +
@@ -5147,6 +5726,16 @@
   configPanelBodyEl.addEventListener('click', function (e) {
     var order = window.APP_CONFIG.moduleOrderDefault;
     var list = null;
+
+    var onOffBtn = e.target.closest('[data-order-onoff]');
+    if (onOffBtn) {
+      var offPair = order[Number(onOffBtn.getAttribute('data-order-onoff'))];
+      if (!offPair) return;
+      if (offPair.off) delete offPair.off; else offPair.off = true;
+      persistConfigSection('moduleOrderDefault');
+      renderModuleOrderRows(onOffBtn.closest('.config-module-order-list'));
+      return;
+    }
 
     var gradeBtn = e.target.closest('[data-order-grade]');
     if (gradeBtn) {
@@ -5447,7 +6036,12 @@
         // category just for one module.
         personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
         repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
-        speakEasy: { kind: 'speakEasy', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
+        // Due moduli, un componente solo (openSpeakEasy e dintorni), come i
+        // tre Dialogue: storyProfile e' l'unica cosa che li distingue nel
+        // comportamento, kind quella che da' a ciascuno i propri testi in
+        // data/istruzioni-moduli.json (CLAUDE.md regola 8).
+        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/a1-episodio1-inglese.json', storyProfile: 'meet', type: 'studio' },
+        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/a1-episodio1-inglese.json', storyProfile: 'why', type: 'studio' },
         // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
@@ -5501,6 +6095,7 @@
       dialoguePlaceholderMap: {
         papa: 'papa',
         mamma: 'mamma',
+        cognome: 'cognome',
         figliaNome: 'figliaNome',
         figlioNome: 'figlioNome',
         figliaEta: 'figliaEta',
@@ -5516,6 +6111,14 @@
         mamma: 'mamma',
         figlia: 'figliaNome',
         figlio: 'figlioNome'
+      },
+      // Chi parla ma non ha un nome personalizzabile: la guida, e la
+      // famiglia quando parla in coro. L'etichetta sta qui e non scritta
+      // dentro speakerLabel(), cosi' un episodio con un altro cast (un
+      // cameriere, un poliziotto) aggiunge una riga qui e basta.
+      dialogueSpeakerLabels: {
+        guide: 'Guida',
+        tutti: 'Tutti'
       },
       // Fixed words are authored individually so punctuation stays attached
       // to the right word; slots expand to one or more words at render time.
@@ -5561,6 +6164,11 @@
     var episode = EPISODES[episodeId];
     var order = (CONFIG.episodes[episodeId] && CONFIG.episodes[episodeId].moduleOrder) || CONFIG.moduleOrderDefault;
     var seen = {};
+    // Una coppia con off: true e' spenta: sparisce dalla mappa invece di
+    // restare grigia, cosi' provando un ordine si vede l'episodio come lo
+    // vedra' lo studente. Il conteggio delle apparizioni (seen) si fa PRIMA
+    // del filtro, cosi' spegnere il primo Flash Card non rinomina il secondo
+    // — e riaccenderlo non sposta di nuovo i progressi.
     episode.modules = order.map(function (pair) {
       var moduleId = pair.module;
       var module = Object.assign({ id: moduleStepId(moduleId, seen[moduleId] || 0), moduleId: moduleId }, episode.modulesById[moduleId]);
@@ -5571,8 +6179,9 @@
       var labelInfo = CONFIG.moduleLabels[moduleId];
       module.label = (labelInfo && labelInfo.name) || moduleId;
       module.subtitle = labelInfo && labelInfo.subtitle;
+      module.off = !!pair.off;
       return module;
-    });
+    }).filter(function (module) { return !module.off; });
   });
 
   /* ============================================================
@@ -6302,7 +6911,7 @@
   function openModuleByKind(module) {
     if (module.kind === 'personalizzazione') openCustomize();
     else if (module.kind === 'repeatAloud') openRepeatAloud(module);
-    else if (module.kind === 'speakEasy') openSpeakEasy(module);
+    else if (module.storyProfile) openSpeakEasy(module);
     else if (module.voiceVariant) openVoiceCoach(module);
     else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
     else if (module.dialogoProfile) openDialogo(module);
@@ -6630,9 +7239,13 @@
      the plain completionRules badge — there's nothing to self-assess.
      ============================================================ */
   var currentSpeakEasyModule = null;
-  var seExplanationLineIds = []; // id delle battute CON spiegazione, in ordine di dialogo — l'ordine della lezione
-  var seHasExplanations = false; // seExplanationLineIds.length > 0 — distingue il modulo-lezione dal modulo-lettura
-  var seSessionAnswers = {}; // lineId -> 'chiara'|'nonAncora'|'nonChiara' — set di lavoro, NON ancora salvato
+  // Le skill dell'episodio, in ordine di dialogo — l'ordine della lezione.
+  // Una battuta puo' averne piu' di una (whatYouLearn e' una lista), quindi
+  // l'unita' qui NON e' la battuta ma la singola skill: il suo id e'
+  // seSkillId(idBattuta, posizione), es. "d-1-s2".
+  var seSkillIds = [];
+  var seHasExplanations = false; // seSkillIds.length > 0 — distingue il modulo-lezione dal modulo-lettura
+  var seSessionAnswers = {}; // skillId -> 'chiara'|'nonAncora'|'nonChiara' — set di lavoro, NON ancora salvato
   var seLastAvgPct = 0; // calcolato a "Ho finito", letto da speak-easy-complete-btn per saveModuleOutcome
   var seReviewMode = false; // il modulo è già stato completato almeno una volta -> visita di ripasso
   var seSelfCheck = null; // istruzioni-moduli.json's speakEasy.selfCheck (domanda + le tre risposte)
@@ -6646,6 +7259,13 @@
   // Distinto da seExplanationStats (addSeExplanationStat): quello è un
   // conteggio cumulativo per capire quali spiegazioni sono scritte male,
   // questo è "cosa ha dichiarato adesso questo utente su questa battuta".
+  // L'id di una skill dentro la sua battuta. Serve un id proprio perche' la
+  // stessa battuta puo' portarne due (d-1: "Hello e Hi" e "Nice to meet
+  // you"): dichiararne una non deve valere per l'altra.
+  function seSkillId(lineId, index) {
+    return lineId + '-s' + (index + 1);
+  }
+
   function seDeclarationsKey(episodeId, userName) {
     return 'baseinglese:seDeclarations:' + episodeId + ':' + userName;
   }
@@ -6666,26 +7286,26 @@
   // in questo giro — la base sia del blocco del completamento sia del
   // punteggio SelfScoreRules.
   function seDeclaredCount() {
-    return seExplanationLineIds.filter(function (id) { return !!seSessionAnswers[id]; }).length;
+    return seSkillIds.filter(function (id) { return !!seSessionAnswers[id]; }).length;
   }
 
   function seAllDeclared() {
-    return seExplanationLineIds.length > 0 && seDeclaredCount() === seExplanationLineIds.length;
+    return seSkillIds.length > 0 && seDeclaredCount() === seSkillIds.length;
   }
 
   // Primo giro: la lezione va avanti in ordine, quindi è apribile solo fino
   // alla prima spiegazione non ancora dichiarata. Al ripasso invece sono
   // tutte libere.
   function seFirstUndeclaredIndex() {
-    for (var i = 0; i < seExplanationLineIds.length; i++) {
-      if (!seSessionAnswers[seExplanationLineIds[i]]) return i;
+    for (var i = 0; i < seSkillIds.length; i++) {
+      if (!seSessionAnswers[seSkillIds[i]]) return i;
     }
-    return seExplanationLineIds.length;
+    return seSkillIds.length;
   }
 
-  function seIsUnlocked(lineId) {
+  function seIsUnlocked(skillId) {
     if (seReviewMode) return true;
-    var idx = seExplanationLineIds.indexOf(lineId);
+    var idx = seSkillIds.indexOf(skillId);
     return idx !== -1 && idx <= seFirstUndeclaredIndex();
   }
 
@@ -6707,9 +7327,15 @@
 
   function speakerLabel(episode, speaker) {
     var slotKey = episode.dialogueSpeakers && episode.dialogueSpeakers[speaker];
-    if (!slotKey) return 'Guida';
-    var rawValue = (currentValues[slotKey] || '').trim() || slotDefault(episode, slotKey);
-    return resolveSlotValue(episode, slotKey, rawValue, 'it');
+    if (slotKey) {
+      var rawValue = (currentValues[slotKey] || '').trim() || slotDefault(episode, slotKey);
+      return resolveSlotValue(episode, slotKey, rawValue, 'it');
+    }
+    // Chi non ha un nome personalizzabile prende la propria etichetta fissa
+    // dall'episodio (dialogueSpeakerLabels) — prima era scritta qui dentro,
+    // e valeva "Guida" per chiunque non fosse della famiglia.
+    var fixed = episode.dialogueSpeakerLabels && episode.dialogueSpeakerLabels[speaker];
+    return fixed || speaker;
   }
 
   // Job 10 (2nd collaudo): "Cosa imparo qui" — an OPTIONAL per-line field
@@ -6721,36 +7347,55 @@
   // self-check answer itself (data-se-answer) never hides again once
   // given, so re-toggling the block open/closed doesn't lose it.
   function renderSpeakEasy(data) {
-    var lineIds = [];
+    // Il profilo (CONFIG.story.profiles) decide le due differenze fra Meet
+    // the Story e Why We Say It: se la traduzione sta sempre in chiaro, e se
+    // le skill si mostrano. Il resto del disegno e' identico — e' lo stesso
+    // componente.
+    var profile = (CONFIG.story.profiles[currentSpeakEasyModule.storyProfile]) || {};
+    var alwaysTranslated = profile.translations === 'always';
+    var withSkills = profile.skills !== false;
+    var skillIds = [];
     var itemsHtml = episodeGrade(data, currentSpeakEasyModule.grade).map(function (line) {
       var align = dialogueLineAlign(line);
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
-      // whatYouLearn è { title, body } (CLAUDE.md regola 25: contenuto
-      // scomposto nei suoi pezzi, mai un blocco unico). Basta il corpo a
-      // decidere se la battuta ha una spiegazione: un titolo senza testo
-      // non è una spiegazione.
-      var explanation = line.whatYouLearn;
-      var hasExplanation = !!(explanation && explanation.body);
-      if (hasExplanation) lineIds.push(line.id);
-      var explanationBtnHtml = hasExplanation
-        ? '<button type="button" class="translation-toggle" data-toggle-explanation="' + line.id + '">Cosa imparo qui</button>' +
-          '<span class="se-declared" id="se-declared-' + line.id + '" hidden></span>'
-        : '';
-      var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
-        return '<button type="button" class="btn ' + (a.primary ? 'btn-primary' : 'btn-secondary') +
-          ' btn-sm" data-se-answer="' + a.value + '" data-line="' + line.id + '">' + a.button + '</button>';
-      }).join('');
-      var explanationBlockHtml = hasExplanation
-        ? '<div class="se-explanation panel" id="se-explanation-' + line.id + '" hidden>' +
-          (explanation.title ? '<p class="se-explanation-title">' + explanation.title + '</p>' : '') +
-          '<p class="se-explanation-text">' + explanation.body + '</p>' +
-          '<div class="se-selfcheck" data-se-line="' + line.id + '">' +
+      // whatYouLearn è una LISTA di skill, ciascuna { title, body } (CLAUDE.md
+      // regola 25). Una battuta lunga può introdurre due strutture diverse —
+      // d-1 saluta E si presenta — e forzarle in una spiegazione sola
+      // significherebbe spostare il contenuto per far quadrare la struttura.
+      // Una skill senza corpo non è una skill: un titolo da solo non spiega.
+      var skills = (line.whatYouLearn || []).filter(function (sk) { return sk && sk.body; });
+      if (!withSkills) skills = [];
+      var buttonsHtml = '';
+      var blocksHtml = '';
+      skills.forEach(function (skill, i) {
+        var skillId = seSkillId(line.id, i);
+        skillIds.push(skillId);
+        // L'etichetta del pulsante è il titolo della skill: su una battuta
+        // con due skill, due pulsanti uguali non direbbero quale si apre.
+        buttonsHtml += '<button type="button" class="translation-toggle" data-toggle-explanation="' + skillId + '" aria-expanded="false">' + skill.title + '</button>' +
+          '<span class="se-declared" id="se-declared-' + skillId + '" hidden></span>';
+        var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
+          return '<button type="button" class="btn ' + (a.primary ? 'btn-primary' : 'btn-secondary') +
+            ' btn-sm" data-se-answer="' + a.value + '" data-skill="' + skillId + '">' + a.button + '</button>';
+        }).join('');
+        blocksHtml += '<div class="se-explanation panel" id="se-explanation-' + skillId + '" hidden>' +
+          '<p class="se-explanation-title">' + skill.title + '</p>' +
+          '<p class="se-explanation-text">' + skill.body + '</p>' +
+          '<div class="se-selfcheck" data-se-skill="' + skillId + '">' +
           '<p class="se-selfcheck-question">' + ((seSelfCheck && seSelfCheck.question) || '') + '</p>' +
           '<div class="se-selfcheck-actions">' + answersHtml + '</div>' +
-          '<p class="se-selfcheck-followup" id="se-followup-' + line.id + '" hidden></p>' +
+          '<p class="se-selfcheck-followup" id="se-followup-' + skillId + '" hidden></p>' +
           '</div>' +
-          '</div>'
+          '</div>';
+      });
+      // Traduzione sempre in chiaro (Meet the Story) = nessun pulsante da
+      // premere: il pulsante esiste solo dove c'è qualcosa da scoprire.
+      var translationBtnHtml = alwaysTranslated
+        ? ''
+        : '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>';
+      var actionsHtml = (translationBtnHtml || buttonsHtml)
+        ? '<div class="chat-actions">' + translationBtnHtml + buttonsHtml + '</div>'
         : '';
       return '<div class="chat-row ' + align + '">' +
         '<div class="chat-bubble panel">' +
@@ -6760,47 +7405,49 @@
         '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
         '</div>' +
-        '<div class="chat-actions">' +
-        '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>' +
-        explanationBtnHtml +
-        '</div>' +
-        '<p class="chat-italian" id="chat-italian-' + line.id + '" hidden>' + italian + '</p>' +
-        explanationBlockHtml +
+        actionsHtml +
+        '<p class="chat-italian" id="chat-italian-' + line.id + '"' + (alwaysTranslated ? '' : ' hidden') + '>' + italian + '</p>' +
+        blocksHtml +
         '</div>' +
         '</div>';
     }).join('');
     document.getElementById('speak-easy-body').innerHTML = '<div class="chat-list">' + itemsHtml + '</div>';
-    seExplanationLineIds = lineIds;
-    seHasExplanations = lineIds.length > 0;
+    seSkillIds = skillIds;
+    seHasExplanations = skillIds.length > 0;
     seRefreshExplanationStates();
-    // Primo giro: la lezione parte da sola sulla prima spiegazione non
-    // ancora dichiarata — è il senso di "una alla volta, in sequenza".
+    // Primo giro: la lezione parte da sola sulla prima skill non ancora
+    // dichiarata — è il senso di "una alla volta, in sequenza".
     // Al ripasso si apre tutto chiuso e decide l'utente cosa rivedere.
     if (seHasExplanations && !seReviewMode) {
-      var next = seExplanationLineIds[seFirstUndeclaredIndex()];
+      var next = seSkillIds[seFirstUndeclaredIndex()];
       if (next) seOpenExplanation(next);
     }
   }
 
   // Apre una spiegazione. Nel primo giro ne resta aperta una sola per volta
   // (lezione); al ripasso non si chiude nulla, si guarda quello che si vuole.
-  function seOpenExplanation(lineId) {
-    if (!seReviewMode) {
-      seExplanationLineIds.forEach(function (id) {
-        if (id !== lineId) seCloseExplanation(id);
-      });
-    }
-    var el = document.getElementById('se-explanation-' + lineId);
-    if (el) el.hidden = false;
-    var btn = document.querySelector('[data-toggle-explanation="' + lineId + '"]');
-    if (btn) btn.textContent = 'Nascondi spiegazione';
+  // Aperto/chiuso si dice con aria-expanded, non riscrivendo l'etichetta:
+  // il pulsante porta il TITOLO della sua skill, e su una battuta con due
+  // skill sostituirlo con "Nascondi spiegazione" toglierebbe l'unica cosa
+  // che dice quale delle due si sta guardando.
+  function seSetExplanationOpen(skillId, open) {
+    var el = document.getElementById('se-explanation-' + skillId);
+    if (el) el.hidden = !open;
+    var btn = document.querySelector('[data-toggle-explanation="' + skillId + '"]');
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
 
-  function seCloseExplanation(lineId) {
-    var el = document.getElementById('se-explanation-' + lineId);
-    if (el) el.hidden = true;
-    var btn = document.querySelector('[data-toggle-explanation="' + lineId + '"]');
-    if (btn) btn.textContent = 'Cosa imparo qui';
+  function seOpenExplanation(skillId) {
+    if (!seReviewMode) {
+      seSkillIds.forEach(function (id) {
+        if (id !== skillId) seCloseExplanation(id);
+      });
+    }
+    seSetExplanationOpen(skillId, true);
+  }
+
+  function seCloseExplanation(skillId) {
+    seSetExplanationOpen(skillId, false);
   }
 
   // Ricalcola da zero tutto quello che dipende dalle dichiarazioni: quali
@@ -6810,15 +7457,15 @@
   // stessa scelta di dgUpdateChoiceBoxLock: costa nulla e non lascia stati
   // vecchi in giro.
   function seRefreshExplanationStates() {
-    seExplanationLineIds.forEach(function (lineId) {
-      var answer = seSessionAnswers[lineId];
-      var unlocked = seIsUnlocked(lineId);
+    seSkillIds.forEach(function (skillId) {
+      var answer = seSessionAnswers[skillId];
+      var unlocked = seIsUnlocked(skillId);
 
-      var toggle = document.querySelector('[data-toggle-explanation="' + lineId + '"]');
+      var toggle = document.querySelector('[data-toggle-explanation="' + skillId + '"]');
       if (toggle) toggle.disabled = !unlocked;
-      if (!unlocked) seCloseExplanation(lineId);
+      if (!unlocked) seCloseExplanation(skillId);
 
-      var declaredEl = document.getElementById('se-declared-' + lineId);
+      var declaredEl = document.getElementById('se-declared-' + skillId);
       if (declaredEl) {
         var meta = answer ? seAnswerMeta(answer) : null;
         declaredEl.hidden = !meta;
@@ -6828,7 +7475,7 @@
       // Primo giro: una risposta data è definitiva, come il Sì/Non ancora di
       // Flash Card. Al ripasso invece si può cambiare idea — è tutto il
       // senso di riaprire una spiegazione.
-      var selfcheckEl = document.querySelector('.se-selfcheck[data-se-line="' + lineId + '"]');
+      var selfcheckEl = document.querySelector('.se-selfcheck[data-se-skill="' + skillId + '"]');
       if (selfcheckEl) {
         var lockAnswers = !!answer && !seReviewMode;
         selfcheckEl.querySelectorAll('[data-se-answer]').forEach(function (b) { b.disabled = lockAnswers; });
@@ -6864,7 +7511,7 @@
     document.getElementById('speak-easy-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('speak-easy-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    seExplanationLineIds = [];
+    seSkillIds = [];
     seHasExplanations = false;
     seLastAvgPct = 0;
     // Modulo già completato almeno una volta = visita di ripasso: niente
@@ -6876,11 +7523,11 @@
     // sono il punto di partenza, non una lavagna pulita.
     seSessionAnswers = loadSeDeclarations(currentEpisode.id, getUserName());
     showView('speakEasy');
-    if (isIntroDismissed('speakEasy', getUserName())) {
+    if (isIntroDismissed(module.kind, getUserName())) {
       seShowScreen('main');
     } else {
       document.getElementById('speak-easy-intro-dont-show-again').checked = false;
-      renderIntroContent('speakEasy', 'speak-easy-intro-title', 'speak-easy-intro-body', currentSpeakEasyModule.label);
+      renderIntroContent(module.kind, 'speak-easy-intro-title', 'speak-easy-intro-body', currentSpeakEasyModule.label);
       seShowScreen('intro');
     }
     // Le due fonti servono entrambe PRIMA di disegnare: i testi del
@@ -6889,7 +7536,7 @@
     // stessa forma già usata da openVoiceCoach.
     Promise.all([loadEpisodeData(module), loadModuleInstructions()]).then(function (results) {
       if (currentSpeakEasyModule !== module) return;
-      var instructions = results[1].speakEasy || {};
+      var instructions = results[1][module.kind] || {};
       seSelfCheck = instructions.selfCheck || null;
       seSelfCheckMessages = instructions.selfCheckMessages || null;
       document.getElementById('speak-easy-complete-hint').textContent = instructions.completeHint || '';
@@ -6952,11 +7599,11 @@
     if (answerBtn) {
       if (answerBtn.disabled) return;
       var answer = answerBtn.getAttribute('data-se-answer');
-      var answerLineId = answerBtn.getAttribute('data-line');
-      var eraDichiarata = !!seSessionAnswers[answerLineId];
-      seSessionAnswers[answerLineId] = answer;
-      addSeExplanationStat(currentEpisode.id, getUserName(), answerLineId, answer);
-      var followupEl = document.getElementById('se-followup-' + answerLineId);
+      var answerSkillId = answerBtn.getAttribute('data-skill');
+      var eraDichiarata = !!seSessionAnswers[answerSkillId];
+      seSessionAnswers[answerSkillId] = answer;
+      addSeExplanationStat(currentEpisode.id, getUserName(), answerSkillId, answer);
+      var followupEl = document.getElementById('se-followup-' + answerSkillId);
       var followup = seSelfCheckMessages && seSelfCheckMessages[answer];
       if (followup && followup.body) {
         followupEl.textContent = followup.body;
@@ -6970,9 +7617,9 @@
       // dichiarata prima, non si sposta niente: si sta rivedendo, non
       // avanzando.
       if (!seReviewMode && !eraDichiarata) {
-        var nextId = seExplanationLineIds[seFirstUndeclaredIndex()];
+        var nextId = seSkillIds[seFirstUndeclaredIndex()];
         if (nextId) seOpenExplanation(nextId);
-        else seCloseExplanation(answerLineId);
+        else seCloseExplanation(answerSkillId);
       }
     }
   });
@@ -6980,11 +7627,11 @@
   document.getElementById('speak-easy-back-map').addEventListener('click', openEpisodeMap);
 
   document.getElementById('speak-easy-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(currentSpeakEasyModule, { dismissPref: introDismissPref('speakEasy') });
+    openHowItWorksOverlay(currentSpeakEasyModule, { dismissPref: introDismissPref(currentSpeakEasyModule.kind) });
   });
 
   document.getElementById('speak-easy-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed('speakEasy', getUserName(), document.getElementById('speak-easy-intro-dont-show-again').checked);
+    setIntroDismissed(currentSpeakEasyModule.kind, getUserName(), document.getElementById('speak-easy-intro-dont-show-again').checked);
     seShowScreen('main');
   });
 
@@ -7013,8 +7660,8 @@
     // mancanti a spingerla verso lo zero. Un episodio senza spiegazioni non
     // ha niente da autovalutare e resta sul messaggio neutro di sempre.
     if (seHasExplanations) {
-      var chiaraCount = seExplanationLineIds.filter(function (id) { return seSessionAnswers[id] === 'chiara'; }).length;
-      seLastAvgPct = Math.round((chiaraCount / seExplanationLineIds.length) * 100);
+      var chiaraCount = seSkillIds.filter(function (id) { return seSessionAnswers[id] === 'chiara'; }).length;
+      seLastAvgPct = Math.round((chiaraCount / seSkillIds.length) * 100);
       applyOutcomeSubtitle('speak-easy-summary-title-sub', 'speakEasyCompleteMessages', percentageBucket(seLastAvgPct));
     } else {
       applyOutcomeSubtitle('speak-easy-summary-title-sub', 'studioCompleteMessages', 'default');

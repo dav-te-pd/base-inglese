@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -65,7 +66,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -78,9 +79,9 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_VP = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng'];
-const ALL_BEFORE_QM = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng'];
-const ALL_BEFORE_DG_TEMPO = ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng', 'quickMatchEngIta', 'quickMatchItaEng', 'voicePractice', 'dialogoAscoltaRipeti'];
+const ALL_BEFORE_VP = stepsBefore('voicePractice');
+const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
 
 async function run() {
   const browser = await launchBrowser();
@@ -133,7 +134,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T14RA', ['personalizzazione']);
+    await bootAsUser(page, 'T14RA', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(300);
     const btnLabel = await page.evaluate(() => document.getElementById('repeat-aloud-complete').textContent);
@@ -162,8 +163,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T14SE', ['personalizzazione', 'repeatAloud']);
-    await openModule(page, 'speakEasy');
+    await bootAsUser(page, 'T14SE', stepsBefore('whyWeSayIt'));
+    await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(300);
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(150);
@@ -172,7 +173,7 @@ async function run() {
     await page.click('#speak-easy-complete-btn');
     await page.waitForTimeout(150);
     const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T14SE');
-    log('[Job3] Speak Easy: summary\'s own button completes the module', completedAfter.indexOf('speakEasy') !== -1);
+    log('[Job3] Speak Easy: summary\'s own button completes the module', completedAfter.indexOf('whyWeSayIt') !== -1);
     log('[Job3] Speak Easy: No JS errors', errors.length === 0);
     await page.close();
   }
@@ -351,7 +352,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T14MappaWidth', ['personalizzazione']);
+    await bootAsUser(page, 'T14MappaWidth', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud'); // Mappa + Spiegazione + Help all visible
     await page.waitForTimeout(200);
     const widthAllVisible = await page.$eval('#repeat-aloud-back-map', el => el.getBoundingClientRect().width);

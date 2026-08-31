@@ -1,6 +1,6 @@
 {
   "level": "A1",
-  "episodeId": 1,
+  "episodeId": "episode1",
   "episodeTitle": "Presentarsi",
   "language": "inglese",
   "personalizationTablesUsed": [
@@ -9,7 +9,7 @@
       "label": "Nome del papà / utente",
       "type": "select",
       "table": "people.papa",
-      "default": "giancarlo"
+      "default": "marco"
     },
     {
       "key": "mamma",
@@ -19,11 +19,18 @@
       "default": "giulia"
     },
     {
+      "key": "cognome",
+      "label": "Cognome della famiglia",
+      "type": "select",
+      "table": "people.cognome",
+      "default": "rossi"
+    },
+    {
       "key": "figliaNome",
       "label": "Nome della figlia",
       "type": "select",
       "table": "people.figlia",
-      "default": "sofia",
+      "default": "emma",
       "group": "figlia"
     },
     {
@@ -40,7 +47,7 @@
       "label": "Nome del figlio",
       "type": "select",
       "table": "people.figlio",
-      "default": "leo",
+      "default": "tommaso",
       "group": "figlio"
     },
     {
@@ -48,7 +55,7 @@
       "label": "Età del figlio",
       "type": "select",
       "table": "episode.ageOptions.figlio",
-      "default": "10",
+      "default": "8",
       "group": "figlio",
       "narrow": true
     },
@@ -75,116 +82,280 @@
           "id": "a-hello",
           "english": "Hello",
           "italian": "Ciao / Salve",
-          "pronunciationTip": "L'accento cade sulla seconda sillaba: \"hel-LOU\", non \"E-lo\". La \"h\" si sente appena, un soffio.",
-          "grammarCategory": "interiezione/saluto"
-        },
-        {
-          "id": "a-everyone",
-          "english": "everyone",
-          "italian": "tutti",
-          "pronunciationTip": "\"EV-ri-uan\", accento sulla prima sillaba.",
-          "grammarCategory": "pronome indefinito"
-        },
-        {
-          "id": "a-nice-to-meet-you",
-          "english": "Nice to meet you",
-          "italian": "Piacere di conoscerti/vi",
-          "pronunciationTip": "La \"ee\" di \"meet\" è lunga e tesa (non \"mit\" secco all'italiana): \"nais tu MIIT yu\".",
-          "grammarCategory": "espressione idiomatica"
-        },
-        {
-          "id": "a-can",
-          "english": "Can",
-          "italian": "Puoi / Potete",
-          "pronunciationTip": "La \"a\" è aperta, quasi come \"kan\" ma più schiacciata.",
-          "grammarCategory": "verbo modale"
-        },
-        {
-          "id": "a-introduce",
-          "english": "introduce",
-          "italian": "presentare",
-          "pronunciationTip": "Accento sull'ultima sillaba: \"in-tro-DIUS\".",
-          "grammarCategory": "verbo"
-        },
-        {
-          "id": "a-yourselves",
-          "english": "yourselves",
-          "italian": "voi stessi",
-          "pronunciationTip": "\"yor-SELVZ\", la \"s\" finale suona \"z\".",
-          "grammarCategory": "pronome riflessivo"
-        },
-        {
-          "id": "a-im",
-          "english": "I'm",
-          "italian": "Sono / Mi chiamo",
-          "pronunciationTip": "È la contrazione di \"I am\", si pronuncia tutta attaccata: \"aim\", mai \"ai-em\" staccato.",
-          "grammarCategory": "pronome + verbo essere"
-        },
-        {
-          "id": "a-from",
-          "english": "from",
-          "italian": "da / di",
-          "pronunciationTip": "La \"o\" è una via di mezzo tra \"a\" e \"o\" aperta, non la \"o\" chiusa italiana: suona quasi \"fram\".",
-          "grammarCategory": "preposizione"
+          "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
+          "grammarCategory": "saluto"
         },
         {
           "id": "a-hi",
           "english": "Hi",
           "italian": "Ciao",
-          "pronunciationTip": "Dittongo lungo \"hai\", più informale di \"Hello\".",
-          "grammarCategory": "interiezione/saluto"
+          "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
+          "grammarCategory": "saluto"
         },
         {
-          "id": "a-wife",
-          "english": "wife",
-          "italian": "moglie",
-          "pronunciationTip": "\"uaif\" — la \"w\" è un suono labiale che non esiste in italiano.",
-          "grammarCategory": "sostantivo"
-        },
-        {
-          "id": "a-years-old",
-          "english": "years old",
-          "italian": "... anni",
-          "pronunciationTip": "\"years\" parte quasi come \"ie-ars\"; \"old\" ha la \"o\" lunga: \"ould\".",
-          "grammarCategory": "espressione per età"
-        },
-        {
-          "id": "a-great",
-          "english": "Great",
-          "italian": "Ottimo / Fantastico",
-          "pronunciationTip": "Si legge \"greit\", non \"great\" all'italiana.",
+          "id": "a-nice",
+          "english": "nice",
+          "italian": "bello / piacevole",
+          "pronunciationTip": "nais",
           "grammarCategory": "aggettivo"
         },
         {
-          "id": "a-welcome",
-          "english": "Welcome",
-          "italian": "Benvenuto/i",
-          "pronunciationTip": "L'accento è tutto sulla prima sillaba: \"WEL-com\", la seconda parte si \"mangia\" leggermente.",
-          "grammarCategory": "interiezione/saluto"
+          "id": "a-to",
+          "english": "to",
+          "italian": "a / verso",
+          "pronunciationTip": "tu — corta",
+          "grammarCategory": "preposizione"
         },
         {
-          "id": "a-trip",
-          "english": "trip",
-          "italian": "viaggio",
-          "pronunciationTip": "La \"r\" è morbida, non arrotata come in italiano.",
+          "id": "a-meet",
+          "english": "meet",
+          "italian": "incontrare",
+          "pronunciationTip": "miit — la \"i\" è lunga e tesa, non \"mit\"",
+          "grammarCategory": "verbo"
+        },
+        {
+          "id": "a-you",
+          "english": "you",
+          "italian": "tu / voi",
+          "pronunciationTip": "iu",
+          "grammarCategory": "pronome"
+        },
+        {
+          "id": "a-i",
+          "english": "I",
+          "italian": "io",
+          "pronunciationTip": "ai — sempre maiuscola in inglese",
+          "grammarCategory": "pronome"
+        },
+        {
+          "id": "a-am",
+          "english": "am",
+          "italian": "sono",
+          "pronunciationTip": "am",
+          "grammarCategory": "verbo essere"
+        },
+        {
+          "id": "a-im",
+          "english": "I'm",
+          "italian": "io sono",
+          "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
+          "grammarCategory": "pronome + verbo essere"
+        },
+        {
+          "id": "a-where",
+          "english": "where",
+          "italian": "dove",
+          "pronunciationTip": "UEAR — la \"wh\" è un soffio, non \"vu\"",
+          "grammarCategory": "avverbio interrogativo"
+        },
+        {
+          "id": "a-are",
+          "english": "are",
+          "italian": "sei / siamo / siete / sono",
+          "pronunciationTip": "ar",
+          "grammarCategory": "verbo essere"
+        },
+        {
+          "id": "a-from",
+          "english": "from",
+          "italian": "da / di",
+          "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
+          "grammarCategory": "preposizione"
+        },
+        {
+          "id": "a-italy",
+          "english": "Italy",
+          "italian": "Italia",
+          "pronunciationTip": "I-ta-li — accento sulla prima",
+          "grammarCategory": "nome di paese"
+        },
+        {
+          "id": "a-and",
+          "english": "and",
+          "italian": "e",
+          "pronunciationTip": "and — la \"d\" finale si sente appena",
+          "grammarCategory": "congiunzione"
+        },
+        {
+          "id": "a-years",
+          "english": "years",
+          "italian": "anni",
+          "pronunciationTip": "i-ars — parte con un suono di \"i\"",
           "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-old",
+          "english": "old",
+          "italian": "vecchio (di età)",
+          "pronunciationTip": "ould — la \"o\" è lunga",
+          "grammarCategory": "aggettivo"
+        },
+        {
+          "id": "a-we",
+          "english": "we",
+          "italian": "noi",
+          "pronunciationTip": "ui",
+          "grammarCategory": "pronome"
+        },
+        {
+          "id": "a-the",
+          "english": "the",
+          "italian": "il / la / i / le",
+          "pronunciationTip": "de — la lingua tra i denti, non \"ze\"",
+          "grammarCategory": "articolo"
         },
         {
           "id": "a-family",
           "english": "family",
           "italian": "famiglia",
-          "pronunciationTip": "Accento sulla prima sillaba: \"FA-mi-li\".",
+          "pronunciationTip": "FA-mi-li — accento sulla prima",
           "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-going",
+          "english": "going",
+          "italian": "andando",
+          "pronunciationTip": "GO-in — la \"g\" finale si sente appena",
+          "grammarCategory": "verbo"
+        },
+        {
+          "id": "a-welcome",
+          "english": "Welcome",
+          "italian": "Benvenuto",
+          "pronunciationTip": "UEL-com — accento sulla prima",
+          "grammarCategory": "saluto"
         }
       ]
     },
     "B": {
       "label": "Chunk",
-      "items": []
+      "items": [
+        {
+          "id": "b-nice-to-meet-you",
+          "english": "Nice to meet you",
+          "italian": "Piacere di conoscerti / conoscervi",
+          "pronunciationTip": "nais tu MIIT iu",
+          "grammarCategory": "espressione idiomatica"
+        },
+        {
+          "id": "b-where-are-you",
+          "english": "Where are you",
+          "italian": "Dove sei / Dove siete",
+          "pronunciationTip": "UEAR ar iu — tutto legato",
+          "grammarCategory": "struttura interrogativa"
+        },
+        {
+          "id": "b-i-am-from",
+          "english": "I am from",
+          "italian": "Vengo da / Sono di",
+          "pronunciationTip": "ai am fram",
+          "grammarCategory": "pronome + verbo essere + preposizione"
+        },
+        {
+          "id": "b-and-you",
+          "english": "And you?",
+          "italian": "E tu? / E voi?",
+          "pronunciationTip": "and IU — accento su \"you\"",
+          "grammarCategory": "espressione"
+        },
+        {
+          "id": "b-years-old",
+          "english": "years old",
+          "italian": "anni (di età)",
+          "pronunciationTip": "i-ars OULD",
+          "grammarCategory": "espressione per l'età"
+        },
+        {
+          "id": "b-going-to",
+          "english": "going to",
+          "italian": "andando a / verso",
+          "pronunciationTip": "GO-in tu — nel parlato veloce diventa quasi \"gonna\"",
+          "grammarCategory": "verbo + preposizione"
+        }
+      ]
     },
     "C": {
       "label": "Frasi",
-      "items": []
+      "items": [
+        {
+          "id": "c-1",
+          "english": "Nice to meet you.",
+          "italian": "Piacere di conoscervi.",
+          "fromLine": "d-1"
+        },
+        {
+          "id": "c-2",
+          "english": "I am {{papa}}.",
+          "italian": "Sono {{papa}}.",
+          "fromLine": "d-2"
+        },
+        {
+          "id": "c-3",
+          "english": "Where are you from?",
+          "italian": "Di dove sei?",
+          "fromLine": "d-3"
+        },
+        {
+          "id": "c-4",
+          "english": "I am from {{partenza}}, Italy.",
+          "italian": "Vengo da {{partenza}}, in Italia.",
+          "fromLine": "d-4"
+        },
+        {
+          "id": "c-5",
+          "english": "And you?",
+          "italian": "E tu?",
+          "fromLine": "d-5"
+        },
+        {
+          "id": "c-6",
+          "english": "I am {{mamma}}.",
+          "italian": "Sono {{mamma}}.",
+          "fromLine": "d-6"
+        },
+        {
+          "id": "c-7",
+          "english": "I'm {{figliaNome}}.",
+          "italian": "Sono {{figliaNome}}.",
+          "fromLine": "d-7"
+        },
+        {
+          "id": "c-8",
+          "english": "I'm {{figliaEta}} years old.",
+          "italian": "Ho {{figliaEta}} anni.",
+          "fromLine": "d-7"
+        },
+        {
+          "id": "c-9",
+          "english": "I'm {{figlioEta}}.",
+          "italian": "Ho {{figlioEta}} anni.",
+          "fromLine": "d-8"
+        },
+        {
+          "id": "c-10",
+          "english": "We are the {{cognome}} family!",
+          "italian": "Siamo la famiglia {{cognome}}!",
+          "fromLine": "d-9"
+        },
+        {
+          "id": "c-11",
+          "english": "Where are you going?",
+          "italian": "Dove state andando?",
+          "fromLine": "d-10"
+        },
+        {
+          "id": "c-12",
+          "english": "We are going to {{destinazione}}!",
+          "italian": "Andiamo in {{destinazione}}!",
+          "fromLine": "d-11"
+        },
+        {
+          "id": "c-13",
+          "english": "Welcome to {{destinazione}}!",
+          "italian": "Benvenuti in {{destinazione}}!",
+          "fromLine": "d-12"
+        }
+      ]
     },
     "D": {
       "label": "Battute",
@@ -193,50 +364,160 @@
           "id": "d-1",
           "speaker": "guide",
           "ruolo": "esterno",
-          "english": "Hello everyone! Nice to meet you. Can you introduce yourselves?",
-          "italian": "Ciao a tutti! Piacere di conoscervi. Potete presentarvi?"
+          "english": "Hello! Nice to meet you.",
+          "italian": "Ciao! Piacere di conoscervi.",
+          "whatYouLearn": [
+            {
+              "title": "Hello e Hi",
+              "difficulty": "facile",
+              "body": "Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>\"Hello\" è un po' più educato, \"Hi\" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono \"Hello\", i figli dicono \"Hi\".<br>È come in italiano — \"Buongiorno\" a chi non conosci, \"Ciao\" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, \"Hello\" va bene sempre, con chiunque."
+            },
+            {
+              "title": "Nice to meet you",
+              "difficulty": "facile",
+              "body": "Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro \"piacere di conoscerti\".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta \"Hello!\"."
+            }
+          ]
         },
         {
           "id": "d-2",
           "speaker": "papa",
           "ruolo": "famiglia",
-          "english": "Hello, I'm {{papa}}. I'm from {{partenza}}, Italy.",
-          "italian": "Ciao, sono {{papa}}. Vengo da {{partenza}}, Italia."
+          "english": "Hello! I am {{papa}}.",
+          "italian": "Ciao! Sono {{papa}}."
         },
         {
           "id": "d-3",
           "speaker": "guide",
           "ruolo": "esterno",
-          "english": "Nice to meet you, {{papa}}. And you?",
-          "italian": "Piacere, {{papa}}. E tu?"
+          "english": "Where are you from, {{papa}}?",
+          "italian": "Di dove sei, {{papa}}?",
+          "whatYouLearn": [
+            {
+              "title": "Chiedere da dove viene qualcuno",
+              "difficulty": "facile",
+              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {partenza}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+            }
+          ]
         },
         {
           "id": "d-4",
-          "speaker": "mamma",
+          "speaker": "papa",
           "ruolo": "famiglia",
-          "english": "Hi, I'm {{mamma}}. I'm {{papa}}'s wife.",
-          "italian": "Ciao, sono {{mamma}}. Sono la moglie di {{papa}}."
+          "english": "I am from {{partenza}}, Italy.",
+          "italian": "Vengo da {{partenza}}, in Italia.",
+          "whatYouLearn": [
+            {
+              "title": "Dire da dove vieni",
+              "difficulty": "facile",
+              "body": "\"I am from {partenza}\" vuol dire \"vengo da {partenza}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+            }
+          ]
         },
         {
           "id": "d-5",
-          "speaker": "figlia",
-          "ruolo": "famiglia",
-          "english": "Hi, I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
-          "italian": "Ciao, sono {{figliaNome}}. Ho {{figliaEta}} anni."
+          "speaker": "guide",
+          "ruolo": "esterno",
+          "english": "And you?",
+          "italian": "E tu?",
+          "whatYouLearn": [
+            {
+              "title": "And you?",
+              "difficulty": "facile",
+              "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo la guida l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente."
+            }
+          ]
         },
         {
           "id": "d-6",
-          "speaker": "figlio",
+          "speaker": "mamma",
           "ruolo": "famiglia",
-          "english": "Hello, I'm {{figlioNome}}. I'm {{figlioEta}}.",
-          "italian": "Ciao, sono {{figlioNome}}. Ho {{figlioEta}} anni."
+          "english": "Hello! I am {{mamma}}.",
+          "italian": "Ciao! Sono {{mamma}}."
         },
         {
           "id": "d-7",
+          "speaker": "figlia",
+          "ruolo": "famiglia",
+          "english": "Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
+          "italian": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
+          "whatYouLearn": [
+            {
+              "title": "I am e I'm",
+              "difficulty": "facile",
+              "body": "Il papà dice \"I am {papà}\", la figlia dice \"I'm {figlia}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello."
+            }
+          ]
+        },
+        {
+          "id": "d-8",
+          "speaker": "figlio",
+          "ruolo": "famiglia",
+          "english": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
+          "italian": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
+          "whatYouLearn": [
+            {
+              "title": "Dire quanti anni hai",
+              "difficulty": "facile",
+              "body": "La figlia dice \"I'm sixteen <strong>years old</strong>\". Il figlio dice solo \"I'm ten\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+            }
+          ]
+        },
+        {
+          "id": "d-9",
+          "speaker": "tutti",
+          "ruolo": "famiglia",
+          "english": "We are the {{cognome}} family!",
+          "italian": "Siamo la famiglia {{cognome}}!",
+          "whatYouLearn": [
+            {
+              "title": "We are",
+              "difficulty": "facile",
+              "body": "\"We are\" vuol dire \"noi siamo\".<br>Conosci già \"I am\" — io sono. Quando si parla in più di uno diventa \"we are\": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola \"family\", al contrario dell'italiano."
+            }
+          ]
+        },
+        {
+          "id": "d-10",
           "speaker": "guide",
           "ruolo": "esterno",
-          "english": "Great! Welcome to the trip, {{papa}}'s family!",
-          "italian": "Ottimo! Benvenuti al viaggio, famiglia di {{papa}}!"
+          "english": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... where are you going?",
+          "italian": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... dove state andando?",
+          "whatYouLearn": [
+            {
+              "title": "Una parola per \"tu\" e per \"voi\"",
+              "difficulty": "facile",
+              "body": "Prima la guida ha chiesto al papà: \"Where are you from?\" — lì \"you\" vuol dire <strong>tu</strong>.<br>Ora chiede a tutta la famiglia: \"Where are you going?\" — e qui \"you\" vuol dire <strong>voi</strong>.<br>In inglese è la stessa parola. Capisci a chi si parla guardando la situazione, non la parola.<br>Non è un problema: ci si abitua prestissimo, e ti risparmia di imparare due forme diverse come in italiano."
+            }
+          ]
+        },
+        {
+          "id": "d-11",
+          "speaker": "papa",
+          "ruolo": "famiglia",
+          "english": "We are going to {{destinazione}}!",
+          "italian": "Andiamo in {{destinazione}}!",
+          "whatYouLearn": [
+            {
+              "title": "Dire dove stai andando",
+              "difficulty": "media",
+              "body": "\"We are going to {destinazione}\" vuol dire \"andiamo in {destinazione}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
+            }
+          ]
+        },
+        {
+          "id": "d-12",
+          "speaker": "guide",
+          "ruolo": "esterno",
+          "english": "Welcome to {{destinazione}}, {{cognome}} family!",
+          "italian": "Benvenuti in {{destinazione}}, famiglia {{cognome}}!",
+          "whatYouLearn": [
+            {
+              "title": "Welcome",
+              "difficulty": "facile",
+              "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {destinazione}\", benvenuti in {destinazione}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
+            }
+          ]
         }
       ]
     }
@@ -244,13 +525,19 @@
   "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
   "ageOptions": {
     "figlia": [
-      8,
-      10,
-      16
+      13,
+      14,
+      15,
+      16,
+      17
     ],
     "figlio": [
+      4,
+      5,
       6,
+      7,
       8,
+      9,
       10
     ]
   }
