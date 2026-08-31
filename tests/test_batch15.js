@@ -1,11 +1,16 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
 // pulsanti: vedi tests/quiz-driver.js.
-const VOCABULARY = loadGrade('A');
+// Il vocabolario da cui il driver ricava le risposte: il grado che il modulo
+// legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
+// modulo compare su gradi diversi, e prendere sempre il grado A significava
+// cercare la domanda mostrata in un elenco che non la contiene.
+const VOCABULARY = loadGrade(gradeOf('quickMatchEngIta'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedRoundEngIta'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -413,11 +418,14 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T15Job10', ALL_BEFORE_QM);
-    await openModule(page, 'whyWeSayIt');
+    await bootAsUser(page, 'T15Job10', stepsBefore('meetTheStory'));
+    // Il modulo senza skill ora e' Meet the Story: e' il suo profilo a dire
+    // che non ne mostra (CONFIG.story.profiles.meet.skills = false), non piu'
+    // il fatto che l'episodio non ne abbia — l'episodio 1 ne ha undici.
+    await openModule(page, 'meetTheStory');
     await page.waitForTimeout(200);
     const explanationButtonCount = await page.evaluate(() => document.querySelectorAll('[data-toggle-explanation]').length);
-    log('[Job10] "Cosa imparo qui" does not appear anywhere (episode 1 has no whatYouLearn lines)', explanationButtonCount === 0);
+    log('[Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno', explanationButtonCount === 0);
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(150);
     const subtitle = await page.$eval('#speak-easy-summary-title-sub', el => el.textContent).catch(() => null);
@@ -445,7 +453,7 @@ async function run() {
     // entrambi i giri, quindi non verificava davvero quello che il suo nome
     // dice — ora la scelta viene dai dati dell'episodio.
     await playThroughQuiz(page, 'sr', {
-      vocabulary: VOCABULARY,
+      vocabulary: VOCABULARY_SR,
       answerFor: function (st) { return st.inRetryPass ? 'correct' : 'wrong'; }
     });
     await page.locator('#sr-complete-btn').click();

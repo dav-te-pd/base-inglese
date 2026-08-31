@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { loadGrade } = require('./quiz-driver');
+const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -181,8 +182,12 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1c', stepsBefore('whyWeSayIt'));
-    await openModule(page, 'whyWeSayIt');
+    // Qui si verifica che l'audio NON disabiliti "Ho finito": serve un
+    // modulo dove quel pulsante e' abilitato di suo, cioe' Meet the Story
+    // (Why We Say It lo tiene bloccato finche' le skill non sono dichiarate,
+    // che e' un blocco diverso e verificato altrove).
+    await bootAsUser(page, 'T17Job1c', stepsBefore('meetTheStory'));
+    await openModule(page, 'meetTheStory');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#speak-easy-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
@@ -371,8 +376,12 @@ async function run() {
     await bootAsUser(page, 'T17Job2', ALL_BEFORE_QM);
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
-    // Force through to the summary screen quickly (answer every card).
-    for (let i = 0; i < 20; i++) {
+    // Force through to the summary screen quickly (answer every card). Il
+    // limite viene dal mazzo vero (un giro di risposte piu' l'eventuale
+    // ripasso, piu' margine): scritto a mano era tarato su 15 carte e si e'
+    // rotto in silenzio quando il grado A e' passato a 21.
+    const carte = loadGrade(gradeOf('flashcardAEngIta')).length;
+    for (let i = 0; i < carte * 3 + 10; i++) {
       const summaryVisible = await page.isVisible('#fc-summary-screen').catch(() => false);
       if (summaryVisible) break;
       const retryVisible = await page.isVisible('#fc-retry-intro-screen').catch(() => false);

@@ -1,11 +1,17 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { declareAllSkills } = require('./story-driver');
+const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
 // pulsanti: vedi tests/quiz-driver.js.
-const VOCABULARY = loadGrade('A');
+// Il vocabolario da cui il driver ricava le risposte: il grado che il modulo
+// legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
+// modulo compare su gradi diversi, e prendere sempre il grado A significava
+// cercare la domanda mostrata in un elenco che non la contiene.
+const VOCABULARY = loadGrade(gradeOf('quickMatchEngIta'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedRoundEngIta'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -166,6 +172,8 @@ async function run() {
     await bootAsUser(page, 'T14SE', stepsBefore('whyWeSayIt'));
     await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(300);
+    // "Ho finito" e' bloccato finche' ogni skill non e' dichiarata.
+    await declareAllSkills(page);
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(150);
     const summaryVisible = await page.evaluate(() => !document.getElementById('speak-easy-summary-screen').hidden);

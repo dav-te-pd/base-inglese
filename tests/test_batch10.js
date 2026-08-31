@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { declareAllSkills } = require('./story-driver');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -234,6 +235,9 @@ async function run() {
     await bootAsUser(page, 'T10SE', ALL_MODULES.slice(0, idx));
     await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(300);
+    // "Ho finito" e' bloccato finche' ogni skill non e' dichiarata: si
+    // attraversa la lezione, come farebbe l'utente.
+    await declareAllSkills(page);
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(400);
     const tones = await page.evaluate(() => window.__playedTones || []);

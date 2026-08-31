@@ -41,16 +41,35 @@ function loadGrade(grade, parts) {
   return (entry && entry.items) || [];
 }
 
+// I gradi C e D contengono segnaposto ({{papa}}, {{partenza}}, ...) che
+// l'app sostituisce con le scelte dell'utente prima di mostrare il testo.
+// Confrontare il testo a schermo con il modello scritto nel file darebbe
+// sempre "non trovato": qui il modello diventa un'espressione regolare in
+// cui ogni segnaposto vale "una o più parole qualsiasi". Un grado senza
+// segnaposto (A, B) si comporta come prima, cioè un confronto esatto.
+function templateMatcher(template) {
+  const escaped = String(template || '').trim()
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/\\\{\\\{[^}]*?\\\}\\\}/g, '.+');
+  return new RegExp('^' + escaped + '$');
+}
+
+function matchesTemplate(template, text) {
+  return templateMatcher(template).test(String(text || '').trim());
+}
+
 // La risposta corretta per la domanda mostrata, senza sapere la direzione:
 // se la domanda è l'inglese di una voce la risposta è il suo italiano, e
-// viceversa. Torna null se la domanda non è nel vocabolario.
+// viceversa. Torna il MODELLO della risposta (non il testo finito, che
+// dipende dalle scelte dell'utente), da confrontare con matchesTemplate.
+// Torna null se la domanda non è nel vocabolario.
 function correctAnswerFor(vocabulary, prompt) {
   const p = String(prompt || '').trim();
   for (let i = 0; i < vocabulary.length; i++) {
-    if (vocabulary[i].english.trim() === p) return vocabulary[i].italian.trim();
+    if (matchesTemplate(vocabulary[i].english, p)) return vocabulary[i].italian.trim();
   }
   for (let i = 0; i < vocabulary.length; i++) {
-    if (vocabulary[i].italian.trim() === p) return vocabulary[i].english.trim();
+    if (matchesTemplate(vocabulary[i].italian, p)) return vocabulary[i].english.trim();
   }
   return null;
 }
@@ -188,7 +207,7 @@ async function playThroughQuiz(page, prefix, options) {
     const wantCorrect = answerFor(st) === 'correct';
     let index = -1;
     for (let i = 0; i < st.options.length; i++) {
-      const isCorrect = st.options[i].text === correctText;
+      const isCorrect = matchesTemplate(correctText, st.options[i].text);
       if (wantCorrect ? isCorrect : !isCorrect) { index = i; break; }
     }
     if (index === -1) throw new Error('Nessuna opzione ' + (wantCorrect ? 'corretta' : 'sbagliata') + ' per "' + st.prompt + '"');
@@ -212,4 +231,4 @@ async function playThroughQuiz(page, prefix, options) {
   throw new Error('Il modulo "' + prefix + '" non ha raggiunto la Schermata Finale entro ' + maxSteps + ' passi');
 }
 
-module.exports = { loadEpisode, loadGrade, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz };
+module.exports = { loadEpisode, loadGrade, correctAnswerFor, matchesTemplate, readQuizState, waitForQuizChange, playThroughQuiz };
