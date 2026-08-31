@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { loadGrade } = require('./quiz-driver');
+const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -212,9 +213,12 @@ async function run() {
     log('[Job3] "fc-level-label" (module category text inside the module) no longer exists', noLevelLabel);
     const badgeHiddenAtStart = await page.$eval('#fc-ripasso-badge', el => el.hidden).catch(() => null);
     log('[Job3] "Ripasso" badge exists and starts hidden (main pass)', badgeHiddenAtStart === true);
-    // Force every card wrong to trigger a retry pass.
+    // Force every card wrong to trigger a retry pass. Il limite viene dal
+    // mazzo vero: scritto a mano era tarato su 15 carte e non bastava piu'
+    // ad arrivare al ripasso con 21.
+    const carteRipasso = loadGrade(gradeOf('flashcardAEngIta')).length;
     let reachedRetry = false;
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < carteRipasso * 3 + 10; i++) {
       const summaryVisible = await page.isVisible('#fc-summary-screen').catch(() => false);
       if (summaryVisible) break;
       const retryVisible = await page.isVisible('#fc-retry-intro-screen').catch(() => false);

@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -143,8 +143,11 @@ async function run() {
     log('[Regression] Mod1 checkmark still appears', afterAudio.checkVisible);
     await page.click('#dg-translations-toggle');
     await page.waitForTimeout(50);
-    const translationsShown = await page.$$eval('.dg-translation', els => els.length === 7 && els.every(e => !e.hidden));
-    log('[Regression] Mod1 translations toggle still reveals all 7 translations', translationsShown);
+    // Quante sono le battute lo dice il grado che il modulo legge, non un
+    // numero scritto qui: il dialogo e' passato da 7 a 12 battute.
+    const quante = loadGrade(gradeOf('dialogoAscoltaRipeti')).length;
+    const translationsShown = await page.$$eval('.dg-translation', (els, n) => els.length === n && els.every(e => !e.hidden), quante);
+    log('[Regression] Mod1 translations toggle rivela tutte le ' + quante + ' traduzioni', translationsShown);
     log('[Regression] No JS errors on Mod1', errors.length === 0);
     await page.close();
   }

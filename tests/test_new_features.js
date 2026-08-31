@@ -73,8 +73,9 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'OrderTester', []);
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
-    const expected = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.map(p => p.module));
-    log('[A] Rendered module order matches CONFIG.episodes.episode1.moduleOrder', JSON.stringify(order) === JSON.stringify(expected));
+    // Gli id dei PASSI, non i nomi dei moduli: lo stesso modulo puo'
+    // comparire piu' volte e le apparizioni successive hanno un id proprio.
+    log('[A] L\'ordine in mappa e\' quello di CONFIG.moduleOrderDefault', JSON.stringify(order) === JSON.stringify(allSteps()));
     log('[A] No JS errors on map render', errors.length === 0);
     await page.close();
   }
@@ -109,7 +110,7 @@ async function run() {
     // Note: order array was mutated pre-boot via addInitScript-style evaluate before go-episode;
     // but EPISODES.modules was computed once at script load. Re-check by reading it directly.
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
-    log('[A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior)', order.length === 14);
+    log('[A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior)', order.length === allSteps().length);
     log('[A] No JS errors on reorder test', errors.length === 0);
     await page.close();
   }

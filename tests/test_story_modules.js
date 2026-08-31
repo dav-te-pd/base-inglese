@@ -21,25 +21,6 @@ const { stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
 
-// I passi che precedono Why We Say It nella mappa: la mappa non lascia
-// aprire un modulo finché i precedenti non sono completati. Letti dall'ordine
-// vero, non riscritti a mano, così un cambio di ordine non rompe il test.
-function stepsBefore(page, moduleId) {
-  return page.evaluate(function (id) {
-    var order = window.APP_CONFIG.moduleOrderDefault;
-    var seen = {};
-    var ids = [];
-    for (var i = 0; i < order.length; i++) {
-      var m = order[i].module;
-      var stepId = seen[m] ? m + '-' + (seen[m] + 1) : m;
-      seen[m] = (seen[m] || 0) + 1;
-      if (m === id) return ids;
-      ids.push(stepId);
-    }
-    return ids;
-  }, moduleId);
-}
-
 const mockInit = () => {
   const fakeSynth = {
     speaking: false, _current: null,
@@ -60,7 +41,7 @@ async function bootAsUser(page, userName, moduleId) {
   await page.fill('#name-input', userName);
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode');
-  const completed = await stepsBefore(page, moduleId);
+  const completed = stepsBefore(moduleId);
   await page.evaluate(({ userName, completed }) => {
     localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed }));
     ['mappaEpisodio', 'meetTheStory', 'whyWeSayIt'].forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1'));

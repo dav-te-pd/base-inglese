@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { stepsBefore } = require('./module-order');
+const { loadGrade } = require('./quiz-driver');
+const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -108,11 +109,16 @@ async function run() {
   // transcript -> 0 stars -> should get queued for a retry pass. All
   // others get their own exact target text -> full marks.
   let sawRetryQueueEntry = false;
-  for (let i = 0; i < 7; i++) {
+  // Quante righe ha il modulo lo dice il grado che legge davvero, non un
+  // numero scritto qui: era 7 quando Voice Check leggeva le battute.
+  const righe = loadGrade(gradeOf('voiceCoach')).length;
+  for (let i = 0; i < righe; i++) {
     const target = await page.$eval('#vc-target', el => el.textContent);
-    const isBadOne = target.indexOf('Mondov') !== -1 || target.indexOf(target) !== -1 ? false : false;
-    // d2 is the papa line: "Hello, I'm ... . I'm from ... Italy." — force it wrong.
-    const forceWrong = target.indexOf("I'm from") !== -1;
+    // Una riga sbagliata di proposito serve a far comparire il ripasso.
+    // Si sceglie la PRIMA, non una riconosciuta dal testo: legarla a una
+    // frase specifica significa che cambiando il contenuto dell'episodio il
+    // test smette di forzarne una senza dirlo.
+    const forceWrong = i === 0;
     const transcript = forceWrong ? '' : target;
     const stars = await recordAndSend(page, transcript);
     if (forceWrong) {
@@ -126,7 +132,7 @@ async function run() {
   }
   log('[4c] Test actually forced at least one bad-star line', sawRetryQueueEntry);
 
-  // After the 7th line's Avanti, we should be looking at the retryIntro
+  // Dopo l'ultima riga, si deve essere sulla Schermata Ripasso
   // screen (the wrong line queued for a retry pass), not the summary yet.
   const retryIntroVisible = await page.evaluate(() => !document.getElementById('voice-coach-retry-intro-screen').hidden);
   log('[4c] Richiamo: after the main pass, the Schermata Ripasso appears (bad line queued)', retryIntroVisible);
