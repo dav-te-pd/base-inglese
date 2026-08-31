@@ -26,6 +26,7 @@
 
 const fs = require('fs');
 const { repoPath } = require('./test-env');
+const { slotValues, itemText } = require('./module-order');
 
 const DEFAULT_EPISODE = ['data', 'a1-episodio1-inglese.json'];
 
@@ -43,54 +44,27 @@ function loadGrade(grade, parts) {
 
 // I gradi C e D contengono segnaposto ({{papa}}, {{partenza}}, ...) che
 // l'app sostituisce con le scelte dell'utente prima di mostrare il testo.
-// Confrontare il testo a schermo con il modello scritto nel file darebbe
-// sempre "non trovato": qui il modello diventa un'espressione regolare in
-// cui ogni segnaposto vale "una o più parole qualsiasi". Un grado senza
-// segnaposto (A, B) si comporta come prima, cioè un confronto esatto.
-function templateMatcher(template) {
-  const escaped = String(template || '').trim()
-    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    .replace(/\\\{\\\{[^}]*?\\\}\\\}/g, '.+');
-  return new RegExp('^' + escaped + '$');
-}
-
-function matchesTemplate(template, text) {
-  return templateMatcher(template).test(String(text || '').trim());
-}
+// Qui la sostituzione si rifà identica sui valori predefiniti (itemText in
+// module-order.js, stesse regole di resolveSlotValue: i nomi di persona non
+// si traducono, i toponimi sì), così il confronto è fra testi veri.
+//
+// Confrontare invece i MODELLI non basta: tolti i segnaposto, "I'm
+// {{figliaNome}}." e "I'm {{figliaEta}} years old." accettano tutti e due la
+// stessa domanda, e la voce scelta sarebbe quella sbagliata una volta su due.
 
 // La risposta corretta per la domanda mostrata, senza sapere la direzione:
 // se la domanda è l'inglese di una voce la risposta è il suo italiano, e
-// viceversa. Torna il MODELLO della risposta (non il testo finito, che
-// dipende dalle scelte dell'utente), da confrontare con matchesTemplate.
-// Torna null se la domanda non è nel vocabolario.
-//
-// Due voci possono avere la STESSA forma una volta tolti i segnaposto — nel
-// grado C "I'm {{figliaNome}}." e "I'm {{figlioEta}}." diventano entrambe
-// "I'm .+\." — e allora il modello da solo non basta a dire da quale voce
-// venga la domanda mostrata. Le opzioni a schermo sciolgono il dubbio: la
-// voce giusta è quella la cui risposta è davvero fra le quattro. Senza
-// opzioni (chiamata diretta dai test) vale la prima che combacia, come
-// prima.
-function correctAnswerFor(vocabulary, prompt, optionTexts) {
+// viceversa. Torna null se la domanda non è nel vocabolario.
+function correctAnswerFor(vocabulary, prompt) {
   const p = String(prompt || '').trim();
-  const options = optionTexts || [];
-  const candidates = [];
+  const values = slotValues();
   for (let i = 0; i < vocabulary.length; i++) {
-    if (matchesTemplate(vocabulary[i].english, p)) candidates.push(vocabulary[i].italian.trim());
+    if (itemText(vocabulary[i], 'en', values).trim() === p) return itemText(vocabulary[i], 'it', values).trim();
   }
-  if (!candidates.length) {
-    for (let i = 0; i < vocabulary.length; i++) {
-      if (matchesTemplate(vocabulary[i].italian, p)) candidates.push(vocabulary[i].english.trim());
-    }
+  for (let i = 0; i < vocabulary.length; i++) {
+    if (itemText(vocabulary[i], 'it', values).trim() === p) return itemText(vocabulary[i], 'en', values).trim();
   }
-  if (!candidates.length) return null;
-  if (candidates.length > 1 && options.length) {
-    const shown = candidates.filter(function (answer) {
-      return options.some(function (t) { return matchesTemplate(answer, t); });
-    });
-    if (shown.length === 1) return shown[0];
-  }
-  return candidates[0];
+  return null;
 }
 
 // Tutto lo stato che serve, in una sola valutazione sincrona dentro la
@@ -221,12 +195,12 @@ async function playThroughQuiz(page, prefix, options) {
       continue;
     }
 
-    const correctText = correctAnswerFor(vocabulary, st.prompt, st.options.map(function (o) { return o.text; }));
+    const correctText = correctAnswerFor(vocabulary, st.prompt);
     if (correctText === null) throw new Error('Domanda non presente nel vocabolario dell\'episodio: "' + st.prompt + '"');
     const wantCorrect = answerFor(st) === 'correct';
     let index = -1;
     for (let i = 0; i < st.options.length; i++) {
-      const isCorrect = matchesTemplate(correctText, st.options[i].text);
+      const isCorrect = st.options[i].text === correctText;
       if (wantCorrect ? isCorrect : !isCorrect) { index = i; break; }
     }
     if (index === -1) throw new Error('Nessuna opzione ' + (wantCorrect ? 'corretta' : 'sbagliata') + ' per "' + st.prompt + '"');
@@ -250,4 +224,4 @@ async function playThroughQuiz(page, prefix, options) {
   throw new Error('Il modulo "' + prefix + '" non ha raggiunto la Schermata Finale entro ' + maxSteps + ' passi');
 }
 
-module.exports = { loadEpisode, loadGrade, correctAnswerFor, matchesTemplate, readQuizState, waitForQuizChange, playThroughQuiz };
+module.exports = { loadEpisode, loadGrade, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz };

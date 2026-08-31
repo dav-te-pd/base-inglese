@@ -74,4 +74,59 @@ function allSteps() {
   return stepIds();
 }
 
-module.exports = { readOrder, stepIds, stepsBefore, gradeOf, allSteps };
+
+// ---------------------------------------------------------------------------
+// Le tabelle di personalizzazione e il riempimento dei segnaposto.
+//
+// Perché servono qui: i gradi C e D contengono {{papa}}, {{partenza}}, ... e
+// l'app li sostituisce prima di mostrare il testo. Un test che confronta
+// quello che vede a schermo con quello che c'è nel file deve fare la stessa
+// sostituzione, altrimenti non trova mai niente — o, peggio, trova la voce
+// sbagliata quando due modelli si assomigliano ("I'm {{figliaNome}}." accetta
+// anche "I'm 16 years old.").
+//
+// Le regole sono le stesse di resolveSlotValue() in index.html: il nome di
+// una persona non si traduce mai (tabella people.*), un toponimo sì.
+
+function readTable(html, section, name) {
+  const block = html.match(new RegExp(section + ':\\s*\\{[\\s\\S]*?\\n    \\},'));
+  if (!block) return null;
+  const list = block[0].match(new RegExp('\\b' + name + ':\\s*\\[([\\s\\S]*?)\\]'));
+  if (!list) return null;
+  const rows = [];
+  const re = /\{\s*value:\s*'([^']*)'\s*,\s*it:\s*'([^']*)'\s*,\s*en:\s*'([^']*)'/g;
+  let m;
+  while ((m = re.exec(list[1])) !== null) rows.push({ value: m[1], it: m[2], en: m[3] });
+  return rows;
+}
+
+// I valori predefiniti di ogni slot, nelle due lingue: quelli che vede un
+// utente di test, che non personalizza niente.
+function slotValues(episodePath) {
+  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+  const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'a1-episodio1-inglese.json'])), 'utf8'));
+  const values = {};
+  (episode.personalizationTablesUsed || []).forEach(slot => {
+    const isPerson = slot.table.indexOf('people.') === 0;
+    if (slot.table.indexOf('episode.ageOptions.') === 0) {
+      values[slot.key] = { it: String(slot.default), en: String(slot.default) };
+      return;
+    }
+    const [section, name] = slot.table.split('.');
+    const rows = readTable(html, section, name) || [];
+    const picked = rows.find(r => r.value === slot.default) || rows[0];
+    if (!picked) return;
+    values[slot.key] = { it: picked.it, en: isPerson ? picked.it : picked.en };
+  });
+  return values;
+}
+
+// Il testo di una voce come lo mostra l'app: stessa sostituzione di
+// fillTemplate(), sui valori predefiniti.
+function itemText(item, lang, values) {
+  const v = values || slotValues();
+  const raw = lang === 'en' ? item.english : item.italian;
+  return String(raw).replace(/\{\{(\w+)\}\}/g, (whole, key) => (v[key] ? v[key][lang] : whole));
+}
+
+module.exports = { readOrder, stepIds, stepsBefore, gradeOf, allSteps, slotValues, itemText };
