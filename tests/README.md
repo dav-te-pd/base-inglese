@@ -1,8 +1,9 @@
 # Suite di regressione
 
-27 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+28 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
-`test_voicecoach.js`, `test_speakeasy.js`, `test_fallbacks.js`). Insieme costituiscono la suite di regressione completa
+`test_voicecoach.js`, `test_speakeasy.js`, `test_fallbacks.js`,
+`test_hidden_guard.js`). Insieme costituiscono la suite di regressione completa
 citata da CLAUDE.md (regola 15): quando una modifica tocca codice condiviso
 va lanciata tutta, quando resta dentro un modulo bastano i file di quel
 modulo.
@@ -23,7 +24,7 @@ npm test
 ```
 
 `npm test` esegue `run_full_regression.sh`, che avvia da solo il server
-statico sulla porta 8955, lancia i 27 file in ordine e ferma il server alla
+statico sulla porta 8955, lancia i 28 file in ordine e ferma il server alla
 fine. Se un server risponde già su quella porta, lo riusa invece di
 avviarne un altro.
 
@@ -73,6 +74,25 @@ README di ciascuna per cosa sono e perché sono state tenute:
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
 millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
 intermittente, si guarda lì prima di sospettare una regressione dell'app.
+
+## `test_hidden_guard.js` — perché è nella suite
+
+Un elemento con l'attributo `hidden` che resta visibile perché una regola
+CSS gli dà un `display` proprio: è successo cinque volte in questo progetto
+(`.btn`, `.header-actions`, `header.app-header`, le schermate di Speed Round
+e Flash Card). Non è sfortuna — `[hidden]{display:none}` arriva dal foglio
+predefinito del browser, il livello più debole della cascata, e qualunque
+regola d'autore lo batte.
+
+`index.html` ha ora una guardia unica in cima al foglio di stile
+(`[hidden]:not([hidden="until-found"]){display:none!important}`), che copre
+anche le classi future. Questo test non si limita a controllare che quella
+riga esista: prende ogni regola del foglio che imposta un `display`,
+costruisce un elemento che quella regola colpisce, gli mette `hidden` e
+verifica che sparisca davvero. Una regola nuova scritta in modo da tornare a
+rompere la guardia (per esempio con un `!important` su un `#id`) fa fallire
+la CI il giorno in cui viene scritta, non il giorno in cui qualcuno apre
+quella schermata.
 
 ## `test_fallbacks.js` — perché è nella suite
 

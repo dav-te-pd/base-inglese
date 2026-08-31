@@ -37,7 +37,15 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 11. **Prima di costruire un nuovo elemento di interfaccia, verificare se esiste già un componente riusabile che serve allo scopo** (es. i pannelli/box/schermate già presenti nel progetto) ed estenderlo invece di duplicarlo. Se durante un lavoro noti duplicazioni già esistenti nel codice, segnalale nel riepilogo finale invece di correggerle silenziosamente — verranno affrontate in una revisione dedicata.
 
-12. **Ogni volta che si aggiunge o modifica una proprietà `display` su una classe CSS condivisa, verificare esplicitamente che esista l'override `[hidden] { display: none }` corrispondente.** Un elemento nascosto via attributo `hidden` ma la cui classe imposta un proprio `display` resta visibile, perché una regola d'autore batte sempre lo stile predefinito del browser `[hidden]{display:none}`, indipendentemente dalla specificità. Questo bug si è già ripresentato più volte nel progetto (es. `.btn`, `.header-actions`, `header.app-header`, le schermate di Speed Round e Flash Card).
+12. **La visibilità via `hidden` è garantita da una guardia unica, non dalla memoria di chi scrive CSS.** In cima al foglio di stile di `index.html` c'è una sola riga:
+
+    ```css
+    [hidden]:not([hidden="until-found"]) { display: none !important; }
+    ```
+
+    Una regola d'autore con `!important` batte ogni regola d'autore senza, quindi questa copre ogni classe esistente e ogni classe futura. **Aggiungere un `display` a una classe non richiede più nessuna verifica e nessun override accanto**: non scriverne di nuovi, e non toccare la guardia. `tests/test_hidden_guard.js` è nella suite e non si fida della riga: prende ogni regola del foglio che imposta un `display`, costruisce un elemento che quella regola colpisce, gli mette `hidden` e verifica che sparisca — quindi una regola scritta in modo da rompere di nuovo la guardia (per esempio un `!important` su un `#id`) fa fallire la CI subito.
+
+    *Perché c'è: `[hidden]{display:none}` arriva dal foglio predefinito del browser, il livello più debole della cascata, e qualunque regola d'autore lo batte a prescindere dalla specificità. Il bug si è ripresentato cinque volte (`.btn`, `.header-actions`, `header.app-header`, le schermate di Speed Round e Flash Card) perché la difesa era una raccomandazione: chi aggiungeva un `display` a una classe non poteva sapere che quella classe sarebbe stata nascosta altrove. Un audit su tutto il file ha poi trovato altri 18 punti scoperti, nessuno ancora esploso. La regola vecchia chiedeva di ricordarsene ogni volta; questa toglie l'occasione di dimenticarsene.*
 
 13. **Prima di creare una nuova funzione o calcolo, verificare se ne esiste già uno riusabile nel codice, ed estenderlo invece di duplicarlo.** Quando riusi o crei una funzione degna di nota, comunicane il nome esatto nel riepilogo di risposta.
 

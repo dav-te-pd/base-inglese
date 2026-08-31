@@ -51,7 +51,7 @@ I valori regolabili — soglie, tempi, liste, percentuali — stanno tutti in
 
 ## I test
 
-27 file Playwright, uno per giro di lavoro o argomento. Vanno lanciati tutti
+28 file Playwright, uno per giro di lavoro o argomento. Vanno lanciati tutti
 quando una modifica tocca codice condiviso; se resta dentro un modulo bastano i
 file di quel modulo (`CLAUDE.md`, regola 15).
 
