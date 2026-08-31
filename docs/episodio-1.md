@@ -8,6 +8,23 @@
 >
 > Il metodo con cui è stato scritto (workflow, regole dei dialoghi, checklist) sta nel file di progetto `base-inglese-contenuti-didattici`, non qui.
 
+## ISTRUZIONI PER L'AGGIORNAMENTO DEL JSON
+
+**Tutto ciò che segue SOSTITUISCE integralmente il contenuto attuale del file dati. Non si aggiunge: rimpiazza.**
+
+Nello specifico:
+
+- **Il dialogo** è nuovo: 12 battute al posto delle 7 attuali, con testo e traduzioni diversi. Il vecchio dialogo va rimosso.
+- **Le tabelle di personalizzazione** sostituiscono quelle attuali: nomi a 8 opzioni per ruolo, età cambiate, destinazioni ridotte a 6, più il nuovo slot `cognome`.
+- **I gradi B e C**, oggi vuoti, vanno riempiti con il contenuto qui sotto.
+- **Il grado A** passa da 15 a 21 voci.
+
+**I nomi di persona non si traducono mai nel dialogo.** La colonna inglese esiste solo per mostrare la doppia forma nella schermata di personalizzazione. I toponimi invece si traducono (Torino → Turin). I cognomi non hanno forma inglese: colonna identica per costruzione.
+
+**Ricordarsi della copia di sicurezza** dentro `index.html`, che `test_fallbacks.js` verifica: va rigenerata dal file dati, non riscritta a mano.
+
+**Se un conteggio non torna rispetto ai numeri attesi qui sopra, fermarsi e segnalarlo prima di scrivere.**
+
 ---
 
 
@@ -184,6 +201,8 @@ Le dodici battute della tabella in cima, con `speaker`, `ruolo`, `english`, `ita
 **Il grado C ha bisogno di una categoria?** Per le parole la categoria è grammaticale; per una frase intera forse è funzionale — domanda, risposta, presentazione, saluto. Non sappiamo ancora a cosa servirebbe: **da decidere all'episodio 4**, quando ci saranno una cinquantina di frasi davanti e un criterio potrà emergere invece di essere inventato.
 
 ## Gli slot di personalizzazione
+
+**Queste tabelle sostituiscono integralmente quelle attuali.**
 
 Nove slot. I **nomi di persona non si traducono mai** nel dialogo: la colonna inglese serve solo a mostrare la doppia forma nella schermata di personalizzazione. I **toponimi si traducono**.
 
