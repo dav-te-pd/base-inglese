@@ -174,7 +174,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInitAsync);
-    await bootAsUser(page, 'T18Job1b', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T18Job1b', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#fc-card [data-say]');

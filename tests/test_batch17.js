@@ -326,7 +326,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1f', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T17Job1f', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     // en-it: the listen button lives on the FRONT (English side).
@@ -373,7 +373,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job2', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T17Job2', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     // Force through to the summary screen quickly (answer every card). Il

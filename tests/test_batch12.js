@@ -286,11 +286,19 @@ async function run() {
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are
     // "Quiz".
-    log('[Job7] Dialogue: Listen & Repeat shows "Studia il dialogo"', row('dialogoAscoltaRipeti').type === 'Studia il dialogo');
-    log('[Job7] Dialogue: Repeat in Time shows "Studia il dialogo" too', row('dialogoRipetiATempo').type === 'Studia il dialogo');
-    log('[Job7] Dialogue: Real Dialogue shows "Studia il dialogo" too', row('dialogoContinuo').type === 'Studia il dialogo');
-    log('[Job7] Voice Practice is "Studio"', row('voicePractice').type === 'Studio');
-    log('[Job7] Voice Check is "Quiz"', row('voiceCoach').type === 'Quiz');
+    // L'etichetta e' "categoria · grado" (docs/struttura-corso.md): la
+    // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
+    // Il grado atteso viene dall'ordine, non riscritto qui.
+    log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',
+      ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].every(id => row(id).type.indexOf('Studia il dialogo') === 0));
+    log('[Job7] Voice Practice è "Studio"', row('voicePractice').type.indexOf('Studio') === 0);
+    log('[Job7] Voice Check è "Quiz"', row('voiceCoach').type.indexOf('Quiz') === 0);
+    log('[Job7] Your Story è "Inizio", senza grado (non ne legge uno)', row('personalizzazione').type === 'Inizio');
+    // Il grado accanto alla categoria: Repeat Aloud compare due volte, su due
+    // gradi diversi, e le due righe devono dirlo.
+    log('[Job7] L\'etichetta porta il nome del grado accanto alla categoria',
+      row('repeatAloud').type === 'Studio · Parole' && row('repeatAloud-2').type === 'Studio · Espressioni');
+    log('[Job7] Un quiz sulle frasi lo dice', row('speedRoundEngIta').type === 'Quiz · Frasi');
     log('[Job7] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

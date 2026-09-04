@@ -328,12 +328,12 @@ async function run() {
     await bootAsUser(page, 'T15Job6', ALL_BEFORE_QM);
     await openModule(page, 'repeatAloud');
     const raType = await page.$eval('#repeat-aloud-type-badge', el => el.textContent).catch(() => null);
-    log('[Job6] Repeat Aloud header shows type badge "Studio"', raType === 'Studio');
+    log('[Job6] Repeat Aloud header shows type badge "Studio · <grado>"', raType.indexOf('Studio') === 0);
     await page.click('#repeat-aloud-back-map');
     await page.waitForTimeout(150);
     await openModule(page, 'quickMatchEngIta');
     const qmType = await page.$eval('#quick-match-type-badge', el => el.textContent).catch(() => null);
-    log('[Job6] Quick Match header shows type badge "Studio"', qmType === 'Studio');
+    log('[Job6] Quick Match header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
     log('[Job6] No JS errors', errors.length === 0);
     await page.close();
   }

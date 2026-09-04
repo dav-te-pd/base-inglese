@@ -371,6 +371,18 @@
     // episodio, non qui: questa è solo la lista da cui la vista di
     // riordino fa scegliere, e da cui il pulsante del grado cicla. ----
     grades: ['A', 'B', 'C', 'D'],
+    // ---- Come si chiama ogni grado per lo studente (docs/struttura-corso.md).
+    // La lettera è l'identificativo tecnico — codice, dati, Pannello Admin —
+    // e allo studente non dice niente: senza il nome, gli esercizi sembrano
+    // ripetersi senza motivo, invece di lavorare su cose diverse. Si mostra
+    // accanto alla categoria, separato da gradeSeparator: "Studio · Parole". ----
+    gradeNames: {
+      A: 'Parole',
+      B: 'Espressioni',
+      C: 'Frasi',
+      D: 'Dialogo'
+    },
+    gradeSeparator: ' · ',
     // ---- Module step order — the ONLY place that decides module
     // sequence AND which grade of the episode each step reads.
     // moduleOrderDefault is the ONE sequence every episode uses unless it
@@ -401,14 +413,14 @@
       { module: 'personalizzazione' },
       { module: 'meetTheStory', grade: 'D' },
       { module: 'repeatAloud', grade: 'A' },
-      { module: 'flashcardAEngIta', grade: 'A' },
-      { module: 'flashcardAItaEng', grade: 'A' },
       { module: 'quickMatchEngIta', grade: 'A' },
       { module: 'quickMatchItaEng', grade: 'A' },
+      { module: 'flashcardAEngIta', grade: 'A' },
+      { module: 'flashcardAItaEng', grade: 'A' },
       { module: 'repeatAloud', grade: 'B' },
-      { module: 'flashcardAEngIta', grade: 'B' },
       { module: 'quickMatchEngIta', grade: 'B' },
       { module: 'quickMatchItaEng', grade: 'B' },
+      { module: 'flashcardAEngIta', grade: 'B' },
       { module: 'voicePractice', grade: 'B' },
       { module: 'whyWeSayIt', grade: 'D' },
       { module: 'quickMatchEngIta', grade: 'C' },
@@ -440,14 +452,17 @@
     // moduleOutcomeRules below regardless of which of these it shows —
     // "studio" is not a promise of "ungraded", just "no time pressure".
     moduleTypes: {
+      // Le sei categorie (docs/struttura-corso.md). Dicono allo studente cosa
+      // lo aspetta, NON se verrà valutato: ogni modulo registra il risultato,
+      // sempre. La differenza fra studio e quiz non è la valutazione, è la
+      // pressione — nello studio si va al proprio ritmo, nel quiz c'è il tempo
+      // o l'avanzamento automatico.
+      inizio: { label: 'Inizio' },
       studio: { label: 'Studio' },
-      // All three Dialogue modules (job: nuovo ordine) — none of them is
-      // actually evaluated by the system (no ModuleRules, see
-      // moduleOutcomeRules below); this just names what they are.
-      studiaDialogo: { label: 'Studia il dialogo' },
+      dialogo: { label: 'Studia il dialogo' },
       quiz: { label: 'Quiz' },
-      test: { label: 'Verifica finale' }, // future: Test
-      fine: { label: 'Fine' } // future: Modulo Finale, Download
+      test: { label: 'Verifica finale' }, // previsto: Test
+      fine: { label: 'Fine' } // previsti: Modulo Finale, Download
     },
     // ---- Module Rules — which of three systems colors a module's map
     // badge, keyed by module id. Read this instead of the code to know
@@ -830,18 +845,11 @@
           "type": "select",
           "table": "places.departures",
           "default": "mondovi"
-        },
-        {
-          "key": "destinazione",
-          "label": "Destinazione",
-          "type": "select",
-          "table": "places.destinations",
-          "default": "cina"
         }
       ],
       "levels": {
         "A": {
-          "label": "Parole singole",
+          "label": "Parole",
           "items": [
             {
               "id": "a-hello",
@@ -863,13 +871,6 @@
               "italian": "bello / piacevole",
               "pronunciationTip": "nais",
               "grammarCategory": "aggettivo"
-            },
-            {
-              "id": "a-to",
-              "english": "to",
-              "italian": "a / verso",
-              "pronunciationTip": "tu — corta",
-              "grammarCategory": "preposizione"
             },
             {
               "id": "a-meet",
@@ -975,25 +976,11 @@
               "italian": "famiglia",
               "pronunciationTip": "FA-mi-li — accento sulla prima",
               "grammarCategory": "sostantivo"
-            },
-            {
-              "id": "a-going",
-              "english": "going",
-              "italian": "andando",
-              "pronunciationTip": "GO-in — la \"g\" finale si sente appena",
-              "grammarCategory": "verbo"
-            },
-            {
-              "id": "a-welcome",
-              "english": "Welcome",
-              "italian": "Benvenuto",
-              "pronunciationTip": "UEL-com — accento sulla prima",
-              "grammarCategory": "saluto"
             }
           ]
         },
         "B": {
-          "label": "Chunk",
+          "label": "Espressioni",
           "items": [
             {
               "id": "b-nice-to-meet-you",
@@ -1029,13 +1016,6 @@
               "italian": "anni (di età)",
               "pronunciationTip": "i-ars OULD",
               "grammarCategory": "espressione per l'età"
-            },
-            {
-              "id": "b-going-to",
-              "english": "going to",
-              "italian": "andando a / verso",
-              "pronunciationTip": "GO-in tu — nel parlato veloce diventa quasi \"gonna\"",
-              "grammarCategory": "verbo + preposizione"
             }
           ]
         },
@@ -1101,29 +1081,11 @@
               "english": "We are the {{cognome}} family!",
               "italian": "Siamo la famiglia {{cognome}}!",
               "fromLine": "d-9"
-            },
-            {
-              "id": "c-11",
-              "english": "Where are you going?",
-              "italian": "Dove state andando?",
-              "fromLine": "d-10"
-            },
-            {
-              "id": "c-12",
-              "english": "We are going to {{destinazione}}!",
-              "italian": "Andiamo in {{destinazione}}!",
-              "fromLine": "d-11"
-            },
-            {
-              "id": "c-13",
-              "english": "Welcome to {{destinazione}}!",
-              "italian": "Benvenuti in {{destinazione}}!",
-              "fromLine": "d-12"
             }
           ]
         },
         "D": {
-          "label": "Battute",
+          "label": "Dialogo",
           "items": [
             {
               "id": "d-1",
@@ -1224,7 +1186,7 @@
                 {
                   "title": "Dire quanti anni hai",
                   "difficulty": "facile",
-                  "body": "La figlia dice \"I'm sixteen <strong>years old</strong>\". Il figlio dice solo \"I'm ten\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+                  "body": "La figlia dice \"I'm {{figliaEta}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
                 }
               ]
             },
@@ -1241,48 +1203,6 @@
                   "body": "\"We are\" vuol dire \"noi siamo\".<br>Conosci già \"I am\" — io sono. Quando si parla in più di uno diventa \"we are\": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola \"family\", al contrario dell'italiano."
                 }
               ]
-            },
-            {
-              "id": "d-10",
-              "speaker": "guide",
-              "ruolo": "esterno",
-              "english": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... where are you going?",
-              "italian": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... dove state andando?",
-              "whatYouLearn": [
-                {
-                  "title": "Una parola per \"tu\" e per \"voi\"",
-                  "difficulty": "facile",
-                  "body": "Prima la guida ha chiesto al papà: \"Where are you from?\" — lì \"you\" vuol dire <strong>tu</strong>.<br>Ora chiede a tutta la famiglia: \"Where are you going?\" — e qui \"you\" vuol dire <strong>voi</strong>.<br>In inglese è la stessa parola. Capisci a chi si parla guardando la situazione, non la parola.<br>Non è un problema: ci si abitua prestissimo, e ti risparmia di imparare due forme diverse come in italiano."
-                }
-              ]
-            },
-            {
-              "id": "d-11",
-              "speaker": "papa",
-              "ruolo": "famiglia",
-              "english": "We are going to {{destinazione}}!",
-              "italian": "Andiamo in {{destinazione}}!",
-              "whatYouLearn": [
-                {
-                  "title": "Dire dove stai andando",
-                  "difficulty": "media",
-                  "body": "\"We are going to {{destinazione:en}}\" vuol dire \"andiamo in {{destinazione}}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
-                }
-              ]
-            },
-            {
-              "id": "d-12",
-              "speaker": "guide",
-              "ruolo": "esterno",
-              "english": "Welcome to {{destinazione}}, {{cognome}} family!",
-              "italian": "Benvenuti in {{destinazione}}, famiglia {{cognome}}!",
-              "whatYouLearn": [
-                {
-                  "title": "Welcome",
-                  "difficulty": "facile",
-                  "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {{destinazione:en}}\", benvenuti in {{destinazione}}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
-                }
-              ]
             }
           ]
         }
@@ -1290,6 +1210,7 @@
       "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
       "ageOptions": {
         "figlia": [
+          12,
           13,
           14,
           15,
@@ -1303,7 +1224,8 @@
           7,
           8,
           9,
-          10
+          10,
+          11
         ]
       }
     }
@@ -6030,11 +5952,10 @@
       // computed-modules block below), keyed by these same ids, so the
       // displayed name lives in exactly one place (CLAUDE.md).
       modulesById: {
-        // "Studio" (the generic studio-type label) doesn't describe this
-        // one well — it's setup, not learning — so it overrides the
-        // type's own label with typeLabel instead of needing a whole
-        // category just for one module.
-        personalizzazione: { kind: 'personalizzazione', type: 'studio', typeLabel: 'Inizio' },
+        // Categoria "Inizio" (docs/struttura-corso.md): è preparazione, non
+        // studio. Prima era uno "studio" con l'etichetta sovrascritta a mano,
+        // perché la categoria non esisteva ancora.
+        personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
         repeatAloud: { kind: 'repeatAloud', dataFile: 'data/a1-episodio1-inglese.json', type: 'studio' },
         // Due moduli, un componente solo (openSpeakEasy e dintorni), come i
         // tre Dialogue: storyProfile e' l'unica cosa che li distingue nel
@@ -6062,9 +5983,9 @@
         // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
         // share their own category (job: sei etichette) — distinct from
         // plain "studio" since a dialogue plays out with its own pacing.
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'studiaDialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'studiaDialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'studiaDialogo' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
         // Speed Match: quiz, not a separate "a tempo" category (job: sei
         // etichette) — the time pressure IS what makes it a quiz here.
         speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/a1-episodio1-inglese.json', type: 'quiz' },
@@ -6100,8 +6021,7 @@
         figlioNome: 'figlioNome',
         figliaEta: 'figliaEta',
         figlioEta: 'figlioEta',
-        partenza: 'partenza',
-        destinazione: 'destinazione'
+        partenza: 'partenza'
       },
       // Maps a dialogue "speaker" id to the slotFields key used for their
       // display name tag in the Speak Easy chat bubbles. A speaker with no
@@ -6463,9 +6383,9 @@
   // Un segnaposto può chiedere una lingua sua, con {{chiave:en}} o
   // {{chiave:it}}, invece di seguire quella della chiamata. Serve dove un
   // testo mescola le due lingue: una skill è scritta in italiano ma cita la
-  // frase inglese del dialogo, quindi "We are going to {{destinazione:en}}"
-  // vuol dire "andiamo in {{destinazione}}" deve dare "China" nella citazione
-  // e "Cina" nella spiegazione. Senza suffisso vale la lingua della chiamata,
+  // frase inglese del dialogo, quindi "I am from {{partenza:en}}" vuol dire
+  // "vengo da {{partenza}}" deve dare "Turin" nella citazione e "Torino"
+  // nella spiegazione. Senza suffisso vale la lingua della chiamata,
   // come prima: nessun testo esistente cambia comportamento.
   function fillTemplate(text, episode, values, lang) {
     return text.replace(/\{\{(\w+)(?::(\w+))?\}\}/g, function (match, varName, forcedLang) {
@@ -6865,10 +6785,10 @@
       var outcomeLevel = outcome && outcome.level;
       var rowClass = status + (outcomeLevel ? ' outcome-' + outcomeLevel : '');
       var badgeLabel = (outcomeLevel && OUTCOME_BADGE_LABEL[outcomeLevel]) || STATUS_LABEL[status];
-      var typeInfo = CONFIG.moduleTypes[m.type];
-      // typeLabel (see personalizzazione's own entry) overrides the
-      // type's generic label for a module it doesn't quite describe.
-      var typeLabelText = m.typeLabel || (typeInfo && typeInfo.label);
+      // Stessa etichetta che ogni modulo mostra nella propria intestazione
+      // (moduleTypeLabel): categoria e grado, "Studio · Parole". Qui era
+      // ricalcolata a parte, e il grado non sarebbe comparso in mappa.
+      var typeLabelText = moduleTypeLabel(m);
       var typeHtml = typeLabelText ? '<span class="module-row-type">' + typeLabelText + '</span>' : '';
       var subtitleHtml = m.subtitle ? '<span class="module-row-subtitle">' + m.subtitle + '</span>' : '';
       return '<button type="button" class="module-row ' + rowClass + '" data-module="' + m.id + '"' +
@@ -7099,9 +7019,15 @@
   // same CONFIG.moduleTypes/typeLabel lookup renderModuleList already
   // uses for the map row, reused here (not a second copy) so a module's
   // header can show it too, next to its name, not just the map.
+  // "Studio · Parole": la categoria dice cosa aspettarsi, il grado su cosa si
+  // sta lavorando. Un modulo senza grado (Your Story) mostra la sola
+  // categoria — non c'è un "su cosa" da dire.
   function moduleTypeLabel(module) {
     var typeInfo = CONFIG.moduleTypes[module.type];
-    return module.typeLabel || (typeInfo && typeInfo.label) || '';
+    var category = module.typeLabel || (typeInfo && typeInfo.label) || '';
+    var gradeName = module.grade && CONFIG.gradeNames[module.grade];
+    if (!gradeName) return category;
+    return category ? category + CONFIG.gradeSeparator + gradeName : gradeName;
   }
 
   // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed

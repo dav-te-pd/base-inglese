@@ -206,7 +206,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job3', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T16Job3', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     const noLevelLabel = await page.evaluate(() => !document.getElementById('fc-level-label'));
@@ -284,7 +284,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job5', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T16Job5', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     // Start the front-of-card audio (en-it direction -> front is english, has a listen button).
@@ -339,7 +339,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job7', ALL_BEFORE_QM);
+    await bootAsUser(page, 'T16Job7', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     const rects = await page.evaluate(() => {

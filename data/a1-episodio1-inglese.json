@@ -65,18 +65,11 @@
       "type": "select",
       "table": "places.departures",
       "default": "mondovi"
-    },
-    {
-      "key": "destinazione",
-      "label": "Destinazione",
-      "type": "select",
-      "table": "places.destinations",
-      "default": "cina"
     }
   ],
   "levels": {
     "A": {
-      "label": "Parole singole",
+      "label": "Parole",
       "items": [
         {
           "id": "a-hello",
@@ -98,13 +91,6 @@
           "italian": "bello / piacevole",
           "pronunciationTip": "nais",
           "grammarCategory": "aggettivo"
-        },
-        {
-          "id": "a-to",
-          "english": "to",
-          "italian": "a / verso",
-          "pronunciationTip": "tu — corta",
-          "grammarCategory": "preposizione"
         },
         {
           "id": "a-meet",
@@ -210,25 +196,11 @@
           "italian": "famiglia",
           "pronunciationTip": "FA-mi-li — accento sulla prima",
           "grammarCategory": "sostantivo"
-        },
-        {
-          "id": "a-going",
-          "english": "going",
-          "italian": "andando",
-          "pronunciationTip": "GO-in — la \"g\" finale si sente appena",
-          "grammarCategory": "verbo"
-        },
-        {
-          "id": "a-welcome",
-          "english": "Welcome",
-          "italian": "Benvenuto",
-          "pronunciationTip": "UEL-com — accento sulla prima",
-          "grammarCategory": "saluto"
         }
       ]
     },
     "B": {
-      "label": "Chunk",
+      "label": "Espressioni",
       "items": [
         {
           "id": "b-nice-to-meet-you",
@@ -264,13 +236,6 @@
           "italian": "anni (di età)",
           "pronunciationTip": "i-ars OULD",
           "grammarCategory": "espressione per l'età"
-        },
-        {
-          "id": "b-going-to",
-          "english": "going to",
-          "italian": "andando a / verso",
-          "pronunciationTip": "GO-in tu — nel parlato veloce diventa quasi \"gonna\"",
-          "grammarCategory": "verbo + preposizione"
         }
       ]
     },
@@ -336,29 +301,11 @@
           "english": "We are the {{cognome}} family!",
           "italian": "Siamo la famiglia {{cognome}}!",
           "fromLine": "d-9"
-        },
-        {
-          "id": "c-11",
-          "english": "Where are you going?",
-          "italian": "Dove state andando?",
-          "fromLine": "d-10"
-        },
-        {
-          "id": "c-12",
-          "english": "We are going to {{destinazione}}!",
-          "italian": "Andiamo in {{destinazione}}!",
-          "fromLine": "d-11"
-        },
-        {
-          "id": "c-13",
-          "english": "Welcome to {{destinazione}}!",
-          "italian": "Benvenuti in {{destinazione}}!",
-          "fromLine": "d-12"
         }
       ]
     },
     "D": {
-      "label": "Battute",
+      "label": "Dialogo",
       "items": [
         {
           "id": "d-1",
@@ -459,7 +406,7 @@
             {
               "title": "Dire quanti anni hai",
               "difficulty": "facile",
-              "body": "La figlia dice \"I'm sixteen <strong>years old</strong>\". Il figlio dice solo \"I'm ten\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+              "body": "La figlia dice \"I'm {{figliaEta}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
             }
           ]
         },
@@ -476,48 +423,6 @@
               "body": "\"We are\" vuol dire \"noi siamo\".<br>Conosci già \"I am\" — io sono. Quando si parla in più di uno diventa \"we are\": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola \"family\", al contrario dell'italiano."
             }
           ]
-        },
-        {
-          "id": "d-10",
-          "speaker": "guide",
-          "ruolo": "esterno",
-          "english": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... where are you going?",
-          "italian": "{{papa}}, {{mamma}}, {{figliaNome}}, {{figlioNome}}... dove state andando?",
-          "whatYouLearn": [
-            {
-              "title": "Una parola per \"tu\" e per \"voi\"",
-              "difficulty": "facile",
-              "body": "Prima la guida ha chiesto al papà: \"Where are you from?\" — lì \"you\" vuol dire <strong>tu</strong>.<br>Ora chiede a tutta la famiglia: \"Where are you going?\" — e qui \"you\" vuol dire <strong>voi</strong>.<br>In inglese è la stessa parola. Capisci a chi si parla guardando la situazione, non la parola.<br>Non è un problema: ci si abitua prestissimo, e ti risparmia di imparare due forme diverse come in italiano."
-            }
-          ]
-        },
-        {
-          "id": "d-11",
-          "speaker": "papa",
-          "ruolo": "famiglia",
-          "english": "We are going to {{destinazione}}!",
-          "italian": "Andiamo in {{destinazione}}!",
-          "whatYouLearn": [
-            {
-              "title": "Dire dove stai andando",
-              "difficulty": "media",
-              "body": "\"We are going to {{destinazione:en}}\" vuol dire \"andiamo in {{destinazione}}\".<br>Ritrovi \"we are\", che hai appena visto. Qui però non finisce lì: \"we are <strong>going</strong>\" vuol dire che l'azione sta succedendo adesso, o che è già decisa.<br>\"To\" indica la direzione: verso dove.<br>Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio."
-            }
-          ]
-        },
-        {
-          "id": "d-12",
-          "speaker": "guide",
-          "ruolo": "esterno",
-          "english": "Welcome to {{destinazione}}, {{cognome}} family!",
-          "italian": "Benvenuti in {{destinazione}}, famiglia {{cognome}}!",
-          "whatYouLearn": [
-            {
-              "title": "Welcome",
-              "difficulty": "facile",
-              "body": "\"Welcome\" vuol dire \"benvenuto\". Con \"to\" davanti al posto: \"Welcome to {{destinazione:en}}\", benvenuti in {{destinazione}}.<br>Ritrovi \"to\" della frase di prima: la stessa parolina per dire verso dove.<br>Non cambia se sei uno o siete in tanti: \"welcome\" va bene per tutti."
-            }
-          ]
         }
       ]
     }
@@ -525,6 +430,7 @@
   "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
   "ageOptions": {
     "figlia": [
+      12,
       13,
       14,
       15,
@@ -538,7 +444,8 @@
       7,
       8,
       9,
-      10
+      10,
+      11
     ]
   }
 }

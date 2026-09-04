@@ -18,7 +18,7 @@
 
 const { launchBrowser, APP_URL } = require('./test-env');
 const { stepsBefore } = require('./module-order');
-const { loadGrade } = require('./quiz-driver');
+const { loadGrade, loadEpisode } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -111,9 +111,14 @@ async function run() {
   battute.forEach(line => (line.whatYouLearn || []).forEach((sk, i) => skillIds.push(line.id + '-s' + (i + 1))));
   const battuteConDueSkill = battute.filter(l => (l.whatYouLearn || []).length > 1);
 
-  log('[dati] Il grado D ha 12 battute', battute.length === 12);
+  // I numeri dichiarati in docs/episodio-1.md, verificati sul file dati vero
+  // (CLAUDE.md regola 29): se l'episodio viene ridiviso, qui si vede subito.
+  const attesi = { A: 18, B: 5, C: 10, D: 9, skill: 8 };
+  ['A', 'B', 'C', 'D'].forEach(g => log('[dati] Il grado ' + g + ' ha ' + attesi[g] + ' voci', loadGrade(g).length === attesi[g]));
+  log('[dati] I nomi dei gradi sono quelli mostrati allo studente',
+    JSON.stringify(['A', 'B', 'C', 'D'].map(g => loadEpisode().levels[g].label)) === JSON.stringify(['Parole', 'Espressioni', 'Frasi', 'Dialogo']));
   log('[dati] whatYouLearn è una lista su ogni battuta che ne ha', battute.every(l => !l.whatYouLearn || Array.isArray(l.whatYouLearn)));
-  log('[dati] Le skill sono 11 su 10 battute (la prima ne porta due)', skillIds.length === 11 && battuteConDueSkill.length === 1);
+  log('[dati] Le skill sono ' + attesi.skill + ' e la prima battuta ne porta due', skillIds.length === attesi.skill && battuteConDueSkill.length === 1);
   log('[dati] Ogni skill ha titolo e corpo separati', battute.every(l => (l.whatYouLearn || []).every(s => !!s.title && !!s.body)));
 
   // ============ A: Meet the Story — primo contatto ============
@@ -148,25 +153,18 @@ async function run() {
 
     let st = await readState(page);
     log('[B] Le traduzioni partono nascoste, dietro il loro pulsante', st.traduzioniVisibili === 0 && st.pulsantiTraduzione === battute.length);
-    log('[B] Ci sono 11 pulsanti skill, uno per skill e non per battuta', st.skill === 11);
+    log('[B] C\'è un pulsante per skill, non per battuta', st.skill === attesi.skill);
     log('[B] Gli id delle skill sono quelli attesi, in ordine di dialogo', JSON.stringify(st.skillIds) === JSON.stringify(skillIds));
     log('[B] La prima battuta porta due skill distinte', st.skillIds[0] === 'd-1-s1' && st.skillIds[1] === 'd-1-s2');
     log('[B] Ogni pulsante porta il titolo della propria skill', st.etichette[0] !== st.etichette[1] && st.etichette[0].length > 0);
     log('[B] La prima skill si apre da sola', st.aperte.length === 1 && st.aperte[0] === 'd-1-s1');
     log('[B] L\'apertura si dichiara con aria-expanded, non riscrivendo l\'etichetta', st.espanse.length === 1 && st.espanse[0] === 'd-1-s1');
-    log('[B] Tutte le altre sono bloccate', st.toggleDisabilitati === 10);
+    log('[B] Tutte le altre sono bloccate', st.toggleDisabilitati === attesi.skill - 1);
     log('[B] "Ho finito" è bloccato', st.completaDisabilitato === true);
     log('[B] La riga che spiega il blocco è visibile e viene dai dati', st.hintVisibile === true && st.hintTesto.length > 0);
     log('[B] "Esci e riprendi dopo" è disponibile', st.riprendiVisibile === true);
 
-    // I segnaposto delle skill: sostituiti, e ciascuno nella lingua del pezzo
-    // in cui sta. La citazione inglese dice "China", la spiegazione italiana
-    // "Cina" — sono lo stesso slot, e senza una lingua per segnaposto uno dei
-    // due sarebbe per forza sbagliato.
     log('[B] Nessun segnaposto rimasto grezzo nelle skill', st.skillConSegnaposto === 0);
-    const skillDestinazione = st.corpiSkill.find(t => t.indexOf('vuol dire "andiamo in') !== -1) || '';
-    log('[B] La citazione inglese usa il valore inglese ("China")', skillDestinazione.indexOf('We are going to China') !== -1);
-    log('[B] La spiegazione italiana usa il valore italiano ("Cina")', skillDestinazione.indexOf('andiamo in Cina') !== -1);
 
     // La seconda skill della PRIMA battuta: dichiarare la prima non deve
     // valere anche per lei — è il motivo per cui ha un id proprio.
@@ -175,7 +173,7 @@ async function run() {
     log('[B] Dichiarata la prima, si apre la seconda della stessa battuta', st.aperte.length === 1 && st.aperte[0] === 'd-1-s2');
     log('[B] Una sola skill aperta per volta', st.aperte.length === 1);
     log('[B] Una spunta sola: la seconda skill della stessa battuta è ancora da dichiarare', st.spunte.length === 1 && st.spunte[0].indexOf('Chiara') !== -1);
-    log('[B] "Ho finito" ancora bloccato con una su undici', st.completaDisabilitato === true);
+    log('[B] "Ho finito" ancora bloccato con una sola dichiarata', st.completaDisabilitato === true);
 
     for (const id of skillIds.slice(1)) await dichiara(page, id, 'chiara');
     st = await readState(page);
@@ -183,6 +181,33 @@ async function run() {
     log('[B] Dichiarate tutte, la riga del blocco sparisce', st.hintVisibile === false);
     log('[B] Dichiarate tutte, "Esci e riprendi dopo" sparisce', st.riprendiVisibile === false);
     log('[B] Nessun errore JS', errors.length === 0);
+    await page.close();
+  }
+
+  // ============ B2: una lingua per segnaposto, dentro la stessa skill ============
+  {
+    // Con Mondovì (il predefinito) le due lingue coincidono e non si
+    // vedrebbe niente: si sceglie Torino, che in inglese è Turin. La skill
+    // cita la frase inglese dentro una spiegazione italiana, quindi lo
+    // stesso slot deve rendere "Turin" nella citazione e "Torino" nella
+    // prosa — è tutto il motivo per cui esiste {{chiave:en}}.
+    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
+    await page.evaluate(() => localStorage.setItem('baseinglese:episode1:custom:Story_Lingue', JSON.stringify({ partenza: 'torino' })));
+    await page.reload();
+    await page.waitForSelector('#go-episode');
+    await page.click('#go-episode');
+    await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
+    await openStory(page, 'whyWeSayIt');
+    const st2 = await readState(page);
+    const skillPartenza = st2.corpiSkill.find(t => t.indexOf('vuol dire "vengo da') !== -1) || '';
+    log('[B2] La citazione inglese usa il valore inglese ("Turin")', skillPartenza.indexOf('I am from Turin') !== -1);
+    log('[B2] La prosa italiana usa il valore italiano ("Torino")', skillPartenza.indexOf('vengo da Torino') !== -1);
+    log('[B2] Nessun segnaposto rimasto grezzo', st2.skillConSegnaposto === 0);
+    log('[B2] Nessun errore JS', errors.length === 0);
     await page.close();
   }
 
@@ -244,7 +269,7 @@ async function run() {
     let st = await readState(page);
     log('[D] Al ripasso si apre tutto chiuso', st.aperte.length === 0);
     log('[D] Al ripasso nessuna skill è bloccata', st.toggleDisabilitati === 0);
-    log('[D] Al ripasso le spunte mostrano le scelte già fatte', st.spunte.length === 11);
+    log('[D] Al ripasso le spunte mostrano le scelte già fatte', st.spunte.length === attesi.skill);
     log('[D] Al ripasso "Ho finito" è subito disponibile', st.completaDisabilitato === false);
     log('[D] Al ripasso "Esci e riprendi dopo" non compare', st.riprendiVisibile === false);
 
@@ -260,7 +285,7 @@ async function run() {
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const secondoEsito = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:Story_Ripasso')).whyWeSayIt);
-    log('[D] Il ripasso riscrive l\'esito con la nuova percentuale', secondoEsito.pct === Math.round((10 / 11) * 100));
+    log('[D] Il ripasso riscrive l\'esito con la nuova percentuale', secondoEsito.pct === Math.round(((attesi.skill - 1) / attesi.skill) * 100));
     log('[D] Nessun errore JS', errors.length === 0);
     await page.close();
   }

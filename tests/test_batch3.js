@@ -144,9 +144,9 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types', []);
     const personalizzaLabel = await page.$eval('[data-module="personalizzazione"] .module-row-type', el => el.textContent);
-    log('[3] Personalizzazione shows its own type label, not "Studio"', personalizzaLabel === 'Inizio');
-    const moduleTypesCfg = await page.evaluate(() => window.APP_CONFIG.moduleTypes.studiaDialogo && window.APP_CONFIG.moduleTypes.studiaDialogo.label);
-    log('[3] CONFIG.moduleTypes.studiaDialogo exists with label "Studia il dialogo"', moduleTypesCfg === 'Studia il dialogo');
+    log('[3] Personalizzazione mostra la propria categoria "Inizio", non "Studio"', personalizzaLabel === 'Inizio');
+    const moduleTypesCfg = await page.evaluate(() => window.APP_CONFIG.moduleTypes.dialogo.label);
+    log('[3] CONFIG.moduleTypes.dialogo esiste con etichetta "Studia il dialogo"', moduleTypesCfg === 'Studia il dialogo');
     log('[3] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -156,14 +156,14 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
     const srTypeLabel = await page.$eval('[data-module="speedRoundEngIta"] .module-row-type', el => el.textContent);
-    log('[3] Speed Round shows "Quiz"', srTypeLabel === 'Quiz');
+    log('[3] Speed Round mostra la categoria "Quiz"', srTypeLabel.indexOf('Quiz') === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
     // system.
     const dgContinuoLabel = await page.$eval('[data-module="dialogoContinuo"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Continuo shows "Studia il dialogo"', dgContinuoLabel === 'Studia il dialogo');
+    log('[3] Dialogo Continuo mostra "Studia il dialogo"', dgContinuoLabel.indexOf('Studia il dialogo') === 0);
     const dgAscoltaLabel = await page.$eval('[data-module="dialogoAscoltaRipeti"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Ascolta e Ripeti also shows "Studia il dialogo"', dgAscoltaLabel === 'Studia il dialogo');
+    log('[3] Dialogo Ascolta e Ripeti mostra anch\'esso "Studia il dialogo"', dgAscoltaLabel.indexOf('Studia il dialogo') === 0);
     await page.close();
   }
 

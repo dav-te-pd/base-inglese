@@ -107,7 +107,12 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     *Perché c'è: `whatYouLearn` era nato come stringa unica. Le undici spiegazioni dell'Episodio 1 hanno un titolo e un corpo, e il grassetto serve DENTRO il corpo per evidenziare le parole — con una stringa sola il titolo sarebbe stato grassetto anche lui, indistinguibile dal resto. Separarlo prima di scrivere il contenuto è costato cinque righe.*
 
-26. **Il contenuto di un episodio nasce in `docs/episodio-N.md`, uno per episodio.** Da lì viene scritto `data/{livello}-episodio{N}-{lingua}.json`, che è la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
+26. **Due file in `docs/` sono la fonte, e non vanno mai scavalcati da quello che viene detto in chat.**
+
+    - **`docs/episodio-N.md`, uno per episodio** — il contenuto di quell'episodio. Da lì viene scritto `data/{livello}-episodio{N}-{lingua}.json`, la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
+    - **`docs/struttura-corso.md`, uno solo per tutto il corso** — la struttura: ordine dei moduli con i loro gradi, nomi dei gradi mostrati allo studente, categorie, regole di esito. Da lì vengono aggiornate le voci corrispondenti di `APP_CONFIG`. Vale per l'intero corso, non per un episodio: un ordine per episodio significherebbe riordinarlo venti volte.
+
+    Il messaggio che accompagna una modifica è sempre della forma *"aggiorna leggendo `docs/...`"*: i dati non passano più dalla conversazione.
 
     **Le istruzioni su cosa fare stanno DENTRO il file, mai nel messaggio che lo accompagna**: il file è la fonte e deve bastare da solo. Una sessione futura riceve il markdown, non la conversazione in cui è nato.
 
