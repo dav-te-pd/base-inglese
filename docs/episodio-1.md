@@ -2,7 +2,7 @@
 
 > **Materiale di partenza per Claude Code.** Da qui viene scritto `data/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca. Questo file contiene anche le motivazioni delle scelte; il JSON contiene solo i dati.
 >
-> **Numeri attesi nel JSON:** 18 voci nel grado A, 5 in B, 10 in C, 9 battute in D, 8 skill, 8 slot di personalizzazione. Se i conti non tornano, fermarsi e segnalarlo.
+> **Numeri attesi nel JSON:** 16 voci nel grado A, 7 in B, 10 in C, 9 battute in D, 8 skill, 8 slot di personalizzazione. Se i conti non tornano, fermarsi e segnalarlo.
 >
 > Il metodo con cui è stato scritto (workflow, regole dei dialoghi, checklist) sta nel file di progetto `base-inglese-contenuti-didattici`, non qui.
 
@@ -13,7 +13,7 @@
 Nello specifico:
 
 - **Il dialogo scende da 12 a 9 battute.** Le ultime tre — la domanda sulla destinazione, la risposta e il benvenuto — sono state spostate nell'episodio 2. Vanno rimosse da qui.
-- **I gradi vanno ricalcolati** su questo contenuto: A passa a 18 voci, B a 5, C a 10, D a 9.
+- **I gradi vanno ricalcolati** su questo contenuto: A passa a 16 voci, B a 7, C a 10, D a 9.
 - **Le skill scendono da 11 a 8:** escono quella sul "you" plurale, quella su "we are going to" e quella su "welcome", che appartengono all'episodio 2.
 - **Lo slot `destinazione` esce dall'episodio 1:** non compare più in nessuna battuta. Restano 8 slot.
 - **Le tabelle di personalizzazione** restano quelle attuali, con la sola rimozione della destinazione e le età corrette (vedi sotto).
@@ -86,6 +86,7 @@ Il campo nel JSON è `whatYouLearn`, ed è **sempre una lista**, anche con una s
 > Il papà dice "I am {{papà}}", la figlia dice "I'm {{figlia}}". Sono la stessa cosa: "I'm" è solo la forma corta.
 > Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".
 > Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.
+> Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. **In inglese non si può:** "I" ci deve essere sempre. Non esiste dire "am Marco".
 
 **7 — su d8 "I'm {etàFiglio}." — Dire quanti anni hai** *(facile)*
 > La figlia dice "I'm {{etàFiglia}} **years old**". Il figlio dice solo "I'm {{etàFiglio}}".
@@ -110,13 +111,15 @@ Nessuna in questo episodio. Il present continuous, che era rimandato, esce insie
 
 ## I gradi
 
-### Grado A — 18 parole
+### Grado A — 16 parole
 
-`hello` · `hi` · `nice` · `meet` · `you` · `I` · `am` · `I'm` · `where` · `are` · `from` · `Italy` · `and` · `years` · `old` · `we` · `the` · `family`
+`hello` · `hi` · `nice` · `meet` · `you` · `I` · `I'm` · `where` · `from` · `Italy` · `and` · `years` · `old` · `we` · `the` · `family`
 
 *Più i numeri delle età, che vengono da A0 (1-20).*
 
 **Uscite con le tre battute spostate:** `going`, `welcome`, i nomi dei paesi, e **`to`**.
+
+**Uscite anche `am` e `are` come parole singole**, spostate nel grado B come `I am` e `we are`. *Motivo:* nessuno usa "am" o "are" isolati, e dopo A0.2 lo studente conosce già la coniugazione del verbo essere. Isolarli in una carta da studiare è un esercizio senza oggetto. Come parte di `I am` e `we are` invece hanno un significato che si può usare. Il riequilibrio serve anche ai numeri: il grado B con cinque voci era troppo scarno per i quattro moduli che ci pescano.
 
 *Perché esce anche `to`:* nel dialogo lungo compariva tre volte — "Nice **to** meet you", "going **to**", "Welcome **to**". Restando solo il primo caso, quel `to` non ha un significato che lo studente possa usare da solo: serve solo dentro un'espressione che si impara intera, e quell'espressione è già nel grado B. Tornerà nel grado A dell'episodio 2, dove "going to" e "welcome to" gli danno un senso vero — la direzione.
 
@@ -128,10 +131,8 @@ Nessuna in questo episodio. Il present continuous, che era rimandato, esce insie
 | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
 | you | tu / voi | iu | pronome |
 | I | io | ai — sempre maiuscola in inglese | pronome |
-| am | sono | am | verbo essere |
 | I'm | io sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere |
 | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
-| are | sei / siamo / siete / sono | ar | verbo essere |
 | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
 | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
 | and | e | and — la "d" finale si sente appena | congiunzione |
@@ -141,12 +142,14 @@ Nessuna in questo episodio. Il present continuous, che era rimandato, esce insie
 | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
 | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
 
-### Grado B — 5 espressioni
+### Grado B — 7 espressioni
 
 | Inglese | Italiano | Pronuncia | Categoria |
 |---|---|---|---|
+| I am | (io) sono | ai am | pronome + verbo essere |
+| we are | (noi) siamo | ui ar | pronome + verbo essere |
 | Nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
-| Where are you | Dove sei / Dove siete | UEAR ar iu — tutto legato | struttura interrogativa |
+| Where are you? | Di dove sei? / Di dove siete? | UEAR ar iu — tutto legato | struttura interrogativa |
 | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
 | And you? | E tu? / E voi? | and IU — accento su "you" | espressione |
 | years old | anni (di età) | i-ars OULD | espressione per l'età |
