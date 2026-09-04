@@ -22,6 +22,16 @@ Non servono dipendenze per questo: il server è Node puro
 (`tests/serve.js`). Va bene qualunque altro server statico sulla stessa
 cartella — `python3 -m http.server 8955` fa lo stesso lavoro.
 
+## Strumenti
+
+- `node tools/rigenera-fallback.js` — riscrive le copie di sicurezza dentro
+  `index.html` a partire dai file in `data/`. Da lanciare ogni volta che si
+  tocca un file in `data/` (CLAUDE.md regola 6); `tests/test_fallbacks.js`
+  verifica poi che le due versioni coincidano.
+- `node tests/tools/apri-modulo.js <idPasso>` — apre un modulo nell'app e ne
+  stampa lo stato (bordi, segnaposto, errori), con screenshot facoltativo.
+  Senza argomenti elenca i passi disponibili.
+
 ## Com'è strutturato
 
 ```

@@ -285,23 +285,23 @@
     // ---- I due profili del componente della storia (Meet the Story,
     // Why We Say It) — stessa forma di CONFIG.dialogo.profiles: un modulo
     // dichiara storyProfile nel proprio descrittore e il componente legge
-    // di qui come comportarsi, senza sapere quale dei due sta disegnando. ----
+    // di qui come comportarsi, senza sapere quale dei due sta disegnando.
+    //
+    // La traduzione non è più una differenza fra i due: sta dentro la bolla
+    // e sempre visibile in entrambi. Nasconderla dietro un pulsante costava
+    // un click per card a chi sta studiando le regole, e il link
+    // sottolineato si leggeva come un collegamento web. La chiave è stata
+    // tolta invece di lasciarla ferma su 'always' per tutti e due: una
+    // manopola che non muove niente si finisce per girarla. ----
     story: {
       profiles: {
-        // Primo contatto con la storia. Le traduzioni sono SEMPRE visibili:
-        // qui non c'e' ancora niente di studiato da cui dedurre il senso, e
-        // nasconderle non allenerebbe nessuno — renderebbe solo il dialogo
-        // incomprensibile. Nessuna skill: si ascolta e si guarda, non si
+        // Primo contatto con la storia: si ascolta e si guarda, non si
         // studiano le regole.
         meet: {
-          translations: 'always',
           skills: false
         },
-        // Il modulo delle regole. Le traduzioni tornano dietro il pulsante
-        // (a questo punto i pezzi si conoscono) e le skill ci sono: al primo
-        // giro in sequenza, una alla volta.
+        // Il modulo delle regole: al primo giro in sequenza, una alla volta.
         why: {
-          translations: 'onDemand',
           skills: true
         }
       }
@@ -1281,32 +1281,68 @@
         "answers": [
           {
             "value": "nonChiara",
-            "button": "Non mi è chiara",
-            "short": "Non chiara",
-            "primary": false
+            "button": "Non mi è chiara"
           },
           {
             "value": "nonAncora",
-            "button": "Non ancora, la ripasserò",
-            "short": "Da ripassare",
-            "primary": false
+            "button": "Non ancora, la ripasserò"
           },
           {
             "value": "chiara",
-            "button": "Sì, mi è chiara",
-            "short": "Chiara",
-            "primary": true
+            "button": "Sì, mi è chiara"
           }
         ]
       },
       "selfCheckMessages": {
         "nonChiara": {
           "title": "Va bene così",
-          "body": "È normale non capire tutto subito: prova ad andare avanti con gli esercizi e torna qui più tardi. Se dopo un po' resta poco chiara, usa il tasto Help in alto."
+          "bodies": [
+            "È normale non capire tutto subito: vai avanti con gli esercizi e torna qui più tardi.",
+            "Nessun problema: certe regole si capiscono dopo averle incontrate qualche volta negli esercizi.",
+            "Va bene così. Spesso è la pratica a far scattare la cosa, non la spiegazione.",
+            "Capita a tutti. Prosegui: quando la ritroverai in una frase vera avrà più senso.",
+            "Non fermarti qui. Questa regola tornerà, e la seconda volta è sempre più facile.",
+            "Tranquillo: segnalarla come poco chiara serve proprio a ritrovarla dopo.",
+            "Va benissimo dirlo. Le regole difficili sono quelle che poi si ricordano meglio.",
+            "Nessuna fretta: continua con gli esercizi e rileggila tra qualche modulo.",
+            "Succede. A volte serve solo sentire la frase qualche volta in più.",
+            "Va bene. Prova ad ascoltare di nuovo la battuta: spesso la regola si sente prima di capirla.",
+            "Non è un problema: nessuno impara una struttura nuova al primo colpo.",
+            "Ci sta. Se resta poco chiara anche dopo gli esercizi, usa il tasto Help in alto.",
+            "Va bene così: l'importante è che tu sappia che qui c'è qualcosa da recuperare.",
+            "Nessun problema. Le regole si sistemano da sole man mano che le usi.",
+            "Capita, e non vuol dire niente sul tuo inglese: vai avanti.",
+            "Tranquillo. Alcune cose in inglese hanno senso solo dopo che le hai dette a voce.",
+            "Va bene. Torna a questa card quando avrai fatto qualche esercizio in più.",
+            "Nessuna fretta: questa regola tornerà negli episodi successivi.",
+            "Succede, ed è utile saperlo: ora sai cosa ripassare.",
+            "Va bene così. Meglio dirlo adesso che far finta di aver capito."
+          ]
         },
         "nonAncora": {
           "title": "Nessun problema",
-          "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
+          "bodies": [
+            "Capita, tornaci con calma quando vuoi: la ripasserai più avanti.",
+            "Va bene: sai dov'è, e puoi tornarci quando ti serve.",
+            "Nessun problema. Segnata come da ripassare.",
+            "Perfetto così: ripassare è parte del lavoro, non un ritardo.",
+            "D'accordo. La ritroverai qui quando vorrai rivederla.",
+            "Va bene, la lasciamo in sospeso: resta a disposizione.",
+            "Nessuna fretta: ci torni quando hai la testa più libera.",
+            "Ottimo che tu l'abbia notato: ora sai cosa rivedere.",
+            "Va bene. Intanto vai avanti, poi ripassi.",
+            "Segnato. Questa card ti aspetta quando vuoi tornarci.",
+            "Certo, con calma: nessuno ha fretta qui.",
+            "Va bene così: metterla da parte è meglio che passarci sopra.",
+            "D'accordo. Rileggerla tra qualche giorno funziona benissimo.",
+            "Nessun problema: la ripasserai quando la ritroverai in un esercizio.",
+            "Va bene. Riconoscere cosa serve rivedere è già metà del lavoro.",
+            "Perfetto. Continua, e torna qui quando ti va.",
+            "Segnata. Puoi rivederla ogni volta che riapri questo modulo.",
+            "Va bene: meglio ripassare una volta in più che una in meno.",
+            "D'accordo, la mettiamo in lista. Avanti con il prossimo.",
+            "Nessun problema: ci torni con calma, quando vuoi."
+          ]
         }
       },
       "ruleKicker": "Nuova regola",
@@ -1396,7 +1432,7 @@
     "dialogoRipetiATempo": {
       "howItWorks": {
         "title": "Dialogue: Repeat in Time",
-        "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+        "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere. Fa la stessa cosa del pulsante \"Prossima frase\".</p>"
       },
       "helpReminder": {
         "title": "Come funziona, in breve",
@@ -1406,7 +1442,7 @@
     "dialogoContinuo": {
       "howItWorks": {
         "title": "Dialogue: Real Dialogue",
-        "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+        "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere.</p>"
       },
       "helpReminder": {
         "title": "Come funziona, in breve",
@@ -1440,7 +1476,6 @@
 
   window.FALLBACK_FEEDBACK_MESSAGES = {
     "percentageRule": {
-      "rule": "basata sulla percentuale di risposte/parole corrette sul totale",
       "0": {
         "range": "0%",
         "showMessage": false,
@@ -1457,7 +1492,8 @@
       "3": {
         "range": "80-100%",
         "messageKey": "alto"
-      }
+      },
+      "rule": "basata sulla percentuale di risposte/parole corrette sul totale"
     },
     "voiceCoachMessages": {
       "alto": [
@@ -3200,14 +3236,17 @@
     gap: 14px;
   }
 
+  /* Bordo e sfondo marcati: con un solo pixel di bordo e lo stesso sfondo
+     della pagina le card non si distinguevano una dall'altra, e la lista
+     sembrava un blocco unico. */
   .wws-card {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 14px;
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
     border-radius: var(--radius-md);
-    background: var(--card);
+    background: var(--card-2);
   }
 
   /* La card su cui si sta lavorando: stesso bordo accento da 2px di
@@ -3215,8 +3254,7 @@
      riduce di 1px per compensare il bordo più spesso, così le card non
      ballano quando la corrente cambia. */
   .wws-card.is-current {
-    border: 2px solid var(--accent);
-    padding: 13px;
+    border-color: var(--accent);
   }
 
   .wws-card-top {
@@ -3252,7 +3290,7 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background: var(--card-2);
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
   }
@@ -3367,7 +3405,18 @@
     gap: 10px;
   }
 
-  .se-complete-row .btn { flex: 1; }
+  /* Affiancati devono starci anche su un telefono stretto: a 360px — la
+     larghezza di gran parte degli Android — "Esci e riprendi dopo" usciva
+     dallo schermo. Stesso rimedio dei tre pulsanti di risposta: possono
+     andare a capo dentro il pulsante invece di allargarlo. */
+  .se-complete-row .btn {
+    flex: 1;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    white-space: normal;
+    line-height: 1.2;
+  }
 
   .se-selfcheck-question {
     font-family: var(--font-mono);
@@ -3399,11 +3448,13 @@
   }
 
   /* La risposta data resta accesa, così si vede senza riaprire niente.
-     Verde per tutte e tre: dice "hai risposto", non "è andata bene" —
-     stessa coppia di colori di .sr-option.is-correct, non una nuova. */
+     Accento e non verde: marcare in verde "Sì, mi è chiara" e lasciare
+     grigio "Non mi è chiara" farebbe sembrare la prima giusta e la seconda
+     sbagliata, mentre sono due risposte oneste alla stessa domanda.
+     Nell'app l'accento vuol dire "comunicazione di sistema", non giudizio. */
   .se-selfcheck-actions .btn.is-chosen {
-    background: var(--correct-bg);
-    color: var(--correct-ink);
+    background: var(--accent);
+    color: var(--accent-ink);
     border-color: transparent;
   }
 
@@ -3775,12 +3826,11 @@
     margin-top: 4px;
   }
 
-  .dg-bubble.dg-bubble-timer .dg-line-timer {
-    display: flex;
-    /* La barra è toccabile mentre scorre (salta alla battuta dopo), quindi
-       lo dice anche il cursore. */
-    cursor: pointer;
-  }
+  .dg-bubble.dg-bubble-timer .dg-line-timer { display: flex; }
+
+  /* Mentre la barra scorre è tutta la bolla a rispondere al tocco (salta
+     alla battuta successiva), quindi lo dice anche il cursore. */
+  .dg-bubble.dg-bubble-timer { cursor: pointer; }
 
   .dg-line-timer-caption {
     margin: 0;
@@ -7351,7 +7401,8 @@
   var seReviewMode = false; // il modulo è già stato completato almeno una volta -> visita di ripasso
   var seTexts = null; // i testi del modulo da istruzioni-moduli.json (kicker della regola, riga "niente di nuovo", motivo del lucchetto)
   var seSelfCheck = null; // istruzioni-moduli.json's speakEasy.selfCheck (domanda + le tre risposte)
-  var seSelfCheckMessages = null; // istruzioni-moduli.json's speakEasy.selfCheckMessages (il seguito dopo la risposta)
+  var seSelfCheckMessages = null; // istruzioni-moduli.json's whyWeSayIt.selfCheckMessages (le frasi di supporto dopo la risposta)
+  var seFollowupUsed = {}; // risposta -> frasi già mostrate in questa apertura del modulo, per non ripeterle
 
   // Le dichiarazioni sopravvivono all'uscita SOLO se l'utente lo chiede:
   // "Esci e riprendi dopo" durante il primo giro, o il completamento. Uscire
@@ -7366,6 +7417,24 @@
   // you"): dichiararne una non deve valere per l'altra.
   function seSkillId(lineId, index) {
     return lineId + '-s' + (index + 1);
+  }
+
+  // La frase di supporto dopo una risposta. Ce ne sono venti per tipo
+  // (istruzioni-moduli.json) e dentro lo stesso modulo non si ripetono: chi
+  // dichiara "non mi è chiara" su tre card legge tre frasi diverse, invece
+  // della stessa tre volte, che suonerebbe come un messaggio automatico.
+  // Finite le venti, il giro riparte — con venti card servirebbe comunque un
+  // ventunesimo testo, e ricominciare è meglio che restare senza.
+  function seFollowupText(answer) {
+    var entry = seSelfCheckMessages && seSelfCheckMessages[answer];
+    var bodies = entry && entry.bodies;
+    if (!bodies || !bodies.length) return '';
+    var usate = seFollowupUsed[answer] || [];
+    if (usate.length >= bodies.length) usate = [];
+    var libere = bodies.filter(function (t) { return usate.indexOf(t) === -1; });
+    var scelta = libere[Math.floor(Math.random() * libere.length)];
+    seFollowupUsed[answer] = usate.concat([scelta]);
+    return scelta;
   }
 
   function seDeclarationsKey(episodeId, userName) {
@@ -7411,12 +7480,6 @@
     return idx !== -1 && idx <= seFirstUndeclaredIndex();
   }
 
-  function seAnswerMeta(value) {
-    var list = (seSelfCheck && seSelfCheck.answers) || [];
-    for (var i = 0; i < list.length; i++) { if (list[i].value === value) return list[i]; }
-    return null;
-  }
-
   // Shared by Speak Easy and every Dialogo module (CLAUDE.md rule 13) —
   // which side of the chat a line renders on. Driven by the line's own
   // "ruolo" ('esterno' | 'famiglia') in the episode data, never derived
@@ -7454,7 +7517,6 @@
     // le skill si mostrano. Il resto del disegno è identico — è lo stesso
     // componente.
     var profile = (CONFIG.story.profiles[currentSpeakEasyModule.storyProfile]) || {};
-    var alwaysTranslated = profile.translations === 'always';
     var withSkills = profile.skills !== false;
     var skillIds = [];
     var itemsHtml = episodeGrade(data, currentSpeakEasyModule.grade).map(function (line) {
@@ -7477,8 +7539,11 @@
         var skillTitle = fillTemplate(skill.title, currentEpisode, currentValues, 'it');
         var skillBody = fillTemplate(skill.body, currentEpisode, currentValues, 'it');
         var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
-          return '<button type="button" class="btn ' + (a.primary ? 'btn-primary' : 'btn-secondary') +
-            ' btn-sm" data-se-answer="' + a.value + '" data-skill="' + skillId + '">' + a.button + '</button>';
+          // Tutti e tre uguali all'apertura: nessuno è preselezionato, e
+          // nessuno è "la risposta giusta" — sono tre risposte oneste alla
+          // stessa domanda.
+          return '<button type="button" class="btn btn-secondary btn-sm" data-se-answer="' + a.value +
+            '" data-skill="' + skillId + '">' + a.button + '</button>';
         }).join('');
         return '<div class="se-explanation" id="se-explanation-' + skillId + '" data-skill-block="' + skillId + '">' +
           '<div class="wws-rule-top">' +
@@ -7494,11 +7559,6 @@
           '</div>' +
           '</div>';
       }).join('');
-      // Traduzione sempre in chiaro (Meet the Story) = nessun pulsante da
-      // premere: il pulsante esiste solo dove c'è qualcosa da scoprire.
-      var translationBtnHtml = alwaysTranslated
-        ? ''
-        : '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>';
       var noRuleHtml = (withSkills && !skills.length)
         ? '<p class="wws-no-rule">' + ((seTexts && seTexts.noRuleHint) || '') + '</p>'
         : '';
@@ -7510,14 +7570,15 @@
         '<div class="wws-row ' + align + '">' +
         '<div class="wws-bubble">' +
         '<p class="wws-english">' + english + '</p>' +
-        '<p class="wws-italian" id="chat-italian-' + line.id + '"' + (alwaysTranslated ? '' : ' hidden') + '>' + italian + '</p>' +
-        '</div>' +
-        '</div>' +
+        '<p class="wws-italian" id="chat-italian-' + line.id + '">' + italian + '</p>' +
+        // Il Blocco Ascolto sta DENTRO la bolla, sotto la frase che fa
+        // ascoltare: staccato sotto sembrava un elemento a sé.
         '<div class="repeat-item-audio">' +
         '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
         '</div>' +
-        (translationBtnHtml ? '<div class="chat-actions">' + translationBtnHtml + '</div>' : '') +
+        '</div>' +
+        '</div>' +
         noRuleHtml +
         rulesHtml +
         '</div>';
@@ -7558,23 +7619,23 @@
       var ruleEl = document.getElementById('se-explanation-' + skillId);
       if (ruleEl) ruleEl.classList.toggle('is-ahead', !unlocked);
 
+      // La spunta dice "hai risposto", non "va bene": senza etichetta
+      // accanto, che altrimenti leggeva "✓ NON CHIARA". Cosa si è risposto
+      // lo dice già il pulsante acceso.
       var declaredEl = document.getElementById('se-declared-' + skillId);
       if (declaredEl) {
-        var meta = answer ? seAnswerMeta(answer) : null;
-        declaredEl.hidden = !meta;
-        declaredEl.innerHTML = meta ? icon('check') + '<span>' + meta.short + '</span>' : '';
+        declaredEl.hidden = !answer;
+        declaredEl.innerHTML = answer ? icon('check') : '';
       }
 
       var selfcheckEl = document.querySelector('.se-selfcheck[data-se-skill="' + skillId + '"]');
       if (selfcheckEl) {
         selfcheckEl.hidden = !unlocked;
-        // Primo giro: una risposta data è definitiva, come il Sì/Non ancora
-        // di Flash Card. Al ripasso invece si può cambiare idea.
-        var lockAnswers = !!answer && !seReviewMode;
         selfcheckEl.querySelectorAll('[data-se-answer]').forEach(function (b) {
-          b.disabled = lockAnswers;
-          // La risposta scelta resta accesa: si vede cosa si è risposto
-          // senza dover riaprire niente.
+          // Si può cambiare idea sempre, anche durante il primo passaggio:
+          // accorgersi a metà spiegazione di aver capito è normale, e la
+          // dichiarazione serve a sapere cosa ripassare, non a incastrare.
+          b.disabled = false;
           b.classList.toggle('is-chosen', b.getAttribute('data-se-answer') === answer);
         });
       }
@@ -7592,7 +7653,13 @@
       card.classList.toggle('is-ahead', isAhead);
       var stateEl = document.getElementById('wws-state-' + cardId);
       if (!stateEl) return;
-      var tutteDichiarate = cardSkills.length > 0 && cardSkills.every(function (id) { return !!seSessionAnswers[id]; });
+      // Una card senza regole non ha niente da dichiarare, ma scorrendo,
+      // alcune card con la spunta e altre senza fanno chiedere se quelle
+      // senza sono da fare. Prende la spunta da sola appena la sequenza la
+      // supera — o subito, se non c'è più una sequenza (ripasso).
+      var superata = cardSkills.length === 0 && seCardIndex(cardId) < seCurrentCardIndex();
+      var tutteDichiarate = superata ||
+        (cardSkills.length > 0 && cardSkills.every(function (id) { return !!seSessionAnswers[id]; }));
       stateEl.classList.toggle('is-done', tutteDichiarate);
       if (tutteDichiarate) {
         stateEl.hidden = false;
@@ -7628,6 +7695,22 @@
     return next ? next.replace(/-s\d+$/, '') : null;
   }
 
+  // La posizione di una card nella lista, e quella della card corrente:
+  // servono a sapere se la sequenza ha già superato una card senza regole.
+  // Senza card corrente (ripasso, o tutto dichiarato) sono tutte superate.
+  function seCardIndex(cardId) {
+    var cards = Array.prototype.map.call(
+      document.querySelectorAll('#speak-easy-body .wws-card'),
+      function (c) { return c.getAttribute('data-card'); });
+    return cards.indexOf(cardId);
+  }
+
+  function seCurrentCardIndex() {
+    var current = seCurrentCardId();
+    if (!current) return Infinity;
+    return seCardIndex(current);
+  }
+
   function seShowScreen(name) {
     document.getElementById('speak-easy-intro-screen').hidden = name !== 'intro';
     document.getElementById('speak-easy-main-screen').hidden = name !== 'main';
@@ -7656,6 +7739,7 @@
     // "Esci e riprendi dopo", o dal completamento di un giro precedente)
     // sono il punto di partenza, non una lavagna pulita.
     seSessionAnswers = loadSeDeclarations(currentEpisode.id, getUserName());
+    seFollowupUsed = {};
     showView('speakEasy');
     if (isIntroDismissed(module.kind, getUserName())) {
       seShowScreen('main');
@@ -7696,20 +7780,6 @@
       toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
       return;
     }
-    var toggleBtn = e.target.closest('[data-toggle-translation]');
-    if (toggleBtn) {
-      var lineId = toggleBtn.getAttribute('data-toggle-translation');
-      var italianEl = document.getElementById('chat-italian-' + lineId);
-      var reveal = italianEl.hasAttribute('hidden');
-      if (reveal) {
-        italianEl.removeAttribute('hidden');
-        toggleBtn.textContent = 'Nascondi traduzione';
-      } else {
-        italianEl.setAttribute('hidden', '');
-        toggleBtn.textContent = 'Mostra traduzione';
-      }
-      return;
-    }
     // Risposta al self-check. Registra la dichiarazione nel set di lavoro
     // (seSessionAnswers, che alimenta la percentuale SelfScoreRules) e un
     // conteggio cumulativo per battuta (addSeExplanationStat — "una
@@ -7725,9 +7795,9 @@
       seSessionAnswers[answerSkillId] = answer;
       addSeExplanationStat(currentEpisode.id, getUserName(), answerSkillId, answer);
       var followupEl = document.getElementById('se-followup-' + answerSkillId);
-      var followup = seSelfCheckMessages && seSelfCheckMessages[answer];
-      if (followup && followup.body) {
-        followupEl.textContent = followup.body;
+      var followupText = seFollowupText(answer);
+      if (followupText) {
+        followupEl.textContent = followupText;
         followupEl.removeAttribute('hidden');
       } else {
         followupEl.hidden = true;
@@ -9578,12 +9648,15 @@
   // interaction). Dialogo Continuo ('auto' advance) never accepts a
   // click here — it plays on its own via dgPlayLine's own chaining.
   document.getElementById('dg-list').addEventListener('click', function (e) {
-    // La barra del tempo, mentre scorre, è il "ho finito di ripetere":
-    // toccarla chiude il conto alla rovescia e passa alla battuta dopo,
-    // esattamente come il pulsante "Prossima frase". In Dialogo Continuo
-    // quel pulsante non c'è, e senza questo si poteva solo aspettare.
-    // dgSkipToNextLine non fa nulla se nessuna barra sta scorrendo.
-    if (e.target.closest('.dg-line-timer')) {
+    // Mentre la barra scorre, toccare la battuta vuol dire "ho finito di
+    // ripetere": chiude il conto alla rovescia e passa alla successiva,
+    // come il pulsante "Prossima frase" (che resta). L'area sensibile è
+    // TUTTA la bolla, non solo la barra: centrare una striscia alta pochi
+    // pixel è difficile col mouse e quasi impossibile col dito.
+    // dgSkipToNextLine non fa nulla se nessuna barra sta scorrendo, quindi
+    // questo non ruba il tocco agli altri usi della bolla.
+    var timerBubble = e.target.closest('.dg-bubble.dg-bubble-timer');
+    if (timerBubble && dgLineTimerTimeoutId !== null) {
       dgSkipToNextLine();
       return;
     }

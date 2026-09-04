@@ -215,6 +215,15 @@ async function run() {
     const dopoBattuta = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Tocco] Toccare la battuta in corso salta l\'audio', dopoBattuta === false);
     log('[Tocco] Toccare la battuta in corso fa partire il countdown', true);
+
+    // Ora la barra sta scorrendo: toccare di nuovo la bolla — il testo, non
+    // la barra — chiude il conto alla rovescia e porta alla battuta dopo.
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"] .dg-english');
+    await page.waitForFunction(id => {
+      const b = document.querySelector('.dg-bubble[data-line-id="' + id + '"]');
+      return b && b.classList.contains('is-active');
+    }, D2, { timeout: 5000 });
+    log('[Tocco] Con la barra in corso, toccare la bolla porta alla battuta dopo', true);
     log('[Tocco] Nessun errore JS', errors.length === 0);
     await page.close();
   }
@@ -243,8 +252,11 @@ async function run() {
       return b && b.classList.contains('dg-bubble-timer');
     }, D1, { timeout: 15000 });
 
-    await page.click('.dg-bubble[data-line-id="' + D1 + '"] .dg-line-timer');
-    // Toccata la barra, si deve sentire la battuta SUCCESSIVA.
+    // Si tocca il TESTO della battuta, non la barra: l'area sensibile è
+    // tutta la bolla, perché centrare una striscia alta pochi pixel col dito
+    // è quasi impossibile.
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"] .dg-english');
+    // Toccata la bolla, si deve sentire la battuta SUCCESSIVA.
     await page.waitForFunction(id => {
       const b = document.querySelector('.dg-bubble[data-line-id="' + id + '"]');
       return b && b.classList.contains('is-active');
@@ -253,8 +265,8 @@ async function run() {
       barraPrima: document.querySelector('.dg-bubble[data-line-id="' + a.d1 + '"]').classList.contains('dg-bubble-timer'),
       attivaDopo: document.querySelector('.dg-bubble[data-line-id="' + a.d2 + '"]').classList.contains('is-active')
     }), { d1: D1, d2: D2 });
-    log('[Barra] Toccare la barra chiude il countdown della battuta corrente', stato.barraPrima === false);
-    log('[Barra] Toccare la barra porta alla battuta successiva', stato.attivaDopo === true);
+    log('[Barra] Toccare la bolla (non la barra) chiude il countdown', stato.barraPrima === false);
+    log('[Barra] Toccare la bolla porta alla battuta successiva', stato.attivaDopo === true);
     log('[Barra] Nessun errore JS', errors.length === 0);
     await page.close();
   }

@@ -80,6 +80,14 @@ function readState(page) {
       lucchetti: Array.from(document.querySelectorAll('.wws-state')).filter(el => vis(el) && !el.classList.contains('is-done')).length,
       senzaRegola: Array.from(document.querySelectorAll('.wws-no-rule')).filter(vis).length,
       pulsantiTraduzione: document.querySelectorAll('[data-toggle-translation]').length,
+      preselezionati: document.querySelectorAll('.se-selfcheck-actions .btn-primary').length,
+      rispostaDisabilitata: Array.from(document.querySelectorAll('[data-se-answer]')).filter(b => b.disabled).length,
+      spunteConTesto: Array.from(document.querySelectorAll('.se-declared')).filter(el => el.textContent.trim().length > 0).length,
+      // Il Blocco Ascolto e la traduzione stanno DENTRO la bolla.
+      audioNellaBolla: document.querySelectorAll('.wws-bubble .repeat-item-audio').length,
+      sceltoColore: (() => { const b = document.querySelector('.se-selfcheck-actions .btn.is-chosen'); return b ? getComputedStyle(b).backgroundColor : null; })(),
+      accento: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+      spunteCard: Array.from(document.querySelectorAll('.wws-state.is-done')).filter(el => el.getClientRects().length > 0).map(el => el.id),
       traduzioniVisibili: Array.from(document.querySelectorAll('.wws-italian')).filter(vis).length,
       // La traduzione sta dentro la bolla, la regola no.
       traduzioniNellaBolla: document.querySelectorAll('.wws-bubble .wws-italian').length,
@@ -98,6 +106,14 @@ function readState(page) {
       segnapostoGrezzi: Array.from(document.querySelectorAll('.wws-english, .wws-italian')).filter(el => /\{\{/.test(el.textContent)).length
     };
   });
+}
+
+// Il colore atteso per il pulsante scelto: si legge il token --accent del
+// tema invece di scrivere un esadecimale qui, che cambierebbe a ogni tema.
+function coloreAtteso(hex) {
+  const h = hex.replace('#', '');
+  const n = parseInt(h.length === 3 ? h.split('').map(c => c + c).join('') : h, 16);
+  return 'rgb(' + ((n >> 16) & 255) + ', ' + ((n >> 8) & 255) + ', ' + (n & 255) + ')';
 }
 
 async function dichiara(page, skillId, valore) {
@@ -141,6 +157,7 @@ async function run() {
     log('[A] Meet the Story mostra tutte le battute', st.battute === battute.length);
     log('[A] Le traduzioni sono tutte già visibili', st.traduzioniVisibili === battute.length);
     log('[A] Non c\'è nessun pulsante "Mostra traduzione"', st.pulsantiTraduzione === 0);
+    log('[A] Il Blocco Ascolto sta dentro la bolla', st.audioNellaBolla === battute.length);
     log('[A] Non compare nessuna skill, anche se le battute ne hanno', st.skill === 0);
     log('[A] "Ho finito" è subito cliccabile (completionRules)', st.completaDisabilitato === false);
     log('[A] Non compare la riga che spiega il blocco', st.hintVisibile === false);
@@ -160,7 +177,12 @@ async function run() {
     await openStory(page, 'whyWeSayIt');
 
     let st = await readState(page);
-    log('[B] Le traduzioni partono nascoste, dietro il loro pulsante', st.traduzioniVisibili === 0 && st.pulsantiTraduzione === battute.length);
+    // La traduzione non si nasconde più: un click per card a chi sta
+    // studiando le regole era di troppo, e il link sottolineato si leggeva
+    // come un collegamento web.
+    log('[B] Le traduzioni sono sempre visibili, dentro la bolla', st.traduzioniVisibili === battute.length && st.pulsantiTraduzione === 0);
+    log('[B] Il Blocco Ascolto sta dentro la bolla', st.audioNellaBolla === battute.length);
+    log('[B] Nessun pulsante è preselezionato all\'apertura', st.preselezionati === 0);
     log('[B] C\'è un riquadro per skill, non per battuta', st.skill === attesi.skill);
     log('[B] Gli id delle skill sono quelli attesi, in ordine di dialogo', JSON.stringify(st.skillIds) === JSON.stringify(skillIds));
     log('[B] Una card per battuta, impilate', st.battute === battute.length);
@@ -191,7 +213,12 @@ async function run() {
     st = await readState(page);
     log('[B] Dichiarata la prima, tocca alla seconda della stessa battuta', st.corrente[0] === 'd-1' && st.corpiVisibili === 2);
     log('[B] Il pulsante scelto resta acceso', st.scelti.length === 1 && st.scelti[0] === 'd-1-s1');
-    log('[B] Una spunta sola: la seconda skill della stessa battuta è ancora da dichiarare', st.spunte.length === 1 && st.spunte[0].indexOf('Chiara') !== -1);
+    // Accento e non verde: verde su "Sì, mi è chiara" farebbe sembrare
+    // sbagliata "Non mi è chiara", che è una risposta onesta come le altre.
+    log('[B] Il pulsante scelto è blu accento, non verde', st.sceltoColore === coloreAtteso(st.accento));
+    log('[B] La spunta è sola, senza etichetta accanto', st.spunte.length === 1 && st.spunteConTesto === 0);
+    log('[B] Si può cambiare risposta anche durante il primo giro', st.rispostaDisabilitata === 0);
+    log('[B] Una spunta sola: la seconda skill della stessa battuta è ancora da dichiarare', st.spunte.length === 1);
     log('[B] "Ho finito" ancora bloccato con una sola dichiarata', st.completaDisabilitato === true);
 
     for (const id of skillIds.slice(1)) await dichiara(page, id, 'chiara');
@@ -200,6 +227,45 @@ async function run() {
     log('[B] Dichiarate tutte, la riga del blocco sparisce', st.hintVisibile === false);
     log('[B] Dichiarate tutte, "Esci e riprendi dopo" sparisce', st.riprendiVisibile === false);
     log('[B] Nessun errore JS', errors.length === 0);
+    await page.close();
+  }
+
+  // ============ B1: la spunta automatica e le frasi di supporto ============
+  {
+    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    await bootAsUser(page, 'Story_Spunte', 'whyWeSayIt');
+    await openStory(page, 'whyWeSayIt');
+
+    // Una card senza regole non ha niente da dichiarare, ma restare senza
+    // spunta mentre le altre ce l'hanno fa chiedere se è da fare. La prende
+    // da sola appena la sequenza la supera, non prima.
+    const senzaRegola = battute.filter(l => !(l.whatYouLearn || []).length).map(l => l.id);
+    let spunte = await page.evaluate(() => Array.from(document.querySelectorAll('.wws-state.is-done')).map(el => el.id));
+    log('[B1] All\'apertura nessuna card senza regola ha già la spunta',
+      senzaRegola.every(id => spunte.indexOf('wws-state-' + id) === -1));
+
+    // Dichiarate le due skill della prima battuta, la sequenza supera d-2.
+    const frasi = [];
+    for (const id of skillIds) {
+      await dichiara(page, id, 'nonChiara');
+      frasi.push(await page.$eval('#se-followup-' + id, el => el.textContent));
+      if (id === 'd-1-s2') {
+        spunte = await page.evaluate(() => Array.from(document.querySelectorAll('.wws-state.is-done')).map(el => el.id));
+        log('[B1] Superata la prima card, quella senza regole prende la spunta',
+          spunte.indexOf('wws-state-' + senzaRegola[0]) !== -1);
+      }
+    }
+    spunte = await page.evaluate(() => Array.from(document.querySelectorAll('.wws-state.is-done')).map(el => el.id));
+    log('[B1] Alla fine ogni card ha la spunta, anche quelle senza regole', spunte.length === battute.length);
+
+    // Venti varianti per risposta, e dentro lo stesso modulo non si
+    // ripetono: la stessa frase tre volte suonerebbe come un automatismo.
+    log('[B1] Ogni dichiarazione mostra una frase di supporto', frasi.every(f => f.trim().length > 0));
+    log('[B1] Le frasi di supporto sono tutte diverse fra loro', new Set(frasi).size === frasi.length);
+    log('[B1] Nessun errore JS', errors.length === 0);
     await page.close();
   }
 
@@ -289,7 +355,7 @@ async function run() {
     log('[D] Al ripasso non c\'è una card corrente: sono tutte raggiungibili', st.corrente.length === 0 && st.avanti.length === 0);
     log('[D] Al ripasso si legge il corpo di ogni regola', st.corpiVisibili === attesi.skill);
     log('[D] Al ripasso restano accese tutte le risposte date', st.scelti.length === attesi.skill);
-    log('[D] Al ripasso le spunte mostrano le scelte già fatte', st.spunte.length === attesi.skill);
+    log('[D] Al ripasso ogni regola dichiarata porta la sua spunta', st.spunte.length === attesi.skill);
     log('[D] Al ripasso "Ho finito" è subito disponibile', st.completaDisabilitato === false);
     log('[D] Al ripasso "Esci e riprendi dopo" non compare', st.riprendiVisibile === false);
 

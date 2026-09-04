@@ -46,32 +46,68 @@
       "answers": [
         {
           "value": "nonChiara",
-          "button": "Non mi è chiara",
-          "short": "Non chiara",
-          "primary": false
+          "button": "Non mi è chiara"
         },
         {
           "value": "nonAncora",
-          "button": "Non ancora, la ripasserò",
-          "short": "Da ripassare",
-          "primary": false
+          "button": "Non ancora, la ripasserò"
         },
         {
           "value": "chiara",
-          "button": "Sì, mi è chiara",
-          "short": "Chiara",
-          "primary": true
+          "button": "Sì, mi è chiara"
         }
       ]
     },
     "selfCheckMessages": {
       "nonChiara": {
         "title": "Va bene così",
-        "body": "È normale non capire tutto subito: prova ad andare avanti con gli esercizi e torna qui più tardi. Se dopo un po' resta poco chiara, usa il tasto Help in alto."
+        "bodies": [
+          "È normale non capire tutto subito: vai avanti con gli esercizi e torna qui più tardi.",
+          "Nessun problema: certe regole si capiscono dopo averle incontrate qualche volta negli esercizi.",
+          "Va bene così. Spesso è la pratica a far scattare la cosa, non la spiegazione.",
+          "Capita a tutti. Prosegui: quando la ritroverai in una frase vera avrà più senso.",
+          "Non fermarti qui. Questa regola tornerà, e la seconda volta è sempre più facile.",
+          "Tranquillo: segnalarla come poco chiara serve proprio a ritrovarla dopo.",
+          "Va benissimo dirlo. Le regole difficili sono quelle che poi si ricordano meglio.",
+          "Nessuna fretta: continua con gli esercizi e rileggila tra qualche modulo.",
+          "Succede. A volte serve solo sentire la frase qualche volta in più.",
+          "Va bene. Prova ad ascoltare di nuovo la battuta: spesso la regola si sente prima di capirla.",
+          "Non è un problema: nessuno impara una struttura nuova al primo colpo.",
+          "Ci sta. Se resta poco chiara anche dopo gli esercizi, usa il tasto Help in alto.",
+          "Va bene così: l'importante è che tu sappia che qui c'è qualcosa da recuperare.",
+          "Nessun problema. Le regole si sistemano da sole man mano che le usi.",
+          "Capita, e non vuol dire niente sul tuo inglese: vai avanti.",
+          "Tranquillo. Alcune cose in inglese hanno senso solo dopo che le hai dette a voce.",
+          "Va bene. Torna a questa card quando avrai fatto qualche esercizio in più.",
+          "Nessuna fretta: questa regola tornerà negli episodi successivi.",
+          "Succede, ed è utile saperlo: ora sai cosa ripassare.",
+          "Va bene così. Meglio dirlo adesso che far finta di aver capito."
+        ]
       },
       "nonAncora": {
         "title": "Nessun problema",
-        "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
+        "bodies": [
+          "Capita, tornaci con calma quando vuoi: la ripasserai più avanti.",
+          "Va bene: sai dov'è, e puoi tornarci quando ti serve.",
+          "Nessun problema. Segnata come da ripassare.",
+          "Perfetto così: ripassare è parte del lavoro, non un ritardo.",
+          "D'accordo. La ritroverai qui quando vorrai rivederla.",
+          "Va bene, la lasciamo in sospeso: resta a disposizione.",
+          "Nessuna fretta: ci torni quando hai la testa più libera.",
+          "Ottimo che tu l'abbia notato: ora sai cosa rivedere.",
+          "Va bene. Intanto vai avanti, poi ripassi.",
+          "Segnato. Questa card ti aspetta quando vuoi tornarci.",
+          "Certo, con calma: nessuno ha fretta qui.",
+          "Va bene così: metterla da parte è meglio che passarci sopra.",
+          "D'accordo. Rileggerla tra qualche giorno funziona benissimo.",
+          "Nessun problema: la ripasserai quando la ritroverai in un esercizio.",
+          "Va bene. Riconoscere cosa serve rivedere è già metà del lavoro.",
+          "Perfetto. Continua, e torna qui quando ti va.",
+          "Segnata. Puoi rivederla ogni volta che riapri questo modulo.",
+          "Va bene: meglio ripassare una volta in più che una in meno.",
+          "D'accordo, la mettiamo in lista. Avanti con il prossimo.",
+          "Nessun problema: ci torni con calma, quando vuoi."
+        ]
       }
     },
     "ruleKicker": "Nuova regola",
@@ -161,7 +197,7 @@
   "dialogoRipetiATempo": {
     "howItWorks": {
       "title": "Dialogue: Repeat in Time",
-      "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+      "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere. Fa la stessa cosa del pulsante \"Prossima frase\".</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
@@ -171,7 +207,7 @@
   "dialogoContinuo": {
     "howItWorks": {
       "title": "Dialogue: Real Dialogue",
-      "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+      "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere.</p>"
     },
     "helpReminder": {
       "title": "Come funziona, in breve",
