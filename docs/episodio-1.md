@@ -1,10 +1,8 @@
 # Episodio 1 — "Presentarsi"
 
-> **Materiale di partenza per Claude Code.** Da qui viene scritto
-> `data/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca.
-> Questo file contiene anche le motivazioni delle scelte; il JSON contiene solo i dati.
+> **Materiale di partenza per Claude Code.** Da qui viene scritto `data/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca. Questo file contiene anche le motivazioni delle scelte; il JSON contiene solo i dati.
 >
-> **Numeri attesi nel JSON:** 21 voci nel grado A, 6 in B, 13 in C, 12 battute in D, 11 skill, 9 slot di personalizzazione. Se i conti non tornano, fermarsi e segnalarlo.
+> **Numeri attesi nel JSON:** 18 voci nel grado A, 5 in B, 10 in C, 9 battute in D, 8 skill, 8 slot di personalizzazione. Se i conti non tornano, fermarsi e segnalarlo.
 >
 > Il metodo con cui è stato scritto (workflow, regole dei dialoghi, checklist) sta nel file di progetto `base-inglese-contenuti-didattici`, non qui.
 
@@ -14,19 +12,21 @@
 
 Nello specifico:
 
-- **Il dialogo** è nuovo: 12 battute al posto delle 7 attuali, con testo e traduzioni diversi. Il vecchio dialogo va rimosso.
-- **Le tabelle di personalizzazione** sostituiscono quelle attuali: nomi a 8 opzioni per ruolo, età cambiate, destinazioni ridotte a 6, più il nuovo slot `cognome`.
-- **I gradi B e C**, oggi vuoti, vanno riempiti con il contenuto qui sotto.
-- **Il grado A** passa da 15 a 21 voci.
+- **Il dialogo scende da 12 a 9 battute.** Le ultime tre — la domanda sulla destinazione, la risposta e il benvenuto — sono state spostate nell'episodio 2. Vanno rimosse da qui.
+- **I gradi vanno ricalcolati** su questo contenuto: A passa a 18 voci, B a 5, C a 10, D a 9.
+- **Le skill scendono da 11 a 8:** escono quella sul "you" plurale, quella su "we are going to" e quella su "welcome", che appartengono all'episodio 2.
+- **Lo slot `destinazione` esce dall'episodio 1:** non compare più in nessuna battuta. Restano 8 slot.
+- **Le tabelle di personalizzazione** restano quelle attuali, con la sola rimozione della destinazione e le età corrette (vedi sotto).
 
 **I nomi di persona non si traducono mai nel dialogo.** La colonna inglese esiste solo per mostrare la doppia forma nella schermata di personalizzazione. I toponimi invece si traducono (Torino → Turin). I cognomi non hanno forma inglese: colonna identica per costruzione.
+
+**Nelle skill i segnaposto vengono sostituiti**, e la citazione della frase inglese chiede il valore inglese con `{{chiave:en}}` — così *«I am from {{partenza:en}}» vuol dire «vengo da {{partenza}}»* rende "I am from Turin" nella citazione e "vengo da Torino" nella prosa.
 
 **Ricordarsi della copia di sicurezza** dentro `index.html`, che `test_fallbacks.js` verifica: va rigenerata dal file dati, non riscritta a mano.
 
 **Se un conteggio non torna rispetto ai numeri attesi qui sopra, fermarsi e segnalarlo prima di scrivere.**
 
 ---
-
 
 ## Il dialogo (validato)
 
@@ -41,111 +41,90 @@ Nello specifico:
 | d7 | Figlia | Hi! I'm {figlia}. I'm {etàFiglia} years old. | Ciao! Sono {figlia}. Ho {etàFiglia} anni. |
 | d8 | Figlio | Hi! I'm {figlio}. I'm {etàFiglio}. | Ciao! Sono {figlio}. Ho {etàFiglio} anni. |
 | d9 | Tutti | We are the {cognome} family! | Siamo la famiglia {cognome}! |
-| d10 | Guida | {papà}, {mamma}, {figlia}, {figlio}... where are you going? | {papà}, {mamma}, {figlia}, {figlio}... dove state andando? |
-| d11 | Papà | We are going to {destinazione}! | Andiamo in {destinazione}! |
-| d12 | Guida | Welcome to {destinazione}, {cognome} family! | Benvenuti in {destinazione}, famiglia {cognome}! |
 
 ## Note di scrittura
 
-1. **Perché "Where are you going?" sta dopo la battuta corale.** Nella prima domanda `you` significa "tu" (rivolta al papà), nella seconda "voi" (rivolta alla famiglia). Vicine, la seconda sarebbe sembrata una ripetizione e la differenza sarebbe passata inosservata. Dopo "We are the {cognome} family" il plurale è già stabilito dalla famiglia stessa.
-2. **Perché la guida elenca i nomi.** Oltre a chiarire il "voi", fa sentire allo studente **il proprio nome pronunciato** — uno dei quattro è il suo.
-3. **Adulti e ragazzi parlano diverso.** Papà e mamma "Hello" e "I am", i figli "Hi" e "I'm". Una sola distinzione di registro che spiega due differenze, e rispetta la regola della forma estesa prima della contratta.
-4. **"We are going" per esteso.** Stessa regola, e in più `we are` compare identico due volte (d9 e d11): lo studente lo vede uguale invece che in due varianti.
-5. **Le due forme dell'età.** La figlia "I'm sixteen years old", il figlio "I'm ten". La seconda previene l'errore classico: chi conosce solo quella, al ristorante risponderà "we are three" alla domanda "quanti siete", dicendo di avere tre anni.
-6. **Cosa è stato tolto.** *"Can you introduce yourselves?"* — riflessivo con accento anomalo, la frase più difficile, serviva solo da innesco. *Il genitivo sassone* ("I'm {papà}'s wife") — struttura ostica; chi è la moglie di chi si capisce dalla scena. *"Everyone"* — parola lunga e poco utile all'inizio.
-7. **La destinazione compare due volte**, in d11 e d12. Martello sulla sceneggiatura.
-8. **Il cognome è uno slot nuovo.** Prima la famiglia non ne aveva uno.
-9. **Le destinazioni sono limitate a paesi che in italiano vogliono "in".** La traduzione di "We are going to {destinazione}" cambia preposizione secondo il paese — "in Cina" ma "negli Stati Uniti" — e una tabella non può contenere una preposizione per riga senza complicare il testo. Il vincolo diventa una lezione futura.
-10. **`Hello!` e `Hi!` non entrano nel grado C:** sono parole singole già nel grado A, e come "frasi" sarebbero identiche. Il grado C esercita la costruzione della frase, non le esclamazioni di una parola. *Regola generale: una voce non si ripete a due gradi diversi se a quel grado non aggiunge niente.*
+1. **Adulti e ragazzi parlano diverso.** Papà e mamma "Hello" e "I am", i figli "Hi" e "I'm". Una sola distinzione di registro che spiega due differenze, e rispetta la regola della forma estesa prima della contratta.
+2. **Le due forme dell'età.** La figlia "I'm sixteen years old", il figlio "I'm ten". La seconda previene l'errore classico: chi conosce solo quella, al ristorante risponderà "we are three" alla domanda "quanti siete", dicendo di avere tre anni.
+3. **Cosa è stato tolto.** *"Can you introduce yourselves?"* — riflessivo con accento anomalo, la frase più difficile, serviva solo da innesco. *Il genitivo sassone* ("I'm {papà}'s wife") — struttura ostica; chi è la moglie di chi si capisce dalla scena. *"Everyone"* — parola lunga e poco utile all'inizio.
+4. **Il cognome è uno slot nuovo.** Prima la famiglia non ne aveva uno.
+5. **`Hello!` e `Hi!` non entrano nel grado C:** sono parole singole già nel grado A, e come "frasi" sarebbero identiche. Il grado C esercita la costruzione della frase, non le esclamazioni di una parola. *Regola generale: una voce non si ripete a due gradi diversi se a quel grado non aggiunge niente.*
+6. **Perché l'episodio è stato diviso.** La versione a 12 battute aveva 21 parole nuove tutte insieme — troppe per chi parte da zero, senza niente di pregresso su cui appoggiarsi. E il grado B con sole 6 voci aveva quattro moduli che ci insistevano sopra, rendendoli ripetitivi. Le ultime tre battute sono diventate il nucleo dell'episodio 2, che le riprende dentro una scena propria.
 
-## Le 11 skill
+## Le 8 skill
 
-Tutte di difficoltà **facile** tranne la 10, **media**. Il campo nel JSON è `whatYouLearn`, ed è una **lista**: una battuta può portare più di una skill (d1 ne ha due). Ogni skill ha `title` e `body`. HTML consentito nel corpo, niente `<p>`, `<br>` per andare a capo.
+Il campo nel JSON è `whatYouLearn`, ed è **sempre una lista**, anche con una skill sola: la battuta d1 ne ha due. Ogni voce ha `title` e `body`. HTML consentito nel corpo, niente `<p>`, `<br>` per andare a capo.
 
-**I segnaposto nelle skill vengono sostituiti**, come in ogni altro testo dell'episodio: lo studente legge il valore che ha scelto, non `{partenza}`. Nel JSON si scrivono nella forma `{{chiave}}`.
-
-Una skill è scritta in italiano ma cita la frase inglese del dialogo, e le due lingue possono volere valori diversi — "China" nella citazione, "Cina" nella spiegazione. La citazione inglese chiede quindi la propria lingua con il suffisso `:en` (`{{destinazione:en}}`); senza suffisso vale l'italiano. I nomi di persona non si traducono mai, quindi lì il suffisso non serve.
-
-**1 — su d1 "Hello!" — Hello e Hi**
+**1 — su d1 "Hello!" — Hello e Hi** *(facile)*
 > Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.
 > "Hello" è un po' più educato, "Hi" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".
 > È come in italiano — "Buongiorno" a chi non conosci, "Ciao" a un amico. Nessuno dei due è sbagliato.
 > Se sei in dubbio, "Hello" va bene sempre, con chiunque.
 
-**2 — su d7 "Hi! I'm {figlia}." — I am e I'm**
-> Il papà dice "I am {{papa}}", la figlia dice "I'm {{figliaNome}}". Sono la stessa cosa: "I'm" è solo la forma corta.
-> Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".
-> Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.
+**2 — su d1 "Nice to meet you." — Nice to meet you** *(facile)*
+> Si dice quando incontri qualcuno per la **prima volta**, ed è il modo normale di farlo: né troppo formale né troppo informale.
+> Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".
+> Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!".
 
-**3 — su d8 "I'm {etàFiglio}." — Dire quanti anni hai**
-> La figlia dice "I'm sixteen **years old**". Il figlio dice solo "I'm ten".
-> Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.
-> Attenzione a una cosa: in inglese **non si usa il verbo avere** per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".
-> Ricordatelo, perché è la differenza più grande con l'italiano.
-
-**4 — su d4 "I am from {partenza}." — Dire da dove vieni**
-> "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".
-> Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".
-> "From" significa "da". La userai tantissimo.
-
-**5 — su d3 "Where are you from?" — Chiedere da dove viene qualcuno**
+**3 — su d3 "Where are you from?" — Chiedere da dove viene qualcuno** *(facile)*
 > "Where are you from?" vuol dire "di dove sei?".
 > "Where" significa "dove". E ritrovi già "are you", che è la domanda del verbo essere.
 > Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.
 > Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra.
 
-**6 — su d1 "Nice to meet you." — Nice to meet you**
-> Si dice quando incontri qualcuno per la **prima volta**, ed è il modo normale di farlo: né troppo formale né troppo informale.
-> Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".
-> Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!".
+**4 — su d4 "I am from {partenza}." — Dire da dove vieni** *(facile)*
+> "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".
+> Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".
+> "From" significa "da". La userai tantissimo.
 
-**7 — su d10 "...where are you going?" — Una parola per "tu" e per "voi"**
-> Prima la guida ha chiesto al papà: "Where are you from?" — lì "you" vuol dire **tu**.
-> Ora chiede a tutta la famiglia: "Where are you going?" — e qui "you" vuol dire **voi**.
-> In inglese è la stessa parola. Capisci a chi si parla guardando la situazione, non la parola.
-> Non è un problema: ci si abitua prestissimo, e ti risparmia di imparare due forme diverse come in italiano.
-
-**8 — su d5 "And you?" — And you?**
+**5 — su d5 "And you?" — And you?** *(facile)*
 > Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.
 > Nel dialogo la guida l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.
 > Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.
 
-**9 — su d9 "We are the {cognome} family!" — We are**
+**6 — su d7 "Hi! I'm {figlia}." — I am e I'm** *(facile)*
+> Il papà dice "I am {{papà}}", la figlia dice "I'm {{figlia}}". Sono la stessa cosa: "I'm" è solo la forma corta.
+> Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".
+> Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.
+
+**7 — su d8 "I'm {etàFiglio}." — Dire quanti anni hai** *(facile)*
+> La figlia dice "I'm {{etàFiglia}} **years old**". Il figlio dice solo "I'm {{etàFiglio}}".
+> Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.
+> Attenzione a una cosa: in inglese **non si usa il verbo avere** per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".
+> Ricordatelo, perché è la differenza più grande con l'italiano.
+
+**8 — su d9 "We are the {cognome} family!" — We are** *(facile)*
 > "We are" vuol dire "noi siamo".
 > Conosci già "I am" — io sono. Quando si parla in più di uno diventa "we are": cambia sia la parola per dire chi, sia il verbo.
 > Nota che in inglese il cognome va **prima** della parola "family", al contrario dell'italiano.
 
-**10 — su d11 "We are going to {destinazione}!" — Dire dove stai andando** *(media)*
-> "We are going to {{destinazione:en}}" vuol dire "andiamo in {{destinazione}}".
-> Ritrovi "we are", che hai appena visto. Qui però non finisce lì: "we are **going**" vuol dire che l'azione sta succedendo adesso, o che è già decisa.
-> "To" indica la direzione: verso dove.
-> Per ora imparala così, tutta insieme. È una delle frasi più utili in viaggio.
+### Skill spostate all'episodio 2
 
-**11 — su d12 "Welcome to {destinazione}!" — Welcome**
-> "Welcome" vuol dire "benvenuto". Con "to" davanti al posto: "Welcome to {{destinazione:en}}", benvenuti in {{destinazione}}.
-> Ritrovi "to" della frase di prima: la stessa parolina per dire verso dove.
-> Non cambia se sei uno o siete in tanti: "welcome" va bene per tutti.
+Il "you" che vale tu e voi, "we are going to", "welcome": appartengono alle tre battute spostate.
 
 ### Skill rimandate
 
-| Struttura | Dove compare | Perché | Quando |
-|---|---|---|---|
-| Present continuous (`are going`) | d11 | Spiegare il tempo verbale richiederebbe il contrasto con il present simple, non ancora noto. Per ora la frase si impara intera. | Episodio 2 |
+Nessuna in questo episodio. Il present continuous, che era rimandato, esce insieme alla battuta che lo conteneva.
+
+---
 
 ## I gradi
 
-### Grado A — 21 parole
+### Grado A — 18 parole
 
-`hello` · `hi` · `nice` · `to` · `meet` · `you` · `I` · `am` · `I'm` · `where` · `are` · `from` · `Italy` · `and` · `years` · `old` · `we` · `the` · `family` · `going` · `welcome`
+`hello` · `hi` · `nice` · `meet` · `you` · `I` · `am` · `I'm` · `where` · `are` · `from` · `Italy` · `and` · `years` · `old` · `we` · `the` · `family`
 
 *Più i numeri delle età, che vengono da A0 (1-20).*
+
+**Uscite con le tre battute spostate:** `going`, `welcome`, i nomi dei paesi, e **`to`**.
+
+*Perché esce anche `to`:* nel dialogo lungo compariva tre volte — "Nice **to** meet you", "going **to**", "Welcome **to**". Restando solo il primo caso, quel `to` non ha un significato che lo studente possa usare da solo: serve solo dentro un'espressione che si impara intera, e quell'espressione è già nel grado B. Tornerà nel grado A dell'episodio 2, dove "going to" e "welcome to" gli danno un senso vero — la direzione.
 
 | Voce | Italiano | Pronuncia | Categoria |
 |---|---|---|---|
 | Hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
 | Hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
 | nice | bello / piacevole | nais | aggettivo |
-| to | a / verso | tu — corta | preposizione |
 | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
 | you | tu / voi | iu | pronome |
 | I | io | ai — sempre maiuscola in inglese | pronome |
@@ -161,10 +140,8 @@ Una skill è scritta in italiano ma cita la frase inglese del dialogo, e le due 
 | we | noi | ui | pronome |
 | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
 | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
-| going | andando | GO-in — la "g" finale si sente appena | verbo |
-| Welcome | Benvenuto | UEL-com — accento sulla prima | saluto |
 
-### Grado B — 6 chunk
+### Grado B — 5 espressioni
 
 | Inglese | Italiano | Pronuncia | Categoria |
 |---|---|---|---|
@@ -173,9 +150,10 @@ Una skill è scritta in italiano ma cita la frase inglese del dialogo, e le due 
 | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
 | And you? | E tu? / E voi? | and IU — accento su "you" | espressione |
 | years old | anni (di età) | i-ars OULD | espressione per l'età |
-| going to | andando a / verso | GO-in tu — nel parlato veloce diventa quasi "gonna" | verbo + preposizione |
 
-### Grado C — 13 frasi
+*Uscita:* `going to`, che apparteneva alla battuta spostata.
+
+### Grado C — 10 frasi
 
 | Inglese | Italiano | Da battuta |
 |---|---|---|
@@ -189,26 +167,20 @@ Una skill è scritta in italiano ma cita la frase inglese del dialogo, e le due 
 | I'm {etàFiglia} years old. | Ho {etàFiglia} anni. | d7 |
 | I'm {etàFiglio}. | Ho {etàFiglio} anni. | d8 |
 | We are the {cognome} family! | Siamo la famiglia {cognome}! | d9 |
-| Where are you going? | Dove state andando? | d10 |
-| We are going to {destinazione}! | Andiamo in {destinazione}! | d11 |
-| Welcome to {destinazione}! | Benvenuti in {destinazione}! | d12 |
 
-*Nota su d10: la frase esercitata è solo "Where are you going?", senza l'elenco dei nomi — quello resta nel grado D.*
-*`I am {papà}` e `I am {mamma}` sono la stessa struttura con nomi diversi: si tengono entrambe per la regola della ripetizione ravvicinata.*
+*Uscite:* le tre frasi delle battute spostate.
 
-### Grado D — 12 battute
+### Grado D — 9 battute
 
-Le dodici battute della tabella in cima, con `speaker`, `ruolo`, `english`, `italian` e `whatYouLearn` dove previsto.
+Le nove battute della tabella in cima, con `speaker`, `ruolo`, `english`, `italian` e `whatYouLearn` dove previsto.
 
-### Domanda aperta
-
-**Il grado C ha bisogno di una categoria?** Per le parole la categoria è grammaticale; per una frase intera forse è funzionale — domanda, risposta, presentazione, saluto. Non sappiamo ancora a cosa servirebbe: **da decidere all'episodio 4**, quando ci saranno una cinquantina di frasi davanti e un criterio potrà emergere invece di essere inventato.
+---
 
 ## Gli slot di personalizzazione
 
 **Queste tabelle sostituiscono integralmente quelle attuali.**
 
-Nove slot. I **nomi di persona non si traducono mai** nel dialogo: la colonna inglese serve solo a mostrare la doppia forma nella schermata di personalizzazione. I **toponimi si traducono**.
+Otto slot: papà, mamma, figlia, figlio, età figlia, età figlio, cognome, città di partenza. **La destinazione esce**, perché non compare in nessuna battuta di questo episodio.
 
 **Nomi** — otto per ruolo:
 
@@ -221,23 +193,16 @@ Nove slot. I **nomi di persona non si traducono mai** nel dialogo: la colonna in
 
 *Chiara compare tra mamme e figlie, Marco tra papà e figli: non è un problema.*
 
-**Cognome** (slot nuovo, non si traduce): **Rossi** · Bianchi · Ferrari · Russo · Costa · Marino · Barberis · Ambruosi
+**Cognome** (non si traduce): **Rossi** · Bianchi · Ferrari · Russo · Costa · Marino · Barberis · Ambruosi
 
-**Età:** figlia 13-17 (predefinito 16, adolescente) · figlio 4-10 (predefinito 8, bambino). *I due figli restano distinti per età, e questo influisce sugli episodi futuri.*
+**Età** — numeri continui, senza buchi:
+- Età figlio: da **4 a 11**, predefinito 8
+- Età figlia: da **12 a 17**, predefinito 16
 
-**Città di partenza:** Mondovì (predefinito) · Torino/Turin · Milano/Milan
+**Città di partenza** — i toponimi si traducono:
 
-**Destinazione** — sei, predefinito **Cina**:
-
-| Chiave | Italiano | Inglese |
-|---|---|---|
-| cina | **Cina** | China |
-| giappone | Giappone | Japan |
-| spagna | Spagna | Spain |
-| francia | Francia | France |
-| germania | Germania | Germany |
-| irlanda | Irlanda | Ireland |
-
-*Criterio di ammissione: solo paesi che in italiano vogliono la preposizione "in" (vedi la nota 9). "We are going to {destinazione}" si traduce "Andiamo in ...", e una riga della tabella non può portarsi dietro una preposizione propria senza complicare il testo: "negli Stati Uniti" non entra, e per questo gli Stati Uniti non ci sono.*
-
----
+| Chiave | Italiano | Inglese | Predefinito |
+|---|---|---|---|
+| mondovi | Mondovì | Mondovì | ✓ |
+| torino | Torino | Turin | |
+| milano | Milano | Milan | |
