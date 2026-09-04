@@ -53,42 +53,49 @@ async function bootAsUser(page, userName, moduleId) {
 
 async function openStory(page, moduleId) {
   await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForFunction(() => document.querySelectorAll('#speak-easy-body .chat-row').length > 0, null, { timeout: 20000 });
+  await page.waitForFunction(() => document.querySelectorAll('#speak-easy-body .wws-card').length > 0, null, { timeout: 20000 });
 }
 
 // Tutto lo stato che serve, letto in un'unica valutazione sincrona dentro la
 // pagina (CLAUDE.md regola 19).
 function readState(page) {
   return page.evaluate(() => {
-    const vis = id => { const el = document.getElementById(id); return !!el && el.getClientRects().length > 0; };
-    const toggles = Array.from(document.querySelectorAll('[data-toggle-explanation]'));
+    const vis = el => !!el && el.getClientRects().length > 0;
+    const visId = id => vis(document.getElementById(id));
+    const cards = Array.from(document.querySelectorAll('.wws-card'));
+    const regole = Array.from(document.querySelectorAll('.se-explanation'));
+    const selfchecks = Array.from(document.querySelectorAll('.se-selfcheck'));
     return {
-      battute: document.querySelectorAll('.chat-row').length,
-      skill: toggles.length,
-      etichette: toggles.map(b => b.textContent),
-      skillIds: toggles.map(b => b.getAttribute('data-toggle-explanation')),
-      toggleDisabilitati: toggles.filter(b => b.disabled).length,
-      aperte: toggles.filter(b => {
-        const el = document.getElementById('se-explanation-' + b.getAttribute('data-toggle-explanation'));
-        return el && el.getClientRects().length > 0;
-      }).map(b => b.getAttribute('data-toggle-explanation')),
-      espanse: toggles.filter(b => b.getAttribute('aria-expanded') === 'true').map(b => b.getAttribute('data-toggle-explanation')),
-      spunte: Array.from(document.querySelectorAll('.se-declared'))
-        .filter(el => el.getClientRects().length > 0)
-        .map(el => el.textContent.trim()),
-      pulsantiTraduzione: document.querySelectorAll('[data-toggle-translation]').length,
-      traduzioniVisibili: Array.from(document.querySelectorAll('.chat-italian')).filter(el => el.getClientRects().length > 0).length,
-      completaDisabilitato: document.getElementById('speak-easy-complete').disabled,
-      hintVisibile: vis('speak-easy-complete-hint'),
-      hintTesto: (document.getElementById('speak-easy-complete-hint') || {}).textContent || '',
-      riprendiVisibile: vis('speak-easy-resume-later'),
+      battute: cards.length,
+      corrente: cards.filter(c => c.classList.contains('is-current')).map(c => c.getAttribute('data-card')),
+      avanti: cards.filter(c => c.classList.contains('is-ahead')).map(c => c.getAttribute('data-card')),
+      skill: regole.length,
+      skillIds: regole.map(r => r.getAttribute('data-skill-block')),
       titoli: Array.from(document.querySelectorAll('.se-explanation-title')).map(el => el.textContent),
-      // Nelle skill i segnaposto vanno sostituiti come nel resto
-      // dell'episodio: lo studente deve leggere il valore che ha scelto.
+      titoliVisibili: Array.from(document.querySelectorAll('.se-explanation-title')).filter(vis).length,
+      corpiVisibili: Array.from(document.querySelectorAll('.se-explanation-text')).filter(vis).length,
+      selfcheckVisibili: selfchecks.filter(vis).length,
+      scelti: Array.from(document.querySelectorAll('.se-selfcheck-actions .btn.is-chosen')).map(b => b.getAttribute('data-skill')),
+      spunte: Array.from(document.querySelectorAll('.se-declared')).filter(vis).map(el => el.textContent.trim()),
+      lucchetti: Array.from(document.querySelectorAll('.wws-state')).filter(el => vis(el) && !el.classList.contains('is-done')).length,
+      senzaRegola: Array.from(document.querySelectorAll('.wws-no-rule')).filter(vis).length,
+      pulsantiTraduzione: document.querySelectorAll('[data-toggle-translation]').length,
+      traduzioniVisibili: Array.from(document.querySelectorAll('.wws-italian')).filter(vis).length,
+      // La traduzione sta dentro la bolla, la regola no.
+      traduzioniNellaBolla: document.querySelectorAll('.wws-bubble .wws-italian').length,
+      regoleNellaBolla: document.querySelectorAll('.wws-bubble .se-explanation').length,
+      bolleColoriDiversi: new Set(Array.from(document.querySelectorAll('.wws-card:not(.is-ahead) .wws-bubble')).map(b => getComputedStyle(b).backgroundColor)).size,
+      rispostesuUnaRiga: (() => { const a = document.querySelector('.se-selfcheck-actions'); return a ? getComputedStyle(a).flexDirection : null; })(),
+      usciteSuUnaRiga: getComputedStyle(document.querySelector('.se-complete-row')).flexDirection,
+      bordoCorrente: (() => { const c = document.querySelector('.wws-card.is-current'); return c ? getComputedStyle(c).borderTopWidth : null; })(),
+      completaDisabilitato: document.getElementById('speak-easy-complete').disabled,
+      hintVisibile: visId('speak-easy-complete-hint'),
+      hintTesto: (document.getElementById('speak-easy-complete-hint') || {}).textContent || '',
+      riprendiVisibile: visId('speak-easy-resume-later'),
       skillConSegnaposto: Array.from(document.querySelectorAll('.se-explanation-text, .se-explanation-title'))
         .filter(el => /\{\{|\{[a-zA-Z]/.test(el.textContent)).length,
       corpiSkill: Array.from(document.querySelectorAll('.se-explanation-text')).map(el => el.textContent),
-      segnapostoGrezzi: Array.from(document.querySelectorAll('.chat-english, .chat-italian')).filter(el => /\{\{/.test(el.textContent)).length
+      segnapostoGrezzi: Array.from(document.querySelectorAll('.wws-english, .wws-italian')).filter(el => /\{\{/.test(el.textContent)).length
     };
   });
 }
@@ -110,6 +117,7 @@ async function run() {
   const skillIds = [];
   battute.forEach(line => (line.whatYouLearn || []).forEach((sk, i) => skillIds.push(line.id + '-s' + (i + 1))));
   const battuteConDueSkill = battute.filter(l => (l.whatYouLearn || []).length > 1);
+  const battuteConSkill = battute.filter(l => (l.whatYouLearn || []).length > 0);
 
   // I numeri dichiarati in docs/episodio-1.md, verificati sul file dati vero
   // (CLAUDE.md regola 29): se l'episodio viene ridiviso, qui si vede subito.
@@ -153,13 +161,24 @@ async function run() {
 
     let st = await readState(page);
     log('[B] Le traduzioni partono nascoste, dietro il loro pulsante', st.traduzioniVisibili === 0 && st.pulsantiTraduzione === battute.length);
-    log('[B] C\'è un pulsante per skill, non per battuta', st.skill === attesi.skill);
+    log('[B] C\'è un riquadro per skill, non per battuta', st.skill === attesi.skill);
     log('[B] Gli id delle skill sono quelli attesi, in ordine di dialogo', JSON.stringify(st.skillIds) === JSON.stringify(skillIds));
+    log('[B] Una card per battuta, impilate', st.battute === battute.length);
+    log('[B] La traduzione sta dentro la bolla', st.traduzioniNellaBolla === battute.length);
+    log('[B] La regola sta FUORI dalla bolla, a tutta larghezza', st.regoleNellaBolla === 0);
+    log('[B] Tutte le bolle hanno lo stesso colore: la posizione basta a dire chi parla', st.bolleColoriDiversi === 1);
+    log('[B] I tre pulsanti stanno sulla stessa riga', st.rispostesuUnaRiga === 'row');
+    log('[B] Le due uscite stanno affiancate', st.usciteSuUnaRiga === 'row');
+    log('[B] La card corrente ha il bordo accento da 2px', st.bordoCorrente === '2px');
+    log('[B] Le battute senza skill non hanno riquadro né segno di stato', st.senzaRegola === battute.length - battuteConSkill.length);
     log('[B] La prima battuta porta due skill distinte', st.skillIds[0] === 'd-1-s1' && st.skillIds[1] === 'd-1-s2');
-    log('[B] Ogni pulsante porta il titolo della propria skill', st.etichette[0] !== st.etichette[1] && st.etichette[0].length > 0);
-    log('[B] La prima skill si apre da sola', st.aperte.length === 1 && st.aperte[0] === 'd-1-s1');
-    log('[B] L\'apertura si dichiara con aria-expanded, non riscrivendo l\'etichetta', st.espanse.length === 1 && st.espanse[0] === 'd-1-s1');
-    log('[B] Tutte le altre sono bloccate', st.toggleDisabilitati === attesi.skill - 1);
+    log('[B] Ogni regola porta il proprio titolo', st.titoli[0] !== st.titoli[1] && st.titoli[0].length > 0);
+    log('[B] La card della prima skill è quella corrente', st.corrente.length === 1 && st.corrente[0] === 'd-1');
+    // Sblocco Sequenziale: le card successive restano VISIBILI, non nascoste.
+    log('[B] Di ogni regola si vede il titolo, anche di quelle più avanti', st.titoliVisibili === attesi.skill);
+    log('[B] Il corpo si legge solo della regola corrente', st.corpiVisibili === 1);
+    log('[B] I pulsanti ci sono solo sulla regola corrente', st.selfcheckVisibili === 1);
+    log('[B] Le card più avanti sono attenuate e col lucchetto', st.avanti.length > 0 && st.lucchetti === st.avanti.length);
     log('[B] "Ho finito" è bloccato', st.completaDisabilitato === true);
     log('[B] La riga che spiega il blocco è visibile e viene dai dati', st.hintVisibile === true && st.hintTesto.length > 0);
     log('[B] "Esci e riprendi dopo" è disponibile', st.riprendiVisibile === true);
@@ -170,8 +189,8 @@ async function run() {
     // valere anche per lei — è il motivo per cui ha un id proprio.
     await dichiara(page, 'd-1-s1', 'chiara');
     st = await readState(page);
-    log('[B] Dichiarata la prima, si apre la seconda della stessa battuta', st.aperte.length === 1 && st.aperte[0] === 'd-1-s2');
-    log('[B] Una sola skill aperta per volta', st.aperte.length === 1);
+    log('[B] Dichiarata la prima, tocca alla seconda della stessa battuta', st.corrente[0] === 'd-1' && st.corpiVisibili === 2);
+    log('[B] Il pulsante scelto resta acceso', st.scelti.length === 1 && st.scelti[0] === 'd-1-s1');
     log('[B] Una spunta sola: la seconda skill della stessa battuta è ancora da dichiarare', st.spunte.length === 1 && st.spunte[0].indexOf('Chiara') !== -1);
     log('[B] "Ho finito" ancora bloccato con una sola dichiarata', st.completaDisabilitato === true);
 
@@ -238,7 +257,7 @@ async function run() {
     await openStory(page, 'whyWeSayIt');
     st = await readState(page);
     log('[C] Rientrando si riprende da dove si era arrivati', st.spunte.length === 2);
-    log('[C] La lezione riparte dalla prima non dichiarata', st.aperte.length === 1 && st.aperte[0] === skillIds[2]);
+    log('[C] La lezione riparte dalla prima non dichiarata', st.corrente.length === 1 && st.corrente[0] === skillIds[2].replace(/-s\d+$/, ''));
     log('[C] Nessun errore JS', errors.length === 0);
     await page.close();
   }
@@ -267,14 +286,16 @@ async function run() {
 
     await openStory(page, 'whyWeSayIt');
     let st = await readState(page);
-    log('[D] Al ripasso si apre tutto chiuso', st.aperte.length === 0);
-    log('[D] Al ripasso nessuna skill è bloccata', st.toggleDisabilitati === 0);
+    log('[D] Al ripasso non c\'è una card corrente: sono tutte raggiungibili', st.corrente.length === 0 && st.avanti.length === 0);
+    log('[D] Al ripasso si legge il corpo di ogni regola', st.corpiVisibili === attesi.skill);
+    log('[D] Al ripasso restano accese tutte le risposte date', st.scelti.length === attesi.skill);
     log('[D] Al ripasso le spunte mostrano le scelte già fatte', st.spunte.length === attesi.skill);
     log('[D] Al ripasso "Ho finito" è subito disponibile', st.completaDisabilitato === false);
     log('[D] Al ripasso "Esci e riprendi dopo" non compare', st.riprendiVisibile === false);
 
     // Cambiare idea su una: 10 chiare su 11 -> 91% -> verde, e l'esito viene riscritto.
-    await page.locator('[data-toggle-explanation="d-1-s1"]').click();
+    // Al ripasso le regole sono già tutte leggibili: non c'è niente da
+    // riaprire, si cambia direttamente la risposta.
     await dichiara(page, 'd-1-s1', 'nonChiara');
     await page.locator('#speak-easy-complete').click();
     await page.waitForFunction(() => {

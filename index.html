@@ -1275,7 +1275,7 @@
         "title": "Come funziona, in breve",
         "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara.</p><p>Quando le hai viste tutte, premi \"Ho finito\".</p>"
       },
-      "completeHint": "Si attiva quando hai aperto e dichiarato tutte le spiegazioni.",
+      "completeHint": "Si attiva quando hai risposto a tutte le regole.",
       "selfCheck": {
         "question": "Hai capito la spiegazione?",
         "answers": [
@@ -1308,7 +1308,10 @@
           "title": "Nessun problema",
           "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
         }
-      }
+      },
+      "ruleKicker": "Nuova regola",
+      "noRuleHint": "Qui non c'è niente di nuovo: è solo la storia.",
+      "lockedHint": "Prima le regole qui sopra"
     },
     "mappaEpisodio": {
       "howItWorks": {
@@ -3184,21 +3187,118 @@
   /* The revealed explanation + its self-check — same tinted-panel
      treatment as .retry-intro/.vc-cue (CLAUDE.md rule 11: reuse the
      established "important aside" look, not a new color). */
+  /* ---------- Why We Say It: una card per battuta ----------
+     Il modulo aveva la grafica di Speak Easy, pensata per leggere un
+     dialogo, non per studiare delle regole. Qui ogni battuta è una card:
+     dentro, la bolla con la sua traduzione, e sotto la regola a tutta
+     larghezza. La bolla resta allineata per chi parla (l'informazione c'è),
+     la regola no: allineare un paragrafo lungo produce solo rientri che si
+     leggono male. */
+  .wws-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .wws-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card);
+  }
+
+  /* La card su cui si sta lavorando: stesso bordo accento da 2px di
+     .sr-reveal (CLAUDE.md regola 5, non uno spessore nuovo). Il padding si
+     riduce di 1px per compensare il bordo più spesso, così le card non
+     ballano quando la corrente cambia. */
+  .wws-card.is-current {
+    border: 2px solid var(--accent);
+    padding: 13px;
+  }
+
+  .wws-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .wws-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .wws-state svg { width: 14px; height: 14px; }
+  .wws-state.is-done { color: var(--correct-ink); opacity: 1; }
+
+  .wws-row { display: flex; }
+  .wws-row.left { justify-content: flex-start; }
+  .wws-row.right { justify-content: flex-end; }
+
+  /* Tutte le bolle dello stesso colore: la posizione dice già chi parla, e
+     un secondo codice cromatico sarebbe rumore. */
+  .wws-bubble {
+    max-width: 88%;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .wws-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  /* La traduzione sta DENTRO la bolla, sotto l'inglese: frase e traduzione
+     sono una coppia, e separarle fa perdere il legame. Più piccola e in
+     tono secondario perché è il supporto, non la frase da imparare. */
+  .wws-italian {
+    font-size: 0.88rem;
+    opacity: 0.75;
+    margin: 0;
+  }
+
+  /* La regola: riquadro col colore accento, non verde — non è un giudizio
+     su come è andata, è "qui c'è qualcosa di nuovo". */
   .se-explanation {
     display: flex;
     flex-direction: column;
     gap: 10px;
     padding: 12px 14px;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--accent) 7%, var(--card));
   }
 
-  /* Titolo della spiegazione: ha un posto suo (whatYouLearn.title), non è
-     grassetto dentro il corpo — il corpo il grassetto lo usa per
-     evidenziare le parole di cui si parla, e i due usi non devono
-     assomigliarsi. Stesso font dei titoli del progetto. */
-  /* Skill aperta: l'etichetta resta il titolo (vedi seSetExplanationOpen),
-     quindi lo stato aperto si vede dal peso del testo, non dalle parole. */
-  .translation-toggle[aria-expanded="true"] {
-    font-weight: 700;
+  .wws-rule-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .wws-rule-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
   }
 
   .se-explanation-title {
@@ -3213,10 +3313,40 @@
     margin: 0;
   }
 
-  /* Accanto a "Cosa imparo qui": spunta + dichiarazione già data, così
-     alle visite successive si vede a colpo d'occhio cosa si era detto
-     senza dover riaprire ogni spiegazione. Stessa coppia di colori del
-     "già ascoltato" di Dialogo (.dg-heard-check). */
+  /* Battuta senza regola: nessun riquadro, nessun pulsante, nessun segno di
+     stato — chiedere "l'hai capita?" dove non si spiega niente è una
+     domanda senza oggetto. Resta una riga che lo dice, e la card non blocca
+     la sequenza. */
+  .wws-no-rule {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Sblocco Sequenziale, variante per dichiarazione: le card successive
+     alla corrente restano VISIBILI (far vedere cosa aspetta invoglia ad
+     andare avanti) ma attenuate, e della regola si legge solo il titolo. */
+  .wws-card.is-ahead .wws-card-top,
+  .wws-card.is-ahead .wws-english,
+  .wws-card.is-ahead .wws-italian {
+    opacity: 0.45;
+  }
+
+  .wws-card.is-ahead .wws-bubble {
+    background: none;
+    border-style: dashed;
+  }
+
+  /* Lo stato "non ancora raggiunta" è della singola regola, non della card:
+     la card corrente può contenerne due, e la seconda deve leggersi come
+     bloccata anche lì. */
+  .se-explanation.is-ahead {
+    border-style: dashed;
+    background: none;
+    opacity: 0.6;
+  }
+
   .se-declared {
     display: inline-flex;
     align-items: center;
@@ -3230,13 +3360,14 @@
 
   .se-declared svg { width: 13px; height: 13px; }
 
-  /* Le due uscite del modulo, una sotto l'altra: completamento e — solo
-     durante un primo giro non ancora finito — "Esci e riprendi dopo". */
+  /* Le due uscite del modulo, affiancate: sono due modi di andarsene, non
+     un'azione e il suo ripensamento. */
   .se-complete-row {
     display: flex;
-    flex-direction: column;
     gap: 10px;
   }
+
+  .se-complete-row .btn { flex: 1; }
 
   .se-selfcheck-question {
     font-family: var(--font-mono);
@@ -3247,10 +3378,33 @@
     margin: 0;
   }
 
+  /* I tre pulsanti sulla stessa riga: sono tre risposte alla stessa
+     domanda, e incolonnarli le faceva sembrare tre azioni diverse. */
   .se-selfcheck-actions {
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
+  }
+
+  .se-selfcheck-actions .btn {
+    flex: 1;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    /* Le tre risposte sono frasi, non parole: su uno schermo stretto devono
+       poter andare a capo dentro il pulsante, altrimenti la terza finisce
+       fuori dallo schermo. */
+    white-space: normal;
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  /* La risposta data resta accesa, così si vede senza riaprire niente.
+     Verde per tutte e tre: dice "hai risposto", non "è andata bene" —
+     stessa coppia di colori di .sr-option.is-correct, non una nuova. */
+  .se-selfcheck-actions .btn.is-chosen {
+    background: var(--correct-bg);
+    color: var(--correct-ink);
+    border-color: transparent;
   }
 
   .se-selfcheck-followup {
@@ -3621,7 +3775,12 @@
     margin-top: 4px;
   }
 
-  .dg-bubble.dg-bubble-timer .dg-line-timer { display: flex; }
+  .dg-bubble.dg-bubble-timer .dg-line-timer {
+    display: flex;
+    /* La barra è toccabile mentre scorre (salta alla battuta dopo), quindi
+       lo dice anche il cursore. */
+    cursor: pointer;
+  }
 
   .dg-line-timer-caption {
     margin: 0;
@@ -3650,10 +3809,11 @@
     animation: dg-pulse-soft 2.2s ease-in-out infinite;
   }
 
-  /* Job: Ripeti a Tempo's sequential-unlock gate — a bubble beyond the
-     next reachable line, dimmer than is-locked's temporary dim (that one
-     means "wait a moment"; this one means "not yet, listen to the
-     earlier ones first"). */
+  /* Sblocco Sequenziale, variante per ascolto (Ripeti a Tempo) — una bolla
+     oltre la prossima raggiungibile, più sbiadita del dim temporaneo di
+     is-locked (quello dice "aspetta un attimo", questo "non ancora, prima
+     ascolta le precedenti"). L'altra variante è per dichiarazione, in Why
+     We Say It (vedi .wws-card.is-ahead e seRefreshExplanationStates). */
   .dg-bubble.is-ahead-locked {
     opacity: 0.35;
     pointer-events: none;
@@ -4209,7 +4369,7 @@
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge">Speak Easy</span>
+              <span class="badge" id="speak-easy-badge">Meet the Story</span>
               <span class="module-row-type" id="speak-easy-type-badge"></span>
             </div>
             <div class="header-actions-row">
@@ -4238,8 +4398,12 @@
           <!-- MAIN SCREEN -->
           <div id="speak-easy-main-screen" class="module-screen">
             <header class="app-header">
-              <h1 id="speak-easy-title">Speak Easy</h1>
-              <p style="opacity:0.7; font-size:0.92rem;">Segui il dialogo, ascolta ogni battuta e prova a ripeterla.</p>
+              <h1 id="speak-easy-title">Meet the Story</h1>
+              <!-- Badge, titolo e sottotitolo vengono dal modulo aperto
+                   (CONFIG.moduleLabels): questa vista ne serve due, e prima
+                   diceva "Speak Easy" a entrambi — un nome che non esiste
+                   più. -->
+              <p style="opacity:0.7; font-size:0.92rem;" id="speak-easy-subtitle"></p>
             </header>
 
             <div id="speak-easy-body"></div>
@@ -7027,6 +7191,10 @@
     var category = module.typeLabel || (typeInfo && typeInfo.label) || '';
     var gradeName = module.grade && CONFIG.gradeNames[module.grade];
     if (!gradeName) return category;
+    // "Studia il dialogo · Dialogo" non aggiunge niente: quando il nome del
+    // grado è già contenuto nella categoria, il grado si omette. È il caso
+    // dei tre Dialogue, e non riguarda gli altri moduli.
+    if (category && category.toLowerCase().indexOf(gradeName.toLowerCase()) !== -1) return category;
     return category ? category + CONFIG.gradeSeparator + gradeName : gradeName;
   }
 
@@ -7181,6 +7349,7 @@
   var seSessionAnswers = {}; // skillId -> 'chiara'|'nonAncora'|'nonChiara' — set di lavoro, NON ancora salvato
   var seLastAvgPct = 0; // calcolato a "Ho finito", letto da speak-easy-complete-btn per saveModuleOutcome
   var seReviewMode = false; // il modulo è già stato completato almeno una volta -> visita di ripasso
+  var seTexts = null; // i testi del modulo da istruzioni-moduli.json (kicker della regola, riga "niente di nuovo", motivo del lucchetto)
   var seSelfCheck = null; // istruzioni-moduli.json's speakEasy.selfCheck (domanda + le tre risposte)
   var seSelfCheckMessages = null; // istruzioni-moduli.json's speakEasy.selfCheckMessages (il seguito dopo la risposta)
 
@@ -7282,7 +7451,7 @@
   function renderSpeakEasy(data) {
     // Il profilo (CONFIG.story.profiles) decide le due differenze fra Meet
     // the Story e Why We Say It: se la traduzione sta sempre in chiaro, e se
-    // le skill si mostrano. Il resto del disegno e' identico — e' lo stesso
+    // le skill si mostrano. Il resto del disegno è identico — è lo stesso
     // componente.
     var profile = (CONFIG.story.profiles[currentSpeakEasyModule.storyProfile]) || {};
     var alwaysTranslated = profile.translations === 'always';
@@ -7299,110 +7468,95 @@
       // Una skill senza corpo non è una skill: un titolo da solo non spiega.
       var skills = (line.whatYouLearn || []).filter(function (sk) { return sk && sk.body; });
       if (!withSkills) skills = [];
-      var buttonsHtml = '';
-      var blocksHtml = '';
-      skills.forEach(function (skill, i) {
+      var rulesHtml = skills.map(function (skill, i) {
         var skillId = seSkillId(line.id, i);
         skillIds.push(skillId);
-        // L'etichetta del pulsante è il titolo della skill: su una battuta
-        // con due skill, due pulsanti uguali non direbbero quale si apre.
-        // Le skill contengono segnaposto come ogni altro testo dell'episodio:
-        // lo studente deve leggere il valore che ha scelto, non "{{partenza}}".
-        // La lingua di base è l'italiano (la spiegazione è scritta in
-        // italiano); le citazioni inglesi chiedono la propria con :en.
+        // I segnaposto nelle skill si sostituiscono come in ogni altro testo
+        // dell'episodio; le citazioni inglesi chiedono la propria lingua
+        // con :en (vedi fillTemplate).
         var skillTitle = fillTemplate(skill.title, currentEpisode, currentValues, 'it');
         var skillBody = fillTemplate(skill.body, currentEpisode, currentValues, 'it');
-        buttonsHtml += '<button type="button" class="translation-toggle" data-toggle-explanation="' + skillId + '" aria-expanded="false">' + skillTitle + '</button>' +
-          '<span class="se-declared" id="se-declared-' + skillId + '" hidden></span>';
         var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
           return '<button type="button" class="btn ' + (a.primary ? 'btn-primary' : 'btn-secondary') +
             ' btn-sm" data-se-answer="' + a.value + '" data-skill="' + skillId + '">' + a.button + '</button>';
         }).join('');
-        blocksHtml += '<div class="se-explanation panel" id="se-explanation-' + skillId + '" hidden>' +
+        return '<div class="se-explanation" id="se-explanation-' + skillId + '" data-skill-block="' + skillId + '">' +
+          '<div class="wws-rule-top">' +
+          '<span class="wws-rule-kicker">' + ((seTexts && seTexts.ruleKicker) || '') + '</span>' +
+          '<span class="se-declared" id="se-declared-' + skillId + '" hidden></span>' +
+          '</div>' +
           '<p class="se-explanation-title">' + skillTitle + '</p>' +
-          '<p class="se-explanation-text">' + skillBody + '</p>' +
+          '<p class="se-explanation-text" id="se-body-' + skillId + '">' + skillBody + '</p>' +
           '<div class="se-selfcheck" data-se-skill="' + skillId + '">' +
           '<p class="se-selfcheck-question">' + ((seSelfCheck && seSelfCheck.question) || '') + '</p>' +
           '<div class="se-selfcheck-actions">' + answersHtml + '</div>' +
           '<p class="se-selfcheck-followup" id="se-followup-' + skillId + '" hidden></p>' +
           '</div>' +
           '</div>';
-      });
+      }).join('');
       // Traduzione sempre in chiaro (Meet the Story) = nessun pulsante da
       // premere: il pulsante esiste solo dove c'è qualcosa da scoprire.
       var translationBtnHtml = alwaysTranslated
         ? ''
         : '<button type="button" class="translation-toggle" data-toggle-translation="' + line.id + '">Mostra traduzione</button>';
-      var actionsHtml = (translationBtnHtml || buttonsHtml)
-        ? '<div class="chat-actions">' + translationBtnHtml + buttonsHtml + '</div>'
+      var noRuleHtml = (withSkills && !skills.length)
+        ? '<p class="wws-no-rule">' + ((seTexts && seTexts.noRuleHint) || '') + '</p>'
         : '';
-      return '<div class="chat-row ' + align + '">' +
-        '<div class="chat-bubble panel">' +
+      return '<div class="wws-card" data-card="' + line.id + '">' +
+        '<div class="wws-card-top">' +
         '<span class="chat-speaker">' + speakerLabel(currentEpisode, line.speaker) + '</span>' +
-        '<p class="chat-english">' + english + '</p>' +
+        '<span class="wws-state" id="wws-state-' + line.id + '" hidden></span>' +
+        '</div>' +
+        '<div class="wws-row ' + align + '">' +
+        '<div class="wws-bubble">' +
+        '<p class="wws-english">' + english + '</p>' +
+        '<p class="wws-italian" id="chat-italian-' + line.id + '"' + (alwaysTranslated ? '' : ' hidden') + '>' + italian + '</p>' +
+        '</div>' +
+        '</div>' +
         '<div class="repeat-item-audio">' +
         '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
         '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
         '</div>' +
-        actionsHtml +
-        '<p class="chat-italian" id="chat-italian-' + line.id + '"' + (alwaysTranslated ? '' : ' hidden') + '>' + italian + '</p>' +
-        blocksHtml +
-        '</div>' +
+        (translationBtnHtml ? '<div class="chat-actions">' + translationBtnHtml + '</div>' : '') +
+        noRuleHtml +
+        rulesHtml +
         '</div>';
     }).join('');
-    document.getElementById('speak-easy-body').innerHTML = '<div class="chat-list">' + itemsHtml + '</div>';
+    document.getElementById('speak-easy-body').innerHTML = '<div class="wws-list">' + itemsHtml + '</div>';
     seSkillIds = skillIds;
     seHasExplanations = skillIds.length > 0;
     seRefreshExplanationStates();
-    // Primo giro: la lezione parte da sola sulla prima skill non ancora
-    // dichiarata — è il senso di "una alla volta, in sequenza".
-    // Al ripasso si apre tutto chiuso e decide l'utente cosa rivedere.
-    if (seHasExplanations && !seReviewMode) {
-      var next = seSkillIds[seFirstUndeclaredIndex()];
-      if (next) seOpenExplanation(next);
-    }
   }
 
-  // Apre una spiegazione. Nel primo giro ne resta aperta una sola per volta
-  // (lezione); al ripasso non si chiude nulla, si guarda quello che si vuole.
-  // Aperto/chiuso si dice con aria-expanded, non riscrivendo l'etichetta:
-  // il pulsante porta il TITOLO della sua skill, e su una battuta con due
-  // skill sostituirlo con "Nascondi spiegazione" toglierebbe l'unica cosa
-  // che dice quale delle due si sta guardando.
-  function seSetExplanationOpen(skillId, open) {
-    var el = document.getElementById('se-explanation-' + skillId);
-    if (el) el.hidden = !open;
-    var btn = document.querySelector('[data-toggle-explanation="' + skillId + '"]');
-    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-  }
-
-  function seOpenExplanation(skillId) {
-    if (!seReviewMode) {
-      seSkillIds.forEach(function (id) {
-        if (id !== skillId) seCloseExplanation(id);
-      });
-    }
-    seSetExplanationOpen(skillId, true);
-  }
-
-  function seCloseExplanation(skillId) {
-    seSetExplanationOpen(skillId, false);
-  }
-
-  // Ricalcola da zero tutto quello che dipende dalle dichiarazioni: quali
-  // spiegazioni sono raggiungibili, la spunta accanto a ognuna, se i tre
-  // pulsanti di risposta sono ancora premibili, e le due uscite del modulo.
-  // Ricalcolare invece di aggiornare solo il pezzo che è cambiato è la
-  // stessa scelta di dgUpdateChoiceBoxLock: costa nulla e non lascia stati
-  // vecchi in giro.
+  // Ricalcola da zero lo stato di ogni card e di ogni regola: cosa è
+  // raggiungibile, cosa mostra solo il titolo, quale risposta resta accesa,
+  // e le due uscite del modulo. Ricalcolare invece di aggiornare solo il
+  // pezzo che è cambiato è la stessa scelta di dgUpdateChoiceBoxLock: costa
+  // nulla e non lascia stati vecchi in giro.
+  //
+  // Sblocco Sequenziale, variante per dichiarazione. L'altra variante — per
+  // ascolto — è in Ripeti a Tempo (dgApplySequenceLock): condividono l'idea
+  // ("più avanti non si va finché non hai fatto qui") e il nome, non il
+  // resto. Lì un passo avanti è una bolla sbiadita e inerte; qui una card
+  // resta leggibile, mostra il titolo della regola che aspetta e dice col
+  // lucchetto perché non si tocca. Unirle in un componente solo avrebbe
+  // prodotto due varianti senza markup né CSS in comune: si sarebbe
+  // condiviso il nome della funzione e nient'altro.
   function seRefreshExplanationStates() {
+    var lockedCards = {};
     seSkillIds.forEach(function (skillId) {
       var answer = seSessionAnswers[skillId];
       var unlocked = seIsUnlocked(skillId);
+      var cardId = skillId.replace(/-s\d+$/, '');
+      if (!unlocked) lockedCards[cardId] = true;
 
-      var toggle = document.querySelector('[data-toggle-explanation="' + skillId + '"]');
-      if (toggle) toggle.disabled = !unlocked;
-      if (!unlocked) seCloseExplanation(skillId);
+      // Una regola non ancora raggiunta mostra SOLO il titolo: il corpo
+      // sparisce, i pulsanti anche. Il titolo resta perché far vedere cosa
+      // aspetta invoglia ad andare avanti.
+      var bodyEl = document.getElementById('se-body-' + skillId);
+      if (bodyEl) bodyEl.hidden = !unlocked;
+      var ruleEl = document.getElementById('se-explanation-' + skillId);
+      if (ruleEl) ruleEl.classList.toggle('is-ahead', !unlocked);
 
       var declaredEl = document.getElementById('se-declared-' + skillId);
       if (declaredEl) {
@@ -7411,13 +7565,44 @@
         declaredEl.innerHTML = meta ? icon('check') + '<span>' + meta.short + '</span>' : '';
       }
 
-      // Primo giro: una risposta data è definitiva, come il Sì/Non ancora di
-      // Flash Card. Al ripasso invece si può cambiare idea — è tutto il
-      // senso di riaprire una spiegazione.
       var selfcheckEl = document.querySelector('.se-selfcheck[data-se-skill="' + skillId + '"]');
       if (selfcheckEl) {
+        selfcheckEl.hidden = !unlocked;
+        // Primo giro: una risposta data è definitiva, come il Sì/Non ancora
+        // di Flash Card. Al ripasso invece si può cambiare idea.
         var lockAnswers = !!answer && !seReviewMode;
-        selfcheckEl.querySelectorAll('[data-se-answer]').forEach(function (b) { b.disabled = lockAnswers; });
+        selfcheckEl.querySelectorAll('[data-se-answer]').forEach(function (b) {
+          b.disabled = lockAnswers;
+          // La risposta scelta resta accesa: si vede cosa si è risposto
+          // senza dover riaprire niente.
+          b.classList.toggle('is-chosen', b.getAttribute('data-se-answer') === answer);
+        });
+      }
+    });
+
+    // Le card: bordo accento su quella corrente, attenuazione e lucchetto su
+    // quelle più avanti. Una card senza regole non è mai bloccata e non
+    // porta segno di stato — non c'è niente da dichiarare.
+    var currentCard = seCurrentCardId();
+    document.querySelectorAll('#speak-easy-body .wws-card').forEach(function (card) {
+      var cardId = card.getAttribute('data-card');
+      var cardSkills = seSkillIds.filter(function (id) { return id.indexOf(cardId + '-s') === 0; });
+      var isAhead = !!lockedCards[cardId] && cardId !== currentCard;
+      card.classList.toggle('is-current', cardId === currentCard);
+      card.classList.toggle('is-ahead', isAhead);
+      var stateEl = document.getElementById('wws-state-' + cardId);
+      if (!stateEl) return;
+      var tutteDichiarate = cardSkills.length > 0 && cardSkills.every(function (id) { return !!seSessionAnswers[id]; });
+      stateEl.classList.toggle('is-done', tutteDichiarate);
+      if (tutteDichiarate) {
+        stateEl.hidden = false;
+        stateEl.innerHTML = icon('check');
+      } else if (isAhead) {
+        stateEl.hidden = false;
+        stateEl.innerHTML = icon('lock') + '<span>' + ((seTexts && seTexts.lockedHint) || '') + '</span>';
+      } else {
+        stateEl.hidden = true;
+        stateEl.innerHTML = '';
       }
     });
 
@@ -7435,6 +7620,14 @@
     resumeBtn.hidden = !(seHasExplanations && !seReviewMode && !seAllDeclared());
   }
 
+  // La card su cui si sta lavorando: quella che contiene la prima skill non
+  // ancora dichiarata. Al ripasso non ce n'è una — sono tutte aperte.
+  function seCurrentCardId() {
+    if (seReviewMode) return null;
+    var next = seSkillIds[seFirstUndeclaredIndex()];
+    return next ? next.replace(/-s\d+$/, '') : null;
+  }
+
   function seShowScreen(name) {
     document.getElementById('speak-easy-intro-screen').hidden = name !== 'intro';
     document.getElementById('speak-easy-main-screen').hidden = name !== 'main';
@@ -7448,6 +7641,8 @@
   function openSpeakEasy(module) {
     currentSpeakEasyModule = module;
     document.getElementById('speak-easy-title').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('speak-easy-badge').textContent = module.label;
+    document.getElementById('speak-easy-subtitle').textContent = module.subtitle || '';
     document.getElementById('speak-easy-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     seSkillIds = [];
@@ -7476,6 +7671,7 @@
     Promise.all([loadEpisodeData(module), loadModuleInstructions()]).then(function (results) {
       if (currentSpeakEasyModule !== module) return;
       var instructions = results[1][module.kind] || {};
+      seTexts = instructions;
       seSelfCheck = instructions.selfCheck || null;
       seSelfCheckMessages = instructions.selfCheckMessages || null;
       document.getElementById('speak-easy-complete-hint').textContent = instructions.completeHint || '';
@@ -7514,19 +7710,6 @@
       }
       return;
     }
-    // "Cosa imparo qui" — apre/chiude, ma passando da seOpenExplanation, che
-    // nel primo giro tiene aperta una spiegazione sola per volta. Una
-    // spiegazione non ancora raggiunta dalla sequenza ha il pulsante
-    // disabilitato (seRefreshExplanationStates), quindi non arriva qui.
-    var explanationToggleBtn = e.target.closest('[data-toggle-explanation]');
-    if (explanationToggleBtn) {
-      if (explanationToggleBtn.disabled) return;
-      var explLineId = explanationToggleBtn.getAttribute('data-toggle-explanation');
-      var explanationEl = document.getElementById('se-explanation-' + explLineId);
-      if (explanationEl.hasAttribute('hidden')) seOpenExplanation(explLineId);
-      else seCloseExplanation(explLineId);
-      return;
-    }
     // Risposta al self-check. Registra la dichiarazione nel set di lavoro
     // (seSessionAnswers, che alimenta la percentuale SelfScoreRules) e un
     // conteggio cumulativo per battuta (addSeExplanationStat — "una
@@ -7539,7 +7722,6 @@
       if (answerBtn.disabled) return;
       var answer = answerBtn.getAttribute('data-se-answer');
       var answerSkillId = answerBtn.getAttribute('data-skill');
-      var eraDichiarata = !!seSessionAnswers[answerSkillId];
       seSessionAnswers[answerSkillId] = answer;
       addSeExplanationStat(currentEpisode.id, getUserName(), answerSkillId, answer);
       var followupEl = document.getElementById('se-followup-' + answerSkillId);
@@ -7550,16 +7732,11 @@
       } else {
         followupEl.hidden = true;
       }
+      // Ricalcolare basta: la card corrente è quella della prima skill non
+      // ancora dichiarata, quindi si sposta da sé. Prima serviva anche
+      // aprire e chiudere a mano le spiegazioni, che ora non si aprono più
+      // — sono sempre lì, e a cambiare è cosa se ne legge.
       seRefreshExplanationStates();
-      // Primo giro: dichiarata questa, la lezione passa alla successiva —
-      // "una alla volta, in sequenza". Al ripasso, o su una battuta già
-      // dichiarata prima, non si sposta niente: si sta rivedendo, non
-      // avanzando.
-      if (!seReviewMode && !eraDichiarata) {
-        var nextId = seSkillIds[seFirstUndeclaredIndex()];
-        if (nextId) seOpenExplanation(nextId);
-        else seCloseExplanation(answerSkillId);
-      }
     }
   });
 
@@ -9114,12 +9291,26 @@
   // completion path runs, it also plays the next line itself, the exact
   // same call (dgPlayLine) the #dg-list tap handler makes, as if the
   // user had tapped the newly-suggested bubble themselves.
+  // Vero mentre un profilo Dialogo con countdown sta parlando: lì l'audio
+  // non va interrotto da un tocco qualunque, perché il countdown parte
+  // dalla sua fine (CLAUDE.md regola 16). Guarda la vista attiva e non solo
+  // dgProfile, che resta impostato anche dopo essere usciti dal modulo.
+  function dgAudioProtected() {
+    var view = document.getElementById('view-dialogo');
+    return !!(dgProfile && dgProfile.countdown && view && view.classList.contains('is-active'));
+  }
+
   function dgSkipToNextLine() {
     if (dgLineTimerTimeoutId === null) return;
     clearTimeout(dgLineTimerTimeoutId);
     addNextLineSkip(currentEpisode.id, getUserName(), dgModule.id);
     var finishedLine = dgLineTimerLine;
     dgLineTimerFire();
+    // Nel profilo 'auto' (Dialogo Continuo) è dgLineTimerFinished a
+    // incatenare la battuta successiva: farlo anche qui la suonerebbe due
+    // volte. 'manual' (Ripeti a Tempo) invece si limita a sbloccare e
+    // suggerire, quindi l'avanzamento lo fa questa funzione.
+    if (dgProfile.advance === 'auto') return;
     var next = finishedLine && dgNextDialogueLine(finishedLine);
     if (next) dgPlayLine(next);
   }
@@ -9387,6 +9578,15 @@
   // interaction). Dialogo Continuo ('auto' advance) never accepts a
   // click here — it plays on its own via dgPlayLine's own chaining.
   document.getElementById('dg-list').addEventListener('click', function (e) {
+    // La barra del tempo, mentre scorre, è il "ho finito di ripetere":
+    // toccarla chiude il conto alla rovescia e passa alla battuta dopo,
+    // esattamente come il pulsante "Prossima frase". In Dialogo Continuo
+    // quel pulsante non c'è, e senza questo si poteva solo aspettare.
+    // dgSkipToNextLine non fa nulla se nessuna barra sta scorrendo.
+    if (e.target.closest('.dg-line-timer')) {
+      dgSkipToNextLine();
+      return;
+    }
     if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
     if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked')) return;
@@ -9400,7 +9600,15 @@
     // line currently playing — toggleSpeak's own toggle behavior (same
     // button while .speaking -> stop, not restart) already handles that
     // re-tap safely there.
-    if (dgProfile.countdown && bubble.classList.contains('is-active')) return;
+    // Toccare la battuta che sta parlando salta l'audio e fa partire il
+    // countdown: è il gesto che prima non faceva niente, mentre un tocco a
+    // vuoto sullo schermo lo faceva. Invertito. Non si richiama dgPlayLine
+    // (rifarebbe partire la stessa battuta desincronizzando il timer): si
+    // ferma l'audio, e il countdown parte dalla sua fine come sempre.
+    if (dgProfile.countdown && bubble.classList.contains('is-active')) {
+      if (synth && synth.speaking) synth.cancel();
+      return;
+    }
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
@@ -10597,13 +10805,21 @@
   //     separate data-say child) — dgPlayLine/toggleSpeak already
   //     handle switching/stopping internally (see dgPlayLine's own
   //     comment), racing ahead of that here would undo it
-  // The two countdown Dialogo profiles (Ripeti a Tempo, Continuo) need
-  // no special case: everything but Mappa is either natively disabled
-  // or a locked/inert .dg-bubble during their audio, so nothing reaches
-  // here to begin with.
+  //
+  // Correzione: i due profili Dialogo con countdown (Ripeti a Tempo,
+  // Continuo) SONO un caso speciale, al contrario di quanto diceva prima
+  // questo commento. Il presupposto era che durante il loro audio non
+  // arrivasse qui niente perché tutto è disabilitato o inerte — ma lo
+  // sfondo della pagina non è né l'uno né l'altro: un tocco a vuoto
+  // arrivava fin qui, annullava l'audio, e il countdown partiva in
+  // anticipo. È l'eccezione che CLAUDE.md regola 16 dichiara da sempre
+  // (interrompere l'audio a metà lì sfasa il timer), e che il codice non
+  // applicava. Chi vuole saltare l'audio tocca la battuta, che è il
+  // gesto con un significato.
   document.addEventListener('click', function (e) {
     if (!synth || !synth.speaking) return;
     if (e.target.closest('[data-say], [data-qm-listen-index], .dg-bubble')) return;
+    if (dgAudioProtected()) return;
     synth.cancel();
   }, true);
 

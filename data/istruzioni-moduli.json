@@ -40,7 +40,7 @@
       "title": "Come funziona, in breve",
       "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara.</p><p>Quando le hai viste tutte, premi \"Ho finito\".</p>"
     },
-    "completeHint": "Si attiva quando hai aperto e dichiarato tutte le spiegazioni.",
+    "completeHint": "Si attiva quando hai risposto a tutte le regole.",
     "selfCheck": {
       "question": "Hai capito la spiegazione?",
       "answers": [
@@ -73,7 +73,10 @@
         "title": "Nessun problema",
         "body": "Capita, tornaci con calma quando vuoi: la ripasserai più avanti."
       }
-    }
+    },
+    "ruleKicker": "Nuova regola",
+    "noRuleHint": "Qui non c'è niente di nuovo: è solo la storia.",
+    "lockedHint": "Prima le regole qui sopra"
   },
   "mappaEpisodio": {
     "howItWorks": {
