@@ -113,7 +113,7 @@ async function run() {
 
   // I numeri dichiarati in docs/episodio-1.md, verificati sul file dati vero
   // (CLAUDE.md regola 29): se l'episodio viene ridiviso, qui si vede subito.
-  const attesi = { A: 18, B: 5, C: 10, D: 9, skill: 8 };
+  const attesi = { A: 16, B: 7, C: 10, D: 9, skill: 8 };
   ['A', 'B', 'C', 'D'].forEach(g => log('[dati] Il grado ' + g + ' ha ' + attesi[g] + ' voci', loadGrade(g).length === attesi[g]));
   log('[dati] I nomi dei gradi sono quelli mostrati allo studente',
     JSON.stringify(['A', 'B', 'C', 'D'].map(g => loadEpisode().levels[g].label)) === JSON.stringify(['Parole', 'Espressioni', 'Frasi', 'Dialogo']));
