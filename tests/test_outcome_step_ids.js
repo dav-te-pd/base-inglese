@@ -1,3 +1,7 @@
+// PROTEGGE: che il § 4.1 di docs/validazione.md sia ancora vero — la regola di
+// esito non arriva alla seconda apparizione di un modulo. Senza, la correzione
+// (o la sua regressione) passerebbe senza che nessuno se ne accorga.
+//
 // Prova end-to-end della segnalazione § 4.1 di docs/validazione.md.
 //
 // NON FA PARTE DELLA SUITE (run_full_regression.sh), di proposito: questo file

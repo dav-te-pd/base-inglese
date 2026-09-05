@@ -88,6 +88,166 @@ node tests/test_outcome_step_ids.js
 Quando la decisione D1 sarà presa, va rovesciato (asserire che la regola venga
 applicata) oppure tolto.
 
+## Cosa protegge ogni file
+
+Non è un indice: è la domanda **"cosa si romperebbe se questo file
+sparisse?"**, una riga per file. Serve a vedere i buchi, non a documentare.
+
+Il test che è mancato al § 4.1 di `docs/validazione.md` sarebbe stato *"l'esito
+di un passo viene salvato"*. Nessuno l'aveva scritto, e 583 asserzioni verdi non
+hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima.
+
+| File | Cosa si romperebbe senza |
+|---|---|
+| `test_batch2.js` | Your Story è il primo passo e blocca tutto il resto finché non è fatto; riaprirla a episodio iniziato chiede la frase di conferma e cancella davvero i progressi; il vecchio flag `customizeSeen` continua a migrare. |
+| `test_batch2b.js` | La vista di riordino del Pannello Admin: coppie modulo+grado, frecce, pulsante del grado, interruttore acceso/spento, e che ogni modifica finisca negli override; un passo spento sparisce dalla mappa invece di restare grigio. |
+| `test_batch3.js` | `?config` apre il pannello; il titolo "Spiegazione" resta su due righe; le categorie mostrate (Inizio / Quiz / Studia il dialogo); i testi di `istruzioni-moduli.json` non promettono più un video e portano il consiglio giusto per tipo di modulo. |
+| `test_batch3b.js` | L'avviso distruttivo di Your Story usa il pannello rosso dedicato; "Mostra pronuncia" compare solo dove c'è una `pronunciationTip`; la scatola "L'hai imparato?" resta bloccata finché ogni battuta non è stata sentita; il 3-2-1 usa le frequenze alte. |
+| `test_batch4.js` | Il Pannello Admin mostra la descrizione di ogni parametro e non se stesso come gruppo; nomi, sottotitoli e suffisso di direzione in mappa. |
+| `test_batch4b.js` | La schermata "Spiegazione" di ogni modulo mostra il nome di **quel** modulo, non di un altro. |
+| `test_batch5.js` | Uscire da un Dialogo mentre parla ferma l'audio e non lascia proseguire la sequenza nel modulo dopo; Spiegazione/Help si disabilitano durante il countdown, e Spiegazione sparisce nella Schermata Finale. |
+| `test_batch6.js` | I tre scalini dell'avviso microfono (2 / 4 / 6 registrazioni vuote), il reset dello streak alla prima registrazione riconosciuta, e che una risposta **sbagliata ma sentita** non venga scambiata per un guasto. |
+| `test_batch7.js` | La Schermata Finale ha titolo fisso e sottotitolo variabile per esito; la valvola di sicurezza si apre dopo N tentativi e in Match Practice non offre "Riprova ancora" (lì non c'è niente da ritentare subito). |
+| `test_batch8.js` | Con il microfono dato per guasto "Avanti" resta bloccato **anche forzando il click**, e uscire da lì non segna il modulo come completato. |
+| `test_batch9.js` | Le soglie percentuali esistono; i messaggi finali sono divisi per esito con cinque varianti ciascuno e il tono "alto" non suggerisce di riprovare; Repeat Aloud e la storia hanno una Schermata Finale con pulsante esplicito; la riga che spiega perché la scatola di Dialogo è spenta. |
+| `test_batch10.js` | Tutti i segnaposto dell'episodio sono risolti (uno sconosciuto avvisa in console e resta a schermo invece di rompere); le spunte "sentita" in Dialogo; il suono Traguardo suona su ogni completamento positivo e **non** su "← Mappa", sull'uscita per microfono guasto e su "Non ancora". |
+| `test_batch11.js` | ModuleRules davvero applicata: 100% → verde, 0% → rosso, misto → giallo, e un rifacimento **sovrascrive** l'esito in entrambe le direzioni; `--accent` non è più lo stesso colore del rosso di errore. |
+| `test_batch12.js` | Il catalogo suoni per evento; i tre sfondi di stato in mappa sono distinguibili; nomi e categorie di tutti i moduli (e "Speak Easy" non compare più da nessuna parte); Voice Practice e Voice Check al completo — contatore visibile, nessun ripasso finale, esito salvato, mastery alimentata. |
+| `test_batch13.js` | I tre parametri di registrazione stanno in `APP_CONFIG` e nel pannello; il taglio per silenzio scarta la registrazione senza offrirla e **senza contarla** nei secondi inviati; una registrazione davvero inviata invece li conta. |
+| `test_batch14.js` | Parlare a lungo non fa scattare il taglio per silenzio; "Ho finito" apre la Schermata Finale e **non** completa il modulo; il badge Ripasso; lo Sblocco Sequenziale per ascolto in Ripeti a Tempo; "Prossima frase" e il suo conteggio. |
+| `test_batch15.js` | Traguardo suona a schermata già visibile; le due riserve di messaggi del Ripasso (primo giro e ultimo) sono diverse; il contatore "TENTATIVO N DI 3" non è più in ritardo di uno; **Speed Match congela il punteggio al primo giro** e il ripasso non lo gonfia; Meet the Story senza skill ricade sul messaggio neutro e senza colore. |
+| `test_batch16.js` | Un nome di persona non viene tradotto nel dialogo; Pausa è spento mentre l'audio parla; "Prossima frase" fa partire davvero la battuta dopo invece di limitarsi a suggerirla; girare la carta ferma l'audio; il suono Uscita esiste ed è più basso di Traguardo; le tre colonne dell'intestazione. |
+| `test_batch17.js` | La Regola Azione Critica nella sua forma corretta: fuori dai profili con countdown **niente si blocca**, e un'azione critica ferma l'audio invece di esserne bloccata — verificato modulo per modulo su sei moduli. |
+| `test_batch18.js` | Passando da una battuta all'altra l'evidenziazione resta sulla nuova (la vecchia non se la riprende con un `onEnd` in ritardo); Spiegazione e Help fermano l'audio; un secondo pulsante di ascolto **sostituisce** l'audio invece di fermarlo. |
+| `test_batch19.js` | "Non lo so" si blocca insieme alle opzioni e non può sovrascrivere una risposta giusta appena data; Spiegazione/Help restano visibili anche durante il quiz e si disabilitano solo mentre la barra scorre, riabilitandosi nei tre casi in cui c'è qualcosa da leggere; uscire a metà timer non li lascia spenti. |
+| `test_batch20.js` | Nella direzione it→en il testo mostrato è davvero italiano davanti e inglese dietro (Flash Card e Match Practice): un ternario invertito si vedrebbe subito. |
+| `test_dialogo_extra.js` | Il suono di fine barra suona una volta sola e più piano, mai durante; Ascolta e Ripeti resta libero; e **l'eccezione della regola 16**: un tocco a vuoto non interrompe l'audio con countdown, toccare la battuta sì. |
+| `test_new_features.js` | Il Pannello Admin per intero: si apre da tastiera solo fuori dai campi di testo, modifica in diretta, persiste, rifiuta il JSON non valido senza applicarlo, si chiude con Escape, si azzera col reset; più i due conti alla rovescia 3-2-1. |
+| `test_voicecoach.js` | Il giro completo di Voice Check: "Avanti" bloccato finché non si registra, nessun Indietro, il ripasso delle frasi andate male, la Schermata Finale col pulsante esplicito, e il modulo non completato prima di quello. |
+| `test_story_modules.js` | Meet the Story e Why We Say It al completo: i dati (gradi, skill come lista con titolo e corpo separati), la sequenza obbligata al primo giro, le tre risposte, "Esci e riprendi dopo", il ripasso, e il punteggio autodichiarato che diventa verde. |
+| `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file in `data/`: Pages e artifact non divergono in silenzio. |
+| `test_hidden_guard.js` | Ogni regola CSS che imposta un `display` continua a sparire con `hidden`: la guardia della regola 12 non si può rompere senza che la CI se ne accorga. |
+
+---
+
+## I buchi
+
+Comportamenti importanti che **nessun test copre**. Elencati anche quando
+sembrano ovvi: il § 4.1 era ovvio.
+
+### A — La classe del § 4.1: "il risultato viene salvato"
+
+1. **Flash Card non ha nessun test sull'esito.** Match Practice, Speed Match,
+   Voice Practice, Voice Check, i tre Dialogue e Why We Say It hanno tutti
+   un'asserzione su `outcome-*`. Flash Card ha solo la riga di
+   *configurazione* `flashcardAEngIta = 'selfScoreRules'` — cioè esattamente
+   il tipo di asserzione che al § 4.1 era vera e inutile.
+2. **Nessun test apre uno dei sei passi con id suffisso** (`-2`, `-3`). L'unica
+   menzione è il testo del badge in mappa. È il buco preciso da cui è passato
+   il § 4.1: tutta la suite prova solo le prime apparizioni.
+3. **Del punteggio si verifica solo il colore, mai il numero.** Che il `pct`
+   salvato sia davvero la percentuale giusta non lo controlla nessuno.
+
+### B — Il motore invisibile
+
+4. **`applyMasteryResult` non è testata.** La scala rosso→giallo→verde,
+   `promotionStreak`, la retrocessione di un livello su errore, il salto
+   diretto a rosso di "Non lo so". Si verifica solo che *esistano* delle
+   chiavi `voicepractice:`. Se la scala si invertisse, la suite resterebbe
+   verde.
+5. **`buildMultipleChoiceOptions` non è testata.** Quattro opzioni, una sola
+   giusta, tre distrattori diversi fra loro e dalla risposta. Un doppione fra
+   le opzioni, o un grado così corto da non avere tre distrattori, non lo
+   vedrebbe nessuno.
+6. **La coda di ripasso non è mai asserita direttamente.** Che una voce
+   sbagliata torni, che una giusta non torni, e che dopo `maxAttempts` sia
+   forzata a rosso e tolta dalla coda. I test la attraversano, non la
+   verificano.
+7. **Le soglie non sono provate ai bordi.** 49 contro 50 e 79 contro 80 per
+   `percentageBucket`/`moduleRulesLevel`, e lo stesso per `starsForPercent`.
+   Si provano solo 0, 100 e un caso misto.
+
+### C — Schermate e flussi che nessun test attraversa
+
+8. **L'onboarding.** Nome vuoto rifiutato, nome salvato, "Cambia nome" che
+   riporta indietro. Ogni test lo *usa* come impalcatura, nessuno lo verifica.
+9. **La separazione fra utenti.** Due nomi sullo stesso browser devono vedere
+   progressi, esiti e mastery diversi. Mai verificato — ed è la garanzia su
+   cui si regge tutto lo storage.
+10. **I temi.** I cinque temi selezionabili, la persistenza della scelta, e —
+    la parte che conta davvero — che ogni componente resti leggibile in tutti
+    e cinque (regola 2). Nessun test, in nessuna forma.
+11. **Il menu Help.** Le tre voci, il form, il salvataggio della richiesta in
+    `localStorage`, la conferma. I test controllano che il *pulsante* sia
+    visibile o abilitato; nessuno lo apre fino in fondo.
+12. **La Request Box di Your Story.** Invio, avviso di duplicato, salvataggio
+    della richiesta. Mai toccata.
+13. **Il pulsante "Reset" di un gruppo di slot.** Mai toccato.
+14. **Una riga bloccata in mappa forzata a click.** Si verifica che il
+    pulsante sia `disabled`, non che forzare il click non apra il modulo —
+    controllo che invece esiste per le bolle di Dialogo.
+
+### D — Contenuto e grado
+
+15. **Nessun test verifica che un modulo su un grado mostri le voci di quel
+    grado.** I test chiedono il grado all'ordine (`gradeOf`) e poi confrontano:
+    se `episodeGrade` leggesse un grado sbagliato *ma coerente*, il test lo
+    seguirebbe. Manca l'asserzione diretta — "Repeat Aloud sul grado B mostra
+    le 7 espressioni, non le 16 parole".
+16. **Repeat Aloud non ha quasi test di contenuto.** Che ogni voce mostri
+    inglese, italiano e `pronunciationTip`, e che `generalRule` compaia in
+    cima. È coperto solo il completamento.
+17. **I pulsanti di velocità (100/75/50%).** Che cambino davvero la velocità
+    dell'audio: i mock registrano il testo, non la `rate`.
+18. **Nessuna prova sotto i 375px.** Il viewport più stretto della suite è
+    375; il bug dei pulsanti che uscivano dallo schermo è stato trovato a
+    360 con uno strumento a parte. Nessun test controlla che la pagina non
+    scorra in orizzontale.
+
+### E — Configurazione
+
+19. **Nessun test verifica che una chiave di `APP_CONFIG` sia letta da
+    qualcuno.** È il difetto che ha tenuto in vita `pointsPerCorrect` per
+    ottanta commit: un parametro morto passa la CI senza fare rumore.
+20. **L'override per sezione intera.** Salvare `moduleOrderDefault` dal
+    pannello congela l'ordine anche quando il codice cambia. È il
+    comportamento voluto, e non lo verifica nessuno.
+
+### F — I documenti come fonte (regola 26)
+
+21. **Nessun test confronta `docs/struttura-corso.md` con `APP_CONFIG`.** I 22
+    passi, le sei categorie, i nomi dei gradi e le regole di esito sono
+    scritti in due posti e allineati a mano. `test_fallbacks.js` fa
+    esattamente questo lavoro per i dati; per la struttura l'equivalente non
+    esiste.
+22. **Nessun test conta le voci dell'episodio contro `docs/episodio-1.md`.**
+    `test_story_modules.js` conta le skill contro il *file dati*, cioè contro
+    la copia, non contro il markdown che dichiara i numeri attesi.
+
+### G — Non coperto, e va bene così
+
+23. `episodeFinalOutcomeCase` non è chiamata da nessuno: non c'è
+    comportamento da proteggere finché il Modulo Finale non esiste.
+24. La vista `view-pronunciation` è irraggiungibile dall'interfaccia: nessun
+    test la copre, ed è corretto.
+
+---
+
+## Ogni test nuovo dichiara cosa protegge
+
+Da qui in avanti, un file di test nuovo apre con **una riga** che dice quale
+comportamento si romperebbe se quel file sparisse — la stessa frase che poi va
+nella tabella qui sopra. Non un riassunto di cosa fa il test: cosa si perde
+senza.
+
+```js
+// PROTEGGE: Flash Card salva l'esito autodichiarato sulla mappa — senza,
+// un modulo che smette di chiamare saveModuleOutcome resta verde in silenzio.
+```
+
+La riga vive **solo qui e in testa al file**. Non se ne fa una terza copia
+altrove: si disallineerebbe.
+
 ## Punti fragili noti
 
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
