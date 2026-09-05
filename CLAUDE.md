@@ -1,5 +1,15 @@
 # base-inglese
 
+**Versione: 20260905a**
+
+> ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
+> Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
+> usati. L'età del file non è garanzia di validità.
+
+*La versione è nella forma AAAAMMGG + lettera: questo file vive in due posti, e
+senza un numero non c'è modo di sapere quale copia è la più recente. Chi lo
+modifica alza la lettera se è lo stesso giorno, la data se è un altro.*
+
 App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente. Tutto il progetto vive oggi in un unico file: `index.html` (HTML + CSS + JS inline, nessuna dipendenza esterna oltre ai Google Fonts).
 
 ## Regole permanenti
@@ -140,8 +150,32 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     In entrambe i passi successivi restano **visibili**, mai nascosti: far vedere cosa aspetta invoglia ad andare avanti, e una lista che si allunga da sola disorienta.
 
+31. **Prima di costruire qualcosa di nuovo, dichiara cosa farai e aspetta la validazione.** Non partire e poi mostrare il risultato: si descrive l'intenzione — quali file si toccano, quali funzioni nascono, come si comporterà la cosa — e si aspetta l'ok.
+
+    Vale per il nuovo, non per l'ovvio: una correzione già descritta nella richiesta, un test che accompagna una modifica, un aggiornamento di documentazione già concordato non hanno bisogno di un giro in più. Vale invece per un componente nuovo, una struttura dati nuova, un meccanismo che cambia come si comporta un modulo.
+
+    *Perché c'è: rifare una cosa costruita nella direzione sbagliata costa molto più che descriverla in cinque righe prima. E chi legge la descrizione vede subito le scelte implicite — quelle che, una volta scritte nel codice, si notano solo quando è tardi.*
+
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese` — ramo di lavoro e di pubblicazione: `main`
 - Sito pubblicato (GitHub Pages, forma completa): https://dav-te-pd.github.io/base-inglese/
 - Artifact pubblicato (pagina singola, copie di sicurezza): https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621
+
+## Regole e funzioni dell'app
+
+Due elenchi separati, e restano separati: **una regola dice come si decide, una
+funzione dice come si comporta il codice.** Confonderli fa perdere il motivo di
+entrambi.
+
+Ogni voce ha tre parti: **il numero**, **la spiegazione tecnica**, e **una nota di
+contesto solo se serve**. La numerazione è decisa fuori da qui e va copiata così
+com'è: non si inventano numeri.
+
+### Regole
+
+*Da popolare dopo l'estrazione.*
+
+### Funzioni
+
+*Da popolare dopo l'estrazione.*
