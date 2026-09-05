@@ -69,6 +69,25 @@ README di ciascuna per cosa sono e perché sono state tenute:
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
 
+## `test_outcome_step_ids.js` — fuori dalla suite, di proposito
+
+Verifica che il difetto descritto nel § 4.1 di `docs/validazione.md` ci sia
+ancora: la regola di esito dichiarata in `CONFIG.moduleOutcomeRules` non arriva
+alla seconda apparizione di uno stesso modulo nell'ordine. Gioca l'episodio in
+un profilo pulito dal passo 1 al passo 9 e confronta i due badge in mappa.
+
+Non è nella suite perché **asserisce che un difetto esista**: il giorno in cui
+lo si corregge, la CI diventerebbe rossa per la correzione, e un rosso che
+vuol dire "risolto" è peggio di nessun test. Si lancia a mano, con il server
+attivo:
+
+```bash
+node tests/test_outcome_step_ids.js
+```
+
+Quando la decisione D1 sarà presa, va rovesciato (asserire che la regola venga
+applicata) oppure tolto.
+
 ## Punti fragili noti
 
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di

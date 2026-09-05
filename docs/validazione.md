@@ -5,14 +5,16 @@
 > documentazione, qui è scritto **quello che fa il codice**, e la contraddizione è
 > segnalata.
 >
-> **Non è una lista di cose da correggere.** Niente è stato modificato per
-> scriverlo: nessuna logica toccata, nessun nome cambiato, nessun bug corretto.
-> I problemi trovati sono elencati nella sezione **4 — Segnalazioni**, con il
-> punto esatto del codice, e restano lì finché non si decide cosa farne.
+> **Non è una lista di cose da correggere.** Per scriverlo non è stata toccata
+> nessuna logica, nessun nome, nessun difetto. I problemi trovati sono elencati
+> nella sezione **4 — Segnalazioni**, con il punto esatto del codice, e restano
+> lì finché non si decide cosa farne. Le decisioni prese finora sono nella
+> sezione **6**; l'unica che ha già toccato `index.html` è D4, la rimozione di
+> una chiave di configurazione che nessuno leggeva.
 >
-> **Versione della lettura:** `index.html` a 10 998 righe, commit `b3f9a4a`.
-> Ogni numero di riga qui dentro si riferisce a quella versione: se il file
-> cambia, i numeri scorrono e vanno riverificati.
+> **Versione della lettura:** `index.html` a 10 994 righe — commit `cf1fee4` più la
+> rimozione decisa in D4 (§ 6). Ogni numero di riga qui dentro si riferisce a quella
+> versione: se il file cambia, i numeri scorrono e vanno riverificati.
 
 ---
 
@@ -28,9 +30,9 @@ copie `window.FALLBACK_*` incorporate in `index.html`:
 
 | File | Chi lo legge | Copia di sicurezza |
 |---|---|---|
-| `data/a1-episodio1-inglese.json` | `loadEpisodeData()` (riga 7111) | `window.FALLBACK_EPISODE_DATA` |
-| `data/istruzioni-moduli.json` | `loadModuleInstructions()` (riga 5964) | `window.FALLBACK_MODULE_INSTRUCTIONS` |
-| `data/messaggi-feedback.json` | `loadFeedbackMessages()` (riga 8145) | `window.FALLBACK_FEEDBACK_MESSAGES` |
+| `data/a1-episodio1-inglese.json` | `loadEpisodeData()` (riga 7107) | `window.FALLBACK_EPISODE_DATA` |
+| `data/istruzioni-moduli.json` | `loadModuleInstructions()` (riga 5960) | `window.FALLBACK_MODULE_INSTRUCTIONS` |
+| `data/messaggi-feedback.json` | `loadFeedbackMessages()` (riga 8141) | `window.FALLBACK_FEEDBACK_MESSAGES` |
 
 Lo stato per utente vive tutto in `localStorage`, con sei chiavi distinte per
 episodio+utente (elencate al § 2.3).
@@ -42,13 +44,13 @@ episodio+utente (elencate al § 2.3).
 ### 1.0 Come si legge la tabella
 
 - **Grado** — arriva dalla coppia `{ module, grade }` di `CONFIG.moduleOrderDefault`
-  (riga 412), **non** dal descrittore in `EPISODES.episode1.modulesById` (riga 6168).
-- **Id del passo** — `moduleStepId()` (riga 6293): la prima apparizione di un modulo
+  (riga 409), **non** dal descrittore in `EPISODES.episode1.modulesById` (riga 6164).
+- **Id del passo** — `moduleStepId()` (riga 6289): la prima apparizione di un modulo
   tiene l'id nudo, le successive prendono `-2`, `-3`. È l'id con cui si salvano
   progressi ed esiti.
-- **Regola di esito** — `CONFIG.moduleOutcomeRules[id]` (riga 491), **letta con l'id
+- **Regola di esito** — `CONFIG.moduleOutcomeRules[id]` (riga 488), **letta con l'id
   del passo**. Un id assente ricade su `completionRules`.
-- **Voci mostrate** — `episodeGrade(data, module.grade)` (riga 7137), sempre l'intero
+- **Voci mostrate** — `episodeGrade(data, module.grade)` (riga 7133), sempre l'intero
   grado. **Nessun modulo campiona, filtra o limita.** I numeri qui sotto sono quelli
   dell'episodio 1: A=16, B=7, C=10, D=9.
 
@@ -93,12 +95,12 @@ davvero `attemptRule`.
 ### 1.2 Scheda per modulo
 
 #### Your Story — `personalizzazione`
-- **Componente:** `openCustomize()` (6932). Vista `view-customize`.
+- **Componente:** `openCustomize()` (6928). Vista `view-customize`.
 - **Dati:** `personalizationTablesUsed` del file episodio, risolto da
-  `buildSlotFields()`/`resolveSlotTable()` (6512, 6497) contro `CONFIG.people`,
+  `buildSlotFields()`/`resolveSlotTable()` (6508, 6493) contro `CONFIG.people`,
   `CONFIG.places` e `episode.ageOptions`. Otto slot: papa, mamma, cognome,
   figliaNome, figliaEta, figlioNome, figlioEta, partenza.
-- **Completamento:** pulsante `#start-episode` (7085) → `markModuleCompleted` +
+- **Completamento:** pulsante `#start-episode` (7081) → `markModuleCompleted` +
   `openEpisodeMap`. **Nessuna Schermata Finale** — coerente con la regola 17
   (categoria Inizio).
 - **Proprie:** `renderSlotGrid`, `onSlotChange`, `renderRequestBox`,
@@ -109,71 +111,71 @@ davvero `attemptRule`.
   `fillTemplate`, `renderIntroContent`, `openHelpFor`, `showView`.
 
 #### Meet the Story / Why We Say It — `meetTheStory`, `whyWeSayIt`
-- **Componente unico:** `openSpeakEasy()` (7724) + `renderSpeakEasy()` (7514).
+- **Componente unico:** `openSpeakEasy()` (7720) + `renderSpeakEasy()` (7510).
   Vista `view-speak-easy`. Il nome "Speak Easy" **non descrive più nessuno dei
   due moduli** (§ 2.4).
-- **Profilo:** `CONFIG.story.profiles[module.storyProfile]` (riga 296) — l'unica
+- **Profilo:** `CONFIG.story.profiles[module.storyProfile]` (riga 293) — l'unica
   differenza è `skills: false` (meet) / `skills: true` (why).
 - **Contenuto:** grado D (le battute). Why We Say It aggiunge, sotto ogni battuta,
   le sue `whatYouLearn` — **8 skill su 9 battute** nell'episodio 1 (`d-1` ne porta
-  due, alcune battute nessuna). Una skill senza `body` è scartata (7531).
+  due, alcune battute nessuna). Una skill senza `body` è scartata (7527).
 - **Sblocco Sequenziale, variante per dichiarazione** — `seRefreshExplanationStates()`
-  (7606): una skill più avanti mostra solo il titolo, il corpo e i pulsanti spariscono.
-  Solo al primo giro: `seReviewMode` (7737) spegne la sequenza a modulo già completato.
+  (7602): una skill più avanti mostra solo il titolo, il corpo e i pulsanti spariscono.
+  Solo al primo giro: `seReviewMode` (7733) spegne la sequenza a modulo già completato.
 - **Autovalutazione:** tre risposte da `istruzioni-moduli.json → whyWeSayIt.selfCheck`.
   Registrate in `seSessionAnswers` (memoria) + `addSeExplanationStat` (cumulativo,
-  fra sessioni). Salvate su disco **solo** con "Esci e riprendi dopo" (7862) o al
-  completamento (7842) — uscire da "← Mappa" non lascia traccia.
-- **Punteggio:** `% di "chiara" su tutte le skill`, congelato a "Ho finito" (7850).
+  fra sessioni). Salvate su disco **solo** con "Esci e riprendi dopo" (7858) o al
+  completamento (7838) — uscire da "← Mappa" non lascia traccia.
+- **Punteggio:** `% di "chiara" su tutte le skill`, congelato a "Ho finito" (7846).
 - **Completamento:** `#speak-easy-complete` → Schermata Finale → `#speak-easy-complete-btn`.
-  Il blocco "non hai dichiarato tutto" vive nella funzione, non solo sul pulsante (7832).
+  Il blocco "non hai dichiarato tutto" vive nella funzione, non solo sul pulsante (7828).
 
 #### Repeat Aloud — `repeatAloud`
-- **Componente:** `openRepeatAloud()` (7306) + `renderRepeatAloud()` (7161).
+- **Componente:** `openRepeatAloud()` (7302) + `renderRepeatAloud()` (7157).
 - **Contenuto:** tutto il grado, più `data.generalRule` in cima. Ogni voce mostra
   inglese, italiano, `pronunciationTip` e un Blocco Ascolto (100/75/50%).
 - **Niente valutazione, niente ripasso.** Completamento manuale a due passi:
   `#repeat-aloud-complete` (Traguardo + Schermata Finale) → `#repeat-aloud-complete-btn`.
 
 #### Match Practice en→it / it→en — `quickMatchEngIta`, `quickMatchItaEng`
-- **Componente:** `openQuickMatch()` (8920). Direzione da
-  `QM_DIRECTION_BY_KIND[module.kind]` (8717).
+- **Componente:** `openQuickMatch()` (8916). Direzione da
+  `QM_DIRECTION_BY_KIND[module.kind]` (8713).
 - **Domande:** una per ogni voce del grado, in ordine casuale (`srShuffle`).
   Quattro opzioni: la giusta più **tre distrattori pescati a caso** dallo stesso
-  grado — `srShuffle(pool).slice(0, 3)` (8652). Il numero 3 è scritto nel codice.
+  grado — `srShuffle(pool).slice(0, 3)` (8648). Il numero 3 è scritto nel codice.
 - **Ripasso:** coda `qmRetryQueue`; una risposta sbagliata o "Non lo so" rimette la
   voce in coda, finché un giro non esce pulito o la voce raggiunge
   `CONFIG.retryQueue.maxAttempts` (3), a quel punto è forzata a rosso.
-- **Punteggio:** `qmFirstTryCorrectCount / qmVocab.length` (8901) — solo primi
+- **Punteggio:** `qmFirstTryCorrectCount / qmVocab.length` (8897) — solo primi
   tentativi, congelato prima del ripasso.
 - **Mastery:** prefisso `quickmatch:<idVoce>:<direzione>`.
 - **Audio:** en→it un Blocco Ascolto sotto la domanda; it→en un mini-pulsante per
   ciascuna delle quattro opzioni inglesi.
 
 #### Flash Card en→it / it→en — `flashcardAEngIta`, `flashcardAItaEng`
-- **Componente:** `openFlashcard()` (10476). `kind` **`flashcardLevelA` per
+- **Componente:** `openFlashcard()` (10472). `kind` **`flashcardLevelA` per
   entrambe le direzioni e per entrambi i gradi** su cui compare (A e B) — il nome
   del `kind` è rimasto legato al livello A (§ 2.4).
 - **Flusso:** una carta per voce, girata a mano, poi "Sì, la so" / "Non ancora",
   che avanzano da soli. Nessun Indietro/Avanti: una carta si risponde una volta sola.
 - **"Sì, la so" scrive nella mastery esattamente come una risposta verificata** —
-  `fcRecordResult('correct')` → `applyMasteryResult` (10284). Vedi § 3(d).
+  `fcRecordResult('correct')` → `applyMasteryResult` (10280). Vedi § 3(d).
 - **Ripasso:** finché un giro non esce senza "Non ancora"; una carta ostinata è
-  forzata a rosso dopo `maxAttempts` e chiusa fuori dal calcolo (10296-10300).
-- **Punteggio:** `fcFirstTryCorrectCount / fcVocab.length` (10395).
+  forzata a rosso dopo `maxAttempts` e chiusa fuori dal calcolo (10292-10296).
+- **Punteggio:** `fcFirstTryCorrectCount / fcVocab.length` (10391).
 - **Mastery:** prefisso `flashcard-<grado>:<idVoce>:<direzione>` — quindi il grado
   A e il grado B non si mescolano.
 
 #### Voice Practice / Voice Check — `voicePractice`, `voiceCoach`
-- **Componente unico:** `openVoiceCoach()` (8338). `vcVariant` (`practice`/`check`)
+- **Componente unico:** `openVoiceCoach()` (8334). `vcVariant` (`practice`/`check`)
   da `module.voiceVariant` è l'unica cosa che ramifica.
 - **Voice Practice:** pulsante "Esercitati ancora" fino a
   `CONFIG.voicePractice.maxAttemptsPerPhrase` (3), contatore sempre a schermo,
   **nessun giro di ripasso**. Alimenta la mastery con prefisso
-  `voicepractice:<idBattuta>:<indiceParola>` (8455).
+  `voicepractice:<idBattuta>:<indiceParola>` (8451).
 - **Voice Check:** una registrazione per frase, **nessun pulsante di ritentativo**,
-  ma giro di ripasso su tutto ciò che è uscito a 0-1 stelle (8468-8476).
-- **Stelle:** `starsForPercent()` (8163) su `CONFIG.voiceCoach.starThresholds`
+  ma giro di ripasso su tutto ciò che è uscito a 0-1 stelle (8464-8471).
+- **Stelle:** `starsForPercent()` (8159) su `CONFIG.voiceCoach.starThresholds`
   (1/50/80). Soglia di superamento: `stars > 1`.
 - **Riconoscimento:** istanza `SpeechRecognition` propria, `continuous: true`,
   `interimResults: true`. Il testo riconosciuto resta in attesa finché non si preme
@@ -181,34 +183,34 @@ davvero `attemptRule`.
 - **Guasti al microfono:** `vcEmptyRecognitionStreak` con tre scalini da
   `CONFIG.voiceCoach.micIssue` (2 / 4 / 6). Al terzo, "Avanti" resta bloccato
   (`vcMicConfirmedProblem`) — il modulo non si può completare.
-- **Consumo audio:** `addAudioSecondsSent()` (8569) somma i secondi realmente
+- **Consumo audio:** `addAudioSecondsSent()` (8565) somma i secondi realmente
   inviati, letti dal Pannello Admin.
 
 #### I tre Dialogue — `dialogoAscoltaRipeti`, `dialogoRipetiATempo`, `dialogoContinuo`
-- **Componente unico:** `openDialogo()` (9592). Profilo da
-  `CONFIG.dialogo.profiles[module.dialogoProfile]` (riga 309).
+- **Componente unico:** `openDialogo()` (9588). Profilo da
+  `CONFIG.dialogo.profiles[module.dialogoProfile]` (riga 306).
 - **Le differenze stanno tutte nel profilo:** `translations`, `countdown`,
   `readyCountdown`, `advance` (`free`/`manual`/`auto`), `pauseResume`,
   `nextLineButton`, `finalBoxQuestion`.
-- **Durata della barra:** `dgLineDurationMs()` (9263) =
+- **Durata della barra:** `dgLineDurationMs()` (9259) =
   `pausaBase + parole * pausaPerParola`, tagliata a `pausaMassima` (2000 / 900 / 12000 ms).
-- **Sblocco Sequenziale, variante per ascolto** — `dgApplySequenceLock()` (9248),
+- **Sblocco Sequenziale, variante per ascolto** — `dgApplySequenceLock()` (9244),
   solo in Ripeti a Tempo: si arriva al massimo una battuta oltre la più lontana
   ascoltata.
-- **Eccezione al Blocco Ascolto:** `dgAudioProtected()` (9368) fa tirare indietro
+- **Eccezione al Blocco Ascolto:** `dgAudioProtected()` (9364) fa tirare indietro
   il listener globale nei due profili con countdown, così un tocco a vuoto non
   sfasa il conto alla rovescia.
-- **Esito:** `dgFinishModule(level)` (9494) — `verde` da "Sì, lo so", `giallo` da
+- **Esito:** `dgFinishModule(level)` (9490) — `verde` da "Sì, lo so", `giallo` da
   "Non ancora". **Chiama `saveModuleOutcome` senza consultare
   `CONFIG.moduleOutcomeRules`** (§ 4.3). La scatola delle due risposte si sblocca
-  solo quando ogni battuta è stata sentita (`dgUpdateChoiceBoxLock`, 9192).
+  solo quando ogni battuta è stata sentita (`dgUpdateChoiceBoxLock`, 9188).
 
 #### Speed Match en→it / it→en — `speedRoundEngIta`, `speedRoundItaEng`
-- **Componente:** `openSpeedRound()` (10109). Stessa logica a quattro opzioni di
+- **Componente:** `openSpeedRound()` (10105). Stessa logica a quattro opzioni di
   Match Practice (funzioni condivise), più il tempo.
 - **Tempo:** `CONFIG.speedRound.timeLimitSeconds` (10 s) per domanda; lo scadere
-  vale come risposta sbagliata (`srHandleTimeout`, 10056). Prima del quiz, un 3-2-1
-  (`srRunCountdown`, 10095).
+  vale come risposta sbagliata (`srHandleTimeout`, 10052). Prima del quiz, un 3-2-1
+  (`srRunCountdown`, 10091).
 - **Mastery:** prefisso `speedround:` — **coda di ripasso e mastery separate da
   quelle di Match Practice**, anche sulle stesse voci.
 - **Punteggio:** identico a Match Practice (primo tentativo).
@@ -221,43 +223,43 @@ davvero `attemptRule`.
 
 | Funzione | Riga | Cosa fa | Chi la chiama |
 |---|---|---|---|
-| `showView(name)` | 5473 | Cambia vista, alza `moduleEpoch`, chiama `stopAllModuleActivity()` | ogni `open*`, `goHome`, `boot` |
-| `stopAllModuleActivity()` | 5462 | Punto unico di pulizia: sintesi, timer Dialogo, registrazione, timer Speed Match, slide Flash Card, popup | solo `showView` |
-| `loadEpisodeData(module)` | 7111 | `fetch` + cache + ricaduta sul fallback | tutti i moduli con `dataFile` |
-| `episodeGrade(data, grade)` | 7137 | **L'unico** accesso al contenuto di un grado | tutti i moduli con contenuto |
-| `itemText(item, lang)` | 7149 | Testo di una voce con segnaposto già riempiti | Repeat Aloud, Match Practice, Speed Match, Flash Card, `buildMultipleChoiceOptions` |
-| `fillTemplate(text, ep, values, lang)` | 6604 | Sostituisce `{{chiave}}` e `{{chiave:en}}` | `itemText`, Speak Easy, Dialogo, Voice Coach |
-| `moduleStepId(moduleId, seenBefore)` | 6293 | Id del passo (`-2`, `-3` dalle apparizioni successive) | il blocco che calcola `episode.modules` |
-| `moduleTypeLabel(module)` | 7239 | "Studio · Parole"; omette il grado quando la categoria lo contiene | mappa + intestazione di ogni modulo |
-| `moduleNameHtml(name)` | 7228 | Stacca il suffisso `en→it` in uno `<span>` | mappa + intestazioni |
-| `percentageBucket(pct)` | 5313 | `alto`/`medio`/`basso` da `CONFIG.percentageThresholds` | Speed Match, Match Practice, Flash Card, Voice Coach, Why We Say It |
-| `moduleRulesLevel(pct)` | 5330 | `verde`/`giallo`/`rosso`, riusa `percentageBucket` | i cinque `*-complete-btn` valutati |
-| `applyMasteryResult(entry, result)` | 6109 | Scala del colore per voce (`promotionStreak`) | `recordMultipleChoiceResult`, `fcRecordResult`, Voice Practice |
-| `loadMastery`/`saveMastery` | 6097/6104 | Store colori per voce | come sopra + la vista legacy |
-| `buildMultipleChoiceOptions(item, dir, pool)` | 8649 | 4 opzioni: 1 giusta + 3 distrattori casuali | Match Practice, Speed Match |
-| `recordMultipleChoiceResult(params)` | 8672 | Mastery + coda di ripasso + contatore tentativi | Match Practice, Speed Match |
-| `srShuffle(list)` | 9757 | Fisher-Yates | **tutti**: qm, sr, fc, vc, `buildMultipleChoiceOptions` |
-| `renderSummaryScreen(...)` | 5230 | Schermata Finale + pulsante unico + suono Uscita | 7 moduli, una volta al boot |
-| `renderRetryIntroScreen(...)` | 5250 | Schermata Ripasso (guscio) | Speed Match, Match Practice, Flash Card, Voice Coach |
-| `applyRetryIntroContent(id, isLast)` | 5267 | Riempie titolo/testo da `retryIntroMessages` | gli stessi quattro |
-| `applyOutcomeSubtitle(el, key, bucket)` | 5299 | Sottotitolo della Schermata Finale, per esito | tutti i moduli con Schermata Finale |
-| `renderChoiceBox(...)` | 5212 | Coppia di pulsanti secondario+primario | Voice Coach (conferma invio), Flash Card, Dialogo |
-| `openAttemptPopup(...)` | 8192 | Valvola di sicurezza dopo N tentativi | Voice Check, Match Practice, Speed Match, Flash Card |
-| `renderIntroContent(kind, ...)` | 7272 | Schermata "Spiegazione" da `istruzioni-moduli.json` | tutti |
-| `openHowItWorksOverlay(module, opts)` | 5561 | Stessa spiegazione, in popup | tutti |
-| `openHelpFor(module)` | 6032 | Menu Help a tre voci | tutti |
-| `isIntroDismissed`/`setIntroDismissed` | 7203/7212 | Flag "non mostrare più", **per `kind`**, non per episodio | tutti |
-| `toggleSpeak(text, btn, rate, cb)` | 10831 | Sintesi vocale con toggle e `moduleEpoch` | tutti |
-| `startTimerBar`/`freezeTimerBar` | 9873/9881 | Barra del tempo | Speed Match **e** Dialogo |
-| `tokenize(text)` | 10608 | Conteggio/estrazione parole | Voice Coach **e** `dgLineDurationMs` |
-| `icon(name)`/`hydrateIcons(root)` | 5181/5187 | Icone SVG inline | ovunque |
-| `sfxPlay*Sound()` | 9810-9857 | Catalogo suoni per **evento**, da `CONFIG.sound.events` | ovunque |
+| `showView(name)` | 5469 | Cambia vista, alza `moduleEpoch`, chiama `stopAllModuleActivity()` | ogni `open*`, `goHome`, `boot` |
+| `stopAllModuleActivity()` | 5458 | Punto unico di pulizia: sintesi, timer Dialogo, registrazione, timer Speed Match, slide Flash Card, popup | solo `showView` |
+| `loadEpisodeData(module)` | 7107 | `fetch` + cache + ricaduta sul fallback | tutti i moduli con `dataFile` |
+| `episodeGrade(data, grade)` | 7133 | **L'unico** accesso al contenuto di un grado | tutti i moduli con contenuto |
+| `itemText(item, lang)` | 7145 | Testo di una voce con segnaposto già riempiti | Repeat Aloud, Match Practice, Speed Match, Flash Card, `buildMultipleChoiceOptions` |
+| `fillTemplate(text, ep, values, lang)` | 6600 | Sostituisce `{{chiave}}` e `{{chiave:en}}` | `itemText`, Speak Easy, Dialogo, Voice Coach |
+| `moduleStepId(moduleId, seenBefore)` | 6289 | Id del passo (`-2`, `-3` dalle apparizioni successive) | il blocco che calcola `episode.modules` |
+| `moduleTypeLabel(module)` | 7235 | "Studio · Parole"; omette il grado quando la categoria lo contiene | mappa + intestazione di ogni modulo |
+| `moduleNameHtml(name)` | 7224 | Stacca il suffisso `en→it` in uno `<span>` | mappa + intestazioni |
+| `percentageBucket(pct)` | 5309 | `alto`/`medio`/`basso` da `CONFIG.percentageThresholds` | Speed Match, Match Practice, Flash Card, Voice Coach, Why We Say It |
+| `moduleRulesLevel(pct)` | 5326 | `verde`/`giallo`/`rosso`, riusa `percentageBucket` | i cinque `*-complete-btn` valutati |
+| `applyMasteryResult(entry, result)` | 6105 | Scala del colore per voce (`promotionStreak`) | `recordMultipleChoiceResult`, `fcRecordResult`, Voice Practice |
+| `loadMastery`/`saveMastery` | 6093/6100 | Store colori per voce | come sopra + la vista legacy |
+| `buildMultipleChoiceOptions(item, dir, pool)` | 8645 | 4 opzioni: 1 giusta + 3 distrattori casuali | Match Practice, Speed Match |
+| `recordMultipleChoiceResult(params)` | 8668 | Mastery + coda di ripasso + contatore tentativi | Match Practice, Speed Match |
+| `srShuffle(list)` | 9753 | Fisher-Yates | **tutti**: qm, sr, fc, vc, `buildMultipleChoiceOptions` |
+| `renderSummaryScreen(...)` | 5226 | Schermata Finale + pulsante unico + suono Uscita | 7 moduli, una volta al boot |
+| `renderRetryIntroScreen(...)` | 5246 | Schermata Ripasso (guscio) | Speed Match, Match Practice, Flash Card, Voice Coach |
+| `applyRetryIntroContent(id, isLast)` | 5263 | Riempie titolo/testo da `retryIntroMessages` | gli stessi quattro |
+| `applyOutcomeSubtitle(el, key, bucket)` | 5295 | Sottotitolo della Schermata Finale, per esito | tutti i moduli con Schermata Finale |
+| `renderChoiceBox(...)` | 5208 | Coppia di pulsanti secondario+primario | Voice Coach (conferma invio), Flash Card, Dialogo |
+| `openAttemptPopup(...)` | 8188 | Valvola di sicurezza dopo N tentativi | Voice Check, Match Practice, Speed Match, Flash Card |
+| `renderIntroContent(kind, ...)` | 7268 | Schermata "Spiegazione" da `istruzioni-moduli.json` | tutti |
+| `openHowItWorksOverlay(module, opts)` | 5557 | Stessa spiegazione, in popup | tutti |
+| `openHelpFor(module)` | 6028 | Menu Help a tre voci | tutti |
+| `isIntroDismissed`/`setIntroDismissed` | 7199/7208 | Flag "non mostrare più", **per `kind`**, non per episodio | tutti |
+| `toggleSpeak(text, btn, rate, cb)` | 10827 | Sintesi vocale con toggle e `moduleEpoch` | tutti |
+| `startTimerBar`/`freezeTimerBar` | 9869/9877 | Barra del tempo | Speed Match **e** Dialogo |
+| `tokenize(text)` | 10604 | Conteggio/estrazione parole | Voice Coach **e** `dgLineDurationMs` |
+| `icon(name)`/`hydrateIcons(root)` | 5177/5183 | Icone SVG inline | ovunque |
+| `sfxPlay*Sound()` | 9806-9853 | Catalogo suoni per **evento**, da `CONFIG.sound.events` | ovunque |
 
 ### 2.2 Le funzioni che sembrano condivise e non lo sono
 
 - `moduleRulesLevel` è chiamata **solo** dai cinque pulsanti di completamento
   valutati. I tre Dialogue non la usano: scrivono `verde`/`giallo` direttamente.
-- `renderChoiceBox` è chiamata due volte al boot (5334-5335) e una volta per
+- `renderChoiceBox` è chiamata due volte al boot (5330-5331) e una volta per
   apertura in Dialogo (`dgStartExercise`) — non è un componente vivo, è un
   generatore di markup una tantum.
 
@@ -265,21 +267,21 @@ davvero `attemptRule`.
 
 | Chiave | Funzione | Contenuto |
 |---|---|---|
-| `baseinglese:userName` | `getUserName` (5407) | il nome, globale |
-| `baseinglese:theme` | `getTheme` (5368) | il tema scelto |
-| `baseinglese:configOverrides` | `applyConfigOverrides` (760) | override del Pannello Admin, **per sezione di primo livello intera** |
-| `baseinglese:modules:<ep>:<utente>` | `moduleProgressKey` (6329) | `{ completed: [idPasso] }` |
-| `baseinglese:moduleOutcome:<ep>:<utente>` | `moduleOutcomeKey` (6365) | `idPasso -> { level, ... }` |
-| `baseinglese:mastery:<ep>:<utente>` | `masteryStorageKey` (6093) | `unitId -> { level, streak }` |
-| `baseinglese:<ep>:custom:<utente>` | `customValuesKey` (6616) | valori di personalizzazione |
-| `baseinglese:seDeclarations:<ep>:<utente>` | `seDeclarationsKey` (7440) | dichiarazioni di Why We Say It |
-| `baseinglese:seExplanationStats:<ep>:<utente>` | `seExplanationStatsKey` (6468) | conteggio cumulativo per skill |
-| `baseinglese:audioUsage:<ep>:<utente>` | `audioUsageKey` (6419) | secondi di audio inviati per modulo |
-| `baseinglese:nextLineSkips:<ep>:<utente>` | `nextLineSkipsKey` (6443) | quante volte si è saltata una battuta |
-| `baseinglese:helpRequests:<utente>` | `helpRequestsKey` (5525) | richieste di aiuto |
-| `baseinglese:introDismissed:<kind>:<utente>` | `introDismissedKey` (7191) | "non mostrare più" per tipo di modulo |
-| `baseinglese:repeatAloudIntroDismissed:<utente>` | `legacyRaIntroDismissedKey` (7199) | **sola lettura**, residuo di una migrazione |
-| `baseinglese:customizeSeen:<ep>:<utente>` | `customizeSeenKey` (6838) | **sola lettura**, residuo di una migrazione |
+| `baseinglese:userName` | `getUserName` (5403) | il nome, globale |
+| `baseinglese:theme` | `getTheme` (5364) | il tema scelto |
+| `baseinglese:configOverrides` | `applyConfigOverrides` (756) | override del Pannello Admin, **per sezione di primo livello intera** |
+| `baseinglese:modules:<ep>:<utente>` | `moduleProgressKey` (6325) | `{ completed: [idPasso] }` |
+| `baseinglese:moduleOutcome:<ep>:<utente>` | `moduleOutcomeKey` (6361) | `idPasso -> { level, ... }` |
+| `baseinglese:mastery:<ep>:<utente>` | `masteryStorageKey` (6089) | `unitId -> { level, streak }` |
+| `baseinglese:<ep>:custom:<utente>` | `customValuesKey` (6612) | valori di personalizzazione |
+| `baseinglese:seDeclarations:<ep>:<utente>` | `seDeclarationsKey` (7436) | dichiarazioni di Why We Say It |
+| `baseinglese:seExplanationStats:<ep>:<utente>` | `seExplanationStatsKey` (6464) | conteggio cumulativo per skill |
+| `baseinglese:audioUsage:<ep>:<utente>` | `audioUsageKey` (6415) | secondi di audio inviati per modulo |
+| `baseinglese:nextLineSkips:<ep>:<utente>` | `nextLineSkipsKey` (6439) | quante volte si è saltata una battuta |
+| `baseinglese:helpRequests:<utente>` | `helpRequestsKey` (5521) | richieste di aiuto |
+| `baseinglese:introDismissed:<kind>:<utente>` | `introDismissedKey` (7187) | "non mostrare più" per tipo di modulo |
+| `baseinglese:repeatAloudIntroDismissed:<utente>` | `legacyRaIntroDismissedKey` (7195) | **sola lettura**, residuo di una migrazione |
+| `baseinglese:customizeSeen:<ep>:<utente>` | `customizeSeenKey` (6834) | **sola lettura**, residuo di una migrazione |
 
 ### 2.4 Nomi che contengono un modulo che non esiste più
 
@@ -314,28 +316,28 @@ dentro Speed Match) e per le classi CSS `.sr-option`, `.sr-summary`,
 **Prova.** Ogni modulo prende **tutte** le voci del proprio grado e le mescola:
 
 ```js
-// riga 8907 — Match Practice
+// riga 8903 — Match Practice
 qmQueue = srShuffle(qmVocab.map(function (v) { return v.id; }));
-// riga 10081 — Speed Match
+// riga 10077 — Speed Match
 srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
-// riga 10465 — Flash Card
+// riga 10461 — Flash Card
 fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
-// riga 8380 — Voice Coach
+// riga 8376 — Voice Coach
 vcQueue = vcLines.map(function (l) { return l.id; });
 ```
 
-`srShuffle` (9757) è un Fisher-Yates puro: nessun peso, nessun colore letto.
+`srShuffle` (9753) è un Fisher-Yates puro: nessun peso, nessun colore letto.
 `qmVocab`/`srVocab`/`fcVocab`/`vcLines` sono sempre `episodeGrade(data, module.grade)`
 per intero. L'unico altro punto in cui si pescano voci è la scelta dei distrattori:
 
 ```js
-// riga 8652 — buildMultipleChoiceOptions
+// riga 8648 — buildMultipleChoiceOptions
 var distractors = srShuffle(pool).slice(0, 3).map(...)
 ```
 
 anche lì, casuale e senza colore. **Il colore per voce (`mastery`) viene scritto ma
 non viene mai riletto per decidere cosa mostrare.** L'unico lettore di
-`loadMastery` a scopo di visualizzazione è `renderPhrase()` (10616), che appartiene
+`loadMastery` a scopo di visualizzazione è `renderPhrase()` (10612), che appartiene
 alla vista legacy irraggiungibile (§ 4.5).
 
 ### (b) Il colore di una parola è tracciato per tipo di esercizio o è uno solo per parola?
@@ -347,12 +349,12 @@ parola.
 prefisso di modulo:
 
 ```js
-// riga 8673 — Match Practice e Speed Match
+// riga 8669 — Match Practice e Speed Match
 var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
-//   unitPrefix vale 'quickmatch' (8790) o 'speedround' (9963)
-// riga 10281 — Flash Card
+//   unitPrefix vale 'quickmatch' (8786) o 'speedround' (9959)
+// riga 10277 — Flash Card
 var unitId = 'flashcard-' + fcGrade + ':' + fcCurrentItem.id + ':' + fcDirection;
-// riga 8455 — Voice Practice
+// riga 8451 — Voice Practice
 var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;
 ```
 
@@ -362,7 +364,7 @@ La stessa parola dell'episodio 1 può quindi avere fino a **sette** voci distint
 `flashcard-B:<id>:…`. Voice Practice non usa nemmeno l'id della voce: indicizza per
 **posizione della parola dentro la battuta** (`voicepractice:<idBattuta>:<indice>`),
 quindi non è confrontabile con le altre. Esiste infine un ottavo spazio di nomi,
-`fixed:<n>` / `slot:<chiave>` (`buildTargetTokens`, 6661), che appartiene alla
+`fixed:<n>` / `slot:<chiave>` (`buildTargetTokens`, 6657), che appartiene alla
 vista legacy.
 
 ### (c) Se (a) esistesse, leggerebbe i colori per tipo di esercizio o quelli globali?
@@ -376,15 +378,15 @@ richiede prima una decisione su quale dei sette-otto valori conta.
 
 **Sì, esattamente come una risposta verificata.**
 
-**Prova.** `fcRecordResult` (10279) chiama la stessa `applyMasteryResult` che usano
+**Prova.** `fcRecordResult` (10275) chiama la stessa `applyMasteryResult` che usano
 i quiz veri:
 
 ```js
-// riga 10284
+// riga 10280
 mastery[unitId] = applyMasteryResult(mastery[unitId], result);
 ```
 
-`result` è `'correct'` per "Sì, la so" (10544) e `'wrong'` per "Non ancora" (10534).
+`result` è `'correct'` per "Sì, la so" (10540) e `'wrong'` per "Non ancora" (10530).
 Non c'è nessun peso, nessuna sorgente, nessuna distinzione: due "Sì, la so" di fila
 promuovono di un livello esattamente come due risposte giuste in Speed Match
 (`CONFIG.mastery.promotionStreak = 2`).
@@ -398,7 +400,7 @@ affidabile". Quella cautela **non arriva fino alla mastery**.
 
 **No** — e non esiste nemmeno il meccanismo che quel tetto limiterebbe.
 
-**Prova.** `EPISODES` (6140) contiene un solo episodio. Ogni modulo legge
+**Prova.** `EPISODES` (6136) contiene un solo episodio. Ogni modulo legge
 `loadEpisodeData(module)` con `module.dataFile`, che è sempre il file dell'episodio
 corrente, e poi `episodeGrade(data, module.grade)`. Non c'è nessun punto del codice
 che unisca il contenuto di due file episodio, e nessuna delle 26 chiavi di primo
@@ -413,50 +415,50 @@ Elenco completo di ciò che è emerso, dal più al meno sostanziale.
 
 | Valore | Riga | Cosa decide |
 |---|---|---|
-| `slice(0, 3)` | 8652 | **Tre distrattori** → quattro opzioni per domanda, in Match Practice e Speed Match |
-| `FC_SLIDE_MS = 260` | 10222 | Durata dello scorrimento tra carte; deve restare allineata a mano alla transizione CSS di `.fc-card` |
-| `stars > 1` | 8432, 8470 | Soglia di superamento in Voice Coach (feedback, suono, coda di ripasso) |
-| `for (i = 1; i <= 3; i++)` | 8173 | Tre stelle, cablate in `renderStars` |
-| `maxAttempts - 1` | 8296, 8843, 10005, 10405 | Quale giro di ripasso è "l'ultimo", quindi quale gruppo di messaggi mostrare |
-| `.slice(-6)` | 5631 | Lunghezza della parola magica `config` |
+| `slice(0, 3)` | 8648 | **Tre distrattori** → quattro opzioni per domanda, in Match Practice e Speed Match |
+| `FC_SLIDE_MS = 260` | 10218 | Durata dello scorrimento tra carte; deve restare allineata a mano alla transizione CSS di `.fc-card` |
+| `stars > 1` | 8428, 8466 | Soglia di superamento in Voice Coach (feedback, suono, coda di ripasso) |
+| `for (i = 1; i <= 3; i++)` | 8169 | Tre stelle, cablate in `renderStars` |
+| `maxAttempts - 1` | 8293, 8842, 10001, 10401 | Quale giro di ripasso è "l'ultimo", quindi quale gruppo di messaggi mostrare |
+| `.slice(-6)` | 5627 | Lunghezza della parola magica `config` |
 
 **Tabelle di etichette scritte nel codice** (la regola 8 di `CLAUDE.md` chiede che i
 testi che lo studente legge stiano in `data/istruzioni-moduli.json`)
 
 | Costante | Riga | Contenuto |
 |---|---|---|
-| `DIRECTION_LABEL` | 8647 | `INGLESE → ITALIANO`, `ITALIANO → INGLESE` |
-| `STATUS_LABEL` | 6979 | `Completato`, `Attuale`, `Bloccato` |
-| `STATUS_ICON` | 6980 | icone di stato |
-| `OUTCOME_BADGE_LABEL` | 6987 | `Da rivedere`, `Da riprovare` |
-| `MODULE_RULES_LEVEL` | 5329 | `alto→verde`, `medio→giallo`, `basso→rosso` |
-| `STAR_MESSAGE_KEYS` | 8143 | `1→basso`, `2→medio`, `3→alto` |
-| `LEVEL_CLASS` | 6081 | `rosso→wrong`, `giallo→similar`, `verde→correct` |
-| `LEVELS` | 6080 | l'ordine della scala dei colori |
-| `MAP_PSEUDO_MODULE` | 6826 | il nome `Mappa dell'episodio` |
-| `QM_/SR_DIRECTION_BY_KIND` | 8717, 9731 | mappa `kind → direzione` |
+| `DIRECTION_LABEL` | 8643 | `INGLESE → ITALIANO`, `ITALIANO → INGLESE` |
+| `STATUS_LABEL` | 6975 | `Completato`, `Attuale`, `Bloccato` |
+| `STATUS_ICON` | 6976 | icone di stato |
+| `OUTCOME_BADGE_LABEL` | 6983 | `Da rivedere`, `Da riprovare` |
+| `MODULE_RULES_LEVEL` | 5325 | `alto→verde`, `medio→giallo`, `basso→rosso` |
+| `STAR_MESSAGE_KEYS` | 8139 | `1→basso`, `2→medio`, `3→alto` |
+| `LEVEL_CLASS` | 6077 | `rosso→wrong`, `giallo→similar`, `verde→correct` |
+| `LEVELS` | 6076 | l'ordine della scala dei colori |
+| `MAP_PSEUDO_MODULE` | 6822 | il nome `Mappa dell'episodio` |
+| `QM_/SR_DIRECTION_BY_KIND` | 8713, 9727 | mappa `kind → direzione` |
 
 **Frasi intere scritte nel codice**
 
-- `'Ho finito, torna alla mappa'` (5236) — l'unica etichetta di completamento
+- `'Ho finito, torna alla mappa'` (5232) — l'unica etichetta di completamento
   dell'app, in un punto solo, ma nel codice.
 - I sei titoli delle Schermate Finali: `Esercizio completato!` ×2, `Round completato!` ×2,
-  `Tutte le carte ripassate!`, `Dialogo ripassato!`, `Modulo completato!` (5337-5349, 5352).
-- `'L\'hai imparata?'`, `'Non ancora'`, `'Sì, la so!'` (5335) — Flash Card.
-- `'Sicuro? Invia per la valutazione, o cancella e riprova.'`, `'Cancella'`, `'Invia'` (5334).
-- Il menu Help completo: le tre voci (6001-6003), i due testi del modulo di
-  richiesta (6014-6016), la conferma (6028).
-- `'Non ti abbiamo sentito: prova a parlare entro N secondi…'` (8008).
-- `'TENTATIVO N DI M'` (8222, 8426).
-- `'Risposta corretta: '` (8887 e 10042), `'Hai detto:'` (8414).
-- `'Mostra pronuncia'` (8263), `'Esercitati ancora'`/`'Riprova'` (8362),
-  `'Pausa'`/`'Riprendi'` (9519), `'Mostra traduzioni'`/`'Nascondi traduzioni'` (9636),
-  `'Pronto?'`/`'Pronto? Via!'`/`'Ho capito, inizia'` (9110-9114, e i gemelli in
+  `Tutte le carte ripassate!`, `Dialogo ripassato!`, `Modulo completato!` (5333-5341, 5348).
+- `'L\'hai imparata?'`, `'Non ancora'`, `'Sì, la so!'` (5331) — Flash Card.
+- `'Sicuro? Invia per la valutazione, o cancella e riprova.'`, `'Cancella'`, `'Invia'` (5330).
+- Il menu Help completo: le tre voci (5997-5999), i due testi del modulo di
+  richiesta (6010-6012), la conferma (6024).
+- `'Non ti abbiamo sentito: prova a parlare entro N secondi…'` (8004).
+- `'TENTATIVO N DI M'` (8218, 8422).
+- `'Risposta corretta: '` (8883 e 10038), `'Hai detto:'` (8410).
+- `'Mostra pronuncia'` (8259), `'Esercitati ancora'`/`'Riprova'` (8364),
+  `'Pausa'`/`'Riprendi'` (9515), `'Mostra traduzioni'`/`'Nascondi traduzioni'` (9632),
+  `'Pronto?'`/`'Pronto? Via!'`/`'Ho capito, inizia'` (9106-9110, e i gemelli in
   `srRenderStartScreen`/`qmRenderStartScreen`).
 - `'Caricamento...'` e `'Non è stato possibile caricare i contenuti di questo modulo.'`,
   ripetuti in ognuno degli otto `open*`.
-- `'Ripeti ad alta voce'`, didascalia della barra del tempo (9233).
-- `'Ce l\'hai fatta!'` / `'Tranquillo, capita!'` (8196-8198) — fallback del popup, che
+- `'Ripeti ad alta voce'`, didascalia della barra del tempo (9229).
+- `'Ce l\'hai fatta!'` / `'Tranquillo, capita!'` (8193-8194) — fallback del popup, che
   però ha già la sua versione in `messaggi-feedback.json`.
 - Le tre domande finali dei Dialogue **sono** in `APP_CONFIG`
   (`dialogo.profiles.*.finalBoxQuestion`), non nel codice: è l'eccezione, non la regola.
@@ -471,17 +473,17 @@ testi che lo studente legge stiano in `data/istruzioni-moduli.json`)
 **id del modulo**; i pulsanti di completamento li interrogano con **l'id del passo**:
 
 ```js
-// riga 9013 — Match Practice
+// riga 9009 — Match Practice
 if (CONFIG.moduleOutcomeRules[qmModule.id] === 'moduleRules') { ... }
-// riga 10556 — Flash Card
+// riga 10552 — Flash Card
 if (CONFIG.moduleOutcomeRules[fcModule.id] === 'selfScoreRules') { ... }
-// riga 8602 — Voice Coach
+// riga 8598 — Voice Coach
 if (CONFIG.moduleOutcomeRules[vcModule.id] === 'moduleRules') { ... }
-// righe 8318 e 8440 — quale tentativo conta
+// righe 8314 e 8436 — quale tentativo conta
 CONFIG.attemptRule[vcModule.id] === 'lastAttempt'
 ```
 
-Dalla seconda apparizione in poi, `moduleStepId()` (6293) produce `quickMatchEngIta-2`,
+Dalla seconda apparizione in poi, `moduleStepId()` (6289) produce `quickMatchEngIta-2`,
 `flashcardAEngIta-2`, `voicePractice-2` … e in `moduleOutcomeRules` quelle chiavi non
 ci sono. La condizione è falsa, `saveModuleOutcome` **non viene chiamato**, il modulo
 resta sul badge "Completato" grigio.
@@ -498,14 +500,40 @@ resta sul badge "Completato" grigio.
 | 16 | `voicePractice-2` | `moduleRules` + `lastAttempt` | `completionRules` + **primo tentativo** |
 
 Il passo 16 è colpito due volte: oltre a non colorare la mappa, `attemptRule` cade su
-`undefined`, quindi `vcFinishModule` (8318) usa `vcFirstAttemptPercents` invece di
+`undefined`, quindi `vcFinishModule` (8314) usa `vcFirstAttemptPercents` invece di
 `vcLastAttemptPercentByLine`. Il punteggio mostrato allo studente al passo 16 è
 calcolato con una regola diversa da quella del passo 12, a parità di modulo.
 
 **Perché è passato inosservato.** L'ordine a coppie (con lo stesso modulo su più gradi)
 è recente; `moduleOutcomeRules` è più vecchio e non è mai stato riletto dopo.
-`episodeFinalOutcomeCase` (6397) legge `outcomes[m.id]` con l'id del passo — coerente
+`episodeFinalOutcomeCase` (6393) legge `outcomes[m.id]` con l'id del passo — coerente
 con come si scrive, quindi non emerge da lì.
+
+**Verificato eseguendo, non leggendo** — `tests/test_outcome_step_ids.js`. Il test
+gioca l'episodio in un profilo pulito dal passo 1 al passo 9, con le stesse identiche
+risposte nei due Match Practice en→it (sbagliate al primo giro, giuste al ripasso), e
+legge i due badge dalla mappa:
+
+```
+passo 4  quickMatchEngIta     badge: "Da riprovare"   classi esito: [outcome-rosso]
+passo 9  quickMatchEngIta-2   badge: "Completato"     classi esito: []
+
+baseinglese:moduleOutcome:episode1:ProvaEsitoPassi
+{"quickMatchEngIta":{"level":"rosso","pct":0},"quickMatchItaEng":{"level":"rosso","pct":0},
+ "flashcardAEngIta":{"level":"verde","pct":100},"flashcardAItaEng":{"level":"verde","pct":100}}
+```
+
+Il passo 9 non compare fra gli esiti salvati: `saveModuleOutcome` non è stato chiamato.
+
+**Perché non si vede usando l'app.** Il test risponde male apposta, e serve. Con
+risposte buone il punteggio è alto, `moduleRulesLevel` restituisce `verde` — e
+**una riga `.module-row.outcome-verde` nel CSS non esiste**: `OUTCOME_BADGE_LABEL`
+(6983) ha solo `giallo` e `rosso`, quindi un modulo verde ricade su
+`STATUS_LABEL.completed` e mostra "Completato", con lo stesso identico verde di
+`.module-row.completed` (2901, 2970). **Un esito verde e nessun esito sono
+indistinguibili a schermo.** Il difetto si vede solo quando lo studente va male:
+allora il passo 4 diventa giallo o rosso e il passo 9 resta verde "Completato" — cioè
+il caso in cui l'informazione sarebbe più utile è esattamente quello in cui manca.
 
 **Non corretto.** Le strade sono almeno tre (indicizzare per `moduleId` invece che per
 `id`; ricadere sul `moduleId` quando l'id del passo non c'è; dichiarare le regole nella
@@ -523,7 +551,7 @@ coincidono esattamente** (verificato voce per voce).
 
 ### 4.3 I Dialogue scrivono l'esito senza consultare la regola
 
-`dgFinishModule` (9494) chiama `saveModuleOutcome` **incondizionatamente**:
+`dgFinishModule` (9490) chiama `saveModuleOutcome` **incondizionatamente**:
 
 ```js
 saveModuleOutcome(currentEpisode, getUserName(), dgModule.id, { level: level, ... });
@@ -540,27 +568,27 @@ schema di chiamata.
 
 | Voce | Stato |
 |---|---|
-| `CONFIG.speedRound.pointsPerCorrect: 50` | **Mai letta.** Nessuna occorrenza fuori dalla dichiarazione. Ha anche una descrizione in `configFieldDescriptions` (riga 733), quindi **compare nel Pannello Admin come manopola che non muove niente.** Il commento sopra parla di un punteggio a punti che il codice non calcola più (`srFinishModule`, 10067, dice esplicitamente che punteggio e percentuale sono stati tolti). |
+| ~~`CONFIG.speedRound.pointsPerCorrect: 50`~~ | **Tolto** (decisione D4, § 6). Non era mai letta, e una descrizione in `configFieldDescriptions` la faceva comparire nel Pannello Admin come manopola che non muove niente. Il punteggio a punti non esiste più: `srFinishModule` (10063) dice esplicitamente che punteggio e percentuale sono stati tolti. |
 | `CONFIG.places.destinations` | **Mai referenziata.** Nessun file episodio la nomina in `personalizationTablesUsed`; lo slot `destinazione` è stato tolto dall'episodio 1. Resta disponibile per un episodio futuro — ma oggi è configurazione senza lettore. |
-| `messaggi-feedback.json → speedRoundMessages` | **Mai letta.** Unica occorrenza in `index.html`: la copia di sicurezza (riga 1521). Nessun `data.speedRoundMessages` da nessuna parte. |
-| `module.typeLabel` | **Mai impostata.** `moduleTypeLabel` (7241) apre con `module.typeLabel || ...`: nessun oggetto modulo porta quel campo. Ramo morto, residuo di quando la categoria di Your Story era sovrascritta a mano. |
+| `messaggi-feedback.json → speedRoundMessages` | **Mai letta.** Unica occorrenza in `index.html`: la copia di sicurezza (riga 1517). Nessun `data.speedRoundMessages` da nessuna parte. |
+| `module.typeLabel` | **Mai impostata.** `moduleTypeLabel` (7237) apre con `module.typeLabel || ...`: nessun oggetto modulo porta quel campo. Ramo morto, residuo di quando la categoria di Your Story era sovrascritta a mano. |
 
 ### 4.5 Codice irraggiungibile
 
 - **La vista `view-pronunciation` per intero.** `startPronunciationExercise()`
-  (10624) è l'unico ingresso, e **nessuno la chiama** (verificato: sole occorrenze,
+  (10620) è l'unico ingresso, e **nessuno la chiama** (verificato: sole occorrenze,
   la definizione). Con lei restano irraggiungibili: `renderPhrase`,
   `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.episode1.segments`,
-  la seconda istanza `SpeechRecognition` (10905 in poi), `#phrase`, `#mic-btn`,
+  la seconda istanza `SpeechRecognition` (10901 in poi), `#phrase`, `#mic-btn`,
   `#speak-btn`, `#status`, `#transcript`, `#warning`, `#pronunciation-hint`,
   `LEVEL_CLASS`, e la voce `pronunciation` di `views`. È l'esercizio originale
   dell'app, prima che esistessero i moduli.
-  → `EPISODES.episode1.segments` (6259) descrive ancora la vecchia frase, con uno
+  → `EPISODES.episode1.segments` (6255) descrive ancora la vecchia frase, con uno
   slot `destinazione` che non esiste più tra gli slot dell'episodio: `slotDefault`
   restituirebbe `undefined`. Non esplode solo perché non ci arriva nessuno.
-- **`applyRotatingSubtitle()`** (5285): definita, mai chiamata. È stata sostituita
-  ovunque da `applyOutcomeSubtitle` (5299); resta citata solo nei commenti (riga 3975).
-- **`episodeFinalOutcomeCase()`** (6397): definita, mai chiamata. È dichiaratamente
+- **`applyRotatingSubtitle()`** (5281): definita, mai chiamata. È stata sostituita
+  ovunque da `applyOutcomeSubtitle` (5295); resta citata solo nei commenti (riga 3971).
+- **`episodeFinalOutcomeCase()`** (6393): definita, mai chiamata. È dichiaratamente
   pronta per il Modulo Finale, che non esiste. Con lei resta inutilizzata la chiave
   `episodeFinalMessages` di `messaggi-feedback.json`.
 
@@ -568,7 +596,7 @@ schema di chiamata.
 
 | Valore | Dove sta due (o più) volte |
 |---|---|
-| Nome del grado | `CONFIG.gradeNames` (`A: 'Parole'`, riga 380) **e** `levels.A.label` nel file episodio. Il codice legge solo il primo; il secondo non è letto da nessuno. |
+| Nome del grado | `CONFIG.gradeNames` (`A: 'Parole'`, riga 377) **e** `levels.A.label` nel file episodio. Il codice legge solo il primo; il secondo non è letto da nessuno. |
 | Contenuto dei tre file `data/` | Duplicato per intero nei blocchi `window.FALLBACK_*`. È deliberato (regola 6) e `tests/test_fallbacks.js` lo sorveglia — segnalato per completezza, non come difetto. |
 | Durata dello scorrimento della carta | `FC_SLIDE_MS = 260` in JS **e** la transizione di `.fc-card` in CSS, allineate a mano. |
 | `feedbackPauseMs: 600` | `CONFIG.speedRound` **e** `CONFIG.quickMatch`, stesso valore, tenuti separati di proposito. |
@@ -579,15 +607,15 @@ schema di chiamata.
 
 ### 4.7 Altre cose viste, più piccole
 
-- `openSpeakEasy` (7727-7728) scrive in `#speak-easy-badge` e `#speak-easy-subtitle`
+- `openSpeakEasy` (7723-7724) scrive in `#speak-easy-badge` e `#speak-easy-subtitle`
   oltre che in `#speak-easy-title` e `#speak-easy-type-badge`: quattro elementi per
   due informazioni. Da verificare se i primi due sono ancora visibili.
-- `#vc-warning` (8356) e `#warning` (10908) usano `style.display` diretto invece di
+- `#vc-warning` (8352) e `#warning` (10904) usano `style.display` diretto invece di
   `hidden`, i due punti fuori convenzione già noti e lasciati apposta.
 - `CONFIG.episodes.episode1` è `{}`: nessun episodio sovrascrive l'ordine globale.
-  Il ramo `(CONFIG.episodes[episodeId] && ... .moduleOrder)` (6299) non è mai vero
+  Il ramo `(CONFIG.episodes[episodeId] && ... .moduleOrder)` (6295) non è mai vero
   oggi.
-- `applyConfigOverrides` (760) sostituisce **l'intera sezione di primo livello**.
+- `applyConfigOverrides` (756) sostituisce **l'intera sezione di primo livello**.
   Un override salvato su `moduleOrderDefault` congela l'ordine: modifiche successive
   al codice non arrivano più all'utente finché non si svuota la sezione dal pannello.
   È il comportamento voluto, ma vale la pena saperlo.
@@ -599,25 +627,107 @@ schema di chiamata.
 
 ---
 
-## 5. Domande aperte
+## 5. Domande ancora aperte
 
-Cose che il codice non chiarisce da solo, e che non sono state indovinate.
+Le conseguenze delle alternative, senza sceglierne una.
 
-1. **Il § 4.1 va corretto come?** Le tre strade (indicizzare per `moduleId`;
-   ricadere sul `moduleId`; portare la regola dentro la coppia dell'ordine) hanno
-   conseguenze diverse su cosa significa "un modulo" quando compare più volte.
-2. **Il passo 16 (Voice Practice sul grado C) deve usare `lastAttempt` come il passo 12?**
-   Se sì è parte del § 4.1; se no, va dichiarato, perché oggi è un effetto collaterale,
-   non una scelta.
-3. **La mastery deve distinguere un "Sì, la so" da una risposta verificata?**
-   `moduleOutcomeRules` lo fa a livello di modulo; `applyMasteryResult` no. Se la
-   distinzione conta, manca; se non conta, `selfScoreRules` è una distinzione senza
-   effetto pratico oltre l'etichetta.
-4. **`CONFIG.speedRound.pointsPerCorrect` va tolto o ricablato?** Oggi è una manopola
-   visibile nel Pannello Admin che non fa niente.
-5. **La vista `view-pronunciation` va rimossa?** Sono circa 200 righe di JS più il
-   markup più `EPISODES.episode1.segments`, tutte irraggiungibili.
-6. **I nomi obsoleti (§ 2.4) si rinominano tutti insieme o si lasciano?**
-   Toccano id di moduli salvati in `localStorage` (`quickMatchEngIta`,
-   `speedRoundEngIta`, `voiceCoach`), quindi una rinomina non è solo cosmetica:
-   invaliderebbe i progressi già salvati senza una migrazione.
+### D1 — Come si corregge il § 4.1
+
+**Prima, la domanda posta in chat: indicizzare per `moduleId` farebbe condividere
+anche il progresso?** No: **solo la regola.** Progressi ed esiti si scrivono con
+`module.id` (l'id del passo) — `markModuleCompleted(…, currentModule.id)` e
+`saveModuleOutcome(…, currentModule.id)` — e si rileggono allo stesso modo
+(`moduleStatus(episode, progress, m.id)`, `outcomes[m.id]` in `renderModuleList`).
+`moduleOutcomeRules` è soltanto la tabella che dice *quale regola vale*: cambiarne
+l'indicizzazione cambia quale regola si trova, non dove finisce il risultato. Le due
+apparizioni resterebbero due passi separati, con progresso e colore propri, giudicati
+con la stessa regola.
+
+**L'unico modo di far condividere anche il progresso** sarebbe cambiare *dove si
+scrive* — passare `moduleId` invece di `id` a `markModuleCompleted`/`saveModuleOutcome`.
+Non serve a niente qui, e collasserebbe due passi in uno: è la strada da non prendere
+per sbaglio mentre si sistema la tabella.
+
+| | Cosa comporta | Costo | Rischio |
+|---|---|---|---|
+| **A — indicizzare per `moduleId`** | Tutte le apparizioni di uno stesso modulo condividono la regola, per costruzione: non è più possibile darne una diversa alla seconda. | Cinque righe (i quattro pulsanti di completamento più le due letture di `attemptRule`); la configurazione non cambia di una virgola. | Nessuno tecnico. Si perde un grado di libertà che oggi nessuno usa. |
+| **B — ricaduta `[id]` poi `[moduleId]`** | Default identico ad A, ma resta possibile dichiarare un'eccezione per un singolo passo scrivendo `'quickMatchEngIta-2': '…'`. | Le stesse cinque righe più una funzione condivisa che fa la ricaduta — altrimenti la si riscrive cinque volte. | La chiave del passo è **generata** (`-2`, `-3`) e si sposta quando si riordina: un'eccezione scritta a mano si stacca in silenzio dal passo che voleva descrivere. |
+| **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
+
+### D2 — Il passo 16 (Voice Practice sul grado C) deve usare `lastAttempt`?
+
+| | Cosa comporta |
+|---|---|
+| **Sì** | Non è un lavoro a parte: si risolve da solo con A o con B, perché `attemptRule` è indicizzato esattamente come `moduleOutcomeRules` e viene letto negli stessi due punti (8314, 8436). |
+| **No** — il grado C deve valere il primo tentativo | Allora serve una **dichiarazione esplicita**, perché oggi è un `undefined`, non una scelta. E una dichiarazione per singolo passo è esprimibile solo con B o con C: con A non lo è. |
+| **Terza via** | Se Voice Practice deve *sempre* valere l'ultimo tentativo e Voice Check *sempre* il primo, `attemptRule` non serve più a nessuno: la distinzione è già in `voiceVariant`, che sta nel descrittore ed è quindi identico per tutte le apparizioni. La tabella sparisce e il § 4.1 si riduce al solo `moduleOutcomeRules`. |
+
+### D5 — Rimuovere `view-pronunciation`
+
+| | Cosa comporta |
+|---|---|
+| **Toglierla** | Spariscono `startPronunciationExercise`, `renderPhrase`, `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.episode1.segments`, la seconda istanza `SpeechRecognition` (10901 in poi), il markup della vista e i suoi sei elementi. Con loro l'unico lettore di `LEVEL_CLASS`. |
+| **L'ostacolo vero** | `tokenize`, `alignWords`, `classify` — e le loro `levenshtein`, `similarity`, `stripForCompare` — **stanno in quel blocco ma le usa Voice Coach** (8389-8403) **e Dialogo** (`dgLineDurationMs`, 9260). Vanno spostate in un punto condiviso, non cancellate: è la parte che rende la rimozione non banale, ed è anche il momento giusto per dare loro un posto proprio (regola 18). |
+| **Tenerla** | Costa zero oggi. È l'**unico posto in cui la mastery viene riletta per disegnare qualcosa**: se domani si costruisce la composizione per colore, `renderPhrase` è già il modello di come si mostrano rosso/giallo/verde a schermo — l'unico esempio funzionante che l'app abbia. |
+
+---
+
+## 6. Decisioni prese
+
+Registrate qui perché una decisione che vive solo in chat si perde. La numerazione è
+quella delle domande aperte della revisione precedente.
+
+### D3 — La mastery deve distinguere un'autovalutazione da una risposta verificata
+
+**Sì, deve distinguere. Non ora**: oggi la mastery non è riletta da nessuno (§ 3a),
+quindi non fa danno, e correggerla prima del meccanismo che leggerà quei colori
+significherebbe farlo nascere già inquinato. La correzione va fatta **insieme** a quel
+meccanismo.
+
+**La direzione, per quando si farà:**
+
+> Il colore **sale** solo su risposte verificate. **Scende** su qualsiasi segnale,
+> autovalutazione compresa.
+
+Il perché è nella natura dei due segnali: **chi dichiara di non sapere dà
+un'informazione onesta; chi dichiara di sapere dà un'opinione.** Un "Non ancora" di
+Flash Card è affidabile quanto una risposta sbagliata a Match Practice; un "Sì, la so"
+no. Oggi `applyMasteryResult` (6105) li tratta come identici in entrambe le direzioni.
+
+**`CONFIG.mastery.promotionStreak` fa parte della stessa domanda.** Vale `2` dal
+**primo commit del repository** (`f7298f9`, 24 agosto), nello stesso blocco che ha
+introdotto la scala dei colori, e non è mai stato cambiato negli 80 commit successivi:
+l'unica altra modifica a quella riga (`8b70545`) le ha aggiunto la descrizione per il
+Pannello Admin, non un valore nuovo. Quando è stato scelto, **l'unica cosa che
+alimentava la scala era l'esercizio di pronuncia** — un "corretto" era una parola
+riconosciuta dal microfono. L'autovalutazione è arrivata sulla stessa scala **il
+commit successivo, lo stesso giorno**, con Flash Card (`95852b2`): il numero non è
+stato rivisto, ma il
+significato di ciò che conta gli è cambiato sotto.
+
+Con `promotionStreak: 2`, da zero servono **quattro** "Sì, la so" per arrivare a
+verde (il primo tentativo fissa la base a rosso con streak 1; il secondo porta a
+giallo; il quarto a verde) e **due** per il primo scalino. Alzare il numero non è la
+risposta: rallenterebbe anche le risposte verificate per compensare una sola fonte
+inaffidabile. **Il problema non è quanto in fretta si sale, è chi può far salire.**
+
+### D4 — `CONFIG.speedRound.pointsPerCorrect`
+
+**Tolto.** Il punteggio a punti non esiste più nel codice. Una manopola visibile nel
+Pannello Admin che non muove niente è peggio di una assente: chi la gira crede di aver
+cambiato qualcosa. Rimossa la chiave e la sua riga in `configFieldDescriptions`.
+
+### D6 — I nomi obsoleti del § 2.4
+
+**Si rinominano tutti insieme, ma non ora e mai senza migrazione.** Toccano id salvati
+in `localStorage` (`quickMatchEngIta`, `speedRoundEngIta`, `voiceCoach` sono chiavi
+dentro `baseinglese:modules:*` e `baseinglese:moduleOutcome:*`): una rinomina non è
+cosmetica, azzererebbe i progressi di chi sta già usando l'app.
+
+**Quando:** insieme al passaggio a Supabase, dove i dati vengono comunque trasferiti e
+una migrazione è già in conto.
+
+**Nel frattempo:** nessuna rinomina, e **ogni nome nuovo segue il nome attuale del
+modulo, mai quello vecchio.** Le tre funzioni `se*` nate nel giro precedente —
+`seFollowupText` (7424), `seCardIndex` (7697), `seCurrentCardIndex` (7704) — entrano
+nella lista del § 2.4 insieme alle altre: sono nuove, ma portano già un prefisso morto.
