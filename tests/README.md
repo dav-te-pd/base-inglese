@@ -1,12 +1,12 @@
 # Suite di regressione
 
-28 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+29 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_voicecoach.js`, `test_story_modules.js`, `test_fallbacks.js`,
-`test_hidden_guard.js`). Insieme costituiscono la suite di regressione completa
-citata da CLAUDE.md (regola 15): quando una modifica tocca codice condiviso
-va lanciata tutta, quando resta dentro un modulo bastano i file di quel
-modulo.
+`test_hidden_guard.js`, `test_outcome_step_ids.js`). Insieme costituiscono la
+suite di regressione completa citata da CLAUDE.md (regola 15): quando una
+modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
+modulo bastano i file di quel modulo.
 
 ## Come lanciarla
 
@@ -24,7 +24,7 @@ npm test
 ```
 
 `npm test` esegue `run_full_regression.sh`, che avvia da solo il server
-statico sulla porta 8955, lancia i 28 file in ordine e ferma il server alla
+statico sulla porta 8955, lancia i 29 file in ordine e ferma il server alla
 fine. Se un server risponde già su quella porta, lo riusa invece di
 avviarne un altro.
 
@@ -69,24 +69,26 @@ README di ciascuna per cosa sono e perché sono state tenute:
 - `debug/` — script diagnostici per bug ormai risolti, tenuti come riferimento.
 - `legacy/` — test precedenti alla numerazione `test_batchN.js`, probabilmente superati.
 
-## `test_outcome_step_ids.js` — fuori dalla suite, di proposito
+## `test_outcome_step_ids.js` — nella suite dal 2026-09-05
 
-Verifica che il difetto descritto nel § 4.1 di `docs/validazione.md` ci sia
-ancora: la regola di esito dichiarata in `CONFIG.moduleOutcomeRules` non arriva
-alla seconda apparizione di uno stesso modulo nell'ordine. Gioca l'episodio in
-un profilo pulito dal passo 1 al passo 9 e confronta i due badge in mappa.
+Verifica che la regola di esito (`CONFIG.moduleOutcomeRules`) e la regola del
+tentativo arrivino a **ogni apparizione** di un modulo nell'ordine, non solo
+alla prima. Gioca l'episodio in un profilo pulito dal passo 1 al passo 9 e
+confronta i due badge in mappa: a parità di risposte devono essere identici, e
+tutti e due devono avere un esito salvato.
 
-Non è nella suite perché **asserisce che un difetto esista**: il giorno in cui
-lo si corregge, la CI diventerebbe rossa per la correzione, e un rosso che
-vuol dire "risolto" è peggio di nessun test. Si lancia a mano, con il server
-attivo:
+**Era fuori dalla suite** finché asseriva che il difetto del § 4.1 di
+`docs/validazione.md` esistesse ancora: un test che asserisce un difetto
+diventa rosso proprio quando il difetto viene corretto, e un rosso che vuol
+dire "risolto" è peggio di nessun test. Corretto il difetto (vedi
+`docs/correzioni.md`), il file è stato rovesciato ed è entrato nella suite —
+la suite passa così da 28 a 29 file.
+
+Si può ancora lanciare da solo, con il server attivo:
 
 ```bash
 node tests/test_outcome_step_ids.js
 ```
-
-Quando la decisione D1 sarà presa, va rovesciato (asserire che la regola venga
-applicata) oppure tolto.
 
 ## Cosa protegge ogni file
 
@@ -127,6 +129,7 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_story_modules.js` | Meet the Story e Why We Say It al completo: i dati (gradi, skill come lista con titolo e corpo separati), la sequenza obbligata al primo giro, le tre risposte, "Esci e riprendi dopo", il ripasso, e il punteggio autodichiarato che diventa verde. |
 | `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file in `data/`: Pages e artifact non divergono in silenzio. |
 | `test_hidden_guard.js` | Ogni regola CSS che imposta un `display` continua a sparire con `hidden`: la guardia della regola 12 non si può rompere senza che la CI se ne accorga. |
+| `test_outcome_step_ids.js` | La regola di esito e la regola del tentativo arrivano a **ogni** apparizione di un modulo nell'ordine, non solo alla prima: senza, la mappa torna a lasciare grigi sei passi su ventidue, e in silenzio (un esito verde e nessun esito sono indistinguibili a schermo). |
 
 ---
 

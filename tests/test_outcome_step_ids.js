@@ -1,22 +1,16 @@
-// PROTEGGE: che il § 4.1 di docs/validazione.md sia ancora vero — la regola di
-// esito non arriva alla seconda apparizione di un modulo. Senza, la correzione
-// (o la sua regressione) passerebbe senza che nessuno se ne accorga.
+// PROTEGGE: che la regola di esito e la regola del tentativo arrivino a OGNI
+// apparizione di un modulo nell'ordine, non solo alla prima. Senza, la mappa
+// torna a colorare il passo 4 e a lasciare grigio il passo 9 a parità di
+// risposte, in silenzio — che è com'era prima della correzione del 2026-09-05.
 //
-// Prova end-to-end della segnalazione § 4.1 di docs/validazione.md.
-//
-// NON FA PARTE DELLA SUITE (run_full_regression.sh), di proposito: questo file
-// verifica che un DIFETTO ci sia ancora, non che una cosa funzioni. Se finisse
-// nella suite, il giorno in cui il § 4.1 viene corretto (decisione D1) la CI
-// diventerebbe rossa proprio per la correzione — cioè il rosso vorrebbe dire
-// "risolto", l'opposto di quello che un rosso deve significare. Si lancia a
-// mano:  node tests/test_outcome_step_ids.js
-// Quando D1 è decisa, va rovesciato (asserire la regola applicata) o tolto.
-//
-// La domanda: la regola di esito dichiarata in CONFIG.moduleOutcomeRules
-// arriva anche alla SECONDA apparizione di uno stesso modulo nell'ordine?
-// moduleOutcomeRules è indicizzato per id del MODULO ('quickMatchEngIta'),
-// mentre i pulsanti di completamento lo interrogano con l'id del PASSO, che
-// dalla seconda apparizione in poi è 'quickMatchEngIta-2' (moduleStepId).
+// Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
+// docs/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
+// apparizione in poi è 'quickMatchEngIta-2', invece che con l'id del MODULO),
+// e per quel motivo stava fuori dalla suite: un test che asserisce un difetto
+// diventa rosso proprio quando il difetto viene corretto. Corretto il difetto
+// (index.html: sette letture passate a .moduleId, CONFIG.attemptRule tolta e
+// sostituita da module.voiceVariant), il file è stato rovesciato ed è entrato
+// nella suite. Vedi docs/correzioni.md.
 //
 // Il test non legge il codice: gioca l'episodio in un profilo pulito, dal
 // primo passo fino alla seconda apparizione di Match Practice en→it, e
@@ -26,11 +20,13 @@
 // le risposte giuste il punteggio è 100% -> verde, e il badge di un modulo
 // verde dice "Completato" esattamente come quello di un modulo senza esito
 // (OUTCOME_BADGE_LABEL ha solo giallo e rosso). I due casi si distinguerebbero
-// solo dalla classe della riga. Rispondendo sbagliato il punteggio è 0% ->
-// rosso -> badge "Da riprovare", e la differenza si vede anche nel testo.
+// solo dalla classe della riga, ed è esattamente il motivo per cui il difetto
+// era invisibile a schermo. Rispondendo sbagliato il punteggio è 0% -> rosso
+// -> badge "Da riprovare", e la differenza (o la sua assenza) si vede anche
+// nel testo.
 const { launchBrowser, APP_URL } = require('./test-env');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
-const { stepIds, gradeOf } = require('./module-order');
+const { stepIds, gradeOf, stepsBefore } = require('./module-order');
 
 const BASE = APP_URL;
 const USER = 'ProvaEsitoPassi';
@@ -193,64 +189,155 @@ function readRow(page, stepId) {
   }, stepId);
 }
 
+// Un profilo con i passi precedenti già segnati come fatti: serve solo ad
+// arrivare a un passo lontano nell'ordine senza rigiocare tutto. Il blocco [A]
+// NON usa questa scorciatoia — lì il punto è proprio giocare davvero.
+async function bootSeeded(page, userName, completed) {
+  await page.goto(BASE);
+  if (!(await visible(page, '#name-input'))) {
+    await page.click('#switch-user');
+    await page.waitForSelector('#name-input', { state: 'visible' });
+  }
+  await page.fill('#name-input', userName);
+  await page.click('#onboarding-form button[type=submit]');
+  await page.waitForSelector('#go-episode', { state: 'visible' });
+  await page.evaluate(function (arg) {
+    localStorage.setItem('baseinglese:modules:episode1:' + arg.userName,
+      JSON.stringify({ completed: arg.completed }));
+  }, { userName: userName, completed: completed });
+  await page.click('#go-episode');
+  await backOnMap(page);
+}
+
 async function run() {
   const browser = await launchBrowser();
-  const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
-  const errors = [];
-  page.on('pageerror', e => errors.push(e.message));
-  await page.addInitScript(mockInit);
+  const risultati = [];
+  const log = (msg, ok) => { risultati.push(ok); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
   const ids = stepIds();
-  const passo4 = ids[3];  // quickMatchEngIta   (grado A)
-  const passo9 = ids[8];  // quickMatchEngIta-2 (grado B)
+  const passo4 = ids[3];   // quickMatchEngIta   (prima apparizione)
+  const passo9 = ids[8];   // quickMatchEngIta-2 (seconda apparizione)
+  const passo12 = ids[11]; // voicePractice      (prima apparizione)
+  const passo16 = ids[15]; // voicePractice-2    (seconda apparizione)
 
-  console.log('Passo 4 dell\'ordine: ' + passo4 + '  (grado ' + gradeOf(passo4) + ')');
-  console.log('Passo 9 dell\'ordine: ' + passo9 + '  (grado ' + gradeOf(passo9) + ')');
-  console.log('');
+  // ============ [A] La regola di esito arriva alla seconda apparizione ============
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
 
-  await bootFresh(page);
-  await doPersonalizzazione(page);            // 1
-  await doStory(page, ids[1]);                // 2  meetTheStory
-  await doRepeatAloud(page, ids[2]);          // 3  repeatAloud
-  await doQuickMatch(page, ids[3]);           // 4  quickMatchEngIta
-  await doQuickMatch(page, ids[4]);           // 5  quickMatchItaEng
-  await doFlashcard(page, ids[5]);            // 6  flashcardAEngIta
-  await doFlashcard(page, ids[6]);            // 7  flashcardAItaEng
-  await doRepeatAloud(page, ids[7]);          // 8  repeatAloud-2
-  await doQuickMatch(page, ids[8]);           // 9  quickMatchEngIta-2
+    console.log('[A] Passo 4 dell\'ordine: ' + passo4 + '  (grado ' + gradeOf(passo4) + ')');
+    console.log('[A] Passo 9 dell\'ordine: ' + passo9 + '  (grado ' + gradeOf(passo9) + ')');
 
-  const r4 = await readRow(page, passo4);
-  const r9 = await readRow(page, passo9);
-  const salvati = await page.evaluate(function (u) {
-    return localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}';
-  }, USER);
+    await bootFresh(page);
+    await doPersonalizzazione(page);            // 1
+    await doStory(page, ids[1]);                // 2  meetTheStory
+    await doRepeatAloud(page, ids[2]);          // 3  repeatAloud
+    await doQuickMatch(page, ids[3]);           // 4  quickMatchEngIta
+    await doQuickMatch(page, ids[4]);           // 5  quickMatchItaEng
+    await doFlashcard(page, ids[5]);            // 6  flashcardAEngIta
+    await doFlashcard(page, ids[6]);            // 7  flashcardAItaEng
+    await doRepeatAloud(page, ids[7]);          // 8  repeatAloud-2
+    await doQuickMatch(page, ids[8]);           // 9  quickMatchEngIta-2
 
-  console.log('BADGE IN MAPPA (profilo pulito, stesse risposte in entrambi i passi)');
-  console.log('  passo 4  ' + passo4.padEnd(20) + ' badge: "' + r4.badge + '"   classi esito: [' + r4.classi.join(', ') + ']');
-  console.log('  passo 9  ' + passo9.padEnd(20) + ' badge: "' + r9.badge + '"   classi esito: [' + r9.classi.join(', ') + ']');
-  console.log('');
-  console.log('ESITI SALVATI (baseinglese:moduleOutcome:episode1:' + USER + ')');
-  console.log('  ' + salvati);
-  console.log('');
+    const r4 = await readRow(page, passo4);
+    const r9 = await readRow(page, passo9);
+    const salvati = await page.evaluate(function (u) {
+      return localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}';
+    }, USER);
+    const esiti = JSON.parse(salvati);
 
-  const uguali = r4.badge === r9.badge && r4.classi.join(',') === r9.classi.join(',');
-  const esiti = JSON.parse(salvati);
-  const ok = !uguali && !!esiti[passo4] && !esiti[passo9];
+    console.log('    passo 4  ' + passo4.padEnd(20) + ' badge: "' + r4.badge + '"   classi esito: [' + r4.classi.join(', ') + ']');
+    console.log('    passo 9  ' + passo9.padEnd(20) + ' badge: "' + r9.badge + '"   classi esito: [' + r9.classi.join(', ') + ']');
+    console.log('    esiti salvati: ' + salvati);
 
-  if (uguali) {
-    console.log('ESITO: i due badge sono UGUALI — l\'analisi del § 4.1 è sbagliata.');
-  } else {
-    console.log('ESITO: i due badge sono DIVERSI a parità di risposte.');
-    console.log('       ' + passo4 + ' ha un esito salvato, ' + passo9 + ' no:');
-    console.log('       moduleOutcomeRules["' + passo9 + '"] è undefined, quindi');
-    console.log('       il pulsante di completamento non chiama saveModuleOutcome.');
+    log('[A] La prima apparizione salva un esito', !!esiti[passo4]);
+    log('[A] Anche la SECONDA apparizione salva un esito', !!esiti[passo9]);
+    log('[A] I due esiti hanno lo stesso livello a parità di risposte',
+      !!esiti[passo4] && !!esiti[passo9] && esiti[passo4].level === esiti[passo9].level);
+    log('[A] I due badge in mappa sono uguali', r4.badge === r9.badge);
+    log('[A] Le due righe portano le stesse classi di esito',
+      r4.classi.join(',') === r9.classi.join(','));
+    log('[A] La classe di esito c\'è davvero (non sono uguali perché entrambe vuote)',
+      r4.classi.length > 0);
+    log('[A] Nessun errore JS', errors.length === 0);
+    if (errors.length) console.log('    ' + errors.join(' | '));
+    await page.close();
   }
-  if (errors.length) console.log('ERRORI JS IN PAGINA: ' + errors.join(' | '));
 
-  console.log('');
-  console.log(ok ? 'OK  - § 4.1 confermato' : 'FAIL - § 4.1 non confermato');
+  // ============ [B] La regola del tentativo non passa più da una tabella ============
+  //
+  // LastAttemptRule/FirstAttemptRule vive ora in module.voiceVariant, che sta
+  // nel descrittore: le due apparizioni di Voice Practice condividono lo stesso
+  // descrittore, quindi la regola non può divergere per costruzione. Qui si
+  // guarda la traccia visibile di vcVariant sulla SECONDA apparizione — riga di
+  // ritentativo e testo del pulsante, gli unici segni a schermo di quale delle
+  // due varianti è aperta (vedi openVoiceCoach).
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+
+    console.log('[B] Passo 12 dell\'ordine: ' + passo12);
+    console.log('[B] Passo 16 dell\'ordine: ' + passo16);
+
+    const leggiVariante = () => page.evaluate(function () {
+      return {
+        rigaRitentativo: document.getElementById('vc-retry-row').hidden,
+        testoRitentativo: document.getElementById('voice-coach-retry-btn').textContent.trim()
+      };
+    });
+
+    await bootSeeded(page, 'ProvaTentativo12', stepsBefore(passo12));
+    await openStep(page, passo12);
+    await waitForAny(page, ['#voice-coach-intro-start-btn', '#vc-target']);
+    const v12 = await leggiVariante();
+
+    await bootSeeded(page, 'ProvaTentativo16', stepsBefore(passo16));
+    await openStep(page, passo16);
+    await waitForAny(page, ['#voice-coach-intro-start-btn', '#vc-target']);
+    const v16 = await leggiVariante();
+
+    console.log('    passo 12  riga ritentativo nascosta: ' + v12.rigaRitentativo + '   pulsante: "' + v12.testoRitentativo + '"');
+    console.log('    passo 16  riga ritentativo nascosta: ' + v16.rigaRitentativo + '   pulsante: "' + v16.testoRitentativo + '"');
+
+    log('[B] Il passo 12 si apre come Voice Practice (LastAttemptRule)',
+      v12.rigaRitentativo === false && v12.testoRitentativo === 'Esercitati ancora');
+    log('[B] Anche il passo 16 si apre come Voice Practice, identico al 12',
+      v16.rigaRitentativo === v12.rigaRitentativo && v16.testoRitentativo === v12.testoRitentativo);
+    log('[B] Nessun errore JS', errors.length === 0);
+    if (errors.length) console.log('    ' + errors.join(' | '));
+    await page.close();
+  }
+
+  // ============ [C] La tabella indicizzata per id del passo non è tornata ============
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    await page.goto(BASE);
+    const stato = await page.evaluate(function () {
+      const c = window.APP_CONFIG;
+      const regole = c.moduleOutcomeRules || {};
+      return {
+        attemptRule: typeof c.attemptRule,
+        chiaviConSuffisso: Object.keys(regole).filter(function (k) { return /-\d+$/.test(k); })
+      };
+    });
+    log('[C] CONFIG.attemptRule non esiste più', stato.attemptRule === 'undefined');
+    log('[C] moduleOutcomeRules non ha chiavi con suffisso di passo (-2, -3)',
+      stato.chiaviConSuffisso.length === 0);
+    if (stato.chiaviConSuffisso.length) console.log('    ' + stato.chiaviConSuffisso.join(', '));
+    await page.close();
+  }
+
   await browser.close();
-  process.exit(ok ? 0 : 1);
+  const falliti = risultati.filter(function (r) { return !r; }).length;
+  console.log('');
+  console.log(falliti === 0
+    ? 'ALL PASS (' + risultati.length + ' asserzioni)'
+    : falliti + ' su ' + risultati.length + ' asserzioni FALLITE');
+  process.exit(falliti === 0 ? 0 : 1);
 }
 
 run().catch(e => { console.error(e); process.exit(1); });

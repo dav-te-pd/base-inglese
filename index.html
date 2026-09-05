@@ -502,37 +502,17 @@
       dialogoRipetiATempo: 'selfAssessment',
       dialogoContinuo: 'selfAssessment'
     },
-    // ---- Which attempt counts toward a moduleRules score, keyed by
-    // module id — orthogonal to moduleOutcomeRules above (that says WHAT
-    // colors the badge; this says WHICH number feeds it). Only listed
-    // here for a module that actually has a SAME-PASS retry mechanic
-    // (a way to re-attempt one item before moving on), because that's
-    // the only situation where "which attempt counts" is a real choice:
-    //   lastAttempt (LastAttemptRule) — Voice Practice's "Esercitati
-    //     ancora": the latest attempt on each phrase always replaces the
-    //     earlier one, better or worse — training is about where you
-    //     ended up, not where you started.
-    //   firstAttempt (FirstAttemptRule) — Voice Check: frozen at the
-    //     very first pass, before the later ripasso pass — otherwise the
-    //     ripasso (which repeats until correct) would push the score
-    //     toward 100%.
-    // Speed Match/Match Practice/Flash Card have NO same-pass retry (an
-    // answer is locked in the moment it's given; a wrong one only comes
-    // back in a separate ripasso pass, same freeze-before-ripasso need as
-    // Voice Check above) — firstAttempt isn't a configurable choice for
-    // them, it's the only attempt that ever exists, hardcoded into each
-    // module's own first-try counter (qmFirstTryCorrectCount and
-    // siblings). Six entries here for those three modules/6 directions
-    // used to declare 'firstAttempt' anyway, never read by anything —
-    // removed (censimento audit, job 2) rather than wired up, since
-    // wiring a read into modules with nothing to branch on would just be
-    // a second copy of "always first attempt" that could drift from the
-    // hardcoded one. A future module with its own same-pass retry picks
-    // one of the two rules here instead of reimplementing either loop.
-    attemptRule: {
-      voicePractice: 'lastAttempt',
-      voiceCoach: 'firstAttempt'
-    },
+    // ---- Quale tentativo conta per un punteggio ModuleRules: NON c'e'
+    // piu' una tabella qui. Le due righe che ci stavano (voicePractice:
+    // 'lastAttempt', voiceCoach: 'firstAttempt') duplicavano una
+    // distinzione gia' presente nel descrittore come module.voiceVariant,
+    // che e' anche l'unica cosa che ramifica tutto il resto del modulo.
+    // La regola vive ora nel punto che decide, vcEvaluate — vedi il suo
+    // commento LastAttemptRule/FirstAttemptRule per il perche' delle due
+    // scelte e per il motivo per cui gli altri moduli non hanno una
+    // scelta da fare. Essendo nel descrittore, e non in una tabella
+    // indicizzata per id del passo, vale identica a ogni apparizione del
+    // modulo nell'ordine. ----
     // ---- Module display names — the ONE place a module's name/subtitle
     // is written. Keyed by module id (same keys as EPISODES.episode1.
     // modulesById), read by the Object.keys(EPISODES).forEach computed-
@@ -6177,8 +6157,9 @@
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
         // Practice: studio type; also ModuleRules now (CONFIG.
-        // moduleOutcomeRules), scored by CONFIG.attemptRule's
-        // LastAttemptRule instead of Voice Check's FirstAttemptRule —
+        // moduleOutcomeRules), scored by LastAttemptRule instead of
+        // Voice Check's FirstAttemptRule (vcEvaluate branches on this
+        // very field) —
         // own kind for its own howItWorks/helpReminder text and
         // intro-dismiss flag (data/istruzioni-moduli.json).
         voicePractice: { kind: 'voicePractice', dataFile: 'data/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
@@ -7863,7 +7844,7 @@
     // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
     // number behind it is the student's own declared "Sì, mi è chiara"
     // share — only saved when there was something to self-assess at all.
-    if (seHasExplanations && CONFIG.moduleOutcomeRules[currentSpeakEasyModule.id] === 'selfScoreRules') {
+    if (seHasExplanations && CONFIG.moduleOutcomeRules[currentSpeakEasyModule.moduleId] === 'selfScoreRules') {
       saveModuleOutcome(currentEpisode, getUserName(), currentSpeakEasyModule.id, { level: moduleRulesLevel(seLastAvgPct), pct: seLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
@@ -7879,14 +7860,15 @@
        - practice: "Esercitati ancora" (own button, capped at
          CONFIG.voicePractice.maxAttemptsPerPhrase, visible counter) —
          no final ripasso pass; DOES color the map via ModuleRules, scored
-         by the LATEST attempt on each phrase (CONFIG.attemptRule:
-         LastAttemptRule) since retrying means "I want to get better",
+         by the LATEST attempt on each phrase (LastAttemptRule, see
+         vcEvaluate) since retrying means "I want to get better",
          not a frozen first try; also feeds the per-word mastery store (a
          real measurement — see the practice-only block in vcEvaluate).
        - check: no retry button at all (one recording per phrase) but
          keeps the existing retry-QUEUE/Schermata Ripasso pass and
-         ModuleRules map color scored by the FIRST attempt only (CONFIG.
-         attemptRule: FirstAttemptRule), unchanged from before the split.
+         ModuleRules map color scored by the FIRST attempt only
+         (FirstAttemptRule, see vcEvaluate), unchanged from before the
+         split.
      Recording mechanics, mic-trouble detection, star rating and the
      shared safety-valve popup are identical either way — everything in
      this section not explicitly gated on vcVariant runs for both.
@@ -8305,13 +8287,14 @@
   function vcFinishModule() {
     sfxPlayTraguardoSound();
     vcShowScreen('summary');
-    // CONFIG.attemptRule picks which numbers feed the average: Voice
-    // Check (firstAttempt) reads vcFirstAttemptPercents, frozen before
-    // the ripasso pass; Voice Practice (lastAttempt) reads the latest
-    // score per line instead — this is also the score ModuleRules colors
-    // the map badge with (see voice-coach-complete-btn below), not just
-    // this screen's message tone.
-    var vcScorePercents = CONFIG.attemptRule[vcModule.id] === 'lastAttempt'
+    // vcVariant sceglie quali numeri fanno la media (vedi il commento
+    // LastAttemptRule/FirstAttemptRule in vcEvaluate): Voice Check legge
+    // vcFirstAttemptPercents, congelato prima del ripasso; Voice Practice
+    // legge invece l'ultimo punteggio per battuta — ed e' anche il
+    // punteggio con cui ModuleRules colora il badge sulla mappa (vedi
+    // voice-coach-complete-btn piu' sotto), non solo il tono del
+    // messaggio di questa schermata.
+    var vcScorePercents = vcVariant === 'practice'
       ? Object.keys(vcLastAttemptPercentByLine).map(function (id) { return vcLastAttemptPercentByLine[id]; })
       : vcFirstAttemptPercents;
     vcLastAvgPct = vcScorePercents.length
@@ -8427,13 +8410,24 @@
     document.getElementById('vc-stars').innerHTML = renderStars(stars);
     var passed = stars > 1;
 
-    // CONFIG.attemptRule (see its own comment): Voice Practice keeps
-    // OVERWRITING this line's score on every attempt (LastAttemptRule —
-    // the latest one always wins); Voice Check only ever records the
-    // very first (FirstAttemptRule), same as Speed Round/Quick Match/
-    // Flash Card's own "first try" scoring, so a later ripasso pass
-    // doesn't inflate the session score (see vcFinishModule).
-    if (CONFIG.attemptRule[vcModule.id] === 'lastAttempt') {
+    // LastAttemptRule / FirstAttemptRule — quale tentativo conta. La
+    // distinzione e' vcVariant (da module.voiceVariant, nel descrittore):
+    // non c'e' una tabella da consultare, perche' non c'e' una scelta da
+    // fare per apparizione. Voice Practice vale SEMPRE l'ultimo
+    // tentativo, Voice Check SEMPRE il primo:
+    //   practice — LastAttemptRule: "Esercitati ancora" sovrascrive il
+    //     punteggio della battuta a ogni tentativo, migliore o peggiore.
+    //     Allenarsi vuol dire dove sei arrivato, non da dove partivi.
+    //   check — FirstAttemptRule: congelato al primo passaggio, prima
+    //     del ripasso — che ripete finche' non e' giusto e spingerebbe
+    //     il punteggio verso il 100% (vedi vcFinishModule).
+    // Gli altri moduli (Match Practice, Speed Match, Flash Card) non
+    // hanno un ritentativo nello stesso passaggio: una risposta e'
+    // definitiva appena data, una sbagliata torna solo nel ripasso.
+    // Li' "quale tentativo" non e' una scelta, e' l'unico che esiste, ed
+    // e' cablato nel loro contatore di primo tentativo
+    // (qmFirstTryCorrectCount e simili).
+    if (vcVariant === 'practice') {
       vcLastAttemptPercentByLine[line.id] = pct;
     } else if (attemptNum === 1) {
       vcFirstAttemptPercents.push(pct);
@@ -8593,9 +8587,10 @@
     // saveModuleOutcome always overwrites, so a redo genuinely replaces
     // the previous color in either direction, same as every other module
     // already using this store (see MODULE OUTCOME above). Which pct
-    // that is (first-pass vs. latest-attempt) is CONFIG.attemptRule's
-    // own call, already baked into vcLastAvgPct by vcFinishModule.
-    if (CONFIG.moduleOutcomeRules[vcModule.id] === 'moduleRules') {
+    // that is (first-pass vs. latest-attempt) is vcVariant's own call
+    // (see vcEvaluate), already baked into vcLastAvgPct by
+    // vcFinishModule.
+    if (CONFIG.moduleOutcomeRules[vcModule.moduleId] === 'moduleRules') {
       saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
@@ -8890,7 +8885,8 @@
     sfxPlayTraguardoSound();
     qmShowScreen('summary');
     // firstAttempt is the only attempt that exists here (no same-pass
-    // retry — see CONFIG.attemptRule's own comment): qmFirstTryCorrectCount
+    // retry — see vcEvaluate's LastAttemptRule/FirstAttemptRule
+    // comment): qmFirstTryCorrectCount
     // only ever increments on an item's very first attempt, so this pct is
     // already frozen before the ripasso pass — same number feeds both the
     // message tone here and the ModuleRules map badge (quick-match-complete-btn).
@@ -9006,7 +9002,7 @@
   document.getElementById('qm-complete-btn').addEventListener('click', function () {
     // ModuleRules (CONFIG.moduleOutcomeRules), same reference wiring as
     // Voice Coach's own complete-btn: verified answers, first-pass pct.
-    if (CONFIG.moduleOutcomeRules[qmModule.id] === 'moduleRules') {
+    if (CONFIG.moduleOutcomeRules[qmModule.moduleId] === 'moduleRules') {
       saveModuleOutcome(currentEpisode, getUserName(), qmModule.id, { level: moduleRulesLevel(qmLastAvgPct), pct: qmLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), qmModule.id);
@@ -10065,7 +10061,7 @@
     sfxPlayTraguardoSound();
     srShowScreen('summary');
     // firstAttempt is the only attempt that exists here (no same-pass
-    // retry — see CONFIG.attemptRule's own comment): frozen before the
+    // retry — see vcEvaluate's own comment): frozen before the
     // ripasso pass — same pct feeds the message tone here and the
     // ModuleRules map badge.
     var pct = srVocab.length ? Math.round((srFirstTryCorrectCount / srVocab.length) * 100) : 0;
@@ -10178,7 +10174,7 @@
   });
 
   document.getElementById('sr-complete-btn').addEventListener('click', function () {
-    if (CONFIG.moduleOutcomeRules[srModule.id] === 'moduleRules') {
+    if (CONFIG.moduleOutcomeRules[srModule.moduleId] === 'moduleRules') {
       saveModuleOutcome(currentEpisode, getUserName(), srModule.id, { level: moduleRulesLevel(srLastAvgPct), pct: srLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), srModule.id);
@@ -10385,7 +10381,7 @@
       sfxPlayTraguardoSound();
       fcShowScreen('summary');
       // firstAttempt is the only attempt that exists here (no same-pass
-      // retry — see CONFIG.attemptRule's own comment): frozen before the
+      // retry — see vcEvaluate's own comment): frozen before the
       // ripasso pass — same pct feeds the message tone here and the
       // SelfScoreRules map badge.
       var pct = fcVocab.length ? Math.round((fcFirstTryCorrectCount / fcVocab.length) * 100) : 0;
@@ -10549,7 +10545,7 @@
   document.getElementById('fc-complete-btn').addEventListener('click', function () {
     // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
     // number behind it is the student's own declared "Sì, la so" share.
-    if (CONFIG.moduleOutcomeRules[fcModule.id] === 'selfScoreRules') {
+    if (CONFIG.moduleOutcomeRules[fcModule.moduleId] === 'selfScoreRules') {
       saveModuleOutcome(currentEpisode, getUserName(), fcModule.id, { level: moduleRulesLevel(fcLastAvgPct), pct: fcLastAvgPct });
     }
     markModuleCompleted(currentEpisode, getUserName(), fcModule.id);
