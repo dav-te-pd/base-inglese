@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906e**
+**Versione: 20260906f**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -216,6 +216,30 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     consegna a codice fermo: niente anticipi, nemmeno la parte che sembra
     sicura o già decisa. Se una cosa va misurata per rispondere, si legge il
     codice — non lo si tocca.
+
+35. **Un messaggio che segnala il fallimento di un meccanismo non può
+    dipendere da quel meccanismo.** È l'**unica eccezione ammessa alla
+    regola 8** — i testi che lo studente legge stanno in
+    `data/{lingua}/istruzioni-moduli.json` — e va scritta **con il motivo
+    accanto**, nel codice, non lasciata sembrare una dimenticanza.
+
+    Il caso che l'ha fatta nascere: la schermata d'errore di caricamento
+    prende i propri testi da `istruzioni-moduli.json`. Ma se il file che non
+    si carica è *proprio quello*, un testo preso da lì non arriverebbe mai, e
+    la schermata resterebbe muta esattamente nel caso che la giustifica.
+    Serve quindi una frase di ultima istanza nel codice
+    (`LOAD_ERROR_LAST_RESORT`), usata solo quando i testi veri non sono
+    raggiungibili.
+
+    **Non è un permesso generico.** Vale quando la dipendenza è circolare:
+    il messaggio parla del meccanismo da cui dovrebbe venire. In ogni altro
+    caso la regola 8 non ha eccezioni.
+
+    *Conseguenza da tenere a mente: dove la circolarità c'è, il testo dal
+    file non arriverà MAI. I tre punti non bloccanti (Spiegazione, Help,
+    l'intro di un modulo) falliscono solo quando fallisce
+    `istruzioni-moduli.json`, quindi usano sempre la frase di ultima
+    istanza — non per scorciatoia, ma perché l'alternativa non esiste.*
 
 ## Riferimenti operativi
 

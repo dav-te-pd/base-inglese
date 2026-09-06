@@ -1,10 +1,11 @@
 # Suite di regressione
 
-32 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+33 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_voicecoach.js`, `test_story_modules.js`, `test_fallbacks.js`,
 `test_hidden_guard.js`, `test_outcome_step_ids.js`, `test_config_letta.js`,
-`test_struttura_corso.js`, `test_scala_colori.js`). Insieme costituiscono la
+`test_struttura_corso.js`, `test_scala_colori.js`,
+`test_errore_caricamento.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -134,6 +135,7 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_config_letta.js` | Ogni parametro di `APP_CONFIG` è nominato da qualcuno: una manopola che non muove più niente resta nel Pannello Admin e si finisce per girarla. È il difetto che ha tenuto in vita `pointsPerCorrect`. |
 | `test_struttura_corso.js` | `docs/it/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
 | `test_scala_colori.js` | La scala rosso→giallo→verde sale solo con la costanza, scende di un gradino solo, non salta, e legge `CONFIG.mastery.promotionStreak` invece di avere il numero cablato. È il dato più costoso da ricostruire e il meno visibile a schermo. |
+| `test_errore_caricamento.js` | Un fallimento nel caricamento dei dati diventa qualcosa che lo studente vede e da cui può uscire, invece di un modulo che non si apre o che si apre vuoto. Protegge anche che il testo venga dal JSON e che "Riprova" rifaccia davvero l'apertura fallita. **Limite noto:** finché esiste il blocco `window.FALLBACK_*`, un fetch fallito non produce un errore ma la copia inline — il test azzera quelle globali dopo il caricamento della pagina, e quando il fallback sarà tolto quella riga diventerà un no-op. |
 
 ---
 

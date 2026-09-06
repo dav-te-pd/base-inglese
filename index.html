@@ -1447,6 +1447,12 @@
     },
     "dialogoShared": {
       "choiceBoxHint": "Si attiva quando hai ascoltato tutte le battute del dialogo."
+    },
+    "erroreCaricamento": {
+      "title": "Non riusciamo a caricare il contenuto",
+      "body": "<p>I contenuti di questo esercizio non sono arrivati. Quasi sempre è la connessione: aspetta un momento e riprova.</p><p>Se riprovando non cambia niente, torna alla mappa — i tuoi progressi sono salvati e non hai perso nulla.</p>",
+      "retryLabel": "Riprova",
+      "backLabel": "Torna alla mappa"
     }
   };
 
@@ -2451,6 +2457,16 @@
   .danger-panel-notice .danger-panel-icon,
   .danger-panel-notice .danger-panel-title { color: var(--accent); }
 
+  /* I due pulsanti della schermata di errore (#view-error): impilati e a
+     tutta larghezza, come ogni altra coppia di uscite a pieno schermo.
+     Nessun colore qui: .btn-primary/.btn-secondary li portano gia'. */
+  .load-error-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
   /* Only view-pronunciation (legacy, unreachable from the current UI —
      left untouched, out of scope) still uses a plain .top-row. Every
      reachable module now uses .header-2row below instead. */
@@ -2983,6 +2999,12 @@
   }
 
   .module-status-text.is-error { color: var(--wrong-ink); }
+
+  /* Tono neutro per un fallimento NON bloccante (un testo d'aiuto che non
+     arriva): stesso ragionamento di .danger-panel-notice — un file che non
+     si carica non e' uno sbaglio dello studente, quindi mai il rosso di
+     .is-error, che qui significa "hai sbagliato". */
+  .is-notice { color: var(--accent); }
 
   .repeat-list {
     display: flex;
@@ -4975,6 +4997,38 @@
       </div>
     </section>
 
+    <!-- ============ SHARED: SCHERMATA DI ERRORE DI CARICAMENTO ============
+         Una sola schermata per ogni fallimento BLOCCANTE del caricamento
+         dei dati (l'episodio, i testi dei moduli): quelli in cui dentro il
+         modulo non c'e' piu' niente da fare. Un fallimento NON bloccante —
+         la Spiegazione, il pannello Help, un messaggio di esito — resta
+         invece dov'e', perche' buttare fuori dal modulo qualcuno a cui non
+         si e' caricato un testo d'aiuto sarebbe peggio del problema.
+
+         Riusa .danger-panel-notice, la variante neutra gia' usata
+         dall'avviso del microfono (CLAUDE.md regola 11): un file che non
+         si carica non e' uno sbaglio dello studente, quindi mai il rosso
+         di .danger-panel ne' di .is-error.
+
+         Non ha la .header-2row dei moduli (regola 9) ed e' una deroga
+         dichiarata: non e' un modulo, e i suoi due pulsanti SONO le
+         uscite. -->
+    <section id="view-error" class="view">
+      <div class="card">
+        <div class="card-body">
+          <div class="danger-panel danger-panel-notice">
+            <span class="danger-panel-icon" data-icon="triangle-alert" data-icon-class="icon-lg"></span>
+            <h1 class="danger-panel-title" id="load-error-title"></h1>
+            <div class="danger-panel-body" id="load-error-body"></div>
+          </div>
+          <div class="load-error-actions">
+            <button type="button" class="btn btn-primary btn-block" id="load-error-retry"></button>
+            <button type="button" class="btn btn-secondary btn-block" id="load-error-back"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </div>
 
   <!-- ============ SHARED: MODULE HELP OVERLAY ============
@@ -5407,7 +5461,8 @@
     dialogo: document.getElementById('view-dialogo'),
     speedRound: document.getElementById('view-speed-round'),
     flashcard: document.getElementById('view-flashcard'),
-    pronunciation: document.getElementById('view-pronunciation')
+    pronunciation: document.getElementById('view-pronunciation'),
+    error: document.getElementById('view-error')
   };
 
   // Bumped on every showView() call (i.e. every navigation, including
@@ -5453,6 +5508,96 @@
       views[key].classList.toggle('is-active', key === name);
     });
   }
+
+  /* ============================================================
+     SHARED: SCHERMATA DI ERRORE DI CARICAMENTO (CLAUDE.md regola 13)
+
+     Il punto unico dove finisce un fallimento BLOCCANTE del caricamento
+     dati: l'episodio di un modulo, o i testi senza cui quel modulo non si
+     puo' disegnare. Prima erano undici messaggi scritti nel codice, in
+     quattro formulazioni diverse, tutti rossi e tutti senza via d'uscita:
+     il modulo restava aperto con una frase e basta.
+
+     Un fallimento NON bloccante — la Spiegazione, il pannello Help, un
+     messaggio di esito — NON passa di qui: resta dov'e', perche' sono
+     aiuti opzionali e buttare fuori dal modulo chi non li ha nemmeno
+     aperti sarebbe peggio del problema.
+
+     showView() chiama gia' stopAllModuleActivity() (regola 21), quindi
+     arrivare qui ferma da se' l'audio del modulo che stava fallendo.
+     ============================================================ */
+  var loadErrorRetry = null;
+
+  // LA FRASE DI ULTIMA ISTANZA — l'UNICA eccezione ammessa alla regola 8
+  // (i testi dello studente stanno in data/{lingua}/istruzioni-moduli.json),
+  // e sta qui col motivo accanto come chiede la regola 35: un messaggio che
+  // segnala il fallimento di un meccanismo non puo' dipendere da quel
+  // meccanismo. Se il file che non si carica e' proprio istruzioni-moduli
+  // .json, un testo preso da li' non arriverebbe mai, e la schermata
+  // d'errore resterebbe muta esattamente nel caso che la giustifica.
+  // Non e' un valore da regolare (regola 3): e' l'ultima rete, non una
+  // manopola.
+  var LOAD_ERROR_LAST_RESORT = {
+    title: 'Non riusciamo a caricare il contenuto',
+    body: '<p>Qualcosa non ha funzionato nel recupero dei dati. Controlla la connessione e riprova.</p>',
+    retryLabel: 'Riprova',
+    backLabel: 'Torna alla mappa',
+    // Per i punti NON bloccanti (Spiegazione, Help, l'intro di un modulo):
+    // l'esercizio si puo' fare lo stesso, e il messaggio deve dirlo.
+    inlineText: 'Non riusciamo a caricare questo testo. Puoi continuare lo stesso.'
+  };
+
+  // Il messaggio dei punti NON bloccanti. Usa sempre la frase di ultima
+  // istanza, e non e' una scorciatoia: questi tre punti falliscono SOLO
+  // quando a non caricarsi e' istruzioni-moduli.json, cioe' proprio il file
+  // da cui verrebbe il testo. E' la regola 35 applicata due volte.
+  function loadErrorInlineHtml(extraClass) {
+    return '<p class="' + (extraClass ? extraClass + ' ' : '') + 'is-notice">' +
+      LOAD_ERROR_LAST_RESORT.inlineText + '</p>';
+  }
+
+  function renderLoadErrorTexts(texts) {
+    var t = texts || {};
+    var r = LOAD_ERROR_LAST_RESORT;
+    document.getElementById('load-error-title').textContent = t.title || r.title;
+    document.getElementById('load-error-body').innerHTML = t.body || r.body;
+    document.getElementById('load-error-retry').textContent = t.retryLabel || r.retryLabel;
+    document.getElementById('load-error-back').textContent = t.backLabel || r.backLabel;
+  }
+
+  // riprova: la funzione da rilanciare — di solito la riapertura del modulo
+  // che ha fallito — cosi' il pulsante rifa' esattamente quello che non e'
+  // riuscito, invece di chiedere allo studente di ricaricare la pagina.
+  // Senza, il pulsante non compare: meglio nessun pulsante di uno che non
+  // si sa dove porta.
+  function showLoadError(riprova) {
+    loadErrorRetry = typeof riprova === 'function' ? riprova : null;
+    document.getElementById('load-error-retry').hidden = !loadErrorRetry;
+    // Nel caso normale i testi sono gia' in memoria (il modulo li ha
+    // caricati aprendo), e si usano subito senza far lampeggiare la frase
+    // di ultima istanza. Se non ci sono, la schermata si mostra COMUNQUE
+    // adesso, con quella frase, e si aggiorna se i testi arrivano: farla
+    // aspettare un fetch significherebbe rischiare che non arrivi mai —
+    // che e' il difetto che questa schermata esiste per chiudere.
+    var inMemoria = moduleInstructionsCache && moduleInstructionsCache.erroreCaricamento;
+    renderLoadErrorTexts(inMemoria);
+    showView('error');
+    if (inMemoria) return;
+    loadModuleInstructions().then(function (data) {
+      if (!views.error.classList.contains('is-active')) return;
+      renderLoadErrorTexts(data.erroreCaricamento);
+    }).catch(function () {});
+  }
+
+  document.getElementById('load-error-retry').addEventListener('click', function () {
+    var riprova = loadErrorRetry;
+    loadErrorRetry = null;
+    if (riprova) riprova();
+  });
+
+  document.getElementById('load-error-back').addEventListener('click', function () {
+    openEpisodeMap();
+  });
 
   function goHome() {
     var name = getUserName();
@@ -5564,8 +5709,7 @@
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
     }).catch(function () {
-      document.getElementById('howitworks-overlay-body').innerHTML =
-        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
+      document.getElementById('howitworks-overlay-body').innerHTML = loadErrorInlineHtml('');
     });
   }
 
@@ -5967,8 +6111,7 @@
         ? '<div class="overlay-text">' + entry.body + '</div>'
         : '<p class="overlay-text">Contenuto non ancora disponibile per questo modulo.</p>';
     }).catch(function () {
-      document.getElementById('help-overlay-body').innerHTML =
-        '<p class="overlay-text is-error">Non è stato possibile caricare il contenuto.</p>';
+      document.getElementById('help-overlay-body').innerHTML = loadErrorInlineHtml('overlay-text');
     });
   }
 
@@ -6518,6 +6661,15 @@
       episodeSlotFieldsPromises[episode.id] = loadEpisodeData(episode).then(function (data) {
         episode.slotFields = buildSlotFields(data);
         return episode.slotFields;
+      }).catch(function (e) {
+        // Qui si memorizza una PROMISE, non un dato: senza questa riga una
+        // promise respinta resterebbe in cache per sempre, e ogni tentativo
+        // successivo — "Riprova" della schermata d'errore compreso —
+        // fallirebbe subito riusando il vecchio rifiuto, senza nemmeno
+        // riprovare il fetch. loadEpisodeData invece mette in cache solo il
+        // dato riuscito, quindi non ha lo stesso problema.
+        delete episodeSlotFieldsPromises[episode.id];
+        throw e;
       });
     }
     return episodeSlotFieldsPromises[episode.id];
@@ -6764,6 +6916,13 @@
         input.value = '';
       }
       feedbackEl.hidden = false;
+    }).catch(function () {
+      // Non bloccante: la richiesta non e' stata salvata, ma il resto di
+      // Personalizza funziona. Prima il rifiuto non lo raccoglieva nessuno
+      // e il pulsante sembrava semplicemente non rispondere.
+      feedbackEl.innerHTML = LOAD_ERROR_LAST_RESORT.inlineText;
+      feedbackEl.className = 'request-field-feedback is-notice';
+      feedbackEl.hidden = false;
     });
   }
 
@@ -6924,8 +7083,7 @@
       renderSlotGrid();
       renderRequestBox();
     }).catch(function () {
-      document.getElementById('slot-grid').innerHTML =
-        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di personalizzazione.</p>';
+      showLoadError(openCustomize);
     });
   }
 
@@ -7037,6 +7195,26 @@
     else if (module.flashcardDirection) openFlashcard(module);
   }
 
+  // Aprire un modulo dalla mappa e' una funzione con un nome, non il corpo
+  // di un listener: "Riprova" della schermata d'errore deve poter rifare
+  // ESATTAMENTE questa apertura (CLAUDE.md regola 20 — il comportamento sta
+  // nella funzione, non nel punto che la richiama).
+  // A module's own fillTemplate calls still need currentEpisode.slotFields
+  // AND currentValues populated — on a fresh page load neither exists yet,
+  // so make sure they're there first. loadCustomValues is a cheap
+  // synchronous localStorage read, so refreshing it here even when already
+  // set costs nothing and keeps it correct after a user switch.
+  function openModuleFromMap(module) {
+    ensureEpisodeSlotFields(currentEpisode).then(function () {
+      currentValues = loadCustomValues(currentEpisode, getUserName());
+      openModuleByKind(module);
+    }).catch(function () {
+      // Senza questo il tocco sulla riga non produceva NIENTE: nessuna
+      // schermata, nessun messaggio, il modulo semplicemente non si apriva.
+      showLoadError(function () { openModuleFromMap(module); });
+    });
+  }
+
   document.getElementById('module-list').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-module]');
     if (!btn || btn.disabled) return;
@@ -7047,27 +7225,26 @@
     // "seen Customize yet?" gate needed here anymore (see
     // migrateCustomizeSeenToModuleProgress for the old flag's one-time
     // migration).
-    // A module's own fillTemplate calls still need currentEpisode.
-    // slotFields AND currentValues populated — on a fresh page load
-    // neither exists yet, so make sure they're there first.
-    // loadCustomValues is a cheap synchronous localStorage read, so
-    // refreshing it here even when already set costs nothing and keeps
-    // it correct after a user switch.
-    ensureEpisodeSlotFields(currentEpisode).then(function () {
-      currentValues = loadCustomValues(currentEpisode, getUserName());
-      openModuleByKind(module);
-    });
+    openModuleFromMap(module);
   });
 
-  document.getElementById('start-episode').addEventListener('click', function () {
-    // slot-grid/request-box already wait on this in openCustomize(), so in
-    // practice it's already resolved by the time this is clickable — this
-    // just guards a very fast click from racing the fetch.
+  // Come openModuleFromMap: una funzione con un nome, perche' "Riprova"
+  // deve poter rifare questo stesso passaggio (regola 20).
+  // slot-grid/request-box already wait on this in openCustomize(), so in
+  // practice it's already resolved by the time the button is clickable —
+  // this just guards a very fast click from racing the fetch.
+  function startEpisodeFromCustomize() {
     ensureEpisodeSlotFields(currentEpisode).then(function () {
       markModuleCompleted(currentEpisode, getUserName(), 'personalizzazione');
       openEpisodeMap();
+    }).catch(function () {
+      // Senza questo il pulsante non faceva niente: nessun avanzamento e
+      // nessun messaggio.
+      showLoadError(startEpisodeFromCustomize);
     });
-  });
+  }
+
+  document.getElementById('start-episode').addEventListener('click', startEpisodeFromCustomize);
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
 
@@ -7257,8 +7434,7 @@
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
     }).catch(function () {
-      document.getElementById(bodyElId).innerHTML =
-        '<p class="is-error">Non è stato possibile caricare il contenuto.</p>';
+      document.getElementById(bodyElId).innerHTML = loadErrorInlineHtml('');
     });
   }
 
@@ -7298,8 +7474,7 @@
       renderRepeatAloud(data);
     }).catch(function () {
       if (currentRepeatAloudModule !== module) return;
-      document.getElementById('repeat-aloud-body').innerHTML =
-        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+      showLoadError(function () { openRepeatAloud(module); });
     });
   }
 
@@ -7739,8 +7914,7 @@
       renderSpeakEasy(results[0]);
     }).catch(function () {
       if (currentSpeakEasyModule !== module) return;
-      document.getElementById('speak-easy-body').innerHTML =
-        '<p class="module-status-text is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+      showLoadError(function () { openSpeakEasy(module); });
     });
   }
 
@@ -8363,7 +8537,7 @@
       vcNextLine();
     }).catch(function () {
       if (vcModule !== module) return;
-      document.getElementById('vc-target').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+      showLoadError(function () { openVoiceCoach(module); });
     });
   }
 
@@ -8925,9 +9099,7 @@
       qmVocab = episodeGrade(data, module.grade);
     }).catch(function () {
       if (qmModule !== module) return;
-      document.getElementById('qm-start-body').hidden = false;
-      document.getElementById('qm-start-body').innerHTML =
-        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+      showLoadError(function () { openQuickMatch(module); });
     });
   }
 
@@ -9598,9 +9770,7 @@
       dgDialogue = episodeGrade(data, module.grade);
     }).catch(function () {
       if (dgModule !== module) return;
-      document.getElementById('dg-start-body').hidden = false;
-      document.getElementById('dg-start-body').innerHTML =
-        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+      showLoadError(function () { openDialogo(module); });
     });
   }
 
@@ -10114,9 +10284,7 @@
       srVocab = episodeGrade(data, module.grade);
     }).catch(function () {
       if (srModule !== module) return;
-      document.getElementById('sr-start-body').hidden = false;
-      document.getElementById('sr-start-body').innerHTML =
-        '<p class="is-error">Non è stato possibile caricare i contenuti di questo modulo.</p>';
+      showLoadError(function () { openSpeedRound(module); });
     });
   }
 
@@ -10491,7 +10659,7 @@
       fcStartDeck();
     }).catch(function () {
       if (fcModule !== module) return;
-      document.getElementById('fc-front-word').textContent = 'Non è stato possibile caricare i contenuti di questo modulo.';
+      showLoadError(function () { openFlashcard(module); });
     });
   }
 

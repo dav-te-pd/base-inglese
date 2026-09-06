@@ -236,5 +236,11 @@
   },
   "dialogoShared": {
     "choiceBoxHint": "Si attiva quando hai ascoltato tutte le battute del dialogo."
+  },
+  "erroreCaricamento": {
+    "title": "Non riusciamo a caricare il contenuto",
+    "body": "<p>I contenuti di questo esercizio non sono arrivati. Quasi sempre è la connessione: aspetta un momento e riprova.</p><p>Se riprovando non cambia niente, torna alla mappa — i tuoi progressi sono salvati e non hai perso nulla.</p>",
+    "retryLabel": "Riprova",
+    "backLabel": "Torna alla mappa"
   }
 }
