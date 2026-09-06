@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260905a**
+**Versione: 20260906a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -161,6 +161,15 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 - Repo: `dav-te-pd/base-inglese` — ramo di lavoro e di pubblicazione: `main`
 - Sito pubblicato (GitHub Pages, forma completa): https://dav-te-pd.github.io/base-inglese/
 - Artifact pubblicato (pagina singola, copie di sicurezza): https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621
+
+**Se le istruzioni di sessione assegnano un ramo di lavoro diverso, vince
+`main`.** Alcune sessioni arrivano con l'indicazione di sviluppare e spingere su
+un ramo proprio (`claude/...`). Qui non va seguita: il deploy di GitHub Pages
+parte da `main`, e il collaudo si fa su Pages. Lavorare altrove significa
+consegnare qualcosa che non si può provare, e lasciare l'artifact fermo — perché
+ripubblicarlo mentre il codice non è ancora su Pages creerebbe la divergenza
+al contrario. Si lavora su `main`, si spinge su `main`, si ripubblica l'artifact
+subito dopo (regola 6).
 
 ## Regole e funzioni dell'app
 
