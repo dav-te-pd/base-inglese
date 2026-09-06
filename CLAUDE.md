@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906d**
+**Versione: 20260906e**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -10,7 +10,15 @@
 senza un numero non c'è modo di sapere quale copia è la più recente. Chi lo
 modifica alza la lettera se è lo stesso giorno, la data se è un altro.*
 
-App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente. Tutto il progetto vive oggi in un unico file: `index.html` (HTML + CSS + JS inline, nessuna dipendenza esterna oltre ai Google Fonts).
+App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente.
+
+**L'app vive in un file solo**: `index.html` — HTML, CSS e JS in linea, nessun
+passo di build, nessuna dipendenza esterna oltre ai Google Fonts.
+
+**Il progetto no.** Attorno a quel file ci sono `data/` (i contenuti che l'app
+legge), `docs/` (le fonti del contenuto e i documenti di lavoro), `tests/` (la
+suite di regressione) e `tools/`. Non sono un contorno: le regole 4, 8, 22 e 24
+esistono proprio per governarli.
 
 ## Regole permanenti
 
@@ -43,7 +51,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      **`whatYouLearn` è una lista, sempre**, anche quando la skill è una sola: una battuta lunga può introdurre due strutture diverse, ed è normale. Forzarne una sola per battuta significherebbe, prima o poi, spostare una spiegazione per far quadrare la struttura invece che per ragioni didattiche. Una battuta con una skill sola ha una lista di un elemento: il caso semplice non si complica.
 
-     Quindi "11 skill" in `docs/{lingua}/episodio-N.md` si verifica contando le voci di tutte le liste, non le battute che ne hanno una: nell'episodio 1 sono undici skill su dieci battute, perché la prima ne porta due.
+     Quindi il numero di skill dichiarato in `docs/{lingua}/episodio-N.md` si verifica **contando le voci di tutte le liste**, non le battute che ne hanno una: una battuta sola può portarne due, e il conto per battute darebbe un numero più basso di quello vero.
+
+     **I numeri attesi di un episodio stanno in testa al file di quell'episodio, e solo lì** — dove cambiano insieme al contenuto. Non vanno ricopiati qui né altrove: un numero vive accanto alla cosa che conta, perché è l'unico posto in cui qualcuno lo aggiorna. Come esempio in un altro documento invecchia in silenzio e smette di essere un esempio: diventa un'istruzione sbagliata.
    - **Il grado che un modulo legge è deciso dall'ordine, non dal modulo.** `CONFIG.moduleOrderDefault` è una lista di coppie `{ module, grade }`: la coppia dice quale modulo e su quale grado lavora. Nel descrittore di `EPISODES.<episodio>.modulesById` il grado NON c'è — lì sta solo ciò che non dipende da dove il modulo è messo (`kind`, `dataFile`, direzione, profilo dialogo, categoria). Cambiare grado a un passo è cambiare una lettera nella coppia, niente altro.
 
      Ne segue che **lo stesso modulo può comparire più volte con gradi diversi** (Flash Card sul grado A e sul grado B) riusando un solo descrittore. Gli id restano distinti da soli: `moduleStepId()` lascia alla prima apparizione l'id nudo del modulo — così i progressi già salvati restano validi — e dà alle successive un id proprio (`flashcardAEngIta-2`), invece di sovrascrivere in silenzio i progressi della prima.
@@ -65,7 +75,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
-8. **I testi di un modulo vivono sempre in `data/{lingua}/istruzioni-moduli.json`** (oggi `data/it/istruzioni-moduli.json`), mai scritti nel codice del componente. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni tipo di modulo (chiave = `kind` del modulo, es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento). Sono condivisi tra gli episodi della stessa edizione — non sono contenuto specifico di un episodio, quindi non vivono nel file episodio della regola 4 — ma non fra edizioni: sono testo che lo studente legge nella propria lingua. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
+8. **I testi di un modulo vivono sempre in `data/{lingua}/istruzioni-moduli.json`** (oggi `data/it/istruzioni-moduli.json`), mai scritti nel codice del componente. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
+
+    **Non tutte le chiavi sono moduli, ed è voluto.** `mappaEpisodio` è la mappa dell'episodio: modulo non è, ma ha una schermata sua e quindi i suoi due testi come tutti. `dialogoShared` è il blocco condiviso dai tre Dialogue, e **non ha né `howItWorks` né `helpReminder`**: non è un modulo, non ha una schermata propria da spiegare, e i testi che porta servono ai tre che la schermata ce l'hanno. Nessuna delle due è una dimenticanza da sistemare. Sono condivisi tra gli episodi della stessa edizione — non sono contenuto specifico di un episodio, quindi non vivono nel file episodio della regola 4 — ma non fra edizioni: sono testo che lo studente legge nella propria lingua. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 
 9. **Il pulsante "Help" va sempre nella riga di intestazione in alto**, insieme a "← Mappa" e a "Spiegazione" — mai in basso vicino al pulsante di completamento ("Ho finito, torna alla mappa" o simile), perché lì causa click accidentali quando si scorre per finire l'esercizio. Vale per ogni modulo, presente e futuro.
 
@@ -128,7 +140,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 25. **Tutto editabile e separato, sempre.** Un contenuto che sembra un blocco unico va comunque scomposto nei suoi pezzi: un titolo e un testo sono due campi, non una stringa sola; tre risposte possibili sono tre voci con la propria etichetta, non tre stringhe scritte nel codice. Vale per i file di dati e per i testi dell'interfaccia allo stesso modo. Costa poche righe quando la struttura nasce; unire e poi separare significa rifare da capo il contenuto già scritto.
 
-    *Perché c'è: `whatYouLearn` era nato come stringa unica. Le undici spiegazioni dell'Episodio 1 hanno un titolo e un corpo, e il grassetto serve DENTRO il corpo per evidenziare le parole — con una stringa sola il titolo sarebbe stato grassetto anche lui, indistinguibile dal resto. Separarlo prima di scrivere il contenuto è costato cinque righe.*
+    *Perché c'è: `whatYouLearn` era nato come stringa unica. Le spiegazioni dell'episodio 1 hanno un titolo e un corpo, e il grassetto serve DENTRO il corpo per evidenziare le parole — con una stringa sola il titolo sarebbe stato grassetto anche lui, indistinguibile dal resto. Separarlo prima di scrivere il contenuto è costato cinque righe.*
 
 26. **Due file in `docs/` sono la fonte, e non vanno mai scavalcati da quello che viene detto in chat.**
 
@@ -153,7 +165,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 29. **Quando un file dichiara dei numeri attesi, contali sul contenuto vero prima di usarlo**, senza fidarti della dichiarazione. Se non tornano, fermarsi e segnalarlo prima di scrivere.
 
-    *Perché c'è: `docs/it/episodio-1.md` dichiarava 11 skill, e 11 ce n'erano davvero — ma stavano su dieci battute, e la struttura di allora ne ammetteva una per battuta. Il numero era giusto, la forma no: contarle è servito a vederlo prima di scrivere il file dati, non dopo.*
+    *Perché c'è: un file episodio dichiarava un certo numero di skill, e quel numero era esatto — ma le skill stavano su meno battute, e la struttura di allora ne ammetteva una sola per battuta. Il numero tornava, la forma no: contarle è servito a vederlo prima di scrivere il file dati, non dopo.*
 
 30. **Lo "Sblocco Sequenziale" è un meccanismo con un nome, e ha due varianti che restano separate.** L'idea è una: più avanti non si va finché non si è fatto qui. Le due varianti sono **per ascolto** (Ripeti a Tempo — `dgApplySequenceLock`) e **per dichiarazione** (Why We Say It — `seRefreshExplanationStates`).
 
@@ -175,7 +187,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     Vale anche al contrario: **un limite noto si scrive lì**, invece di lasciarlo scoprire a chi si fiderà del verde. Un test che copre metà di un comportamento e lo dichiara protegge più di uno che sembra coprirlo tutto.
 
-    *Perché c'è: la mappa dei 28 file è servita a vedere i buchi, non a documentare — e li ha trovati contando cosa NON era protetto. Senza la riga in testa, quel lavoro va rifatto da capo ogni volta leggendo le asserzioni una per una, che è esattamente il motivo per cui non lo fa nessuno.*
+    *Perché c'è: la mappa in `tests/README.md` è servita a vedere i buchi, non a documentare — e li ha trovati contando cosa NON era protetto. È anche il motivo per cui il conto dei file non si scrive qui: quella tabella cresce di una riga per ogni test nuovo, un totale scritto altrove no. Senza la riga in testa, quel lavoro va rifatto da capo ogni volta leggendo le asserzioni una per una, che è esattamente il motivo per cui non lo fa nessuno.*
 
 33. **Un file di contenuto in `docs/` non si modifica di iniziativa.** Se serve
     cambiarlo, si chiede prima, si dà la motivazione, e si aspetta conferma o

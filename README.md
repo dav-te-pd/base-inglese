@@ -6,7 +6,8 @@ verifica finale) che parte da una schermata di personalizzazione, dove sceglie
 i nomi e i luoghi della storia, e finisce con un riepilogo. I progressi sono
 salvati per utente, nel browser.
 
-Oggi c'è un episodio (`A1 · Episodio 1 · inglese`) con 14 moduli, e cinque temi
+Oggi c'è un episodio (`A1 · Episodio 1 · inglese`) di 22 passi su 15 moduli
+distinti — alcuni compaiono più volte, su gradi diversi — e cinque temi
 grafici selezionabili (Viaggio, Notte, Mediterraneo, Moderno, Natura).
 
 ## Come si apre in locale
