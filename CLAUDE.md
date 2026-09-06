@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906c**
+**Versione: 20260906d**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -176,6 +176,34 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     Vale anche al contrario: **un limite noto si scrive lì**, invece di lasciarlo scoprire a chi si fiderà del verde. Un test che copre metà di un comportamento e lo dichiara protegge più di uno che sembra coprirlo tutto.
 
     *Perché c'è: la mappa dei 28 file è servita a vedere i buchi, non a documentare — e li ha trovati contando cosa NON era protetto. Senza la riga in testa, quel lavoro va rifatto da capo ogni volta leggendo le asserzioni una per una, che è esattamente il motivo per cui non lo fa nessuno.*
+
+33. **Un file di contenuto in `docs/` non si modifica di iniziativa.** Se serve
+    cambiarlo, si chiede prima, si dà la motivazione, e si aspetta conferma o
+    rifiuto. Vale anche per una correzione che sembra ovvia: quel file è una
+    decisione presa, non un appunto.
+
+    Riguarda i file di contenuto, cioè quelli sotto `docs/{lingua}/` (regola 4):
+    `episodio-N.md` e `struttura-corso.md`.
+
+    **È diversa dalla 31**: quella riguarda il codice — dichiarare cosa si
+    costruirà prima di costruirlo — questa il contenuto.
+
+34. **Prima di una modifica strutturale il giro è: proposta → valutazione →
+    decisione → esecuzione.** In quest'ordine, e sono quattro momenti distinti:
+
+    - **la proposta** arriva da chi guida il progetto;
+    - **la valutazione** dice cosa comporta, cosa si rompe, quanto costa e
+      **se sceglieresti diversamente** — l'ultima non è un ornamento, è la
+      parte che serve di più: una valutazione che non dice mai "no, così no"
+      non è una valutazione;
+    - **la decisione** è di chi ha proposto;
+    - **l'esecuzione** arriva dopo, con un prompt suo.
+
+    **Un prompt che chiede una valutazione dice esplicitamente "non modificare
+    niente in questo giro", e va rispettato alla lettera.** La valutazione si
+    consegna a codice fermo: niente anticipi, nemmeno la parte che sembra
+    sicura o già decisa. Se una cosa va misurata per rispondere, si legge il
+    codice — non lo si tocca.
 
 ## Riferimenti operativi
 
