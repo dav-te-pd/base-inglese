@@ -71,10 +71,21 @@ function senzaBloccoDescrizioni(testo) {
 function regioneDiRicerca() {
   var html = fs.readFileSync(repoPath('index.html'), 'utf8');
   if (ESCLUDI_DESCRIZIONI) html = senzaBloccoDescrizioni(html);
-  var dir = repoPath('data');
-  var dati = fs.readdirSync(dir).filter(function (f) { return /\.json$/.test(f); })
-    .map(function (f) { return fs.readFileSync(repoPath('data', f), 'utf8'); });
-  return [html].concat(dati).join('\n');
+  return [html].concat(tuttiIJson(repoPath('data'))).join('\n');
+}
+
+// Tutti i .json sotto data/, a qualunque profondità: i dati stanno in una
+// cartella per lingua (data/it/, e domani data/de/), quindi un readdir piatto
+// non troverebbe più niente — e non troverebbe niente in silenzio, perché una
+// regione di ricerca vuota fa solo segnalare più chiavi, non fallire.
+function tuttiIJson(dir) {
+  var out = [];
+  fs.readdirSync(dir, { withFileTypes: true }).forEach(function (voce) {
+    var pieno = dir + '/' + voce.name;
+    if (voce.isDirectory()) out = out.concat(tuttiIJson(pieno));
+    else if (/\.json$/.test(voce.name)) out.push(fs.readFileSync(pieno, 'utf8'));
+  });
+  return out;
 }
 
 // Ogni percorso foglia di APP_CONFIG. Un array è una foglia: si legge intero.
@@ -119,7 +130,7 @@ async function run() {
     ' (' + daControllare.length + ' controllate, ' +
     (tutti.length - daControllare.length) + ' di configFieldDescriptions)');
   console.log('Regione di ricerca: index.html' +
-    (ESCLUDI_DESCRIZIONI ? ' (senza il blocco configFieldDescriptions)' : '') + ' + data/*.json');
+    (ESCLUDI_DESCRIZIONI ? ' (senza il blocco configFieldDescriptions)' : '') + ' + tutti i .json sotto data/');
   console.log('');
 
   const mute = daControllare.filter(function (p) {

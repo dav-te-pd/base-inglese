@@ -1,4 +1,4 @@
-// PROTEGGE: che docs/struttura-corso.md e APP_CONFIG dicano la stessa cosa su
+// PROTEGGE: che docs/it/struttura-corso.md e APP_CONFIG dicano la stessa cosa su
 // ordine dei passi, nomi dei gradi e categorie. Il markdown è la fonte
 // (CLAUDE.md regola 26) e APP_CONFIG l'esecuzione: se divergono, si legge un
 // documento che descrive un'app diversa da quella che gira — ed è il caso in
@@ -24,7 +24,7 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 
-const DOC = 'docs/struttura-corso.md';
+const DOC = 'docs/it/struttura-corso.md';
 
 // Le righe di una tabella markdown sotto un'intestazione data. Si parte dal
 // titolo, si prende il primo blocco di righe che iniziano con "|", si buttano

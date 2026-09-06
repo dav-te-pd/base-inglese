@@ -114,7 +114,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
-    const episodeData = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()));
+    const episodeData = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()));
     const text = JSON.stringify(episodeData);
     const hasOldPlaceholders = /\{\{(papaName|mammaName|figliaName|figlioName|cittaPartenza)\}\}/.test(text);
     log('[Job2b] No old-style placeholder tokens remain in the episode data file', !hasOldPlaceholders);
@@ -134,7 +134,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.route('**/data/a1-episodio1-inglese.json', async (route) => {
+    await page.route('**/data/it/a1-episodio1-inglese.json', async (route) => {
       const response = await route.fetch();
       const json = await response.json();
       if (json.levels.D.items && json.levels.D.items.length) {

@@ -104,7 +104,7 @@ function readTable(html, section, name) {
 // utente di test, che non personalizza niente.
 function slotValues(episodePath) {
   const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'a1-episodio1-inglese.json'])), 'utf8'));
+  const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'it', 'a1-episodio1-inglese.json'])), 'utf8'));
   const values = {};
   (episode.personalizationTablesUsed || []).forEach(slot => {
     const isPerson = slot.table.indexOf('people.') === 0;

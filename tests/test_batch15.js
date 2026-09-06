@@ -125,7 +125,7 @@ async function run() {
     await openModule(page, 'quickMatchEngIta');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
-    const vocab = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
+    const vocab = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
     const engToIta = {}; vocab.forEach(v => { engToIta[v.english] = v.italian; });
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
@@ -179,7 +179,7 @@ async function run() {
     await openModule(page, 'quickMatchEngIta');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
-    const vocab2 = await page.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
+    const vocab2 = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
     const engToIta2 = {}; vocab2.forEach(v => { engToIta2[v.english] = v.italian; });
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
@@ -288,7 +288,7 @@ async function run() {
     const sawLastRetryText = retryScreens[retryScreens.length - 1].text;
     log('[Job4] First retry screen has a non-empty title', !!sawFirstRetryTitle && sawFirstRetryTitle.trim().length > 0);
     log('[Job4] First retry screen has a non-empty text', !!sawFirstRetryText && sawFirstRetryText.trim().length > 0);
-    const data = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job4] First retry title comes from retryIntroMessages.first.titles', data.retryIntroMessages.first.titles.indexOf(sawFirstRetryTitle) !== -1);
     log('[Job4] Second/last retry title comes from retryIntroMessages.last.titles (different pool)', !!sawLastRetryTitle && data.retryIntroMessages.last.titles.indexOf(sawLastRetryTitle) !== -1);
     log('[Job4] First and last retry texts are drawn from different pools', data.retryIntroMessages.first.bodies.indexOf(sawFirstRetryText) !== -1 && data.retryIntroMessages.last.bodies.indexOf(sawLastRetryText) !== -1);
@@ -429,7 +429,7 @@ async function run() {
     await page.click('#speak-easy-complete');
     await page.waitForTimeout(150);
     const subtitle = await page.$eval('#speak-easy-summary-title-sub', el => el.textContent).catch(() => null);
-    const data10 = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()));
+    const data10 = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
     await page.click('#speak-easy-complete-btn');
     await page.waitForTimeout(150);

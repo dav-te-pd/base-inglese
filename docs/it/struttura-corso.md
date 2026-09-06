@@ -4,7 +4,7 @@
 >
 > Vale per **tutto il corso**, non per un singolo episodio: il contenuto di un episodio sta in `docs/episodio-N.md`.
 >
-> **Le istruzioni stanno in questo file, non nel messaggio.** Il messaggio è sempre della forma *"aggiorna leggendo docs/struttura-corso.md"*.
+> **Le istruzioni stanno in questo file, non nel messaggio.** Il messaggio è sempre della forma *"aggiorna leggendo docs/it/struttura-corso.md"*.
 
 ---
 
@@ -120,4 +120,4 @@ Un modulo produce un tipo di dato diverso a seconda di com'è fatto, e la regola
 - **Si aggiunge un grado:** entra nella tabella dei gradi con il nome mostrato
 - **Si cambia l'ordine:** si riscrive la tabella dei 22 passaggi
 
-Poi una riga a Claude Code: *"aggiorna `APP_CONFIG` leggendo `docs/struttura-corso.md`"*.
+Poi una riga a Claude Code: *"aggiorna `APP_CONFIG` leggendo `docs/it/struttura-corso.md`"*.

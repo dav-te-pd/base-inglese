@@ -128,11 +128,11 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_new_features.js` | Il Pannello Admin per intero: si apre da tastiera solo fuori dai campi di testo, modifica in diretta, persiste, rifiuta il JSON non valido senza applicarlo, si chiude con Escape, si azzera col reset; più i due conti alla rovescia 3-2-1. |
 | `test_voicecoach.js` | Il giro completo di Voice Check: "Avanti" bloccato finché non si registra, nessun Indietro, il ripasso delle frasi andate male, la Schermata Finale col pulsante esplicito, e il modulo non completato prima di quello. |
 | `test_story_modules.js` | Meet the Story e Why We Say It al completo: i dati (gradi, skill come lista con titolo e corpo separati), la sequenza obbligata al primo giro, le tre risposte, "Esci e riprendi dopo", il ripasso, e il punteggio autodichiarato che diventa verde. |
-| `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file in `data/`: Pages e artifact non divergono in silenzio. |
+| `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file sotto `data/{lingua}/`: Pages e artifact non divergono in silenzio. |
 | `test_hidden_guard.js` | Ogni regola CSS che imposta un `display` continua a sparire con `hidden`: la guardia della regola 12 non si può rompere senza che la CI se ne accorga. |
 | `test_outcome_step_ids.js` | La regola di esito e la regola del tentativo arrivano a **ogni** apparizione di un modulo nell'ordine, non solo alla prima: senza, la mappa torna a lasciare grigi sei passi su ventidue, e in silenzio (un esito verde e nessun esito sono indistinguibili a schermo). |
 | `test_config_letta.js` | Ogni parametro di `APP_CONFIG` è nominato da qualcuno: una manopola che non muove più niente resta nel Pannello Admin e si finisce per girarla. È il difetto che ha tenuto in vita `pointsPerCorrect`. |
-| `test_struttura_corso.js` | `docs/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
+| `test_struttura_corso.js` | `docs/it/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
 | `test_scala_colori.js` | La scala rosso→giallo→verde sale solo con la costanza, scende di un gradino solo, non salta, e legge `CONFIG.mastery.promotionStreak` invece di avere il numero cablato. È il dato più costoso da ricostruire e il meno visibile a schermo. |
 
 ---
@@ -228,14 +228,14 @@ sembrano ovvi: il § 4.1 era ovvio.
 
 ### F — I documenti come fonte (regola 26)
 
-21. **~~Nessun test confronta `docs/struttura-corso.md` con `APP_CONFIG`.~~**
+21. **~~Nessun test confronta `docs/it/struttura-corso.md` con `APP_CONFIG`.~~**
     *Chiuso in parte da `test_struttura_corso.js` (2026-09-06):* i 22 passi
     con il loro grado, i quattro gradi con il nome mostrato e le sei
     categorie con la loro etichetta. **Resta fuori di proposito la tabella
     delle regole di esito:** nomina i moduli con il nome mostrato e non con
     l'id, li raggruppa a prosa, e include "Test", che non esiste — servirebbe
     una mappa nome→id scritta a mano, cioè una terza fonte da allineare.
-22. **Nessun test conta le voci dell'episodio contro `docs/episodio-1.md`.**
+22. **Nessun test conta le voci dell'episodio contro `docs/it/episodio-1.md`.**
     `test_story_modules.js` conta le skill contro il *file dati*, cioè contro
     la copia, non contro il markdown che dichiara i numeri attesi.
 
@@ -307,12 +307,12 @@ quella schermata.
 ## `test_fallbacks.js` — perché è nella suite
 
 Non prova un modulo: verifica che le copie di sicurezza dentro `index.html`
-(`window.FALLBACK_*`) coincidano con i file in `data/`. Se divergono, il sito
+(`window.FALLBACK_*`) coincidano con i file sotto `data/{lingua}/`. Se divergono, il sito
 su GitHub Pages (che carica i file veri) e l'artifact (che ricade sulle copie)
 mostrano contenuti diversi — è già successo, e nessun test se n'era accorto
 perché i test girano solo dove i file veri esistono. Sta nella suite e non fra
 gli strumenti proprio perché la divergenza si ripresenta ogni volta che si
-tocca un file in `data/`, cioè spesso.
+tocca un file sotto `data/`, cioè spesso.
 
 ## File di servizio
 

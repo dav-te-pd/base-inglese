@@ -1,6 +1,6 @@
 # Episodio 1 — "Presentarsi"
 
-> **Materiale di partenza per Claude Code.** Da qui viene scritto `data/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca. Questo file contiene anche le motivazioni delle scelte; il JSON contiene solo i dati.
+> **Materiale di partenza per Claude Code.** Da qui viene scritto `data/it/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca. Questo file contiene anche le motivazioni delle scelte; il JSON contiene solo i dati.
 >
 > **Numeri attesi nel JSON:** 16 voci nel grado A, 7 in B, 10 in C, 9 battute in D, 8 skill, 8 slot di personalizzazione. Se i conti non tornano, fermarsi e segnalarlo.
 >

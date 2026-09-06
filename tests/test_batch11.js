@@ -169,7 +169,7 @@ async function run() {
   const LINE_COUNT = await (async () => {
     const p = await browser.newPage();
     await p.goto(BASE);
-    const n = await p.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
+    const n = await p.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
     await p.close();
     return n;
   })();
@@ -382,7 +382,7 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
     const fallback = await page.evaluate(() => window.FALLBACK_FEEDBACK_MESSAGES.episodeFinalMessages);
-    const fetched = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()).then(d => d.episodeFinalMessages));
+    const fetched = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()).then(d => d.episodeFinalMessages));
     log('[Modulo Finale prep] episodeFinalMessages has all 3 cases with non-empty compliments', ['tuttiVerdi', 'gialloNoRosso', 'almenoUnRosso'].every(k => fallback[k] && fallback[k].compliments.length > 0));
     log('[Modulo Finale prep] tuttiVerdi has NO tip (nessun consiglio)', fallback.tuttiVerdi.tip.length === 0);
     log('[Modulo Finale prep] gialloNoRosso and almenoUnRosso DO have a tip', fallback.gialloNoRosso.tip.length > 0 && fallback.almenoUnRosso.tip.length > 0);

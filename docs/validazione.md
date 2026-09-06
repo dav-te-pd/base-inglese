@@ -33,9 +33,9 @@ copie `window.FALLBACK_*` incorporate in `index.html`:
 
 | File | Chi lo legge | Copia di sicurezza |
 |---|---|---|
-| `data/a1-episodio1-inglese.json` | `loadEpisodeData()` (riga 7088) | `window.FALLBACK_EPISODE_DATA` |
-| `data/istruzioni-moduli.json` | `loadModuleInstructions()` (riga 5940) | `window.FALLBACK_MODULE_INSTRUCTIONS` |
-| `data/messaggi-feedback.json` | `loadFeedbackMessages()` (riga 8123) | `window.FALLBACK_FEEDBACK_MESSAGES` |
+| `data/it/a1-episodio1-inglese.json` | `loadEpisodeData()` (riga 7088) | `window.FALLBACK_EPISODE_DATA` |
+| `data/it/istruzioni-moduli.json` | `loadModuleInstructions()` (riga 5940) | `window.FALLBACK_MODULE_INSTRUCTIONS` |
+| `data/it/messaggi-feedback.json` | `loadFeedbackMessages()` (riga 8123) | `window.FALLBACK_FEEDBACK_MESSAGES` |
 
 Lo stato per utente vive tutto in `localStorage`, con sei chiavi distinte per
 episodio+utente (elencate al § 2.3).
@@ -426,7 +426,7 @@ Elenco completo di ciò che è emerso, dal più al meno sostanziale.
 | `.slice(-6)` | 5607 | Lunghezza della parola magica `config` |
 
 **Tabelle di etichette scritte nel codice** (la regola 8 di `CLAUDE.md` chiede che i
-testi che lo studente legge stiano in `data/istruzioni-moduli.json`)
+testi che lo studente legge stiano in `data/it/istruzioni-moduli.json`)
 
 | Costante | Riga | Contenuto |
 |---|---|---|
@@ -550,14 +550,14 @@ il caso in cui l'informazione sarebbe più utile è esattamente quello in cui ma
 Il campo `moduleId` esisteva già su ogni passo (costruito a 6285) e non lo leggeva
 nessuno. Le altre due strade sono state scartate: ricadere sul `moduleId` lascia in
 piedi la possibilità di divergere; dichiarare le regole nella coppia dell'ordine
-sposta la configurazione in `docs/struttura-corso.md` e fa crescere la tabella con
+sposta la configurazione in `docs/it/struttura-corso.md` e fa crescere la tabella con
 l'ordine. `CONFIG.attemptRule` non è stata reindicizzata ma **tolta**: la sua
 distinzione era già in `module.voiceVariant`.
 
 `tests/test_outcome_step_ids.js` è stato rovesciato ed è entrato nella suite: da
 "dimostra il difetto" a "dimostra che la regola arriva a ogni apparizione".
 
-### 4.2 `docs/struttura-corso.md` dice una cosa che il codice non fa
+### 4.2 `docs/it/struttura-corso.md` dice una cosa che il codice non fa
 
 La tabella "Le regole di esito" assegna `moduleRules` a Match Practice e Voice
 Practice e `selfScoreRules` a Flash Card — **senza distinguere le apparizioni**.
@@ -669,7 +669,7 @@ per sbaglio mentre si sistema la tabella.
 |---|---|---|---|
 | **A — indicizzare per `moduleId`** | Tutte le apparizioni di uno stesso modulo condividono la regola, per costruzione: non è più possibile darne una diversa alla seconda. | Cinque righe (i quattro pulsanti di completamento più le due letture di `attemptRule`); la configurazione non cambia di una virgola. | Nessuno tecnico. Si perde un grado di libertà che oggi nessuno usa. |
 | **B — ricaduta `[id]` poi `[moduleId]`** | Default identico ad A, ma resta possibile dichiarare un'eccezione per un singolo passo scrivendo `'quickMatchEngIta-2': '…'`. | Le stesse cinque righe più una funzione condivisa che fa la ricaduta — altrimenti la si riscrive cinque volte. | La chiave del passo è **generata** (`-2`, `-3`) e si sposta quando si riordina: un'eccezione scritta a mano si stacca in silenzio dal passo che voleva descrivere. |
-| **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
+| **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/it/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
 
 ### D2 — Il passo 16 (Voice Practice sul grado C) deve usare `lastAttempt`?
 

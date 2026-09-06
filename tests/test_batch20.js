@@ -9,7 +9,7 @@ const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const BASE = APP_URL;
 
-const EPISODE_DATA = JSON.parse(fs.readFileSync(repoPath('data', 'a1-episodio1-inglese.json'), 'utf8'));
+const EPISODE_DATA = JSON.parse(fs.readFileSync(repoPath('data', 'it', 'a1-episodio1-inglese.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }

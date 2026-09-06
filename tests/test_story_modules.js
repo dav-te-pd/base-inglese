@@ -135,7 +135,7 @@ async function run() {
   const battuteConDueSkill = battute.filter(l => (l.whatYouLearn || []).length > 1);
   const battuteConSkill = battute.filter(l => (l.whatYouLearn || []).length > 0);
 
-  // I numeri dichiarati in docs/episodio-1.md, verificati sul file dati vero
+  // I numeri dichiarati in docs/it/episodio-1.md, verificati sul file dati vero
   // (CLAUDE.md regola 29): se l'episodio viene ridiviso, qui si vede subito.
   const attesi = { A: 16, B: 7, C: 10, D: 9, skill: 8 };
   ['A', 'B', 'C', 'D'].forEach(g => log('[dati] Il grado ' + g + ' ha ' + attesi[g] + ' voci', loadGrade(g).length === attesi[g]));

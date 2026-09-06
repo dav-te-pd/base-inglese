@@ -164,7 +164,7 @@ async function run() {
   const LINE_COUNT = await (async () => {
     const p = await browser.newPage();
     await p.goto(BASE);
-    const n = await p.evaluate(() => fetch('data/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
+    const n = await p.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
     await p.close();
     return n;
   })();
@@ -286,7 +286,7 @@ async function run() {
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are
     // "Quiz".
-    // L'etichetta e' "categoria · grado" (docs/struttura-corso.md): la
+    // L'etichetta e' "categoria · grado" (docs/it/struttura-corso.md): la
     // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
     // Il grado atteso viene dall'ordine, non riscritto qui.
     log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',

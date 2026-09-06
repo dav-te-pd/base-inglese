@@ -136,7 +136,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
-    const data = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job2] moduleCompleteMessages is bucketed {alto,medio,basso}, each 5 entries',
       data.moduleCompleteMessages && data.moduleCompleteMessages.alto.length === 5 && data.moduleCompleteMessages.medio.length === 5 && data.moduleCompleteMessages.basso.length === 5);
     log('[Job2] dialogoCompleteMessages is {siLoSo,nonAncora}, each 5 entries',
@@ -173,7 +173,7 @@ async function run() {
     await page.waitForTimeout(150);
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Non ancora" subtitle: "' + subtitle + '"');
-    const data = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job2B] "Non ancora" outcome subtitle is one of dialogoCompleteMessages.nonAncora', data.dialogoCompleteMessages.nonAncora.indexOf(subtitle) !== -1);
     log('[Job2B] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -201,7 +201,7 @@ async function run() {
     await page.waitForTimeout(150);
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Si lo so" subtitle: "' + subtitle + '"');
-    const data = await page.evaluate(() => fetch('data/messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job2B] "Sì, lo so" outcome subtitle is one of dialogoCompleteMessages.siLoSo', data.dialogoCompleteMessages.siLoSo.indexOf(subtitle) !== -1);
     log('[Job2B] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

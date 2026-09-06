@@ -12,7 +12,7 @@ grafici selezionabili (Viaggio, Notte, Mediterraneo, Moderno, Natura).
 ## Come si apre in locale
 
 L'app è una pagina statica, ma va servita via HTTP: legge i suoi contenuti da
-`data/*.json` con `fetch`, che da `file://` viene bloccato dal browser.
+i JSON sotto `data/` con `fetch`, che da `file://` viene bloccato dal browser.
 
 ```bash
 npm run serve     # → http://localhost:8955/index.html
@@ -25,8 +25,8 @@ cartella — `python3 -m http.server 8955` fa lo stesso lavoro.
 ## Strumenti
 
 - `node tools/rigenera-fallback.js` — riscrive le copie di sicurezza dentro
-  `index.html` a partire dai file in `data/`. Da lanciare ogni volta che si
-  tocca un file in `data/` (CLAUDE.md regola 6); `tests/test_fallbacks.js`
+  `index.html` a partire dai file sotto `data/`. Da lanciare ogni volta che si
+  tocca uno di quei file (CLAUDE.md regola 6); `tests/test_fallbacks.js`
   verifica poi che le due versioni coincidano.
 - `node tests/tools/apri-modulo.js <idPasso>` — apre un modulo nell'app e ne
   stampa lo stato (bordi, segnaposto, errori), con screenshot facoltativo.
@@ -37,14 +37,27 @@ cartella — `python3 -m http.server 8955` fa lo stesso lavoro.
 ```
 index.html      tutta l'applicazione: HTML, CSS e JS in un unico file,
                 nessuna dipendenza esterna oltre ai Google Fonts
-data/           i contenuti, letti a runtime (mai scritti nel codice)
-docs/           censimento dei moduli e screenshot storici
+data/{lingua}/  i contenuti dell'edizione, letti a runtime (mai nel codice)
+docs/{lingua}/  i sorgenti markdown di quell'edizione (episodi, struttura)
+docs/           quello che descrive il codice: censimento, validazione,
+                registro delle correzioni, screenshot storici
 tests/          la suite di regressione Playwright
 CLAUDE.md       le regole permanenti del progetto — da leggere prima di
                 metterci mano
 ```
 
-Dentro `data/`:
+## Le cartelle per lingua
+
+`data/{lingua}/` e `docs/{lingua}/`, dove *lingua* è quella dello **studente**,
+non quella che impara. Oggi c'è una sola edizione: `it`, italiano → inglese.
+
+**Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla
+coppia di lingue: *"I have ten years"* è una trappola italiana e non tedesca.
+Un'edizione nuova nasce copiando la cartella e sostituendo i contenuti, e una
+correzione fatta in `it/` **non** arriva nelle altre — se serve ovunque, si fa
+ovunque, di proposito.
+
+Dentro `data/it/`:
 
 | file | cosa contiene |
 |---|---|
@@ -54,7 +67,7 @@ Dentro `data/`:
 
 `index.html` tiene una copia di sicurezza di questi contenuti al suo interno,
 usata **solo** se il `fetch` fallisce (hosting che non serve i JSON). La
-sorgente da modificare resta sempre il file in `data/`.
+sorgente da modificare resta sempre il file sotto `data/{lingua}/`.
 
 I valori regolabili — soglie, tempi, liste, percentuali — stanno tutti in
 `window.APP_CONFIG`, in cima a `index.html`. Non vanno sparsi nel codice.
@@ -88,11 +101,11 @@ Due indirizzi, che servono a cose diverse:
 | **GitHub Pages** | <https://dav-te-pd.github.io/base-inglese/> | da solo, a ogni push su `main` |
 | **Artifact claude.ai** | <https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621> | a mano, ripubblicando **lo stesso** artifact (`CLAUDE.md`, regola 6) |
 
-**Non sono la stessa cosa.** Su Pages i file `data/*.json` esistono, quindi
+**Non sono la stessa cosa.** Su Pages i JSON sotto `data/` esistono, quindi
 l'app li carica: è la sua forma completa. L'artifact è una pagina singola —
 il `fetch` dei dati fallisce e `index.html` ricade sulle copie di sicurezza
 che tiene al proprio interno. Finché quelle copie non coincidono con i file
-in `data/`, i due indirizzi mostrano contenuti diversi:
+sotto `data/`, i due indirizzi mostrano contenuti diversi:
 
 `tests/test_fallbacks.js` verifica che coincidano, ed è dentro la suite: una
 divergenza fa fallire la CI come qualunque altra regressione.

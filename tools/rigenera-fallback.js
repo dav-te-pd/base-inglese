@@ -25,9 +25,9 @@ const INDEX = path.join(REPO_ROOT, 'index.html');
 // sotto la propria chiave di percorso (l'app lo cerca per dataFile), gli
 // altri due entrano così come sono.
 const BLOCCHI = [
-  { global: 'FALLBACK_EPISODE_DATA', file: 'data/a1-episodio1-inglese.json', perPercorso: true },
-  { global: 'FALLBACK_MODULE_INSTRUCTIONS', file: 'data/istruzioni-moduli.json', perPercorso: false },
-  { global: 'FALLBACK_FEEDBACK_MESSAGES', file: 'data/messaggi-feedback.json', perPercorso: false }
+  { global: 'FALLBACK_EPISODE_DATA', file: 'data/it/a1-episodio1-inglese.json', perPercorso: true },
+  { global: 'FALLBACK_MODULE_INSTRUCTIONS', file: 'data/it/istruzioni-moduli.json', perPercorso: false },
+  { global: 'FALLBACK_FEEDBACK_MESSAGES', file: 'data/it/messaggi-feedback.json', perPercorso: false }
 ];
 
 function indentaComeIlFile(testo) {

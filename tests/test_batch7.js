@@ -106,7 +106,7 @@ async function run() {
       await page.addInitScript(mockInit);
       await page.goto(BASE);
       await page.evaluate(() => {
-        return fetch('data/messaggi-feedback.json').then(r => r.json()).then(data => {
+        return fetch('data/it/messaggi-feedback.json').then(r => r.json()).then(data => {
           window.__testPick = data.moduleCompleteMessages[Math.floor(Math.random() * data.moduleCompleteMessages.length)];
         });
       });

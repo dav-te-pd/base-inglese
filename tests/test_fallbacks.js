@@ -26,9 +26,9 @@ function stableStringify(value) {
 }
 
 const CHECKS = [
-  { file: 'data/a1-episodio1-inglese.json', global: 'FALLBACK_EPISODE_DATA', keyed: true },
-  { file: 'data/istruzioni-moduli.json', global: 'FALLBACK_MODULE_INSTRUCTIONS', keyed: false },
-  { file: 'data/messaggi-feedback.json', global: 'FALLBACK_FEEDBACK_MESSAGES', keyed: false }
+  { file: 'data/it/a1-episodio1-inglese.json', global: 'FALLBACK_EPISODE_DATA', keyed: true },
+  { file: 'data/it/istruzioni-moduli.json', global: 'FALLBACK_MODULE_INSTRUCTIONS', keyed: false },
+  { file: 'data/it/messaggi-feedback.json', global: 'FALLBACK_FEEDBACK_MESSAGES', keyed: false }
 ];
 
 async function run() {

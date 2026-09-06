@@ -28,7 +28,7 @@ const fs = require('fs');
 const { repoPath } = require('./test-env');
 const { slotValues, itemText } = require('./module-order');
 
-const DEFAULT_EPISODE = ['data', 'a1-episodio1-inglese.json'];
+const DEFAULT_EPISODE = ['data', 'it', 'a1-episodio1-inglese.json'];
 
 function loadEpisode(parts) {
   return JSON.parse(fs.readFileSync(repoPath.apply(null, parts || DEFAULT_EPISODE), 'utf8'));
