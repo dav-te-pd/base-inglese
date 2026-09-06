@@ -1,9 +1,10 @@
 # Suite di regressione
 
-29 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+32 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_voicecoach.js`, `test_story_modules.js`, `test_fallbacks.js`,
-`test_hidden_guard.js`, `test_outcome_step_ids.js`). Insieme costituiscono la
+`test_hidden_guard.js`, `test_outcome_step_ids.js`, `test_config_letta.js`,
+`test_struttura_corso.js`, `test_scala_colori.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -24,7 +25,7 @@ npm test
 ```
 
 `npm test` esegue `run_full_regression.sh`, che avvia da solo il server
-statico sulla porta 8955, lancia i 29 file in ordine e ferma il server alla
+statico sulla porta 8955, lancia i 32 file in ordine e ferma il server alla
 fine. Se un server risponde già su quella porta, lo riusa invece di
 avviarne un altro.
 
@@ -130,6 +131,9 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file in `data/`: Pages e artifact non divergono in silenzio. |
 | `test_hidden_guard.js` | Ogni regola CSS che imposta un `display` continua a sparire con `hidden`: la guardia della regola 12 non si può rompere senza che la CI se ne accorga. |
 | `test_outcome_step_ids.js` | La regola di esito e la regola del tentativo arrivano a **ogni** apparizione di un modulo nell'ordine, non solo alla prima: senza, la mappa torna a lasciare grigi sei passi su ventidue, e in silenzio (un esito verde e nessun esito sono indistinguibili a schermo). |
+| `test_config_letta.js` | Ogni parametro di `APP_CONFIG` è nominato da qualcuno: una manopola che non muove più niente resta nel Pannello Admin e si finisce per girarla. È il difetto che ha tenuto in vita `pointsPerCorrect`. |
+| `test_struttura_corso.js` | `docs/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
+| `test_scala_colori.js` | La scala rosso→giallo→verde sale solo con la costanza, scende di un gradino solo, non salta, e legge `CONFIG.mastery.promotionStreak` invece di avere il numero cablato. È il dato più costoso da ricostruire e il meno visibile a schermo. |
 
 ---
 
@@ -153,11 +157,13 @@ sembrano ovvi: il § 4.1 era ovvio.
 
 ### B — Il motore invisibile
 
-4. **`applyMasteryResult` non è testata.** La scala rosso→giallo→verde,
-   `promotionStreak`, la retrocessione di un livello su errore, il salto
-   diretto a rosso di "Non lo so". Si verifica solo che *esistano* delle
-   chiavi `voicepractice:`. Se la scala si invertisse, la suite resterebbe
-   verde.
+4. **~~`applyMasteryResult` non è testata.~~** *Chiuso in parte da
+   `test_scala_colori.js` (2026-09-06):* la salita, la discesa di un gradino
+   solo, il non-salto e il fatto che `promotionStreak` venga letto sono ora
+   coperti, ciascuno su un profilo pulito. **Resta scoperto:** il salto
+   diretto a rosso di "Non lo so" (`declaredNonAttempt`), che non passa da
+   `applyMasteryResult` ma la scavalca — vive in
+   `recordMultipleChoiceResult`, ed è una strada sua.
 5. **`buildMultipleChoiceOptions` non è testata.** Quattro opzioni, una sola
    giusta, tre distrattori diversi fra loro e dalla risposta. Un doppione fra
    le opzioni, o un grado così corto da non avere tre distrattori, non lo
@@ -209,20 +215,26 @@ sembrano ovvi: il § 4.1 era ovvio.
 
 ### E — Configurazione
 
-19. **Nessun test verifica che una chiave di `APP_CONFIG` sia letta da
-    qualcuno.** È il difetto che ha tenuto in vita `pointsPerCorrect` per
-    ottanta commit: un parametro morto passa la CI senza fare rumore.
+19. **~~Nessun test verifica che una chiave di `APP_CONFIG` sia letta da
+    qualcuno.~~** *Chiuso da `test_config_letta.js` (2026-09-06).* Cerca il
+    nome della foglia, non il percorso puntato: il percorso letterale non
+    compare mai per 104 chiavi su 141, perché l'app indicizza a runtime.
+    **Limite dichiarato:** una foglia con un nome generico (`name`, `label`,
+    `value`) è impossibile da falsificare — il test è forte sui nomi propri,
+    che sono quelli dei parametri costruiti per uno scopo.
 20. **L'override per sezione intera.** Salvare `moduleOrderDefault` dal
     pannello congela l'ordine anche quando il codice cambia. È il
     comportamento voluto, e non lo verifica nessuno.
 
 ### F — I documenti come fonte (regola 26)
 
-21. **Nessun test confronta `docs/struttura-corso.md` con `APP_CONFIG`.** I 22
-    passi, le sei categorie, i nomi dei gradi e le regole di esito sono
-    scritti in due posti e allineati a mano. `test_fallbacks.js` fa
-    esattamente questo lavoro per i dati; per la struttura l'equivalente non
-    esiste.
+21. **~~Nessun test confronta `docs/struttura-corso.md` con `APP_CONFIG`.~~**
+    *Chiuso in parte da `test_struttura_corso.js` (2026-09-06):* i 22 passi
+    con il loro grado, i quattro gradi con il nome mostrato e le sei
+    categorie con la loro etichetta. **Resta fuori di proposito la tabella
+    delle regole di esito:** nomina i moduli con il nome mostrato e non con
+    l'id, li raggruppa a prosa, e include "Test", che non esiste — servirebbe
+    una mappa nome→id scritta a mano, cioè una terza fonte da allineare.
 22. **Nessun test conta le voci dell'episodio contro `docs/episodio-1.md`.**
     `test_story_modules.js` conta le skill contro il *file dati*, cioè contro
     la copia, non contro il markdown che dichiara i numeri attesi.

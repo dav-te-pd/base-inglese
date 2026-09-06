@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906a**
+**Versione: 20260906b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -155,6 +155,16 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     Vale per il nuovo, non per l'ovvio: una correzione già descritta nella richiesta, un test che accompagna una modifica, un aggiornamento di documentazione già concordato non hanno bisogno di un giro in più. Vale invece per un componente nuovo, una struttura dati nuova, un meccanismo che cambia come si comporta un modulo.
 
     *Perché c'è: rifare una cosa costruita nella direzione sbagliata costa molto più che descriverla in cinque righe prima. E chi legge la descrizione vede subito le scelte implicite — quelle che, una volta scritte nel codice, si notano solo quando è tardi.*
+
+32. **Ogni test dichiara in testa cosa protegge.** La prima riga di un file di test è un commento `// PROTEGGE:` che dice **quale comportamento si romperebbe se quel file sparisse** — non cosa il test fa, che si legge dal codice, ma cosa si perde senza. Se serve, sotto ci va anche il *come*: quale strada si è scelta per misurarlo e perché non quella ovvia.
+
+    Lo stesso testo va nella tabella "Cosa protegge ogni file" di `tests/README.md`, che è l'unico posto dove la mappa vive: una seconda copia altrove si disallineerebbe.
+
+    **Un test che non sa dire cosa protegge non va scritto.** Se la riga esce come "verifica che la funzione X funzioni", il test sta ricopiando l'implementazione invece di difendere un comportamento, e passerà anche quando l'app è rotta.
+
+    Vale anche al contrario: **un limite noto si scrive lì**, invece di lasciarlo scoprire a chi si fiderà del verde. Un test che copre metà di un comportamento e lo dichiara protegge più di uno che sembra coprirlo tutto.
+
+    *Perché c'è: la mappa dei 28 file è servita a vedere i buchi, non a documentare — e li ha trovati contando cosa NON era protetto. Senza la riga in testa, quel lavoro va rifatto da capo ogni volta leggendo le asserzioni una per una, che è esattamente il motivo per cui non lo fa nessuno.*
 
 ## Riferimenti operativi
 
