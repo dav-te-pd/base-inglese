@@ -43,14 +43,51 @@ const chromium = playwright.chromium;
 const APP_PORT = process.env.APP_PORT || String(DEFAULT_PORT);
 const APP_URL = process.env.APP_URL || 'http://localhost:' + APP_PORT + '/index.html';
 
+// I Google Fonts non si scaricano nei test, e NON e' un dettaglio di comodo:
+// index.html li chiede a fonts.googleapis.com, e su una macchina che non li
+// raggiunge il browser aspetta il timeout prima di rinunciare — **12,6 secondi
+// a ogni page.goto()**, non solo al primo. Misurato: un caricamento di pagina
+// passa da 12.600 ms a 51 ms, e la suite completa da ~50 minuti a meno di
+// dieci.
+//
+// **Togliere questa rotta costa quaranta minuti a ogni suite.** Se un giorno
+// serve un test che guarda i font davvero, lo si scrive disattivandola per
+// quella pagina — non togliendola da qui.
+//
+// Non e' un adattamento a un container: su una macchina che i font li
+// raggiunge, abortirli non cambia nessuna asserzione (nessuna dipende dai
+// font) e risparmia comunque il tempo di scaricarli.
+const FONT_ESTERNI = /fonts\.(googleapis|gstatic)\.com/;
+
+// Il filtro e' una FUNZIONE, non un glob: in Playwright il carattere `*` di un
+// glob non attraversa la `/`, quindi 'https://fonts.g*' non aggancia niente e
+// la rotta sembra applicata mentre non lo e'. E' successo — la prima misura
+// diceva "bloccare i font non serve", e la prova era rotta, non l'ipotesi.
+function bloccaFontEsterni(page) {
+  return page.route(function (url) { return FONT_ESTERNI.test(String(url)); },
+    function (route) { return route.abort(); });
+}
+
 // Avvia Chromium. Senza executablePath Playwright usa il proprio browser
 // (quello installato da `npx playwright install chromium`, o quello indicato
 // da PLAYWRIGHT_BROWSERS_PATH); CHROMIUM_PATH serve solo a chi deve puntare a
 // un binario di sistema.
+//
+// La rotta sui font si installa qui, su ogni pagina che il browser crea: un
+// punto solo per tutti i file della suite, invece di una riga da ricordarsi in
+// ognuno (che e' la difesa che prima o poi qualcuno dimentica).
 function launchBrowser(options) {
   const opts = Object.assign({}, options);
   if (process.env.CHROMIUM_PATH) opts.executablePath = process.env.CHROMIUM_PATH;
-  return chromium.launch(opts);
+  return chromium.launch(opts).then(function (browser) {
+    const newPageOriginale = browser.newPage.bind(browser);
+    browser.newPage = function () {
+      return newPageOriginale.apply(null, arguments).then(function (page) {
+        return bloccaFontEsterni(page).then(function () { return page; });
+      });
+    };
+    return browser;
+  });
 }
 
 // Radice del repository, per i test che leggono file di dati da disco.
@@ -69,4 +106,4 @@ function outputPath(name) {
   return path.join(dir, name);
 }
 
-module.exports = { chromium, launchBrowser, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath };
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath };
