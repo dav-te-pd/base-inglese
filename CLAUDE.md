@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906g**
+**Versione: 20260907a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -254,6 +254,23 @@ un ramo proprio (`claude/...`). Qui non va seguita: il deploy di GitHub Pages
 parte da `main`, e il collaudo si fa su Pages. Lavorare altrove significa
 consegnare qualcosa che non si può provare. Si lavora su `main` e si spinge su
 `main`.
+
+**Unica eccezione: il ramo di verifica, che dura quanto la suite.** Il controllo
+di fine turno esige che ogni commit sia spinto da qualche parte; la suite
+completa dura più di un turno. La collisione non è un caso, è strutturale — si
+ripresenterà sempre — e senza un'eccezione dichiarata finisce che si pubblica
+metà verifica su Pages a ogni giro.
+
+Quando parte la suite completa, il commit nasce su `claude/verifica-in-corso`:
+si spinge lì, il controllo è soddisfatto, e **Pages non vede niente finché il
+verde non c'è**. A suite verde il ramo confluisce in `main` e muore.
+
+Non contraddice la regola sopra, la serve: quella esiste perché lavorare
+altrove significa consegnare qualcosa che non si può provare. Un ramo che vive
+venti minuti e serve solo a non pubblicare a verifica aperta non consegna niente
+a nessuno — anzi, protegge Pages proprio nel momento in cui non si sa ancora se
+il codice regge. **Su quel ramo non ci si lavora e non ci si resta**: nasce
+quando la suite parte, muore quando confluisce.
 
 ## Regole e funzioni dell'app
 

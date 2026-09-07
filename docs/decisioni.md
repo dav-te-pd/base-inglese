@@ -46,7 +46,6 @@ scoprirla scaduta.
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
-| 2026-09-07 | `docs/it/episodio-1.md` (riga 34) dice ancora *«ricordarsi della copia di sicurezza dentro `index.html`, che `test_fallbacks.js` verifica»*, con la nota «finché c'è, va tenuto allineato». Copia, strumento, test e artifact **non esistono più** dal 2026-09-06. | È un'**istruzione operativa** dentro un file fonte: una sessione futura la eseguirebbe, e per eseguirla dovrebbe **ricostruire il fallback** che abbiamo appena tolto. La riga rimanda a questo stesso file per il "destinato a sparire" — ma è sparito, e la riga è rimasta. | **Alla prossima modifica di quel file.** La riscrittura del 2026-09-07 c'era e la riga è sopravvissuta, quindi la condizione «con la riscrittura» è già stata spesa una volta: non si tocca lo stesso (file di contenuto, regola 33), ma va detto a voce a ogni giro finché non sparisce. |
 | 2026-09-07 | I numeri dichiarati in testa a `docs/it/episodio-1.md` (**14** in A, 7 in B, **9** in C, 9 in D, 8 skill) non corrispondono a `data/it/a1-episodio1-inglese.json`, che ha **16** in A, 7 in B, **10** in C, 9 in D, 8 skill. | Il markdown è la fonte (regola 26) e il JSON è quello che l'app esegue: finché divergono, l'app non mostra il contenuto deciso. Segnalato e non eseguito perché rigenerare il file dati è una richiesta a sé — e la regola 29 dice di fermarsi e dirlo, non di completare a intuito. | **Quando arriverà la richiesta di riscrivere il file dati** leggendo il markdown. Non prima. |
 
 ## Pulizie rimandate di proposito
