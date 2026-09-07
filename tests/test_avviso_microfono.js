@@ -197,13 +197,23 @@ async function run() {
       });
       log('[A] ' + modulo.nome + ': l\'avviso e\' fuori dal blocco del risultato e ha corpo a schermo',
           visibileDavvero.dentroResult === false && visibileDavvero.altezza > 0);
-      // Da fermo si puo' ancora registrare: qui la strada per riprovare c'e',
-      // a differenza di quella che porta al livello 3 passando da "Invia".
-      log('[A] ' + modulo.nome + ': anche al livello confermato si puo\' ancora riprovare a registrare',
-          await page.evaluate(() => {
-            const b = document.getElementById('vc-record-btn');
-            return !!b && b.getClientRects().length > 0 && !b.disabled;
-          }));
+      // Al livello confermato il microfono si spegne come "Avanti". Prima
+      // restava premibile e si poteva registrare a vuoto all'infinito: il
+      // contatore era gia' alla soglia, quindi nessun tentativo in piu'
+      // produceva nemmeno un avviso nuovo — un gesto senza piu' effetto che
+      // sembrava utile. Restano due uscite, e sono l'unica cosa attiva.
+      const fermo = await page.evaluate(() => {
+        const vivo = el => !!el && el.getClientRects().length > 0 && !el.disabled;
+        return {
+          microfono: vivo(document.getElementById('vc-record-btn')),
+          tornaMappa: vivo(document.getElementById('vc-mic-notice-map')),
+          mappaInAlto: vivo(document.getElementById('voice-coach-back-map'))
+        };
+      });
+      log('[A] ' + modulo.nome + ': al livello confermato il microfono e\' spento',
+          fermo.microfono === false);
+      log('[A] ' + modulo.nome + ': restano le due uscite, mappa in alto compresa',
+          fermo.tornaMappa === true && fermo.mappaInAlto === true);
       await page.close();
     }
 

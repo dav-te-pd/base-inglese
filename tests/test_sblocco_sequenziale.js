@@ -15,6 +15,13 @@
 // proteggerebbe i pulsanti di oggi e lascerebbe scoperto il primo che qualcuno
 // aggiunge domani, che è come il difetto è nato.
 //
+// PROTEGGE ANCHE il COLORE, ed e' una misura non uno screenshot: l'accento
+// deve comparire una volta sola nella colonna, sulla card corrente. Quando lo
+// usava anche ogni regola futura, il disegno era completo in ogni sua voce e
+// non funzionava lo stesso — nove segnali "non ancora" contro un segnale "sei
+// qui", nella stessa tinta. E' il difetto che non si trova leggendo il codice
+// di un elemento alla volta: ogni regola, da sola, era giusta.
+//
 // LIMITE DICHIARATO: qui si guarda il passo BLOCCATO. Che il passo corrente
 // funzioni è verificato solo quanto basta a non far passare questo file su
 // un'app in cui non funziona niente (la controprova in fondo a ogni blocco);
@@ -131,6 +138,36 @@ async function run() {
       return { partito: window.__detti.length > prima };
     });
     log('[Dichiarazione] Controprova: dalla card corrente l\'audio parte', controprova.partito === true);
+
+    // ── Il colore: due stati opposti non possono avere la stessa tinta ──
+    const colori = await page.evaluate(() => {
+      const accento = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim();
+      // Il colore risolto dell'accento, per confrontare mele con mele: la
+      // variabile e' un esadecimale, getComputedStyle restituisce rgb().
+      const sonda = document.createElement('span');
+      sonda.style.color = accento;
+      document.body.appendChild(sonda);
+      const accentoRisolto = getComputedStyle(sonda).color;
+      sonda.remove();
+      const eAccento = c => c === accentoRisolto;
+      const bloccate = Array.from(document.querySelectorAll('.se-explanation.is-ahead'));
+      return {
+        bloccate: bloccate.length,
+        bordiAccento: bloccate.filter(el => eAccento(getComputedStyle(el).borderTopColor)).length,
+        kickerAccento: bloccate.filter(el => {
+          const k = el.querySelector('.wws-rule-kicker');
+          return k && eAccento(getComputedStyle(k).color);
+        }).length,
+        // Quante card portano il bordo accento: deve essere una sola, quella
+        // corrente. E' il conteggio che dice se l'accento e' ancora scarso.
+        cardConBordoAccento: Array.from(document.querySelectorAll('.wws-card'))
+          .filter(el => eAccento(getComputedStyle(el).borderTopColor)).length
+      };
+    });
+    log('[Colore] Una regola bloccata non usa l\'accento, ne\' nel bordo ne\' nel "nuova regola"',
+        colori.bloccate > 0 && colori.bordiAccento === 0 && colori.kickerAccento === 0);
+    log('[Colore] L\'accento marca UNA sola card, quella corrente',
+        colori.cardConBordoAccento === 1);
     await page.close();
   }
 

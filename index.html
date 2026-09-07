@@ -2276,10 +2276,15 @@
      larghezza. La bolla resta allineata per chi parla (l'informazione c'è),
      la regola no: allineare un paragrafo lungo produce solo rientri che si
      leggono male. */
+  /* Nove card in colonna non si contano a colpo d'occhio: le separa lo
+     spazio, non un bordo più spesso. Un bordo più spesso su nove card
+     aggiunge nove linee da guardare; lo spazio separa senza disegnare
+     niente — e se non basta il bordo si può sempre ingrossare dopo, il
+     contrario no. */
   .wws-list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: var(--space-xl);
   }
 
   /* Bordo e sfondo marcati: con un solo pixel di bordo e lo stesso sfondo
@@ -2301,6 +2306,14 @@
      ballano quando la corrente cambia. */
   .wws-card.is-current {
     border-color: var(--accent);
+  }
+
+  /* La card già dichiarata: lo stesso inchiostro della spunta, quasi
+     annacquato. Il fondo è per lo sguardo che scorre, la spunta per l'occhio
+     che si ferma — due letture della stessa cosa, non due cose. Nessun
+     colore nuovo: un colore nuovo direbbe una terza cosa che non abbiamo. */
+  .wws-card.is-done {
+    background: color-mix(in srgb, var(--correct-ink) 6%, var(--card-2));
   }
 
   .wws-card-top {
@@ -2424,11 +2437,26 @@
 
   /* Lo stato "non ancora raggiunta" è della singola regola, non della card:
      la card corrente può contenerne due, e la seconda deve leggersi come
-     bloccata anche lì. */
+     bloccata anche lì.
+
+     E NON usa l'accento. L'accento dice "sei qui", e lo dice il bordo della
+     card corrente: se lo usa anche ogni regola futura, in una colonna di
+     nove card il segnale "sei qui" finisce in minoranza di nove a uno nella
+     stessa tinta e smette di segnalare. Non mancava niente al disegno —
+     erano due stati opposti dipinti con lo stesso colore. Un accento scarso
+     si vede da solo. Il tratteggio e l'attenuazione restano: sono loro a
+     dire "bloccata", e non hanno bisogno di un colore per farlo. */
   .se-explanation.is-ahead {
     border-style: dashed;
+    border-color: var(--border);
     background: none;
     opacity: 0.6;
+  }
+
+  /* Il "NUOVA REGOLA" è la seconda cosa che porta accento dentro il riquadro,
+     ed è la più ripetuta: una volta per regola, nove volte per schermata. */
+  .se-explanation.is-ahead .wws-rule-kicker {
+    color: var(--text);
   }
 
   .se-declared {
@@ -6873,6 +6901,10 @@
       var tutteDichiarate = superata ||
         (cardSkills.length > 0 && cardSkills.every(function (id) { return !!seSessionAnswers[id]; }));
       stateEl.classList.toggle('is-done', tutteDichiarate);
+      // Lo stesso stato, letto due volte: la spunta quando ci si ferma, il
+      // fondo quando si scorre. Una card più avanti non è "fatta" nemmeno se
+      // per caso non ha regole da dichiarare.
+      card.classList.toggle('is-done', tutteDichiarate && !isAhead);
       if (tutteDichiarate) {
         stateEl.hidden = false;
         stateEl.innerHTML = icon('check');
@@ -7342,9 +7374,14 @@
     var panel = document.getElementById('vc-mic-notice');
     var level = streak >= t.confirmedAt ? 3 : streak >= t.restartSuggestionAt ? 2 : streak >= t.warningAt ? 1 : 0;
     // Confirmed problem (level 3): the system has concluded this isn't a
-    // pronunciation issue, so "Avanti" — and completing the module — is
-    // blocked until either the mic starts working again (streak resets)
-    // or the student leaves via "Torna alla mappa" below.
+    // pronunciation issue, so "Avanti" — and the microphone itself, see
+    // updateVcActionButtons — are blocked, and il modulo non si completa.
+    // L'unica uscita e' "Torna alla mappa" qui sotto (o "← Mappa" in alto).
+    // Prima questo commento diceva che il blocco si scioglieva anche se il
+    // microfono ricominciava a funzionare: da qui non puo' accadere, perche'
+    // non c'e' piu' niente da premere per riprovare. Era una promessa che il
+    // codice non poteva mantenere, ed e' stata tolta invece di lasciarla
+    // credere.
     vcMicConfirmedProblem = level === 3;
     updateVcActionButtons();
     if (level === 0) { panel.hidden = true; return; }
@@ -7475,6 +7512,17 @@
     // the module can't be completed while the system itself flagged that
     // nothing was ever actually heard.
     document.getElementById('vc-next-btn').disabled = !vcCurrentEvaluated || vcMicConfirmedProblem;
+    // Stessa guardia, stesso posto: al livello confermato si spegne anche il
+    // microfono. Il contatore e' gia' alla soglia, quindi ogni registrazione
+    // in piu' non produce nemmeno un avviso nuovo — e' un gesto che non ha
+    // piu' effetto, e lasciarlo attivo lo fa sembrare utile. Restano vive
+    // due uscite e nessun modo di girare a vuoto: "Torna alla mappa" nel
+    // pannello e "← Mappa" in alto.
+    // Le due ragioni per cui il microfono e' spento stanno insieme, e devono:
+    // questa funzione gira a ogni aggiornamento, e scrivere la sola
+    // vcMicConfirmedProblem riaccenderebbe il pulsante su un browser senza
+    // riconoscimento vocale — dove openVoiceCoach l'aveva spento apposta.
+    document.getElementById('vc-record-btn').disabled = vcMicConfirmedProblem || !VCSpeechRecognition;
   }
 
   function renderVoiceCoachSentence() {
@@ -7766,6 +7814,10 @@
 
   document.getElementById('vc-record-btn').addEventListener('click', function () {
     if (!vcRecognition) return;
+    // Seconda guardia oltre al disabled del pulsante, come vcNextLine: i
+    // punti da cui si puo' chiedere di registrare si moltiplicano nel tempo,
+    // questo controllo resta uno (CLAUDE.md regola 20).
+    if (vcMicConfirmedProblem) return;
     if (vcState === 'recording') {
       if (vcListening) vcRecognition.stop();
       return;
