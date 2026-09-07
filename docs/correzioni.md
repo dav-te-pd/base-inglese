@@ -32,6 +32,12 @@ commit che lo giustifica. Il titolo si ritrova con `git log --grep`.
 | 2026-09-05 | La regola di esito (`CONFIG.moduleOutcomeRules`) veniva cercata con l'**id del passo** invece che con l'id del **modulo**: dalla seconda apparizione in poi (`quickMatchEngIta-2`, `flashcardAEngIta-2`, `voicePractice-2`…) la chiave non esisteva, `saveModuleOutcome` non veniva chiamato e sei passi su ventidue restavano senza colore in mappa. Sette letture passate a `.moduleId` — un campo che l'app costruiva già su ogni passo e non leggeva nessuno. Era il § 4.1 di `docs/validazione.md`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 | 2026-09-05 | `CONFIG.attemptRule` tolta. Le sue due righe (`voicePractice: 'lastAttempt'`, `voiceCoach: 'firstAttempt'`) duplicavano una distinzione già nel descrittore come `module.voiceVariant`, ed erano anch'esse indicizzate per id del passo: il passo 16 cadeva su `undefined` e usava il primo tentativo invece dell'ultimo. La regola vive ora in `vcEvaluate`, che rama su `vcVariant`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 
+## Contenuto dell'episodio
+
+| Data | Cosa | Commit |
+|---|---|---|
+| 2026-09-07 | `data/it/a1-episodio1-inglese.json` riscritto da `docs/it/episodio-1.md`: i numeri dichiarati nella fonte (15 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot) non corrispondevano al file dati (16, 7, 10, 9), quindi l'app mostrava un contenuto diverso da quello deciso. Il grado C non ricopia più le battute a mano: dove la fonte scrive `= dN` la frase viene dalla battuta, così non possono divergere. `episodeTitle` da "Presentarsi" ad "Al gate", ed etichetta del personaggio da "Guida" a "Hostess al gate". | titolo: `Il file episodio riscritto dalla sua fonte` |
+
 ## Why We Say It
 
 | Data | Cosa | Commit |

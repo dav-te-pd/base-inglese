@@ -1,7 +1,7 @@
 {
   "level": "A1",
   "episodeId": "episode1",
-  "episodeTitle": "Presentarsi",
+  "episodeTitle": "Al gate",
   "language": "inglese",
   "personalizationTablesUsed": [
     {
@@ -114,13 +114,6 @@
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-im",
-          "english": "I'm",
-          "italian": "io sono",
-          "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
-          "grammarCategory": "pronome + verbo essere"
-        },
-        {
           "id": "a-where",
           "english": "where",
           "italian": "dove",
@@ -128,18 +121,18 @@
           "grammarCategory": "avverbio interrogativo"
         },
         {
-          "id": "a-from",
-          "english": "from",
-          "italian": "da / di",
-          "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
-          "grammarCategory": "preposizione"
-        },
-        {
           "id": "a-italy",
           "english": "Italy",
           "italian": "Italia",
           "pronunciationTip": "I-ta-li — accento sulla prima",
           "grammarCategory": "nome di paese"
+        },
+        {
+          "id": "a-from",
+          "english": "from",
+          "italian": "da / di",
+          "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
+          "grammarCategory": "preposizione"
         },
         {
           "id": "a-and",
@@ -196,6 +189,13 @@
           "grammarCategory": "pronome + verbo essere"
         },
         {
+          "id": "b-im",
+          "english": "I'm",
+          "italian": "(io) sono",
+          "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
+          "grammarCategory": "pronome + verbo essere, contratto"
+        },
+        {
           "id": "b-we-are",
           "english": "we are",
           "italian": "(noi) siamo",
@@ -204,17 +204,10 @@
         },
         {
           "id": "b-nice-to-meet-you",
-          "english": "Nice to meet you",
+          "english": "nice to meet you",
           "italian": "Piacere di conoscerti / conoscervi",
           "pronunciationTip": "nais tu MIIT iu",
           "grammarCategory": "espressione idiomatica"
-        },
-        {
-          "id": "b-where-are-you",
-          "english": "Where are you?",
-          "italian": "Di dove sei? / Di dove siete?",
-          "pronunciationTip": "UEAR ar iu — tutto legato",
-          "grammarCategory": "struttura interrogativa"
         },
         {
           "id": "b-i-am-from",
@@ -225,7 +218,7 @@
         },
         {
           "id": "b-and-you",
-          "english": "And you?",
+          "english": "and you?",
           "italian": "E tu? / E voi?",
           "pronunciationTip": "and IU — accento su \"you\"",
           "grammarCategory": "espressione"
@@ -244,60 +237,54 @@
       "items": [
         {
           "id": "c-1",
-          "english": "Nice to meet you.",
-          "italian": "Piacere di conoscervi.",
-          "fromLine": "d-1"
-        },
-        {
-          "id": "c-2",
           "english": "I am {{papa}}.",
           "italian": "Sono {{papa}}.",
           "fromLine": "d-2"
         },
         {
-          "id": "c-3",
+          "id": "c-2",
           "english": "Where are you from?",
           "italian": "Di dove sei?",
           "fromLine": "d-3"
         },
         {
-          "id": "c-4",
+          "id": "c-3",
           "english": "I am from {{partenza}}, Italy.",
           "italian": "Vengo da {{partenza}}, in Italia.",
           "fromLine": "d-4"
         },
         {
-          "id": "c-5",
-          "english": "And you?",
-          "italian": "E tu?",
-          "fromLine": "d-5"
-        },
-        {
-          "id": "c-6",
+          "id": "c-4",
           "english": "I am {{mamma}}.",
           "italian": "Sono {{mamma}}.",
           "fromLine": "d-6"
         },
         {
-          "id": "c-7",
+          "id": "c-5",
           "english": "I'm {{figliaNome}}.",
           "italian": "Sono {{figliaNome}}.",
           "fromLine": "d-7"
         },
         {
-          "id": "c-8",
+          "id": "c-6",
           "english": "I'm {{figliaEta}} years old.",
           "italian": "Ho {{figliaEta}} anni.",
           "fromLine": "d-7"
         },
         {
-          "id": "c-9",
+          "id": "c-7",
+          "english": "I'm {{figlioNome}}.",
+          "italian": "Sono {{figlioNome}}.",
+          "fromLine": "d-8"
+        },
+        {
+          "id": "c-8",
           "english": "I'm {{figlioEta}}.",
           "italian": "Ho {{figlioEta}} anni.",
           "fromLine": "d-8"
         },
         {
-          "id": "c-10",
+          "id": "c-9",
           "english": "We are the {{cognome}} family!",
           "italian": "Siamo la famiglia {{cognome}}!",
           "fromLine": "d-9"
@@ -343,7 +330,7 @@
             {
               "title": "Chiedere da dove viene qualcuno",
               "difficulty": "facile",
-              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E ritrovi già \"are you\", che è la domanda del verbo essere.<br>Il papà risponde \"I am from {{partenza:en}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde \"I am from {{partenza:en}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
             }
           ]
         },
@@ -371,7 +358,7 @@
             {
               "title": "And you?",
               "difficulty": "facile",
-              "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo la guida l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente."
+              "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente."
             }
           ]
         },
@@ -392,7 +379,7 @@
             {
               "title": "I am e I'm",
               "difficulty": "facile",
-              "body": "Il papà dice \"I am {{papa}}\", la figlia dice \"I'm {{figliaNome}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono {{papa}}\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am {{papa}}\"."
+              "body": "Il papà dice \"I am {{papa}}\", la figlia dice \"I'm {{figliaNome}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
             }
           ]
         },

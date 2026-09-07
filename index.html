@@ -5423,7 +5423,11 @@
       // dentro speakerLabel(), cosi' un episodio con un altro cast (un
       // cameriere, un poliziotto) aggiunge una riga qui e basta.
       dialogueSpeakerLabels: {
-        guide: 'Guida',
+        // "Hostess al gate", non "Guida": i nomi descrivono, non etichettano
+        // (docs/it/episodio-1.md, nota 5). La chiave resta 'guide' perche' e'
+        // l'id tecnico gia' scritto in ogni battuta del file episodio;
+        // allinearla al personaggio e' registrato in docs/decisioni.md.
+        guide: 'Hostess al gate',
         tutti: 'Tutti'
       },
       // Fixed words are authored individually so punctuation stays attached
