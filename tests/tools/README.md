@@ -26,3 +26,27 @@ solo giro ha fatto emergere un badge fermo al nome di un modulo che non
 esiste più, un sottotitolo sbagliato, e — con `--larghezza=360`, cioè la
 larghezza di gran parte degli Android — un pulsante che usciva dallo
 schermo. Prima si riscriveva lo stesso script usa-e-getta ogni volta.
+
+---
+
+## `attendi.sh`
+
+Non è uno strumento di verifica visiva come gli altri di questa cartella: è
+**l'unica forma giusta di un'attesa**, scritta una volta sola.
+
+```
+tests/tools/attendi.sh <file-di-log> <marcatore-ok> <marcatore-ko> [secondi-max]
+tests/tools/attendi.sh /tmp/suite.log "ALL FILES GREEN" "SOME FILES FAILED"
+```
+
+Esce **0** se trova il marcatore di successo, **1** se trova quello di
+fallimento, **2** se scade il tempo massimo — e in quel caso lo dice, invece di
+lasciar credere che il lavoro sia finito bene.
+
+Perché esiste (CLAUDE.md regola 37): un'attesa agganciata al **nome di un
+processo** trova sé stessa e non finisce mai (`pgrep -f X` cerca `X` anche
+nella propria riga di comando), e un'attesa che chiude con un `grep` dei
+fallimenti **esce con 1 proprio quando è andato tutto bene**. Sono due difetti
+che non somigliano a errori: somigliano a risultati. Questo script si aggancia
+a ciò che il lavoro **scrive** quando finisce, mai a ciò che il lavoro **è**
+mentre gira.

@@ -1,11 +1,12 @@
 # Suite di regressione
 
-32 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+34 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_voicecoach.js`, `test_story_modules.js`,
 `test_hidden_guard.js`, `test_outcome_step_ids.js`, `test_config_letta.js`,
 `test_struttura_corso.js`, `test_scala_colori.js`,
-`test_errore_caricamento.js`). Insieme costituiscono la
+`test_errore_caricamento.js`, `test_avviso_microfono.js`,
+`test_sblocco_sequenziale.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -135,6 +136,8 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_struttura_corso.js` | `docs/it/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
 | `test_scala_colori.js` | La scala rosso→giallo→verde sale solo con la costanza, scende di un gradino solo, non salta, e legge `CONFIG.mastery.promotionStreak` invece di avere il numero cablato. È il dato più costoso da ricostruire e il meno visibile a schermo. |
 | `test_errore_caricamento.js` | Un fallimento nel caricamento dei dati diventa qualcosa che lo studente vede e da cui può uscire, invece di un modulo che non si apre o che si apre vuoto. Protegge anche che il testo venga dal JSON e che "Riprova" rifaccia davvero l'apertura fallita. Dopo la rimozione delle copie `window.FALLBACK_*` è l'unica rete rimasta sul percorso di caricamento: se sparisse, un guasto tornerebbe a essere invisibile. |
+| `test_avviso_microfono.js` | L'avviso "non riusciamo a sentirti" dei due moduli di voce: che compaia, che salga di livello nell'ordine delle soglie di `CONFIG`, che al livello confermato blocchi "Avanti" lasciando "Torna alla mappa" come unica uscita, e che sparisca appena una parola viene riconosciuta. Senza, uno studente col microfono rotto resta a fissare zero stelle credendo di pronunciare male. **Limite dichiarato:** misura anche il caso opposto — una registrazione chiusa dal timeout di silenzio (premi e non parli) viene scartata e NON incrementa il contatore, quindi il pannello non compare mai per quella strada. È il comportamento di oggi, fissato apposta: se si decide che anche il silenzio deve contare, questo file diventa rosso, ed è giusto. |
+| `test_sblocco_sequenziale.js` | La promessa dello Sblocco Sequenziale in **entrambe** le varianti (regola 30): dentro un passo più avanti della sequenza non risponde niente — nessun audio, nessun cambiamento — mentre il passo raggiungibile continua a rispondere. Senza, la sequenza torna a essere solo un effetto grafico: la card sembra spenta e il pulsante dentro funziona lo stesso, che è il difetto trovato al 6° collaudo nella variante per dichiarazione. Clicca tutto quello che trova invece di un elenco di pulsanti, così copre anche quelli aggiunti domani. |
 
 ---
 

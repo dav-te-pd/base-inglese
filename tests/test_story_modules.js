@@ -64,6 +64,172 @@ function numeriAttesiDallaFonte() {
     slot: prendi('slot', /(\d+)\s+slot/)
   };
 }
+// ── Il confronto testuale fra la fonte e il file dati ────────────────────────
+//
+// I numeri qui sopra dicono QUANTE voci ci sono. Non dicono che siano LE voci
+// giuste: un episodio trascritto con "Hello" al posto di "hello" ha i conti
+// perfetti e il contenuto sbagliato — è successo, ed è il difetto che questo
+// blocco esiste per prendere.
+//
+// Le tabelle di docs/it/episodio-1.md sono la fonte (regola 26), il JSON
+// l'esecuzione: qui si confrontano CARATTERE PER CARATTERE.
+function tabellaSotto(testo, titolo) {
+  const i = testo.indexOf(titolo);
+  if (i === -1) throw new Error('Titolo non trovato in ' + FONTE + ': ' + titolo);
+  const righe = testo.slice(i).split('\n');
+  const out = [];
+  let dentro = false;
+  for (let n = 1; n < righe.length; n++) {
+    const r = righe[n].trim();
+    const eRiga = r.startsWith('|') && r.endsWith('|');
+    if (!dentro) {
+      if (eRiga) dentro = true;
+      else if (r.startsWith('#')) break;   // titolo successivo: nessuna tabella
+      else continue;
+    }
+    if (!eRiga) break;
+    const celle = r.slice(1, -1).split('|').map(c => c.trim().replace(/`/g, ''));
+    if (celle.every(c => /^:?-+:?$/.test(c))) continue;   // riga separatrice
+    out.push(celle);
+  }
+  if (!out.length) throw new Error('Nessuna tabella sotto "' + titolo + '" in ' + FONTE);
+  return { intestazione: out[0], righe: out.slice(1) };
+}
+
+// I segnaposto si scrivono in due notazioni diverse, e apposta: il markdown usa
+// il nome corto e leggibile ({figlia}), il JSON la chiave vera dello slot
+// ({{figliaNome}}). Tradurli con un dizionario scritto qui vorrebbe dire
+// ricopiare in un test una corrispondenza che vive altrove — il difetto che il
+// riquadro dei numeri attesi esiste per non ripetere.
+//
+// Quindi il dizionario non si scrive: si RICAVA. Il segnaposto n-esimo di una
+// riga del markdown corrisponde al segnaposto n-esimo della riga del JSON, e la
+// corrispondenza deve reggere su TUTTE le righe. Uno scambio ({mamma} scritto
+// dove va {papà}) rompe la coerenza e viene visto, senza che nessuno abbia
+// dovuto elencare le coppie.
+function scomponi(s) {
+  const chiavi = [];
+  const scheletro = String(s == null ? '' : s)
+    .replace(/\{+([^{}]+)\}+/g, (_, k) => { chiavi.push(k.trim()); return '§'; });
+  return { scheletro, chiavi };
+}
+
+function creaMappa(nome) {
+  const avanti = new Map();
+  const indietro = new Map();
+  const rotture = [];
+  return {
+    rotture,
+    aggiungi(da, a, dove) {
+      if (avanti.has(da) && avanti.get(da) !== a) {
+        rotture.push(dove + ': "' + da + '" vale "' + avanti.get(da) + '" altrove, qui "' + a + '"');
+      } else if (indietro.has(a) && indietro.get(a) !== da) {
+        rotture.push(dove + ': "' + a + '" corrisponde a "' + indietro.get(a) + '" altrove, qui a "' + da + '"');
+      } else {
+        avanti.set(da, a);
+        indietro.set(a, da);
+      }
+    },
+    get coppie() { return avanti.size; },
+    nome
+  };
+}
+
+function confrontaTestoConLaFonte(log) {
+  const md = fs.readFileSync(repoPath.apply(null, FONTE.split('/')), 'utf8');
+  const voci = g => loadGrade(g);
+  const segna = creaMappa('segnaposto');
+  const differenze = [];
+  const confronta = (dove, atteso, trovato) => {
+    if (atteso !== trovato) differenze.push(dove + '\n      fonte: ' + JSON.stringify(atteso) + '\n      json:  ' + JSON.stringify(trovato));
+  };
+  // Un confronto che tiene conto dei segnaposto: il testo attorno deve
+  // coincidere alla lettera, le chiavi devono corrispondersi in modo coerente.
+  const confrontaConSegnaposto = (dove, testoMd, testoJson) => {
+    const a = scomponi(testoMd);
+    const b = scomponi(testoJson);
+    confronta(dove, a.scheletro, b.scheletro);
+    if (a.chiavi.length !== b.chiavi.length) {
+      differenze.push(dove + ': la fonte ha ' + a.chiavi.length + ' segnaposto, il json ' + b.chiavi.length);
+      return;
+    }
+    a.chiavi.forEach((k, i) => segna.aggiungi(k, b.chiavi[i], dove));
+  };
+
+  // ── Gradi A e B: quattro colonne, nessun segnaposto, confronto secco ──
+  [['A', '### Grado A'], ['B', '### Grado B']].forEach(([grado, titolo]) => {
+    const t = tabellaSotto(md, titolo);
+    const items = voci(grado);
+    if (t.righe.length !== items.length) {
+      differenze.push('grado ' + grado + ': la tabella ha ' + t.righe.length + ' righe, il json ' + items.length + ' voci');
+      return;
+    }
+    t.righe.forEach((riga, i) => {
+      const it = items[i];
+      const dove = 'grado ' + grado + ' riga ' + (i + 1) + ' (' + it.id + ')';
+      confronta(dove + ' inglese', riga[0], it.english);
+      confronta(dove + ' italiano', riga[1], it.italian);
+      confronta(dove + ' pronuncia', riga[2], it.pronunciationTip);
+      confronta(dove + ' categoria', riga[3], it.grammarCategory);
+    });
+  });
+
+  // ── Grado D: chi parla, il testo, e quante skill porta ogni battuta ──
+  const tD = tabellaSotto(md, '### Grado D');
+  const battuteMd = tD.righe;
+  const battuteJson = voci('D');
+  const chi = creaMappa('chi parla');
+  if (battuteMd.length !== battuteJson.length) {
+    differenze.push('grado D: la tabella ha ' + battuteMd.length + ' righe, il json ' + battuteJson.length);
+  } else {
+    battuteMd.forEach((riga, i) => {
+      const it = battuteJson[i];
+      const dove = 'grado D ' + riga[0] + ' (' + it.id + ')';
+      chi.aggiungi(riga[1], it.speaker, dove);
+      confrontaConSegnaposto(dove + ' inglese', riga[2], it.english);
+      confrontaConSegnaposto(dove + ' italiano', riga[3], it.italian);
+      // "1, 2" sono due skill, "—" nessuna. Il totale è già controllato dai
+      // numeri attesi: qui conta che stiano sulla battuta GIUSTA.
+      const attese = riga[4] === '—' ? 0 : riga[4].split(',').filter(x => x.trim()).length;
+      const trovate = (it.whatYouLearn || []).length;
+      if (attese !== trovate) differenze.push(dove + ': la fonte le dà ' + attese + ' skill, il json ' + trovate);
+    });
+  }
+
+  // ── Grado C: le righe "= dN" non si ricopiano, si risolvono ──
+  const tC = tabellaSotto(md, '### Grado C');
+  const frasiJson = voci('C');
+  if (tC.righe.length !== frasiJson.length) {
+    differenze.push('grado C: la tabella ha ' + tC.righe.length + ' righe, il json ' + frasiJson.length);
+  } else {
+    tC.righe.forEach((riga, i) => {
+      const it = frasiJson[i];
+      const dove = 'grado C ' + riga[0] + ' (' + it.id + ')';
+      const da = riga[3];                               // "d4"
+      let ing = riga[1], ita = riga[2];
+      const uguale = /^=\s*(d\d+)$/.exec(ing.trim());
+      if (uguale) {
+        const origine = battuteMd.find(r => r[0] === uguale[1]);
+        if (!origine) { differenze.push(dove + ': "' + ing + '" rimanda a una battuta che non esiste'); return; }
+        ing = origine[2]; ita = origine[3];
+      }
+      confrontaConSegnaposto(dove + ' inglese', ing, it.english);
+      confrontaConSegnaposto(dove + ' italiano', ita, it.italian);
+      // "d4" nella colonna "Da" è la battuta d-4 del json.
+      confronta(dove + ' fromLine', da.replace(/^d/, 'd-'), it.fromLine);
+    });
+  }
+
+  if (differenze.length) console.log('  ' + differenze.join('\n  '));
+  log('[Fonte] Il testo del json coincide con le tabelle di ' + FONTE, differenze.length === 0);
+  if (segna.rotture.length) console.log('  ' + segna.rotture.join('\n  '));
+  log('[Fonte] I segnaposto della fonte e quelli del json si corrispondono sempre allo stesso modo',
+      segna.rotture.length === 0 && segna.coppie > 0);
+  if (chi.rotture.length) console.log('  ' + chi.rotture.join('\n  '));
+  log('[Fonte] Chi parla in ogni battuta corrisponde sempre allo stesso ruolo',
+      chi.rotture.length === 0 && chi.coppie > 0);
+}
+
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -173,6 +339,8 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+
+  confrontaTestoConLaFonte(log);
 
   const battute = loadGrade('D');
   const skillIds = [];

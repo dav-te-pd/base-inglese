@@ -45,12 +45,16 @@ commit che lo giustifica. Il titolo si ritrova con `git log --grep`.
 | 2026-09-04 | Dodici correzioni in un giro: traduzione dentro la bolla e sempre visibile (via il link "Mostra traduzione"); Blocco Ascolto dentro la bolla; bordo e sfondo delle card più marcati; nessuno dei tre pulsanti preselezionato; il pulsante scelto blu accento e non verde; la risposta si può cambiare anche al primo giro; via l'etichetta accanto alla spunta ("✓ NON CHIARA"); le card senza regola prendono la spunta quando la sequenza le supera; venti frasi di supporto per risposta, mai ripetute dentro lo stesso modulo. | `b3f9a4a` |
 | 2026-09-04 | A 320 e 360 px "Esci e riprendi dopo" usciva dallo schermo (`.se-complete-row .btn`: ora va a capo dentro il pulsante invece di allargarlo). | `b3f9a4a` |
 
+| 2026-09-07 | Sblocco Sequenziale, variante per dichiarazione: una card `is-ahead` non risponde più a niente. Prima l'attenuazione era solo grafica e il Blocco Ascolto dentro la card restava cliccabile — l'audio partiva da una card futura, aggirando la sequenza che il meccanismo esiste per imporre. Guardia sola in cima al gestore, stessa forma della variante per ascolto nel Dialogo. | `86e7462` |
+
 ## Dialogue (Repeat in Time, Real Dialogue)
 
 | Data | Cosa | Commit |
 |---|---|---|
 | 2026-09-04 | L'area sensibile per passare alla battuta successiva mentre scorre la barra è **tutta la bolla**, non la sola barra del tempo. Vale per entrambi i profili. Il pulsante "Prossima frase" resta. | `b3f9a4a` |
 | 2026-09-04 | La Spiegazione di entrambi i moduli dice che si può anche toccare la battuta per andare avanti. | `b3f9a4a` |
+
+| 2026-09-07 | Real Dialogue: toccare una battuta mentre parla ne salta l'audio, come negli altri due profili. Il salto stava **dopo** la guardia `advance === 'auto'`, che usciva prima: una perdita causata dall'ordine delle righe, non una scelta. | `86e7462` |
 
 ## Speed Match
 

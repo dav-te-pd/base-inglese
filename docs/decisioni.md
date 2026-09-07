@@ -41,6 +41,7 @@ scoprirla scaduta.
 | 2026-09-06 | `openModuleByKind` è una catena di `if/else if` **senza ramo finale**: un modulo il cui `kind` non corrisponde a niente diventa una riga cliccabile che non fa nulla. | Lo stato di un modulo è derivato ("il primo non completato è l'attuale"), quindi quel modulo resta attuale per sempre e **blocca tutti i passi successivi**, senza un errore in console. | **Da fissare** — proposto: prima degli episodi grammaticali (P2), che sono il caso in cui un `kind` non ancora costruito si presenta davvero. |
 | 2026-09-06 | `episodeGrade()` restituisce `[]` per un grado assente, e i controlli `qmQueue`/`vcQueue`/`srQueue` `.length === 0` lo leggono come «coda finita». | Un modulo puntato su un grado che l'episodio non ha **non crolla: si dichiara completato senza aver fatto fare un solo esercizio**, e registra l'esito. È peggio di un errore, perché sembra funzionare. | **Da fissare** — proposto: insieme al precedente, e comunque prima di un episodio con una forma di gradi diversa. |
 | 2026-09-06 | `migrateCustomizeSeenToModuleProgress()` scrive `'personalizzazione'` nei progressi di **qualunque** episodio, anche di uno che quel modulo non lo dichiara. | Gira in cima a `openEpisodeMap()`, senza guardare se l'episodio ha quel modulo. Innocuo oggi (nessuno rilegge quell'id), ma è spazzatura nei progressi salvati. | **Da fissare** — proposto: quando nasce il primo episodio senza Personalizza. |
+| 2026-09-07 | Al terzo livello dell'avviso microfono **non c'è nessuna strada per tornare a registrare**: il microfono è nascosto (stato `result`), "Esercitati ancora" è spento e "Avanti" è bloccato da `vcMicConfirmedProblem`. Il commento di `vcUpdateMicNotice` dice che il blocco si scioglie «finché il microfono non ricomincia a funzionare (il contatore si azzera)» — quel ramo non può accadere, perché non c'è niente da premere per riprovare. | Non è un blocco senza uscita — "Torna alla mappa" c'è ed è verificata da `test_avviso_microfono.js` — ma è **una promessa che il codice fa e non può mantenere**: chi legge quel commento crede che esista un recupero sul posto e non lo cerca. Delle due, o si dà una strada per riprovare (lasciare "Esercitati ancora" acceso al livello 3) o si toglie la promessa dal commento. | **Da fissare** — è una decisione di comportamento, non una svista: sceglierla richiede di dire cosa deve poter fare uno studente col microfono rotto. |
 
 ## Contenuto
 
@@ -48,7 +49,7 @@ scoprirla scaduta.
 |---|---|---|---|
 | 2026-09-07 | Il markdown scrive i segnaposto in **notazione leggibile** (`{papà}`, `{figlia}`, `{etàFiglia}`) e il JSON usa le **chiavi vere** (`papa`, `figliaNome`, `figliaEta`). | È una traduzione mentale a ogni lettura, e prima o poi qualcuno la sbaglia. Non si allinea adesso perché cambiare le chiavi del JSON è una **migrazione**: sono la struttura dei valori salvati in `baseinglese:<episodio>:custom:<utente>`. | **Insieme alla rinomina degli slot a id**, che tocca comunque quelle chiavi. Un lavoro solo. |
 | 2026-09-07 | La chiave tecnica del personaggio è `speaker: "guide"` in ogni battuta, ma il personaggio è l'**Hostess al gate** (l'etichetta mostrata è stata allineata, la chiave no). | Regola 18: un nome che non dice più cosa nomina. Innocuo finché il cast è uno, fuorviante quando un episodio avrà davvero una guida *e* una hostess. | **Quando un episodio avrà un secondo personaggio esterno**, o insieme alla prossima riscrittura delle battute: allinearla adesso significherebbe toccare nove battute per una parola che nessuno vede. |
-| 2026-09-07 | I numeri dichiarati in testa a `docs/it/episodio-1.md` (**14** in A, 7 in B, **9** in C, 9 in D, 8 skill) non corrispondono a `data/it/a1-episodio1-inglese.json`, che ha **16** in A, 7 in B, **10** in C, 9 in D, 8 skill. | Il markdown è la fonte (regola 26) e il JSON è quello che l'app esegue: finché divergono, l'app non mostra il contenuto deciso. Segnalato e non eseguito perché rigenerare il file dati è una richiesta a sé — e la regola 29 dice di fermarsi e dirlo, non di completare a intuito. | **Quando arriverà la richiesta di riscrivere il file dati** leggendo il markdown. Non prima. |
+| 2026-09-07 | `docs/it/episodio-1.md`, nota 3, dice *«i numeri si scrivono in lettere perché è la parola che Voice Practice ascolta»*. **Oggi l'app non lo fa**: `slotOptions` normalizza un numero rendendo `it` ed `en` identici, quindi la battuta d7 in inglese dice «I'm 16 years old» con la cifra. | Stessa famiglia della riga sul fallback: **un'istruzione che descrive uno stato che non esiste.** Chi la legge crede che sia già così e non cerca il difetto. | **Quando si farà il magazzino** (punto ③ di «Cosa manca» in `docs/it/tabelle-personalizzazione.md`), che è ciò che la rende vera. |
 
 ## CI rosse che non dicono cosa fare
 
@@ -69,12 +70,6 @@ test. Vanno guardate in un giro solo — **dopo il collaudo**, sono mezza giorna
 >
 > Senza questa riga chi prende il lavoro toglie anche i `length === 3`, e quelli
 > sono la parte che protegge.
-
-## Contenuto
-
-| Data | Cosa | Perché | Quando si esegue |
-|---|---|---|---|
-| 2026-09-07 | `docs/it/episodio-1.md`, nota 3, dice *«i numeri si scrivono in lettere perché è la parola che Voice Practice ascolta»*. **Oggi l'app non lo fa**: `slotOptions` normalizza un numero rendendo `it` ed `en` identici, quindi la battuta d7 in inglese dice «I'm 16 years old» con la cifra. | Stessa famiglia della riga sul fallback: **un'istruzione che descrive uno stato che non esiste.** Chi la legge crede che sia già così e non cerca il difetto. | **Quando si farà il magazzino** (punto ③ di «Cosa manca» in `docs/it/tabelle-personalizzazione.md`), che è ciò che la rende vera. |
 
 ## Dati che l'app produce e nessuno può leggere
 
