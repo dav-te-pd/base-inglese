@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260907a**
+**Versione: 20260907b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -241,6 +241,29 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     l'intro di un modulo) falliscono solo quando fallisce
     `istruzioni-moduli.json`, quindi usano sempre la frase di ultima
     istanza — non per scorciatoia, ma perché l'alternativa non esiste.*
+
+36. **Una suite contaminata a metà non è un verde parziale: è un risultato
+    nullo.** Se un file cambia mentre la suite gira — il codice, i dati, un
+    file di test — i file passati prima della modifica hanno provato una cosa
+    e quelli dopo un'altra: **nessuno dei due risultati vale**, e non si sa
+    nemmeno quale sia quale. Si butta e si rilancia da capo.
+
+    Non è pignoleria: **un verde inattendibile costa più di un giro in più.**
+    Un giro in più costa mezz'ora di attesa; un verde in cui non si può
+    credere costa la fiducia in tutti i verdi successivi, che è la sola cosa
+    per cui la suite esiste.
+
+    Quindi, in pratica: **mentre la suite gira, l'albero di lavoro non si
+    tocca.** Nemmeno un `git pull`, nemmeno una rinomina che "non c'entra
+    niente" — i test leggono dal disco a ogni caricamento di pagina, e non
+    esiste modo di sapere dopo quali file abbiano visto cosa. Se una modifica
+    non può aspettare, si ferma la suite prima di farla, non dopo.
+
+    *Perché c'è: una suite era a 28 file su 32, tutti verdi, dopo sette ore di
+    lavoro. Una modifica al file dati e una a `index.html`, fatte mentre
+    girava, hanno reso quei 28 file inutilizzabili — non falsi, peggio:
+    indecidibili. Buttarli e ripartire è stata la cosa giusta, e la tentazione
+    di tenerseli era forte proprio perché erano verdi.*
 
 ## Riferimenti operativi
 
