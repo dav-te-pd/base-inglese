@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260907c**
+**Versione: 20260907d**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -295,13 +295,11 @@ a nessuno — anzi, protegge Pages proprio nel momento in cui non si sa ancora s
 il codice regge. **Su quel ramo non ci si lavora e non ci si resta**: nasce
 quando la suite parte, muore quando confluisce.
 
-⚠️ **`claude/verifica-in-corso` esiste sul remoto e non è una verifica in corso.**
-Il 2026-09-07 la cancellazione è fallita — il proxy git risponde «Everything
-up-to-date» a ogni tentativo — e il ramo è rimasto lì, fermo allo stesso commit
-di `main`. **Trovarlo non significa che qualcuno stia verificando qualcosa**, e
-non ci si lavora sopra: se serve un ramo di verifica lo si ricrea da `main`, che
-è comunque quello che la regola chiede. Si può togliere a mano
-dall'interfaccia di GitHub.
+*Nota pratica: dal container la cancellazione del ramo può fallire — il proxy
+git risponde «Everything up-to-date» invece di cancellare. Se succede, il ramo
+resta sul remoto fermo allo stesso commit di `main`: si toglie a mano
+dall'interfaccia di GitHub, e finché è lì **non significa che una verifica sia
+in corso.***
 
 ## Regole e funzioni dell'app
 

@@ -78,6 +78,24 @@ test. Vanno guardate in un giro solo — **dopo il collaudo**, sono mezza giorna
 
 ## Dati che l'app produce e nessuno può leggere
 
+> **Nessun dato di uso è aggregabile finché non esiste un raccoglitore.**
+> Il `localStorage` sa cosa ha fatto **un** utente su **un** dispositivo; tutti i
+> KPI che abbiamo scritto chiedono *«quanti studenti»* — e quella domanda oggi
+> non ha risposta.
+>
+> Vale per ognuno: dove si ferma la gente, i ripassi nel quiz, le aperture
+> dell'Help, i secondi di audio, le spiegazioni dichiarate poco chiare. Il
+> meccanismo che li produce c'è già, spesso per intero: **manca solo dove
+> mandarli.** Ogni giorno che passa è un giorno di dati che si accumulano su
+> dispositivi diversi e non li somma nessuno.
+>
+> **Quando:** con Supabase, o qualunque altra cosa faccia da raccoglitore.
+>
+> **La conseguenza sposta una priorità:** Supabase non serve solo agli account e
+> ai pagamenti. **Serve a sapere se il metodo funziona.** Finché non c'è, ogni
+> giudizio sul contenuto resta un'impressione — e i moduli di autovalutazione
+> producono, senza saperlo, l'unica prova che potrebbe smentirla.
+
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
 | 2026-09-07 | **Le risposte di Why We Say It si salvano davvero**, per singola skill: `addSeExplanationStat` scrive `baseinglese:seExplanationStats:<episodio>:<utente>` a ogni risposta, con `{ chiara, nonAncora, nonChiara }` per ogni `skillId`. **Ma la chiave contiene l'utente e vive nel `localStorage` del suo browser**: il dato non esce mai dal dispositivo. «Una spiegazione poco chiara a *molti* studenti» **non è calcolabile**, perché non esiste nessun modo di raccogliere quei conteggi. Oggi si vede solo nel Pannello Admin, e solo del profilo aperto. | È un giudizio sul **nostro** contenuto, non sullo studente — il dato più prezioso che quei moduli producono — e oggi si perde a ogni dispositivo. Il meccanismo di raccolta c'è già, per metà: manca solo dove mandarlo. | **Con Supabase**, o con qualunque altra cosa dia un posto dove i conteggi di più studenti si sommano. Non prima: senza un raccoglitore non c'è niente da costruire. |
