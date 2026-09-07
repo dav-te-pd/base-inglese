@@ -37,6 +37,30 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
+// Speed Match e Match Practice finiscono quando finiscono le domande: il grado
+// ne ha nove, e questi cicli cliccano sempre la PRIMA opzione sperando che
+// prima o poi capiti giusta (o sbagliata). Se la fortuna va storta per tutte e
+// nove, il giro si chiude, le opzioni spariscono, e il click successivo
+// restava appeso trenta secondi su una schermata di riepilogo — poi moriva con
+// un "TimeoutError" che non diceva niente. Il ciclo, che di giri ne prova
+// venti, era scritto per un giro che di domande ne ha nove.
+//
+// Non e' una lentezza da assecondare con un'attesa piu' lunga: e' il ciclo che
+// non sa quando fermarsi. Qui lo sa, e l'asserzione "Managed to observe..."
+// subito dopo il ciclo diventa il rosso che SPIEGA, invece del timeout muto.
+//
+// Perche' proprio cosi': il rosso era intermittente e cadeva ogni volta su una
+// riga diversa (139 in una corsa, 244 in un'altra) — tre cicli con lo stesso
+// difetto, non una riga sfortunata. Un rattoppo su una riga sola avrebbe
+// spostato il problema, non tolto.
+async function tapPrimaOpzione(page, contenitore) {
+  const presente = await page.locator(contenitore + ' .sr-option').first()
+    .waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false);
+  if (!presente) return false;   // giro finito: non c'e' piu' niente da toccare
+  await page.click(contenitore + ' .sr-option >> nth=0');
+  return true;
+}
+
 async function run() {
   const browser = await launchBrowser();
   const results = [];
@@ -59,7 +83,7 @@ async function run() {
     // a correct tap is observed; a wrong tap just advances to retry.
     let gotCorrect = false;
     for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      await page.click('#qm-options .sr-option >> nth=0');
+      if (!(await tapPrimaOpzione(page, '#qm-options'))) break;
       await page.waitForTimeout(20);
       const wasCorrect = await page.evaluate(() => document.querySelector('#qm-options .sr-option.is-correct') !== null && document.querySelector('#qm-options .sr-option.is-wrong') === null);
       if (wasCorrect) {
@@ -136,7 +160,7 @@ async function run() {
     log('[SR Task1] "Non lo so" starts enabled on a fresh question', beforeDisabled === false);
     let gotCorrect = false;
     for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      await page.click('#sr-options .sr-option >> nth=0');
+      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
       await page.waitForTimeout(20);
       const wasCorrect = await page.evaluate(() => document.querySelector('#sr-options .sr-option.is-correct') !== null && document.querySelector('#sr-options .sr-option.is-wrong') === null);
       if (wasCorrect) {
@@ -198,7 +222,7 @@ async function run() {
     // is randomized per question).
     let gotWrong = false;
     for (let attempt = 0; attempt < 20 && !gotWrong; attempt++) {
-      await page.click('#sr-options .sr-option >> nth=0');
+      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
       await page.waitForTimeout(30);
       const revealShown = await page.evaluate(() => !document.getElementById('sr-reveal').hidden);
       if (revealShown) {
@@ -241,7 +265,7 @@ async function run() {
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
     let gotCorrect = false;
     for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      await page.click('#sr-options .sr-option >> nth=0');
+      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
       await page.waitForTimeout(15); // right after the tap, before feedbackPauseMs (600) elapses
       const wasCorrect = await page.evaluate(() => document.querySelector('#sr-options .sr-option.is-correct') !== null && document.querySelector('#sr-options .sr-option.is-wrong') === null);
       if (wasCorrect) {

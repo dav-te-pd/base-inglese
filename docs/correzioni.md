@@ -32,6 +32,12 @@ commit che lo giustifica. Il titolo si ritrova con `git log --grep`.
 | 2026-09-05 | La regola di esito (`CONFIG.moduleOutcomeRules`) veniva cercata con l'**id del passo** invece che con l'id del **modulo**: dalla seconda apparizione in poi (`quickMatchEngIta-2`, `flashcardAEngIta-2`, `voicePractice-2`…) la chiave non esisteva, `saveModuleOutcome` non veniva chiamato e sei passi su ventidue restavano senza colore in mappa. Sette letture passate a `.moduleId` — un campo che l'app costruiva già su ogni passo e non leggeva nessuno. Era il § 4.1 di `docs/validazione.md`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 | 2026-09-05 | `CONFIG.attemptRule` tolta. Le sue due righe (`voicePractice: 'lastAttempt'`, `voiceCoach: 'firstAttempt'`) duplicavano una distinzione già nel descrittore come `module.voiceVariant`, ed erano anch'esse indicizzate per id del passo: il passo 16 cadeva su `undefined` e usava il primo tentativo invece dell'ultimo. La regola vive ora in `vcEvaluate`, che rama su `vcVariant`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 
+## Suite di regressione
+
+| Data | Cosa | Commit |
+|---|---|---|
+| 2026-09-07 | `test_batch19.js`: i quattro cicli che cliccano sempre la prima opzione — uno in Match Practice, tre in Speed Match — provavano **venti** giri su un grado che ha **nove** domande. Se la fortuna andava storta per tutte e nove, il giro finiva, le opzioni sparivano, e il click successivo restava appeso trenta secondi su una schermata di riepilogo prima di morire con un `TimeoutError` che non diceva niente. Ora `tapPrimaOpzione()` si accorge che non c'è più niente da toccare e il ciclo esce: l'asserzione «Managed to observe...» subito dopo diventa il rosso che **spiega**. | titolo: `Il ciclo di Speed Match sapeva contare fino a venti su nove domande` |
+
 ## Contenuto dell'episodio
 
 | Data | Cosa | Commit |
