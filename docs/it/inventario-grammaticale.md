@@ -23,6 +23,9 @@
 > nuovo per un cinese.* Un'edizione nuova non si ottiene traducendo questo file: si ottiene
 > riordinandolo.
 >
+> **Il file gemello: `docs/it/obiettivi-a1.md`.** L'inventario dice **cosa** bisogna insegnare,
+> gli obiettivi dicono **dove** serve. *Il punto in cui i due si incrociano è l'episodio.*
+>
 > Convenzione: `docs/it/inventario-grammaticale.md`.
 
 ---
@@ -290,3 +293,7 @@ vera vive altrove.*
 | **Episodio grammaticale: il verbo essere** | schede 1.1, 1.2, 1.3 | va per primo, apre tre episodi |
 | **Episodio grammaticale: i numeri 1-20** | struttura 3 | fra i primi |
 | **Episodio trappola: l'articolo di troppo** | trappola 2.3 | dopo che `the` è stato usato qualche volta |
+
+*Queste scene sono registrate anche in `docs/it/obiettivi-a1.md`, accanto all'obiettivo che
+coprono: il carrello e il ristorante sotto **ordinare al bar/ristorante**, il taxi sotto
+**mezzi pubblici in città**.*
