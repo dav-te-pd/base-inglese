@@ -129,8 +129,9 @@ la contrazione prima della forma piena, che è l'inverso dell'ordine naturale.*
 
 ### Grado A — quindici parole
 
-`hello` · `hi` · `nice` · `meet` · `you` · `I` · `where` · `from` · `Italy` · `and` · `years` ·
-`old` · `we` · `the` · `family`
+*Le quindici voci sono nella tabella qui sotto, che è l'unica fonte: l'elenco in prosa che
+c'era prima è stato tolto perché diceva le stesse cose in ordine diverso, e due scritture della
+stessa lista prima o poi divergono.*
 
 *Più i numeri delle età, che vengono dall'episodio grammaticale dei numeri.*
 
