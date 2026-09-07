@@ -73,14 +73,14 @@
       "items": [
         {
           "id": "a-hello",
-          "english": "Hello",
+          "english": "hello",
           "italian": "Ciao / Salve",
           "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
           "grammarCategory": "saluto"
         },
         {
           "id": "a-hi",
-          "english": "Hi",
+          "english": "hi",
           "italian": "Ciao",
           "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
           "grammarCategory": "saluto"

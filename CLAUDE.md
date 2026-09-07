@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260907e**
+**Versione: 20260907f**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -347,20 +347,24 @@ metà verifica su Pages a ogni giro.
 
 Quando parte la suite completa, il commit nasce su `claude/verifica-in-corso`:
 si spinge lì, il controllo è soddisfatto, e **Pages non vede niente finché il
-verde non c'è**. A suite verde il ramo confluisce in `main` e muore.
+verde non c'è**. A suite verde il ramo confluisce in `main`.
 
 Non contraddice la regola sopra, la serve: quella esiste perché lavorare
 altrove significa consegnare qualcosa che non si può provare. Un ramo che vive
 venti minuti e serve solo a non pubblicare a verifica aperta non consegna niente
 a nessuno — anzi, protegge Pages proprio nel momento in cui non si sa ancora se
-il codice regge. **Su quel ramo non ci si lavora e non ci si resta**: nasce
-quando la suite parte, muore quando confluisce.
+il codice regge. **Su quel ramo non ci si lavora e non ci si resta**: si usa mentre la suite
+gira, e appena confluisce si torna su `main`.
 
-*Nota pratica: dal container la cancellazione del ramo può fallire — il proxy
-git risponde «Everything up-to-date» invece di cancellare. Se succede, il ramo
-resta sul remoto fermo allo stesso commit di `main`: si toglie a mano
-dall'interfaccia di GitHub, e finché è lì **non significa che una verifica sia
-in corso.***
+**È sempre lo stesso ramo, e non si cancella.** Dal container la cancellazione
+dal remoto fallisce comunque — il proxy git risponde «Everything up-to-date»
+invece di cancellare — quindi provarci è solo rumore. **Se `claude/verifica-in-corso`
+esiste già, ci si spinge sopra**: ne resta uno per sempre invece di uno nuovo a
+ogni giro, e il motivo per cui la regola diceva "muore col merge" — non lasciare
+rami vaganti — è rispettato meglio con uno solo che con venti.
+
+Quindi: **trovarlo non significa che una verifica sia in corso.** Sta fermo
+all'ultimo commit confluito finché non serve di nuovo.
 
 ## Regole e funzioni dell'app
 

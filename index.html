@@ -6973,6 +6973,19 @@
   }
 
   document.getElementById('speak-easy-body').addEventListener('click', function (e) {
+    // Sblocco Sequenziale, variante per dichiarazione: una card piu' avanti
+    // della corrente non risponde a NIENTE — ne' al Blocco Ascolto (il
+    // pulsante e le velocita'), ne' a un tocco qualunque. Prima .is-ahead
+    // era solo opacita' e bordo tratteggiato: la card sembrava spenta e
+    // l'audio partiva lo stesso, aggirando la sequenza che il meccanismo
+    // esiste per imporre.
+    // Stessa forma della variante per ascolto nel Dialogo (dgHandleBubbleTap,
+    // cerca 'is-ahead-locked'): una guardia sola in cima al gestore, non un
+    // controllo per pulsante — i pulsanti dentro una card si moltiplicano,
+    // il gestore resta uno (CLAUDE.md regole 20 e 30).
+    var cardAvanti = e.target.closest('.wws-card.is-ahead');
+    if (cardAvanti) return;
+
     var listenBtn = e.target.closest('[data-say]');
     if (listenBtn) {
       var data = episodeDataCache[currentSpeakEasyModule.dataFile];
@@ -8875,7 +8888,6 @@
       dgSkipToNextLine();
       return;
     }
-    if (dgProfile.advance === 'auto') return;
     var bubble = e.target.closest('.dg-bubble');
     if (!bubble || bubble.classList.contains('is-locked') || bubble.classList.contains('is-ahead-locked')) return;
     // Job 1 (4th collaudo) + correction (5th collaudo): re-tapping the
@@ -8897,6 +8909,13 @@
       if (synth && synth.speaking) synth.cancel();
       return;
     }
+    // La guardia sull'avanzamento sta DOPO il salto dell'audio, non prima.
+    // Stava sopra, e Dialogo Continuo (advance: 'auto') usciva di qui prima
+    // di poterlo raggiungere: toccare la battuta che parla non faceva
+    // niente, mentre la regola 16 nomina ENTRAMBI i profili col countdown.
+    // Il suo scopo — impedire l'avanzamento manuale dove si avanza da soli —
+    // resta intatto: blocca dgPlayLine qui sotto, non il salto.
+    if (dgProfile.advance === 'auto') return;
     var lineId = bubble.getAttribute('data-line-id');
     var line = dgDialogue.find(function (l) { return l.id === lineId; });
     if (!line) return;
