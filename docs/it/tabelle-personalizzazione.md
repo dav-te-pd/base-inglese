@@ -2,12 +2,12 @@
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 >
-> ⚠️ **NON ANCORA TRASCRIVIBILE.** Questo file descrive il magazzino come sarà. Oggi le
-> tabelle vivono in `APP_CONFIG.people` e `APP_CONFIG.places`, e **due cose del disegno qui
-> sotto non sono rappresentabili nel codice attuale** — vedi *Cosa manca* in fondo. Il file
-> serve a decidere adesso e ad avere la fonte pronta; **la trascrizione in
-> `data/it/tabelle-personalizzazione.json` viene dopo una modifica al codice**, che va valutata
-> prima (regola 1.10).
+> ⚠️ **NON ANCORA TRASCRIVIBILE.** Questo file descrive il magazzino **come sarà**. Oggi le
+> tabelle vivono in `APP_CONFIG.people` e `APP_CONFIG.places`, e parte del disegno qui sotto
+> **non è rappresentabile nel codice attuale** — vedi *Cosa manca* in fondo, che è **un lavoro
+> solo e non si può spezzare**. Il file serve a decidere adesso e ad avere la fonte pronta;
+> **la trascrizione in `data/it/tabelle-personalizzazione.json` viene dopo quel lavoro**, che va
+> valutato prima (regola 1.10).
 >
 > **Cos'è.** Il **magazzino** dei valori di personalizzazione. Contiene più di quello che si
 > usa: un episodio **elenca gli id che vuole**, uno per uno, e solo quelli compaiono
@@ -169,6 +169,12 @@ magazzino è più grande della vetrina.*
 di vocabolario, non una quantità. Se il dialogo mostrasse `I'm 16`, lo studente non leggerebbe
 mai la parola che sta studiando.*
 
+⚠️ **Oggi l'app fa il contrario:** le età sono numeri semplici, `slotOptions` le normalizza con
+`it` ed `en` identici, e la battuta d7 in inglese dice **`I'm 16 years old`**. La colonna `en`
+di questa tabella lo corregge — ma **cambia cosa il riconoscimento vocale si aspetta di
+sentire**, quindi non deve arrivare nascosta dentro uno spostamento di dati. Vedi *Cosa manca*,
+punto ③.
+
 ## LUOGHI DI PARTENZA — città e paese accoppiati
 
 ⚠️ **Questa tabella ha due valori per riga, e oggi non è rappresentabile.** Vedi *Cosa manca*.
@@ -237,33 +243,72 @@ rimandare. Quando arriverà la scheda di distinzione, i dati sono già pronti.*
 
 ## COSA MANCA PERCHÉ QUESTO FILE SIA TRASCRIVIBILE
 
-**Due cose, e nessuna delle due è una trascrizione.**
+> **È un lavoro solo, non tre**, e va fatto tutto insieme. *Misurato da Claude Code sul codice,
+> non dedotto.*
 
-### 1. Un secondo campo per riga
+### Perché non si può spezzare (1.241)
 
-`resolveSlotValue` restituisce `picked[lang]` — **un solo campo per slot** — e le righe di
-`places.departures` sono `{ value, it, en, fr, es, de }`. **Non c'è un secondo campo "paese" da
-leggere sulla stessa riga**, e non esiste una sintassi per chiederlo: `{paese}` resterebbe non
-risolto a schermo.
+**Il secondo campo per riga ha bisogno di una riga che **abbia** un secondo campo, e oggi le
+righe stanno in `APP_CONFIG`.** Farlo da solo vorrebbe dire aggiungere la colonna paese ad
+`APP_CONFIG` — cioè il lavoro buttato già scartato una volta.
 
-*Finché non c'è, `Italy` resta scritto a mano nella battuta d4 dell'episodio del gate, e resta
-nel grado A — che vale 15 invece di 14.*
+*Presentarlo come due cose separate suggerirebbe che si possano fare in ordine. Non si può, e
+scriverlo qui evita che fra un mese qualcuno tenti la strada corta.*
 
-### 2. Il magazzino fuori da `APP_CONFIG`
+### Cosa comprende
 
-Oggi le tabelle stanno in `APP_CONFIG.people` e `APP_CONFIG.places`. Portarle in
-`data/it/tabelle-personalizzazione.json` **cambia il modo in cui i moduli risolvono uno slot**,
-e tocca tredici punti del codice.
+**① Il magazzino esce da `APP_CONFIG` e va in `data/it/tabelle-personalizzazione.json`.**
 
-**Serve anche una migrazione:** i profili salvano il valore della riga — `marco`, `mondovi`,
-`16` — che diventerebbe `papa-marco`, `orig-mondovi`, `eta-16`. Senza migrazione,
-`var picked = match || opts[0]` **ricade in silenzio sulla prima opzione**: chi ha
+**È più piccolo di quanto sembri: il magazzino è già dietro un punto unico** (1.240).
+`CONFIG.people` e `CONFIG.places` hanno **zero occorrenze** nel codice — nessuno li raggiunge
+per nome, passano tutti da `resolveSlotTable`. *Gli slot sono ovunque, le tabelle passano da
+una funzione sola.*
+
+| Dove | Cosa cambia |
+|---|---|
+| `resolveSlotTable` | la radice: il file caricato invece di `CONFIG` |
+| `buildSlotFields` — `isPersonName: slot.table.indexOf('people.') === 0` | sostituita dal campo `traducibile` della riga |
+| `resolveSlotValue` — `return field.isPersonName ? picked.it : picked[lang]` | legge il campo dichiarato invece di dedurlo |
+
+Più un quarto loader accanto ai tre esistenti. **Mezza giornata, non giorni.**
+
+**② Il secondo campo per riga**, per il paese accoppiato alla città.
+
+Dentro il lavoro unico è **minuscolo**: `dialoguePlaceholderMap` mappa già segnaposto → chiave
+slot. Basta ammettere che una voce nomini anche un campo — `paese: { slot: 'partenza', campo:
+'paese' }` — e `resolveSlotValue` legge quello. *Una funzione e la forma di una mappa.*
+
+**③ Le età smettono di essere numeri e diventano parole (1.242).**
+
+⚠️ **Oggi l'app dice `I'm 16 years old`, con la cifra.** `slotOptions` normalizza le età così:
+
+```js
+var s = String(item);
+return { value: s, it: s, en: s, ... };
+```
+
+**`it` ed `en` diventano identici.** Il magazzino, che porta `en: sixteen`, la farebbe diventare
+`I'm sixteen years old` — che è il comportamento giusto e quello che la nota 3 dell'episodio
+descrive. *Ma finché questo lavoro non è fatto, quella nota descrive una cosa che l'app non fa.*
+
+**Cambia cosa il riconoscimento vocale si aspetta di sentire, quindi vuole un test suo.** E non
+va lasciata arrivare nascosta dentro uno spostamento di dati.
+
+**④ La migrazione dei valori salvati.**
+
+**Tocca un namespace solo** (1.243): `baseinglese:<episodio>:custom:<utente>`. Una tabella di
+corrispondenza `marco → papa-marco`, `mondovi → orig-mondovi`, `16 → eta-16`, letta una volta al
+boot.
+
+*Senza, `var picked = match || opts[0]` **ricade in silenzio sulla prima opzione**: chi ha
 personalizzato si ritrova tutte le scelte riportate ai default, senza avviso e senza che nessun
-test lo veda.
+test lo veda.*
 
-**E serve un test rovesciato:** non *"ogni riga del magazzino è usata"* — falso per costruzione,
-il magazzino è più grande della vetrina — ma **"ogni id elencato da un episodio esiste nel
-magazzino"**. Un id scritto storto oggi darebbe `picked = opts[0]`: silenzio.
+**⑤ Il test rovesciato.**
+
+Non *"ogni riga del magazzino è usata"* — falso per costruzione, il magazzino è più grande della
+vetrina — ma **"ogni id elencato da un episodio esiste nel magazzino"**. *Stessa forma di
+`test_config_letta.js`, che già cerca per nome-foglia: si copia quello.*
 
 ### E una cosa da chiudere insieme
 
@@ -271,4 +316,4 @@ magazzino"**. Un id scritto storto oggi darebbe `picked = opts[0]`: silenzio.
 `{figlia}`, `{etàFiglia}`, `{papà}`, il JSON usa `figliaNome`, `figliaEta`, `papa`. Oggi sono
 notazione leggibile contro chiavi vere, ma **è una traduzione mentale a ogni lettura, e prima o
 poi qualcuno la sbaglia.** Va allineato in questo stesso lavoro, che tocca comunque quelle
-chiavi — e che quindi comporta comunque una migrazione.
+chiavi e comporta comunque una migrazione.
