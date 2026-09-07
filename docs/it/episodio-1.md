@@ -9,7 +9,7 @@
 > cambiare quando vogliamo. *Oggi nel codice è `badge: 'Episodio 1'`, scritto nel codice: con
 > la regola 4 non ci può più stare.*
 >
-> **Numeri attesi nel JSON:** 14 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
+> **Numeri attesi nel JSON:** 15 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
 > 8 slot di personalizzazione. **Se i conti non tornano, fermarsi e segnalarlo.**
 >
 > **Materiale di partenza per Claude Code.** Da qui viene scritto
@@ -54,7 +54,7 @@ quiz due cose diverse, in silenzio, senza che nessun test lo vedesse.*
 | d1 | Hostess al gate | Hello! Nice to meet you. | Ciao! Piacere di conoscervi. | 1, 2 |
 | d2 | Papà | Hello! I am {papà}. | Ciao! Sono {papà}. | — |
 | d3 | Hostess al gate | Where are you from, {papà}? | Di dove sei, {papà}? | 3 |
-| d4 | Papà | I am from {partenza}, {paese}. | Vengo da {partenza}, in {paese}. | 4 |
+| d4 | Papà | I am from {partenza}, Italy. | Vengo da {partenza}, in Italia. | 4 |
 | d5 | Hostess al gate | And you? | E tu? | 5 |
 | d6 | Mamma | Hello! I am {mamma}. | Ciao! Sono {mamma}. | — |
 | d7 | Figlia | Hi! I'm {figlia}. I'm {etàFiglia} years old. | Ciao! Sono {figlia}. Ho {etàFiglia} anni. | 6 |
@@ -127,10 +127,10 @@ una hai già l'altra"*. Metterla in B contraddirebbe la nostra stessa spiegazion
 il confronto è l'insegnamento (regola 4.1). *Fino a ieri `I'm` stava nel grado A e `I am` in B —
 la contrazione prima della forma piena, che è l'inverso dell'ordine naturale.*
 
-### Grado A — quattordici parole
+### Grado A — quindici parole
 
-`hello` · `hi` · `nice` · `meet` · `you` · `I` · `where` · `from` · `and` · `years` · `old` ·
-`we` · `the` · `family`
+`hello` · `hi` · `nice` · `meet` · `you` · `I` · `where` · `from` · `Italy` · `and` · `years` ·
+`old` · `we` · `the` · `family`
 
 *Più i numeri delle età, che vengono dall'episodio grammaticale dei numeri.*
 
@@ -143,6 +143,7 @@ la contrazione prima della forma piena, che è l'inverso dell'ordine naturale.*
 | you | tu / voi | iu | pronome |
 | I | io | ai — sempre maiuscola in inglese | pronome |
 | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
+| Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
 | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
 | and | e | and — la "d" finale si sente appena | congiunzione |
 | years | anni | i-ars — parte con un suono di "i" | sostantivo |
@@ -151,7 +152,20 @@ la contrazione prima della forma piena, che è l'inverso dell'ordine naturale.*
 | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
 | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
 
-**Maiuscole:** in A e B minuscolo, tranne dove la lingua impone la maiuscola — qui solo `I`.
+> ⚠️ **`Italy` è ancora una voce fissa del grado A, e la battuta d4 lo scrive a mano.**
+>
+> **Deciso e non ancora applicato:** il paese diventerà parte dello slot `partenza`, accoppiato
+> alla città nella stessa riga del magazzino — così uno studente di Lugano non dichiara un
+> paese che non è il suo, e la coppia non può divergere (regola 2.7). Allora `Italy` uscirà dal
+> grado A, che scenderà a 14.
+>
+> **Perché non ora:** `resolveSlotValue` restituisce **un solo campo per slot**, e le righe di
+> `places.departures` non hanno un secondo campo da leggere. Rappresentarlo oggi vorrebbe dire
+> aggiungere una colonna ad `APP_CONFIG`, che stiamo per smontare — lavoro buttato. **Dipende
+> da `data/it/tabelle-personalizzazione.json`, che non esiste ancora.**
+
+**Maiuscole:** in A e B minuscolo, tranne dove la lingua impone la maiuscola — qui `I` e
+`Italy`, che è un nome proprio.
 In C e D scrittura normale (regola 4.4). *`Hello` e `Hi` erano maiuscoli solo perché nel
 dialogo stanno a inizio battuta.*
 
@@ -165,7 +179,7 @@ spiegare a parole una cosa che non si fa mai studiare.*
 | Voce | Dove è andata | Perché |
 |---|---|---|
 | `I'm` | grado B, accanto a `I am` | è una forma del verbo essere, non una parola singola |
-| `Italy` | **slot di personalizzazione**, accoppiato alla città | non è più una voce fissa: ogni studente può partire da un paese diverso |
+| ~~`Italy`~~ | **resta nel grado A, per ora** | vedi il riquadro qui sotto |
 | `am`, `are` | grado B, dentro `I am` e `we are` | nessuno li usa isolati. Aperti dall'episodio grammaticale del verbo essere |
 | `to` | esce e torna dopo | restando solo dentro `nice to meet you`, non ha un significato usabile da solo. Tornerà quando `going to` e `welcome to` gli daranno un senso: la direzione |
 | `going`, `welcome` | episodio successivo | stavano solo nelle battute spostate |
@@ -242,10 +256,18 @@ Nessuna. *Il present continuous, che era rimandato, esce insieme alla battuta ch
 
 **Otto slot:** papà, mamma, figlia, figlio, età figlia, età figlio, cognome, partenza.
 
-**Il paese non è un nono slot:** arriva accoppiato con la città, dalla stessa riga del
+**Il paese non sarà mai un nono slot:** arriverà accoppiato con la città, dalla stessa riga del
 magazzino. *Città e paese appartengono alla stessa realtà: sceglierli separatamente
-permetterebbe "Torino, Francia"* (regola 2.7, il fruttivendolo). Nella battuta d4 i due
-segnaposto `{partenza}` e `{paese}` leggono **due campi della stessa riga**.
+permetterebbe "Torino, Francia"* (regola 2.7, il fruttivendolo).
+
+⚠️ **Oggi non è così:** `Italy` è scritto a mano nella battuta d4. Vedi il riquadro nel grado A.
+
+**I segnaposto di questa tabella sono notazione leggibile, non le chiavi vere.** Nel JSON le
+chiavi restano quelle di oggi — `papa`, `figliaNome`, `figliaEta` — perché sono la struttura
+dei valori salvati in `baseinglese:<episodio>:custom:<utente>`: cambiarle è una migrazione, non
+una trascrizione. *Il fatto che markdown e JSON scrivano i segnaposto in due modi diversi è una
+traduzione mentale a ogni lettura, e prima o poi qualcuno la sbaglia: va sistemato insieme alla
+rinomina degli slot a id, che tocca comunque quelle chiavi.*
 
 **L'episodio elenca gli id che usa**, uno per uno — non "tutti quelli della tabella"
 (regola 5.7):
