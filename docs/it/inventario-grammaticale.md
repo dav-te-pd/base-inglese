@@ -76,7 +76,7 @@ strutture sono spezzate in schede.*
 | `there is` / `there are` | da lavorare |
 | Imperativo | da lavorare |
 | Quantificatori base | da lavorare |
-| Numeri, ore, date, prezzi | ⚠️ **regola decisa, non ancora spezzata** |
+| **Numeri, ore, date, prezzi** | ✅ **spezzata in 5 schede** — lavorata la 3.1 (numeri 1-20) |
 
 **Voci singole, che non si spezzano:** genitivo sassone · present continuous *(solo la forma
 fissa)* · `I'd like`
@@ -230,38 +230,77 @@ scheda 2.2 potrà usarlo come esempio che lo studente riconosce già.
 
 # 3. NUMERI, ORE, DATE, PREZZI
 
-⚠️ **Regola decisa, struttura non ancora spezzata.**
+**Perché è in A1:** senza i numeri non si dice l'età, l'ora, il prezzo, il binario. **È la
+struttura più usata di tutte** e la meno grammaticale: per la maggior parte è vocabolario.
 
-## La regola, già decisa
+**Cinque schede**, e ne è lavorata una — le altre si spezzano quando servono.
 
-> **Un numero si scrive in lettere quando è la parola che stiamo insegnando.**
+| # | Scheda | Cosa insegna | Quando |
+|---|---|---|---|
+| **3.1** | **I numeri 1-20** | le venti parole | ✅ **lavorata** — l'episodio 1 le usa già |
+| 3.2 | **Da 20 a 100** | le decine e la composizione: `twenty-one`, `thirty-five` | quando servono prezzi o età degli adulti |
+| 3.3 | **L'ora** | `half past`, `quarter to`, e il modo semplice `seven thirty` | quando c'è un orario in una scena |
+| 3.4 | **Le date** | giorni, mesi, e l'ordinale: `the fifth of June` | molto dopo |
+| 3.5 | **I prezzi** | `how much`, la valuta, i decimali | con l'obiettivo *chiedere il prezzo* |
 
-I numeri 1-20 si insegnano come **voci di vocabolario**: `sixteen` è una parola da imparare,
-non una quantità. Se il dialogo mostrasse `I'm 16`, lo studente non leggerebbe mai la parola
-che sta studiando — e in Voice Practice dovrebbe pronunciare qualcosa che non ha mai visto
-scritto.
+*Perché la 3.2 è separata: da venti in su **non impari parole nuove, impari a comporle**.
+`twenty-one` si fa con pezzi che già hai — è una regola, non vocabolario.*
 
-**Nei dialoghi: sempre in lettere.** Così impara **a leggerlo e a scriverlo**, non solo a
-riconoscere una cifra che sa già.
+*Perché l'ora è a sé: `half past seven` non ha niente a che vedere col contare. **È un modo di
+dire**, e ha la sua trappola — l'inglese dice "mezza **dopo** le sette" dove l'italiano dice
+"sette e mezza".*
 
-**Nella schermata di personalizzazione: la cifra.** Scegliere `16` da un elenco è più veloce
-che leggere `sixteen`. *Sono due usi diversi, non una duplicazione* — le due forme stanno nella
-tabella di personalizzazione (regola 5.8).
+## 3.1 — I numeri da uno a venti
 
-**Nell'episodio grammaticale servono entrambe:** gli esercizi le mettono in relazione — vedi
-`16`, devi riconoscere `sixteen`, e viceversa. **È proprio quello l'esercizio.**
+**Cosa insegna:** `one` … `twenty`, **come parole e come cifre insieme**.
 
-## Cosa resta da fare
+*Perché tutte e venti in una scheda sola:* si imparano insieme perché **si contano insieme**.
+Spezzarle in 1-10 e 11-20 romperebbe una sequenza che nella testa dello studente è una sola.
 
-**La struttura va spezzata.** *"Numeri, ore, date, prezzi"* sono quattro cose diverse:
-`sixteen` e *"sono le tre e mezza"* non si imparano insieme.
+### Le due forme, e perché servono entrambe
 
-**E almeno una scheda si stacca subito:** i numeri **1-20** sono l'episodio grammaticale da
-mettere per primo, mentre ore, date e prezzi vengono molto dopo.
+| Forma | Dove si usa |
+|---|---|
+| **la cifra** — `16` | la schermata di personalizzazione: **scegliere da un elenco di cifre è più veloce** |
+| **la parola** — `sixteen` | **il dialogo**, e quello che Voice Practice ascolta |
 
-## Trappola già nota
+> **Un numero si scrive in lettere quando è la parola che stiamo insegnando.** `sixteen` è una
+> voce di vocabolario, non una quantità. *Se il dialogo mostrasse `I'm 16`, lo studente non
+> leggerebbe mai la parola che sta studiando — e in Voice Practice dovrebbe pronunciare
+> qualcosa che non ha mai visto scritto.*
 
-`thirteen` / `thirty`, `fourteen` / `forty`. *Da prevedere, non da scoprire.*
+**Nell'episodio grammaticale servono tutte e due, ed è proprio quello l'esercizio:** vedi `16`,
+devi riconoscere `sixteen`, e viceversa.
+
+⚠️ **Oggi l'app fa il contrario:** le età sono numeri semplici e `slotOptions` le normalizza
+rendendo italiano e inglese identici, quindi la battuta d7 **in inglese dice `I'm 16 years
+old`**. La correzione arriva con il magazzino della personalizzazione.
+
+### Esempi dalla storia
+
+Le età della famiglia, che l'episodio 1 usa già:
+
+> `I'm sixteen years old.` · `I'm ten.` · `I'm eight.`
+
+*Perché questi:* sono le uniche occorrenze di numeri in tutto quello che è scritto finora, e
+**la scheda serve proprio a reggere quelle due battute**.
+
+### La trappola, e va nella scheda
+
+**`thirteen` / `thirty`, `fourteen` / `forty`.** Non è ancora un problema — `thirty` sta nella
+scheda 3.2 — ma la scheda 3.1 può già dire come si distinguono:
+
+> **`-teen` porta l'accento in fondo** — thir-TEEN — **e le decine sull'inizio** — THIR-ty.
+
+*Va detta adesso perché più tardi lo studente avrà già preso l'abitudine sbagliata, e correggere
+un'abitudine costa più che formarla.*
+
+### Il pezzo più difficile è proprio quello che serve
+
+**`thirteen`–`seventeen` sono le età della figlia**, e sono **i cinque più difficili da
+pronunciare** di tutti e venti: gruppi consonantici, il *th*, e l'accento in fondo.
+
+*Non è un caso da evitare: è il motivo per cui questa scheda va per prima e va esercitata bene.*
 
 ---
 
@@ -291,7 +330,7 @@ vera vive altrove.*
 | **Il carrello delle bevande** sull'aereo | scheda 2.1 — `a` / `an` | venti caffè uguali: `a` si spiega da solo |
 | **Il taxi all'arrivo** | scheda 2.2 — `the` | un taxi solo, in contrasto con il carrello |
 | **Episodio grammaticale: il verbo essere** | schede 1.1, 1.2, 1.3 | va per primo, apre tre episodi |
-| **Episodio grammaticale: i numeri 1-20** | struttura 3 | fra i primi |
+| **Episodio grammaticale: i numeri 1-20** | scheda 3.1 | **fra i primi** — l'episodio 1 li usa già per le età |
 | **Episodio trappola: l'articolo di troppo** | trappola 2.3 | dopo che `the` è stato usato qualche volta |
 
 *Queste scene sono registrate anche in `docs/it/obiettivi-a1.md`, accanto all'obiettivo che
