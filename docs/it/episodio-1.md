@@ -5,7 +5,7 @@
 > **Titolo mostrato allo studente:** *Al gate* — appartiene all'edizione italiana e può
 > cambiare quando vogliamo.
 >
-> **Numeri attesi nel JSON:** 14 voci nel grado A, 6 in B, 10 in C, 9 battute in D, 8 skill,
+> **Numeri attesi nel JSON:** 14 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
 > 8 slot di personalizzazione. **Se i conti non tornano, fermarsi e segnalarlo.**
 >
 > **Materiale di partenza per Claude Code.** Da qui viene scritto
@@ -65,7 +65,7 @@ quiz due cose diverse, in silenzio, senza che nessun test lo vedesse.*
 due presentazioni dei genitori, identiche nella struttura. *Nel modulo Why We Say It quelle due
 card non hanno pulsanti e prendono la spunta da sole quando la sequenza le supera.*
 
-### Grado C — dieci frasi
+### Grado C — nove frasi
 
 *Le frasi del grado C **si ricavano dalle battute togliendo saluti e vocativi**: quello che
 resta è la frase riusabile. Dove la frase è identica alla battuta si scrive `= dN` e non si
@@ -76,19 +76,18 @@ ricopia — così non possono divergere.*
 | c1 | I am {papà}. | Sono {papà}. | d2 | tolto `Hello!` |
 | c2 | Where are you from? | Di dove sei? | d3 | tolto il vocativo |
 | c3 | `= d4` | | d4 | identica |
-| c4 | `= d5` | | d5 | identica |
-| c5 | I am {mamma}. | Sono {mamma}. | d6 | tolto `Hello!` |
-| c6 | I'm {figlia}. | Sono {figlia}. | d7 | tolto `Hi!`, e la battuta contiene due frasi |
-| c7 | I'm {etàFiglia} years old. | Ho {etàFiglia} anni. | d7 | seconda frase della battuta |
-| c8 | I'm {figlio}. | Sono {figlio}. | d8 | tolto `Hi!`, e la battuta contiene due frasi |
-| c9 | I'm {etàFiglio}. | Ho {etàFiglio} anni. | d8 | seconda frase della battuta |
-| c10 | `= d9` | | d9 | identica |
+| c4 | I am {mamma}. | Sono {mamma}. | d6 | tolto `Hello!` |
+| c5 | I'm {figlia}. | Sono {figlia}. | d7 | tolto `Hi!`, e la battuta contiene due frasi |
+| c6 | I'm {etàFiglia} years old. | Ho {etàFiglia} anni. | d7 | seconda frase della battuta |
+| c7 | I'm {figlio}. | Sono {figlio}. | d8 | tolto `Hi!`, e la battuta contiene due frasi |
+| c8 | I'm {etàFiglio}. | Ho {etàFiglio} anni. | d8 | seconda frase della battuta |
+| c9 | `= d9` | | d9 | identica |
 
-**`Nice to meet you.` non è nel grado C**: come frase non aggiunge niente rispetto al chunk del
-grado B, ed è la stessa identica stringa. *Una voce non si ripete a due gradi se a quel grado
-non aggiunge niente* (regola 2.6).
+**Non sono nel grado C:** `nice to meet you` e `and you?`. **Non si costruiscono** — si
+producono intere — quindi stanno in B. *Il grado C esercita la **costruzione** della frase: una
+frase che non si costruisce non ha niente da fare lì* (vedi il criterio sotto il grado B).
 
-### Grado B — sei espressioni
+### Grado B — sette espressioni
 
 *B contiene **espressioni e pezzi**. Se è una frase intera sta in C* (regola 2.5).
 
@@ -99,14 +98,30 @@ non aggiunge niente* (regola 2.6).
 | we are | (noi) siamo | ui ar | pronome + verbo essere |
 | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
 | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
+| and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
 | years old | anni (di età) | i-ars OULD | espressione per l'età |
 
-**`where are you from?` e `and you?` sono uscite da B**: sono frasi intere, quindi stanno solo
-in C. *Erano duplicate fra i due gradi, e il criterio le ha separate da solo.*
+> **Il criterio: B contiene quello che si produce intero, C quello che si costruisce.**
+>
+> **La prova:** *puoi cambiarci dentro un pezzo e ottenere un'altra frase valida dello stesso
+> tipo?* Se sì è C, se no è B. **Non contano la lunghezza né il punto interrogativo.**
+>
+> `I am {papà}.` sì — qualunque nome. `We are the {cognome} family!` sì. `nice to meet you`
+> **no**: è sempre esattamente quella.
+>
+> *È il criterio che il metodo aveva già senza averlo mai formalizzato: "il grado C esercita
+> **la costruzione** della frase". Una frase che non si costruisce non ha niente da fare lì. E
+> si **prova** invece di giudicarla — la formulazione precedente, "costruita o memorizzata",
+> chiedeva un giudizio.*
 
-**`nice to meet you` resta in B** benché sia una frase intera: **è una formula che si impara
-intera e si produce così com'è**, non una frase costruita con le parole del grado A. La linea
-di confine è *costruita / memorizzata*, non lunga / corta. *Eccezione validata, rivedibile.*
+**`nice to meet you` e `and you?` stanno in B** benché siano frasi intere: non si costruiscono,
+non c'è nessun pezzo da cambiare. **Non sono eccezioni**, sono il criterio applicato.
+
+**`where are you from?` sta in C**, ed è il caso limite: si potrebbe imparare intera, ma **la
+skill 3 insegna già che è costruita** — *"domanda e risposta usano le stesse parole, se impari
+una hai già l'altra"*. Metterla in B contraddirebbe la nostra stessa spiegazione.
+
+*Fino a ieri `where are you from?` e `and you?` erano in B **e** in C, duplicate.*
 
 **`I am` e `I'm` stanno entrambi qui.** Sono due forme della stessa cosa, e vanno **vicine**:
 il confronto è l'insegnamento (regola 4.1). *Fino a ieri `I'm` stava nel grado A e `I am` in B —
