@@ -1,23 +1,30 @@
 // PROTEGGE: l'avviso "non riusciamo a sentirti" dei due moduli di voce —
-// che compaia quando deve, che salga di livello nell'ordine giusto, che al
-// terzo livello impedisca di andare avanti, e che sparisca da solo appena il
-// microfono torna a funzionare. Senza questo file, uno studente col microfono
-// rotto può restare a fissare zero stelle credendo di pronunciare male.
+// che compaia per ENTRAMBE le strade con cui un microfono rotto si manifesta,
+// che salga di livello nell'ordine giusto, che al terzo livello impedisca di
+// andare avanti, e che sparisca da solo appena il microfono torna a
+// funzionare. Senza questo file, uno studente col microfono rotto puo' restare
+// a fissare zero stelle credendo di pronunciare male.
 //
-// LIMITE DICHIARATO, ed è il motivo per cui questo file esiste: l'avviso è
-// mosso SOLO da vcEmptyRecognitionStreak, che si tocca in un punto solo —
-// dentro vcEvaluate(), cioè dopo un click su "Invia". Una registrazione
-// chiusa dal timeout di silenzio (premi e non parli) viene scartata prima:
-// non arriva mai a "Invia", quindi non incrementa niente e il pannello a tre
-// livelli NON compare mai. Il blocco [A] qui sotto misura proprio quel caso e
-// fissa il comportamento di oggi: se un giorno si decide che anche il
-// silenzio deve contare, questo file diventa rosso — ed è giusto così, perché
-// quella è una decisione, non un dettaglio.
+// LE DUE STRADE, e sono la ragione per cui questo file esiste:
+//   [A] premi e non parli — il timeout di silenzio chiude la registrazione e
+//       la scarta. E' il gesto piu' comune di chi ha il microfono rotto.
+//   [B] parli ma non viene riconosciuta nessuna parola — la registrazione
+//       arriva a "Invia" e viene valutata.
+// Fino al 2026-09-07 solo la [B] muoveva vcEmptyRecognitionStreak: il ramo del
+// silenzio usciva prima, quindi la strada piu' battuta era l'unica che
+// all'avviso non arrivava mai. Non erano due meccanismi in competizione, era
+// uno che non veniva mai innescato. Se qualcuno rimette quel `return` prima
+// dell'incremento, il blocco [A] diventa rosso.
+//
+// PROTEGGE ANCHE, e non e' un dettaglio: che il pannello stia FUORI da
+// #vc-result. La strada [A] torna allo stato di riposo, dove #vc-result e'
+// nascosto — da li' dentro l'avviso salirebbe di livello restando invisibile.
+// E' il caso peggiore di tutti: un meccanismo che funziona e non si vede.
 //
 // COME: il riconoscimento finto del blocco [A] non consegna MAI un risultato e
-// si chiude solo su stop() — che è ciò che fa quello vero quando nessuno
+// si chiude solo su stop() — che e' cio' che fa quello vero quando nessuno
 // parla. Un mock che risponde subito (come quello di test_voicecoach.js) non
-// passerebbe mai dal ramo del silenzio, cioè eviterebbe l'unica cosa che qui
+// passerebbe mai dal ramo del silenzio, cioe' eviterebbe l'unica cosa che li'
 // si vuole misurare (CLAUDE.md regola 19).
 
 const { launchBrowser, APP_URL } = require('./test-env');
@@ -145,25 +152,58 @@ async function run() {
       await page.addInitScript(mockSilenzio);
       await apriModulo(page, 'AvvisoMic' + modulo.id, modulo.id);
 
+      const soglie = await page.evaluate(() => {
+        const c = window.APP_CONFIG.voiceCoach.micIssue;
+        return { uno: c.warningAt, due: c.restartSuggestionAt, tre: c.confirmedAt };
+      });
+
       const giri = [];
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < soglie.tre; i++) {
         await page.evaluate(() => document.getElementById('vc-record-btn').click());
-        // Si aspetta l'EFFETTO del timeout — la registrazione tornata a
-        // riposo — non un numero di millisecondi sperato.
+        // Si aspetta l'EFFETTO del timeout — la registrazione che si e'
+        // fermata da sola — non un numero di millisecondi sperato. Non si
+        // aspetta piu' la riga di avviso: dal secondo tentativo quella riga
+        // lascia il posto al pannello, e aspettarla appenderebbe il test
+        // esattamente sul comportamento nuovo.
         await page.waitForFunction(() => {
-          const w = document.getElementById('vc-silence-warning');
-          return w && w.getClientRects().length > 0;
+          const b = document.getElementById('vc-record-btn');
+          return b && !b.classList.contains('is-recording');
         }, null, { timeout: 10000 });
         giri.push(await leggiStato(page));
       }
 
-      log('[A] ' + modulo.nome + ': ogni registrazione muta avvisa che non ti abbiamo sentito',
-          giri.every(g => g.avvisoSilenzio));
+      const attesoAl = n => n >= soglie.tre ? 3 : n >= soglie.due ? 2 : n >= soglie.uno ? 1 : 0;
       log('[A] ' + modulo.nome + ': una registrazione muta viene scartata, "Invia" non compare mai',
           giri.every(g => !g.inviaOfferto));
-      // Il limite dichiarato in testa al file, misurato invece che raccontato.
-      log('[A] ' + modulo.nome + ': il pannello a tre livelli NON compare (il silenzio non conta)',
-          giri.every(g => g.pannello === false));
+      log('[A] ' + modulo.nome + ': il primo tentativo muto dice solo che non ti abbiamo sentito',
+          giri[0].avvisoSilenzio === true && giri[0].pannello === false);
+      // Il cuore della correzione: premere e non parlare CONTA.
+      if (!giri.every((g, i) => g.livello === attesoAl(i + 1))) {
+        console.log('  livelli osservati: ' + giri.map(g => g.livello).join(',') +
+                    ' — attesi: ' + giri.map((g, i) => attesoAl(i + 1)).join(','));
+      }
+      log('[A] ' + modulo.nome + ': premere e non parlare fa salire l\'avviso come le soglie di CONFIG',
+          giri.every((g, i) => g.livello === attesoAl(i + 1)));
+      log('[A] ' + modulo.nome + ': quando c\'e\' l\'avviso la riga sotto il microfono si toglie',
+          giri.every(g => g.pannello ? g.avvisoSilenzio === false : g.avvisoSilenzio === true));
+      // Il pannello sta fuori da #vc-result: se qualcuno lo rimettesse dentro,
+      // qui sarebbe hidden=false e invisibile lo stesso — e nessuna delle
+      // asserzioni sopra se ne accorgerebbe, perche' leggono la visibilita'
+      // vera (getClientRects), non l'attributo.
+      const visibileDavvero = await page.evaluate(() => {
+        const p = document.getElementById('vc-mic-notice');
+        const r = p.getBoundingClientRect();
+        return { dentroResult: !!p.closest('#vc-result'), altezza: r.height };
+      });
+      log('[A] ' + modulo.nome + ': l\'avviso e\' fuori dal blocco del risultato e ha corpo a schermo',
+          visibileDavvero.dentroResult === false && visibileDavvero.altezza > 0);
+      // Da fermo si puo' ancora registrare: qui la strada per riprovare c'e',
+      // a differenza di quella che porta al livello 3 passando da "Invia".
+      log('[A] ' + modulo.nome + ': anche al livello confermato si puo\' ancora riprovare a registrare',
+          await page.evaluate(() => {
+            const b = document.getElementById('vc-record-btn');
+            return !!b && b.getClientRects().length > 0 && !b.disabled;
+          }));
       await page.close();
     }
 

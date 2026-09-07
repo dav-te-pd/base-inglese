@@ -56,6 +56,12 @@ commit che lo giustifica. Il titolo si ritrova con `git log --grep`.
 
 | 2026-09-07 | Real Dialogue: toccare una battuta mentre parla ne salta l'audio, come negli altri due profili. Il salto stava **dopo** la guardia `advance === 'auto'`, che usciva prima: una perdita causata dall'ordine delle righe, non una scelta. | `86e7462` |
 
+## Voice Practice / Voice Check
+
+| Data | Cosa | Commit |
+|---|---|---|
+| 2026-09-07 | Premere il microfono e non parlare ora **conta** come registrazione senza parole: il ramo del timeout di silenzio incrementa `vcEmptyRecognitionStreak` e aggiorna l'avviso. Prima quel contatore si muoveva solo dentro `vcEvaluate()`, cioè dopo un "Invia" — e una registrazione muta viene scartata prima di arrivarci, quindi il gesto più comune di chi ha il microfono rotto era l'unico che all'avviso non arrivava mai. Non erano due meccanismi in competizione: era uno che non veniva mai innescato. Livello 1 dopo due tentativi. Il pannello è uscito da `#vc-result`, che nello stato di riposo è nascosto: da lì dentro sarebbe salito di livello restando invisibile. Quando l'avviso c'è, la riga sotto il microfono si toglie invece di ripetere lo stesso concetto. | titolo: `Premere e non parlare conta come registrazione vuota` |
+
 ## Speed Match
 
 | Data | Cosa | Commit |
