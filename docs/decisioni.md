@@ -50,6 +50,32 @@ scoprirla scaduta.
 | 2026-09-07 | La chiave tecnica del personaggio è `speaker: "guide"` in ogni battuta, ma il personaggio è l'**Hostess al gate** (l'etichetta mostrata è stata allineata, la chiave no). | Regola 18: un nome che non dice più cosa nomina. Innocuo finché il cast è uno, fuorviante quando un episodio avrà davvero una guida *e* una hostess. | **Quando un episodio avrà un secondo personaggio esterno**, o insieme alla prossima riscrittura delle battute: allinearla adesso significherebbe toccare nove battute per una parola che nessuno vede. |
 | 2026-09-07 | I numeri dichiarati in testa a `docs/it/episodio-1.md` (**14** in A, 7 in B, **9** in C, 9 in D, 8 skill) non corrispondono a `data/it/a1-episodio1-inglese.json`, che ha **16** in A, 7 in B, **10** in C, 9 in D, 8 skill. | Il markdown è la fonte (regola 26) e il JSON è quello che l'app esegue: finché divergono, l'app non mostra il contenuto deciso. Segnalato e non eseguito perché rigenerare il file dati è una richiesta a sé — e la regola 29 dice di fermarsi e dirlo, non di completare a intuito. | **Quando arriverà la richiesta di riscrivere il file dati** leggendo il markdown. Non prima. |
 
+## CI rosse che non dicono cosa fare
+
+*Stessa famiglia: la CI diventa rossa e chi la legge non sa se è rotta l'app o il
+test. Vanno guardate in un giro solo — **dopo il collaudo**, sono mezza giornata.*
+
+| Data | Cosa | Perché | Quando si esegue |
+|---|---|---|---|
+| 2026-09-07 | `test_batch19.js`, tre cose **in quest'ordine**: **(1)** il `.catch(() => {})` della riga 131 sopprime il fallimento del click su `#sr-ready-btn` — probabile causa vera del rosso in CI: se il click non va, il countdown non parte e il test muore nove righe dopo su un timeout che non dice niente. Va sostituito con un `waitForSelector('#sr-ready-btn')` prima del click: se il pulsante non c'è, deve fallire lì e dirlo. **(2)** la riga 132 (`waitForTimeout(300)`) è ridondante rispetto alla 139, che aspetta già lo stato vero — via, e il test è anche più veloce. **(3)** il messaggio del timeout della 139 dice solo «TimeoutError»: per capire cosa fosse successo è servito leggere il codice, non il log. | **L'ordine conta, e chi legge fra un mese deve saperlo: 2 senza 1 non risolve niente.** Togliere solo l'attesa fissa dichiarerebbe chiuso un difetto ancora vivo, che tornerebbe con lo stesso timeout muto. La causa è il click soppresso, non la lentezza del countdown. | **Prima del collaudo.** Una CI rossa a caso durante un collaudo fa perdere tempo a capire se è colpa del contenuto o del test. |
+| 2026-09-07 | Quattro valori **ricopiati invece che letti dalla fonte**: `test_batch12.js:199` (i cinque colori d'accento come esadecimali), `test_new_features.js:148-149` e `test_batch3b.js:248` (le frequenze `1568`/`1976`, che stanno in `CONFIG` righe 160-161), `test_new_features.js:276` (il default `10` di `timeLimitSeconds`, `CONFIG` riga 248). In tutti la pagina è già caricata: leggerli dalla fonte costa **meno** righe che ricopiarli. | Un valore scritto in un secondo posto invecchia, e in un test rompe la CI senza che niente sia rotto. **I colori sono il caso peggiore**: non è solo un valore ricopiato, è la **regola 2 disattesa** — «nessun colore fisso, sempre le variabili del tema» — in un posto dove nessuno guardava. E in un componente un colore sbagliato si vede a schermo; in un test si vede solo come una CI rossa senza motivo. | **Dopo il collaudo, insieme a `test_batch19`**: sono la stessa famiglia. |
+
+> ⚠️ **Prima di prendere questo lavoro, la distinzione che lo rende sicuro:**
+> **se il valore esiste altrove nel progetto, ricopiarlo è una copia; se il numero
+> è il requisito, è un'asserzione.** `freq === 1568` è una copia — la fonte è
+> `CONFIG`. `readyTones.length === 3` («il 3-2-1 suona tre volte») è un requisito,
+> e **deve restare**: se domani il countdown suonasse cinque volte, il test deve
+> dirlo. Stessa cosa per `moduleCompleteMessages.alto.length === 5`.
+>
+> Senza questa riga chi prende il lavoro toglie anche i `length === 3`, e quelli
+> sono la parte che protegge.
+
+## Contenuto
+
+| Data | Cosa | Perché | Quando si esegue |
+|---|---|---|---|
+| 2026-09-07 | `docs/it/episodio-1.md`, nota 3, dice *«i numeri si scrivono in lettere perché è la parola che Voice Practice ascolta»*. **Oggi l'app non lo fa**: `slotOptions` normalizza un numero rendendo `it` ed `en` identici, quindi la battuta d7 in inglese dice «I'm 16 years old» con la cifra. | Stessa famiglia della riga sul fallback: **un'istruzione che descrive uno stato che non esiste.** Chi la legge crede che sia già così e non cerca il difetto. | **Quando si farà il magazzino** (punto ③ di «Cosa manca» in `docs/it/tabelle-personalizzazione.md`), che è ciò che la rende vera. |
+
 ## Pulizie rimandate di proposito
 
 | Data | Cosa | Perché | Quando si esegue |

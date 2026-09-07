@@ -16,9 +16,54 @@
 // È il caso che la struttura a lista esiste per reggere, quindi è quello che
 // il test deve attraversare davvero.
 
-const { launchBrowser, APP_URL } = require('./test-env');
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { loadGrade, loadEpisode } = require('./quiz-driver');
+
+// I numeri attesi si LEGGONO dalla fonte, non si ricopiano qui. Il riquadro
+// "Numeri attesi nel JSON" in testa a docs/it/episodio-1.md è la dichiarazione
+// (CLAUDE.md regola 26), il file dati è l'esecuzione: questo test confronta le
+// due, non "ieri contro oggi".
+//
+// Perché non basta scriverli a mano: un numero copiato in un secondo posto
+// invecchia — e in un test invecchia peggio che altrove, perché non mente in
+// silenzio, rompe la CI. Sembra un controllo che funziona, mentre è un
+// controllo da manutenere. È già successo: l'episodio è passato da 16 a 15
+// voci nel grado A e questo file è diventato rosso senza che niente fosse
+// rotto. Stessa forma di test_struttura_corso.js, che legge
+// docs/it/struttura-corso.md invece di ricopiarne le tabelle.
+const FONTE = 'docs/it/episodio-1.md';
+
+// Ogni numero si prende COL SUO NOME accanto, mai per posizione: se un giorno
+// il riquadro viene riscritto in un altro ordine, un lettore posizionale
+// accoppierebbe in silenzio il numero sbagliato al grado sbagliato — che è
+// esattamente il difetto che questa funzione esiste per togliere.
+function numeriAttesiDallaFonte() {
+  const testo = fs.readFileSync(repoPath.apply(null, FONTE.split('/')), 'utf8');
+  const i = testo.indexOf('Numeri attesi nel JSON');
+  if (i === -1) throw new Error('Riquadro "Numeri attesi nel JSON" non trovato in ' + FONTE);
+  // Il riquadro è una citazione markdown su più righe: si ricuce il blocco
+  // finché le righe cominciano con ">", poi si tolgono i marcatori.
+  const blocco = testo.slice(i).split('\n')
+    .slice(0, 6)
+    .filter((r, n) => n === 0 || r.trim().startsWith('>'))
+    .join(' ')
+    .replace(/[>*]/g, ' ');
+  const prendi = (etichetta, regex) => {
+    const m = blocco.match(regex);
+    if (!m) throw new Error('Numero atteso non trovato in ' + FONTE + ': ' + etichetta);
+    return parseInt(m[1], 10);
+  };
+  return {
+    A: prendi('grado A', /(\d+)\s+voci nel grado A/),
+    B: prendi('grado B', /(\d+)\s+in B/),
+    C: prendi('grado C', /(\d+)\s+in C/),
+    D: prendi('grado D', /(\d+)\s+battute in D/),
+    skill: prendi('skill', /(\d+)\s+skill/),
+    slot: prendi('slot', /(\d+)\s+slot/)
+  };
+}
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -135,14 +180,27 @@ async function run() {
   const battuteConDueSkill = battute.filter(l => (l.whatYouLearn || []).length > 1);
   const battuteConSkill = battute.filter(l => (l.whatYouLearn || []).length > 0);
 
-  // I numeri dichiarati in docs/it/episodio-1.md, verificati sul file dati vero
-  // (CLAUDE.md regola 29): se l'episodio viene ridiviso, qui si vede subito.
-  const attesi = { A: 16, B: 7, C: 10, D: 9, skill: 8 };
-  ['A', 'B', 'C', 'D'].forEach(g => log('[dati] Il grado ' + g + ' ha ' + attesi[g] + ' voci', loadGrade(g).length === attesi[g]));
+  // I numeri LETTI dal riquadro in testa a docs/it/episodio-1.md e confrontati
+  // col file dati vero (CLAUDE.md regola 29). Non sono scritti qui: se la fonte
+  // e i dati divergono lo dice questo test, e non c'è niente da aggiornare a
+  // mano quando l'episodio cambia.
+  const attesi = numeriAttesiDallaFonte();
+  console.log('[dati] fonte ' + FONTE + ': A=' + attesi.A + ' B=' + attesi.B +
+    ' C=' + attesi.C + ' D=' + attesi.D + ' skill=' + attesi.skill + ' slot=' + attesi.slot);
+  // Il messaggio nomina il grado E i due numeri: quando cade si legge dal log
+  // che cosa non torna, senza aprire né la fonte né il file dati.
+  ['A', 'B', 'C', 'D'].forEach(g => log(
+    '[dati] Il grado ' + g + ' ha le voci che la fonte dichiara (' + attesi[g] + '), e ne ha ' + loadGrade(g).length,
+    loadGrade(g).length === attesi[g]));
+  log('[dati] Gli slot di personalizzazione sono quelli che la fonte dichiara (' + attesi.slot +
+    '), e sono ' + (loadEpisode().personalizationTablesUsed || []).length,
+    (loadEpisode().personalizationTablesUsed || []).length === attesi.slot);
   log('[dati] I nomi dei gradi sono quelli mostrati allo studente',
     JSON.stringify(['A', 'B', 'C', 'D'].map(g => loadEpisode().levels[g].label)) === JSON.stringify(['Parole', 'Espressioni', 'Frasi', 'Dialogo']));
   log('[dati] whatYouLearn è una lista su ogni battuta che ne ha', battute.every(l => !l.whatYouLearn || Array.isArray(l.whatYouLearn)));
-  log('[dati] Le skill sono ' + attesi.skill + ' e la prima battuta ne porta due', skillIds.length === attesi.skill && battuteConDueSkill.length === 1);
+  log('[dati] Le skill sono quelle che la fonte dichiara (' + attesi.skill + '), e sono ' + skillIds.length +
+    ', con una sola battuta che ne porta due',
+    skillIds.length === attesi.skill && battuteConDueSkill.length === 1);
   log('[dati] Ogni skill ha titolo e corpo separati', battute.every(l => (l.whatYouLearn || []).every(s => !!s.title && !!s.body)));
 
   // ============ A: Meet the Story — primo contatto ============

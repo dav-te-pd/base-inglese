@@ -11,6 +11,27 @@ lista, la prima ipotesi è l'attesa a tempo, non una regressione dell'app.
 Correggerli tutti preventivamente sarebbe lavoro speculativo — si aspetta che
 il rosso indichi dove.
 
+**Quando un punto si manifesta, la cosa che si manifesta non è per forza la
+causa. Si verifica prima di correggere.** È il caso più insidioso proprio qui,
+perché questo file *suggerisce già una risposta*: il rosso arriva, il punto è
+in elenco, e la tentazione è togliere l'attesa e dichiarare chiuso.
+
+*Il caso che l'ha insegnato — `test_batch19.js`, 2026-09-07.* Il test è morto
+sul `waitForFunction` di riga 139, tre righe dopo l'attesa fissa di riga 132,
+che è in questa lista. Sembrava il suo caso da manuale. Non lo era: la 132 è
+**ridondante** rispetto alla 139, che aspetta già lo stato vero, e con un
+countdown da cinquanta millisecondi il budget di tre secondi non poteva
+scadere. La causa stava **una riga più su**, alla 131:
+`await page.click('#sr-ready-btn').catch(() => {})` — il click fallisce, il
+`.catch` vuoto lo ingoia, il countdown non parte mai, e il test muore dove non
+si può più capire perché. **L'errore viene soppresso dove nasce, e si manifesta
+dove non si può più diagnosticare.**
+
+Togliere solo l'attesa fissa avrebbe dichiarato chiuso un difetto ancora vivo,
+che sarebbe tornato con lo stesso timeout muto. **Quindi: quando un punto di
+questa lista fallisce, la prima ipotesi resta l'attesa a tempo — ma prima di
+correggerla si guarda se qualcosa, poco sopra, sta ingoiando l'errore vero.**
+
 **Non tutte sono ugualmente fragili.** Un'attesa dopo un'azione che è già
 finita è innocua; una che deve cadere dentro una finestra di riproduzione, o
 che dà tempo a eventi asincroni di accadere, non lo è. I commenti nel codice
