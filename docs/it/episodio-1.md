@@ -1,9 +1,13 @@
 # Episodio "Al gate"
 
-> **Id interno:** `gate` — descrittivo, in inglese, **congelato**: è la chiave con cui si
-> salvano i progressi. Cambiarlo è una migrazione di dati, non una rinomina.
+> **Id interno oggi:** `episode1`, come nel codice.
+> ⚠️ **Deciso e non ancora applicato:** diventerà **`gate`** — descrittivo, in inglese, e
+> **congelato**, perché è la chiave con cui si salvano i progressi. La rinomina è un lavoro a
+> sé (P1), insieme alla migrazione degli otto namespace dei progressi: **finché non è fatta,
+> l'id è `episode1` e va usato quello.**
 > **Titolo mostrato allo studente:** *Al gate* — appartiene all'edizione italiana e può
-> cambiare quando vogliamo.
+> cambiare quando vogliamo. *Oggi nel codice è `badge: 'Episodio 1'`, scritto nel codice: con
+> la regola 4 non ci può più stare.*
 >
 > **Numeri attesi nel JSON:** 14 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
 > 8 slot di personalizzazione. **Se i conti non tornano, fermarsi e segnalarlo.**
