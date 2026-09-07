@@ -307,6 +307,13 @@ magazzino è stato creato.
    personalizzazione invece si sceglie la cifra: è più veloce da leggere in un elenco. Due usi,
    non una duplicazione.*
 
+   ⚠️ **Oggi l'app non lo fa.** Le età sono numeri semplici e `slotOptions` le normalizza
+   rendendo `it` ed `en` identici, quindi la battuta d7 **in inglese dice `I'm 16 years old`**,
+   con la cifra. La correzione arriva con il magazzino della personalizzazione, che porta
+   `en: sixteen` — vedi `docs/it/tabelle-personalizzazione.md`, *Cosa manca*, punto ③. **È una
+   modifica che cambia cosa il riconoscimento vocale si aspetta di sentire**, quindi non deve
+   arrivare nascosta dentro uno spostamento di dati: vuole un test suo.
+
 4. **Cosa è stato tolto.** *"Can you introduce yourselves?"* — riflessivo con accento anomalo,
    la frase più difficile, serviva solo da innesco. *Il genitivo sassone* ("I'm {papà}'s wife")
    — struttura ostica; chi è la moglie di chi si capisce dalla scena. *"Everyone"* — parola
