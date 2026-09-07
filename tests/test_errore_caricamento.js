@@ -15,15 +15,13 @@
 // niente, quindi [E] verifica anche il contrario — con la rotta ripristinata
 // la schermata NON compare.
 //
-// LIMITE NOTO, e va detto: finché esiste il blocco window.FALLBACK_* dentro
-// index.html, una richiesta fallita NON produce un errore — produce la copia
-// inline, e la schermata non comparirebbe mai. Il test azzera quindi le tre
-// globali (senzaFallback), e lo fa DOPO il caricamento della pagina, non
-// prima: uno script di init girerebbe prima dello script di index.html, che
-// subito dopo riassegnerebbe quelle stesse globali. Quando il fallback verrà
-// tolto, quelle righe non troveranno più niente da azzerare e il test
-// resterà valido senza modifiche: è scritto per sopravvivere a quel lavoro,
-// non per aggirarlo.
+// NOTA STORICA, perché spiega perché questo test è più forte di quanto
+// sembri: quando è nato, index.html teneva una copia inline dei dati
+// (window.FALLBACK_*) e una richiesta fallita non produceva un errore ma
+// quella copia — quindi il test doveva azzerare tre globali per poter
+// vedere la schermata. Quella copia adesso non c'è più: un fetch fallito è
+// un fetch fallito, e questo test misura il comportamento vero senza doverne
+// spegnere nessun altro.
 //
 // Il file episodio è quello di ogni modulo, quindi la prova si fa su Match
 // Practice: è il primo passo dopo Personalizza che legge un grado, e la sua
@@ -60,19 +58,6 @@ async function clickIfVisible(page, sel) {
   return false;
 }
 
-// Toglie di mezzo le copie di sicurezza: senza questo un fetch fallito
-// ricadrebbe sulla copia inline e il modulo si aprirebbe normalmente.
-// Va chiamata DOPO ogni caricamento della pagina (vedi la nota in testa).
-// Dopo la rimozione del fallback (lavoro già deciso) non troverà più niente
-// da azzerare, e il test funzionerà uguale.
-function senzaFallback(page) {
-  return page.evaluate(() => {
-    window.FALLBACK_EPISODE_DATA = undefined;
-    window.FALLBACK_MODULE_INSTRUCTIONS = undefined;
-    window.FALLBACK_FEEDBACK_MESSAGES = undefined;
-  });
-}
-
 // Porta un profilo pulito fino alla mappa, con i passi precedenti già fatti.
 async function finoAllaMappa(page, utente) {
   await page.goto(APP_URL);
@@ -100,7 +85,6 @@ async function finoAllaMappa(page, utente) {
   await page.click('#go-episode');
   await clickIfVisible(page, '#map-intro-start-btn');
   await page.waitForSelector('#module-list .module-row', { state: 'visible', timeout: 15000 });
-  await senzaFallback(page);
 }
 
 // Legge in UNA sola chiamata tutto quello che serve sapere della schermata
@@ -190,7 +174,6 @@ async function run() {
   await page.route('**/' + FILE_EPISODIO, route => route.abort());
   await page.evaluate(() => { location.reload(); });
   await page.waitForSelector('#go-episode', { state: 'visible', timeout: 15000 });
-  await senzaFallback(page);
   await page.click('#go-episode');
   await clickIfVisible(page, '#map-intro-start-btn');
   await page.waitForSelector('#module-list .module-row', { state: 'visible', timeout: 15000 });

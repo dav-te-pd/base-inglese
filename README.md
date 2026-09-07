@@ -25,10 +25,6 @@ cartella — `python3 -m http.server 8955` fa lo stesso lavoro.
 
 ## Strumenti
 
-- `node tools/rigenera-fallback.js` — riscrive le copie di sicurezza dentro
-  `index.html` a partire dai file sotto `data/`. Da lanciare ogni volta che si
-  tocca uno di quei file (CLAUDE.md regola 6); `tests/test_fallbacks.js`
-  verifica poi che le due versioni coincidano.
 - `node tests/tools/apri-modulo.js <idPasso>` — apre un modulo nell'app e ne
   stampa lo stato (bordi, segnaposto, errori), con screenshot facoltativo.
   Senza argomenti elenca i passi disponibili.
@@ -66,9 +62,11 @@ Dentro `data/it/`:
 | `istruzioni-moduli.json` | i testi "Guarda come si fa" e i promemoria del pannello Help, per tipo di modulo |
 | `messaggi-feedback.json` | i messaggi di esito mostrati all'utente |
 
-`index.html` tiene una copia di sicurezza di questi contenuti al suo interno,
-usata **solo** se il `fetch` fallisce (hosting che non serve i JSON). La
-sorgente da modificare resta sempre il file sotto `data/{lingua}/`.
+L'app li carica con `fetch` e **non ne tiene nessuna copia dentro
+`index.html`**: se un file non arriva, il caricamento fallisce e lo studente
+vede la schermata d'errore, con "Riprova" e "Torna alla mappa". Un percorso
+sbagliato si vede subito, invece di essere assorbito in silenzio da una copia
+interna.
 
 I valori regolabili — soglie, tempi, liste, percentuali — stanno tutti in
 `window.APP_CONFIG`, in cima a `index.html`. Non vanno sparsi nel codice.
@@ -95,21 +93,16 @@ può pilotare con `APP_PORT`, `APP_URL`, `PLAYWRIGHT_MODULE`, `CHROMIUM_PATH`,
 
 ## Dov'è pubblicata
 
-Due indirizzi, che servono a cose diverse:
+Un indirizzo solo: <https://dav-te-pd.github.io/base-inglese/>, che si
+aggiorna da sé a ogni push su `main`. Commit, push, e basta.
 
-| dove | indirizzo | come si aggiorna |
-|---|---|---|
-| **GitHub Pages** | <https://dav-te-pd.github.io/base-inglese/> | da solo, a ogni push su `main` |
-| **Artifact claude.ai** | <https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621> | a mano, ripubblicando **lo stesso** artifact (`CLAUDE.md`, regola 6) |
-
-**Non sono la stessa cosa.** Su Pages i JSON sotto `data/` esistono, quindi
-l'app li carica: è la sua forma completa. L'artifact è una pagina singola —
-il `fetch` dei dati fallisce e `index.html` ricade sulle copie di sicurezza
-che tiene al proprio interno. Finché quelle copie non coincidono con i file
-sotto `data/`, i due indirizzi mostrano contenuti diversi:
-
-`tests/test_fallbacks.js` verifica che coincidano, ed è dentro la suite: una
-divergenza fa fallire la CI come qualunque altra regressione.
+*C'era anche un artifact su claude.ai — una pagina singola, dove il `fetch`
+dei dati fallisce sempre. Per farla funzionare, `index.html` teneva una copia
+inline dei tre file di dati, da rigenerare a mano a ogni modifica e da
+sorvegliare con un test apposta. Costava tre cose da mantenere e ne nascondeva
+una peggiore: quella copia assorbiva in silenzio anche i guasti veri, quindi un
+percorso sbagliato su Pages non si sarebbe visto. Nel settembre 2026 sono
+spariti insieme: l'artifact, la copia, lo strumento e il test.*
 
 ## Prima di modificare
 

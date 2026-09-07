@@ -42,6 +42,12 @@ scoprirla scaduta.
 | 2026-09-06 | `episodeGrade()` restituisce `[]` per un grado assente, e i controlli `qmQueue`/`vcQueue`/`srQueue` `.length === 0` lo leggono come «coda finita». | Un modulo puntato su un grado che l'episodio non ha **non crolla: si dichiara completato senza aver fatto fare un solo esercizio**, e registra l'esito. È peggio di un errore, perché sembra funzionare. | **Da fissare** — proposto: insieme al precedente, e comunque prima di un episodio con una forma di gradi diversa. |
 | 2026-09-06 | `migrateCustomizeSeenToModuleProgress()` scrive `'personalizzazione'` nei progressi di **qualunque** episodio, anche di uno che quel modulo non lo dichiara. | Gira in cima a `openEpisodeMap()`, senza guardare se l'episodio ha quel modulo. Innocuo oggi (nessuno rilegge quell'id), ma è spazzatura nei progressi salvati. | **Da fissare** — proposto: quando nasce il primo episodio senza Personalizza. |
 
+## Contenuto
+
+| Data | Cosa | Perché | Quando si esegue |
+|---|---|---|---|
+| 2026-09-06 | `docs/it/episodio-1.md` (riga 25) dice ancora *«ricordarsi della copia di sicurezza dentro `index.html`, che `test_fallbacks.js` verifica»*. Copia, test e artifact non esistono più. | È un'**istruzione operativa** dentro un file fonte: una sessione futura la leggerebbe e cercherebbe di eseguire un passo che non esiste, o peggio ricostruirebbe il fallback. | **Con la riscrittura già decisa di quel file** (sedici correzioni in coda, «A0.2» compresa). Non si tocca prima: è un file di contenuto, regola 33. |
+
 ## Pulizie rimandate di proposito
 
 | Data | Cosa | Perché | Quando si esegue |

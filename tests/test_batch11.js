@@ -1,6 +1,14 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
+
+// I messaggi si leggono dal file, non dalla pagina. Prima si leggeva
+// window.FALLBACK_FEEDBACK_MESSAGES — comodo, ma era la copia inline dentro
+// index.html, sparita insieme al fallback. Il file è la fonte, quindi è da lì
+// che si guarda, e per questa verifica il browser non serve.
+const MESSAGGI = JSON.parse(
+  fs.readFileSync(repoPath('data', 'it', 'messaggi-feedback.json'), 'utf8'));
 
 const mockInit = () => {
   window.__consoleWarnings = [];
@@ -379,15 +387,13 @@ async function run() {
 
   // ============ Modulo Finale prep: episodeFinalMessages data (3 cases, compliment always first, tip only when due) ============
   {
-    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
-    await page.goto(BASE);
-    const fallback = await page.evaluate(() => window.FALLBACK_FEEDBACK_MESSAGES.episodeFinalMessages);
-    const fetched = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()).then(d => d.episodeFinalMessages));
-    log('[Modulo Finale prep] episodeFinalMessages has all 3 cases with non-empty compliments', ['tuttiVerdi', 'gialloNoRosso', 'almenoUnRosso'].every(k => fallback[k] && fallback[k].compliments.length > 0));
-    log('[Modulo Finale prep] tuttiVerdi has NO tip (nessun consiglio)', fallback.tuttiVerdi.tip.length === 0);
-    log('[Modulo Finale prep] gialloNoRosso and almenoUnRosso DO have a tip', fallback.gialloNoRosso.tip.length > 0 && fallback.almenoUnRosso.tip.length > 0);
-    log('[Modulo Finale prep] FALLBACK mirror matches the real data file exactly', JSON.stringify(fallback) === JSON.stringify(fetched));
-    await page.close();
+    // L'asserzione "la copia inline coincide col file vero" e' sparita insieme
+    // alla copia: non c'e' piu' un secondo posto da tenere allineato, che era
+    // tutto il suo motivo di esistere.
+    const finali = MESSAGGI.episodeFinalMessages;
+    log('[Modulo Finale prep] episodeFinalMessages has all 3 cases with non-empty compliments', ['tuttiVerdi', 'gialloNoRosso', 'almenoUnRosso'].every(k => finali[k] && finali[k].compliments.length > 0));
+    log('[Modulo Finale prep] tuttiVerdi has NO tip (nessun consiglio)', finali.tuttiVerdi.tip.length === 0);
+    log('[Modulo Finale prep] gialloNoRosso and almenoUnRosso DO have a tip', finali.gialloNoRosso.tip.length > 0 && finali.almenoUnRosso.tip.length > 0);
   }
 
   await browser.close();

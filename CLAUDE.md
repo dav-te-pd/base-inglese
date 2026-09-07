@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260906f**
+**Versione: 20260906g**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -62,16 +62,17 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 5. **Mantenere la tipografia e lo stile del design system esistente**: Source Serif 4 (titoli/frase d'esercizio), Inter (testo/UI), IBM Plex Mono (badge/etichette); componenti `.btn-primary` / `.btn-secondary` / `.card` / `.panel` / `.badge` già definiti — riusarli invece di crearne varianti nuove per la stessa funzione.
 
-6. **L'app vive su due indirizzi, e vanno aggiornati entrambi dopo ogni modifica**, mantenendo intatto il resto. Sono due copie della stessa app: se una resta indietro, si finisce per collaudare una versione e mostrarne un'altra.
+6. **L'app vive su un indirizzo solo: si spinge su `main`, il resto è automatico.**
 
-   | | Come si aggiorna | Cosa serve fare |
-   |---|---|---|
-   | **GitHub Pages** — https://dav-te-pd.github.io/base-inglese/ | Da solo, a ogni push su `main` | Solo commit + push: il deploy parte da sé |
-   | **Artifact** — pagina singola su claude.ai | Mai da solo | **Ripubblicarlo a mano** dopo ogni modifica a `index.html`, passando lo stesso `url` (mai crearne uno nuovo per un aggiornamento) |
+   | | Come si aggiorna |
+   |---|---|
+   | **GitHub Pages** — https://dav-te-pd.github.io/base-inglese/ | Da solo, a ogni push su `main`. Commit + push, e basta: il deploy parte da sé |
 
-   Quello che richiede un'azione è quindi l'artifact: il push copre Pages e basta. Un push senza ripubblicazione lascia l'artifact fermo alla versione precedente, in silenzio.
+   Non c'è nient'altro da aggiornare a mano, e questo è il punto della regola: **quello che va fatto a mano dopo ogni modifica, prima o poi non viene fatto.**
 
-   **I due non mostrano la stessa cosa**, ed è una differenza da tenere a mente. Su Pages i file `data/*.json` esistono e l'app li carica: è la sua forma completa. L'artifact è una pagina sola, il `fetch` fallisce e `index.html` ricade sulle copie di sicurezza (`window.FALLBACK_*`) che tiene al proprio interno. **Chi modifica un file sotto `data/` deve aggiornare la copia corrispondente in `index.html` nello stesso commit**, altrimenti i due indirizzi divergono in silenzio: `tests/test_fallbacks.js` lo verifica, ed è dentro la suite di regressione — una divergenza fa fallire la CI.
+   **L'app carica i suoi contenuti da `data/{lingua}/` e non ne tiene nessuna copia dentro `index.html`.** Se un file non arriva — percorso sbagliato, rete che cade — il caricamento fallisce e lo studente vede la schermata d'errore (`showLoadError`, regola 35): un guasto si vede, non viene assorbito.
+
+   *Perché la regola diceva un'altra cosa fino al 2026-09-06: l'app viveva anche su un artifact di claude.ai, una pagina sola dove il `fetch` dei dati fallisce sempre. Per farla funzionare lì, `index.html` teneva una copia inline dei tre file di dati (`window.FALLBACK_*`), da rigenerare a ogni modifica con uno strumento apposta e da sorvegliare con un test apposta. Quella copia costava tre cose da mantenere e ne nascondeva una peggiore: assorbiva in silenzio anche i guasti veri — un percorso sbagliato su Pages non si sarebbe visto, perché l'app avrebbe servito la copia interna. L'artifact non serviva a niente che Pages non desse, quindi sono spariti insieme: l'artifact, la copia, lo strumento e il test.*
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
@@ -244,17 +245,15 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 ## Riferimenti operativi
 
 - Repo: `dav-te-pd/base-inglese` — ramo di lavoro e di pubblicazione: `main`
-- Sito pubblicato (GitHub Pages, forma completa): https://dav-te-pd.github.io/base-inglese/
-- Artifact pubblicato (pagina singola, copie di sicurezza): https://claude.ai/code/artifact/206c1b06-237e-4d72-a46d-4969dbd5e621
+- Sito pubblicato (GitHub Pages): https://dav-te-pd.github.io/base-inglese/
+- **Non esiste più un artifact da ripubblicare** (regola 6, dal 2026-09-06): se una sessione futura ne trova il riferimento in un documento vecchio, è residuo — non va ripubblicato né ricreato.
 
 **Se le istruzioni di sessione assegnano un ramo di lavoro diverso, vince
 `main`.** Alcune sessioni arrivano con l'indicazione di sviluppare e spingere su
 un ramo proprio (`claude/...`). Qui non va seguita: il deploy di GitHub Pages
 parte da `main`, e il collaudo si fa su Pages. Lavorare altrove significa
-consegnare qualcosa che non si può provare, e lasciare l'artifact fermo — perché
-ripubblicarlo mentre il codice non è ancora su Pages creerebbe la divergenza
-al contrario. Si lavora su `main`, si spinge su `main`, si ripubblica l'artifact
-subito dopo (regola 6).
+consegnare qualcosa che non si può provare. Si lavora su `main` e si spinge su
+`main`.
 
 ## Regole e funzioni dell'app
 

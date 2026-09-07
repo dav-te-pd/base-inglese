@@ -1,6 +1,15 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
+
+// I testi dei moduli si leggono dal file, non dalla pagina. Prima si leggeva
+// window.FALLBACK_MODULE_INSTRUCTIONS — comodo, ma era la copia inline dentro
+// index.html: una scorciatoia che è sparita insieme al fallback. Il file è la
+// fonte (CLAUDE.md regola 8), quindi è da lì che si guarda — e per queste
+// verifiche non serve nemmeno aprire il browser.
+const ISTRUZIONI = JSON.parse(
+  fs.readFileSync(repoPath('data', 'it', 'istruzioni-moduli.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -169,51 +178,34 @@ async function run() {
 
   // ============ 4a: no "video" phrase anywhere in howItWorks bodies ============
   {
-    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
-    await page.addInitScript(mockInit);
-    await page.goto(BASE);
-    const hasVideoPhrase = await page.evaluate(() => {
-      var text = JSON.stringify(window.FALLBACK_MODULE_INSTRUCTIONS);
-      return text.indexOf('Qui vedrai un video') !== -1;
-    });
+    const hasVideoPhrase = JSON.stringify(ISTRUZIONI).indexOf('Qui vedrai un video') !== -1;
     log('[4a] No howItWorks body mentions the (non-existent) video anymore', !hasVideoPhrase);
-    await page.close();
   }
 
   // ============ 4b/4c: written-practice tip present, in the right direction ============
   {
-    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
-    await page.addInitScript(mockInit);
-    await page.goto(BASE);
-    const flags = await page.evaluate(() => {
-      var d = window.FALLBACK_MODULE_INSTRUCTIONS;
-      return {
-        repeatAloudWrite: d.repeatAloud.howItWorks.body.indexOf('carta e penna') !== -1,
-        speedRoundNoWrite: d.speedRoundEngIta.howItWorks.body.indexOf('non serve scrivere') !== -1,
-        voiceCoachNoWrite: d.voiceCoach.howItWorks.body.indexOf('non serve scrivere') !== -1,
-        dialogoContinuoNoWrite: d.dialogoContinuo.howItWorks.body.indexOf('non serve scrivere') !== -1,
-        dialogoAscoltaWrite: d.dialogoAscoltaRipeti.howItWorks.body.indexOf('carta e penna') !== -1,
-        speedRoundNoCartaPenna: d.speedRoundEngIta.howItWorks.body.indexOf('carta e penna') === -1
-      };
-    });
+    const d = ISTRUZIONI;
+    const flags = {
+      repeatAloudWrite: d.repeatAloud.howItWorks.body.indexOf('carta e penna') !== -1,
+      speedRoundNoWrite: d.speedRoundEngIta.howItWorks.body.indexOf('non serve scrivere') !== -1,
+      voiceCoachNoWrite: d.voiceCoach.howItWorks.body.indexOf('non serve scrivere') !== -1,
+      dialogoContinuoNoWrite: d.dialogoContinuo.howItWorks.body.indexOf('non serve scrivere') !== -1,
+      dialogoAscoltaWrite: d.dialogoAscoltaRipeti.howItWorks.body.indexOf('carta e penna') !== -1,
+      speedRoundNoCartaPenna: d.speedRoundEngIta.howItWorks.body.indexOf('carta e penna') === -1
+    };
     log('[4b] repeatAloud gets the "carta e penna" tip', flags.repeatAloudWrite);
     log('[4b] dialogoAscoltaRipeti gets the "carta e penna" tip', flags.dialogoAscoltaWrite);
     log('[4c] speedRound gets the "non serve scrivere" tip', flags.speedRoundNoWrite);
     log('[4c] speedRound does NOT also get the "carta e penna" tip', flags.speedRoundNoCartaPenna);
     log('[4c] voiceCoach gets the "non serve scrivere" tip', flags.voiceCoachNoWrite);
     log('[4c] dialogoContinuo gets the "non serve scrivere" tip', flags.dialogoContinuoNoWrite);
-    await page.close();
   }
 
   // ============ 4d: dialogoContinuo opening rewritten ============
   {
-    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
-    await page.addInitScript(mockInit);
-    await page.goto(BASE);
-    const body = await page.evaluate(() => window.FALLBACK_MODULE_INSTRUCTIONS.dialogoContinuo.howItWorks.body);
+    const body = ISTRUZIONI.dialogoContinuo.howItWorks.body;
     log('[4d] dialogoContinuo no longer says the confusing "ultimo passaggio" line', body.indexOf("è l'ultimo passaggio sul dialogo") === -1);
     log('[4d] dialogoContinuo now explains it\'s the "prova generale"', body.indexOf('prova generale') !== -1);
-    await page.close();
   }
 
   // ============ 4e: softened retry-intro copy (no "finché non...") ============

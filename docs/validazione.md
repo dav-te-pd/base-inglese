@@ -28,14 +28,21 @@ poi il CSS, poi tutto il resto del JavaScript in un secondo `<script>` chiuso in
 una IIFE. Non c'è build, non ci sono moduli, non c'è nessuna dipendenza esterna
 oltre ai Google Fonts.
 
-Il contenuto sta in tre file dentro `data/`, letti via `fetch` con ricaduta sulle
-copie `window.FALLBACK_*` incorporate in `index.html`:
+Il contenuto sta in tre file dentro `data/it/`, letti via `fetch`. **Nessuna
+copia dentro `index.html`**: se un file non arriva, il rifiuto sale fino al
+chiamante e finisce nella schermata d'errore (`showLoadError`).
 
-| File | Chi lo legge | Copia di sicurezza |
-|---|---|---|
-| `data/it/a1-episodio1-inglese.json` | `loadEpisodeData()` (riga 7088) | `window.FALLBACK_EPISODE_DATA` |
-| `data/it/istruzioni-moduli.json` | `loadModuleInstructions()` (riga 5940) | `window.FALLBACK_MODULE_INSTRUCTIONS` |
-| `data/it/messaggi-feedback.json` | `loadFeedbackMessages()` (riga 8123) | `window.FALLBACK_FEEDBACK_MESSAGES` |
+| File | Chi lo legge |
+|---|---|
+| `data/it/a1-episodio1-inglese.json` | `loadEpisodeData()` |
+| `data/it/istruzioni-moduli.json` | `loadModuleInstructions()` |
+| `data/it/messaggi-feedback.json` | `loadFeedbackMessages()` |
+
+> **Aggiornato il 2026-09-06:** fino a quella data i tre file avevano una copia
+> inline (`window.FALLBACK_*`) che serviva all'artifact di claude.ai. Artifact e
+> copie sono stati tolti insieme. I numeri di riga citati in questo documento
+> sono anteriori a quella rimozione, che ha tolto 952 righe dalla testa di
+> `index.html`: vanno riletti come riferimenti, non come coordinate.
 
 Lo stato per utente vive tutto in `localStorage`, con sei chiavi distinte per
 episodio+utente (elencate al § 2.3).
@@ -587,7 +594,7 @@ schema di chiamata.
 |---|---|
 | ~~`CONFIG.speedRound.pointsPerCorrect: 50`~~ | **Tolto** (decisione D4, § 6). Non era mai letta, e una descrizione in `configFieldDescriptions` la faceva comparire nel Pannello Admin come manopola che non muove niente. Il punteggio a punti non esiste più: `srFinishModule` (10059) dice esplicitamente che punteggio e percentuale sono stati tolti. |
 | `CONFIG.places.destinations` | **Mai referenziata.** Nessun file episodio la nomina in `personalizationTablesUsed`; lo slot `destinazione` è stato tolto dall'episodio 1. Resta disponibile per un episodio futuro — ma oggi è configurazione senza lettore. |
-| `messaggi-feedback.json → speedRoundMessages` | **Mai letta.** Unica occorrenza in `index.html`: la copia di sicurezza (riga 1497). Nessun `data.speedRoundMessages` da nessuna parte. |
+| `messaggi-feedback.json → speedRoundMessages` | **Mai letta.** Nessun `data.speedRoundMessages` da nessuna parte in `index.html`. (L'unica occorrenza era nella copia di sicurezza, tolta il 2026-09-06 insieme all'artifact: ora la chiave sta solo nel file di dati, e non la legge nessuno.) |
 | `module.typeLabel` | **Mai impostata.** `moduleTypeLabel` (7218) apre con `module.typeLabel || ...`: nessun oggetto modulo porta quel campo. Ramo morto, residuo di quando la categoria di Your Story era sovrascritta a mano. |
 
 ### 4.5 Codice irraggiungibile
@@ -614,7 +621,6 @@ schema di chiamata.
 | Valore | Dove sta due (o più) volte |
 |---|---|
 | Nome del grado | `CONFIG.gradeNames` (`A: 'Parole'`, riga 377) **e** `levels.A.label` nel file episodio. Il codice legge solo il primo; il secondo non è letto da nessuno. |
-| Contenuto dei tre file `data/` | Duplicato per intero nei blocchi `window.FALLBACK_*`. È deliberato (regola 6) e `tests/test_fallbacks.js` lo sorveglia — segnalato per completezza, non come difetto. |
 | Durata dello scorrimento della carta | `FC_SLIDE_MS = 260` in JS **e** la transizione di `.fc-card` in CSS, allineate a mano. |
 | `feedbackPauseMs: 600` | `CONFIG.speedRound` **e** `CONFIG.quickMatch`, stesso valore, tenuti separati di proposito. |
 | `countdownStepMs: 800` | `CONFIG.speedRound` **e** `CONFIG.dialogo`, idem. |

@@ -1,6 +1,6 @@
 # Censimento dei 14 moduli
 
-Fotografia dello stato attuale dei moduli, ricavata leggendo `index.html` — stesso contenuto della pagina pubblicata come artifact, qui in formato markdown per restare nella documentazione di progetto. Ordine: come compaiono in mappa (`moduleOrderDefault`).
+Fotografia dello stato attuale dei moduli, ricavata leggendo `index.html`, in formato markdown per restare nella documentazione di progetto. Ordine: come compaiono in mappa (`moduleOrderDefault`).
 
 Colonne sì/no: "sì" o "no" secco. I marcatori `†1`–`†3` rimandano alle note in fondo.
 

@@ -142,9 +142,9 @@ async function run() {
   {
     // Serve a modified copy of the real episode JSON (with a pronunciationTip
     // added to the first dialogue line) so the app's own fetch() picks it up
-    // instead of the on-disk file — real fetch succeeds over http, so
-    // patching window.FALLBACK_EPISODE_DATA alone (the fetch-failure
-    // fallback) has no effect.
+    // instead of the on-disk file. Si intercetta la richiesta invece di
+    // toccare il file su disco: il file e' la fonte condivisa da tutti i
+    // test, modificarlo li' significherebbe cambiarli tutti.
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));

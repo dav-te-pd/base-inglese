@@ -1,8 +1,8 @@
 # Suite di regressione
 
-33 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
+32 file Playwright, uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
-`test_voicecoach.js`, `test_story_modules.js`, `test_fallbacks.js`,
+`test_voicecoach.js`, `test_story_modules.js`,
 `test_hidden_guard.js`, `test_outcome_step_ids.js`, `test_config_letta.js`,
 `test_struttura_corso.js`, `test_scala_colori.js`,
 `test_errore_caricamento.js`). Insieme costituiscono la
@@ -129,13 +129,12 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_new_features.js` | Il Pannello Admin per intero: si apre da tastiera solo fuori dai campi di testo, modifica in diretta, persiste, rifiuta il JSON non valido senza applicarlo, si chiude con Escape, si azzera col reset; più i due conti alla rovescia 3-2-1. |
 | `test_voicecoach.js` | Il giro completo di Voice Check: "Avanti" bloccato finché non si registra, nessun Indietro, il ripasso delle frasi andate male, la Schermata Finale col pulsante esplicito, e il modulo non completato prima di quello. |
 | `test_story_modules.js` | Meet the Story e Why We Say It al completo: i dati (gradi, skill come lista con titolo e corpo separati), la sequenza obbligata al primo giro, le tre risposte, "Esci e riprendi dopo", il ripasso, e il punteggio autodichiarato che diventa verde. |
-| `test_fallbacks.js` | Le tre copie `window.FALLBACK_*` in `index.html` coincidono con i file sotto `data/{lingua}/`: Pages e artifact non divergono in silenzio. |
 | `test_hidden_guard.js` | Ogni regola CSS che imposta un `display` continua a sparire con `hidden`: la guardia della regola 12 non si può rompere senza che la CI se ne accorga. |
 | `test_outcome_step_ids.js` | La regola di esito e la regola del tentativo arrivano a **ogni** apparizione di un modulo nell'ordine, non solo alla prima: senza, la mappa torna a lasciare grigi sei passi su ventidue, e in silenzio (un esito verde e nessun esito sono indistinguibili a schermo). |
 | `test_config_letta.js` | Ogni parametro di `APP_CONFIG` è nominato da qualcuno: una manopola che non muove più niente resta nel Pannello Admin e si finisce per girarla. È il difetto che ha tenuto in vita `pointsPerCorrect`. |
 | `test_struttura_corso.js` | `docs/it/struttura-corso.md` e `APP_CONFIG` dicono la stessa cosa su ordine, gradi e categorie: la fonte (regola 26) non descrive un'app diversa da quella che gira. |
 | `test_scala_colori.js` | La scala rosso→giallo→verde sale solo con la costanza, scende di un gradino solo, non salta, e legge `CONFIG.mastery.promotionStreak` invece di avere il numero cablato. È il dato più costoso da ricostruire e il meno visibile a schermo. |
-| `test_errore_caricamento.js` | Un fallimento nel caricamento dei dati diventa qualcosa che lo studente vede e da cui può uscire, invece di un modulo che non si apre o che si apre vuoto. Protegge anche che il testo venga dal JSON e che "Riprova" rifaccia davvero l'apertura fallita. **Limite noto:** finché esiste il blocco `window.FALLBACK_*`, un fetch fallito non produce un errore ma la copia inline — il test azzera quelle globali dopo il caricamento della pagina, e quando il fallback sarà tolto quella riga diventerà un no-op. |
+| `test_errore_caricamento.js` | Un fallimento nel caricamento dei dati diventa qualcosa che lo studente vede e da cui può uscire, invece di un modulo che non si apre o che si apre vuoto. Protegge anche che il testo venga dal JSON e che "Riprova" rifaccia davvero l'apertura fallita. Dopo la rimozione delle copie `window.FALLBACK_*` è l'unica rete rimasta sul percorso di caricamento: se sparisse, un guasto tornerebbe a essere invisibile. |
 
 ---
 
@@ -306,15 +305,22 @@ rompere la guardia (per esempio con un `!important` su un `#id`) fa fallire
 la CI il giorno in cui viene scritta, non il giorno in cui qualcuno apre
 quella schermata.
 
-## `test_fallbacks.js` — perché è nella suite
+## `test_fallbacks.js` — tolto, e perché
 
-Non prova un modulo: verifica che le copie di sicurezza dentro `index.html`
-(`window.FALLBACK_*`) coincidano con i file sotto `data/{lingua}/`. Se divergono, il sito
-su GitHub Pages (che carica i file veri) e l'artifact (che ricade sulle copie)
-mostrano contenuti diversi — è già successo, e nessun test se n'era accorto
-perché i test girano solo dove i file veri esistono. Sta nella suite e non fra
-gli strumenti proprio perché la divergenza si ripresenta ogni volta che si
-tocca un file sotto `data/`, cioè spesso.
+C'era, e verificava che le copie di sicurezza dentro `index.html`
+(`window.FALLBACK_*`) coincidessero con i file sotto `data/{lingua}/`: senza,
+GitHub Pages e l'artifact di claude.ai mostravano contenuti diversi.
+
+Nel settembre 2026 sono spariti insieme l'artifact e le copie, e con loro il
+test: **non c'è più un secondo posto da tenere allineato.** L'app carica i
+file veri e basta; se non arrivano, `test_errore_caricamento.js` garantisce
+che lo studente lo veda.
+
+Vale la pena ricordare perché quelle copie erano un problema e non solo un
+costo: assorbivano ogni fallimento in silenzio, guasti veri compresi. Un
+percorso sbagliato su Pages non si sarebbe visto, perché l'app avrebbe servito
+la copia interna. `test_fallbacks.js` esisteva per sorvegliare un meccanismo
+che, di suo, nascondeva le regressioni.
 
 ## File di servizio
 
