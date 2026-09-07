@@ -35,10 +35,6 @@ cognomi non hanno forma inglese: colonna identica per costruzione.
 valore inglese con `{{chiave:en}}` — così *«I am from {{partenza:en}}» vuol dire «vengo da
 {{partenza}}»* rende "I am from Turin" nella citazione e "vengo da Torino" nella prosa.
 
-**Ricordarsi della copia di sicurezza** dentro `index.html`, che `test_fallbacks.js` verifica:
-va rigenerata dal file dati, non riscritta a mano. *Nota: il fallback è destinato a sparire —
-vedi `docs/decisioni.md`. Finché c'è, va tenuto allineato.*
-
 ---
 
 ## LA MATRICE
