@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260907d**
+**Versione: 20260907e**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -264,6 +264,67 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     girava, hanno reso quei 28 file inutilizzabili — non falsi, peggio:
     indecidibili. Buttarli e ripartire è stata la cosa giusta, e la tentazione
     di tenerseli era forte proprio perché erano verdi.*
+
+37. **Una misura che non misura, e non lo dice.** È il difetto più costoso di
+    tutti, perché non somiglia a un errore: somiglia a un risultato. Un test
+    verde che non prova niente, un'attesa che dice "in corso" su un lavoro
+    finito, un controllo che dice "fallito" su una suite verde — nessuno di
+    questi si annuncia. **Restano lì a farsi credere.**
+
+    In un giorno solo se ne sono presentate tre della stessa forma: due
+    attese che dicevano "in corso" a vuoto e una che diceva "fallito" a
+    vuoto. Il caso singolo si corregge in un minuto; quello che va corretto
+    è la forma.
+
+    **Due conseguenze operative, e sono obbligatorie:**
+
+    - **Un'attesa non si aggancia mai al nome di un processo. Si aggancia a
+      quello che il lavoro produce.** `pgrep -f X` cerca `X` in *tutte* le
+      righe di comando, compresa la propria: l'attesa trova sé stessa e non
+      finisce mai. La forma giusta guarda un'informazione che esiste **solo**
+      quando il lavoro è finito davvero — la riga conclusiva in un file di
+      log, un file di esito — e che non può parlare di sé:
+
+      ```bash
+      # sbagliato: si trova da sola, aspetta per sempre
+      until ! pgrep -f run_full_regression >/dev/null; do sleep 15; done
+
+      # giusto: aspetta ciò che il lavoro scrive quando finisce
+      until grep -q "ALL FILES GREEN\|SOME FILES FAILED" suite.log; do sleep 15; done
+      ```
+
+      E l'ultimo comando dell'attesa non deve essere un `grep` che cerca i
+      fallimenti: quando è tutto verde non trova niente ed **esce con 1**,
+      cioè si dichiara fallita proprio quando è andato tutto bene.
+
+    - **Per sapere se un lavoro è attivo si usa `TaskList`, non `pgrep`.** È
+      la stessa lista che l'utente vede nel pannello «Attività in
+      background»: guardare quella significa rispondergli con la sua fonte,
+      non con una mia stima. `TaskStop` chiude ciò che resta appeso.
+
+    *Perché c'è, e perché sta qui benché parli di come si lavora e non
+    dell'app: il 2026-09-07 questo difetto è costato due risposte false —
+    "la suite sta girando" mentre era finita da un'ora, e il silenzio su un
+    task appeso da due ore che l'utente vedeva e io no. Chi guida il progetto
+    non ha modo di controllare queste risposte: se ne accorge solo per caso.
+    E la sessione successiva non era lì a impararlo.*
+
+38. **Si lancia sempre la suite completa in locale prima di spingere.** La CI
+    resta, ma come rete su una macchina che non è la mia — non come primo
+    controllo.
+
+    Prima era un compromesso: la locale costava cinquanta minuti contro gli
+    undici della CI, e su una modifica piccola si poteva ragionevolmente
+    spingere e aspettare. **Dal 2026-09-07 costa uguale** — undici minuti,
+    da quando i test non aspettano più il timeout dei Google Fonts
+    (`bloccaFontEsterni` in `tests/test-env.js`) — **e arriva prima**: la CI
+    verifica ciò che è già pubblicato, la locale ciò che sta per esserlo.
+
+    Restano tre cose che solo la locale può fare, e sono il motivo per cui
+    non basta la CI: vedere un test **fallire apposta** prima di fidarsene
+    (regola 32), **diagnosticare** un rosso rilanciando un file solo in
+    pochi secondi, e dare il verde **prima** della pubblicazione — che è
+    tutto il senso del ramo di verifica.
 
 ## Riferimenti operativi
 
