@@ -366,6 +366,27 @@ async function run() {
     const mastery = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:episode1:' + u) || '{}'), 'T12Practice');
     const masteryKeys = Object.keys(mastery).filter(k => k.indexOf('voicepractice:') === 0);
     log('[Job5] Voice Practice fed the per-word mastery store (voicepractice: unit ids present)', masteryKeys.length > 0);
+
+    // Il dato si registra sul TARGET, conservando il dettaglio delle parole.
+    // Le stelle SONO gia' la media delle parole: il dato c'era e finiva a
+    // schermo e basta. La media dice quanto vale il target, le parole dicono
+    // DOVE si rompe — quindi le due cose convivono, non si sostituiscono.
+    //
+    // La riga del target si riconosce dalla forma: 'voicepractice:<voce>',
+    // due segmenti, mentre quelle per parola ne hanno tre
+    // ('voicepractice:<voce>:<indice>'). Si contano invece di cercarne una
+    // scritta a mano qui: le battute le sceglie il modulo, non il test.
+    const perTarget = masteryKeys.filter(k => k.split(':').length === 2);
+    const perParola = masteryKeys.filter(k => k.split(':').length === 3);
+    log('[Job5] Voice Practice scrive anche una riga per il TARGET, non solo per parola',
+      perTarget.length > 0);
+    log('[Job5] Le righe per parola restano tutte: il target si aggiunge, non sostituisce',
+      perParola.length > perTarget.length);
+    // Ogni target ha almeno una parola sotto di se': se comparisse una riga di
+    // target senza le sue parole, vorrebbe dire che la media ha preso il posto
+    // del dettaglio invece di affiancarlo.
+    log('[Job5] Ogni riga di target ha le sue parole accanto',
+      perTarget.every(t => perParola.some(w => w.indexOf(t + ':') === 0)));
     log('[Job5] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

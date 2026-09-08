@@ -7891,6 +7891,22 @@
         var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;
         mastery[unitId] = applyMasteryResult(mastery[unitId], pairResults[i]);
       });
+      // E il TARGET: la voce intera, con la media delle parole. Il criterio e'
+      // "dove ci sono le stelle, quello e' il dato da registrare" — le stelle
+      // SONO gia' la media delle parole (pct), quindi il dato c'era e finiva a
+      // schermo e basta.
+      //
+      // La media dice quanto vale il target, le parole dicono DOVE si rompe:
+      // se "nice to meet you" e' giallo perche' "nice" e' rosso, lo studente
+      // deve poterlo vedere. Per questo le righe per parola restano tutte —
+      // non e' una sostituzione, e' la riga che mancava sopra.
+      //
+      // La soglia non si inventa qui: percentageBucket legge
+      // CONFIG.percentageThresholds, le stesse soglie con cui la percentuale
+      // diventa un colore ovunque nell'app (regola 3 e regola 13).
+      var esitoTarget = { alto: 'correct', medio: 'similar', basso: 'wrong' }[percentageBucket(pct)];
+      var targetId = 'voicepractice:' + line.id;
+      mastery[targetId] = applyMasteryResult(mastery[targetId], esitoTarget);
       saveMastery(currentEpisode.id, getUserName(), mastery);
     }
 
