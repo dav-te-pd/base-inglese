@@ -93,6 +93,7 @@ fissa)* · `I'd like`
 | **R.6** | Espressioni che non si traducono a pezzi | ✅ lavorata |
 | **R.7** | L'ordine delle parole | ⚠️ un caso solo, **cresce con gli episodi** |
 | **R.8** | La *e* finale muta | ✅ lavorata — *non un episodio: un `pronunciationTip` ricorrente* |
+| **R.9** | **I saluti** | ✅ lavorata — *apre con `good morning`, **riordina** alla fine* |
 
 **Utili al viaggio, poco presenti nelle liste standard:** `how much is/are` · `Excuse me` /
 `Sorry`
@@ -382,6 +383,39 @@ città e non ce l'ha.
 
 ---
 
+## R.9 — I saluti
+
+**Perché è in A1:** sono le prime parole che lo studente dice e sente, e **l'inglese ne ha più
+dell'italiano** — dove noi diciamo *"buongiorno"* tutto il giorno, l'inglese cambia tre volte.
+
+| Inglese | Quando | Registro |
+|---|---|---|
+| `hi` | sempre | **informale** — amici, coetanei |
+| `hello` | sempre | **neutro** — va bene con chiunque |
+| `good morning` | fino a mezzogiorno | **di servizio** — chi lavora, chi ti serve |
+| `good afternoon` | dal pomeriggio | idem |
+| `good evening` | dalla sera | idem |
+| `good night` | ⚠️ **solo per congedarsi** | *non è un saluto d'incontro: è "buonanotte"* |
+
+**La trappola è l'ultima:** *un italiano dice "buonanotte" arrivando a cena. **In inglese
+`good night` si dice solo andando via**.*
+
+**Esempi dalla storia:** l'hostess alla porta dell'aereo dice `Good morning` — *contesto di
+servizio*. I genitori e i figli dell'episodio 1 dicono `Hello` e `Hi` — *contesto personale*.
+
+### Dove tornano
+
+| Saluto | Dove |
+|---|---|
+| `good morning` | porta dell'aereo · l'annuncio di sicurezza · **il pilota** *(primo ascolto disturbato)* · il check-in in hotel |
+| `good afternoon` | il ristorante · il mercato |
+| `good evening` | il ristorante di sera · il rientro in hotel |
+| `good night` | ⚠️ da collocare — *serve una scena di congedo* |
+
+**Diventa un episodio di riordino** (regola 4.13): *dopo averli sentiti sparsi in cinque episodi,
+l'episodio grammaticale non insegna niente di nuovo — **mette in ordine quello che lo studente sa
+già**.*
+
 ## R.2 — `you` vale *tu* e *voi*
 
 **Perché è in A1:** l'italiano ha due parole, l'inglese una. **Lo studente ne cerca due e ne
@@ -531,7 +565,7 @@ vera vive altrove.*
 | **Il taxi all'arrivo** | scheda 2.2 — `the` | un taxi solo, in contrasto con il carrello |
 | **Episodio grammaticale: il verbo essere** | schede 1.1, 1.2, 1.3 | va per primo, apre tre episodi |
 | **Episodio grammaticale: i numeri 1-20** | scheda 3.1 | **fra i primi** — l'episodio 1 li usa già per le età |
-| **Episodio: nomi propri e traduzioni** | scheda R.1 | **fra i primi** — l'episodio 1 la usa senza dirlo |
+| **Episodio: nomi propri e traduzioni** | scheda R.1 | ⚠️ **slittato**: al ritiro bagagli o in coda al controllo passaporti, dove si incontrano persone con nomi veri. *All'inizio era troppa roba, e la scheda non aveva niente su cui appoggiarsi* |
 | **Episodio trappola: l'articolo di troppo** | trappola 2.3 | dopo che `the` è stato usato qualche volta |
 
 *Queste scene sono registrate anche in `docs/it/obiettivi-a1.md`, accanto all'obiettivo che
