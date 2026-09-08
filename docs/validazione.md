@@ -53,7 +53,7 @@ episodio+utente (elencate al § 2.3).
 
 ### 1.0 Come si legge la tabella
 
-- **Grado** — arriva dalla coppia `{ module, grade }` di `CONFIG.moduleOrderDefault`
+- **Grado** — arriva dalla coppia `{ module, grade }` della sequenza dell'episodio (`CONFIG.sequences`)
   (riga 409), **non** dal descrittore in `EPISODES.episode1.modulesById` (riga 6144).
 - **Id del passo** — `moduleStepId()` (riga 6270): la prima apparizione di un modulo
   tiene l'id nudo, le successive prendono `-2`, `-3`. È l'id con cui si salvano
@@ -639,7 +639,7 @@ schema di chiamata.
   Il ramo `(CONFIG.episodes[episodeId] && ... .moduleOrder)` (6276) non è mai vero
   oggi.
 - `applyConfigOverrides` (736) sostituisce **l'intera sezione di primo livello**.
-  Un override salvato su `moduleOrderDefault` congela l'ordine: modifiche successive
+  Un override salvato su `sequences` congela l'ordine: modifiche successive
   al codice non arrivano più all'utente finché non si svuota la sezione dal pannello.
   È il comportamento voluto, ma vale la pena saperlo.
 - `retryQueue.attemptsReminderThreshold` e `retryQueue.maxAttempts` valgono entrambi

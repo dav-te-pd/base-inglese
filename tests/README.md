@@ -233,7 +233,7 @@ sembrano ovvi: il § 4.1 era ovvio.
     **Limite dichiarato:** una foglia con un nome generico (`name`, `label`,
     `value`) è impossibile da falsificare — il test è forte sui nomi propri,
     che sono quelli dei parametri costruiti per uno scopo.
-20. **L'override per sezione intera.** Salvare `moduleOrderDefault` dal
+20. **L'override per sezione intera.** Salvare `sequences` dal
     pannello congela l'ordine anche quando il codice cambia. È il
     comportamento voluto, e non lo verifica nessuno.
 
@@ -289,7 +289,7 @@ in cui il test era stato scritto. Al primo riordino vero (da 14 a 22 passi)
 sono cadute quasi tutte insieme — 15 file su 28 — e nessuna diceva perché:
 solo "timeout aspettando un modulo".
 
-`module-order.js` calcola quelle liste da `CONFIG.moduleOrderDefault`, che è
+`module-order.js` calcola quelle liste da `CONFIG.sequences['narrativo-standard']`, che è
 l'unico posto che decide la sequenza: `stepIds()` (tutti i passi in ordine),
 `stepsBefore(id)` (cosa completare per aprirne uno), `gradeOf(id)` (su quale
 grado lavora, per i test che iniettano contenuto), `allSteps()`. Legge

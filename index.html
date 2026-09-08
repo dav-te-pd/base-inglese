@@ -1362,7 +1362,7 @@
     font-weight: 600;
   }
 
-  /* moduleOrderDefault's reorder view (see renderModuleOrderField) — one
+  /* La vista di riordino delle sequenze (see renderModuleOrderField) — one
      row per module id, up/down buttons instead of a raw JSON textarea. */
   .config-module-order-list {
     display: flex;
@@ -5061,7 +5061,7 @@
     });
   }
 
-  // moduleOrderDefault gets its own reorder view (up/down per row)
+  // CONFIG.sequences gets its own reorder view (up/down per row)
   // instead of the generic raw-JSON textarea every other array field
   // gets — the same override storage (setConfigPath/persistConfigSection)
   // either way, just a friendlier editor for a field that's meant to be
@@ -5105,7 +5105,7 @@
   // episodio: è il dataFile del descrittore a dirlo, non un elenco a parte
   // da tenere allineato a mano. Personalizza non ne ha, quindi la sua riga
   // non mostra il pulsante del grado. Guarda tutti gli episodi perché
-  // moduleOrderDefault è la sequenza condivisa, non quella di uno solo.
+  // La vista mostra la sequenza dell'episodio corrente, non un ordine globale.
   function moduleUsesGrade(moduleId) {
     return Object.keys(EPISODES).some(function (episodeId) {
       var entry = EPISODES[episodeId].modulesById[moduleId];
@@ -5488,7 +5488,7 @@
       // personalizationTablesUsed before Customize can render, sharing
       // loadEpisodeData's own cache (no extra request).
       dataFile: 'data/it/a1-episodio1-inglese.json',
-      // Each module's own data, unordered — CONFIG.moduleOrderDefault (or
+      // Each module's own data, unordered — la sequenza dell'episodio (or
       // this episode's own override in CONFIG.episodes.episode1, if it
       // declared one — see near "Module step order") is the ONLY place
       // that decides the sequence; modules.map below just resolves that
@@ -5501,7 +5501,7 @@
       // next to the module on the map (see MODULE_TYPE_LABEL) but not
       // yet wired to map colors or to the valvola/richiamo mechanics.
       // Il grado NON si dichiara qui: lo decide la coppia { module, grade }
-      // in CONFIG.moduleOrderDefault, così lo stesso descrittore serve tutte
+      // nella sequenza dell'episodio, così lo stesso descrittore serve tutte
       // le apparizioni dello stesso modulo su gradi diversi.
       // label/subtitle are NOT declared per-entry here — they're read from
       // CONFIG.moduleLabels[id] (see the Object.keys(EPISODES).forEach
@@ -5551,7 +5551,7 @@
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // Il grado dice QUALI voci, la direzione da che verso mostrarle:
         // la direzione sta qui, il grado sta nella coppia di
-        // CONFIG.moduleOrderDefault (module.grade arriva da lì, vedi il
+        // dalla sequenza dell'episodio (module.grade arriva da lì, vedi il
         // blocco che calcola episode.modules) — cambiare grado non tocca
         // né il componente né questo dizionario.
         // studio, not quiz (job: sei etichette) — self-paced, no time
@@ -5618,14 +5618,14 @@
 
   // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,
   // when it declares none (every episode today), the shared CONFIG.
-  // moduleOrderDefault — against that episode's own modulesById into the
+  // la sequenza dichiarata — against that episode's own modulesById into the
   // ordered "modules" array every other function already reads, portando
   // su ogni modulo il grado dichiarato dalla sua coppia
   // (renderModuleList, moduleStatus, openModuleByKind,
   // ensureEpisodeSlotFields, ...) — none of them change: reordering a
   // step for one episode is moving a line in its own moduleOrder;
   // reordering it for every episode at once is moving a line in
-  // moduleOrderDefault. Nothing here changes either way. Also attaches
+  // la sequenza dichiarata. Nothing here changes either way. Also attaches
   // .label/.subtitle from CONFIG.moduleLabels[id] — the one place the
   // displayed name lives — onto every module object, so every existing
   // reader of module.label (map, Spiegazione title, module headers) picks
@@ -6395,7 +6395,7 @@
      Lists the modules declared on the episode (see EPISODES above) with
      their derived status. Only the current module, or a completed one
      being reviewed, can be opened — a locked row is a disabled button.
-     Personalizza is module #1 of that same list (see moduleOrderDefault)
+     Personalizza is module #1 of that same list (see CONFIG.sequences)
      — no special-casing here, it locks/unlocks/completes exactly like
      every other module.
      ============================================================ */
@@ -6528,7 +6528,7 @@
     if (!btn || btn.disabled) return;
     var module = currentEpisode.modules.find(function (m) { return m.id === btn.getAttribute('data-module'); });
     if (!module) return;
-    // Personalizza is module #1 (see moduleOrderDefault), so every other
+    // Personalizza is module #1 (see CONFIG.sequences), so every other
     // module is naturally locked until it's completed — no separate
     // "seen Customize yet?" gate needed here anymore (see
     // migrateCustomizeSeenToModuleProgress for the old flag's one-time

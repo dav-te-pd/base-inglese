@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260908a**
+**Versione: 20260908b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -54,7 +54,22 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
      Quindi il numero di skill dichiarato in `docs/{lingua}/episodio-N.md` si verifica **contando le voci di tutte le liste**, non le battute che ne hanno una: una battuta sola può portarne due, e il conto per battute darebbe un numero più basso di quello vero.
 
      **I numeri attesi di un episodio stanno in testa al file di quell'episodio, e solo lì** — dove cambiano insieme al contenuto. Non vanno ricopiati qui né altrove: un numero vive accanto alla cosa che conta, perché è l'unico posto in cui qualcuno lo aggiorna. Come esempio in un altro documento invecchia in silenzio e smette di essere un esempio: diventa un'istruzione sbagliata.
-   - **Il grado che un modulo legge è deciso dall'ordine, non dal modulo.** `CONFIG.moduleOrderDefault` è una lista di coppie `{ module, grade }`: la coppia dice quale modulo e su quale grado lavora. Nel descrittore di `EPISODES.<episodio>.modulesById` il grado NON c'è — lì sta solo ciò che non dipende da dove il modulo è messo (`kind`, `dataFile`, direzione, profilo dialogo, categoria). Cambiare grado a un passo è cambiare una lettera nella coppia, niente altro.
+   - **Il grado che un modulo legge è deciso dalla sequenza, non dal modulo.** Una **sequenza** è una lista di coppie `{ module, grade }`: la coppia dice quale modulo e su quale grado lavora. Le sequenze vivono in `CONFIG.sequences`, una per nome (oggi solo `narrativo-standard`, i ventidue passi). Nel descrittore di `EPISODES.<episodio>.modulesById` il grado NON c'è — lì sta solo ciò che non dipende da dove il modulo è messo (`kind`, `dataFile`, direzione, profilo dialogo, categoria). Cambiare grado a un passo è cambiare una lettera nella coppia, niente altro.
+
+     **Ogni episodio dichiara la propria sequenza, sempre, anche il primo**: `CONFIG.episodes.<id>.sequence` porta il nome. Non esiste una sequenza di default che qualcuno eredita in silenzio — `moduleOrderDefault` è stato tolto apposta il 2026-09-08, perché il primo episodio corto avrebbe preso i ventidue passi narrativi senza che nessuno l'avesse deciso.
+
+     In alternativa un episodio può scrivere il proprio ordine per intero in `CONFIG.episodes.<id>.moduleOrder` — è la strada che il Pannello Admin usa quando riordini a mano. **Cosa vince, e non c'è una quarta possibilità:**
+
+     | L'episodio dichiara | Vale |
+     |---|---|
+     | solo `sequence` | quella sequenza |
+     | solo `moduleOrder` | quell'ordine, scritto per intero |
+     | **tutte e due** | **errore** — si dice, non si sceglie |
+     | **niente** | **errore** — nessun default implicito |
+
+     Il caso "tutte e due" è l'unico che si potrebbe risolvere zitti scegliendone una, ed è per questo che non lo si fa: chi ha scritto entrambe crede che valga quella che sta guardando, e ha il 50% di probabilità di sbagliarsi per sempre. L'errore non alza un'eccezione — `resolveEpisodeOrder` gira al caricamento e un `throw` lì lascerebbe una pagina bianca — ma viaggia con l'episodio e diventa la schermata d'errore all'apertura della mappa.
+
+     **Un'eccezione non si dichiara come "narrativo-standard meno Flash Card": chi fa eccezione scrive la sua sequenza per intero.** Una sottrazione si legge solo tenendo aperti due documenti, e quando la base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
 
      Ne segue che **lo stesso modulo può comparire più volte con gradi diversi** (Flash Card sul grado A e sul grado B) riusando un solo descrittore. Gli id restano distinti da soli: `moduleStepId()` lascia alla prima apparizione l'id nudo del modulo — così i progressi già salvati restano validi — e dà alle successive un id proprio (`flashcardAEngIta-2`), invece di sovrascrivere in silenzio i progressi della prima.
 
@@ -148,7 +163,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     - **`docs/{lingua}/episodio-N.md`, uno per episodio di ogni edizione** — il contenuto di quell'episodio. Da lì viene scritto `data/{lingua}/{livello}-episodio{N}-{lingua-che-si-impara}.json`, la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
     - **`docs/{lingua}/struttura-corso.md`, uno per edizione** — la struttura: ordine dei moduli con i loro gradi, nomi dei gradi mostrati allo studente, categorie, regole di esito. Da lì vengono aggiornate le voci corrispondenti di `APP_CONFIG`. Vale per l'intero corso di quell'edizione, non per un episodio: un ordine per episodio significherebbe riordinarlo venti volte.
 
-      *Sta sotto la lingua perché i nomi dei gradi sono testo che lo studente legge — "Parole", "Espressioni" — e un'edizione tedesca vuole i suoi. **Da sapere:** `CONFIG.grades`, `CONFIG.gradeNames`, `CONFIG.moduleTypes` e `CONFIG.moduleOrderDefault` sono oggi valori globali singoli, quindi con una seconda edizione due file `struttura-corso.md` rivendicherebbero la stessa voce di configurazione. Va risolto prima di aggiungere la seconda lingua, non adesso.*
+      *Sta sotto la lingua perché i nomi dei gradi sono testo che lo studente legge — "Parole", "Espressioni" — e un'edizione tedesca vuole i suoi. **Da sapere:** `CONFIG.grades`, `CONFIG.gradeNames`, `CONFIG.moduleTypes` e `CONFIG.sequences` sono oggi valori globali singoli, quindi con una seconda edizione due file `struttura-corso.md` rivendicherebbero la stessa voce di configurazione. Va risolto prima di aggiungere la seconda lingua, non adesso.*
 
     Il messaggio che accompagna una modifica è sempre della forma *"aggiorna leggendo `docs/...`"*: i dati non passano più dalla conversazione.
 
