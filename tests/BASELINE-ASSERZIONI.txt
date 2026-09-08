@@ -1,0 +1,55 @@
+# Quante asserzioni esegue ogni file della suite.
+#
+# Non e' una statistica: e' la difesa contro un verde che prova meno di
+# ieri. Il numero puo' SALIRE (un test nuovo) e non deve CALARE. Quando
+# sale di proposito si riscrive questo file con:
+#
+#   node tests/tools/conta-asserzioni.js --scrivi <elenco dei file>
+#
+# Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
+# dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
+#
+# Ultimo aggiornamento: 2026-09-08
+# Totale: 933
+test_attendi.js 6
+test_avviso_microfono.js 31
+test_batch10.js 23
+test_batch11.js 25
+test_batch12.js 47
+test_batch13.js 21
+test_batch14.js 38
+test_batch15.js 39
+test_batch16.js 35
+test_batch17.js 44
+test_batch18.js 19
+test_batch19.js 40
+test_batch2.js 22
+test_batch20.js 9
+test_batch2b.js 23
+test_batch3.js 23
+test_batch3b.js 24
+test_batch4.js 69
+test_batch4b.js 10
+test_batch5.js 22
+test_batch6.js 12
+test_batch7.js 11
+test_batch8.js 8
+test_batch9.js 22
+test_config_letta.js 3
+test_conta_asserzioni.js 12
+test_dialogo_extra.js 20
+test_episodi_corti.js 9
+test_episodio2.js 9
+test_errore_caricamento.js 13
+test_hidden_guard.js 4
+test_interruttore_episodio.js 14
+test_match_practice_nonloso.js 6
+test_new_features.js 29
+test_outcome_step_ids.js 17
+test_report_mastery.js 8
+test_sblocco_sequenziale.js 16
+test_scala_colori.js 24
+test_sequenze.js 11
+test_story_modules.js 81
+test_struttura_corso.js 9
+test_voicecoach.js 25
