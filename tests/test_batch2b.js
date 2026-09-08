@@ -99,7 +99,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ TASK 1: global moduleOrderDefault + config panel reorder ============
+  // ============ TASK 1: la sequenza dell'episodio + il riordino dal pannello ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -108,10 +108,10 @@ async function run() {
     await bootAsUser(page, 'T1Reorder', []);
     const episodesOverride = await page.evaluate(() => window.APP_CONFIG.episodes.episode1.moduleOrder);
     log('[1] episode1 declares no own moduleOrder (reads the global default)', episodesOverride === undefined);
-    const globalOrder = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.slice());
-    // Ogni voce è una coppia { module, grade } (CONFIG.moduleOrderDefault):
+    const globalOrder = await page.evaluate(() => window.APP_CONFIG.sequences['narrativo-standard'].slice());
+    // Ogni voce è una coppia { module, grade } (CONFIG.sequences):
     // il grado sta lì, non più nel descrittore del modulo.
-    log('[1] moduleOrderDefault exists with personalizzazione first', globalOrder[0].module === 'personalizzazione');
+    log('[1] la sequenza narrativo-standard esiste e comincia da personalizzazione', globalOrder[0].module === 'personalizzazione');
     log('[1] Le voci sono coppie modulo+grado', globalOrder.every(p => typeof p.module === 'string') && globalOrder.some(p => typeof p.grade === 'string'));
 
     // Open the config panel, find the moduleOrderDefault group, move row 1 down.

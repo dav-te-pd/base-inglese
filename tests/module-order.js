@@ -7,9 +7,14 @@
 // primo riordino vero (da 14 a 22 passi) sono cadute quasi tutte insieme,
 // e nessuna diceva perché: solo "timeout aspettando un modulo".
 //
-// Qui la lista si calcola dall'ordine vero (CONFIG.moduleOrderDefault), che
-// è l'unico posto che decide la sequenza. Un riordino futuro non tocca più
-// nessun test.
+// Qui la lista si calcola dalla sequenza vera dell'episodio 1
+// (CONFIG.sequences['narrativo-standard']), che è l'unico posto che decide
+// l'ordine. Un riordino futuro non tocca più nessun test.
+//
+// La sequenza si cerca per NOME e non "la prima che c'è": quando ne
+// esisteranno tre — narrativo-standard, breve-cd, grammaticale — prendere la
+// prima vorrebbe dire cambiare in silenzio cosa provano tutti i test il
+// giorno in cui qualcuno ne aggiunge una in cima.
 //
 // La lettura è statica — index.html come testo — invece che dalla pagina:
 // così la lista è disponibile PRIMA di aprire il browser, dove i test ne
@@ -20,15 +25,15 @@ const { repoPath } = require('./test-env');
 
 function readOrder() {
   const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const block = html.match(/moduleOrderDefault:\s*\[([\s\S]*?)\n\s*\],/);
-  if (!block) throw new Error('moduleOrderDefault non trovato in index.html');
+  const block = html.match(/'narrativo-standard':\s*\[([\s\S]*?)\n\s*\]/);
+  if (!block) throw new Error("La sequenza 'narrativo-standard' non e' stata trovata in index.html");
   const pairs = [];
   const re = /\{\s*module:\s*'([^']+)'(?:\s*,\s*grade:\s*'([^']+)')?(?:\s*,\s*off:\s*(true|false))?\s*\}/g;
   let m;
   while ((m = re.exec(block[1])) !== null) {
     pairs.push({ module: m[1], grade: m[2], off: m[3] === 'true' });
   }
-  if (!pairs.length) throw new Error('moduleOrderDefault vuoto o in un formato non riconosciuto');
+  if (!pairs.length) throw new Error("La sequenza 'narrativo-standard' e' vuota o in un formato non riconosciuto");
   return pairs;
 }
 

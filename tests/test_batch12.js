@@ -59,7 +59,7 @@ const mockInit = () => {
   }
 };
 
-// I passi della mappa, calcolati dall'ordine vero (CONFIG.moduleOrderDefault)
+// I passi della mappa, calcolati dalla sequenza vera (CONFIG.sequences)
 // invece che riscritti qui: un riordino non deve piu' rompere questo file.
 const ALL_MODULES = allSteps();
 // Le chiavi introDismissed sono i KIND dei moduli, non gli id dei passi:
@@ -265,7 +265,7 @@ async function run() {
       };
     }));
     const ids = rows.map(r => r.id);
-    log('[Job7] L\'ordine in mappa e\' quello di CONFIG.moduleOrderDefault',
+    log('[Job7] L\'ordine in mappa e\' quello della sequenza dell\'episodio',
       JSON.stringify(ids) === JSON.stringify(ALL_MODULES));
     // I nomi e le categorie si cercano per id del passo, non per posizione:
     // la posizione cambia a ogni riordino, l'identita' del passo no.

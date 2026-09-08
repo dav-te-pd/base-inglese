@@ -380,63 +380,63 @@
       D: 'Dialogo'
     },
     gradeSeparator: ' · ',
-    // ---- Module step order — the ONLY place that decides module
-    // sequence AND which grade of the episode each step reads.
-    // moduleOrderDefault is the ONE sequence every episode uses unless it
-    // declares its own CONFIG.episodes.<id>.moduleOrder below (none does
-    // today — episode1 reads this default).
+    // ---- Le SEQUENZE: l'unico posto che decide l'ordine dei passi E su
+    // quale grado dell'episodio ciascuno lavora.
     //
-    // Ogni voce è una COPPIA { module, grade }: quale modulo, e su quale
-    // grado dell'episodio lavora. Lo stesso modulo può quindi comparire
-    // più volte su gradi diversi (Flash Card sul grado A e sul grado B);
-    // il grado NON vive più nel descrittore del modulo (EPISODES.
-    // episode1.modulesById), che resta uguale per tutte le sue apparizioni.
-    // Un modulo che non legge contenuto dall'episodio (Personalizza) non
-    // ha grade.
+    // Una sequenza è una lista di COPPIE { module, grade }: quale modulo, e
+    // su quale grado. Lo stesso modulo può comparire più volte su gradi
+    // diversi (Flash Card sul grado A e sul grado B); il grado NON vive nel
+    // descrittore del modulo (EPISODES.episode1.modulesById), che resta
+    // uguale per tutte le sue apparizioni. Un modulo che non legge contenuto
+    // dall'episodio (Personalizza) non ha grade.
     //
-    // Reordering a step (moving Dialogo, Speed Round, a whole group of
-    // steps, ...) for every episode at once means moving a line in THIS
-    // array; nothing else needs to change — each module's own data
-    // (kind/label/dataFile/dialogoProfile/type/...) lives unordered in
-    // EPISODES.episode1.modulesById, keyed by these same module ids (see
-    // EPISODES near moduleProgressKey). Also editable live from the
-    // hidden config panel's reorder view (see near renderModuleOrderField),
-    // which writes back here the same way any other override does — su/giù
-    // per l'ordine, il pulsante con la lettera per il grado. A future
-    // episode needing sections (a named group of steps) is the shape to
-    // extend this into later (e.g. adding a { section } key to a pair),
-    // not something to build yet. ----
-    moduleOrderDefault: [
-      { module: 'personalizzazione' },
-      { module: 'meetTheStory', grade: 'D' },
-      { module: 'repeatAloud', grade: 'A' },
-      { module: 'quickMatchEngIta', grade: 'A' },
-      { module: 'quickMatchItaEng', grade: 'A' },
-      { module: 'flashcardAEngIta', grade: 'A' },
-      { module: 'flashcardAItaEng', grade: 'A' },
-      { module: 'repeatAloud', grade: 'B' },
-      { module: 'quickMatchEngIta', grade: 'B' },
-      { module: 'quickMatchItaEng', grade: 'B' },
-      { module: 'flashcardAEngIta', grade: 'B' },
-      { module: 'voicePractice', grade: 'B' },
-      { module: 'whyWeSayIt', grade: 'D' },
-      { module: 'quickMatchEngIta', grade: 'C' },
-      { module: 'quickMatchItaEng', grade: 'C' },
-      { module: 'voicePractice', grade: 'C' },
-      { module: 'dialogoAscoltaRipeti', grade: 'D' },
-      { module: 'dialogoRipetiATempo', grade: 'D' },
-      { module: 'dialogoContinuo', grade: 'D' },
-      { module: 'speedRoundEngIta', grade: 'C' },
-      { module: 'speedRoundItaEng', grade: 'C' },
-      { module: 'voiceCoach', grade: 'C' }
-    ],
-    // Per-episode override of moduleOrderDefault above — an episode only
-    // needs an entry here if its own step sequence differs from the
-    // global default. Empty today: episode1 has none, so it reads the
-    // global default (see the EPISODES.modules computation near
-    // moduleProgressKey).
+    // OGNI EPISODIO DICHIARA LA SUA, sempre, anche il primo: non esiste più
+    // una sequenza di default che qualcuno eredita in silenzio. Un episodio
+    // che non dichiara niente è un errore che si vede, non un episodio che
+    // ne prende una a caso — vedi resolveEpisodeOrder.
+    //
+    // Un'eccezione non si dichiara come "narrativo-standard meno Flash
+    // Card": chi fa eccezione scrive la sua sequenza PER INTERO. Una
+    // sottrazione si legge solo tenendo aperti due documenti, e quando la
+    // base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
+    //
+    // Editabile dal Pannello Admin, che mostra la sequenza dell'episodio
+    // corrente (vedi renderModuleOrderField): su/giù per l'ordine, il
+    // pulsante con la lettera per il grado, l'occhio per accendere e
+    // spegnere un passo.
+    sequences: {
+      'narrativo-standard': [
+        { module: 'personalizzazione' },
+        { module: 'meetTheStory', grade: 'D' },
+        { module: 'repeatAloud', grade: 'A' },
+        { module: 'quickMatchEngIta', grade: 'A' },
+        { module: 'quickMatchItaEng', grade: 'A' },
+        { module: 'flashcardAEngIta', grade: 'A' },
+        { module: 'flashcardAItaEng', grade: 'A' },
+        { module: 'repeatAloud', grade: 'B' },
+        { module: 'quickMatchEngIta', grade: 'B' },
+        { module: 'quickMatchItaEng', grade: 'B' },
+        { module: 'flashcardAEngIta', grade: 'B' },
+        { module: 'voicePractice', grade: 'B' },
+        { module: 'whyWeSayIt', grade: 'D' },
+        { module: 'quickMatchEngIta', grade: 'C' },
+        { module: 'quickMatchItaEng', grade: 'C' },
+        { module: 'voicePractice', grade: 'C' },
+        { module: 'dialogoAscoltaRipeti', grade: 'D' },
+        { module: 'dialogoRipetiATempo', grade: 'D' },
+        { module: 'dialogoContinuo', grade: 'D' },
+        { module: 'speedRoundEngIta', grade: 'C' },
+        { module: 'speedRoundItaEng', grade: 'C' },
+        { module: 'voiceCoach', grade: 'C' }
+      ]
+    },
+    // Ogni episodio dichiara la sua sequenza per NOME. In alternativa può
+    // scrivere il proprio ordine per intero in `moduleOrder` — è la strada
+    // che il Pannello Admin usa quando riordini a mano. Dichiararle
+    // ENTRAMBE è un errore, e viene detto invece che risolto in silenzio
+    // scegliendone una (resolveEpisodeOrder).
     episodes: {
-      episode1: {}
+      episode1: { sequence: 'narrativo-standard' }
     },
     // ---- Module "type" labels (see each modulesById entry's own `type`)
     // — shown next to a module's name on the map so the student knows
@@ -664,7 +664,7 @@
     // implementation detail, with a sensible range where one exists.
     // Purely descriptive — never read by anything except the panel. ----
     configFieldDescriptions: {
-      'moduleOrderDefault': 'Ordine di default dei passi, usato da ogni episodio che non ne dichiara uno proprio. Ogni riga è un modulo con il grado su cui lavora: le frecce spostano il passo, il pulsante con la lettera cambia grado (A → B → C → D). Ricarica la pagina per vedere l\'effetto in mappa.',
+      'sequences': 'Le sequenze di passi, una per nome. Ogni episodio ne dichiara una (CONFIG.episodes.&lt;id&gt;.sequence), e nessun episodio ne eredita una in silenzio. Qui sotto si modifica quella dell\'episodio corrente: le frecce spostano il passo, il pulsante con la lettera cambia grado (A → B → C → D), l\'occhio accende e spegne. Ricarica la pagina per vedere l\'effetto in mappa.',
       'grades': 'Lettere dei gradi dell\'episodio, nell\'ordine in cui il pulsante del grado le fa girare nella vista di riordino.',
       'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
       'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi inglesi.',
@@ -5122,8 +5122,26 @@
     return grades[(i + 1) % grades.length];
   }
 
+  // Quale sequenza sta modificando il pannello: quella dell'episodio che si
+  // sta guardando. Prima la vista era legata all'unico ordine globale e la
+  // domanda non esisteva; adesso le sequenze sono piu' d'una, e modificarne
+  // una a caso sarebbe peggio che non modificarne nessuna.
+  //
+  // Un episodio con un moduleOrder proprio non ha una sequenza da riordinare
+  // qui: la vista lo dice invece di mostrare le righe di qualcun altro.
+  function sequenzaInModifica() {
+    var ep = (CONFIG.episodes && CONFIG.episodes[currentEpisode && currentEpisode.id]) || {};
+    return (typeof ep.sequence === 'string' && ep.sequence) || null;
+  }
+
+  function ordineInModifica() {
+    var nome = sequenzaInModifica();
+    return (nome && window.APP_CONFIG.sequences && window.APP_CONFIG.sequences[nome]) || null;
+  }
+
   function renderModuleOrderRows(list) {
-    var order = window.APP_CONFIG.moduleOrderDefault;
+    var order = ordineInModifica();
+    if (!order) { list.innerHTML = '<p class="config-field-hint">Questo episodio non usa una sequenza: ha un <code>moduleOrder</code> proprio, che si modifica dal campo <code>episodes</code>.</p>'; return; }
     list.innerHTML = order.map(function (pair, i) {
       var gradeBtn = moduleUsesGrade(pair.module)
         ? '<button type="button" class="btn btn-secondary btn-sm config-module-order-grade" data-order-grade="' + i + '" aria-label="Cambia grado">' + (pair.grade || '–') + '</button>'
@@ -5149,7 +5167,7 @@
     wrap.className = 'config-field';
     // Il testo della spiegazione sta in CONFIG.configFieldDescriptions come
     // quello di ogni altro parametro (CLAUDE.md regola 25), non scritto qui.
-    wrap.innerHTML = configFieldDescriptionHtml(['moduleOrderDefault']);
+    wrap.innerHTML = configFieldDescriptionHtml(['sequences']);
     var list = document.createElement('div');
     list.className = 'config-module-order-list';
     wrap.appendChild(list);
@@ -5158,7 +5176,8 @@
   }
 
   configPanelBodyEl.addEventListener('click', function (e) {
-    var order = window.APP_CONFIG.moduleOrderDefault;
+    var order = ordineInModifica();
+    if (!order) return;
     var list = null;
 
     var onOffBtn = e.target.closest('[data-order-onoff]');
@@ -5166,7 +5185,7 @@
       var offPair = order[Number(onOffBtn.getAttribute('data-order-onoff'))];
       if (!offPair) return;
       if (offPair.off) delete offPair.off; else offPair.off = true;
-      persistConfigSection('moduleOrderDefault');
+      persistConfigSection('sequences');
       renderModuleOrderRows(onOffBtn.closest('.config-module-order-list'));
       return;
     }
@@ -5188,7 +5207,7 @@
       list = btn.closest('.config-module-order-list');
     }
 
-    persistConfigSection('moduleOrderDefault');
+    persistConfigSection('sequences');
     renderModuleOrderRows(list);
   });
 
@@ -5206,7 +5225,7 @@
       details.appendChild(summary);
       var body = document.createElement('div');
       body.className = 'config-group-body';
-      if (sectionKey === 'moduleOrderDefault') {
+      if (sectionKey === 'sequences') {
         body.appendChild(renderModuleOrderField());
       } else if (Array.isArray(section)) {
         body.appendChild(renderConfigJsonField([sectionKey], section));
@@ -5622,9 +5641,60 @@
     return seenBefore ? moduleId + '-' + (seenBefore + 1) : moduleId;
   }
 
+  // COSA VINCE, e non c'e' una quarta possibilita':
+  //
+  //   | dichiara            | vale                                        |
+  //   |---------------------|---------------------------------------------|
+  //   | solo `sequence`     | quella sequenza                             |
+  //   | solo `moduleOrder`  | quell'ordine, scritto per intero            |
+  //   | tutte e due         | ERRORE — si dice, non si sceglie in silenzio |
+  //   | niente              | ERRORE — nessun default implicito           |
+  //
+  // Il caso "tutte e due" e' l'unico che potrebbe essere risolto zitti
+  // scegliendone una, ed e' proprio per questo che non lo si fa: chi ha
+  // scritto entrambe crede che valga quella che sta guardando, e ha il 50%
+  // di probabilita' di sbagliarsi per sempre.
+  //
+  // "Niente" e' un errore per la stessa ragione per cui moduleOrderDefault
+  // non e' sopravvissuto: un default implicito e' una sequenza che nessuno
+  // ha scelto e che tutti ereditano. Il primo episodio corto avrebbe preso
+  // i ventidue passi narrativi senza che nessuno l'avesse deciso.
+  //
+  // Perche' NON alza un'eccezione: questa funzione gira al caricamento
+  // dello script, dentro il ciclo che costruisce EPISODES. Un throw li'
+  // fermerebbe il resto dello script e lascerebbe una pagina bianca — un
+  // guasto peggiore di quello che segnala. Restituisce invece l'errore, che
+  // openEpisodeMap trasforma nella schermata d'errore (regola 35): lo
+  // studente vede qualcosa, e chi sviluppa lo trova anche in console.
+  function resolveEpisodeOrder(episodeId) {
+    var ep = (CONFIG.episodes && CONFIG.episodes[episodeId]) || {};
+    var haOrdine = Array.isArray(ep.moduleOrder);
+    var haSequenza = typeof ep.sequence === 'string' && ep.sequence.length > 0;
+    if (haOrdine && haSequenza) {
+      return { order: [], errore: 'L\'episodio "' + episodeId + '" dichiara sia una sequenza ("' +
+        ep.sequence + '") sia un moduleOrder proprio: sono due risposte alla stessa domanda, e va tenuta una sola.' };
+    }
+    if (haOrdine) return { order: ep.moduleOrder, errore: null };
+    if (!haSequenza) {
+      return { order: [], errore: 'L\'episodio "' + episodeId +
+        '" non dichiara nessuna sequenza. Ogni episodio deve dichiarare la sua: non esiste piu\' una sequenza di default.' };
+    }
+    var seq = CONFIG.sequences && CONFIG.sequences[ep.sequence];
+    if (!Array.isArray(seq)) {
+      return { order: [], errore: 'L\'episodio "' + episodeId + '" chiede la sequenza "' + ep.sequence +
+        '", che non esiste in CONFIG.sequences.' };
+    }
+    return { order: seq, errore: null };
+  }
+
   Object.keys(EPISODES).forEach(function (episodeId) {
     var episode = EPISODES[episodeId];
-    var order = (CONFIG.episodes[episodeId] && CONFIG.episodes[episodeId].moduleOrder) || CONFIG.moduleOrderDefault;
+    var risolto = resolveEpisodeOrder(episodeId);
+    var order = risolto.order;
+    // L'errore viaggia con l'episodio: chi apre la mappa lo trova (vedi
+    // openEpisodeMap) invece di trovare una mappa vuota senza spiegazione.
+    episode.orderError = risolto.errore;
+    if (risolto.errore) console.error('[base-inglese] ' + risolto.errore);
     var seen = {};
     // Una coppia con off: true e' spenta: sparisce dalla mappa invece di
     // restare grigia, cosi' provando un ordine si vede l'episodio come lo
@@ -6374,6 +6444,15 @@
   }
 
   function openEpisodeMap() {
+    // Un episodio senza una sequenza valida non ha passi da mostrare: senza
+    // questa riga la mappa si aprirebbe VUOTA, che e' il difetto silenzioso
+    // di sempre — sembra funzionare e non lo dice. Il "Riprova" rifara' la
+    // stessa strada e fallira' di nuovo, ed e' onesto: e' la
+    // configurazione a essere rotta, non un caricamento andato storto.
+    if (currentEpisode.orderError) {
+      showLoadError(function () { openEpisodeMap(); });
+      return;
+    }
     migrateCustomizeSeenToModuleProgress(currentEpisode, getUserName());
     document.getElementById('map-episode-badge').textContent = currentEpisode.badge;
     renderModuleList();
