@@ -15,8 +15,14 @@
 > **Due cose che la fonte non diceva e che sono state decise trascrivendo:**
 > `episodeId: "episode2"` e `speaker: "hostess"` per l'hostess alla porta.
 >
-> ⚠️ **L'episodio è scritto ma non collegato:** non è ancora in `EPISODES`, quindi **l'app non lo
-> vede**. È il passo 11 fatto, non il passo successivo.
+> ✅ **Collegato l'8 settembre.** L'app lo vede: si sceglie dal **Pannello Admin** — `?config`,
+> gruppo `episodioCorrente` — e la pagina si ricarica.
+>
+> *La scelta ricarica di proposito: mappa, progressi, slot e contenuti si costruiscono all'avvio,
+> e cambiarli a caldo lascerebbe a schermo un misto dei due episodi.*
+>
+> **Usa `sequence: 'narrativo-standard'`**, perché ha tutti e quattro i gradi — *è la ragione per
+> cui `breve-cd` non serviva più*.
 >
 > Convenzione: diventerà `docs/it/episodio-2.md`.
 
@@ -192,6 +198,30 @@ sono due `Thank you` e non c'è niente da spiegare.*
 > "Enjoy your flight" vuol dire "buon volo", e la sentirai in mille versioni: "enjoy your meal", "enjoy your stay", "enjoy your day".
 > **Una cosa importante: qui la conversazione è finita.** In italiano risponderemmo — "grazie, altrettanto" — ma in inglese questa formula **chiude da sé**. Chi la riceve sorride e passa.
 > Non è maleducazione: è che la frase è già un saluto.
+
+---
+
+## I PERSONAGGI E LE LORO ETICHETTE
+
+*Le **etichette** sono quello che lo studente legge sopra ogni bolla. Non coincidono con la
+colonna "Chi" della matrice, che descrive **chi parla nella scena** e serve a noi che scriviamo.*
+
+| Personaggio *(colonna "Chi")* | Etichetta a schermo |
+|---|---|
+| Hostess | **Hostess** |
+| Papà | **Papà** |
+| Tutti | **Tutti** |
+
+> **Qui coincidono, ma non è la regola.** *Nell'episodio 1 il personaggio si chiama "Hostess al
+> gate" e l'etichetta è "Hostess": la descrizione dice **quale** hostess è, l'etichetta è quello
+> che ci sta sopra una bolla.*
+>
+> **In questo episodio è "Hostess" e basta** perché ce n'è una sola in scena — *ma se un giorno
+> ce ne fossero due, la colonna "Chi" le distinguerebbe e le etichette dovrebbero farlo anche
+> loro.*
+
+**Da qui Claude Code trascrive `dialogueSpeakerLabels`.** *Questa tabella è la fonte: la colonna
+"Chi" della matrice non lo è.*
 
 ---
 
