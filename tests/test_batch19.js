@@ -53,12 +53,104 @@ async function openModule(page, moduleId) {
 // riga diversa (139 in una corsa, 244 in un'altra) — tre cicli con lo stesso
 // difetto, non una riga sfortunata. Un rattoppo su una riga sola avrebbe
 // spostato il problema, non tolto.
-async function tapPrimaOpzione(page, contenitore) {
-  const presente = await page.locator(contenitore + ' .sr-option').first()
-    .waitFor({ state: 'visible', timeout: 2000 }).then(() => true).catch(() => false);
-  if (!presente) return false;   // giro finito: non c'e' piu' niente da toccare
-  await page.click(contenitore + ' .sr-option >> nth=0');
-  return true;
+// ---------------------------------------------------------------------------
+// GUIDARE IL QUIZ INVECE DI SPERARCI.
+//
+// Match Practice e Speed Round non espongono quale opzione sia quella giusta
+// (`qmCurrentOptions`/`srCurrentOptions` vivono dentro l'IIFE), quindi un test
+// che vuole osservare una risposta GIUSTA deve toccare e guardare cosa succede.
+// Fin qui e' inevitabile. Quello che NON e' inevitabile e' come si contava il
+// giro: quattro blocchi di questo file toccavano la prima opzione al massimo
+// venti volte e speravano. Misurato il 2026-09-08: rosso 2 giri su 3 su
+// `[SR Task1]`, e poi — con quello corretto — rosso su `[SR Task3-adj]`, che ha
+// la stessa forma. Non era sfortuna: era la specie, e se ne correggeva un
+// esemplare per volta.
+//
+// Le tre cose che rendono il giro deterministico, e nessuna e' un tempo:
+//
+//   1. SULL'ULTIMA DOMANDA DEL PASSAGGIO NON SI RISPONDE MAI. Li' una risposta
+//      chiude il passaggio, e con esso le domande che restavano da provare. Si
+//      dichiara "non lo so": la voce torna nel giro di ripasso, quindi altre
+//      domande dopo ci sono di sicuro.
+//   2. IL LIMITE DEL CICLO NON E' UN NUMERO A OCCHIO: e' quante domande
+//      esistono per quanti passaggi la coda di ripasso ammette. Venti tentativi
+//      su un giro di nove domande sono meno di quello che sembrano, perche' il
+//      ciclo finisce quando finiscono le domande, non quando finisce il conto.
+//   3. LE SCHERMATE DI MEZZO SI ATTRAVERSANO invece di far uscire il ciclo: il
+//      riquadro della risposta, l'intro del ripasso.
+//
+// Con nove domande e tre passaggi le occasioni diventano ~30 invece di ~9, e la
+// probabilita' di non vedere mai una prima opzione giusta passa da 7,5% a
+// 0,02%. Resta un test probabilistico — dichiararlo e' meglio che fingere che
+// non lo sia — ma di un ordine di grandezza che non si incontra.
+//
+// Tutti gli id dei due moduli seguono lo stesso schema, quindi il prefisso
+// ('qm' o 'sr') basta a servirli entrambi: un solo posto da correggere invece
+// di quattro.
+function statoQuiz(page, p) {
+  return page.evaluate((pre) => {
+    const vis = el => !!el && el.getClientRects().length > 0;
+    const contatore = (document.getElementById(pre + '-counter') || {}).textContent || '';
+    const m = contatore.match(/(\d+)\s*\/\s*(\d+)/);
+    return {
+      contatore: contatore.trim(),
+      indice: m ? Number(m[1]) : null,
+      totale: m ? Number(m[2]) : null,
+      quiz: vis(document.getElementById(pre + '-quiz-screen')),
+      ripasso: vis(document.getElementById(pre + '-retry-intro-screen')),
+      riepilogo: vis(document.getElementById(pre + '-summary-screen')),
+      revealAperto: !document.getElementById(pre + '-reveal').hidden,
+      opzioni: document.querySelectorAll('#' + pre + '-options .sr-option').length
+    };
+  }, p);
+}
+
+// Tocca la prima opzione finche' non ne capita una dell'esito voluto
+// ('giusta' o 'sbagliata'). Restituisce il contatore della domanda su cui e'
+// successo, oppure null se il giro e' finito senza — e in quel caso il test
+// che la chiama deve fallire dicendolo, non proseguire su una schermata a caso.
+async function toccaFinoA(page, p, voluto) {
+  const partenza = await statoQuiz(page, p);
+  const maxPassaggi = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
+  const limite = (partenza.totale || 1) * (maxPassaggi + 1) + 5;
+  for (let mosse = 0; mosse < limite; mosse++) {
+    const st = await statoQuiz(page, p);
+    if (st.riepilogo) return null;
+    if (st.ripasso) { await page.click('#' + p + '-retry-continue-btn'); continue; }
+    if (st.revealAperto) { await page.click('#' + p + '-advance-btn'); continue; }
+    if (!st.quiz || !st.opzioni) return null;
+    if (st.indice !== null && st.indice === st.totale) {
+      await page.click('#' + p + '-dontknow-btn');
+      continue;
+    }
+    const prima = st.contatore;
+    await page.click('#' + p + '-options .sr-option >> nth=0');
+    // Giusta o sbagliata si legge dallo stato, non dal tempo: la classe la
+    // mette il gestore del click, sincrono con il click stesso.
+    const giusta = await page.evaluate((pre) =>
+      document.querySelector('#' + pre + '-options .sr-option.is-correct') !== null &&
+      document.querySelector('#' + pre + '-options .sr-option.is-wrong') === null, p);
+    if ((voluto === 'giusta') === giusta) return prima;
+  }
+  return null;
+}
+
+// L'attesa della domanda successiva, nella forma giusta: non un numero di
+// millisecondi ma cio' che il lavoro produce — il contatore cambiato e il
+// riquadro della risposta chiuso — con lo stato del pulsante letto DENTRO la
+// stessa chiamata che ha aspettato. Fra un'attesa e una lettura separate la
+// domanda puo' cambiare ancora.
+function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
+  return page.waitForFunction((a) => {
+    const b = document.getElementById(a.pre + '-dontknow-btn');
+    const c = document.getElementById(a.pre + '-counter');
+    const rev = document.getElementById(a.pre + '-reveal');
+    if (!b || !c || !rev) return null;
+    if (!rev.hidden) return null;
+    if (c.textContent.trim() === a.prima) return null;
+    return { spento: b.disabled, nascosto: b.hidden, contatore: c.textContent.trim() };
+  }, { pre: p, prima: contatorePrecedente }, { timeout: 15000 })
+    .then(h => h.jsonValue()).catch(() => null);
 }
 
 async function run() {
@@ -78,32 +170,18 @@ async function run() {
     await page.waitForTimeout(200);
     const beforeDisabled = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
     log('[QM Task1] "Non lo so" starts enabled on a fresh question', beforeDisabled === false);
-    // qmCurrentOptions (which option is correct) is module-scope, not
-    // exposed globally, so try option 0 repeatedly across questions until
-    // a correct tap is observed; a wrong tap just advances to retry.
-    let gotCorrect = false;
-    for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      if (!(await tapPrimaOpzione(page, '#qm-options'))) break;
-      await page.waitForTimeout(20);
-      const wasCorrect = await page.evaluate(() => document.querySelector('#qm-options .sr-option.is-correct') !== null && document.querySelector('#qm-options .sr-option.is-wrong') === null);
-      if (wasCorrect) {
-        gotCorrect = true;
-        const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
-        log('[QM Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix)', dontKnowDisabledRightAfter === true);
-      } else {
-        // wrong path: reveal shown, dontknow hidden; advance manually to next question for retry
-        const revealShown = await page.evaluate(() => !document.getElementById('qm-reveal').hidden);
-        if (revealShown) {
-          await page.click('#qm-advance-btn');
-          await page.waitForTimeout(50);
-        }
-      }
+    // Il giro si GUIDA (vedi toccaFinoA): non si tocca la prima opzione venti
+    // volte sperando, e sull'ultima domanda del passaggio non si risponde mai.
+    const contatorePrimaQM = await toccaFinoA(page, 'qm', 'giusta');
+    log('[QM Task1] Managed to observe a correct-answer tap within retries', contatorePrimaQM !== null);
+    if (contatorePrimaQM !== null) {
+      const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
+      log('[QM Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix)', dontKnowDisabledRightAfter === true);
     }
-    log('[QM Task1] Managed to observe a correct-answer tap within retries', gotCorrect);
-    // Now confirm it resets enabled on the NEXT question (not stuck disabled forever).
-    await page.waitForTimeout(800); // feedbackPauseMs (600) then auto-advance
-    const nextQDisabled = await page.evaluate(() => document.getElementById('qm-dontknow-btn') ? document.getElementById('qm-dontknow-btn').disabled : null);
-    log('[QM Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)', nextQDisabled === false);
+    // La domanda successiva si aspetta, non si cronometra.
+    const dopoQM = contatorePrimaQM === null ? null : await attendiDomandaSuccessiva(page, 'qm', contatorePrimaQM);
+    log('[QM Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
+      dopoQM !== null && dopoQM.spento === false);
     log('[QM Task1] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -177,64 +255,15 @@ async function run() {
     //   - l'attesa finale non e' un tempo: e' la domanda successiva a schermo,
     //     riconosciuta dal contatore cambiato e dal riquadro della risposta
     //     chiuso, con lo stato del pulsante letto DENTRO la stessa chiamata.
-    const statoSR = () => page.evaluate(() => {
-      const vis = el => !!el && el.getClientRects().length > 0;
-      const contatore = (document.getElementById('sr-counter') || {}).textContent || '';
-      const m = contatore.match(/(\d+)\s*\/\s*(\d+)/);
-      return {
-        contatore: contatore.trim(),
-        indice: m ? Number(m[1]) : null,
-        totale: m ? Number(m[2]) : null,
-        quiz: vis(document.getElementById('sr-quiz-screen')),
-        ripasso: vis(document.getElementById('sr-retry-intro-screen')),
-        riepilogo: vis(document.getElementById('sr-summary-screen')),
-        revealAperto: !document.getElementById('sr-reveal').hidden,
-        opzioni: document.querySelectorAll('#sr-options .sr-option').length
-      };
-    });
-
-    const partenzaSR = await statoSR();
-    const maxPassaggiSR = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
-    const limiteSR = (partenzaSR.totale || 1) * (maxPassaggiSR + 1) + 5;
-    let contatorePrimaSR = null;
-    let mosseSR = 0;
-
-    while (contatorePrimaSR === null && mosseSR < limiteSR) {
-      mosseSR++;
-      const st = await statoSR();
-      if (st.riepilogo) break;
-      if (st.ripasso) { await page.click('#sr-retry-continue-btn'); continue; }
-      if (st.revealAperto) { await page.click('#sr-advance-btn'); continue; }
-      if (!st.quiz || !st.opzioni) break;
-      if (st.indice !== null && st.indice === st.totale) {
-        await page.click('#sr-dontknow-btn');
-        continue;
-      }
-      const prima = st.contatore;
-      await page.click('#sr-options .sr-option >> nth=0');
-      // Giusta o sbagliata si legge dallo stato, non dal tempo: la classe la
-      // mette il gestore del click, sincrono con il click stesso.
-      const giusta = await page.evaluate(() =>
-        document.querySelector('#sr-options .sr-option.is-correct') !== null &&
-        document.querySelector('#sr-options .sr-option.is-wrong') === null);
-      if (giusta) {
-        contatorePrimaSR = prima;
-        const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('sr-dontknow-btn').disabled);
-        log('[SR Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix, same as Quick Match)', dontKnowDisabledRightAfter === true);
-      }
-    }
+    // Stesso giro guidato dei tre blocchi gemelli (vedi toccaFinoA): la prima
+    // versione di questo blocco sperava, ed era rossa 2 giri su 3.
+    const contatorePrimaSR = await toccaFinoA(page, 'sr', 'giusta');
     log('[SR Task1] Managed to observe a correct-answer tap within retries', contatorePrimaSR !== null);
-
-    // Nessun numero di millisecondi: si aspetta la domanda successiva.
-    const dopoSR = contatorePrimaSR === null ? null : await page.waitForFunction(precedente => {
-      const b = document.getElementById('sr-dontknow-btn');
-      const c = document.getElementById('sr-counter');
-      const rev = document.getElementById('sr-reveal');
-      if (!b || !c || !rev) return null;
-      if (!rev.hidden) return null;
-      if (c.textContent.trim() === precedente) return null;
-      return { spento: b.disabled, contatore: c.textContent.trim() };
-    }, contatorePrimaSR, { timeout: 15000 }).then(h => h.jsonValue()).catch(() => null);
+    if (contatorePrimaSR !== null) {
+      const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('sr-dontknow-btn').disabled);
+      log('[SR Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix, same as Quick Match)', dontKnowDisabledRightAfter === true);
+    }
+    const dopoSR = contatorePrimaSR === null ? null : await attendiDomandaSuccessiva(page, 'sr', contatorePrimaSR);
     log('[SR Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
       dopoSR !== null && dopoSR.spento === false);
     log('[SR Task1] No JS errors', errors.length === 0);
@@ -276,15 +305,14 @@ async function run() {
     log('[SR Task3] Spiegazione is DISABLED while the timer bar is running', duringTimer.watchDisabled === true);
     log('[SR Task3] Help is DISABLED while the timer bar is running', duringTimer.helpDisabled === true);
     // A WRONG tap shows the reveal (something to read) -> header unlocks.
-    // Retry across questions until a wrong tap is observed (option order
-    // is randomized per question).
-    let gotWrong = false;
-    for (let attempt = 0; attempt < 20 && !gotWrong; attempt++) {
-      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
-      await page.waitForTimeout(30);
-      const revealShown = await page.evaluate(() => !document.getElementById('sr-reveal').hidden);
-      if (revealShown) {
-        gotWrong = true;
+    // Stesso giro guidato degli altri tre blocchi (toccaFinoA): qui l'esito
+    // voluto e' quello SBAGLIATO, che e' tre volte piu' probabile — ma la forma
+    // del ciclo era identica, e un ciclo che si esaurisce fallisce allo stesso
+    // modo. Si corregge la specie, non l'esemplare che e' caduto.
+    const contatorePrimaW = await toccaFinoA(page, 'sr', 'sbagliata');
+    const gotWrong = contatorePrimaW !== null;
+    {
+      if (gotWrong) {
         const afterWrong = await page.evaluate(() => {
           var w = document.getElementById('speed-round-watch-btn');
           var h = document.getElementById('speed-round-help-btn');
@@ -293,11 +321,6 @@ async function run() {
         log('[SR Task3-adj] Spiegazione re-enabled once the WRONG-answer reveal is shown (something to read)', afterWrong.watchDisabled === false);
         log('[SR Task3-adj] Help re-enabled once the WRONG-answer reveal is shown', afterWrong.helpDisabled === false);
         await page.click('#sr-advance-btn');
-        await page.waitForTimeout(50);
-      } else {
-        // Correct tap: covered by the dedicated block below; just advance
-        // past the auto-advance pause and try the next question.
-        await page.waitForTimeout(700);
       }
     }
     log('[SR Task3-adj] Managed to observe a wrong-answer tap within retries', gotWrong);
@@ -321,13 +344,18 @@ async function run() {
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
-    let gotCorrect = false;
-    for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
-      await page.waitForTimeout(15); // right after the tap, before feedbackPauseMs (600) elapses
-      const wasCorrect = await page.evaluate(() => document.querySelector('#sr-options .sr-option.is-correct') !== null && document.querySelector('#sr-options .sr-option.is-wrong') === null);
-      if (wasCorrect) {
-        gotCorrect = true;
+    // Stesso giro guidato: era questo il blocco caduto nella corsa del
+    // 2026-09-08, dopo che [SR Task1] era gia' stato corretto — la prova che si
+    // stava curando un esemplare per volta.
+    const contatorePrimaAdj = await toccaFinoA(page, 'sr', 'giusta');
+    const gotCorrect = contatorePrimaAdj !== null;
+    {
+      if (gotCorrect) {
+        // Le tre letture qui sotto sono a tempo APPOSTA, e restano: verificano
+        // che un pulsante NON si accenda dentro una finestra (la pausa di
+        // feedback). Per un evento che non deve accadere non esiste una
+        // condizione da aspettare — e' l'eccezione dichiarata in
+        // tests/ATTESE-FISSE.md.
         const rightAfterTap = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione stays DISABLED right after a CORRECT tap (nothing to read, no flicker)', rightAfterTap === true);
         await page.waitForTimeout(300); // still mid-pause (feedbackPauseMs 600)
@@ -336,9 +364,6 @@ async function run() {
         await page.waitForTimeout(500); // past feedbackPauseMs, into the next question's timer
         const nextQuestion = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione still DISABLED into the next question (its own timer just re-locked it)', nextQuestion === true);
-      } else {
-        const revealShown = await page.evaluate(() => !document.getElementById('sr-reveal').hidden);
-        if (revealShown) { await page.click('#sr-advance-btn'); await page.waitForTimeout(50); }
       }
     }
     log('[SR Task3-adj] Managed to observe a correct-answer tap within retries', gotCorrect);
