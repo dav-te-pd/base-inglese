@@ -34,7 +34,7 @@ fi
 cleanup() { [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null; }
 trap cleanup EXIT
 
-FILES="test_batch2.js test_batch2b.js test_batch3.js test_batch3b.js test_batch4.js test_batch4b.js test_batch5.js test_batch6.js test_batch7.js test_batch8.js test_batch9.js test_batch10.js test_batch11.js test_batch12.js test_batch13.js test_batch14.js test_batch15.js test_batch16.js test_batch17.js test_batch18.js test_batch19.js test_batch20.js test_dialogo_extra.js test_new_features.js test_voicecoach.js test_story_modules.js test_hidden_guard.js test_outcome_step_ids.js test_config_letta.js test_struttura_corso.js test_scala_colori.js test_errore_caricamento.js test_avviso_microfono.js test_sblocco_sequenziale.js test_attendi.js test_report_mastery.js test_episodi_corti.js test_sequenze.js test_episodio2.js"
+FILES="test_batch2.js test_batch2b.js test_batch3.js test_batch3b.js test_batch4.js test_batch4b.js test_batch5.js test_batch6.js test_batch7.js test_batch8.js test_batch9.js test_batch10.js test_batch11.js test_batch12.js test_batch13.js test_batch14.js test_batch15.js test_batch16.js test_batch17.js test_batch18.js test_batch19.js test_batch20.js test_dialogo_extra.js test_new_features.js test_voicecoach.js test_story_modules.js test_hidden_guard.js test_outcome_step_ids.js test_config_letta.js test_struttura_corso.js test_scala_colori.js test_errore_caricamento.js test_avviso_microfono.js test_sblocco_sequenziale.js test_attendi.js test_report_mastery.js test_episodi_corti.js test_sequenze.js test_episodio2.js test_interruttore_episodio.js test_match_practice_nonloso.js"
 OVERALL_OK=1
 for f in $FILES; do
   echo "=== $f ==="

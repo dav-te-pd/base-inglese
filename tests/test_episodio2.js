@@ -1,9 +1,8 @@
 // PROTEGGE: che `data/it/a1-episodio2-inglese.json` continui a dire quello che
-// dichiara la sua fonte, `docs/it/episodio-2.md`. Oggi quel file dati **non lo
-// legge nessuno** — l'episodio 2 non è ancora in `EPISODES` — e proprio per
-// questo è il momento in cui può divergere senza che niente lo mostri: non c'è
-// una schermata che sbaglia, non c'è un modulo che si apre vuoto. C'è solo un
-// file che invecchia in silenzio finché qualcuno lo collega.
+// dichiara la sua fonte, `docs/it/episodio-2.md`. I due file cambiano insieme
+// una volta ogni tanto, e quando divergono non crolla niente: i moduli si
+// aprono pieni e hanno l'aria giusta: semplicemente insegnano una cosa che il
+// documento non dice più.
 //
 // COME, e perché non come per l'episodio 1: `test_story_modules.js` confronta
 // il JSON dell'episodio 1 **carattere per carattere** con le tabelle del suo
@@ -20,9 +19,15 @@
 // numericamente perfetta.
 //
 // LIMITE DICHIARATO: il TESTO non è confrontato. Se qualcuno cambia una parola
-// nel markdown e non nel JSON, questo test resta verde. Quando l'episodio 2
-// entrerà in `EPISODES`, il confronto testuale va esteso a lui — e allora
-// questo limite sparisce.
+// nel markdown e non nel JSON, questo test resta verde. Il limite era stato
+// scritto con una scadenza — «quando l'episodio 2 entrerà in `EPISODES`» — e
+// quel giorno è arrivato (2026-09-08, CONFIG.episodioCorrente e l'interruttore
+// del Pannello Admin). **Il limite però resta, e la scadenza si è spostata**:
+// estendere il confronto testuale vuol dire un secondo lettore di markdown per
+// una forma diversa da quella dell'episodio 1, che è esattamente il costo che
+// questo file aveva deciso di non pagare. La riga è registrata in
+// `docs/decisioni.md` con la sua condizione, invece di restare qui come una
+// promessa scaduta.
 
 const fs = require('fs');
 const { repoPath } = require('./test-env');

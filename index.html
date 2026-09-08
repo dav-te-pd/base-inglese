@@ -436,8 +436,24 @@
     // ENTRAMBE è un errore, e viene detto invece che risolto in silenzio
     // scegliendone una (resolveEpisodeOrder).
     episodes: {
-      episode1: { sequence: 'narrativo-standard' }
+      episode1: { sequence: 'narrativo-standard' },
+      // L'ordine è uno solo per tutto il corso (docs/it/struttura-corso.md):
+      // un episodio può sovrascriverlo, ma è l'eccezione, e l'episodio 2 non
+      // lo è — ha tutti e quattro i gradi, quindi i ventidue passi lo
+      // percorrono per intero.
+      episode2: { sequence: 'narrativo-standard' }
     },
+    // Quale episodio apre l'app. È un parametro come gli altri (regola 3) e
+    // non uno stato nascosto: il Pannello Admin gli dà un menu invece del
+    // campo di testo generico (renderEpisodeSwitchField), così l'unico modo
+    // di sbagliarlo è scriverlo a mano negli override.
+    //
+    // Perché un parametro e non una schermata di scelta: la scelta
+    // dell'episodio è una decisione di prodotto — quando ci sarà una mappa
+    // del corso nascerà lì, con il suo disegno. Questo interruttore serve a
+    // RAGGIUNGERE un episodio per provarlo, e non deve diventare per
+    // sbaglio il modo in cui gli studenti ne cambiano.
+    episodioCorrente: 'episode1',
     // ---- Module "type" labels (see each modulesById entry's own `type`)
     // — shown next to a module's name on the map so the student knows
     // what to expect before opening it. Purely declarative for now: not
@@ -664,6 +680,7 @@
     // implementation detail, with a sensible range where one exists.
     // Purely descriptive — never read by anything except the panel. ----
     configFieldDescriptions: {
+      'episodioCorrente': 'Quale episodio apre l\'app. Il menu elenca gli episodi che esistono: sceglierne uno ricarica la pagina, perché mappa, progressi e contenuti si costruiscono all\'avvio. Serve a raggiungere un episodio per provarlo — la scelta dell\'episodio per lo studente sarà un\'altra cosa, con il suo disegno.',
       'sequences': 'Le sequenze di passi, una per nome. Ogni episodio ne dichiara una (CONFIG.episodes.&lt;id&gt;.sequence), e nessun episodio ne eredita una in silenzio. Qui sotto si modifica quella dell\'episodio corrente: le frecce spostano il passo, il pulsante con la lettera cambia grado (A → B → C → D), l\'occhio accende e spegne. Ricarica la pagina per vedere l\'effetto in mappa.',
       'grades': 'Lettere dei gradi dell\'episodio, nell\'ordine in cui il pulsante del grado le fa girare nella vista di riordino.',
       'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
@@ -5162,6 +5179,36 @@
     }).join('');
   }
 
+  // L'interruttore dell'episodio: un menu con gli episodi che ESISTONO,
+  // costruito da Object.keys(EPISODES) invece che da un elenco scritto a
+  // mano — un episodio nuovo compare qui senza che nessuno tocchi il
+  // pannello, e uno tolto sparisce.
+  //
+  // Perche' un menu e non il campo di testo che il pannello darebbe da solo
+  // a un parametro stringa: un id sbagliato a mano manda l'app sul ramo di
+  // ripiego qui sopra, cioe' su un episodio che non e' quello che si
+  // credeva di aver scelto. Con il menu quel caso non si presenta.
+  //
+  // Il ricaricamento non e' una comodita': mappa, progressi, slot e
+  // contenuti dell'episodio si costruiscono all'avvio, e cambiarlo a caldo
+  // lascerebbe a schermo un misto dei due. Lo dichiara data-config-reload,
+  // gestito dal listener generico dei campi (piu' sotto) insieme al
+  // salvataggio, invece che da un secondo listener suo.
+  function renderEpisodeSwitchField() {
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    var opzioni = Object.keys(EPISODES).map(function (id) {
+      var ep = EPISODES[id];
+      return '<option value="' + id + '"' + (id === CONFIG.episodioCorrente ? ' selected' : '') + '>' +
+        (ep.badge || id) + ' (' + id + ')</option>';
+    }).join('');
+    wrap.innerHTML =
+      '<label class="config-field-label" for="cfg-episodioCorrente">episodioCorrente</label>' +
+      configFieldDescriptionHtml(['episodioCorrente']) +
+      '<select id="cfg-episodioCorrente" data-config-path="episodioCorrente" data-config-reload>' + opzioni + '</select>';
+    return wrap;
+  }
+
   function renderModuleOrderField() {
     var wrap = document.createElement('div');
     wrap.className = 'config-field';
@@ -5225,7 +5272,9 @@
       details.appendChild(summary);
       var body = document.createElement('div');
       body.className = 'config-group-body';
-      if (sectionKey === 'sequences') {
+      if (sectionKey === 'episodioCorrente') {
+        body.appendChild(renderEpisodeSwitchField());
+      } else if (sectionKey === 'sequences') {
         body.appendChild(renderModuleOrderField());
       } else if (Array.isArray(section)) {
         body.appendChild(renderConfigJsonField([sectionKey], section));
@@ -5265,6 +5314,11 @@
 
     setConfigPath(path, value);
     persistConfigSection(path[0]);
+    // Un parametro che si legge solo all'avvio non cambia niente finche' la
+    // pagina non riparte: senza questo, il menu dell'episodio si muoverebbe
+    // e a schermo resterebbe l'episodio di prima — una manopola che sembra
+    // aver fatto qualcosa e non l'ha fatto.
+    if (target.hasAttribute('data-config-reload')) window.location.reload();
   });
 
   document.getElementById('config-panel-reset-btn').addEventListener('click', function () {
@@ -5613,6 +5667,58 @@
         { text: "We" }, { text: "are" }, { text: "leaving" }, { slot: 'partenza' },
         { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
       ]
+    },
+    // Episodio 2 — "Sulla porta dell'aereo" (docs/it/episodio-2.md).
+    // Stessi moduli dell'episodio 1: quello che cambia e' il file dati, il
+    // cast e l'unico slot. La sequenza NON sta qui ma in
+    // CONFIG.episodes.episode2 (regola 4), come per ogni altro episodio.
+    episode2: {
+      id: 'episode2',
+      badge: 'Episodio 2',
+      dataFile: 'data/it/a1-episodio2-inglese.json',
+      // `segments` non c'e', e non e' una dimenticanza: quel campo lo legge
+      // solo buildTargetTokens, cioe' la vista `pronunciation`, che non e'
+      // raggiungibile da nessun punto dell'app (nessuno chiama
+      // startPronunciationExercise). Dichiararlo vuoto sarebbe peggio:
+      // sembrerebbe una frase che esiste ed e' vuota.
+      modulesById: {
+        personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
+        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/it/a1-episodio2-inglese.json', storyProfile: 'meet', type: 'studio' },
+        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/it/a1-episodio2-inglese.json', storyProfile: 'why', type: 'studio' },
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'practice', type: 'studio' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'check', type: 'quiz' },
+        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
+        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
+        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
+        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
+        flashcardAEngIta: { kind: 'flashcardLevelA', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcardLevelA', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
+      },
+      // Un solo segnaposto in tutto l'episodio: {{destinazione}} in d7
+      // (docs/it/episodio-2.md, PASSO 10). Gli slot della famiglia non sono
+      // usati — il padre dice "my wife", non un nome.
+      dialoguePlaceholderMap: {
+        destinazione: 'destinazione'
+      },
+      // Nessuno, in questo episodio, ha un nome personalizzabile: l'unico
+      // slot dichiarato dal file dati e' la destinazione
+      // (personalizationTablesUsed), quindi un `papa` mappato su uno slot
+      // che non esiste darebbe un'etichetta VUOTA sulle sue tre battute —
+      // provato, ed e' cosi' che si e' visto.
+      dialogueSpeakers: {},
+      // Le etichette sono quelle della colonna "Chi" della tabella delle
+      // battute in docs/it/episodio-2.md, copiate e non inventate:
+      // "Hostess" (alla porta dell'aereo non c'e' un'altra hostess da cui
+      // distinguerla), "Papa'", "Tutti".
+      dialogueSpeakerLabels: {
+        hostess: 'Hostess',
+        papa: 'Pap\u00e0',
+        tutti: 'Tutti'
+      }
     }
   };
 
@@ -6088,7 +6194,18 @@
   /* ============================================================
      EPISODE CUSTOMIZATION VIEW
      ============================================================ */
-  var currentEpisode = EPISODES.episode1;
+  // L'episodio che si apre lo dice CONFIG.episodioCorrente, non una riga di
+  // codice: e' cosi' che il Pannello Admin puo' cambiarlo (regola 3).
+  // Un id che non esiste piu' negli EPISODES — un override scritto a mano, o
+  // un episodio tolto — non lascia una pagina bianca: si riparte dal primo
+  // episodio dichiarato E LO SI DICE in console, invece di far credere che
+  // l'episodio scelto sia quello a schermo.
+  var currentEpisode = EPISODES[CONFIG.episodioCorrente];
+  if (!currentEpisode) {
+    console.error('[base-inglese] CONFIG.episodioCorrente vale "' + CONFIG.episodioCorrente +
+      '", che non e\' un episodio dichiarato: si apre il primo (' + Object.keys(EPISODES)[0] + ').');
+    currentEpisode = EPISODES[Object.keys(EPISODES)[0]];
+  }
   var currentValues = null;
 
   function renderSlotGrid() {
