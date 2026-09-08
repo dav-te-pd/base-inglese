@@ -215,15 +215,32 @@ uno studente di Lugano non deve dichiarare un paese che non è il suo.*
 | `dest-scozia` | Scozia | Scotland | sì |
 | `dest-thailandia` | Thailandia | Thailand | sì |
 
-**Due criteri, entrambi obbligatori:** in italiano vogliono **"in"** — nome femminile singolare
-— e in inglese **non vogliono l'articolo**. *Per questo si dice Inghilterra e non Regno Unito:
-"**nel** Regno Unito". E per questo sono fuori gli Stati Uniti e i Paesi Bassi.*
+**Tre criteri, tutti obbligatori:**
 
-**Nessuna coincide con i paesi di origine** (Italia, Svizzera, Francia). **Origine e
-destinazione non coincidono mai** (regola 1.73): il conflitto si elimina all'origine —
-togliendo la sovrapposizione dal magazzino — non con una regola applicata a runtime. *Una
-famiglia francese che parte per la Francia produce frasi corrette e una storia che non sta in
-piedi.*
+1. **In italiano vogliono "in"** — nome femminile singolare. *Fuori gli Stati Uniti (**negli**)
+   e Londra (**a**)*
+2. **In inglese non vogliono l'articolo.** *Fuori `the Netherlands`, `the USA`, `the UK` — ed è
+   per questo che c'è la **Scozia** e non il Regno Unito*
+3. ⚠️ **Sono mete che si raccontano.** *Un viaggio in Cina o in Thailandia è una storia; la
+   Spagna e la Germania sono il weekend.* **L'episodio 1 promette un viaggio incredibile, e la
+   destinazione deve essere all'altezza della promessa**
+
+> **Il terzo criterio è quello che esclude Spagna e Germania**, e va scritto perché **i primi
+> due le ammetterebbero**: `in Spagna` / `to Spain` e `in Germania` / `to Germany` passano tutti
+> e due.
+>
+> *Senza questa riga, chi rifà la tabella vede due criteri che le ammettono, non le trova nella
+> lista, e **non sa se è una decisione o una dimenticanza**.*
+
+**La Francia esce per un motivo diverso: è un paese di origine.** **Origine e destinazione non
+coincidono mai** (regola 1.73), e il conflitto si elimina all'origine — togliendo la
+sovrapposizione dal magazzino — **non con una regola applicata a runtime**. *Una famiglia
+francese che parte per la Francia produce frasi corrette e una storia che non sta in piedi.*
+
+> ⚠️ **Oggi `APP_CONFIG.places.destinations` ne ha sei** — Cina, Giappone, Spagna, Francia,
+> Germania, Irlanda — **e sono la tabella vecchia**. *Le due divergono finché il magazzino non
+> viene trascritto, che è bloccato dal secondo campo per riga.* **Non dare per attuale quella
+> nel codice.**
 
 ### In magazzino, non ancora in nessuna vetrina
 
