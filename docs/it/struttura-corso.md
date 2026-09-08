@@ -114,6 +114,63 @@ Un modulo produce un tipo di dato diverso a seconda di com'è fatto, e la regola
 
 ---
 
+## I nomi in codice
+
+*Decisi il 2026-09-08. Sono la fonte della **rinomina unica** registrata in
+`docs/decisioni.md`: da qui vengono i nomi, non dalla conversazione in cui sono
+stati scelti.*
+
+I nomi mostrati allo studente stanno in `CONFIG.moduleLabels` e non cambiano.
+Questa sezione riguarda i nomi che si leggono solo nel codice — `kind`, id dei
+moduli, funzioni — e che nel tempo hanno smesso di dire cosa nominano.
+
+| Oggi | Domani | Perché |
+|---|---|---|
+| `se*` | `storyCards*` | Il componente mostra le battute di un dialogo una sotto l'altra, come carte. **`cards` da solo si confonderebbe con Flash Card, che è un'altra cosa: le une si scorrono, l'altra si gira.** E *story* è già la parola che usiamo — Meet the Story, Your Story. Il nome vecchio veniva da "Speak Easy", un modulo che non esiste più. |
+| `srShuffle` | `shuffle` | Mescola, e basta: nessun modulo può reclamarlo. È lo stesso caso di `srPlayTraguardoSound`, già corretto — regola 18, un nome condiviso non porta il prefisso del primo modulo che l'ha introdotto. |
+| `quickMatch*` | `match*` | È il nome che lo studente legge già (*Match Practice*), senza il suffisso della direzione. |
+| `speedRound*` | `speedMatch*` | Idem (*Speed Match*). "Round" non dice niente che "Match" non dica meglio. |
+| `flashcardLevelA` | `flashcard` | Il grado vive nella coppia `{ module, grade }`, non nel `kind`: quel descrittore gira già sul grado A **e** sul grado B, quindi il nome mente. `flashcard` è anche il nome che tutto il resto del codice usa già (la vista, gli id, le classi). |
+
+### Cosa segue il nome, e cosa no
+
+Un modulo porta il proprio nome su **tre strati**, e non si muovono tutti
+insieme:
+
+1. **il `kind` e l'id del modulo** — `quickMatchEngIta`, `speedRoundItaEng`.
+   Questi seguono sempre: sono la chiave con cui il modulo si nomina, e sono
+   la stessa chiave che indicizza `data/it/istruzioni-moduli.json` e i
+   progressi salvati.
+2. **gli id e le classi in kebab** — `#view-quick-match`, `#speed-round-badge`,
+   `#speak-easy-body`. Questi seguono, perché **scrivono il nome per esteso**:
+   `speak-easy` in 54 punti è il nome di un modulo che non esiste più, scritto
+   a lettere.
+3. **le abbreviazioni di due lettere** — `qm-`, `sr-`, `fc*`, e `se*` stesso
+   nei nomi di funzione. **Queste NON seguono, ed è una decisione, non una
+   dimenticanza.** Nessuno legge `#sr-options` e ne conclude "Speed Round":
+   sono sigle interne che non fanno nessuna promessa sul nome del modulo.
+   Farle seguire triplica il lavoro senza chiarire niente.
+
+   *L'unica eccezione è già nella tabella qui sopra:* `srShuffle` **segue**,
+   perché non è un elemento di Speed Round — è una funzione che usano sei
+   moduli, e lì la sigla una promessa la fa.
+
+**Il rischio di questa decisione, scritto perché non si scopra da solo:** dopo
+la rinomina `sr` non starà più per niente. È accettato. Chi trova `sr-` fra sei
+mesi deve poter leggere qui che è stato deciso, non dimenticato.
+
+### Cosa cambia per chi studia
+
+**Niente a schermo, ma i progressi salvati ripartono da zero.** I `kind` e gli
+id dei moduli sono le chiavi con cui i progressi vivono nel `localStorage`:
+cambiarli non li sposta, li lascia orfani. Vale per quattro delle cinque
+rinomine, non solo per gli id degli episodi.
+
+Per questo la rinomina si fa **finché siamo gli unici utenti**, e prima di un
+collaudo su profilo nuovo — non dopo.
+
+---
+
 ## Da aggiornare quando
 
 - **Si aggiunge un modulo:** entra nell'ordine con il suo grado, nella categoria giusta, con la sua regola di esito
