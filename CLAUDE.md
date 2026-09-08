@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260907f**
+**Versione: 20260908a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -325,6 +325,44 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     (regola 32), **diagnosticare** un rosso rilanciando un file solo in
     pochi secondi, e dare il verde **prima** della pubblicazione — che è
     tutto il senso del ramo di verifica.
+
+39. **Una voce mai incontrata non ha colore.** È assenza di dato, non un
+    giudizio: finché nessuno ha risposto, quella voce **non esiste** nel
+    magazzino della mastery — e non serve rappresentarla, perché è già così.
+    L'unico lettore che abbia mai disegnato quei colori lo sa (`renderPhrase`
+    usa la classe `new` quando la voce manca).
+
+    **La prima risposta le dà il colore che quella risposta merita**, non un
+    livello di partenza deciso a tavolino:
+
+    | Prima risposta | Diventa |
+    |---|---|
+    | giusta | **giallo**, con la striscia a 1 — così la seconda giusta promuove a verde |
+    | simile *(solo Voice Practice)* | **giallo**, striscia 0 |
+    | sbagliata | **rosso**, striscia 0 |
+
+    **Il compromesso è dichiarato, non nascosto: una risposta indovinata a
+    caso porta a giallo.** Lo accettiamo perché l'errore opposto è peggiore —
+    leggere una risposta *giusta* come «non lo sa» è falso **sempre**, mentre
+    leggere un colpo di fortuna come «medio» è falso **a volte**. E giallo non
+    è definitivo: è la scala che dice «ci torniamo sopra», e se era fortuna la
+    prossima risposta lo scopre.
+
+    **Non esiste un quarto livello sotto `rosso`, e non va aggiunto**: entrerebbe
+    in `LEVELS`, l'array su cui `nextLevel`/`prevLevel` fanno l'aritmetica, e
+    cambierebbe la retrocessione di *tutte* le voci per sistemare solo le nuove.
+
+    *Perché c'è, ed è il motivo per cui è la prima delle regole sulla mastery a
+    essere scritta: fino al 2026-09-08 ogni voce nasceva **rossa**, anche
+    rispondendo giusto. Con `promotionStreak: 2` servivano **quattro** risposte
+    giuste per arrivare a verde invece di due, e un profilo che aveva fatto
+    tutto bene mostrava verde 0 su 145 voci. Non era una scelta sbagliata: non
+    era **mai stata scritta da nessuna parte**, né come regola né come
+    motivazione — c'era solo un commento che descriveva cosa faceva il codice.
+    E un test la proteggeva, perché descriveva il codice invece della regola.
+    Questa regola esiste perché la prossima decisione sulla mastery non torni
+    a vivere solo dentro un `+1`.*
+
 
 ## Riferimenti operativi
 

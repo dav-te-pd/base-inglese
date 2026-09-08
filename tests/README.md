@@ -1,6 +1,6 @@
 # Suite di regressione
 
-36 file — 35 Playwright, che aprono l'app in un browser vero, e uno
+37 file — 36 Playwright, che aprono l'app in un browser vero, e uno
 (`test_attendi.js`) che non la apre affatto: prova uno strumento della
 suite, non l'app. Uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
@@ -9,7 +9,7 @@ alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_struttura_corso.js`, `test_scala_colori.js`,
 `test_errore_caricamento.js`, `test_avviso_microfono.js`,
 `test_sblocco_sequenziale.js`, `test_attendi.js`,
-`test_report_mastery.js`). Insieme costituiscono la
+`test_report_mastery.js`, `test_episodi_corti.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -143,6 +143,7 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_sblocco_sequenziale.js` | La promessa dello Sblocco Sequenziale in **entrambe** le varianti (regola 30): dentro un passo più avanti della sequenza non risponde niente — nessun audio, nessun cambiamento — mentre il passo raggiungibile continua a rispondere. Senza, la sequenza torna a essere solo un effetto grafico: la card sembra spenta e il pulsante dentro funziona lo stesso, che è il difetto trovato al 6° collaudo nella variante per dichiarazione. Clicca tutto quello che trova invece di un elenco di pulsanti, così copre anche quelli aggiunti domani. |
 | `test_attendi.js` | Che `tests/tools/attendi.sh` riporti il codice **giusto**: 0 quando il lavoro finisce bene, 1 quando finisce male, e che lo dica invece di limitarsi a restituirlo. È l'unico strumento fra «la suite è finita» e quello che se ne racconta: se sbaglia codice, un rosso passa per verde e il suo output somiglia a un risultato in entrambi i casi. Guida due comandi veri che ci mettono un momento a dichiarare l'esito, così l'attesa deve girare almeno un giro — un log già scritto proverebbe solo che sa fare `grep`. **Limite dichiarato:** il terzo caso, tempo scaduto con uscita 2, non è coperto — costerebbe al test l'attesa che deve misurare; esercitato a mano il 2026-09-07. |
 | `test_report_mastery.js` | Che il pannello dei colori delle voci mostri quello che c'è davvero nel magazzino, ordinato per chiave, e soprattutto che **legga e basta**. È uno strumento per guardare un dato che a schermo non compare da nessun'altra parte: se mostrasse un numero sbagliato nessuno se ne accorgerebbe, perché non c'è nient'altro con cui confrontarlo. L'asserzione che pesa di più è che aprirlo non cambi un byte della mastery — un report che modifica quello che misura è peggio di nessun report, e il rischio è concreto: la funzione carica lo store con la stessa `loadMastery()` dei tre scrittori, a un carattere da un `saveMastery()`. L'ordine per chiave non è estetica: è il punto del pannello, perché le righe della stessa voce devono finire vicine. **Limite dichiarato:** non verifica quante volte una voce è stata scritta, perché quel dato non esiste. |
+| `test_episodi_corti.js` | Che un episodio con una **forma diversa dal primo** non produca silenzio. Tre difetti della stessa famiglia, tutti e tre senza crollo — e per questo erano rimasti: un passo con un `kind` sconosciuto che diventa un vicolo cieco muto e blocca per sempre quelli dopo; un passo puntato su un grado assente che si dichiara **completato senza far fare niente** e registra pure l'esito; la migrazione di `customizeSeen` che scrive in episodi che Personalizza non ce l'hanno. Diventano urgenti con gli **episodi corti** (solo gradi C e D): è lì che tutti e tre mordono. Le tre forme sbagliate si costruiscono dagli override del Pannello Admin, non da un secondo episodio finto. **Limite dichiarato:** verifica che il passo non si completi e che lo studente veda qualcosa, non il testo dell'errore — quello è di `test_errore_caricamento.js`. |
 
 ---
 

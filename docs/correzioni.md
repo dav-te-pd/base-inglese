@@ -32,6 +32,19 @@ commit che lo giustifica. Il titolo si ritrova con `git log --grep`.
 | 2026-09-05 | La regola di esito (`CONFIG.moduleOutcomeRules`) veniva cercata con l'**id del passo** invece che con l'id del **modulo**: dalla seconda apparizione in poi (`quickMatchEngIta-2`, `flashcardAEngIta-2`, `voicePractice-2`…) la chiave non esisteva, `saveModuleOutcome` non veniva chiamato e sei passi su ventidue restavano senza colore in mappa. Sette letture passate a `.moduleId` — un campo che l'app costruiva già su ogni passo e non leggeva nessuno. Era il § 4.1 di `docs/validazione.md`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 | 2026-09-05 | `CONFIG.attemptRule` tolta. Le sue due righe (`voicePractice: 'lastAttempt'`, `voiceCoach: 'firstAttempt'`) duplicavano una distinzione già nel descrittore come `module.voiceVariant`, ed erano anch'esse indicizzate per id del passo: il passo 16 cadeva su `undefined` e usava il primo tentativo invece dell'ultimo. La regola vive ora in `vcEvaluate`, che rama su `vcVariant`. | titolo: `La regola di esito arriva a ogni apparizione, non solo alla prima` |
 
+## Episodi di forma diversa (i tre difetti silenziosi)
+
+*Tutti e tre chiusi insieme il 2026-09-08, perché sono la stessa famiglia: non
+crollano, sembrano funzionare, e mordono al primo episodio che non ha la forma
+del primo. Sono diventati urgenti con la decisione degli **episodi corti** —
+solo gradi C e D.*
+
+| Data | Cosa | Commit |
+|---|---|---|
+| 2026-09-08 | `openModuleByKind` aveva una catena di `if/else if` **senza ramo finale**: un passo con un `kind` sconosciuto era una riga cliccabile che non faceva nulla, restava "attuale" per sempre e bloccava tutti i successivi senza un errore in console. Ora il ramo finale mostra la schermata d'errore, che è già la strada per «qualcosa non va» (regola 35). | titolo: `Tre difetti silenziosi che aspettavano il primo episodio corto` |
+| 2026-09-08 | `episodeGrade()` torna `[]` per un grado assente, e i costruttori di coda leggevano quel `[]` come «coda già finita»: il modulo si dichiarava **completato senza far fare un solo esercizio**, e registrava l'esito. Nasce `episodeGradeRequired()`, il lettore che **pretende**: sta nei sette punti dove il contenuto è indispensabile (cinque code e due schermate), alza, e il fallimento cade nella `.catch()` che ogni modulo ha già. `episodeGrade()` resta il lettore neutro per i gestori di click, dove «nessuna voce» vuol dire solo «niente da fare». | titolo: `Tre difetti silenziosi che aspettavano il primo episodio corto` |
+| 2026-09-08 | `migrateCustomizeSeenToModuleProgress()` scriveva `'personalizzazione'` nei progressi di **qualunque** episodio, anche di uno che quel passo non lo dichiara. Ora controlla che l'episodio abbia davvero quel modulo. | titolo: `Tre difetti silenziosi che aspettavano il primo episodio corto` |
+
 ## Suite di regressione
 
 | Data | Cosa | Commit |

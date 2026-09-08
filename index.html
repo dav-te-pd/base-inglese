@@ -6189,6 +6189,16 @@
 
   function migrateCustomizeSeenToModuleProgress(episode, userName) {
     if (!isCustomizeSeen(episode.id, userName)) return;
+    // ...ma solo se questo episodio Personalizza ce l'ha davvero. Gira in
+    // cima a openEpisodeMap() per QUALUNQUE episodio, e prima scriveva
+    // 'personalizzazione' nei progressi anche di uno che quel passo non lo
+    // dichiara: spazzatura nei progressi salvati, innocua finche' nessuno
+    // rilegge quell'id. Il primo episodio senza Personalizza — gli episodi
+    // corti, o i grammaticali — e' dove smette di essere innocua.
+    var haIlModulo = (episode.modules || []).some(function (m) {
+      return m.moduleId === 'personalizzazione';
+    });
+    if (!haIlModulo) return;
     var progress = loadModuleProgress(episode.id, userName);
     if (progress.completed.indexOf('personalizzazione') === -1) {
       markModuleCompleted(episode, userName, 'personalizzazione');
@@ -6401,6 +6411,17 @@
     else if (module.dialogoProfile) openDialogo(module);
     else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
     else if (module.flashcardDirection) openFlashcard(module);
+    // Il ramo finale che mancava. Senza, un modulo il cui kind non
+    // corrisponde a niente diventava una riga cliccabile che NON FA NULLA:
+    // e lo stato di un passo e' derivato ("il primo non completato e'
+    // l'attuale"), quindi quel passo restava attuale per sempre e bloccava
+    // tutti quelli dopo, senza un errore in console. Un vicolo cieco muto.
+    //
+    // Si riusa la schermata d'errore invece di inventarne una: dice che
+    // qualcosa non va e offre l'uscita verso la mappa (regola 35). Il
+    // "Riprova" rifara' la stessa strada e fallira' di nuovo — ed e' giusto
+    // cosi': e' rotto, e la via d'uscita e' l'altro pulsante.
+    else showLoadError(function () { openModuleFromMap(module); });
   }
 
   // Aprire un modulo dalla mappa e' una funzione con un nome, non il corpo
@@ -6499,6 +6520,33 @@
     return (entry && entry.items) || [];
   }
 
+  // Il grado che un modulo DEVE avere per esistere.
+  //
+  // episodeGrade() resta il lettore neutro: torna [] e va benissimo per un
+  // gestore di click, dove "nessuna voce" vuol dire solo "niente da fare".
+  // Ma nei costruttori di coda quel [] veniva letto come CODA GIA' FINITA
+  // (qmQueue/vcQueue/srQueue .length === 0), e il modulo si dichiarava
+  // completato senza aver fatto fare un solo esercizio — registrando pure
+  // l'esito. Non crollava: sembrava funzionare, che e' peggio.
+  //
+  // Qui invece si alza. Tutti i chiamanti stanno dentro una .then() che ha
+  // gia' la sua .catch() con la schermata d'errore (regola 35), quindi il
+  // fallimento ha gia' una strada e non ne serve una nuova: lo studente vede
+  // che qualcosa non va, invece di un passo che si spunta da solo.
+  //
+  // Diventa urgente con gli EPISODI CORTI (solo gradi C e D): un ordine che
+  // contiene un passo sul grado A e un episodio che il grado A non ce l'ha
+  // sono esattamente questo caso. Il messaggio nomina il passo e il grado,
+  // cosi' chi lo vede sa cosa correggere.
+  function episodeGradeRequired(data, grade, module) {
+    var items = episodeGrade(data, grade);
+    if (!items.length) {
+      throw new Error('Il passo "' + ((module && module.id) || '?') + '" chiede il grado ' +
+        grade + ', che questo episodio non ha (o e\' vuoto)');
+    }
+    return items;
+  }
+
   // Il testo di una voce nella lingua chiesta, con i segnaposto già
   // riempiti. Serve perché i gradi C (frasi) e D (battute) contengono
   // {{papa}}, {{partenza}} e simili: un quiz su quei gradi mostrerebbe il
@@ -6522,7 +6570,7 @@
     var ruleHtml = data.generalRule
       ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
       : '';
-    var itemsHtml = episodeGrade(data, currentRepeatAloudModule.grade).map(function (item) {
+    var itemsHtml = episodeGradeRequired(data, currentRepeatAloudModule.grade, currentRepeatAloudModule).map(function (item) {
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
         '<span class="repeat-item-english">' + itemText(item, 'en') + '</span>' +
@@ -6877,7 +6925,7 @@
     var profile = (CONFIG.story.profiles[currentSpeakEasyModule.storyProfile]) || {};
     var withSkills = profile.skills !== false;
     var skillIds = [];
-    var itemsHtml = episodeGrade(data, currentSpeakEasyModule.grade).map(function (line) {
+    var itemsHtml = episodeGradeRequired(data, currentSpeakEasyModule.grade, currentSpeakEasyModule).map(function (line) {
       var align = dialogueLineAlign(line);
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
@@ -7788,7 +7836,7 @@
     }
     Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
       if (vcModule !== module) return;
-      vcLines = episodeGrade(results[0], module.grade);
+      vcLines = episodeGradeRequired(results[0], module.grade, module);
       vcQueue = vcLines.map(function (l) { return l.id; });
       vcPassTotal = vcQueue.length;
       vcInRetryPass = false;
@@ -8388,7 +8436,7 @@
     showView('quickMatch');
     loadEpisodeData(module).then(function (data) {
       if (qmModule !== module) return;
-      qmVocab = episodeGrade(data, module.grade);
+      qmVocab = episodeGradeRequired(data, module.grade, module);
     }).catch(function () {
       if (qmModule !== module) return;
       showLoadError(function () { openQuickMatch(module); });
@@ -9059,7 +9107,7 @@
     showView('dialogo');
     loadEpisodeData(module).then(function (data) {
       if (dgModule !== module) return;
-      dgDialogue = episodeGrade(data, module.grade);
+      dgDialogue = episodeGradeRequired(data, module.grade, module);
     }).catch(function () {
       if (dgModule !== module) return;
       showLoadError(function () { openDialogo(module); });
@@ -9579,7 +9627,7 @@
     showView('speedRound');
     loadEpisodeData(module).then(function (data) {
       if (srModule !== module) return;
-      srVocab = episodeGrade(data, module.grade);
+      srVocab = episodeGradeRequired(data, module.grade, module);
     }).catch(function () {
       if (srModule !== module) return;
       showLoadError(function () { openSpeedRound(module); });
@@ -9953,7 +10001,7 @@
     showView('flashcard');
     loadEpisodeData(module).then(function (data) {
       if (fcModule !== module) return;
-      fcVocab = episodeGrade(data, module.grade);
+      fcVocab = episodeGradeRequired(data, module.grade, module);
       fcStartDeck();
     }).catch(function () {
       if (fcModule !== module) return;
