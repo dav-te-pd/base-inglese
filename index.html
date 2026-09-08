@@ -1331,6 +1331,30 @@
     padding: 3px 0;
   }
 
+  /* La chiave e' lunga (voicepractice:d-1:0) e deve restare leggibile su un
+     telefono: mono, piccola, e libera di andare a capo invece di spingere il
+     pannello fuori dallo schermo. */
+  .config-mastery-row {
+    align-items: baseline;
+  }
+
+  .config-mastery-key {
+    font-family: var(--font-mono);
+    font-size: 0.74rem;
+    word-break: break-all;
+  }
+
+  .config-mastery-level {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .config-mastery-level[data-level="rosso"] { color: var(--wrong-ink); }
+  .config-mastery-level[data-level="giallo"] { color: var(--similar-ink); }
+  .config-mastery-level[data-level="verde"] { color: var(--correct-ink); }
+
   .config-audio-usage-total {
     border-top: 1px solid var(--border);
     margin-top: 4px;
@@ -4200,6 +4224,21 @@
           <summary>Speak Easy — "Cosa imparo qui" (risposte all'autovalutazione)</summary>
           <div class="config-group-body" id="config-se-explanation-stats"></div>
         </details>
+        <!-- I colori delle voci (mastery), riga per riga. Stessa forma dei tre
+             pannelli qui sopra (CLAUDE.md regola 13). Uno strumento per
+             GUARDARE: legge e basta, non scrive niente e non tocca la scala.
+             Serve a vedere una cosa che a schermo non si vede da nessuna
+             parte — la stessa parola ha righe diverse per esercizio e
+             direzione, e i colori si muovono a ogni risposta.
+             NON mostra quante volte una voce e' stata scritta: quel dato non
+             esiste. Una voce di mastery e' { level, streak } e nessuno dei
+             tre scrittori tiene un contatore; mostrarlo vorrebbe dire
+             cambiare cosa si salva, cioe' la logica che questo pannello
+             esiste per osservare senza disturbare. -->
+        <details class="config-group" open>
+          <summary>colori delle voci (mastery) — profilo corrente</summary>
+          <div class="config-group-body" id="config-mastery"></div>
+        </details>
         <div id="config-panel-body" class="config-panel-body"></div>
         <div class="overlay-actions">
           <button type="button" class="btn btn-secondary btn-block" id="config-panel-reset-btn">Ripristina valori di partenza</button>
@@ -4854,6 +4893,37 @@
       '<div class="config-audio-usage-row config-audio-usage-total"><span>Totale episodio</span><span>' + total.toFixed(1) + ' s</span></div>';
   }
 
+  // I colori delle voci, ordinati per chiave: cosi' le righe della stessa
+  // parola finiscono vicine e si vede a occhio che `a-hello` ne ha una per
+  // esercizio e una per direzione. L'ordinamento e' il punto del pannello,
+  // non un dettaglio: sciolte, quelle righe non dicono niente.
+  //
+  // Legge e basta. Nessuna scrittura, nessun tocco a applyMasteryResult,
+  // alla coda di ripasso o agli azzeramenti.
+  function renderMasteryPanel() {
+    var el = document.getElementById('config-mastery');
+    if (!el) return;
+    var mastery = loadMastery(currentEpisode.id, getUserName());
+    var chiavi = Object.keys(mastery).sort();
+    var perLivello = { rosso: 0, giallo: 0, verde: 0 };
+    var righe = chiavi.map(function (k) {
+      var v = mastery[k] || {};
+      if (perLivello[v.level] !== undefined) perLivello[v.level]++;
+      return '<div class="config-audio-usage-row config-mastery-row">' +
+        '<span class="config-mastery-key">' + k + '</span>' +
+        '<span><span class="config-mastery-level" data-level="' + (v.level || '?') + '">' +
+        (v.level || '?') + '</span> · streak ' + (v.streak === undefined ? '?' : v.streak) + '</span>' +
+        '</div>';
+    }).join('');
+    el.innerHTML =
+      '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' +
+      currentEpisode.id + '. La chiave e\' <code>esercizio:voce:direzione</code>: la stessa parola ha una riga per ogni esercizio e per ogni direzione, ed e\' voluto. Voice Practice indicizza per POSIZIONE nella battuta (<code>voicepractice:d-1:0</code>), non per id della voce. Il numero di scritture non c\'e\': non viene salvato.</p>' +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>Voci in tutto</span><span>' + chiavi.length + '</span></div>' +
+      '<div class="config-audio-usage-row"><span>rosso · giallo · verde</span><span>' +
+      perLivello.rosso + ' · ' + perLivello.giallo + ' · ' + perLivello.verde + '</span></div>' +
+      (righe || '<p class="config-field-hint">Nessuna voce ancora: questo profilo non ha risposto a niente che scriva un colore.</p>');
+  }
+
   function renderNextLineSkipsPanel() {
     var el = document.getElementById('config-next-line-skips');
     if (!el) return;
@@ -4891,6 +4961,7 @@
     renderAudioUsagePanel();
     renderNextLineSkipsPanel();
     renderSeExplanationStatsPanel();
+    renderMasteryPanel();
     configPanelOverlayEl.classList.add('is-open');
   }
   function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
