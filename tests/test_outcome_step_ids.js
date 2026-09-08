@@ -331,6 +331,53 @@ async function run() {
     await page.close();
   }
 
+  // ---- [D] I PANNELLI-REPORT: l'ottava e la nona lettura della stessa
+  // famiglia. Gli store dei pannelli sono indicizzati per id di PASSO
+  // ('voicePractice-2'), CONFIG.moduleLabels per id di MODULO: dalla seconda
+  // apparizione la chiave non esiste e il pannello cadeva sul nome tecnico.
+  // La correzione del 2026-09-05 ne sistemò sette e non guardò questi due.
+  //
+  // Si semina lo store invece di giocare fino al passo 16: il difetto sta
+  // nella LETTURA, e giocare mezz'ora per arrivarci non lo misurerebbe
+  // meglio — misurerebbe la stessa riga più tardi.
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bootFresh(page);
+    const atteso = await page.evaluate(function (utente) {
+      localStorage.setItem('baseinglese:audioSecondsSent:episode1:' + utente,
+        JSON.stringify({ byModule: { 'voicePractice': 12.5, 'voicePractice-2': 7.5 } }));
+      localStorage.setItem('baseinglese:nextLineSkips:episode1:' + utente,
+        JSON.stringify({ byModule: { 'dialogoRipetiATempo': 3 } }));
+      // Il nome atteso si LEGGE dalla configurazione, non si ricopia qui.
+      return window.APP_CONFIG.moduleLabels.voicePractice.name;
+    }, USER);
+    await page.reload();
+    await page.waitForSelector('#go-episode', { state: 'visible' });
+    for (const ch of 'config') await page.keyboard.press(ch);
+    await page.waitForSelector('#config-audio-usage', { state: 'visible', timeout: 10000 });
+    const testo = await page.evaluate(function () {
+      return {
+        audio: document.getElementById('config-audio-usage').innerText,
+        skips: document.getElementById('config-next-line-skips').innerText,
+        titoli: Array.prototype.map.call(document.querySelectorAll('#config-panel-overlay summary, .config-group > summary'),
+          function (el) { return el.textContent; }).join(' | ')
+      };
+    });
+    log('[D] La SECONDA apparizione mostra il nome del modulo, non l\'id del passo',
+      testo.audio.indexOf('voicePractice-2') === -1 && testo.audio.indexOf(atteso) !== -1);
+    log('[D] E anche la prima lo mostra (non si è rotta l\'altra metà)',
+      testo.audio.indexOf('voicePractice') === -1 || testo.audio.indexOf(atteso) !== -1);
+    log('[D] Lo stesso vale per il pannello "Prossima frase"',
+      testo.skips.indexOf('dialogoRipetiATempo') === -1);
+    log('[D] Nessun titolo del pannello nomina un modulo che non esiste più',
+      testo.titoli.indexOf('Speak Easy') === -1);
+    log('[D] Nessun errore JS', errori.length === 0);
+    if (errori.length) console.log('    ' + errori.join(' | '));
+    await page.close();
+  }
+
   await browser.close();
   const falliti = risultati.filter(function (r) { return !r; }).length;
   console.log('');
