@@ -1,6 +1,8 @@
 // PROTEGGE: la scala dei colori per voce (applyMasteryResult) — sale solo con
-// la costanza, scende di un gradino solo, non salta, e onora
-// CONFIG.mastery.promotionStreak invece di avere il numero cablato dentro.
+// la costanza, scende di un gradino solo, non salta, onora
+// CONFIG.mastery.promotionStreak invece di avere il numero cablato dentro, e
+// dà alla PRIMA risposta il colore che quella risposta merita invece di
+// parcheggiare tutto su rosso.
 // È il dato più costoso da ricostruire dell'intera app: si accumula per voce,
 // per utente, su ogni modulo, e una regressione qui non si vede in nessuna
 // schermata — si vede solo dopo settimane, in colori sbagliati che nessuno
@@ -206,16 +208,49 @@ async function run() {
     log('[C] Nessun errore JS', r.errors.length === 0);
   }
 
-  // ---- [D] LA PRIMA VOLTA STABILISCE LA BASE, non promuove ----
+  // ---- [D] LA PRIMA VOLTA PRENDE IL COLORE CHE LA RISPOSTA MERITA ----
+  // Questo blocco prima asseriva il contrario — "il primo incontro parte da
+  // rosso anche se la risposta è giusta" — e proteggeva il difetto invece del
+  // comportamento: una voce mai incontrata nasceva rossa, e con
+  // promotionStreak 2 servivano QUATTRO risposte giuste per arrivare a verde
+  // invece di due. Un profilo che aveva fatto tutto bene mostrava verde 0 su
+  // 145 voci. Il test era verde perché descriveva il codice, non la regola.
   {
-    const r = await prova('[D] nessuna voce in scala + 1 giusta, promotionStreak=1',
-      'ScalaD', null, 1, 'correct');
+    const r = await prova('[D] nessuna voce in scala + 1 giusta, promotionStreak=2',
+      'ScalaD', null, 2, 'correct');
     log('[D] Nasce una sola voce', r.cambiate.length === 1);
-    log('[D] Il primo incontro parte da rosso anche se la risposta è giusta',
-      !!r.valore && r.valore.level === 'rosso');
-    log('[D] ...con la striscia già a 1, così la prossima giusta promuove',
+    log('[D] Una risposta giusta NON viene letta come "non lo sa": nasce giallo',
+      !!r.valore && r.valore.level === 'giallo');
+    log('[D] ...con la striscia già a 1, così la seconda giusta promuove a verde',
       !!r.valore && r.valore.streak === 1);
     log('[D] Nessun errore JS', r.errors.length === 0);
+  }
+
+  // ---- [E] E UNA SBAGLIATA LA PRIMA VOLTA RESTA ROSSA ----
+  // L'altra metà della regola, e senza di essa [D] da solo direbbe "tutto
+  // parte da giallo", che è il difetto opposto.
+  {
+    const r = await prova('[E] nessuna voce in scala + 1 sbagliata, promotionStreak=2',
+      'ScalaE', null, 2, 'wrong');
+    log('[E] Nasce una sola voce', r.cambiate.length === 1);
+    log('[E] Una risposta sbagliata la prima volta nasce rossa',
+      !!r.valore && r.valore.level === 'rosso');
+    log('[E] ...con la striscia a 0', !!r.valore && r.valore.streak === 0);
+    log('[E] Nessun errore JS', r.errors.length === 0);
+  }
+
+  // ---- [F] DUE GIUSTE DI FILA ARRIVANO A VERDE, non quattro ----
+  // Si riparte dallo stato che [D] produce, invece di dare due risposte alla
+  // stessa carta: il mazzo è mescolato e la seconda risposta non cadrebbe per
+  // forza sulla stessa voce. È lo stesso motivo per cui le altre prove
+  // seminano tutte le voci con lo stesso valore.
+  {
+    const r = await prova('[F] giallo/1 (cioè dopo una giusta) + 1 giusta, promotionStreak=2',
+      'ScalaF', { level: 'giallo', streak: 1 }, 2, 'correct');
+    log('[F] Una sola voce cambia', r.cambiate.length === 1);
+    log('[F] La SECONDA risposta giusta porta a verde: due, non quattro',
+      !!r.valore && r.valore.level === 'verde');
+    log('[F] Nessun errore JS', r.errors.length === 0);
   }
 
   await browser.close();

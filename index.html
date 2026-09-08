@@ -5384,9 +5384,31 @@
   // result: 'correct' | 'similar' | 'wrong'
   function applyMasteryResult(entry, result) {
     if (!entry) {
-      // First ever attempt on this item establishes the baseline tracked
-      // level; even a correct first hit still needs the streak rule to climb.
-      return { level: 'rosso', streak: result === 'correct' ? 1 : 0 };
+      // Una voce mai incontrata NON esiste: assenza di dato, non un giudizio.
+      // Non serve rappresentarlo — e' gia' cosi', e l'unico lettore che abbia
+      // mai DISEGNATO questi colori lo sa: renderPhrase usa la classe 'new'
+      // quando entry manca. Per questo qui non c'e' un quarto livello: un
+      // livello sotto rosso entrerebbe in LEVELS, che e' l'array su cui
+      // nextLevel/prevLevel fanno l'aritmetica, e cambierebbe la retrocessione
+      // di TUTTE le voci per sistemare solo le nuove.
+      //
+      // La PRIMA risposta le da' il colore che quella risposta merita, invece
+      // di parcheggiarla su rosso. Prima una risposta GIUSTA veniva letta come
+      // "non lo sa" — falso di sicuro — e con promotionStreak 2 servivano
+      // QUATTRO risposte giuste per arrivare a verde invece di due.
+      //
+      // Perche' giallo e non verde: una risposta giusta non prova che sai una
+      // parola, prova che l'hai indovinata questa volta. Il verde arriva
+      // quando la sai due volte di fila, e allora vuol dire qualcosa. Lo
+      // streak a 1 e' quello che rende vera la frase precedente: la seconda
+      // risposta giusta promuove, come per ogni altra voce.
+      //
+      // Il compromesso, dichiarato: una risposta indovinata a caso porta a
+      // giallo. E' falso a volte; l'errore opposto — leggere una risposta
+      // giusta come "non lo sa" — e' falso sempre. E giallo non e' definitivo:
+      // se era fortuna, la prossima risposta lo scopre.
+      if (result === 'wrong') return { level: 'rosso', streak: 0 };
+      return { level: 'giallo', streak: result === 'correct' ? 1 : 0 };
     }
     if (result === 'wrong') {
       return { level: prevLevel(entry.level), streak: 0 };
@@ -6959,7 +6981,15 @@
     document.querySelectorAll('#speak-easy-body .wws-card').forEach(function (card) {
       var cardId = card.getAttribute('data-card');
       var cardSkills = seSkillIds.filter(function (id) { return id.indexOf(cardId + '-s') === 0; });
-      var isAhead = !!lockedCards[cardId] && cardId !== currentCard;
+      // Piu' avanti della corrente si decide dalla POSIZIONE, non dalle skill.
+      // Prima si leggeva lockedCards, che si popola solo scorrendo le skill:
+      // una card senza regole non ci entrava mai, quindi restava non marcata
+      // pur essendo piu' avanti — sbiadita in modo sbagliato E con il Blocco
+      // Ascolto attivo. La guardia sul gestore era giusta, sbagliava chi
+      // assegnava la classe.
+      // Il ripasso si esclude da solo: li' seCurrentCardIndex() vale Infinity,
+      // e nessun indice e' maggiore di Infinity.
+      var isAhead = seCardIndex(cardId) > seCurrentCardIndex();
       card.classList.toggle('is-current', cardId === currentCard);
       card.classList.toggle('is-ahead', isAhead);
       var stateEl = document.getElementById('wws-state-' + cardId);
@@ -7817,7 +7847,20 @@
     // touched for Voice Check (unchanged from before the split). Unit id
     // is position-based (line + word index), stable across sessions since
     // a line's own word content doesn't change.
-    if (vcVariant === 'practice') {
+    // La condizione sul riconoscimento vuoto NON e' una soglia sul rumore: e'
+    // la regola spostata da COME e' finita la registrazione a COSA ha
+    // prodotto. Il ramo che scartava la registrazione muta (il timeout di
+    // silenzio) si raggiunge solo in silenzio perfetto — basta un frammento
+    // provvisorio qualunque, rumore di fondo o un colpo di tosse, perche'
+    // vcHeardAnySpeech diventi vero e quel ramo non scatti piu'. In una
+    // stanza vera era il caso raro, non quello normale.
+    //
+    // Cosi' invece chiude tutta la famiglia in una condizione sola, compresi
+    // i casi che non abbiamo previsto: silenzio, rumore, errore di rete,
+    // motore che molla. Se non abbiamo sentito niente, non c'e' niente da
+    // giudicare — e il timeout di silenzio torna a fare solo il suo mestiere,
+    // decidere QUANDO smettere di registrare, che e' comodita' e non dato.
+    if (vcVariant === 'practice' && recognizedWords.length > 0) {
       var mastery = loadMastery(currentEpisode.id, getUserName());
       pairs.forEach(function (pair, i) {
         var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;

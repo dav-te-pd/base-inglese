@@ -214,6 +214,7 @@ async function run() {
           fermo.microfono === false);
       log('[A] ' + modulo.nome + ': restano le due uscite, mappa in alto compresa',
           fermo.tornaMappa === true && fermo.mappaInAlto === true);
+
       await page.close();
     }
 
@@ -279,6 +280,20 @@ async function run() {
           scala.every((s, i) => s.livello === attesoAl(i + 1)));
       log('[B] ' + modulo.nome + ': fino a li\' "Avanti" non e\' bloccato dall\'avviso',
           scala.every(s => s.avantiBloccato !== true));
+
+      // Se non abbiamo sentito niente, non c'e' niente da giudicare. Qui la
+      // trascrizione vuota arriva DAVVERO a "Invia" e viene valutata: e' la
+      // strada che scrive, e quella che il ramo del silenzio non copre.
+      //
+      // Perche' non nel blocco [A]: li' il riconoscimento non consegna mai un
+      // risultato, quindi ogni registrazione finisce sul ramo del silenzio e
+      // "Invia" non compare. Un'asserzione messa li' e' verde comunque, cioe'
+      // vera per il motivo sbagliato — misurato: con la condizione tolta dal
+      // codice, quella versione restava verde. Questa diventa rossa.
+      const colori = await page.evaluate((utente) =>
+        localStorage.getItem('baseinglese:mastery:episode1:' + utente), 'AvvisoVuoto' + modulo.id);
+      log('[B] ' + modulo.nome + ': registrazioni senza nessuna parola non scrivono nessun colore',
+          colori === null || Object.keys(JSON.parse(colori)).length === 0);
 
       const ripresa = await invia('hello');
       log('[B] ' + modulo.nome + ': una parola riconosciuta fa sparire l\'avviso',

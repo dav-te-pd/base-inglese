@@ -120,6 +120,26 @@ async function run() {
     const quante = await page.evaluate(() => document.querySelectorAll('.wws-card.is-ahead').length);
     log('[Dichiarazione] All\'apertura ci sono card piu\' avanti della corrente', quante > 0);
 
+    // Le card SENZA regole sono piu' avanti come tutte le altre. Prima non lo
+    // erano mai: lockedCards si popolava solo scorrendo le skill, quindi una
+    // card senza regole restava non marcata — sbiadita in modo sbagliato e col
+    // Blocco Ascolto attivo. L'episodio ne ha due (d-2 e d-6, le presentazioni
+    // dei genitori), quindi il caso c'e' davvero e non va costruito.
+    const senzaRegola = await page.evaluate(() => {
+      const cards = Array.from(document.querySelectorAll('.wws-card'));
+      const senza = cards.filter(c => c.querySelector('.wws-no-rule'));
+      const corrente = cards.findIndex(c => c.classList.contains('is-current'));
+      return {
+        quante: senza.length,
+        oltreLaCorrente: senza.filter(c => cards.indexOf(c) > corrente).length,
+        marcate: senza.filter(c => cards.indexOf(c) > corrente && c.classList.contains('is-ahead')).length
+      };
+    });
+    log('[Dichiarazione] L\'episodio ha card senza regole piu\' avanti della corrente',
+        senzaRegola.quante > 0 && senzaRegola.oltreLaCorrente > 0);
+    log('[Dichiarazione] Anche le card senza regole sono marcate piu\' avanti',
+        senzaRegola.marcate === senzaRegola.oltreLaCorrente);
+
     const esito = await provaAToccare(page, '.wws-card.is-ahead');
     if (esito.errore) console.log('  ' + esito.errore);
     log('[Dichiarazione] In una card piu\' avanti si e\' provato a toccare qualcosa',
