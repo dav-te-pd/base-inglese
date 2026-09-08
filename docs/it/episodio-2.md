@@ -15,8 +15,14 @@
 > **Due cose che la fonte non diceva e che sono state decise trascrivendo:**
 > `episodeId: "episode2"` e `speaker: "hostess"` per l'hostess alla porta.
 >
-> ⚠️ **L'episodio è scritto ma non collegato:** non è ancora in `EPISODES`, quindi **l'app non lo
-> vede**. È il passo 11 fatto, non il passo successivo.
+> ✅ **Collegato l'8 settembre.** L'app lo vede: si sceglie dal **Pannello Admin** — `?config`,
+> gruppo `episodioCorrente` — e la pagina si ricarica.
+>
+> *La scelta ricarica di proposito: mappa, progressi, slot e contenuti si costruiscono all'avvio,
+> e cambiarli a caldo lascerebbe a schermo un misto dei due episodi.*
+>
+> **Usa `sequence: 'narrativo-standard'`**, perché ha tutti e quattro i gradi — *è la ragione per
+> cui `breve-cd` non serviva più*.
 >
 > Convenzione: diventerà `docs/it/episodio-2.md`.
 
