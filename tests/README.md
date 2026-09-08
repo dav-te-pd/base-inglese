@@ -1,6 +1,6 @@
 # Suite di regressione
 
-38 file — 37 Playwright, che aprono l'app in un browser vero, e uno
+39 file — 37 Playwright, che aprono l'app in un browser vero, e uno
 (`test_attendi.js`) che non la apre affatto: prova uno strumento della
 suite, non l'app. Uno per giro di lavoro/argomento (`test_batchN.js`) più
 alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
@@ -9,7 +9,7 @@ alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_struttura_corso.js`, `test_scala_colori.js`,
 `test_errore_caricamento.js`, `test_avviso_microfono.js`,
 `test_sblocco_sequenziale.js`, `test_attendi.js`,
-`test_report_mastery.js`, `test_episodi_corti.js`, `test_sequenze.js`). Insieme costituiscono la
+`test_report_mastery.js`, `test_episodi_corti.js`, `test_sequenze.js`, `test_episodio2.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -145,6 +145,7 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_report_mastery.js` | Che il pannello dei colori delle voci mostri quello che c'è davvero nel magazzino, ordinato per chiave, e soprattutto che **legga e basta**. È uno strumento per guardare un dato che a schermo non compare da nessun'altra parte: se mostrasse un numero sbagliato nessuno se ne accorgerebbe, perché non c'è nient'altro con cui confrontarlo. L'asserzione che pesa di più è che aprirlo non cambi un byte della mastery — un report che modifica quello che misura è peggio di nessun report, e il rischio è concreto: la funzione carica lo store con la stessa `loadMastery()` dei tre scrittori, a un carattere da un `saveMastery()`. L'ordine per chiave non è estetica: è il punto del pannello, perché le righe della stessa voce devono finire vicine. **Limite dichiarato:** non verifica quante volte una voce è stata scritta, perché quel dato non esiste. |
 | `test_episodi_corti.js` | Che un episodio con una **forma diversa dal primo** non produca silenzio. Tre difetti della stessa famiglia, tutti e tre senza crollo — e per questo erano rimasti: un passo con un `kind` sconosciuto che diventa un vicolo cieco muto e blocca per sempre quelli dopo; un passo puntato su un grado assente che si dichiara **completato senza far fare niente** e registra pure l'esito; la migrazione di `customizeSeen` che scrive in episodi che Personalizza non ce l'hanno. Diventano urgenti con gli **episodi corti** (solo gradi C e D): è lì che tutti e tre mordono. Le tre forme sbagliate si costruiscono dagli override del Pannello Admin, non da un secondo episodio finto. **Limite dichiarato:** verifica che il passo non si completi e che lo studente veda qualcosa, non il testo dell'errore — quello è di `test_errore_caricamento.js`. |
 | `test_sequenze.js` | Che ogni episodio dichiari la propria sequenza di passi, che le due strade per dichiararla (`sequence` per nome, `moduleOrder` per intero) non si sovrappongano in silenzio — dichiararle entrambe, o nessuna, è un errore detto e non risolto scegliendone una — e soprattutto che il passaggio alle sequenze **non abbia mosso nessun id di passo**. Quest'ultima è la parte che pesa: i progressi salvati sono indicizzati per id di passo, e se un id si muove ogni studente riparte da zero senza che niente si rompa a schermo. Gli id attesi si leggono dalla sequenza vera in `index.html`, non da una lista ricopiata nel test. |
+| `test_episodio2.js` | Che `data/it/a1-episodio2-inglese.json` continui a dire quello che dichiara `docs/it/episodio-2.md`. Oggi quel file **non lo legge nessuno** — l'episodio 2 non è in `EPISODES` — ed è proprio per questo che può divergere senza che niente lo mostri: nessuna schermata sbaglia, nessun modulo si apre vuoto, c'è solo un file che invecchia in silenzio finché qualcuno lo collega. Confronta i numeri dichiarati e le due cose che un conteggio non vede: che ogni skill stia su una battuta esistente e che ogni `fromLine` punti a una battuta vera. **Limite dichiarato:** il testo NON è confrontato — i due markdown hanno forme diverse e un secondo parser sarebbe più fragile di quanto protegga. Quando l'episodio 2 entrerà in `EPISODES`, il confronto testuale va esteso a lui. |
 
 ---
 

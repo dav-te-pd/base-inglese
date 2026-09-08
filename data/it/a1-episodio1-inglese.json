@@ -100,20 +100,6 @@
           "grammarCategory": "verbo"
         },
         {
-          "id": "a-you",
-          "english": "you",
-          "italian": "tu / voi",
-          "pronunciationTip": "iu",
-          "grammarCategory": "pronome"
-        },
-        {
-          "id": "a-i",
-          "english": "I",
-          "italian": "io",
-          "pronunciationTip": "ai — sempre maiuscola in inglese",
-          "grammarCategory": "pronome"
-        },
-        {
           "id": "a-where",
           "english": "where",
           "italian": "dove",
@@ -154,13 +140,6 @@
           "italian": "vecchio (di età)",
           "pronunciationTip": "ould — la \"o\" è lunga",
           "grammarCategory": "aggettivo"
-        },
-        {
-          "id": "a-we",
-          "english": "we",
-          "italian": "noi",
-          "pronunciationTip": "ui",
-          "grammarCategory": "pronome"
         },
         {
           "id": "a-the",
