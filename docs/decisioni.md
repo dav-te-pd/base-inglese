@@ -28,6 +28,187 @@ scoprirla scaduta.
 
 ---
 
+# LA CATENA IN CORSO — a che punto siamo
+
+> ⚠️ **Questa sezione è un'ECCEZIONE DICHIARATA alle tre regole di questo file**, ed è
+> l'unica. Il cappello qui sopra dice che questo è *«una lista non ordinata»* che
+> *«non dice cosa viene prima»*: questa sezione è ordinata e dice esattamente cosa
+> viene prima.
+>
+> **Perché l'eccezione esiste.** Una catena di ventisei passi interrotta a metà senza
+> traccia è la stessa cosa di un collaudo interrotto con i rilievi in testa: non lascia
+> traccia di essere avvenuta. Il container si è riavviato **tre volte in un giorno
+> solo**, e una sessione nuova legge i file — non la conversazione in cui la catena è
+> stata decisa, che non le arriverà mai.
+>
+> **Perché sta QUI e non in un file suo.** Un file in più è una cosa in più da
+> ricordarsi di aprire. Questo file lo si apre già, perché è dove si guarda cosa è
+> rimasto indietro.
+>
+> **Quando sparisce:** si cancella quando la catena finisce. Non diventa un archivio —
+> è la stessa proprietà che tiene onesto il resto del file.
+
+## Come si legge una riga
+
+Ogni passo dice **tre cose**, e la terza è quella che serve davvero a chi arriva:
+
+1. **dove siamo** — fatto, in corso, o non cominciato;
+2. **cosa non si deve fare** — i divieti, che non si deducono guardando il codice;
+3. **se il punto è una FERMATA SICURA** — cioè se ci si può alzare da lì lasciando il
+   repository in uno stato che qualcuno capisce fra una settimana.
+
+La terza non si ricava dalle altre due, ed è l'unica ragione per cui questa tabella
+vale la pena di essere mantenuta.
+
+## Dove siamo adesso
+
+**Passo C fatto** (i file bastano a riprendere la catena). **Il prossimo passo è lo
+0a.** Nessun passo della fase 1 è cominciato.
+
+## I divieti — leggerli PRIMA di prendere un passo
+
+Non si deducono dal codice, e ognuno è costato una discussione:
+
+- **Il passo 5 (`se* → storyCards*`) non si interrompe. Mai.** Quattro strati insieme
+  (116 identificatori JS, 42 classi e id `se-*`, 54 `speak-easy-*`, due namespace del
+  `localStorage`), e **un `se-` mancato in una regola CSS non fa fallire nessun test**:
+  `test_hidden_guard.js` costruisce gli elementi *a partire dalle* regole, quindi una
+  regola orfana passa verde. Fermarsi lì lascia un repository verde e sbagliato. Se non
+  hai davanti una sessione intera, non cominciarlo.
+- **I passi 3 e 4 (`match*` e `speedMatch*`) si fanno insieme, o nessuno dei due.**
+  Condividono `buildMultipleChoiceOptions`, `recordMultipleChoiceResult` e il parametro
+  `unitPrefix`: mezza coppia rinominata lascia una funzione condivisa i cui due
+  chiamanti seguono convenzioni diverse.
+- **Il passo 18 (le stringhe italiane nel JS) non si fa a metà.** Spostarne una parte
+  raddoppia i posti dove cercarle, invece di dimezzarli.
+- **Il passo 21 (lo spazio dei nomi) non è una fermata sicura.** O l'oggetto esiste e
+  tutto ci passa attraverso, o no.
+- **Dopo ogni rinomina si verificano DUE cose, non una: la suite verde E il conteggio
+  delle asserzioni.** 346 occorrenze dei nomi vecchi stanno dentro `tests/` (90
+  `episode1`, 102 `quickMatch`, 126 `speedRound`, 22 `flashcardLevelA`). Un selettore
+  rinominato male in un punto dove il risultato viene ignorato produce un verde che
+  prova meno di ieri, e il verde da solo non lo dice.
+- **Il conteggio deve NON CALARE, non "restare uguale".** Un test nuovo lo fa salire, ed
+  è giusto: un aumento aggiorna il baseline, un calo si ferma e chiede spiegazioni.
+- **La fase 1 confluisce in `main` solo alla fine**, dopo il passo 6. Durante, si lavora
+  su `claude/verifica-in-corso`.
+
+## I passi
+
+**Legenda dello stato:** ☐ non cominciato · ◐ in corso · ☑ fatto.
+
+### Passo zero — mettere in sicurezza lo strumento
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **0a** | Il contatore delle asserzioni in `run_full_regression.sh`: somma i conteggi che ogni file già stampa, li confronta con un baseline registrato, protesta se calano. **Va visto fallire apposta** (si sposta il baseline di uno) — altrimenti è esso stesso una misura che non misura. ~1 ora. | ☐ | **sì** |
+| **0b** | Una corsa completa della suite: ristabilisce il verde **e produce il baseline dal contatore stesso**, non da un numero contato a mano. ~11 minuti. *(Il contatore va scritto PRIMA della corsa: se il baseline lo conta una persona, il primo confronto può fallire per un errore di conteggio invece che per un'asserzione persa.)* | ☐ | **sì** |
+| **0c** | Il censimento dei `.catch` vuoti in `tests/ERRORI-INGOIATI.md`, file suo accanto ad `ATTESE-FISSE.md` e citato da `tests/README.md`. **47 occorrenze in 19 file.** Non si cancellano: si **distinguono** — un `.catch` su un elemento che legittimamente può non esserci è corretto, uno su un click che deve riuscire è un errore soppresso dove nasce che si manifesta dove non si può più diagnosticare. ~1 ora. | ☐ | **sì** |
+| **0d** | Il merge in `main` di quello che sta su `claude/verifica-in-corso` (i documenti dei nomi e questa catena), appena 0b è verde. Senza, «merge in main solo alla fine» della fase 1 resta ambiguo. | ☐ | **sì** |
+
+### Fase 1 — le rinomine
+
+*I nomi e le loro ragioni stanno in `docs/it/struttura-corso.md`, sezione «I nomi in
+codice». Qui c'è solo l'ordine e lo stato.*
+
+*Il criterio dell'ordine: dal più piccolo al più grande, così **il primo rosso ha sempre
+il sospettato più piccolo possibile**.*
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina. | ☐ | **sì** |
+| **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`. | ☐ | **sì** |
+| **3** | `quickMatch* → match*` (con `quick-match-*`, `view-quick-match`; **non** `qm-`) | ☐ | **NO** — vedi i divieti |
+| **4** | `speedRound* → speedMatch*` (con `speed-round-*`, `view-speed-round`; **non** `sr-`) | ☐ | **sì** |
+| **5** | `se* → storyCards*` — con `se-*`, `speak-easy-*`, `view-speak-easy` e i due namespace `seDeclarations:` / `seExplanationStats:`. **Una sessione sola.** | ☐ | **sì**, ma solo DOPO che è finito per intero |
+| **6** | Gli episodi, **un commit solo**: `episode1 → gate`, `episode2 → aircraft-door`; `docs/it/ → docs/inglese/it/` e `data/it/ → data/inglese/it/` (~111 riferimenti a percorsi); i file rinominati in `inglese-it-gate.md` / `inglese-it-gate.json`; **`messaggi-feedback.json` con il percorso portato in una costante** (oggi è scritto dentro la riga di `fetch`, ed è l'unico dei tre che uno spostamento di cartelle può rompere senza comparire in nessun elenco); le regole 4 e 26 di `CLAUDE.md`. | ☐ | **sì** — e qui la fase 1 confluisce in `main` |
+
+### Fase 1-bis — la sequenza degli episodi, ed `EPISODES` che smette di essere scritto a mano
+
+*Perché adesso: è l'unica voce il cui costo **cresce mentre aspetta**. Se l'episodio 3
+nasce prima, nasce copiando quindici descrittori.*
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **7** | `docs/inglese/it/sequenza-episodi.md` — la fonte, **la scrive Davide**. Elenco di id nell'ordine in cui si incontrano, con i raggruppamenti (A1.1, A1.2) come intestazioni **dentro lo stesso file**, così ordine e gruppo non possono contraddirsi. **NON si genera un `sequenza-episodi.json`**: l'elenco serve *durante* l'avvio, e farlo arrivare da un file renderebbe asincrono l'avvio dell'app. La fonte è il markdown, l'esecuzione è `CONFIG.episodes` aggiornato a mano — lo stesso rapporto che la regola 26 ha già stabilito fra `struttura-corso.md` e `APP_CONFIG`. | ☐ | **sì** |
+| **8** | `EPISODES` nasce dalla sequenza: `dataFile` derivato dall'id invece che scritto trenta volte, `modulesById` costruito una volta sola. | ☐ | **sì** |
+| **9** | Il contenuto torna nei file episodio: `dialogueSpeakerLabels`, `dialoguePlaceholderMap`, `dialogueSpeakers` escono da `index.html`. **La fonte è la tabella «I personaggi e le loro etichette» di `docs/…/episodio-N.md`, NON la colonna «Chi» della matrice** — la colonna dice *quale* personaggio è («Hostess al gate»), la tabella dice cosa sta sopra la bolla («Hostess»). ⚠️ **Non è solo uno spostamento di dati: cambia cosa vede lo studente nell'episodio 1.** La tabella dice che *«le etichette dei personaggi personalizzabili non portano il nome scelto: sopra la bolla c'è "Papà", non "Marco"»*, mentre oggi `speakerLabel()` risolve `papa`/`mamma`/`figlia`/`figlio` sul valore dello slot. Quindi **`dialogueSpeakers` sparisce** e le bolle dell'episodio 1 cambiano etichetta. È deciso (la tabella è la fonte), ma va visto al collaudo, non scoperto. | ☐ | **sì** |
+
+*Risultato: aggiungere l'episodio 3 diventa **una riga nella sequenza e il suo JSON**, zero
+righe di codice. Ed è anche la preparazione del punto unico che serve a Supabase.*
+
+### Fase 2 — il collaudo
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **10** | Profilo nuovo, episodio 2 dall'inizio alla fine. Su nomi definitivi e progressi già azzerati dalla fase 1: **si collauda una volta sola**. | ☐ | **sì** |
+| **11** | Le nove voci accumulate da collaudare. | ☐ | **sì** |
+| **12** | Si corregge **quello che è piccolo e locale**; il resto va in questo file e prende una fase sua, decisa a collaudo finito. ⚠️ **I rilievi si scrivono qui MAN MANO, non alla fine**: un collaudo interrotto con i rilievi in testa non lascia traccia di essere avvenuto. | ☐ | **sì**, se i rilievi sono scritti |
+
+### Fase 2-bis — la mastery
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **13** | Le cinque righe della sezione «La mastery: dove va il dato» qui sotto: la D3, il dato sul target, Voice Check che calcola e non scrive, i colori parcheggiati, il report per grado. *Perché qui: il collaudo su profilo nuovo **è** l'esperimento che le informa.* ⚠️ Gira su uno strumento non ancora tarato: se un rosso diventa ambiguo, **si anticipa il passo 14** invece di rilanciare la suite sperando. | ☐ | **sì**, riga per riga |
+
+### Fase 3 — la taratura dello strumento
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **14** | Le 19 attese fisse di `test_batch19` che fanno da guardia a un'asserzione. **1–1,5 giorni**, la più grossa della fase. Il modello è già scritto e verde: `tests/test_match_practice_nonloso.js`. | ☐ | **sì**, un'asserzione per volta |
+| **15** | I quattro valori ricopiati nei test. ~1 ora. ⚠️ Non portare via anche i `length === 3`: quelli sono **requisiti**, non copie — il riquadro in fondo a questo file lo spiega. | ☐ | **sì** |
+| **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file), `levels.X.label` (morto: unica occorrenza in un commento), i due `if` adiacenti in `vcEvaluate`, i quattro test con funzioni quasi identiche. *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
+| **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
+
+### Fase delle stringhe — quando si vuole, purché intera
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **18** | Le stringhe italiane dal JS a `istruzioni-moduli.json`. **Prima CONTARLE**: il «~25» non è mai stato un censimento, un filtro grezzo ne trova 93 candidate. **Poi misurare quanti test verificano il testo a schermo**, perché questa fase li rompe e nessuna lista lo dichiara. 2–3 giorni. ⚠️ **Mai a metà.** | ☐ | **NO** durante; sì prima e dopo |
+
+### Fase 4 — lo spacchettamento
+
+*Il meccanismo è deciso: **script separati in ordine, con uno spazio dei nomi condiviso.**
+I moduli ES sono migliori in astratto e incompatibili con l'unica cosa da garantire — con
+loro la prima estrazione sarebbe anche l'ultima fermata possibile.*
+
+*Cosa si sta facendo davvero: non «dividere un file grande». `APP_CONFIG` è già un blocco
+`<script>` a sé; il resto sono ~6.400 righe dentro **un IIFE solo**, dove niente è
+raggiungibile da fuori.*
+
+*Cosa ci si guadagna: **non** «gira meno codice» (un test Playwright caricherà comunque la
+pagina intera), ma **si sa cosa si è toccato** — la domanda della regola 15 diventa
+`git diff --name-only` invece di richiedere la conoscenza di seimila righe. E nasce una
+classe di test che oggi non può esistere: 39 test su 41 aprono un browser perché
+`applyMasteryResult`, `percentageBucket`, `episodeGrade`, `moduleStepId` sono funzioni pure
+irraggiungibili da Node.*
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono** — `slotOptions` e `resolveSlotValue` oggi leggono in modo sincrono mentre disegnano, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35). Mezza giornata, con il suo test. | ☐ | **sì** |
+| **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** `module-order.js` e `test_config_letta.js` lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero dei 79 punti di chiamata toccati**. Il primo pezzo estratto dev'essere `APP_CONFIG` proprio perché è il bersaglio che quei due devono leggere. *(Qui muore da sola la divergenza `off/seen` del passo 16.)* | ☐ | **sì** |
+| **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
+| **22** | Gli strati, dal basso: `core`, `dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine`. **Ogni estrazione fa due cose nello stesso commit:** attacca allo spazio dei nomi ciò che quel file espone, e sposta il file. **Dentro l'estrazione dello strato `dati` sta l'unificazione dei tre `fetch` in un punto solo** — `MODULE_INSTRUCTIONS_FILE`, `module.dataFile`, e `messaggi-feedback.json` che oggi scavalca il meccanismo. È voce esplicita, non implicita. | ☐ | **sì**, uno strato per volta |
+| **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** Un modulo sta fra 365 e 670 righe. | ☐ | **sì**, un modulo per volta |
+| **24** | `docs/it/componenti-ui.md` si riempie **nello stesso commit** di ogni estrazione. Criterio: un pezzo ci sta **se e solo se** è usato da più di un modulo — condizione verificabile, non prosa. Il file **nasce con la prima estrazione**, non prima: un file vuoto in attesa è un invito a riempirlo di intenzioni. ⚠️ Una riga rimandata è una riga scritta dopo guardando il risultato, cioè un censimento invece di una decisione registrata. | ☐ | **sì** |
+| **25** | `CLAUDE.md`: la regola 6, la riga «L'app vive in un file solo», **e la regola 8** — che oggi nomina un solo file di testi condivisi mentre ne esistono due (`istruzioni-moduli.json` e `messaggi-feedback.json`). | ☐ | **sì** |
+| **26** | Collaudo dopo lo spacchettamento. *«La suite verifica quello che qualcuno ha pensato di verificare, e un trasloco non è finito quando la suite è verde.»* | ☐ | — |
+
+## Le invarianti, valide per tutta la catena
+
+- **Venti suite invece di un macello.** Nel dubbio fra una corsa e due, se ne fanno due:
+  undici minuti l'una, e ogni rosso ha un sospettato solo. **Non si accorpa per fare un
+  favore a nessuno.**
+- **Lo stato di questa tabella si aggiorna nello stesso commit del passo**, non a fine
+  giornata. È la stessa regola dei test (23) e dei rilievi di collaudo: quello che si
+  rimanda a dopo lo si scrive guardando il risultato, non registrando la scelta.
+- **Una suite contaminata a metà è un risultato nullo** (regola 36): se un file cambia
+  mentre gira, si butta e si rilancia.
+- **Ogni passo che crea un test lo committa insieme al codice** (regola 23), e ogni test
+  nuovo si vede **fallire apposta** prima di consegnarlo.
+
+---
+
 ## Rinomine
 
 | Data | Cosa | Perché | Quando si esegue |
