@@ -255,6 +255,32 @@ Nessuna. *Il present continuous, che era rimandato, esce insieme alla battuta ch
 
 ---
 
+## I PERSONAGGI E LE LORO ETICHETTE
+
+*Le **etichette** sono quello che lo studente legge sopra ogni bolla. Non coincidono con la
+colonna "Chi" della matrice, che descrive **chi parla nella scena** e serve a noi che scriviamo.*
+
+| Personaggio *(colonna "Chi")* | Etichetta a schermo |
+|---|---|
+| Hostess al gate | **Hostess** |
+| Papà | **Papà** |
+| Mamma | **Mamma** |
+| Figlia | **Figlia** |
+| Figlio | **Figlio** |
+| Tutti | **Tutti** |
+
+> **Perché sono due cose e non una.** *"Hostess al gate" dice **quale** hostess è — serve a noi
+> per non confonderla con quella della porta dell'aereo. **Sopra una bolla sarebbe troppo
+> lunga**, e lo studente non ha bisogno di sapere dove sta: lo vede dalla scena.*
+>
+> **Le etichette dei personaggi personalizzabili non portano il nome scelto:** *sopra la bolla
+> c'è "Papà", non "Marco". Il nome sta **dentro** la battuta, dove lo studente lo impara.*
+
+**Da qui Claude Code trascrive `dialogueSpeakerLabels`.** *Questa tabella è la fonte: la colonna
+"Chi" della matrice non lo è.*
+
+---
+
 ## LA PERSONALIZZAZIONE
 
 **Otto slot:** papà, mamma, figlia, figlio, età figlia, età figlio, cognome, partenza.

@@ -201,6 +201,30 @@ sono due `Thank you` e non c'è niente da spiegare.*
 
 ---
 
+## I PERSONAGGI E LE LORO ETICHETTE
+
+*Le **etichette** sono quello che lo studente legge sopra ogni bolla. Non coincidono con la
+colonna "Chi" della matrice, che descrive **chi parla nella scena** e serve a noi che scriviamo.*
+
+| Personaggio *(colonna "Chi")* | Etichetta a schermo |
+|---|---|
+| Hostess | **Hostess** |
+| Papà | **Papà** |
+| Tutti | **Tutti** |
+
+> **Qui coincidono, ma non è la regola.** *Nell'episodio 1 il personaggio si chiama "Hostess al
+> gate" e l'etichetta è "Hostess": la descrizione dice **quale** hostess è, l'etichetta è quello
+> che ci sta sopra una bolla.*
+>
+> **In questo episodio è "Hostess" e basta** perché ce n'è una sola in scena — *ma se un giorno
+> ce ne fossero due, la colonna "Chi" le distinguerebbe e le etichette dovrebbero farlo anche
+> loro.*
+
+**Da qui Claude Code trascrive `dialogueSpeakerLabels`.** *Questa tabella è la fonte: la colonna
+"Chi" della matrice non lo è.*
+
+---
+
 ## PASSO 8 — I gradi
 
 *Il criterio del grado A: **un inglese la dice da sola?** (regola 2.16)*
