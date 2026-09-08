@@ -155,7 +155,7 @@ lista prima o poi divergono.*
 > **Deciso e non ancora applicato:** il paese diventerà parte dello slot `partenza`, accoppiato
 > alla città nella stessa riga del magazzino — così uno studente di Lugano non dichiara un
 > paese che non è il suo, e la coppia non può divergere (regola 2.7). Allora `Italy` uscirà dal
-> grado A, che scenderà a 14.
+> grado A, che scenderà a 11.
 >
 > **Perché non ora:** `resolveSlotValue` restituisce **un solo campo per slot**, e le righe di
 > `places.departures` non hanno un secondo campo da leggere. Rappresentarlo oggi vorrebbe dire

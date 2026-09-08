@@ -10,8 +10,13 @@
 > **Numeri attesi:** 12 voci nel grado A, 6 in B, 5 in C, 9 battute in D, 8 skill, 1 slot.
 > **Se i conti non tornano, fermarsi e segnalarlo.**
 >
-> **Va trascritto nello stesso commit di `episodio-1.md`**, che è stato rifatto l'8 settembre con
-> il criterio nuovo del grado A: i due file si allineano insieme.
+> ✅ **Trascritto l'8 settembre** insieme a `episodio-1.md`, nello stesso commit.
+>
+> **Due cose che la fonte non diceva e che sono state decise trascrivendo:**
+> `episodeId: "episode2"` e `speaker: "hostess"` per l'hostess alla porta.
+>
+> ⚠️ **L'episodio è scritto ma non collegato:** non è ancora in `EPISODES`, quindi **l'app non lo
+> vede**. È il passo 11 fatto, non il passo successivo.
 >
 > Convenzione: diventerà `docs/it/episodio-2.md`.
 
