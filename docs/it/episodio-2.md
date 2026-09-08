@@ -4,14 +4,14 @@
 > inglese, congelato, con la stessa regola dell'episodio 1.
 > **Titolo mostrato allo studente:** *Sulla porta dell'aereo*.
 >
-> ⚠️ **LAVORO IN CORSO — arrivato al passo 7 degli undici.**
+> ⚠️ **LAVORO IN CORSO — arrivato al passo 10 degli undici.**
 >
-> Fatti: la scena · le strutture da insegnare · il dialogo · la validazione · le note di
-> scrittura · le traduzioni · le skill.
-> **Restano:** i gradi A/B/C/D *(passo 8)* · il vocabolario *(9)* · gli slot *(10)* · il JSON
-> *(11)*.
+> **Fatti tutti** tranne il JSON *(passo 11)*, che spetta a Claude Code.
 >
-> **Non trascrivere niente da questo file finché non è completo.**
+> **Numeri attesi:** 12 voci nel grado A, 6 in B, 5 in C, 9 battute in D, 8 skill, 1 slot.
+>
+> ⚠️ **Non trascrivere ancora:** l'episodio 1 va rifatto prima, perché il criterio del grado A è
+> cambiato (regola 2.16) e i suoi numeri scendono. **I due episodi si allineano insieme.**
 >
 > Convenzione: diventerà `docs/it/episodio-2.md`.
 
@@ -78,14 +78,14 @@ stessa che poi verrà riordinata dall'episodio dei saluti.*
 | # | Chi | Inglese | Italiano | Skill |
 |---|---|---|---|---|
 | d1 | Hostess | Good morning! Welcome aboard. | Buongiorno! Benvenuti a bordo. | 1, 2 |
-| d2 | Hostess | Your tickets, please. | I biglietti, per favore. | — |
-| d3 | Papà | Here they are. | Eccoli. | 3 |
-| d4 | Papà | She is my wife. | Lei è mia moglie. | 4 |
-| d5 | Papà | She is my daughter, he is my son. | Lei è mia figlia, lui è mio figlio. | 5 |
+| d2 | Hostess | Your tickets, please. | I biglietti, per favore. | 3 |
+| d3 | Papà | Here they are. | Eccoli. | 4 |
+| d4 | Papà | She is my wife. | Lei è mia moglie. | 5 |
+| d5 | Papà | She is my daughter, he is my son. | Lei è mia figlia, lui è mio figlio. | 6 |
 | d6 | Hostess | Thank you. | Grazie. | — |
-| d7 | Hostess | {destinazione}? This way, please. | {destinazione}? Da questa parte, prego. | 6 |
+| d7 | Hostess | {destinazione}? This way, please. | {destinazione}? Da questa parte, prego. | 7 |
 | d8 | Tutti | Thank you! | Grazie! | — |
-| d9 | Hostess | Enjoy your flight! | Buon volo! | 7 |
+| d9 | Hostess | Enjoy your flight! | Buon volo! | 8 |
 
 **Nove battute.** *Le tre di mezzo — d4 e d5 — sono nate dalla regola 2.13: il grado A era vuoto,
 e invece di sistemare i gradi ci siamo chiesti se il dialogo fosse quello giusto.*
@@ -186,23 +186,129 @@ perché non c'è niente da spiegare.*
 
 ## PASSO 8 — I gradi
 
-⚠️ **DA FARE.** *La sottrazione va fatta bene: il grado A ha una quindicina di parole
-candidate.*
+*Il criterio del grado A: **un inglese la dice da sola?** (regola 2.16)*
 
-**Quello che sappiamo già:**
+### Grado A — dodici parole
 
-- **Il grado A esiste** — `she`, `he`, `my`, `wife`, `daughter`, `son` sono parole vere da
-  isolare. *Prima delle battute d4 e d5 era vuoto, ed è per questo che il dialogo è stato
-  rivisto*
-- **Il grado B contiene i contesti di `please`, mai la parola nuda** (regola 2.15): `your
-  tickets, please` e `this way, please` — **due significati incontrati insieme**
-- **`welcome aboard` non va sia in B che in C** (regola 2.6): sarebbe la stessa stringa
+`morning` · `welcome` · `tickets` · `here` · `they` · `she` · `he` · `wife` · `daughter` · `son`
+· `enjoy` · `flight`
+
+**Fuori, e perché:**
+
+| Voce | Perché |
+|---|---|
+| `are`, `is` | **nessuno le dice da sole**: vivono nella coniugazione, che sta nel suo episodio grammaticale |
+| `good`, `thank`, `way`, `your` | vivono dentro `good morning`, `thank you`, `this way` |
+| `please` | **mai la parola nuda** (regola 2.15): ha due significati e va incontrata nei contesti |
+| `my` | entra **leggero** dentro `she is my wife` (4.14), senza la scheda dei possessivi |
+| `aboard`, `this` | dentro i chunk. *`this` è un dimostrativo, struttura non ancora aperta → **regola in sospeso*** |
+
+**`they` resta**, e la progressione è visibile: `they` → `they are` → `here they are`.
+
+### Grado B — sei espressioni
+
+| Voce | Italiano |
+|---|---|
+| good morning | buongiorno |
+| welcome aboard | benvenuti a bordo |
+| here they are | eccoli |
+| thank you | grazie |
+| this way, please | da questa parte, prego |
+| enjoy your flight | buon volo |
+
+### Grado C — cinque frasi
+
+*Il grado C contiene le frasi che **si costruiscono**, di chiunque le dica — non solo quelle
+della famiglia.*
+
+| # | Inglese | Italiano | Da |
+|---|---|---|---|
+| c1 | Your tickets, please. | I biglietti, per favore. | d2 |
+| c2 | She is my wife. | Lei è mia moglie. | d4 |
+| c3 | She is my daughter. | Lei è mia figlia. | d5 |
+| c4 | He is my son. | Lui è mio figlio. | d5 |
+| c5 | `= d7` | | d7 |
+
+**`your tickets, please` è uscita dal grado B** per non stare in tutti e due (regola 2.6). *E ci
+sta bene: è un oggetto più una formula, quindi si costruisce.*
+
+**`welcome aboard`, `here they are`, `thank you`, `enjoy your flight` non sono in C:** sarebbero
+le stesse stringhe del B.
+
+### Grado D — nove battute
+
+**Totale: 12 / 6 / 5 / 9 — trentadue voci.**
 
 ---
 
-## PASSI 9-11
+## PASSO 9 — Il vocabolario
 
-⚠️ **DA FARE.** Vocabolario con pronuncia e categoria · slot di personalizzazione · JSON.
+### Grado A
 
-**Uno slot da guardare:** la **destinazione** compare in d7, ed è la prima volta che serve.
-*L'episodio 1 non la usa. Va aggiunta agli id elencati, e la tabella esiste già nel magazzino.*
+| Voce | Italiano | Pronuncia | Categoria |
+|---|---|---|---|
+| morning | mattina | MOR-ning | sostantivo |
+| welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza |
+| tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale |
+| here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo |
+| they | loro | dei — la "th" è la lingua fra i denti | pronome |
+| she | lei | scii — lunga | pronome |
+| he | lui | hii — con il soffio davanti | pronome |
+| wife | moglie | uaif — la "e" finale non si legge | sostantivo, famiglia |
+| daughter | figlia | DO-ter — **la "gh" non si legge affatto** | sostantivo, famiglia |
+| son | figlio | san — **non "son" come in italiano** | sostantivo, famiglia |
+| enjoy | godersi | en-GIOI | verbo |
+| flight | volo | flait — **la "gh" muta, come in daughter** | sostantivo |
+
+### Grado B
+
+| Voce | Italiano | Pronuncia | Categoria |
+|---|---|---|---|
+| good morning | buongiorno | gud MOR-ning | saluto |
+| welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza |
+| here they are | eccoli | hia dei ar | espressione |
+| thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia |
+| this way, please | da questa parte, prego | dis UEI pliiz | indicazione di direzione |
+| enjoy your flight | buon volo | en-GIOI ior flait | formula di congedo |
+
+### Tre cose emerse scrivendo il vocabolario
+
+**`daughter` e `flight` hanno la stessa trappola:** la `gh` che non si legge. *Due parole nello
+stesso episodio — **è un'occasione**, e apre l'episodio di pronuncia che semina `night`, `light`,
+`right`.*
+
+**`son` è la più insidiosa:** un italiano la legge come la scrive. *È nella skill 6.*
+
+**La `th` compare tre volte** — `thank you`, `they`, `this`. **È il suono che l'italiano non ha**,
+e ci sarà un episodio suo.
+
+---
+
+## PASSO 10 — Gli slot
+
+**Uno solo, e nuovo: `{destinazione}` in d7.**
+
+*L'episodio 1 non la usa. La tabella esiste già nel magazzino, undici voci, Cina predefinita.*
+
+**La battuta funziona senza preposizione**, perché la destinazione è una domanda secca:
+*"{destinazione}? Da questa parte, prego"*. **Nessun problema di *in Cina* / *negli Stati
+Uniti*.**
+
+**Gli slot della famiglia non sono usati:** il padre dice *"mia moglie"*, non *"Giulia"*.
+
+---
+
+## PASSO 11 — Il JSON
+
+⚠️ **DA FARE, e spetta a Claude Code.** *Non prima che l'episodio 1 sia riallineato al criterio
+nuovo del grado A.*
+
+---
+
+## REGOLE IN SOSPESO NATE QUI
+
+| Regola | Perché è in sospeso | Dove verrà usata |
+|---|---|---|
+| `this` come dimostrativo | entra dentro `this way`, ma **la struttura non è aperta** — come `the` nell'episodio 1 | la scheda dei dimostrativi |
+| `my` come possessivo | entra **leggero**, una forma sola (4.14) | la scheda dei possessivi, che **riordina** |
+| `aboard` | solo dentro `welcome aboard` | quando tornerà negli annunci del pilota |
