@@ -42,7 +42,10 @@ async function apriConOrdine(page, utente, ordine, extra) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(({ ordine, extra, utente }) => {
     localStorage.setItem('baseinglese:configOverrides',
-      JSON.stringify({ moduleOrderDefault: ordine }));
+      // Dal 2026-09-08 non esiste piu' un ordine globale: la forma sbagliata
+      // si costruisce dando all'episodio un moduleOrder proprio, che e' una
+      // delle due strade ammesse (l'altra e' dichiarare una sequenza).
+      JSON.stringify({ episodes: { episode1: { moduleOrder: ordine } } }));
     (extra || []).forEach(([k, v]) => localStorage.setItem(k.replace('{u}', utente), v));
   }, { ordine, extra, utente });
   await page.reload();

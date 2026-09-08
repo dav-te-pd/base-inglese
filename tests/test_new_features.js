@@ -75,7 +75,7 @@ async function run() {
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
     // Gli id dei PASSI, non i nomi dei moduli: lo stesso modulo puo'
     // comparire piu' volte e le apparizioni successive hanno un id proprio.
-    log('[A] L\'ordine in mappa e\' quello di CONFIG.moduleOrderDefault', JSON.stringify(order) === JSON.stringify(allSteps()));
+    log('[A] L\'ordine in mappa e\' quello della sequenza dell\'episodio', JSON.stringify(order) === JSON.stringify(allSteps()));
     log('[A] No JS errors on map render', errors.length === 0);
     await page.close();
   }
@@ -92,7 +92,7 @@ async function run() {
     });
     await page.goto(BASE);
     await page.evaluate(() => {
-      var order = window.APP_CONFIG.moduleOrderDefault;
+      var order = window.APP_CONFIG.sequences['narrativo-standard'];
       var tmp = order[0]; order[0] = order[1]; order[1] = tmp;
     });
     var onboardingVisible = await page.isVisible('#name-input').catch(() => false);

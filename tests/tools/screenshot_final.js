@@ -34,7 +34,7 @@ async function run() {
   await page.waitForTimeout(150);
   await page.evaluate(() => {
     var groups = Array.from(document.querySelectorAll('#config-panel-body .config-group'));
-    var g = groups.find(el => el.querySelector('summary').textContent === 'moduleOrderDefault');
+    var g = groups.find(el => el.querySelector('summary').textContent === 'sequences');
     if (g) g.open = true;
   });
   await page.waitForTimeout(80);

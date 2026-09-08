@@ -114,13 +114,14 @@ async function run() {
     log('[1] la sequenza narrativo-standard esiste e comincia da personalizzazione', globalOrder[0].module === 'personalizzazione');
     log('[1] Le voci sono coppie modulo+grado', globalOrder.every(p => typeof p.module === 'string') && globalOrder.some(p => typeof p.grade === 'string'));
 
-    // Open the config panel, find the moduleOrderDefault group, move row 1 down.
+    // Apre il pannello, trova il gruppo 'sequences' (la vista di riordino
+    // mostra la sequenza dell'episodio corrente) e sposta giu' la prima riga.
     await page.click('body');
     for (const ch of 'config') await page.keyboard.press(ch);
     await page.waitForTimeout(100);
     await page.evaluate(() => {
       var groups = Array.from(document.querySelectorAll('#config-panel-body .config-group'));
-      var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'moduleOrderDefault'; });
+      var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'sequences'; });
       if (g) g.open = true;
     });
     const rowCount = await page.$$eval('.config-module-order-row', els => els.length);
@@ -129,17 +130,17 @@ async function run() {
     log('[1] First row label is Personalizza\'s own label', firstLabel === 'Your Story');
     await page.click('.config-module-order-row:nth-child(1) [data-order-move="down"]');
     await page.waitForTimeout(50);
-    const newOrder = await page.evaluate(() => window.APP_CONFIG.moduleOrderDefault.slice());
+    const newOrder = await page.evaluate(() => window.APP_CONFIG.sequences['narrativo-standard'].slice());
     log('[1] Clicking "down" swaps the first two entries live in APP_CONFIG', newOrder[0].module === globalOrder[1].module && newOrder[1].module === globalOrder[0].module);
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
-    log('[1] Reorder persists to the config overrides in localStorage', JSON.stringify(stored.moduleOrderDefault) === JSON.stringify(newOrder));
+    log('[1] Reorder persists to the config overrides in localStorage', JSON.stringify(stored.sequences['narrativo-standard']) === JSON.stringify(newOrder));
 
     // Il grado si modifica dalla stessa riga, con un tocco solo: il
     // pulsante con la lettera cicla CONFIG.grades. Compare solo per i
     // moduli che leggono contenuto dall'episodio — Personalizza non ne ha.
     const gradeState = await page.evaluate(() => {
       var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
-      var order = window.APP_CONFIG.moduleOrderDefault;
+      var order = window.APP_CONFIG.sequences['narrativo-standard'];
       return rows.map(function (row, i) {
         var btn = row.querySelector('[data-order-grade]');
         return { module: order[i].module, grade: order[i].grade, chip: btn ? btn.textContent.trim() : null };
@@ -153,9 +154,9 @@ async function run() {
     const cycled = await page.evaluate(() => {
       var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
       var i = rows.findIndex(function (row) { return !!row.querySelector('[data-order-grade]'); });
-      var before = window.APP_CONFIG.moduleOrderDefault[i].grade;
+      var before = window.APP_CONFIG.sequences['narrativo-standard'][i].grade;
       rows[i].querySelector('[data-order-grade]').click();
-      var after = window.APP_CONFIG.moduleOrderDefault[i].grade;
+      var after = window.APP_CONFIG.sequences['narrativo-standard'][i].grade;
       var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
       return {
         index: i,
@@ -163,7 +164,7 @@ async function run() {
         after: after,
         expected: window.APP_CONFIG.grades[(window.APP_CONFIG.grades.indexOf(before) + 1) % window.APP_CONFIG.grades.length],
         chip: document.querySelectorAll('.config-module-order-row')[i].querySelector('[data-order-grade]').textContent.trim(),
-        stored: overrides.moduleOrderDefault[i].grade
+        stored: overrides.sequences['narrativo-standard'][i].grade
       };
     });
     log('[1] Un tocco sul grado passa al successivo di CONFIG.grades', cycled.after === cycled.expected && cycled.after !== cycled.before);
@@ -176,16 +177,16 @@ async function run() {
     // vedrà lo studente.
     const spegni = await page.evaluate(() => {
       var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
-      var order = window.APP_CONFIG.moduleOrderDefault;
+      var order = window.APP_CONFIG.sequences['narrativo-standard'];
       var prima = order.length;
       righe[1].querySelector('[data-order-onoff]').click();
       var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
       return {
         prima: prima,
-        off: !!window.APP_CONFIG.moduleOrderDefault[1].off,
+        off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off,
         restaInLista: document.querySelectorAll('.config-module-order-row').length === prima,
         rigaSegnata: document.querySelectorAll('.config-module-order-row.is-off').length === 1,
-        salvato: !!overrides.moduleOrderDefault[1].off
+        salvato: !!overrides.sequences['narrativo-standard'][1].off
       };
     });
     log('[1] Un tocco spegne il passo', spegni.off === true);
@@ -196,7 +197,7 @@ async function run() {
       var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
       righe[1].querySelector('[data-order-onoff]').click();
       var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
-      return { off: !!window.APP_CONFIG.moduleOrderDefault[1].off, salvato: !!overrides.moduleOrderDefault[1].off };
+      return { off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off, salvato: !!overrides.sequences['narrativo-standard'][1].off };
     });
     log('[1] Un secondo tocco lo riaccende', riacceso.off === false && riacceso.salvato === false);
 
@@ -216,14 +217,15 @@ async function run() {
     // volta sola, al caricamento dello script.
     await bootAsUser(page, 'T1Off', []);
     const conteggi = await page.evaluate(() => {
-      var order = window.APP_CONFIG.moduleOrderDefault.map(function (p) {
+      var order = window.APP_CONFIG.sequences['narrativo-standard'].map(function (p) {
         return p.module === 'repeatAloud' ? Object.assign({}, p, { off: true }) : p;
       });
       var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
-      overrides.moduleOrderDefault = order;
+      overrides.sequences = overrides.sequences || {};
+      overrides.sequences['narrativo-standard'] = order;
       localStorage.setItem('baseinglese:configOverrides', JSON.stringify(overrides));
       return {
-        totale: window.APP_CONFIG.moduleOrderDefault.length,
+        totale: window.APP_CONFIG.sequences['narrativo-standard'].length,
         spenti: order.filter(function (p) { return p.off; }).length
       };
     });

@@ -153,7 +153,7 @@ async function run() {
       const res = await route.fetch();
       const json = await res.json();
       // Nel grado che Voice Check legge DAVVERO (la lettera della sua coppia
-      // in moduleOrderDefault), non in quello che leggeva quando questo test
+      // nella sequenza dell'episodio), non in quello che leggeva quando questo test
       // è stato scritto.
       json.levels[gradeOf('voiceCoach')].items[0].pronunciationTip = 'hel-LOU EV-ri-uan';
       await route.fulfill({ response: res, json });

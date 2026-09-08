@@ -134,7 +134,7 @@ async function run() {
     if (!numerazioneOk) console.log('    numerazione: ' + numeri.join(', '));
     log('[Ordine] La numerazione del documento è progressiva da 1', numerazioneOk);
 
-    const dalConfig = config.moduleOrderDefault.map(p => ({ module: p.module, grade: p.grade || null }));
+    const dalConfig = config.sequences['narrativo-standard'].map(p => ({ module: p.module, grade: p.grade || null }));
 
     console.log('[Ordine] documento: ' + dalDoc.length + ' passi | APP_CONFIG: ' + dalConfig.length + ' passi');
     log('[Ordine] Stesso numero di passi', dalDoc.length === dalConfig.length);

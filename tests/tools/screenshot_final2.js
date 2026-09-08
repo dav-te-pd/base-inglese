@@ -27,11 +27,11 @@ async function run() {
   await page.waitForTimeout(150);
   const found = await page.evaluate(() => {
     var groups = Array.from(document.querySelectorAll('#config-panel-body .config-group'));
-    var g = groups.find(el => el.querySelector('summary').textContent === 'moduleOrderDefault');
+    var g = groups.find(el => el.querySelector('summary').textContent === 'sequences');
     if (g) { g.open = true; g.scrollIntoView(); return true; }
     return false;
   });
-  console.log('found moduleOrderDefault group:', found);
+  console.log('found sequences group:', found);
   await page.waitForTimeout(150);
   await page.screenshot({ path: outputPath('config-reorder2.png') });
   await browser.close();
