@@ -150,9 +150,9 @@ davvero `attemptRule`.
 #### Match Practice en→it / it→en — `quickMatchEngIta`, `quickMatchItaEng`
 - **Componente:** `openQuickMatch()` (8912). Direzione da
   `QM_DIRECTION_BY_KIND[module.kind]` (8708).
-- **Domande:** una per ogni voce del grado, in ordine casuale (`srShuffle`).
+- **Domande:** una per ogni voce del grado, in ordine casuale (`shuffle`).
   Quattro opzioni: la giusta più **tre distrattori pescati a caso** dallo stesso
-  grado — `srShuffle(pool).slice(0, 3)` (8643). Il numero 3 è scritto nel codice.
+  grado — `shuffle(pool).slice(0, 3)` (8643). Il numero 3 è scritto nel codice.
 - **Ripasso:** coda `qmRetryQueue`; una risposta sbagliata o "Non lo so" rimette la
   voce in coda, finché un giro non esce pulito o la voce raggiunge
   `CONFIG.retryQueue.maxAttempts` (3), a quel punto è forzata a rosso.
@@ -248,7 +248,7 @@ davvero `attemptRule`.
 | `loadMastery`/`saveMastery` | 6073/6080 | Store colori per voce | come sopra + la vista legacy |
 | `buildMultipleChoiceOptions(item, dir, pool)` | 8640 | 4 opzioni: 1 giusta + 3 distrattori casuali | Match Practice, Speed Match |
 | `recordMultipleChoiceResult(params)` | 8663 | Mastery + coda di ripasso + contatore tentativi | Match Practice, Speed Match |
-| `srShuffle(list)` | 9749 | Fisher-Yates | **tutti**: qm, sr, fc, vc, `buildMultipleChoiceOptions` |
+| `shuffle(list)` | 9749 | Fisher-Yates | **tutti**: qm, sr, fc, vc, `buildMultipleChoiceOptions` |
 | `renderSummaryScreen(...)` | 5206 | Schermata Finale + pulsante unico + suono Uscita | 7 moduli, una volta al boot |
 | `renderRetryIntroScreen(...)` | 5226 | Schermata Ripasso (guscio) | Speed Match, Match Practice, Flash Card, Voice Coach |
 | `applyRetryIntroContent(id, isLast)` | 5243 | Riempie titolo/testo da `retryIntroMessages` | gli stessi quattro |
@@ -306,7 +306,7 @@ toccato.
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
 | `flashcardLevelA` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
 
-**Il caso più delicato è `srShuffle`.** Non è una funzione di Speed Match: la
+**Il caso più delicato è `shuffle`.** Non è una funzione di Speed Match: la
 chiamano Match Practice, Flash Card, Voice Coach e `buildMultipleChoiceOptions`.
 Sta nel blocco di Speed Match e porta il suo prefisso — esattamente la situazione
 che la regola 18 di `CLAUDE.md` descrive ("un elemento che sembra ancora di un
@@ -327,22 +327,22 @@ dentro Speed Match) e per le classi CSS `.sr-option`, `.sr-summary`,
 
 ```js
 // riga 8899 — Match Practice
-qmQueue = srShuffle(qmVocab.map(function (v) { return v.id; }));
+qmQueue = shuffle(qmVocab.map(function (v) { return v.id; }));
 // riga 10073 — Speed Match
-srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
+srQueue = shuffle(srVocab.map(function (v) { return v.id; }));
 // riga 10457 — Flash Card
-fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
+fcPassItems = shuffle(fcVocab.map(function (v) { return v.id; }));
 // riga 8359 — Voice Coach
 vcQueue = vcLines.map(function (l) { return l.id; });
 ```
 
-`srShuffle` (9749) è un Fisher-Yates puro: nessun peso, nessun colore letto.
+`shuffle` (9749) è un Fisher-Yates puro: nessun peso, nessun colore letto.
 `qmVocab`/`srVocab`/`fcVocab`/`vcLines` sono sempre `episodeGrade(data, module.grade)`
 per intero. L'unico altro punto in cui si pescano voci è la scelta dei distrattori:
 
 ```js
 // riga 8643 — buildMultipleChoiceOptions
-var distractors = srShuffle(pool).slice(0, 3).map(...)
+var distractors = shuffle(pool).slice(0, 3).map(...)
 ```
 
 anche lì, casuale e senza colore. **Il colore per voce (`mastery`) viene scritto ma

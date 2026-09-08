@@ -71,8 +71,9 @@ misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli
 ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
 tutto è in `main`.
 
-**Il prossimo passo è il numero 1 — `srShuffle → shuffle`.** Nessun passo della fase 1
-è cominciato, e non va cominciato senza il via di chi guida il progetto.
+**La fase 1 è cominciata: il passo 1 è fatto.** Il prossimo è il **passo 2**
+(`flashcardLevelA → flashcard`), e non va cominciato senza il via di chi guida il
+progetto — un passo per volta, con la fermata in mezzo.
 
 ## I divieti — leggerli PRIMA di prendere un passo
 
@@ -126,7 +127,7 @@ il sospettato più piccolo possibile**.*
 
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
-| **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina. | ☐ | **sì** |
+| **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina.<br><br>**FATTO il 2026-09-08.** Undici in `index.html` (la definizione più dieci chiamate) e una in `tests/test_scala_colori.js`. Verificato prima che `shuffle` non collidesse con niente: nel codice non esisteva, nemmeno come parola. Allineate anche le **nove** occorrenze in `docs/validazione.md`, che descrive il codice e avrebbe continuato a nominare una funzione inesistente. **`docs/it/struttura-corso.md` NON è stato toccato** (regola 33): la sua tabella dichiara la rinomina da fare, ed è la fonte, non un registro di stato. | ☑ | **sì** |
 | **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`. | ☐ | **sì** |
 | **3** | `quickMatch* → match*` (con `quick-match-*`, `view-quick-match`; **non** `qm-`) | ☐ | **NO** — vedi i divieti |
 | **4** | `speedRound* → speedMatch*` (con `speed-round-*`, `view-speed-round`; **non** `sr-`) | ☐ | **sì** |
@@ -218,6 +219,12 @@ irraggiungibili da Node.*
   nuovo si vede **fallire apposta** prima di consegnarlo.
 
 ---
+
+## Come si lavora
+
+| Data | Cosa | Perché | Quando si esegue |
+|---|---|---|---|
+| 2026-09-08 | **Un lavoro a più passi sta sempre nella lista attività**, un elemento per passo, con il progresso vero quando c'è — durante una corsa lunga il testo si aggiorna con il conteggio letto dal log, circa ogni due minuti. Il pallino che gira è un'animazione, non una misura: da solo non dice niente. | **È la prima cosa del progetto che chi guida può verificare senza chiedermela.** Fino a oggi l'unica era la CI, che prova `main` e non quello che sto facendo adesso. E serve proprio perché il mio strumento può mentire: il 2026-09-07 dicevo «la suite sta girando» su un'attesa rotta, mentre un task appeso da due ore era visibile a lui e non a me (regola 37). | **Va in `CLAUDE.md` come regola permanente, insieme alla prossima modifica che tocca quel file** — cioè il passo 6 della catena. Non serve un giro apposta; questa riga esiste perché nel frattempo non si perda. |
 
 ## Rinomine
 

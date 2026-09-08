@@ -17,7 +17,7 @@
 // ciascuna: nessuna dipende dall'esito della precedente.
 //
 // Perché si semina lo STESSO valore su tutte le voci: il mazzo è mescolato
-// (srShuffle), quindi non si sa quale carta esce per prima. Seminando tutte
+// (shuffle), quindi non si sa quale carta esce per prima. Seminando tutte
 // allo stesso stato, qualunque carta esca la transizione da verificare è
 // quella. Alla fine si cerca l'unica voce che è cambiata.
 //

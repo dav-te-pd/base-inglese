@@ -7942,7 +7942,7 @@
     if (vcMicConfirmedProblem) return;
     if (vcQueue.length === 0) {
       if (vcRetryQueue.length > 0) {
-        vcQueue = srShuffle(vcRetryQueue);
+        vcQueue = shuffle(vcRetryQueue);
         vcRetryQueue = [];
         vcPassTotal = vcQueue.length;
         vcPassIndex = 0;
@@ -8350,12 +8350,12 @@
   function buildMultipleChoiceOptions(item, direction, vocabPool) {
     var correctText = itemText(item, direction === 'en-it' ? 'it' : 'en');
     var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
-    var distractors = srShuffle(pool).slice(0, 3).map(function (v) {
+    var distractors = shuffle(pool).slice(0, 3).map(function (v) {
       return itemText(v, direction === 'en-it' ? 'it' : 'en');
     });
     var options = distractors.map(function (text) { return { text: text, correct: false }; });
     options.push({ text: correctText, correct: true });
-    return srShuffle(options);
+    return shuffle(options);
   }
 
   // declaredNonAttempt: an explicit "Non lo so" — not a wrong answer but an
@@ -8537,7 +8537,7 @@
   function qmNextQuestion() {
     if (qmQueue.length === 0) {
       if (qmRetryQueue.length > 0) {
-        qmQueue = srShuffle(qmRetryQueue);
+        qmQueue = shuffle(qmRetryQueue);
         qmRetryQueue = [];
         qmPassTotal = qmQueue.length;
         qmPassIndex = 0;
@@ -8606,7 +8606,7 @@
   }
 
   function qmStartQuiz() {
-    qmQueue = srShuffle(qmVocab.map(function (v) { return v.id; }));
+    qmQueue = shuffle(qmVocab.map(function (v) { return v.id; }));
     qmRetryQueue = [];
     qmRetryAttempts = {};
     qmAttemptCounts = {};
@@ -9458,7 +9458,15 @@
   // and invited exactly this kind of misplacement).
   var sfxAudioCtx = null;
 
-  function srShuffle(list) {
+  // Mescola, e basta: nessun modulo puo' reclamarla. Il nome era `shuffle`
+  // fino al 2026-09-08 — un prefisso ereditato dal primo modulo che l'ha
+  // introdotta, mentre la usano tutti: Speed Match, Match Practice, Flash
+  // Card, Voice Check e buildMultipleChoiceOptions. Regola 18: un nome
+  // condiviso non porta il prefisso di chi e' arrivato prima.
+  // Sta ancora in mezzo al blocco di Speed Match, come sfxAudioCtx qui sopra:
+  // e' lo spacchettamento che dara' a queste cose il loro strato, non questa
+  // rinomina.
+  function shuffle(list) {
     var a = list.slice();
     for (var i = a.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -9699,7 +9707,7 @@
   function srNextQuestion() {
     if (srQueue.length === 0) {
       if (srRetryQueue.length > 0) {
-        srQueue = srShuffle(srRetryQueue);
+        srQueue = shuffle(srRetryQueue);
         srRetryQueue = [];
         srPassTotal = srQueue.length;
         srPassIndex = 0;
@@ -9782,7 +9790,7 @@
   }
 
   function srStartQuiz() {
-    srQueue = srShuffle(srVocab.map(function (v) { return v.id; }));
+    srQueue = shuffle(srVocab.map(function (v) { return v.id; }));
     srRetryQueue = [];
     srRetryAttempts = {};
     srAttemptCounts = {};
@@ -10098,7 +10106,7 @@
       fcLastAvgPct = pct;
       applyOutcomeSubtitle('fc-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
     } else {
-      fcPassItems = srShuffle(wrongIds);
+      fcPassItems = shuffle(wrongIds);
       fcPassIndex = 0;
       fcPassResults = {};
       fcInRetryPass = true;
@@ -10164,7 +10172,7 @@
   }
 
   function fcStartDeck() {
-    fcPassItems = srShuffle(fcVocab.map(function (v) { return v.id; }));
+    fcPassItems = shuffle(fcVocab.map(function (v) { return v.id; }));
     fcPassIndex = 0;
     fcPassResults = {};
     fcRetryAttempts = {};
