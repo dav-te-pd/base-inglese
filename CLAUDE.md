@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260908b**
+**Versione: 20260908c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -20,6 +20,37 @@ legge), `docs/` (le fonti del contenuto e i documenti di lavoro), `tests/` (la
 suite di regressione) e `tools/`. Non sono un contorno: le regole 4, 8, 22 e 24
 esistono proprio per governarli.
 
+## Prima di prendere qualunque lavoro
+
+**Apri `docs/decisioni.md`.** Se in testa c'è una **catena in corso**, il
+prossimo passo è lì — insieme ai divieti che non si deducono leggendo il codice
+(quali passi non si interrompono, quali vanno fatti insieme, quali punti sono
+fermate sicure). Il suo gemello `docs/correzioni.md` dice invece cosa è già
+stato fatto.
+
+*Sta qui e non fra le regole perché va incontrata **prima** di scegliere cosa
+prendere, non mentre si legge la regola che si è già cominciata.*
+
+## Dove sta cosa
+
+I file che governano il lavoro e che altrimenti si scoprono per caso. Non è
+documentazione in più: senza questa mappa, queste informazioni esistono sparse
+dentro quaranta regole, e chi le legge in ordine non ne ricava un elenco
+affidabile.
+
+| File | Cosa c'è dentro |
+|---|---|
+| `docs/decisioni.md` | La **catena in corso** (in testa) e le decisioni prese e non ancora eseguite. Il primo file da aprire. |
+| `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
+| `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
+| `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
+| `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
+| `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |
+| `tests/tools/attendi.sh` | L'attesa scritta nella forma giusta una volta sola (regola 37). Si usa questo invece di riscriverla a mano: `tests/tools/attendi.sh <log> "ALL FILES GREEN" "SOME FILES FAILED"`. |
+| `tests/ATTESE-FISSE.md` | Le attese a tempo che fanno da guardia a un'asserzione. **Si guarda qui quando un test diventa rosso**, prima di cercare una regressione. |
+| `tests/ERRORI-INGOIATI.md` | I `.catch` vuoti dei test, distinti fra legittimi e sopprimenti. Si guarda qui quando un rosso arriva da un punto che non lo spiega. |
+| `tests/test-env.js` | Il punto unico da cui i test prendono Playwright, l'indirizzo dell'app e i percorsi (regola 24). |
+
 ## Regole permanenti
 
 Queste regole valgono per ogni sessione futura su questo progetto, anche quando non vengono ripetute nella richiesta.
@@ -36,7 +67,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      **Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla COPPIA di lingue, non alla lingua che si impara: *"I have ten years"* è una trappola italiana e non tedesca, quindi un'edizione tedesca non è `docs/it/` tradotto — è un contenuto suo. Le edizioni future nascono **copiando la cartella e sostituendo i contenuti**, e **una correzione fatta in `it/` NON deve arrivare nelle altre**: se una cosa va corretta ovunque, va corretta ovunque a mano, di proposito.
 
-     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/censimento-moduli.md`. Sotto `docs/{lingua}/` sta ciò che produce contenuto per lo studente — oggi `episodio-N.md` e `struttura-corso.md`, che porta i nomi dei gradi come li legge lui.
+     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/decisioni.md`, `docs/censimento-moduli.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
+
+     **La regola nomina la cartella, non i file che ci stanno dentro**, ed è una correzione del 2026-09-08: prima elencava due file mentre ce n'erano sei. Un elenco dentro una regola invecchia a ogni file nuovo — e qui invecchiava in silenzio proprio dove la regola 33 va a leggere per sapere cosa proteggere.
 
      Una cartella per una lingua si crea quando c'è qualcosa da metterci, mai in anticipo.
 
@@ -210,8 +243,17 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     rifiuto. Vale anche per una correzione che sembra ovvia: quel file è una
     decisione presa, non un appunto.
 
-    Riguarda i file di contenuto, cioè quelli sotto `docs/{lingua}/` (regola 4):
-    `episodio-N.md` e `struttura-corso.md`.
+    Riguarda **tutto ciò che sta sotto `docs/{lingua}/`** (regola 4), senza
+    elenco: la cartella è il criterio, non i nomi dei file. Oggi ci stanno
+    `episodio-N.md`, `struttura-corso.md`, `tabelle-personalizzazione.md`,
+    `inventario-grammaticale.md` e `obiettivi-a1.md`, e domani ce ne staranno
+    altri — la regola li copre già.
+
+    *Perché senza elenco, e non è pignoleria: fino al 2026-09-08 questa riga
+    ne nominava due su sei, quindi **quattro file di contenuto non erano
+    protetti** da chi la leggeva alla lettera. Un elenco dentro una regola
+    smette di essere vero al primo file nuovo, e nessuno se ne accorge: la
+    regola continua a leggersi bene.*
 
     **È diversa dalla 31**: quella riguarda il codice — dichiarare cosa si
     costruirà prima di costruirlo — questa il contenuto.
