@@ -9,7 +9,7 @@
 > cambiare quando vogliamo. *Oggi nel codice è `badge: 'Episodio 1'`, scritto nel codice: con
 > la regola 4 non ci può più stare.*
 >
-> **Numeri attesi nel JSON:** 15 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
+> **Numeri attesi nel JSON:** 12 voci nel grado A, 7 in B, 9 in C, 9 battute in D, 8 skill,
 > 8 slot di personalizzazione. **Se i conti non tornano, fermarsi e segnalarlo.**
 >
 > **Materiale di partenza per Claude Code.** Da qui viene scritto
@@ -127,11 +127,11 @@ una hai già l'altra"*. Metterla in B contraddirebbe la nostra stessa spiegazion
 il confronto è l'insegnamento (regola 4.1). *Fino a ieri `I'm` stava nel grado A e `I am` in B —
 la contrazione prima della forma piena, che è l'inverso dell'ordine naturale.*
 
-### Grado A — quindici parole
+### Grado A — dodici parole
 
-*Le quindici voci sono nella tabella qui sotto, che è l'unica fonte: l'elenco in prosa che
-c'era prima è stato tolto perché diceva le stesse cose in ordine diverso, e due scritture della
-stessa lista prima o poi divergono.*
+*Le dodici voci sono nella tabella qui sotto, che è l'unica fonte: l'elenco in prosa che c'era
+prima è stato tolto perché diceva le stesse cose in ordine diverso, e due scritture della stessa
+lista prima o poi divergono.*
 
 *Più i numeri delle età, che vengono dall'episodio grammaticale dei numeri.*
 
@@ -141,15 +141,12 @@ stessa lista prima o poi divergono.*
 | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
 | nice | bello / piacevole | nais | aggettivo |
 | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
-| you | tu / voi | iu | pronome |
-| I | io | ai — sempre maiuscola in inglese | pronome |
 | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
 | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
 | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
 | and | e | and — la "d" finale si sente appena | congiunzione |
 | years | anni | i-ars — parte con un suono di "i" | sostantivo |
 | old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
-| we | noi | ui | pronome |
 | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
 | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
 
@@ -165,15 +162,19 @@ stessa lista prima o poi divergono.*
 > aggiungere una colonna ad `APP_CONFIG`, che stiamo per smontare — lavoro buttato. **Dipende
 > da `data/it/tabelle-personalizzazione.json`, che non esiste ancora.**
 
-**Maiuscole:** in A e B minuscolo, tranne dove la lingua impone la maiuscola — qui `I` e
-`Italy`, che è un nome proprio.
+**Maiuscole:** in A e B minuscolo, tranne dove la lingua impone la maiuscola — qui solo `Italy`,
+che è un nome proprio.
 In C e D scrittura normale (regola 4.4). *`Hello` e `Hi` erano maiuscoli solo perché nel
 dialogo stanno a inizio battuta.*
 
-**`I` resta**, benché nessuno lo dica da solo: è una parola che serve a costruire, e va capita
-isolata perché serve a leggere ogni frase che verrà (eccezione della regola 2.3). *E la skill 6
-insegna esplicitamente che `I` non si può mai omettere: toglierlo dal grado A sarebbe stato
-spiegare a parole una cosa che non si fa mai studiare.*
+> ⚠️ **`I`, `you` e `we` sono usciti dal grado A l'8 settembre**, con il criterio nuovo: **un
+> inglese la dice da sola?** (regola 2.16). Nessuno dei tre si dice isolato.
+>
+> *Per `I` c'era un'eccezione dichiarata — "serve a costruire, va capita isolata". **L'argomento
+> non regge:** li impara comunque dentro `I am`, `we are`, `and you?`, e li userà migliaia di
+> volte. Insegnare `I` in Match Practice — `I` ↔ `io` — non è un esercizio, è una definizione.*
+>
+> **Li incontra tutti e tre nel grado B e nel grado C**, dove hanno un contesto.
 
 **Uscite dal grado A:**
 
@@ -183,6 +184,7 @@ spiegare a parole una cosa che non si fa mai studiare.*
 | ~~`Italy`~~ | **resta nel grado A, per ora** | vedi il riquadro qui sotto |
 | `am`, `are` | grado B, dentro `I am` e `we are` | nessuno li usa isolati. Aperti dall'episodio grammaticale del verbo essere |
 | `to` | esce e torna dopo | restando solo dentro `nice to meet you`, non ha un significato usabile da solo. Tornerà quando `going to` e `welcome to` gli daranno un senso: la direzione |
+| `I`, `you`, `we` | **grado B e C** | **nessuno le dice da sole** (regola 2.16). Vivono in `I am`, `we are`, `and you?` |
 | `going`, `welcome` | episodio successivo | stavano solo nelle battute spostate |
 
 ---
