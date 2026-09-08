@@ -32,6 +32,12 @@ che sarebbe tornato con lo stesso timeout muto. **Quindi: quando un punto di
 questa lista fallisce, la prima ipotesi resta l'attesa a tempo — ma prima di
 correggerla si guarda se qualcosa, poco sopra, sta ingoiando l'errore vero.**
 
+**Il gemello di questo file è `ERRORI-INGOIATI.md`**, e la coppia va letta
+insieme: qui stanno le attese che cadono **nel punto giusto**, lì i `.catch`
+vuoti che fanno cadere il test **altrove**. Il caso raccontato qui sotto —
+`test_batch19.js` — è precisamente un punto di questo elenco il cui colpevole
+stava in quell'altro.
+
 **Non tutte sono ugualmente fragili.** Un'attesa dopo un'azione che è già
 finita è innocua; una che deve cadere dentro una finestra di riproduzione, o
 che dà tempo a eventi asincroni di accadere, non lo è. I commenti nel codice

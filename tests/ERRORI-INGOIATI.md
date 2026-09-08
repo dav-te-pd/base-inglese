@@ -1,0 +1,131 @@
+# Errori ingoiati nei test
+
+Censimento dei `.catch(() => {})` — i punti in cui un test **sopprime un
+errore invece di farlo fallire**. Sono 47 in 19 file.
+
+**A cosa serve questo file.** Non è una lista di cose da correggere. Serve
+**quando un test diventa rosso in un punto che non lo spiega**: prima di
+cercare una regressione nel codice dell'app, si guarda se qualcosa, poco
+sopra, sta ingoiando l'errore vero.
+
+**Perché è la famiglia più costosa delle due.** `ATTESE-FISSE.md` censisce le
+attese a tempo, che cadono **nel punto giusto**: brutte, ma diagnosticabili.
+Un `.catch` vuoto fa cadere il test **altrove** — l'errore viene soppresso
+dove nasce e si manifesta dove non si può più capire perché.
+
+*Il caso che l'ha insegnata — `test_batch19.js`, 2026-09-07.* Il click su
+`#sr-ready-btn` falliva, il `.catch` vuoto lo ingoiava, il countdown non
+partiva mai, e il test moriva tre righe dopo su un `waitForFunction` che
+sembrava il colpevole. La lezione era già scritta in `ATTESE-FISSE.md` — e
+nessuno aveva mai contato quante altre volte la stessa forma comparisse nella
+suite. Erano 47.
+
+**Non vanno cancellati: vanno distinti.** Un `.catch` su un elemento che
+legittimamente può non esserci è corretto e deve restare. Un `.catch` su
+un'azione che *deve* riuscire è un difetto che aspetta. Le tre famiglie qui
+sotto sono esattamente quella distinzione.
+
+---
+
+## ① Attese soppresse — 6 punti
+
+**La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
+è un'attesa **che non fallisce mai**: se lo stato non arriva, si aspetta il
+timeout e si tira dritto. È una `waitForTimeout` travestita da attesa di
+stato — con l'aggravante che *sembra* la forma giusta, quindi nessuno la
+cerca in `ATTESE-FISSE.md`.
+
+| File e riga | Cosa viene ingoiato | |
+|---|---|---|
+| `test_batch14.js:315` | `}, { timeout: 3000 }).catch(() => {});` |  |
+| `test_batch16.js:171` | `}, { timeout: 5000 }).catch(() => {});` |  |
+| `test_batch16.js:184` | `}, { timeout: 6000 }).catch(() => {});` |  |
+| `test_batch16.js:263` | `}, { timeout: 5000 }).catch(() => {});` |  |
+| `test_batch2b.js:272` | `}, null, { timeout: 20000 }).catch(() => {});` |  |
+| `test_batch5.js:96` | `await page.waitForFunction(() => window.speechSynthesis.speaking === true, null, { timeou…` |  |
+
+*Una di queste è **dichiarata**: `test_batch2b.js:272` porta il commento che
+spiega perché preferisce non far esplodere il file, e l'asserzione subito dopo
+guarda comunque lo stato vero. Le altre cinque no.*
+
+---
+
+## ② Click che devono riuscire — 29 punti
+
+Un pulsante che il test si aspetta a schermo. Se non c'è, **è un difetto**, e
+il `.catch` lo trasforma in un test che prosegue su una schermata sbagliata e
+muore più avanti.
+
+| File e riga | Cosa viene ingoiato | |
+|---|---|---|
+| `test_batch10.js:289` | `await page.click('#vc-send-btn').catch(() => {});` |  |
+| `test_batch10.js:294` | `if (i < 5) { await page.click('#vc-next-btn').catch(() => {}); await page.waitForTimeout(…` |  |
+| `test_batch12.js:142` | `await page.click('#voice-coach-retry-continue-btn').catch(() => {});` |  |
+| `test_batch14.js:236` | `await page.click('.dg-bubble[data-line-id="' + bubbleIds[2] + '"]').catch(() => {});` |  |
+| `test_batch14.js:339` | `await page.click('.dg-bubble[data-line-id="' + bubbleIds[i] + '"]').catch(() => {});` |  |
+| `test_batch16.js:116` | `await page.selectOption('select[data-slot="papa"]', 'francesco').catch(() => {});` |  |
+| `test_batch16.js:226` | `await page.click('#fc-retry-continue-btn', { timeout: 1000 }).catch(() => {});` |  |
+| `test_batch16.js:232` | `await page.click('#fc-card', { timeout: 1000 }).catch(() => {});` |  |
+| `test_batch17.js:391` | `await page.click('#fc-card', { timeout: 1000 }).catch(() => {});` |  |
+| `test_batch19.js:77` | `await page.click('#qm-start-btn').catch(() => {});` |  |
+| `test_batch19.js:119` | `await page.click('#qm-start-btn').catch(() => {});` |  |
+| `test_batch19.js:156` | `await page.click('#sr-ready-btn').catch(() => {});` | **il caso che ha insegnato la lezione** |
+| `test_batch19.js:266` | `await page.click('#sr-ready-btn').catch(() => {});` |  |
+| `test_batch19.js:321` | `await page.click('#sr-ready-btn').catch(() => {});` |  |
+| `test_batch19.js:362` | `await page.click('#sr-ready-btn').catch(() => {});` |  |
+| `test_batch19.js:388` | `await page.click('#sr-ready-btn').catch(() => {});` |  |
+| `test_batch19.js:411` | `await page.click('#sr-ready-btn').catch(() => {});` |  |
+| `test_batch20.js:97` | `await page.click('#qm-start-btn').catch(() => {});` |  |
+| `test_batch6.js:124` | `await page.click('#vc-send-btn').catch(() => {});` |  |
+| `test_batch6.js:140` | `await page.click('#vc-next-btn').catch(() => {});` |  |
+| `test_batch6.js:150` | `await page.click('#voice-coach-retry-continue-btn').catch(() => {});` |  |
+| `test_batch6.js:235` | `await page.click('#vc-send-btn').catch(() => {});` |  |
+| `test_batch6.js:240` | `await page.click('#vc-next-btn').catch(() => {});` |  |
+| `test_batch7.js:193` | `await page.click('#fc-card').catch(() => {}); // flip` |  |
+| `test_batch8.js:82` | `await page.click('#vc-send-btn').catch(() => {});` |  |
+| `test_batch8.js:90` | `await page.click('#vc-next-btn').catch(() => {});` |  |
+| `test_batch8.js:98` | `await page.click('#voice-coach-retry-continue-btn').catch(() => {});` |  |
+| `test_batch8.js:165` | `await page.click('#vc-send-btn').catch(() => {});` |  |
+| `test_batch8.js:169` | `if (i < 5) { await page.click('#vc-next-btn').catch(() => {}); await page.waitForTimeout(…` |  |
+
+---
+
+## ③ Opzionali legittimi — 12 punti
+
+**Questi vanno lasciati stare.** L'elemento può non esserci per costruzione:
+la schermata introduttiva compare solo la prima volta, il popup della valvola
+di sicurezza solo oltre una soglia, e il click è già protetto da un `if` di
+esistenza. Il `.catch` copre la corsa fra il controllo e il click.
+
+| File e riga | Cosa viene ingoiato | |
+|---|---|---|
+| `test_avviso_microfono.js:112` | `if (intro) await intro.click().catch(() => {});` |  |
+| `test_batch14.js:343` | `if (stillReachable) { await page.click('#dg-next-line-btn').catch(() => {}); await page.w…` |  |
+| `test_batch15.js:101` | `await page.click('#attempt-popup-next', { timeout: 1000 }).catch(() => {});` |  |
+| `test_batch16.js:88` | `await page.click('#attempt-popup-next', { timeout: 1000 }).catch(() => {});` |  |
+| `test_batch16.js:239` | `if (nonBtn) { await nonBtn.click({ timeout: 1000 }).catch(() => {}); }` |  |
+| `test_batch17.js:388` | `if (retryVisible) { await page.click('#fc-retry-continue-btn', { timeout: 1000 }).catch((…` |  |
+| `test_batch17.js:394` | `if (knowBtn) { await knowBtn.click({ timeout: 1000 }).catch(() => {}); }` |  |
+| `test_episodi_corti.js:55` | `if (intro) await intro.click().catch(() => {});` |  |
+| `test_interruttore_episodio.js:93` | `if (intro) await intro.click().catch(() => {});` |  |
+| `test_match_practice_nonloso.js:108` | `if (intro) await intro.click().catch(() => {});` |  |
+| `test_sblocco_sequenziale.js:70` | `if (intro) await intro.click().catch(() => {});` |  |
+| `test_sequenze.js:49` | `if (intro) await intro.click().catch(() => {});` |  |
+
+---
+
+## Come si corregge uno della famiglia ②
+
+Non si toglie il `.catch` e basta: si **aspetta l'elemento prima**, così se non
+arriva il test fallisce lì e lo dice.
+
+```js
+// prima: se il pulsante non c'e', non lo sa nessuno
+await page.click('#sr-ready-btn').catch(() => {});
+
+// dopo: se non c'e', fallisce QUI, con il selettore nel messaggio
+await page.waitForSelector('#sr-ready-btn', { state: 'visible' });
+await page.click('#sr-ready-btn');
+```
+
+**Totale: 47 punti in 19 file** (aggiornato a mano quando cambia).

@@ -158,27 +158,85 @@ async function run() {
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
     const beforeDisabled = await page.evaluate(() => document.getElementById('sr-dontknow-btn').disabled);
     log('[SR Task1] "Non lo so" starts enabled on a fresh question', beforeDisabled === false);
-    let gotCorrect = false;
-    for (let attempt = 0; attempt < 20 && !gotCorrect; attempt++) {
-      if (!(await tapPrimaOpzione(page, '#sr-options'))) break;
-      await page.waitForTimeout(20);
-      const wasCorrect = await page.evaluate(() => document.querySelector('#sr-options .sr-option.is-correct') !== null && document.querySelector('#sr-options .sr-option.is-wrong') === null);
-      if (wasCorrect) {
-        gotCorrect = true;
+
+    // RISCRITTO il 2026-09-08. Prima questo blocco toccava sempre la prima
+    // opzione fra quattro sperando che capitasse quella giusta, e poi aspettava
+    // 800 ms fissi prima di leggere lo stato. Misurato: rosso 2 giri su 3 sullo
+    // stesso codice. Quando il ciclo si esauriva senza trovarne una giusta, il
+    // file eseguiva 39 asserzioni invece di 40 — l'ultima vive dentro il ramo
+    // gotCorrect e semplicemente non girava.
+    //
+    // Adesso la situazione si COSTRUISCE invece di sperarci, con la stessa
+    // tecnica di tests/test_match_practice_nonloso.js:
+    //   - sull'ULTIMA domanda del passaggio non si risponde mai giusto di
+    //     proposito: li' la risposta giusta chiude il passaggio e la "domanda
+    //     successiva" da misurare non esiste. Si dichiara "non lo so", cosi' la
+    //     voce torna nel giro di ripasso e altre domande dopo ci sono di sicuro;
+    //   - il limite del ciclo non e' un numero a occhio: e' quante domande
+    //     esistono per quanti passaggi la coda di ripasso ammette;
+    //   - l'attesa finale non e' un tempo: e' la domanda successiva a schermo,
+    //     riconosciuta dal contatore cambiato e dal riquadro della risposta
+    //     chiuso, con lo stato del pulsante letto DENTRO la stessa chiamata.
+    const statoSR = () => page.evaluate(() => {
+      const vis = el => !!el && el.getClientRects().length > 0;
+      const contatore = (document.getElementById('sr-counter') || {}).textContent || '';
+      const m = contatore.match(/(\d+)\s*\/\s*(\d+)/);
+      return {
+        contatore: contatore.trim(),
+        indice: m ? Number(m[1]) : null,
+        totale: m ? Number(m[2]) : null,
+        quiz: vis(document.getElementById('sr-quiz-screen')),
+        ripasso: vis(document.getElementById('sr-retry-intro-screen')),
+        riepilogo: vis(document.getElementById('sr-summary-screen')),
+        revealAperto: !document.getElementById('sr-reveal').hidden,
+        opzioni: document.querySelectorAll('#sr-options .sr-option').length
+      };
+    });
+
+    const partenzaSR = await statoSR();
+    const maxPassaggiSR = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
+    const limiteSR = (partenzaSR.totale || 1) * (maxPassaggiSR + 1) + 5;
+    let contatorePrimaSR = null;
+    let mosseSR = 0;
+
+    while (contatorePrimaSR === null && mosseSR < limiteSR) {
+      mosseSR++;
+      const st = await statoSR();
+      if (st.riepilogo) break;
+      if (st.ripasso) { await page.click('#sr-retry-continue-btn'); continue; }
+      if (st.revealAperto) { await page.click('#sr-advance-btn'); continue; }
+      if (!st.quiz || !st.opzioni) break;
+      if (st.indice !== null && st.indice === st.totale) {
+        await page.click('#sr-dontknow-btn');
+        continue;
+      }
+      const prima = st.contatore;
+      await page.click('#sr-options .sr-option >> nth=0');
+      // Giusta o sbagliata si legge dallo stato, non dal tempo: la classe la
+      // mette il gestore del click, sincrono con il click stesso.
+      const giusta = await page.evaluate(() =>
+        document.querySelector('#sr-options .sr-option.is-correct') !== null &&
+        document.querySelector('#sr-options .sr-option.is-wrong') === null);
+      if (giusta) {
+        contatorePrimaSR = prima;
         const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('sr-dontknow-btn').disabled);
         log('[SR Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix, same as Quick Match)', dontKnowDisabledRightAfter === true);
-      } else {
-        const revealShown = await page.evaluate(() => !document.getElementById('sr-reveal').hidden);
-        if (revealShown) {
-          await page.click('#sr-advance-btn');
-          await page.waitForTimeout(50);
-        }
       }
     }
-    log('[SR Task1] Managed to observe a correct-answer tap within retries', gotCorrect);
-    await page.waitForTimeout(800); // feedbackPauseMs (600) then auto-advance
-    const nextQDisabled = await page.evaluate(() => document.getElementById('sr-dontknow-btn') ? document.getElementById('sr-dontknow-btn').disabled : null);
-    log('[SR Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)', nextQDisabled === false);
+    log('[SR Task1] Managed to observe a correct-answer tap within retries', contatorePrimaSR !== null);
+
+    // Nessun numero di millisecondi: si aspetta la domanda successiva.
+    const dopoSR = contatorePrimaSR === null ? null : await page.waitForFunction(precedente => {
+      const b = document.getElementById('sr-dontknow-btn');
+      const c = document.getElementById('sr-counter');
+      const rev = document.getElementById('sr-reveal');
+      if (!b || !c || !rev) return null;
+      if (!rev.hidden) return null;
+      if (c.textContent.trim() === precedente) return null;
+      return { spento: b.disabled, contatore: c.textContent.trim() };
+    }, contatorePrimaSR, { timeout: 15000 }).then(h => h.jsonValue()).catch(() => null);
+    log('[SR Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
+      dopoSR !== null && dopoSR.spento === false);
     log('[SR Task1] No JS errors', errors.length === 0);
     await page.close();
   }

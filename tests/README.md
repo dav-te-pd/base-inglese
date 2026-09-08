@@ -10,7 +10,7 @@ alcuni per aree specifiche (`test_dialogo_extra.js`, `test_new_features.js`,
 `test_errore_caricamento.js`, `test_avviso_microfono.js`,
 `test_sblocco_sequenziale.js`, `test_attendi.js`,
 `test_report_mastery.js`, `test_episodi_corti.js`, `test_sequenze.js`, `test_episodio2.js`,
-`test_interruttore_episodio.js`, `test_match_practice_nonloso.js`). Insieme costituiscono la
+`test_interruttore_episodio.js`, `test_match_practice_nonloso.js`, `test_conta_asserzioni.js`). Insieme costituiscono la
 suite di regressione completa citata da CLAUDE.md (regola 15): quando una
 modifica tocca codice condiviso va lanciata tutta, quando resta dentro un
 modulo bastano i file di quel modulo.
@@ -149,6 +149,7 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 | `test_episodio2.js` | Che `data/it/a1-episodio2-inglese.json` continui a dire quello che dichiara `docs/it/episodio-2.md`. Quando i due divergono non crolla niente: i moduli si aprono pieni e hanno l'aria giusta, semplicemente insegnano una cosa che il documento non dice più. Confronta i numeri dichiarati e le due cose che un conteggio non vede: che ogni skill stia su una battuta esistente e che ogni `fromLine` punti a una battuta vera. **Limite dichiarato:** il testo NON è confrontato — i due markdown hanno forme diverse e un secondo parser sarebbe più fragile di quanto protegga. La scadenza scritta qui («quando l'episodio 2 entrerà in `EPISODES`») è arrivata il 2026-09-08 e il limite è rimasto: la condizione nuova è registrata in `docs/decisioni.md`. |
 | `test_interruttore_episodio.js` | Che scegliere un episodio nel Pannello Admin apra **davvero quello**, con il suo contenuto. È l'unica strada che esiste per raggiungere un episodio diverso dal primo: se smette di funzionare, l'app continua a funzionare benissimo mostrando sempre lo stesso episodio, e non se ne accorge nessuno finché non si prova a collaudare il secondo. Protegge anche che l'episodio 2 sia collegato al **suo** file dati — un episodio «collegato» che serve il contenuto dell'altro è il caso peggiore, perché la schermata è piena e ha l'aria giusta — e che un id inesistente non lasci una pagina bianca ma lo **dica** in console. Il menu si confronta con gli episodi che dichiarano una sequenza in `CONFIG.episodes`, non con un elenco scritto nel test: un episodio nuovo entra da solo. **Limite dichiarato:** si guarda un modulo solo (Meet the Story); un descrittore sbagliato su uno degli altri ventuno passerebbe. |
 | `test_match_practice_nonloso.js` | Che in Match Practice «Non lo so» torni **attivo** sulla domanda successiva dopo una risposta giusta. Si spegne insieme alle opzioni e lo riaccende `qmRenderQuestion`: se quella riga sparisce, dalla seconda domanda in poi una delle due uscite dell'esercizio non c'è più — e non crolla niente. È anche il **modello** con cui vanno riscritte le diciannove attese fisse di `test_batch19.js` (`docs/decisioni.md`): la stessa asserzione lì aspetta 800 ms a caso e poi legge; qui si aspetta *quello che il lavoro produce* — la domanda successiva a schermo — e lo stato si legge dentro la stessa chiamata che aspetta. Sull'ultima domanda del passaggio non si risponde mai giusto di proposito: lì la «domanda successiva» non esisterebbe, ed era uno dei due sospetti mai dimostrati del rosso in CI di `test_batch19`. **Limite dichiarato:** una sola direzione (en→it). |
+| `test_conta_asserzioni.js` | Che il contatore delle asserzioni **si accorga di un calo**. È lo strumento che difende ogni verde della suite da un test che ha smesso di girare — e come ogni strumento di misura, se si guasta non lo dice: continua a stampare un numero, e il numero somiglia a un risultato. Il caso non è teorico: `test_batch19` è caduto eseguendo 39 asserzioni invece di 40, perché la quarantesima vive in un ramo che, quando il ciclo si esaurisce, non gira. Prova i tre casi con conseguenze opposte — uguale, in aumento (un test nuovo: va bene), in calo (deve fallire e dire **quale** file) — più il caso che li confonde tutti: un `.result.txt` mancante, che non è zero asserzioni ma un file non eseguito. **Limite dichiarato:** prova che sappia contare le tre forme che i test usano oggi, non che il conteggio sia giusto su ogni file vero; una quarta forma gli sfuggirebbe e questo test resterebbe verde. |
 
 ---
 
@@ -280,9 +281,30 @@ altrove: si disallineerebbe.
 
 ## Punti fragili noti
 
+Due censimenti, e servono in due momenti diversi di uno stesso rosso.
+
 `ATTESE-FISSE.md` elenca i punti in cui un test aspetta un numero di
 millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
 intermittente, si guarda lì prima di sospettare una regressione dell'app.
+
+`ERRORI-INGOIATI.md` elenca i `.catch(() => {})`, distinti in tre famiglie —
+attese soppresse, click che devono riuscire, opzionali legittimi. **Si guarda
+lì quando il rosso arriva da un punto che non lo spiega:** un `.catch` vuoto
+sopprime l'errore dove nasce e lo fa comparire dove non si può più
+diagnosticare. È la famiglia più costosa, perché un'attesa a tempo almeno cade
+nel punto giusto.
+
+## Il conteggio delle asserzioni
+
+`tools/conta-asserzioni.js` conta quante asserzioni ogni file ha **eseguito**
+(le righe `OK`/`PASS`/`FAIL`) e le confronta con `BASELINE-ASSERZIONI.txt`. Lo
+lancia da sé `run_full_regression.sh` alla fine di ogni corsa, e **un calo
+rende la suite rossa**.
+
+Il codice di uscita di un file dice se qualcosa è *fallito*; questo dice se
+qualcosa ha smesso di *girare* — un file che esegue dieci asserzioni invece di
+quaranta esce comunque con zero. Il numero può salire (un test nuovo: si
+riscrive il baseline con `--scrivi`), non deve calare.
 
 ## `tests/module-order.js` — perché esiste
 
