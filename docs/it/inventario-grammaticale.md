@@ -81,6 +81,9 @@ strutture sono spezzate in schede.*
 **Voci singole, che non si spezzano:** genitivo sassone · present continuous *(solo la forma
 fissa)* · `I'd like`
 
+**E le regole della lingua**, che non sono strutture grammaticali e stanno in fondo al file:
+**R.1 nomi propri e traduzioni** ✅ *lavorata*
+
 **Utili al viaggio, poco presenti nelle liste standard:** `how much is/are` · `Excuse me` /
 `Sorry`
 
@@ -304,6 +307,66 @@ pronunciare** di tutti e venti: gruppi consonantici, il *th*, e l'accento in fon
 
 ---
 
+# REGOLE DELLA LINGUA
+
+*Non sono strutture grammaticali: sono **cose che l'inglese fa e l'italiano no**, o viceversa.
+Non si coniugano e non si applicano a parole nuove — **si sanno o non si sanno**.*
+
+*Stanno qui perché **vanno decise prima** come tutto il resto dell'inventario, e perché ognuna
+produce un episodio. **Il nome vale anche per lo studente**: `Torino` → `Turin` è una regola
+della lingua inglese, e chiamarla grammatica sarebbe scorretto.*
+
+---
+
+## R.1 — Nomi propri e traduzioni
+
+**Perché è in A1, e perché per prima:** l'episodio 1 la usa già senza dirlo. Lo studente sceglie
+`Torino` e nel dialogo sente `Turin`; sceglie `Marco` e sente `Marco`. **Senza questa scheda,
+quella differenza sembra un'incoerenza dell'app.**
+
+### Il disguido che previene
+
+> **Il receptionist all'estero ti chiamerà col tuo nome vero.**
+>
+> *Se hai imparato a presentarti come "Mark" perché qualcuno ti ha detto che Marco in inglese si
+> dice così, quando ti chiamano "Marco" **non rispondi**.*
+
+**È il tipo di errore che non si corregge da solo:** nessuno ti dice mai che stai sbagliando,
+perché chi ti sente pensa che tu ti chiami davvero così.
+
+### La regola, e le eccezioni che la rendono difficile
+
+| Cosa | Si traduce? | Esempi |
+|---|---|---|
+| **Nomi di persona** | **no** | Marco resta Marco · Giulia resta Giulia |
+| **Cognomi** | **no** | Costa, Ferrari, Barberis |
+| **Città** | **sì** | Torino → **Turin** · Milano → **Milan** · Napoli → **Naples** · Roma → **Rome** · Nizza → **Nice** |
+| **Paesi** | **sì** | Italia → **Italy** · Svizzera → **Switzerland** · Francia → **France** |
+| **Marchi e aziende** | **no** | PRETTE Airlines resta PRETTE Airlines |
+
+*Cinque esempi per tipologia, presi tutti dal magazzino della personalizzazione: **sono gli
+stessi che lo studente vedrà scegliendo**.*
+
+### Una scheda sola, e il contrasto è l'insegnamento
+
+*Nomi e toponimi seguono regole **opposte** — non si traducono / si traducono. **Insegnarle
+insieme è il punto**: separate, la seconda sembrerebbe contraddire la prima; affiancate, si
+capisce che sono due categorie diverse.*
+
+**E non si spezza oltre:** cinque righe non fanno cinque schede. *La regola c'è già nel criterio
+— non si spezza oltre il necessario, o gli esercizi restano senza materiale.*
+
+### Cosa NON ci va
+
+**Non tutte le città hanno una forma inglese.** Mondovì resta Mondovì, Lugano resta Lugano. *La
+regola non è "le città si traducono" ma **"alcune città hanno un nome inglese, e vanno saputo"**
+— è vocabolario, non una trasformazione da applicare.*
+
+**Va detto nella scheda**, altrimenti lo studente prova a inventare un nome inglese per la sua
+città e non ce l'ha.
+
+---
+
 # REGOLE IN SOSPESO
 
 *Ogni vincolo che ci imponiamo oggi diventa materiale per una lezione futura. Quando una regola
@@ -331,6 +394,7 @@ vera vive altrove.*
 | **Il taxi all'arrivo** | scheda 2.2 — `the` | un taxi solo, in contrasto con il carrello |
 | **Episodio grammaticale: il verbo essere** | schede 1.1, 1.2, 1.3 | va per primo, apre tre episodi |
 | **Episodio grammaticale: i numeri 1-20** | scheda 3.1 | **fra i primi** — l'episodio 1 li usa già per le età |
+| **Episodio: nomi propri e traduzioni** | scheda R.1 | **fra i primi** — l'episodio 1 la usa senza dirlo |
 | **Episodio trappola: l'articolo di troppo** | trappola 2.3 | dopo che `the` è stato usato qualche volta |
 
 *Queste scene sono registrate anche in `docs/it/obiettivi-a1.md`, accanto all'obiettivo che
