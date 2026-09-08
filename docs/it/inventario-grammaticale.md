@@ -82,7 +82,17 @@ strutture sono spezzate in schede.*
 fissa)* · `I'd like`
 
 **E le regole della lingua**, che non sono strutture grammaticali e stanno in fondo al file:
-**R.1 nomi propri e traduzioni** ✅ *lavorata*
+
+| | Scheda | Stato |
+|---|---|---|
+| **R.1** | Nomi propri e traduzioni | ✅ lavorata |
+| **R.2** | `you` vale *tu* e *voi* | ✅ lavorata — **episodio 2** |
+| **R.3** | L'inglese usa *essere* dove l'italiano usa *avere* | ✅ lavorata — *l'errore che dura più a lungo* |
+| **R.4** | Le forme contratte | ✅ lavorata — **assorbita dalla 1.1** |
+| **R.5** | Registro: due forme entrambe corrette | ✅ lavorata |
+| **R.6** | Espressioni che non si traducono a pezzi | ✅ lavorata |
+| **R.7** | L'ordine delle parole | ⚠️ un caso solo, **cresce con gli episodi** |
+| **R.8** | La *e* finale muta | ✅ lavorata — *non un episodio: un `pronunciationTip` ricorrente* |
 
 **Utili al viaggio, poco presenti nelle liste standard:** `how much is/are` · `Excuse me` /
 `Sorry`
@@ -312,6 +322,11 @@ pronunciare** di tutti e venti: gruppi consonantici, il *th*, e l'accento in fon
 *Non sono strutture grammaticali: sono **cose che l'inglese fa e l'italiano no**, o viceversa.
 Non si coniugano e non si applicano a parole nuove — **si sanno o non si sanno**.*
 
+> **Gli elenchi non stanno qui.** Le forme inglesi delle città, i paesi con le loro preposizioni,
+> i nomi con la doppia forma vivono in `APPLINGUE-riferimenti-lingua` e in
+> `docs/it/tabelle-personalizzazione.md`. **Qui c'è cosa si insegna, lì cosa si consulta** — e
+> il collegamento è un rimando, mai una copia.
+
 *Stanno qui perché **vanno decise prima** come tutto il resto dell'inventario, e perché ognuna
 produce un episodio. **Il nome vale anche per lo studente**: `Torino` → `Turin` è una regola
 della lingua inglese, e chiamarla grammatica sarebbe scorretto.*
@@ -364,6 +379,128 @@ regola non è "le città si traducono" ma **"alcune città hanno un nome inglese
 
 **Va detto nella scheda**, altrimenti lo studente prova a inventare un nome inglese per la sua
 città e non ce l'ha.
+
+---
+
+## R.2 — `you` vale *tu* e *voi*
+
+**Perché è in A1:** l'italiano ha due parole, l'inglese una. **Lo studente ne cerca due e ne
+trova una**, e resta col dubbio di aver capito male.
+
+**La regola:** `you` è **sempre** la stessa parola. *Non c'è una forma di cortesia, non c'è il
+plurale. Uno o venti, conosciuto o sconosciuto: sempre `you`.*
+
+**Esempi dalla storia:** l'hostess dice `And you?` alla mamma — **una persona**. Poi dice
+`Where are you going?` alla famiglia — **quattro persone**. **Stessa parola.**
+
+*Perché funziona: le due occorrenze sono nella stessa scena, a poche battute di distanza, e la
+differenza di destinatario si vede.*
+
+**Il rovescio, che va detto:** in inglese non esiste il *lei*. **Non è che manchi la cortesia —
+è che si esprime altrove**, con `please`, `could you`, il tono. *Uno studente italiano che non
+lo sa teme di essere maleducato ogni volta che dice `you`.*
+
+**Va con l'episodio 2**, dove la battuta d10 la contiene.
+
+## R.3 — L'inglese usa *essere* dove l'italiano usa *avere*
+
+**Perché è in A1, e perché è la più importante:** è l'errore che **dura più a lungo** di tutti.
+
+> **`I have ten years`** — la frase che un italiano dice per anni senza che nessuno lo corregga.
+
+**La regola:** per l'età l'inglese usa **il verbo essere**. *Letteralmente: "io **sono** dieci".*
+
+**Esempi dalla storia:**
+
+> `I'm sixteen years old.` · `I'm ten.` — le due forme dell'episodio 1
+
+**La conseguenza da prevenire**, ed è quella che rende la scheda necessaria:
+
+> *Chi impara solo `I'm ten` senza capire la struttura, al ristorante risponderà **`we are
+> three`** alla domanda "quanti siete" — dicendo di avere tre anni.*
+
+**È la stessa famiglia di `I come from`:** l'italiano dice *vengo da*, l'inglese `I am from`.
+Non è sbagliato dire `I come from`, ma è meno naturale — **e nasce dallo stesso riflesso**:
+tradurre il verbo invece della struttura.
+
+**Nell'episodio 1 la skill 7 la previene già.** La scheda la apre; l'episodio trappola arriva
+dopo, quando lo studente ha avuto occasione di sbagliare.
+
+## R.4 — Le forme contratte
+
+**Perché è in A1:** `I'm`, `you're`, `it's` **sono quello che si sente davvero**. Chi impara
+solo la forma estesa capisce metà di quello che gli dicono.
+
+**La regola:** *la contratta arriva sempre **dopo** l'estesa.* Prima si capisce cosa c'è dentro,
+poi si impara a dirlo corto.
+
+| Estesa | Contratta | Nota |
+|---|---|---|
+| `I am` | `I'm` | **eccezione consapevole**: nel parlato è talmente dominante da essere di fatto la forma normale. *Nell'episodio 1 compaiono entrambe, distinte per personaggio* |
+| `we are` | `we're` | dopo che `we are` è consolidato |
+| `going to` | `gonna` | **mai insegnata**: si segnala solo che nel parlato veloce suona così |
+
+**Esempi dalla storia:** i genitori dicono `I am`, i figli `I'm`. *Una sola distinzione di
+registro che spiega due cose insieme.*
+
+**Assorbita dalla scheda 1.1** del verbo essere, che le insegna insieme alla coniugazione.
+
+## R.5 — Registro: quando due forme sono entrambe corrette
+
+**Perché serve una scheda e non una nota:** *uno studente cerca la forma **giusta** e teme quella
+**sbagliata**. Senza chiarimento, deduce che una delle due sia un errore.*
+
+| Più formale | Più informale | |
+|---|---|---|
+| `Hello` | `Hi` | entrambi corretti. **`Hello` va bene sempre, con chiunque** |
+| `I am` | `I'm` | idem |
+
+**La regola per le skill, che vale ovunque:** *quando due forme sono entrambe corrette **va detto
+esplicitamente**.*
+
+**Esempi dalla storia:** i genitori dicono `Hello`, i figli `Hi`. **La scena lo mostra senza
+spiegarlo.**
+
+## R.6 — Espressioni che non si traducono parola per parola
+
+**Perché è in A1:** sono le prime che lo studente incontra, e **tradurle a pezzi produce
+sciocchezze**.
+
+| Inglese | Italiano | Nota |
+|---|---|---|
+| `nice to meet you` | Piacere di conoscerti/vi | **solo al primo incontro**. Dalla seconda volta basta `Hello` |
+| `and you?` | E tu? / E voi? | rimanda la domanda precedente senza ripeterla |
+| `years old` | ... anni | l'italiano ha *anni*, l'inglese *years old* — **ma esiste anche la forma senza** |
+
+**La regola:** *si imparano intere, e la traduzione parola per parola non si prova nemmeno.*
+
+**È il criterio del grado B** (regola 2.5): quello che **si produce intero** invece di
+costruirsi.
+
+## R.7 — L'ordine delle parole
+
+**Perché è in A1:** l'inglese mette prima quello che l'italiano mette dopo, e **succede subito**.
+
+| Inglese | Italiano |
+|---|---|
+| `the {cognome} family` | la famiglia {cognome} |
+
+**Il cognome va prima di `family`.** *È la skill 8 dell'episodio 1.*
+
+**Da lavorare:** questa scheda oggi ha un caso solo. **Cresce con gli episodi**, e quando avrà
+tre o quattro casi diventa una scheda vera — *aggettivo prima del nome, il possessivo, le
+domande*. Per ora è un promemoria di dove si accumula.
+
+## R.8 — La *e* finale non si legge quasi mai
+
+**Perché è in A1:** `nice`, `where`, `Rome`, `Turin`... **la vocale finale muta è ovunque**, dal
+primo episodio.
+
+**La regola:** *la `e` alla fine di una parola quasi mai si pronuncia. **Spesso serve solo a
+cambiare il suono della vocale prima**.*
+
+**È una regola trasversale, da richiamare spesso invece che spiegare una volta.** *Non produce
+un episodio suo: produce un `pronunciationTip` ricorrente.*
 
 ---
 
