@@ -4,14 +4,14 @@
 > inglese, congelato, con la stessa regola dell'episodio 1.
 > **Titolo mostrato allo studente:** *Sulla porta dell'aereo*.
 >
-> ⚠️ **LAVORO IN CORSO — arrivato al passo 10 degli undici.**
->
-> **Fatti tutti** tranne il JSON *(passo 11)*, che spetta a Claude Code.
+> ✅ **PRONTO PER LA TRASCRIZIONE.** *Fatti tutti i passi tranne il JSON, che spetta a Claude
+> Code.*
 >
 > **Numeri attesi:** 12 voci nel grado A, 6 in B, 5 in C, 9 battute in D, 8 skill, 1 slot.
+> **Se i conti non tornano, fermarsi e segnalarlo.**
 >
-> ⚠️ **Non trascrivere ancora:** l'episodio 1 va rifatto prima, perché il criterio del grado A è
-> cambiato (regola 2.16) e i suoi numeri scendono. **I due episodi si allineano insieme.**
+> **Va trascritto nello stesso commit di `episodio-1.md`**, che è stato rifatto l'8 settembre con
+> il criterio nuovo del grado A: i due file si allineano insieme.
 >
 > Convenzione: diventerà `docs/it/episodio-2.md`.
 
@@ -144,8 +144,8 @@ Sono nella tabella del passo 3. **Una scelta da segnalare:**
 
 ## PASSO 7 — Le skill
 
-*Sette skill su sei battute: d1 ne porta due. **Tre battute non hanno skill** — d2, d6, d8 —
-perché non c'è niente da spiegare.*
+*Otto skill su sette battute: d1 ne porta due. **Due battute non hanno skill** — d6 e d8 — perché
+sono due `Thank you` e non c'è niente da spiegare.*
 
 **1 — su d1 `Good morning!` — Buongiorno** *(facile)*
 > `Good morning` si usa fino a mezzogiorno, poi diventa `good afternoon`, e dalla sera `good evening`.
@@ -157,27 +157,33 @@ perché non c'è niente da spiegare.*
 > "Aboard" significa "a bordo": vale per aerei, navi, treni.
 > Lo sentirai spesso: "Welcome to London", "Welcome to our hotel". **La formula è sempre "welcome to" più il posto** — tranne "aboard", che va da solo.
 
-**3 — su d3 `Here they are.` — Eccoli** *(facile)*
+**3 — su d2 `Your tickets, please.` — Please** *(facile)*
+> "Please" vuol dire "per favore", e si mette **alla fine** della richiesta: "Your tickets, please", "Coffee, please".
+> In italiano lo diciamo spesso all'inizio — "per favore, i biglietti" — in inglese quasi sempre in fondo.
+> È la parola che rende gentile qualsiasi richiesta. Senza, "your tickets" suona come un ordine.
+
+**4 — su d3 `Here they are.` — Eccoli** *(facile)*
 > Si dice quando dai qualcosa a qualcuno, o quando la cosa che cercavi salta fuori.
 > Se è una cosa sola: "Here it is". Se sono più d'una: "Here they are".
 > I biglietti sono quattro, quindi "they".
 
-**4 — su d4 `She is my wife.` — He is, she is** *(facile)*
+**5 — su d4 `She is my wife.` — He is, she is** *(facile)*
 > Conosci già "I am" e "we are". Quando parli di **un'altra persona** il verbo diventa "is": "he is" per un uomo, "she is" per una donna.
 > Anche qui il pronome non si può saltare: non esiste dire "is my wife".
 > E nota "my": vuol dire "mio, mia". Ne esistono altri — li vedrai poi.
 
-**5 — su d5 `She is my daughter, he is my son.` — La famiglia** *(facile)*
+**6 — su d5 `She is my daughter, he is my son.` — La famiglia** *(facile)*
 > "Wife" è la moglie, "daughter" la figlia, "son" il figlio.
 > Attenzione a "son": si dice **san**, non "son" come lo leggeresti in italiano.
 > Il papà dice queste tre parole perché è lui che parla. **La mamma direbbe "husband" per il marito, e i figli direbbero "mother" e "father"** — le imparerai quando toccherà a loro.
 
-**6 — su d7 `This way, please.` — Indicare la direzione** *(facile)*
+**7 — su d7 `This way, please.` — Indicare la direzione** *(facile)*
 > "This way" vuol dire "da questa parte", ed è il modo normale di indicare dove andare.
 > Nota che non c'è nessuna preposizione: non si dice "in this way" né "to this way". **Due parole e basta.**
-> E "please" qui non è "per favore": in italiano diventa **"prego"**. È la stessa parola con due significati — la ritroverai ancora.
+> E attenzione a "please": qui **non è "per favore"**. L'hostess non ti sta chiedendo niente, ti sta invitando — in italiano diventa **"prego"**.
+> **Stessa parola, due significati**, e li hai visti tutti e due in questo dialogo: "your tickets, please" era una richiesta, "this way, please" è un invito. Ne ha ancora due, e li vedrai.
 
-**7 — su d9 `Enjoy your flight!` — Qui il dialogo finisce** *(facile)*
+**8 — su d9 `Enjoy your flight!` — Qui il dialogo finisce** *(facile)*
 > "Enjoy your flight" vuol dire "buon volo", e la sentirai in mille versioni: "enjoy your meal", "enjoy your stay", "enjoy your day".
 > **Una cosa importante: qui la conversazione è finita.** In italiano risponderemmo — "grazie, altrettanto" — ma in inglese questa formula **chiude da sé**. Chi la riceve sorride e passa.
 > Non è maleducazione: è che la frase è già un saluto.
