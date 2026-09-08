@@ -41,11 +41,19 @@ const ESCLUDI_DESCRIZIONI = true;
 
 // Chiavi che NON sono lette da nessuno e va bene così. Ognuna con il motivo
 // scritto: un'eccezione senza motivo è un'eccezione che nessuno oserà togliere.
-const ECCEZIONI = {
-  'places.destinations':
-    'Magazzino dei paesi, in attesa dell\'episodio 2. Da rivedere: Francia, ' +
-    'Germania e Spagna escono, origine e destinazione non coincidono mai.'
-};
+// Vuoto, e va tenuto vuoto finché non serve davvero.
+//
+// Conteneva 'places.destinations': un magazzino di paesi che nessuno nominava,
+// in attesa dell'episodio 2. L'attesa è finita il 2026-09-08 —
+// data/it/a1-episodio2-inglese.json dichiara lo slot `destinazione` con
+// `table: "places.destinations"` — e la chiave è tornata viva.
+//
+// La riga non è stata tolta a mano: **è stato questo test a chiederlo**.
+// L'asserzione "nessuna eccezione superflua" è diventata rossa da sola nella
+// suite, ed è la metà che si dimentica di scrivere: senza, un'eccezione
+// dichiarata una volta resta lì per sempre e copre in silenzio la chiave che
+// un giorno muore davvero.
+const ECCEZIONI = {};
 
 // Toglie il blocco configFieldDescriptions dal testo. Le graffe si contano
 // invece di cercare la chiusura a occhio: il blocco non è per sempre l'ultima
