@@ -71,11 +71,25 @@ misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli
 ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
 tutto è in `main`.
 
-**Fase 1: i passi 1 e 2 sono fatti e verificati. I passi 3 e 4 sono scritti
-insieme e in attesa della suite.** Se questa sessione cade adesso, l'albero ha
-le due rinomine ma non la loro verifica: si rilancia la suite completa prima di
-qualunque altra cosa. Il prossimo dopo di loro è il **passo 5**, quello che **non
-si interrompe** — non va cominciato senza una sessione intera davanti. Un passo per volta, con la fermata in mezzo, e non
+**Fase 1: i passi 1 e 2 sono fatti e verificati. I passi 3 e 4 sono scritti e
+BLOCCATI su una decisione di chi guida il progetto.**
+
+Il codice è a posto: suite **41 file su 42 verdi**, conteggio **933 come il
+baseline**. L'unico rosso è `test_struttura_corso.js`, e non è un difetto del
+codice: la tabella «Ordine attuale — 22 passaggi» di
+`docs/it/struttura-corso.md` nomina ancora `quickMatchEngIta`,
+`quickMatchItaEng`, `speedRoundEngIta`, `speedRoundItaEng`, e quel test
+confronta proprio quella tabella con `CONFIG.sequences`.
+
+**Otto celle da cambiare in un file di contenuto** (righe 68, 69, 73, 74, 78,
+79, 84, 85) — regola 33: non si tocca di iniziativa. Il rosso è il test che fa
+il suo mestiere, non un guasto.
+
+**Finché quelle otto celle non cambiano, i passi 3 e 4 NON confluiscono in
+`main`.** Restano su `claude/verifica-in-corso`, commit `38e4164`.
+
+Il prossimo dopo di loro è il **passo 5**, quello che **non si interrompe** —
+non va cominciato senza una sessione intera davanti. Un passo per volta, con la fermata in mezzo, e non
 si comincia senza il via di chi guida il progetto.
 
 *Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
