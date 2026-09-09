@@ -2122,7 +2122,20 @@
     font-size: 1.1rem;
   }
 
-  .repeat-item-audio {
+  /* Il Blocco Ascolto: il pulsante "ascolta" e le velocita', un pezzo solo.
+     Il markup lo produce renderListenBlock() e il tocco lo gestisce
+     speakListenBlock() — qui c'e' solo come si dispone. Fino al 2026-09-09
+     queste due classi si chiamavano repeat-item-audio e repeat-listen-btn:
+     il prefisso del primo modulo che le aveva introdotte, Repeat Aloud,
+     rimasto addosso a un pezzo che nel frattempo usavano in sei
+     (CLAUDE.md regola 18).
+
+     I nomi vecchi sono scritti qui SENZA il punto davanti, ed e' voluto:
+     test_blocco_ascolto.js cerca la forma con il punto o con la virgoletta —
+     cioe' il nome in POSIZIONE D'USO, un selettore o un attributo class — per
+     accorgersi se tornano vivi. Nominarli in prosa, come qui, non deve far
+     fallire quel test: la memoria di un nome tolto non e' il nome tolto. */
+  .listen-block {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -2130,7 +2143,37 @@
     justify-content: flex-end;
   }
 
-  .repeat-listen-btn.speaking { border-color: var(--accent); color: var(--accent); }
+  .listen-block-btn.speaking { border-color: var(--accent); color: var(--accent); }
+
+  /* Lo spegnimento condiviso. "Bloccato" vuol dire UNA cosa sola — inerte al
+     dito — e vuol dire la stessa cosa nelle due varianti dello Sblocco
+     Sequenziale (regola 30) e nel dim temporaneo del Dialogo.
+
+     Quello che NON si unifica e' l'aspetto, ed e' voluto: il Dialogo sbiadisce
+     tutta la bolla perche' li' "bloccato" dice solo "non ancora"; Why We Say It
+     tiene leggibile il titolo della regola che aspetta, perche' li' far vedere
+     cosa aspetta invoglia ad andare avanti. Uguali nel comportamento, diversi
+     nel disegno, perche' dicono due cose diverse — unificarli sarebbe l'errore
+     opposto di quello che questa classe corregge.
+
+     E NON e' qui che il blocco vive: pointer-events e' una difesa cosmetica,
+     un click sintetico la attraversa. Il blocco vero sta nella funzione che
+     esegue (regola 20) — la guardia in cima al gestore di Why We Say It e
+     dgHandleBubbleTap nel Dialogo. Questa riga serve a farlo VEDERE. */
+  .is-tap-locked {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* Dentro qualcosa di bloccato, il Blocco Ascolto si spegne con il resto.
+     Senza questa riga restava a opacita' piena in una card sbiadita: l'audio
+     non partiva (la guardia funzionava) ma il pulsante cambiava sotto il dito
+     ed era la cosa piu' viva di una card morta. */
+  .is-tap-locked .listen-block,
+  .is-tap-locked .listen-block-btn,
+  .is-tap-locked .rate-group {
+    opacity: 0.45;
+  }
 
   .rate-group {
     display: flex;
@@ -2776,7 +2819,7 @@
     min-width: 0;
   }
 
-  .qm-option-row .repeat-listen-btn {
+  .qm-option-row .listen-block-btn {
     flex-shrink: 0;
   }
 
@@ -2923,10 +2966,10 @@
     box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 60%, transparent);
   }
 
+  /* L'inerzia non sta piu' qui: la porta .is-tap-locked, che dgApplyBubbleLock
+     aggiunge insieme a questa classe. Qui resta solo l'aspetto. */
   .dg-bubble.is-locked {
     opacity: 0.4;
-    pointer-events: none;
-    cursor: not-allowed;
   }
 
   /* Ripeti a Tempo/Dialogo Continuo only: the per-line countdown bar
@@ -2981,8 +3024,6 @@
      We Say It (vedi .wws-card.is-ahead e storyCardsRefreshExplanationStates). */
   .dg-bubble.is-ahead-locked {
     opacity: 0.35;
-    pointer-events: none;
-    cursor: not-allowed;
   }
 
   /* ---------- speed match view ---------- */
@@ -3254,12 +3295,12 @@
      ink paired with --primary specifically (not --accent-ink, which
      pairs with --accent and can be the wrong contrast against
      --primary in some themes) — so they stay legible on every theme. */
-  .fc-card-face .repeat-listen-btn {
+  .fc-card-face .listen-block-btn {
     color: var(--primary-ink);
     border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent);
   }
 
-  .fc-card-face .repeat-listen-btn:hover:not(:disabled) {
+  .fc-card-face .listen-block-btn:hover:not(:disabled) {
     border-color: var(--primary-ink);
     color: var(--primary-ink);
     opacity: 0.85;
@@ -3662,7 +3703,7 @@
             <button type="button" class="translation-toggle" id="vc-pronunciation-toggle" hidden>Mostra pronuncia</button>
             <p class="vc-pronunciation" id="vc-pronunciation" hidden></p>
 
-            <div class="repeat-item-audio vc-audio-row" id="vc-audio-controls"></div>
+            <div class="listen-block vc-audio-row" id="vc-audio-controls"></div>
 
             <div class="vc-mic-area">
               <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
@@ -3799,7 +3840,7 @@
             <p class="sr-direction" id="qm-direction"></p>
 
             <div class="sr-prompt panel" id="qm-prompt"></div>
-            <div class="repeat-item-audio" id="qm-prompt-audio" hidden></div>
+            <div class="listen-block" id="qm-prompt-audio" hidden></div>
 
             <div class="sr-options" id="qm-options"></div>
 
@@ -4047,11 +4088,11 @@
               <div class="fc-card-inner" id="fc-card-inner">
                 <div class="fc-card-face fc-card-front">
                   <div class="fc-card-word" id="fc-front-word"></div>
-                  <div class="repeat-item-audio" id="fc-front-audio"></div>
+                  <div class="listen-block" id="fc-front-audio"></div>
                 </div>
                 <div class="fc-card-face fc-card-back">
                   <div class="fc-card-word" id="fc-back-word"></div>
-                  <div class="repeat-item-audio" id="fc-back-audio"></div>
+                  <div class="listen-block" id="fc-back-audio"></div>
                 </div>
               </div>
             </div>
@@ -6767,6 +6808,66 @@
     }).join('');
   }
 
+  /* ============================================================
+     IL BLOCCO ASCOLTO — un pezzo solo (CLAUDE.md regole 11, 13, 18)
+
+     Il pulsante "ascolta" piu' le velocita'. Lo mostrano sei moduli
+     (Repeat Aloud, Why We Say It, Voice Practice, Voice Check, Match
+     Practice nelle due direzioni, Flash Card sulle due facce) e fino al
+     2026-09-09 il suo markup era RICOPIATO A MANO in sette punti, con la
+     coda del gestore del tocco ricopiata in altri cinque. Solo
+     renderRateButtons era condivisa.
+
+     Cosa costava: ogni correzione al Blocco Ascolto andava fatta sette
+     volte, e bastava dimenticarne una perche' un modulo restasse diverso
+     dagli altri senza che nessun test potesse accorgersene — ogni modulo
+     passa i propri test mentre e' diverso dal vicino. Il difetto che l'ha
+     fatto emergere: dentro una card bloccata di Why We Say It il pulsante
+     restava a opacita' piena e reagiva al dito, perche' "bloccato" non
+     aveva un aspetto in NESSUN punto — non c'era un posto dove disegnarlo
+     una volta sola.
+
+     Due forme, e restano due perche' dicono due cose diverse:
+       - piena — pulsante + velocita', dentro un contenitore .listen-block;
+       - mini  — il solo pulsante, per le opzioni di Match Practice it->en
+         (il codice la chiamava gia' "Mini Blocco Ascolto"). Li' il testo e'
+         un'OPZIONE di risposta, non una voce del file episodio, quindi non
+         si risolve per id: porta data-qm-listen-index e non data-say, e il
+         gestore delle opzioni lo intercetta prima di leggere una risposta.
+
+     Il contenitore non lo emette questa funzione quando esiste gia' nel
+     markup statico (#vc-audio-controls, #qm-prompt-audio, #fc-front-audio,
+     #fc-back-audio portano gia' .listen-block): chi ce l'ha lo riusa, chi
+     costruisce le proprie righe a runtime chiede blocco: true.
+     ============================================================ */
+
+  // opts: { say, mini, blocco, extraClass }
+  //   say        — l'identificatore che finisce nell'attributo del tocco
+  //   mini       — solo il pulsante, senza le velocita'
+  //   blocco     — avvolge in <div class="listen-block">, per chi non ce l'ha
+  //   extraClass — classi in piu' sul contenitore
+  function renderListenBlock(opts) {
+    var o = opts || {};
+    var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
+    var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
+      attr + '="' + o.say + '" aria-label="Ascolta">' + icon('volume-2') + '</button>';
+    if (o.mini) return bottone;
+    var dentro = bottone +
+      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(o.say) + '</div>';
+    if (!o.blocco) return dentro;
+    return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
+  }
+
+  // Il tocco su un Blocco Ascolto. Il testo NON lo decide questa funzione: e'
+  // l'unica cosa che varia davvero fra i sei moduli — una ricerca nel file
+  // episodio, vcTargetText(), fcBackText(), l'opzione corrente — quindi lo
+  // risolve chi chiama e lo passa. Qui sta il resto, che era identico in
+  // cinque punti: leggere la velocita' dal pulsante e parlare.
+  function speakListenBlock(btn, testo) {
+    var rateAttr = btn.getAttribute('data-rate');
+    toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+  }
+
   function renderRepeatAloud(data) {
     var ruleHtml = data.generalRule
       ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
@@ -6775,10 +6876,7 @@
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
         '<span class="repeat-item-english">' + itemText(item, 'en') + '</span>' +
-        '<div class="repeat-item-audio">' +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + item.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(item.id) + '</div>' +
-        '</div>' +
+        renderListenBlock({ say: item.id, blocco: true }) +
         '</div>' +
         '<span class="repeat-item-italian">' + itemText(item, 'it') + '</span>' +
         '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
@@ -6939,13 +7037,12 @@
     var data = episodeDataCache[currentRepeatAloudModule.dataFile];
     var item = data && episodeGrade(data, currentRepeatAloudModule.grade).find(function (it) { return it.id === btn.getAttribute('data-say'); });
     if (!item) return;
-    var rateAttr = btn.getAttribute('data-rate');
     // Correction (5th collaudo): job 1 (4th collaudo) locked every other
     // control here, but this module has no countdown to desync — free
     // browsing (tap any word, any order, any time) is the intended
     // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
     // handles switching between words safely on its own.
-    toggleSpeak(itemText(item, 'en'), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    speakListenBlock(btn, itemText(item, 'en'));
   });
 
   document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
@@ -7180,10 +7277,7 @@
         '<p class="wws-italian" id="chat-italian-' + line.id + '">' + italian + '</p>' +
         // Il Blocco Ascolto sta DENTRO la bolla, sotto la frase che fa
         // ascoltare: staccato sotto sembrava un elemento a sé.
-        '<div class="repeat-item-audio">' +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>' +
-        '</div>' +
+        renderListenBlock({ say: line.id, blocco: true }) +
         '</div>' +
         '</div>' +
         noRuleHtml +
@@ -7266,6 +7360,15 @@
       var isAhead = storyCardsCardIndex(cardId) > storyCardsCurrentCardIndex();
       card.classList.toggle('is-current', cardId === currentCard);
       card.classList.toggle('is-ahead', isAhead);
+      // .is-ahead dice come si VEDE una card bloccata, .is-tap-locked dice che
+      // non risponde al dito — ed e' la stessa classe che usa il Dialogo, cosi'
+      // "bloccato" si comporta uguale nelle due varianti dello Sblocco
+      // Sequenziale (regola 30). L'aspetto invece resta diverso apposta: qui il
+      // titolo della regola che aspetta deve restare leggibile.
+      // Sta sulla CARD e non sulla singola regola: una regola non ancora
+      // raggiunta dentro la card CORRENTE non deve spegnere il Blocco Ascolto
+      // di quella card, che si ascolta eccome.
+      card.classList.toggle('is-tap-locked', isAhead);
       var stateEl = document.getElementById('wws-state-' + cardId);
       if (!stateEl) return;
       // Una card senza regole non ha niente da dichiarare, ma scorrendo,
@@ -7404,11 +7507,9 @@
       var data = episodeDataCache[currentStoryCardsModule.dataFile];
       var line = data && episodeGrade(data, currentStoryCardsModule.grade).find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
       if (!line) return;
-      var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
-      var rateAttr = listenBtn.getAttribute('data-rate');
       // Correction (5th collaudo): see Repeat Aloud's own comment — no
       // countdown here either, free tapping is the intended behavior.
-      toggleSpeak(english, listenBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      speakListenBlock(listenBtn, fillTemplate(line.english, currentEpisode, currentValues, 'en'));
       return;
     }
     // Risposta al self-check. Registra la dichiarazione nel set di lavoro
@@ -7923,9 +8024,7 @@
     pronToggle.textContent = 'Mostra pronuncia';
     pronEl.textContent = line.pronunciationTip || '';
     pronEl.hidden = true;
-    document.getElementById('vc-audio-controls').innerHTML =
-      '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="' + line.id + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(line.id) + '</div>';
+    document.getElementById('vc-audio-controls').innerHTML = renderListenBlock({ say: line.id });
     document.getElementById('vc-feedback').innerHTML = '';
     document.getElementById('vc-transcript').innerHTML = '';
     document.getElementById('vc-stars').innerHTML = '';
@@ -8207,13 +8306,12 @@
   document.getElementById('vc-audio-controls').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-say]');
     if (!btn) return;
-    var rateAttr = btn.getAttribute('data-rate');
     // Correction (5th collaudo): no countdown here — Spiegazione, Help,
     // Avanti, Riprova and Record all stay clickable while the model
     // audio plays (job 1, 4th collaudo, over-applied the lock here).
     // Record keeps its own guard below (mic bleed), just as a
     // stop-on-touch instead of a block.
-    toggleSpeak(vcTargetText(), btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    speakListenBlock(btn, vcTargetText());
   });
 
   document.getElementById('vc-record-btn').addEventListener('click', function () {
@@ -8519,9 +8617,7 @@
     var audioEl = document.getElementById('qm-prompt-audio');
     if (qmDirection === 'en-it') {
       audioEl.hidden = false;
-      audioEl.innerHTML =
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="prompt" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('prompt') + '</div>';
+      audioEl.innerHTML = renderListenBlock({ say: 'prompt' });
     } else {
       audioEl.hidden = true;
       audioEl.innerHTML = '';
@@ -8535,7 +8631,7 @@
       // button (see .qm-option-row) — data-qm-listen-index keeps this
       // click target distinct from the answer button it sits next to.
       return '<div class="qm-option-row">' +
-        '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-qm-listen-index="' + i + '" aria-label="Ascolta">' + icon('volume-2') + '</button>' + optionBtn + '</div>';
+        renderListenBlock({ say: i, mini: true }) + optionBtn + '</div>';
     }).join('');
   }
 
@@ -8662,7 +8758,7 @@
     var listenBtn = e.target.closest('[data-qm-listen-index]');
     if (listenBtn) {
       var listenOpt = qmCurrentOptions[parseInt(listenBtn.getAttribute('data-qm-listen-index'), 10)];
-      if (listenOpt) toggleSpeak(listenOpt.text, listenBtn);
+      if (listenOpt) speakListenBlock(listenBtn, listenOpt.text);
       return;
     }
     var btn = e.target.closest('.sr-option');
@@ -8688,12 +8784,11 @@
   document.getElementById('qm-prompt-audio').addEventListener('click', function (e) {
     var say = e.target.closest('[data-say]');
     if (!say) return;
-    var rateAttr = say.getAttribute('data-rate');
     // Correction (5th collaudo): no countdown here — answering while the
     // prompt reads isn't blocked, it stops the prompt (see the
     // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
     // which stays).
-    toggleSpeak(itemText(qmCurrentItem, 'en'), say, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+    speakListenBlock(say, itemText(qmCurrentItem, 'en'));
   });
 
   document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
@@ -8876,6 +8971,7 @@
     if (translationsToggle) translationsToggle.disabled = disable;
     document.querySelectorAll('#dg-list .dg-bubble').forEach(function (b) {
       b.classList.toggle('is-locked', disable && b !== activeBubble);
+      b.classList.toggle('is-tap-locked', disable && b !== activeBubble);
       b.classList.toggle('is-active', locked && b === activeBubble);
     });
     // While a line is actively playing WITH a countdown behind it, the
@@ -8953,11 +9049,12 @@
   function dgApplySequenceLock() {
     var bubbles = document.querySelectorAll('#dg-list .dg-bubble');
     if (dgProfile.advance !== 'manual') {
-      bubbles.forEach(function (b) { b.classList.remove('is-ahead-locked'); });
+      bubbles.forEach(function (b) { b.classList.remove('is-ahead-locked'); b.classList.remove('is-tap-locked'); });
       return;
     }
     bubbles.forEach(function (b, i) {
       b.classList.toggle('is-ahead-locked', i > dgFurthestIndex + 1);
+      b.classList.toggle('is-tap-locked', i > dgFurthestIndex + 1);
     });
   }
 
@@ -10050,15 +10147,9 @@
     var frontAudioEl = document.getElementById('fc-front-audio');
     var backAudioEl = document.getElementById('fc-back-audio');
     frontAudioEl.hidden = !frontIsEnglish;
-    frontAudioEl.innerHTML = frontIsEnglish
-      ? '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="front" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('front') + '</div>'
-      : '';
+    frontAudioEl.innerHTML = frontIsEnglish ? renderListenBlock({ say: 'front' }) : '';
     backAudioEl.hidden = frontIsEnglish;
-    backAudioEl.innerHTML = !frontIsEnglish
-      ? '<button type="button" class="btn btn-secondary btn-sm repeat-listen-btn" data-say="back" aria-label="Ascolta">' + icon('volume-2') + '</button>' +
-        '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons('back') + '</div>'
-      : '';
+    backAudioEl.innerHTML = !frontIsEnglish ? renderListenBlock({ say: 'back' }) : '';
     fcShowChoice(false);
     // The data load runs in the background regardless of the intro screen
     // (see openFlashcard) — don't let it jump past an intro still pending
@@ -10223,12 +10314,10 @@
     if (sayBtn) {
       e.stopPropagation();
       var isBack = !!e.target.closest('.fc-card-back');
-      var text = isBack ? fcBackText() : fcFrontText();
-      var rateAttr = sayBtn.getAttribute('data-rate');
       // Correction (5th collaudo): no countdown here — Sì/Non ancora
       // (their own click handlers below) stop the card's audio on touch
       // instead of being locked out during it.
-      toggleSpeak(text, sayBtn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+      speakListenBlock(sayBtn, isBack ? fcBackText() : fcFrontText());
       return;
     }
     fcFlip();

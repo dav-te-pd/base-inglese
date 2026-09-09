@@ -155,7 +155,7 @@ async function run() {
     await bootAsUser(page, 'T17Job1b', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(200);
-    const listenBtn = await page.$('#repeat-aloud-body .repeat-listen-btn, #repeat-aloud-body [data-say]');
+    const listenBtn = await page.$('#repeat-aloud-body .listen-block-btn, #repeat-aloud-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
     await page.waitForTimeout(100);
     const stateDuring = await page.evaluate(() => ({

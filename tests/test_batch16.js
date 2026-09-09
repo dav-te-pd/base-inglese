@@ -288,7 +288,7 @@ async function run() {
     await openModule(page, 'flashcardAEngIta');
     await page.waitForTimeout(200);
     // Start the front-of-card audio (en-it direction -> front is english, has a listen button).
-    const listenBtn = await page.$('#fc-front-audio .repeat-listen-btn');
+    const listenBtn = await page.$('#fc-front-audio .listen-block-btn');
     if (listenBtn) { await listenBtn.click(); }
     await page.waitForTimeout(100);
     const speakingBeforeFlip = await page.evaluate(() => window.speechSynthesis.speaking);

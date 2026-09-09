@@ -105,7 +105,7 @@ async function run() {
     log('Eng-Ita has NO "Mostra traduzione" button @' + viewport.w, !translationBtn);
 
     // Click the listen icon to make sure toggleSpeak wiring doesn't throw.
-    await page.click('#qm-prompt-audio .repeat-listen-btn');
+    await page.click('#qm-prompt-audio .listen-block-btn');
     await page.waitForTimeout(80);
 
     async function optionButtons() {
@@ -204,10 +204,10 @@ async function run() {
 
     const optionRows = await page.$$('.qm-option-row');
     log('Ita-Eng renders 4 .qm-option-row (option + mini listen) @' + viewport.w, optionRows.length === 4);
-    const miniListenBtns = await page.$$('.qm-option-row .repeat-listen-btn');
+    const miniListenBtns = await page.$$('.qm-option-row .listen-block-btn');
     log('Ita-Eng has 4 mini listen buttons @' + viewport.w, miniListenBtns.length === 4);
 
-    const firstMiniBtn = await page.$('.qm-option-row .repeat-listen-btn');
+    const firstMiniBtn = await page.$('.qm-option-row .listen-block-btn');
     await firstMiniBtn.click();
     await page.waitForTimeout(150);
     const stillEnabled = await page.evaluate(() => {

@@ -295,7 +295,7 @@ function readState(page) {
       rispostaDisabilitata: Array.from(document.querySelectorAll('[data-story-cards-answer]')).filter(b => b.disabled).length,
       spunteConTesto: Array.from(document.querySelectorAll('.story-cards-declared')).filter(el => el.textContent.trim().length > 0).length,
       // Il Blocco Ascolto e la traduzione stanno DENTRO la bolla.
-      audioNellaBolla: document.querySelectorAll('.wws-bubble .repeat-item-audio').length,
+      audioNellaBolla: document.querySelectorAll('.wws-bubble .listen-block').length,
       sceltoColore: (() => { const b = document.querySelector('.story-cards-selfcheck-actions .btn.is-chosen'); return b ? getComputedStyle(b).backgroundColor : null; })(),
       accento: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
       spunteCard: Array.from(document.querySelectorAll('.wws-state.is-done')).filter(el => el.getClientRects().length > 0).map(el => el.id),
