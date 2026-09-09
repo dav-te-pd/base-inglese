@@ -262,16 +262,24 @@ colonna "Chi" della matrice, che descrive **chi parla nella scena** e serve a no
 
 | Personaggio *(colonna "Chi")* | Etichetta a schermo |
 |---|---|
-| Hostess al gate | **Hostess** |
+| Hostess al gate | **Hostess al gate** |
 | Papà | **Papà** |
 | Mamma | **Mamma** |
 | Figlia | **Figlia** |
 | Figlio | **Figlio** |
 | Tutti | **Tutti** |
 
-> **Perché sono due cose e non una.** *"Hostess al gate" dice **quale** hostess è — serve a noi
-> per non confonderla con quella della porta dell'aereo. **Sopra una bolla sarebbe troppo
-> lunga**, e lo studente non ha bisogno di sapere dove sta: lo vede dalla scena.*
+> **L'etichetta PORTA il contorno, ed è la ragione per cui esiste.** *Fra l'hostess del gate,
+> quella della porta dell'aereo, quella del carrello e quella del caffè, senza il contorno sono
+> tutte la stessa persona — che è falso, e toglie proprio quello che rende la storia una storia.*
+>
+> ⚠️ **Questa riga diceva il contrario fino al 2026-09-09**, e l'argomento era che "sopra una
+> bolla sarebbe troppo lunga, e lo studente non ha bisogno di sapere dove sta: lo vede dalla
+> scena". **È falso: la scena in testa ce l'abbiamo NOI, che abbiamo scritto dieci episodi. Lo
+> studente vede una schermata con delle bolle.**
+>
+> **La convenzione che ne esce:** *Hostess al gate · Hostess alla porta · Hostess col carrello.*
+> **Il mestiere più dove sta.**
 >
 > **Le etichette dei personaggi personalizzabili non portano il nome scelto:** *sopra la bolla
 > c'è "Papà", non "Marco". Il nome sta **dentro** la battuta, dove lo studente lo impara.*

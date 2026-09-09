@@ -88,15 +88,15 @@ stessa che poi verrà riordinata dall'episodio dei saluti.*
 
 | # | Chi | Inglese | Italiano | Skill |
 |---|---|---|---|---|
-| d1 | Hostess | Good morning! Welcome aboard. | Buongiorno! Benvenuti a bordo. | 1, 2 |
-| d2 | Hostess | Your tickets, please. | I biglietti, per favore. | 3 |
+| d1 | Hostess alla porta | Good morning! Welcome aboard. | Buongiorno! Benvenuti a bordo. | 1, 2 |
+| d2 | Hostess alla porta | Your tickets, please. | I biglietti, per favore. | 3 |
 | d3 | Papà | Here they are. | Eccoli. | 4 |
 | d4 | Papà | She is my wife. | Lei è mia moglie. | 5 |
 | d5 | Papà | She is my daughter, he is my son. | Lei è mia figlia, lui è mio figlio. | 6 |
-| d6 | Hostess | Thank you. | Grazie. | — |
-| d7 | Hostess | {destinazione}? This way, please. | {destinazione}? Da questa parte, prego. | 7 |
+| d6 | Hostess alla porta | Thank you. | Grazie. | — |
+| d7 | Hostess alla porta | {destinazione}? This way, please. | {destinazione}? Da questa parte, prego. | 7 |
 | d8 | Tutti | Thank you! | Grazie! | — |
-| d9 | Hostess | Enjoy your flight! | Buon volo! | 8 |
+| d9 | Hostess alla porta | Enjoy your flight! | Buon volo! | 8 |
 
 **Nove battute.** *Le tre di mezzo — d4 e d5 — sono nate dalla regola 2.13: il grado A era vuoto,
 e invece di sistemare i gradi ci siamo chiesti se il dialogo fosse quello giusto.*
@@ -208,17 +208,25 @@ colonna "Chi" della matrice, che descrive **chi parla nella scena** e serve a no
 
 | Personaggio *(colonna "Chi")* | Etichetta a schermo |
 |---|---|
-| Hostess | **Hostess** |
+| Hostess alla porta | **Hostess alla porta** |
 | Papà | **Papà** |
 | Tutti | **Tutti** |
 
-> **Qui coincidono, ma non è la regola.** *Nell'episodio 1 il personaggio si chiama "Hostess al
-> gate" e l'etichetta è "Hostess": la descrizione dice **quale** hostess è, l'etichetta è quello
-> che ci sta sopra una bolla.*
+> **L'etichetta PORTA il contorno, ed è la ragione per cui esiste.** *Non è "Hostess" perché in
+> questo episodio ce n'è una sola: è "Hostess alla porta" perché nel corso ce ne sono quattro, e
+> senza il contorno diventerebbero tutte la stessa persona — che è falso, e toglie proprio quello
+> che rende la storia una storia.*
 >
-> **In questo episodio è "Hostess" e basta** perché ce n'è una sola in scena — *ma se un giorno
-> ce ne fossero due, la colonna "Chi" le distinguerebbe e le etichette dovrebbero farlo anche
-> loro.*
+> ⚠️ **Questa riga diceva "Hostess e basta, perché ce n'è una sola in scena" fino al 2026-09-09.**
+> Ragionava su questo episodio invece che sul corso: **lo studente non vede un episodio, vede una
+> serie.**
+>
+> **La convenzione:** *Hostess al gate · Hostess alla porta · Hostess col carrello.* **Il mestiere
+> più dove sta.**
+>
+> **La colonna "Chi" della matrice è stata allineata nello stesso giro:** qui descrizione ed
+> etichetta coincidono, e va bene — *non perché debbano, ma perché il contorno serve a tutte e
+> due.*
 
 **Da qui Claude Code trascrive `dialogueSpeakerLabels`.** *Questa tabella è la fonte: la colonna
 "Chi" della matrice non lo è.*
