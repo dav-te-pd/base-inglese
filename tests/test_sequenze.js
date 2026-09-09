@@ -80,6 +80,70 @@ async function run() {
     await page.close();
   }
 
+  // ── [A2] I DUE EPISODI HANNO GLI STESSI PASSI ───────────────────────────
+  // 2026-09-09 (passo 8): `modulesById` non è più scritto dentro ogni
+  // episodio — i quindici descrittori sono UNO SOLO, e ogni episodio ne
+  // riceve una copia col proprio dataFile. Erano identici a meno del
+  // percorso, misurati: quindici e quindici, zero differenze.
+  //
+  // Questa è quell'invariante vista da fuori: se un episodio perdesse un
+  // descrittore, o ne ricevesse uno che gli altri non hanno, le due mappe
+  // divergerebbero. E l'app non si romperebbe — mostrerebbe un episodio con
+  // ventun passi invece di ventidue, e nessuno saprebbe qual è quello giusto.
+  //
+  // Si confrontano i DUE ELENCHI FRA LORO, non contro una lista scritta qui:
+  // una lista scritta qui sarebbe una fotografia dei moduli di oggi, e
+  // l'invariante non è "sono questi", è "sono gli stessi".
+  //
+  // ⚠️ E NON basta confrontare gli ID dei passi: quelli vengono dalla
+  // SEQUENZA, non da modulesById. Togliendo un descrittore a un episodio la
+  // riga resta in mappa — con lo stesso id, allo stesso posto — solo priva di
+  // `type`, perché resolveEpisodeOrder fa Object.assign su un descrittore che
+  // non c'è. La prima versione di questa asserzione guardava gli id e
+  // dichiarava verde un episodio con un modulo mancante: verificato
+  // iniettando il guasto, che è il motivo per cui quel passaggio esiste.
+  //
+  // Quindi si confronta la riga COME SI VEDE — id più categoria — che è dove
+  // l'assenza del descrittore affiora davvero.
+  {
+    const page = await browser.newPage({ viewport: { width: 390, height: 800 } });
+    page.on('pageerror', e => errori.push('[A2] ' + String(e).slice(0, 140)));
+    const righeDi = async (episodio) => {
+      await boot(page, 'SeqStessiPassi', episodio ? { episodioCorrente: episodio } : null);
+      return page.evaluate(() =>
+        Array.prototype.map.call(document.querySelectorAll('#module-list [data-module]'), function (el) {
+          var cat = el.querySelector('.module-row-type');
+          return el.getAttribute('data-module') + ' | ' + (cat ? cat.textContent.trim() : '(nessuna categoria)');
+        }));
+    };
+    const primo = await righeDi('gate');
+    const secondo = await righeDi('aircraft-door');
+    const uguali = JSON.stringify(primo) === JSON.stringify(secondo);
+    log('[A2] I due episodi mostrano ESATTAMENTE gli stessi passi, con la stessa categoria',
+        primo.length > 0 && uguali);
+    if (!uguali) {
+      primo.forEach(function (r, i) {
+        if (r !== secondo[i]) console.log('  riga ' + i + ':  gate "' + r + '"  vs  aircraft-door "' + secondo[i] + '"');
+      });
+      if (primo.length !== secondo.length) console.log('  righe: ' + primo.length + ' vs ' + secondo.length);
+    }
+    log('[A2] E sono i ventidue della sequenza', primo.length === stepIds().length);
+    // Il confronto qui sopra vede una divergenza FRA i due episodi. Se lo
+    // stesso descrittore mancasse a TUTTI E DUE, resterebbe verde: questa
+    // riga chiude quel caso.
+    //
+    // ⚠️ LIMITE DICHIARATO, misurato iniettando il guasto: prende solo i
+    // moduli che restano senza NIENTE da mostrare. Un modulo che perde il
+    // descrittore ma ha un grado dalla sequenza mostra il solo nome del grado
+    // ("Dialogo" invece di "Studio · Dialogo") — divergente, quindi preso dal
+    // confronto qui sopra, ma NON da questa riga. Le due si coprono a vicenda
+    // solo in parte, ed è meglio saperlo che crederle equivalenti.
+    const senzaCategoria = primo.filter(function (r) { return r.indexOf('(nessuna categoria)') !== -1; });
+    log('[A2] Nessun passo resta senza NIENTE da mostrare accanto al nome',
+        senzaCategoria.length === 0, senzaCategoria.join(' · '));
+    await page.close();
+  }
+
   // ── [B] L'episodio dichiara la sua sequenza per nome ────────────────────
   {
     const page = await browser.newPage({ viewport: { width: 390, height: 800 } });

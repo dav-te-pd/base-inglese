@@ -5612,108 +5612,119 @@
   }
 
   /* ============================================================
-     EPISODES DATA (foundation #2)
-     Each episode declares only the slots its own text uses, with a
-     default value. Slot fields of type "select" pull their options
-     straight from CONFIG (names / places) — nothing episode-specific
-     is duplicated. The customization card is generated from this.
-     slotFields itself is NOT declared here — it's built at runtime from
-     the episode's own data file's "personalizationTablesUsed" (see
-     ensureEpisodeSlotFields/buildSlotFields below), so a future episode
-     with different personalization categories (e.g. "nonno", "animale")
-     needs only its own JSON file, never a change here.
+     EPISODES — costruito dalla sequenza, non scritto a mano
+
+     Un episodio dichiara SOLO quello che è suo: il badge e il contenuto del
+     suo dialogo. Il resto — l'id, il percorso del file dati, i quindici
+     descrittori dei moduli — lo mette buildEpisodes, perché è uguale per
+     tutti e ricavabile.
+
+     Perché: fino al 2026-09-09 `modulesById` era scritto per esteso dentro
+     ogni episodio. Misurati il 2026-09-09, i due erano identici a meno del
+     dataFile: quindici descrittori e quindici, ZERO differenze. Il terzo
+     episodio sarebbe nato copiando quindici righe, il ventesimo copiandone
+     trecento — e una divergenza fra due copie non si sarebbe vista, perché
+     ogni episodio passa i propri test mentre è diverso dal vicino.
+
+     ⚠️ NON c'è un meccanismo per fare eccezione, ed è una scelta. Oggi
+     nessun episodio vuole un descrittore diverso dagli altri; inventare
+     adesso il modo di dirlo significherebbe inventarlo senza un caso vero,
+     cioè inventarlo male. Quando servirà, servirà per una ragione precisa, e
+     quella ragione dirà anche che forma deve avere. Chi arriva qui con un
+     caso vero: aggiungerlo è il momento giusto, aggiungerlo per simmetria no.
+
+     slotFields NON si dichiara: si costruisce a runtime dal
+     "personalizationTablesUsed" del file dati (ensureEpisodeSlotFields /
+     buildSlotFields), così un episodio con categorie di personalizzazione
+     nuove ha bisogno solo del proprio JSON.
      ============================================================ */
-  var EPISODES = {
+
+  // Il percorso del file dati si RICAVA dall'id. La nomenclatura è quella
+  // della regola 4 — `data/{lingua-che-si-impara}/{lingua-studente}/
+  // {lingua}-{studente}-{id}.json` — e qui non ha eccezioni: se un giorno un
+  // episodio volesse un percorso suo, la regola 4 sarebbe da riaprire prima
+  // di questa riga.
+  function episodeDataFile(episodeId) {
+    return 'data/inglese/it/inglese-it-' + episodeId + '.json';
+  }
+
+  /* I quindici moduli, scritti UNA VOLTA per tutti gli episodi.
+
+     Qui sta solo ciò che NON dipende da dove il modulo è messo: il `kind`,
+     la direzione, il profilo, la categoria. Il GRADO non c'è — lo decide la
+     coppia { module, grade } della sequenza (regola 4), così lo stesso
+     descrittore serve tutte le apparizioni dello stesso modulo su gradi
+     diversi. E non ci sono `label`/`subtitle`: quelli vengono da
+     CONFIG.moduleLabels, l'unico posto dove vive il nome mostrato.
+
+     `dataFile: true` vuol dire "questo modulo legge il file dell'episodio";
+     buildEpisodes lo sostituisce col percorso vero. Personalizzazione non ce
+     l'ha perché non legge contenuto, ed è la stessa assenza che
+     moduleUsesGrade guarda per non mostrarle il pulsante del grado.
+
+     I testi howItWorks/helpReminder di ogni kind stanno in
+     data/inglese/it/istruzioni-moduli.json (regola 8), non qui. */
+  var MODULE_DESCRIPTORS = {
+    // Categoria "Inizio" (docs/inglese/it/struttura-corso.md): è preparazione,
+    // non studio. Prima era uno "studio" con l'etichetta sovrascritta a mano,
+    // perché la categoria non esisteva ancora.
+    personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
+    repeatAloud: { kind: 'repeatAloud', dataFile: true, type: 'studio' },
+    // Due moduli, un componente solo (openStoryCards e dintorni): li
+    // distingue storyProfile, che decide se le traduzioni si vedono sempre e
+    // se ci sono le skill.
+    meetTheStory: { kind: 'meetTheStory', dataFile: true, storyProfile: 'meet', type: 'studio' },
+    whyWeSayIt: { kind: 'whyWeSayIt', dataFile: true, storyProfile: 'why', type: 'studio' },
+    // Due moduli, un componente solo: voiceVariant decide quale tentativo
+    // conta (LastAttemptRule per practice, FirstAttemptRule per check) e se
+    // c'è il ripasso finale.
+    voicePractice: { kind: 'voicePractice', dataFile: true, voiceVariant: 'practice', type: 'studio' },
+    voiceCoach: { kind: 'voiceCoach', dataFile: true, voiceVariant: 'check', type: 'quiz' },
+    matchEngIta: { kind: 'matchEngIta', dataFile: true, type: 'studio' },
+    matchItaEng: { kind: 'matchItaEng', dataFile: true, type: 'studio' },
+    // Tre moduli, un componente solo: dialogoProfile decide countdown,
+    // ripetizione e chi parla.
+    dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: true, dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
+    dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: true, dialogoProfile: 'ripetiATempo', type: 'dialogo' },
+    dialogoContinuo: { kind: 'dialogoContinuo', dataFile: true, dialogoProfile: 'continuo', type: 'dialogo' },
+    speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: true, type: 'quiz' },
+    speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: true, type: 'quiz' },
+    // Un kind solo, due direzioni: flashcardDirection le distingue.
+    flashcardAEngIta: { kind: 'flashcard', dataFile: true, flashcardDirection: 'en-it', type: 'studio' },
+    flashcardAItaEng: { kind: 'flashcard', dataFile: true, flashcardDirection: 'it-en', type: 'studio' }
+  };
+
+  // Ogni episodio riceve la SUA copia dei descrittori, non quella condivisa:
+  // il dataFile è diverso per ognuno, e un oggetto condiviso fra episodi si
+  // farebbe modificare da uno e cambierebbe anche agli altri.
+  function buildModulesById(episodeId) {
+    var file = episodeDataFile(episodeId);
+    var out = {};
+    Object.keys(MODULE_DESCRIPTORS).forEach(function (moduleId) {
+      var descrittore = MODULE_DESCRIPTORS[moduleId];
+      var copia = {};
+      Object.keys(descrittore).forEach(function (k) {
+        copia[k] = k === 'dataFile' ? file : descrittore[k];
+      });
+      out[moduleId] = copia;
+    });
+    return out;
+  }
+
+  function buildEpisodes(propri) {
+    var out = {};
+    Object.keys(propri).forEach(function (episodeId) {
+      var episodio = { id: episodeId, dataFile: episodeDataFile(episodeId) };
+      Object.keys(propri[episodeId]).forEach(function (k) { episodio[k] = propri[episodeId][k]; });
+      episodio.modulesById = buildModulesById(episodeId);
+      out[episodeId] = episodio;
+    });
+    return out;
+  }
+
+  var EPISODES = buildEpisodes({
     gate: {
-      id: 'gate',
       badge: 'Episodio 1',
-      // Same file every one of this episode's modules already reads (one
-      // file per episode, CLAUDE.md rule 4) — used here just to resolve
-      // personalizationTablesUsed before Customize can render, sharing
-      // loadEpisodeData's own cache (no extra request).
-      dataFile: 'data/inglese/it/inglese-it-gate.json',
-      // Each module's own data, unordered — la sequenza dell'episodio (or
-      // this episode's own override in CONFIG.episodes.gate, if it
-      // declared one — see near "Module step order") is the ONLY place
-      // that decides the sequence; modules.map below just resolves that
-      // order against this dictionary. Never hardcode a module's name or
-      // order inside the map-rendering code. dataFile is the external
-      // data source for that module's content (CLAUDE.md rule 4).
-      // howItWorks/helpReminder text for each module kind lives in
-      // data/inglese/it/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
-      // `type` (studio/quiz/test) is purely declarative for now — shown
-      // next to the module on the map (see MODULE_TYPE_LABEL) but not
-      // yet wired to map colors or to the valvola/richiamo mechanics.
-      // Il grado NON si dichiara qui: lo decide la coppia { module, grade }
-      // nella sequenza dell'episodio, così lo stesso descrittore serve tutte
-      // le apparizioni dello stesso modulo su gradi diversi.
-      // label/subtitle are NOT declared per-entry here — they're read from
-      // CONFIG.moduleLabels[id] (see the Object.keys(EPISODES).forEach
-      // computed-modules block below), keyed by these same ids, so the
-      // displayed name lives in exactly one place (CLAUDE.md).
-      modulesById: {
-        // Categoria "Inizio" (docs/inglese/it/struttura-corso.md): è preparazione, non
-        // studio. Prima era uno "studio" con l'etichetta sovrascritta a mano,
-        // perché la categoria non esisteva ancora.
-        personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
-        // Due moduli, un componente solo (openStoryCards e dintorni), come i
-        // tre Dialogue: storyProfile e' l'unica cosa che li distingue nel
-        // comportamento, kind quella che da' a ciascuno i propri testi in
-        // data/inglese/it/istruzioni-moduli.json (CLAUDE.md regola 8).
-        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/inglese/it/inglese-it-gate.json', storyProfile: 'meet', type: 'studio' },
-        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/inglese/it/inglese-it-gate.json', storyProfile: 'why', type: 'studio' },
-        // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
-        // shared component (openVoiceCoach and friends, see its own JS
-        // comment), voiceVariant is the only thing that tells them apart.
-        // Practice: studio type; also ModuleRules now (CONFIG.
-        // moduleOutcomeRules), scored by LastAttemptRule instead of
-        // Voice Check's FirstAttemptRule (vcEvaluate branches on this
-        // very field) —
-        // own kind for its own howItWorks/helpReminder text and
-        // intro-dismiss flag (data/inglese/it/istruzioni-moduli.json).
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/inglese/it/inglese-it-gate.json', voiceVariant: 'practice', type: 'studio' },
-        // Check: same id ('voiceCoach') the single pre-split module had —
-        // still the ONE place ModuleRules/the retry-queue ripasso live,
-        // unchanged from before the split.
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/inglese/it/inglese-it-gate.json', voiceVariant: 'check', type: 'quiz' },
-        // Match Practice: studio, not quiz (job: sei etichette) — no time
-        // pressure, self-paced, same as Flash Card.
-        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
-        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
-        // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
-        // share their own category (job: sei etichette) — distinct from
-        // plain "studio" since a dialogue plays out with its own pacing.
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'continuo', type: 'dialogo' },
-        // Speed Match: quiz, not a separate "a tempo" category (job: sei
-        // etichette) — the time pressure IS what makes it a quiz here.
-        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'quiz' },
-        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'quiz' },
-        // kind is shared between directions on purpose: both read the same
-        // level-based (not direction-based) istruzioni-moduli.json entry.
-        // Il grado dice QUALI voci, la direzione da che verso mostrarle:
-        // la direzione sta qui, il grado sta nella coppia di
-        // dalla sequenza dell'episodio (module.grade arriva da lì, vedi il
-        // blocco che calcola episode.modules) — cambiare grado non tocca
-        // né il componente né questo dizionario.
-        // studio, not quiz (job: sei etichette) — self-paced, no time
-        // pressure, same as Repeat Aloud/Story Cards/Match Practice.
-        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-gate.json', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-gate.json', flashcardDirection: 'it-en', type: 'studio' }
-      },
-      // Maps a {{placeholder}} used in dialogue lines to the slotFields key
-      // that supplies its value. Episode 1's own placeholder names are
-      // identical to their slotFields keys on purpose (the two vocabularies
-      // used to differ with no functional reason — {{papaName}} vs. 'papa',
-      // {{cittaPartenza}} vs. 'partenza' — which just made the mapping
-      // harder to read for no benefit), so this is an identity map today.
-      // Kept anyway, not collapsed away: a future episode is free to use
-      // its own placeholder names in its dialogue text and just point them
-      // at the existing slotFields keys here, without renaming anything
-      // upstream. fillTemplate() below warns to the console if a
-      // placeholder has no entry here, instead of failing silently.
       dialoguePlaceholderMap: {
         papa: 'papa',
         mamma: 'mamma',
@@ -5745,6 +5756,14 @@
         guide: 'Hostess al gate',
         tutti: 'Tutti'
       },
+      // ⚠️ `segments` è CODICE MORTO, e resta qui solo perché toglierlo
+      // cambierebbe questo oggetto: lo legge solo buildTargetTokens, cioè la
+      // vista `pronunciation`, che non è raggiungibile da nessun punto
+      // dell'app (nessuno chiama startPronunciationExercise). Sparisce
+      // insieme a quella vista, allo spacchettamento — è registrato in
+      // docs/decisioni.md fra le pulizie rimandate. Non è né contenuto
+      // dell'episodio né struttura: è un residuo.
+      //
       // Fixed words are authored individually so punctuation stays attached
       // to the right word; slots expand to one or more words at render time.
       segments: [
@@ -5758,59 +5777,22 @@
         { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
       ]
     },
-    // Episodio 2 — "Sulla porta dell'aereo" (docs/inglese/it/inglese-it-aircraft-door.md).
-    // Stessi moduli dell'episodio 1: quello che cambia e' il file dati, il
-    // cast e l'unico slot. La sequenza NON sta qui ma in
-    // CONFIG.episodes['aircraft-door'] (regola 4), come per ogni altro episodio.
+    // Episodio 2 — "Sulla porta dell'aereo"
+    // (docs/inglese/it/inglese-it-aircraft-door.md).
     'aircraft-door': {
-      id: 'aircraft-door',
       badge: 'Episodio 2',
-      dataFile: 'data/inglese/it/inglese-it-aircraft-door.json',
-      // `segments` non c'e', e non e' una dimenticanza: quel campo lo legge
-      // solo buildTargetTokens, cioe' la vista `pronunciation`, che non e'
-      // raggiungibile da nessun punto dell'app (nessuno chiama
-      // startPronunciationExercise). Dichiararlo vuoto sarebbe peggio:
-      // sembrerebbe una frase che esiste ed e' vuota.
-      modulesById: {
-        personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
-        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', storyProfile: 'meet', type: 'studio' },
-        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', storyProfile: 'why', type: 'studio' },
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', voiceVariant: 'practice', type: 'studio' },
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', voiceVariant: 'check', type: 'quiz' },
-        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
-        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'continuo', type: 'dialogo' },
-        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'quiz' },
-        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'quiz' },
-        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', flashcardDirection: 'it-en', type: 'studio' }
-      },
-      // Un solo segnaposto in tutto l'episodio: {{destinazione}} in d7
-      // (docs/inglese/it/inglese-it-aircraft-door.md, PASSO 10). Gli slot della famiglia non sono
-      // usati — il padre dice "my wife", non un nome.
-      dialoguePlaceholderMap: {
-        destinazione: 'destinazione'
-      },
-      // Nessuno, in questo episodio, ha un nome personalizzabile: l'unico
-      // slot dichiarato dal file dati e' la destinazione
-      // (personalizationTablesUsed), quindi un `papa` mappato su uno slot
-      // che non esiste darebbe un'etichetta VUOTA sulle sue tre battute —
-      // provato, ed e' cosi' che si e' visto.
+      dialoguePlaceholderMap: { destinazione: 'destinazione' },
+      // Nessun personaggio con nome personalizzabile parla in questo
+      // episodio: la famiglia c'e' ma le battute sono dell'hostess e del
+      // papa'. Vuoto e non assente, perche' speakerLabel lo legge sempre.
       dialogueSpeakers: {},
-      // Le etichette sono quelle della colonna "Chi" della tabella delle
-      // battute in docs/inglese/it/inglese-it-aircraft-door.md, copiate e non inventate:
-      // "Hostess" (alla porta dell'aereo non c'e' un'altra hostess da cui
-      // distinguerla), "Papa'", "Tutti".
       dialogueSpeakerLabels: {
         hostess: 'Hostess',
         papa: 'Pap\u00e0',
         tutti: 'Tutti'
       }
     }
-  };
+  });
 
   // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,
   // when it declares none (every episode today), the shared CONFIG.
