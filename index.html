@@ -5725,37 +5725,6 @@
   var EPISODES = buildEpisodes({
     gate: {
       badge: 'Episodio 1',
-      dialoguePlaceholderMap: {
-        papa: 'papa',
-        mamma: 'mamma',
-        cognome: 'cognome',
-        figliaNome: 'figliaNome',
-        figlioNome: 'figlioNome',
-        figliaEta: 'figliaEta',
-        figlioEta: 'figlioEta',
-        partenza: 'partenza'
-      },
-      // Maps a dialogue "speaker" id to the slotFields key used for their
-      // display name tag in the Story Cards chat bubbles. A speaker with no
-      // entry here (e.g. "guide") gets a fixed label instead.
-      dialogueSpeakers: {
-        papa: 'papa',
-        mamma: 'mamma',
-        figlia: 'figliaNome',
-        figlio: 'figlioNome'
-      },
-      // Chi parla ma non ha un nome personalizzabile: la guida, e la
-      // famiglia quando parla in coro. L'etichetta sta qui e non scritta
-      // dentro speakerLabel(), cosi' un episodio con un altro cast (un
-      // cameriere, un poliziotto) aggiunge una riga qui e basta.
-      dialogueSpeakerLabels: {
-        // "Hostess al gate", non "Guida": i nomi descrivono, non etichettano
-        // (docs/inglese/it/inglese-it-gate.md, nota 5). La chiave resta 'guide' perche' e'
-        // l'id tecnico gia' scritto in ogni battuta del file episodio;
-        // allinearla al personaggio e' registrato in docs/decisioni.md.
-        guide: 'Hostess al gate',
-        tutti: 'Tutti'
-      },
       // ⚠️ `segments` è CODICE MORTO, e resta qui solo perché toglierlo
       // cambierebbe questo oggetto: lo legge solo buildTargetTokens, cioè la
       // vista `pronunciation`, che non è raggiungibile da nessun punto
@@ -5780,17 +5749,7 @@
     // Episodio 2 — "Sulla porta dell'aereo"
     // (docs/inglese/it/inglese-it-aircraft-door.md).
     'aircraft-door': {
-      badge: 'Episodio 2',
-      dialoguePlaceholderMap: { destinazione: 'destinazione' },
-      // Nessun personaggio con nome personalizzabile parla in questo
-      // episodio: la famiglia c'e' ma le battute sono dell'hostess e del
-      // papa'. Vuoto e non assente, perche' speakerLabel lo legge sempre.
-      dialogueSpeakers: {},
-      dialogueSpeakerLabels: {
-        hostess: 'Hostess',
-        papa: 'Pap\u00e0',
-        tutti: 'Tutti'
-      }
+      badge: 'Episodio 2'
     }
   });
 
@@ -6225,7 +6184,8 @@
   }
 
   // Fills {{placeholders}} in a dialogue line using the episode's
-  // dialoguePlaceholderMap (placeholder name -> slotFields key) and the
+  // placeholderMap (placeholder name -> slotFields key, dichiarato nel FILE
+  // dell'episodio dal 2026-09-09 — regola 4, è contenuto) and the
   // user's current customization values, in the given language. Unknown
   // placeholders are left untouched rather than breaking the line — but
   // logged, since a silently-unfilled {{token}} left on screen used to be
@@ -6239,9 +6199,9 @@
   // come prima: nessun testo esistente cambia comportamento.
   function fillTemplate(text, episode, values, lang) {
     return text.replace(/\{\{(\w+)(?::(\w+))?\}\}/g, function (match, varName, forcedLang) {
-      var slotKey = episode.dialoguePlaceholderMap && episode.dialoguePlaceholderMap[varName];
+      var slotKey = episode.placeholderMap && episode.placeholderMap[varName];
       if (!slotKey) {
-        console.warn('fillTemplate: placeholder "' + varName + '" has no dialoguePlaceholderMap entry in episode "' + episode.id + '"');
+        console.warn('fillTemplate: placeholder "' + varName + '" has no placeholderMap entry in episode "' + episode.id + '"');
         return match;
       }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
@@ -6821,8 +6781,31 @@
       })
       .then(function (data) {
         episodeDataCache[module.dataFile] = data;
+        applyEpisodeDialogue(data);
         return data;
       });
+  }
+
+  /* Le etichette dei personaggi e i segnaposto ammessi ARRIVANO DAL FILE
+     EPISODIO, non da `index.html` (regola 4): sono contenuto che lo studente
+     legge, e la loro fonte è la tabella «I personaggi e le loro etichette» del
+     markdown dell'episodio.
+
+     Non si possono dichiarare dentro EPISODES perché quello si costruisce al
+     caricamento, mentre il file dati arriva dopo — quindi si attaccano
+     all'episodio appena il file c'è. È lo stesso rapporto che `slotFields` ha
+     già con `personalizationTablesUsed` (ensureEpisodeSlotFields), e non un
+     meccanismo nuovo.
+
+     ⚠️ Ogni lettore di questi campi (speakerLabel, fillTemplate) gira DENTRO
+     un `loadEpisodeData(...).then(...)`, cioè dopo questa riga. Un lettore
+     nuovo che girasse prima li troverebbe vuoti: non è una cosa che si vede
+     leggendo la funzione, ed è per questo che sta scritta qui. */
+  function applyEpisodeDialogue(data) {
+    var episodio = EPISODES[data && data.episodeId];
+    if (!episodio) return;
+    episodio.speakerLabels = (data && data.speakerLabels) || {};
+    episodio.placeholderMap = (data && data.placeholderMap) || {};
   }
 
   // L'UNICO modo di prendere il contenuto di un grado da un episodio.
@@ -7291,17 +7274,24 @@
     return line.ruolo === 'famiglia' ? 'right' : 'left';
   }
 
+  /* L'etichetta sopra la bolla. UNA sola strada: quella dichiarata nel file
+     episodio, perché è contenuto (regola 4).
+
+     ⚠️ Fino al 2026-09-09 ce n'erano DUE, e la prima risolveva i personaggi
+     della famiglia sul NOME SCELTO: sopra la bolla del papà compariva
+     "Marco". La tabella dell'episodio dice il contrario — *«le etichette dei
+     personaggi personalizzabili non portano il nome scelto: sopra la bolla
+     c'è "Papà", non "Marco". Il nome sta DENTRO la battuta, dove lo studente
+     lo impara»* — e adesso il codice fa quello.
+
+     E l'etichetta porta il CONTORNO: "Hostess al gate", non "Hostess". Fra
+     l'hostess del gate, quella della porta e quella del carrello, senza il
+     contorno sono tutte la stessa persona.
+
+     Il ritorno su `speaker` quando l'etichetta manca è voluto: mostra l'id
+     tecnico, che è brutto e si nota — meglio di una bolla senza nome. */
   function speakerLabel(episode, speaker) {
-    var slotKey = episode.dialogueSpeakers && episode.dialogueSpeakers[speaker];
-    if (slotKey) {
-      var rawValue = (currentValues[slotKey] || '').trim() || slotDefault(episode, slotKey);
-      return resolveSlotValue(episode, slotKey, rawValue, 'it');
-    }
-    // Chi non ha un nome personalizzabile prende la propria etichetta fissa
-    // dall'episodio (dialogueSpeakerLabels) — prima era scritta qui dentro,
-    // e valeva "Guida" per chiunque non fosse della famiglia.
-    var fixed = episode.dialogueSpeakerLabels && episode.dialogueSpeakerLabels[speaker];
-    return fixed || speaker;
+    return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
   }
 
   // Job 10 (2nd collaudo): "Cosa imparo qui" — an OPTIONAL per-line field

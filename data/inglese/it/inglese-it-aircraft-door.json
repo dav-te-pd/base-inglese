@@ -12,6 +12,14 @@
       "default": "cina"
     }
   ],
+  "speakerLabels": {
+    "hostess": "Hostess alla porta",
+    "papa": "Papà",
+    "tutti": "Tutti"
+  },
+  "placeholderMap": {
+    "destinazione": "destinazione"
+  },
   "levels": {
     "A": {
       "label": "Parole",

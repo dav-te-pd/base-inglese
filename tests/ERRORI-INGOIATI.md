@@ -63,6 +63,52 @@ etichette di `log()`.)*
 
 ---
 
+## ⓪-bis L'asserzione che passa quando dovrebbe fallire — trovata in un test APPENA SCRITTO
+
+**Questa non è un difetto vecchio che si scopre: è una cosa che nasce così se
+nessuno la mette alla prova.** Ed è il motivo per cui la regola 32 dice di
+vedere fallire ogni test nuovo — qui c'è il *perché*, con un caso vero.
+
+*Il caso, `tests/test_sequenze.js`, 2026-09-09 (passo 8).* L'asserzione nuova
+doveva proteggere l'invariante appena introdotta: `modulesById` non è più
+scritto dentro ogni episodio, quindi **i due episodi devono avere gli stessi
+passi**. La prima versione confrontava gli **id** dei passi delle due mappe.
+
+Iniettando il guasto — tolto `whyWeSayIt` al solo episodio 2 — il test ha
+detto:
+
+```
+=== SEQUENZE SUMMARY: 13/13 passed ===
+```
+
+**Verde, con un episodio a cui mancava un modulo.** Perché gli id vengono
+dalla **sequenza**, non da `modulesById`: `resolveEpisodeOrder` fa
+`Object.assign` su un descrittore assente e la riga **resta in mappa**, stesso
+id, stesso posto. L'asserzione nominava l'invariante e non la toccava.
+
+**E c'è un secondo difetto nella stessa asserzione, più fine.** La riga di
+contorno diceva *«Nessun passo resta senza categoria (descrittore mancante)»* —
+ma in quel guasto la categoria **non è vuota**: senza `type` resta il nome del
+grado, «Dialogo». Non aveva preso il guasto: l'aveva preso il confronto fra i
+due episodi. **Dichiarava più di quello che fa.**
+
+**Cosa se ne impara, e vale per ogni test nuovo:**
+
+- **Un'asserzione che passa quando dovrebbe fallire non è distinguibile da una
+  che funziona, se nessuno prova a romperla.** Il verde non è un'informazione
+  finché non si è visto il rosso.
+- **Il guasto va iniettato dove nasce il difetto vero**, non dove è comodo.
+  Qui: togliere un descrittore, non rinominare un id.
+- **Quando due asserzioni sembrano coprire la stessa cosa, misurare quale delle
+  due prende il guasto.** Se ne prende una sola, l'altra va riscritta o il suo
+  limite va dichiarato: *«le due si coprono a vicenda solo in parte, ed è
+  meglio saperlo che crederle equivalenti»*.
+
+⚠️ **Nessuno strumento vede questa famiglia.** La suite resta verde, il
+contatore delle asserzioni non cala — l'asserzione gira e passa — e la verifica
+per sottrazione non c'entra. **L'unica cosa che la trova è il passaggio del
+guasto**, che è una cosa che si fa a mano e che quindi si salta.
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

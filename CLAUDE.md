@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260909a**
+**Versione: 20260909b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -85,6 +85,15 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` espressioni (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`.
 
      **La lettera è l'identificativo tecnico, il nome è quello che vede lo studente** (Parole, Espressioni, Frasi, Dialogo). I nomi valgono per tutto il corso di un'edizione, quindi stanno in `CONFIG.gradeNames` e vengono da `docs/{lingua}/struttura-corso.md` (regola 26), non dal singolo episodio; si mostrano accanto alla categoria — "Studio · Parole" — e il grado si omette quando la categoria lo contiene già ("Studia il dialogo", non "Studia il dialogo · Dialogo"). Le voci di A e B portano `pronunciationTip` e `grammarCategory`; quelle di C portano `fromLine`, cioè da quale battuta sono state ricavate; quelle di D portano `speaker`, `ruolo` e l'eventuale `whatYouLearn`. Le battute NON esistono anche altrove: il grado D *è* il dialogo, non una sua copia.
+
+     **Il file episodio porta anche `speakerLabels` e `placeholderMap`, e non è un dettaglio tecnico.** `speakerLabels` è l'etichetta che lo studente legge **sopra ogni bolla**; `placeholderMap` dichiara quali segnaposto quell'episodio ammette. Sono contenuto, quindi stanno lì e non in `index.html` — dove sono vissuti fino al 2026-09-09.
+
+     **Due regole sulle etichette, e sono didattiche, non estetiche:**
+
+     - **L'etichetta porta il CONTORNO, non il solo mestiere:** *Hostess al gate · Hostess alla porta · Hostess col carrello.* Fra quattro hostess senza contorno lo studente vede la stessa persona quattro volte — che è falso, e toglie proprio quello che rende la storia una storia. *L'argomento opposto («sopra una bolla sarebbe troppo lunga, lo studente vede la scena») è stato scritto e poi ritirato: **la scena in testa ce l'ha chi scrive gli episodi**, non chi legge una schermata di bolle.*
+     - **L'etichetta di un personaggio personalizzabile NON porta il nome scelto:** sopra la bolla c'è **"Papà"**, non "Marco". *Il nome sta **dentro** la battuta, dove lo studente lo impara.*
+
+     La fonte è la tabella **«I personaggi e le loro etichette»** del markdown dell'episodio, **non** la colonna «Chi» della matrice: la colonna descrive chi parla nella scena e serve a chi scrive.
 
      **Le "skill" sono i `whatYouLearn`.** Quando se ne parla a voce o in una richiesta si chiamano *skill*; nel JSON il campo si chiama `whatYouLearn` e non ha altri nomi. Una skill è **una spiegazione agganciata a una battuta del grado D**, fatta di `title` e `body` (due campi separati, regola 25). I segnaposto nelle skill vengono sostituiti come in ogni altro testo dell'episodio: una skill è scritta in italiano ma cita la frase inglese del dialogo, quindi la citazione chiede la propria lingua con `{{chiave:en}}` — senza suffisso vale la lingua della chiamata.
 
@@ -432,6 +441,47 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 40. **Un lavoro a più passi sta sempre nella lista attività**, un elemento per passo, con il progresso vero quando c'è: durante una corsa lunga il testo di stato porta un numero che cambia — `Suite 15/42`, `strato 2/6` — aggiornato ogni paio di minuti. **Il pallino che gira è un'animazione, non una misura:** da solo non distingue «sta lavorando» da «si è fermato».
 
     *Perché c'è: è la prima cosa del progetto che chi guida può verificare **senza chiedermela**. Fino a qui l'unica era la CI, che prova `main` e non quello che sto facendo adesso. E serve proprio perché il mio strumento può mentire: il 2026-09-07 dicevo «la suite sta girando» su un'attesa rotta, mentre un task appeso da due ore era visibile a lui e non a me (regola 37). L'alternativa — chiedere ogni dieci minuti — è una difesa che si basa sul ricordarsene, cioè quella che cede.*
+
+41. **Una rinomina si verifica su TUTTE le forme del nome, e ogni forma ha il
+    suo COMANDO.** Con `V` il nome vecchio, la verifica per sottrazione è
+    questa, e si esegue **tutta**, riga per riga, prima di dichiarare fatto un
+    passo:
+
+    | | Comando | Che forma prende |
+    |---|---|---|
+    | ① | `grep -rn "\bV[A-Z]" .` | **camelCase** — `speedRound`, `srShuffle` |
+    | ② | `grep -rn "v-parola" .` | **kebab** — `speed-round`, `story-cards-` |
+    | ③ | `grep -rni "vparola" .` | **minuscolo attaccato** — `speedround`, i prefissi delle chiavi mastery |
+    | ④ | `grep -rn "[a-z]V[a-z]" .` | **dentro un identificatore più lungo** — `openSpeedRound`, `loadSeExplanationStats` |
+    | ⑤ | `grep -rn "V parola\|V PAROLA\|v parola" .` | **con lo spazio**, nella prosa — `Speed Round`, `SPEED ROUND` |
+    | ⑥ | `grep -rn "'segmento'" .` | **il percorso assemblato a pezzi** — `repoPath('data','it',…)` |
+
+    ⚠️ **Sulla ④ non c'è `\b`, ed è il punto.** È precisamente il confine di
+    parola che fa mancare quella forma: in `loadSeExplanationStats` il `Se` è
+    preceduto da una minuscola, quindi `\bse[A-Z]` non lo trova.
+
+    ⚠️ **Sulla ⑥ si cerca il SEGMENTO, non il percorso.** In
+    `repoPath('data', 'it', nome)` la stringa `data/it/` **non esiste mai per
+    intero**, quindi nessuna ricerca sul percorso la trova.
+
+    ⚠️ **Il `grep` va SENSIBILE alle maiuscole.** Un `-i` di troppo rende
+    `[A-Z]` uguale a `[a-z]` e produce centinaia di falsi positivi: è già
+    successo, e il rumore ha nascosto i veri.
+
+    **I comandi si incollano nel riepilogo del passo, con il numero di
+    occorrenze trovate per ognuno — zero compreso.** *Uno zero scritto è una
+    ricerca fatta; uno zero non scritto è indistinguibile da una ricerca
+    saltata.*
+
+    *Perché è una regola permanente e non un appunto: lo stesso difetto è
+    capitato **tre volte**. Due erano forme non previste — le 185 occorrenze
+    con lo spazio ai passi 3 e 4, il percorso a pezzi al passo 6. **La terza è
+    diversa e pesa di più:** tre nomi del passo 5 sono sopravvissuti perché la
+    verifica cercava `\bse[A-Z]`, e la forma ④ **era già nell'elenco**. Non è
+    stata una forma nuova: è stata una forma elencata e non cercata. Ho
+    verificato tre forme credendo di averne verificate cinque. **Un elenco di
+    nomi si legge e si crede di averlo applicato; un elenco di comandi o lo si
+    esegue o non lo si esegue, e la differenza si vede.***
 
 ## Riferimenti operativi
 

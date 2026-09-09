@@ -500,6 +500,76 @@ async function run() {
     await page.close();
   }
 
+  // ============ B0/passo 9: le etichette sopra le bolle ============
+  // 2026-09-09: `dialogueSpeakerLabels` e `dialogueSpeakers` sono usciti da
+  // index.html e sono diventati `speakerLabels` nel FILE dell'episodio
+  // (regola 4: è contenuto che lo studente legge).
+  //
+  // Due cose si romperebbero in silenzio, e prima di oggi NESSUN test le
+  // guardava — non una copertura debole: zero.
+  //
+  // ① Le etichette dei personaggi personalizzabili NON portano il nome
+  //    scelto. Fino a oggi speakerLabel risolveva papà/mamma/figlia/figlio
+  //    sul valore dello slot, quindi sopra la bolla c'era "Marco". La tabella
+  //    dell'episodio dice il contrario: «sopra la bolla c'è "Papà", non
+  //    "Marco". Il nome sta DENTRO la battuta, dove lo studente lo impara.»
+  //    Si sceglie un nome ben riconoscibile e si guarda che NON compaia come
+  //    etichetta: è l'unica forma che prende una reintroduzione della
+  //    risoluzione sul nome.
+  //
+  // ② L'etichetta porta il CONTORNO — "Hostess al gate", non "Hostess" —
+  //    perché fra l'hostess del gate, quella della porta e quella del
+  //    carrello, senza il contorno sono tutte la stessa persona.
+  //
+  // COME: l'atteso si LEGGE dal file episodio, mai ricopiato qui. Un'etichetta
+  // scritta nel test sarebbe una fotografia di oggi, e questo file esiste
+  // proprio per non averne (vedi il commento in testa sui numeri attesi).
+  {
+    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    await bootAsUser(page, 'Story_Etichette', 'meetTheStory');
+
+    // Un nome scelto e ben riconoscibile: se riaffiorasse come etichetta si
+    // vedrebbe subito, e non si confonderebbe con nessuna parola del dialogo.
+    await page.evaluate(() => localStorage.setItem('baseinglese:gate:custom:Story_Etichette',
+      JSON.stringify({ papa: 'giancarlo', mamma: 'nicoletta' })));
+    await page.reload();
+    await page.waitForSelector('#go-episode', { state: 'visible' });
+    await page.click('#go-episode');
+    await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
+    await openStory(page, 'meetTheStory');
+
+    const aSchermo = await page.evaluate(() =>
+      Array.from(new Set(Array.from(document.querySelectorAll('#story-cards-body .chat-speaker'))
+        .map(e => e.textContent.trim()))));
+    const fonte = loadEpisode();
+    const parlanti = Array.from(new Set(loadGrade('D').map(l => l.speaker)));
+    const attese = parlanti.map(sp => (fonte.speakerLabels || {})[sp]).filter(Boolean);
+
+    log('[B0] Il file episodio dichiara un\'etichetta per OGNI parlante del dialogo',
+      attese.length === parlanti.length,
+      'parlanti: ' + parlanti.join(', ') + ' | etichette: ' + attese.join(', '));
+    log('[B0] Le etichette a schermo sono ESATTAMENTE quelle dichiarate nel file episodio',
+      aSchermo.slice().sort().join('|') === attese.slice().sort().join('|'),
+      'schermo: ' + aSchermo.join(', ') + ' | file: ' + attese.join(', '));
+    // La prova ①: il nome scelto sta DENTRO le battute, mai sopra le bolle.
+    log('[B0] Il nome scelto NON compare come etichetta (sta dentro la battuta, non sopra)',
+      aSchermo.indexOf('Giancarlo') === -1 && aSchermo.indexOf('Nicoletta') === -1,
+      'etichette: ' + aSchermo.join(', '));
+    const dentro = await page.evaluate(() =>
+      (document.getElementById('story-cards-body') || {}).textContent || '');
+    log('[B0] ...e il nome scelto c\'è, dentro le battute', dentro.indexOf('Giancarlo') !== -1);
+    // La prova ②: il contorno c'è. Si guarda che l'etichetta del personaggio
+    // esterno sia più di una parola sola, senza ricopiarla.
+    const esterno = (fonte.speakerLabels || {}).guide || '';
+    log('[B0] L\'etichetta del personaggio esterno porta il contorno, non il solo mestiere',
+      esterno.trim().split(/\s+/).length > 1, 'etichetta: "' + esterno + '"');
+    log('[B0] Nessun errore JS', errors.length === 0, errors.join(' | '));
+    await page.close();
+  }
+
   // ============ B1: la spunta automatica e le frasi di supporto ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });

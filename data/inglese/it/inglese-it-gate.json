@@ -67,6 +67,24 @@
       "default": "mondovi"
     }
   ],
+  "speakerLabels": {
+    "guide": "Hostess al gate",
+    "papa": "Papà",
+    "mamma": "Mamma",
+    "figlia": "Figlia",
+    "figlio": "Figlio",
+    "tutti": "Tutti"
+  },
+  "placeholderMap": {
+    "papa": "papa",
+    "mamma": "mamma",
+    "cognome": "cognome",
+    "figliaNome": "figliaNome",
+    "figlioNome": "figlioNome",
+    "figliaEta": "figliaEta",
+    "figlioEta": "figlioEta",
+    "partenza": "partenza"
+  },
   "levels": {
     "A": {
       "label": "Parole",
