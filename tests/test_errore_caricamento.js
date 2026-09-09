@@ -39,7 +39,7 @@ const FILE_EPISODIO = 'inglese-it-gate.json';
 // cambia nel file, il test continua a valere; se qualcuno li riporta dentro
 // il codice, il test se ne accorge.
 const TESTI = JSON.parse(
-  fs.readFileSync(repoPath('data', 'it', 'istruzioni-moduli.json'), 'utf8')
+  fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8')
 ).erroreCaricamento;
 
 const risultati = [];

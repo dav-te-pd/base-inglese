@@ -9,7 +9,7 @@ const BASE = APP_URL;
 // fonte (CLAUDE.md regola 8), quindi è da lì che si guarda — e per queste
 // verifiche non serve nemmeno aprire il browser.
 const ISTRUZIONI = JSON.parse(
-  fs.readFileSync(repoPath('data', 'it', 'istruzioni-moduli.json'), 'utf8'));
+  fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }

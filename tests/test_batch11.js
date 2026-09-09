@@ -8,7 +8,7 @@ const BASE = APP_URL;
 // index.html, sparita insieme al fallback. Il file è la fonte, quindi è da lì
 // che si guarda, e per questa verifica il browser non serve.
 const MESSAGGI = JSON.parse(
-  fs.readFileSync(repoPath('data', 'it', 'messaggi-feedback.json'), 'utf8'));
+  fs.readFileSync(repoPath('data', 'inglese', 'it', 'messaggi-feedback.json'), 'utf8'));
 
 const mockInit = () => {
   window.__consoleWarnings = [];
