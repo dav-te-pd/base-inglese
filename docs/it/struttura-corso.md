@@ -65,24 +65,24 @@ Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verrà valutato:
 | 1 | `personalizzazione` — Your Story | — |
 | 2 | `meetTheStory` — Meet the Story | D |
 | 3 | `repeatAloud` — Repeat Aloud | A |
-| 4 | `quickMatchEngIta` — Match Practice `en→it` | A |
-| 5 | `quickMatchItaEng` — Match Practice `it→en` | A |
+| 4 | `matchEngIta` — Match Practice `en→it` | A |
+| 5 | `matchItaEng` — Match Practice `it→en` | A |
 | 6 | `flashcardAEngIta` — Flash Card `en→it` | A |
 | 7 | `flashcardAItaEng` — Flash Card `it→en` | A |
 | 8 | `repeatAloud` — Repeat Aloud | B |
-| 9 | `quickMatchEngIta` — Match Practice `en→it` | B |
-| 10 | `quickMatchItaEng` — Match Practice `it→en` | B |
+| 9 | `matchEngIta` — Match Practice `en→it` | B |
+| 10 | `matchItaEng` — Match Practice `it→en` | B |
 | 11 | `flashcardAEngIta` — Flash Card `en→it` | B |
 | 12 | `voicePractice` — Voice Practice | B |
 | 13 | `whyWeSayIt` — Why We Say It | D |
-| 14 | `quickMatchEngIta` — Match Practice `en→it` | C |
-| 15 | `quickMatchItaEng` — Match Practice `it→en` | C |
+| 14 | `matchEngIta` — Match Practice `en→it` | C |
+| 15 | `matchItaEng` — Match Practice `it→en` | C |
 | 16 | `voicePractice` — Voice Practice | C |
 | 17 | `dialogoAscoltaRipeti` — Dialogue: Listen & Repeat | D |
 | 18 | `dialogoRipetiATempo` — Dialogue: Repeat in Time | D |
 | 19 | `dialogoContinuo` — Dialogue: Real Dialogue | D |
-| 20 | `speedRoundEngIta` — Speed Match `en→it` | C |
-| 21 | `speedRoundItaEng` — Speed Match `it→en` | C |
+| 20 | `speedMatchEngIta` — Speed Match `en→it` | C |
+| 21 | `speedMatchItaEng` — Speed Match `it→en` | C |
 | 22 | `voiceCoach` — Voice Check | C |
 
 ### La logica dell'ordine
