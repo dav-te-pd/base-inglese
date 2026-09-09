@@ -66,7 +66,7 @@
       promotionStreak: 2
     },
     // ---- shared retry-queue safety valve ----
-    // Every module with a retry-queue mechanic (Speed Round, Quick Match,
+    // Every module with a retry-queue mechanic (Speed Match, Match Practice,
     // Flash Card, Voice Coach today) reads these SAME constants, not a
     // per-module copy.
     retryQueue: {
@@ -83,12 +83,12 @@
       attemptsReminderThreshold: 3
     },
     // ---- shared percentage-score scale ----
-    // Started as Speed Round's own end-of-module message bucket, but now
-    // every evaluated module (Speed Round, Quick Match, Flash Card, Voice
+    // Started as Speed Match's own end-of-module message bucket, but now
+    // every evaluated module (Speed Match, Match Practice, Flash Card, Voice
     // Coach) reads this SAME scale for its Schermata Finale message tone
     // (see percentageBucket()) — living in one module's own section was
     // misleading (nobody looking for "the app's thresholds" would think
-    // to check inside Speed Round) and an invitation for a second,
+    // to check inside Speed Match) and an invitation for a second,
     // duplicate set to appear later. Change these three numbers to retune
     // the alto/medio/basso split everywhere at once.
     percentageThresholds: { basso: 1, medio: 50, alto: 80 },
@@ -98,7 +98,7 @@
     // playXSound() function (see near sfxPlayTone), which reads ONLY this
     // catalog. The event, not the widget that triggered it, decides
     // whether — and which — sound plays.
-    //   corretto   — a single right answer/attempt (Speed Round, Quick
+    //   corretto   — a single right answer/attempt (Speed Match, Quick
     //                Match, Voice Practice/Voice Check per line, Flash
     //                Card's "Sì, la so" — one card of many, not a
     //                completion).
@@ -109,7 +109,7 @@
     //   countdown  — a per-line timer bar running out (Dialogo Ripeti a
     //                Tempo / Continuo).
     //   ready      — one note per digit of a 3-2-1 "get ready" countdown
-    //                (Speed Round, Dialogo Continuo), last digit higher.
+    //                (Speed Match, Dialogo Continuo), last digit higher.
     //   traguardo  — a module closes with a POSITIVE or NEUTRAL outcome.
     //                Never on Dialogo's "Non ancora", never on Voice
     //                Check's confirmed-mic-problem exit.
@@ -147,7 +147,7 @@
           durationMs: 120,
           volume: 0.08
         },
-        // The 3-2-1 "get ready" countdown (Speed Round's srRunCountdown,
+        // The 3-2-1 "get ready" countdown (Speed Match's srRunCountdown,
         // Dialogo Continuo's dgRunReadyCountdown) — one note per digit, all
         // equal except the LAST one (the "1"), which is slightly higher so
         // the final beat before starting is audibly distinct. Not to be
@@ -241,7 +241,7 @@
       // "Avanti" — no final ripasso pass for this module.
       maxAttemptsPerPhrase: 3
     },
-    // ---- Speed Round quiz (speedMatchEngIta / speedMatchItaEng modules) ----
+    // ---- Speed Match quiz (speedMatchEngIta / speedMatchItaEng modules) ----
     speedMatch: {
       // Seconds on the countdown bar before a question times out
       // (timeout is treated the same as a wrong answer).
@@ -261,7 +261,7 @@
       // judgment reads the same one) — none of the three is duplicated
       // here.
     },
-    // ---- Quick Match quiz (matchEngIta / matchItaEng modules) ----
+    // ---- Match Practice quiz (matchEngIta / matchItaEng modules) ----
     // Same multiple-choice/retry/mastery mechanics as speedMatch above
     // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
     // see the comment near those), just untimed: no timeLimitSeconds or
@@ -316,7 +316,7 @@
       // forced advance — see dgSuggestNext).
       pulsareDopoInattivita: 5000,
       // Dialogo Continuo only: the 3-2-1 shown before it auto-starts,
-      // same step timing as Speed Round's own countdown but its own key
+      // same step timing as Speed Match's own countdown but its own key
       // (not reused) so the two can be tuned independently later.
       countdownPre: 3,
       countdownStepMs: 800,
@@ -787,7 +787,7 @@
      Non dipende dalla specificità né dall'ordine: dipende solo da chi ha
      scritto la regola. È il bug che si è ripresentato cinque volte in
      questo progetto (.btn, .header-actions, header.app-header, le
-     schermate di Speed Round e Flash Card), sempre allo stesso modo:
+     schermate di Speed Match e Flash Card), sempre allo stesso modo:
      qualcuno aggiunge un display a una classe e non poteva sapere che
      quella classe sarebbe stata nascosta altrove.
 
@@ -1577,7 +1577,7 @@
      Help — a 3-column grid (job 7, 3rd collaudo) with Mappa pinned left,
      Spiegazione centered, Help pinned right (see .header-actions-row's
      own comment for why grid, not flex). When one or two are hidden
-     (per-screen, e.g. Speed Round's timed screens; or CLAUDE.md rule 10
+     (per-screen, e.g. Speed Match's timed screens; or CLAUDE.md rule 10
      on an evaluative summary) the remaining ones stay exactly where they
      are — nothing redistributes into the gap. Each module's own JS still
      decides which of ITS buttons are hidden and when — this only
@@ -2582,9 +2582,9 @@
   /* ---------- voice coach view ---------- */
   /* job 8 (3rd collaudo): the "1 / 7" progress counter used to have its
      own .vc-counter rule here — smaller, unbolded, faded to 0.6 opacity —
-     visibly different from Speed Round/Quick Match/Flash Card's own
+     visibly different from Speed Match/Match Practice/Flash Card's own
      counters even though it's the exact same kind of information. Now
-     shares .sr-counter (see near .sr-direction) like Quick Match already
+     shares .sr-counter (see near .sr-direction) like Match Practice already
      did, instead of a fourth near-duplicate rule. */
 
   .vc-cue {
@@ -2747,10 +2747,10 @@
 
   #attempt-popup .overlay-backdrop { cursor: default; }
 
-  /* ---------- quick match view ----------
-     Screens/prompt/options/reveal/summary all reuse Speed Round's own
+  /* ---------- match practice view ----------
+     Screens/prompt/options/reveal/summary all reuse Speed Match's own
      #qm-*-screen ids (own, since they're different DOM elements) but
-     Speed Round's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
+     Speed Match's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
      .sr-reveal/.sr-summary CLASSES verbatim — see the markup comment on
      view-match. Only the Ita-Eng per-option mini listen button
      needs a new layout rule. */
@@ -2985,7 +2985,7 @@
     cursor: not-allowed;
   }
 
-  /* ---------- speed round view ---------- */
+  /* ---------- speed match view ---------- */
   #sr-start-screen,
   #sr-retry-intro-screen,
   #sr-quiz-screen,
@@ -3173,7 +3173,7 @@
      .fc-counter rule here, nearly identical to .sr-counter already
      (same family/size/weight, just a different margin/no letter-
      spacing) — now shares .sr-counter directly instead of a near-
-     duplicate, same as Quick Match and Voice Coach's own counters. */
+     duplicate, same as Match Practice and Voice Coach's own counters. */
 
   #fc-card-screen,
   #fc-retry-intro-screen,
@@ -3727,8 +3727,8 @@
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
                generated by the shared renderRetryIntroScreen() (CLAUDE.md
                rule 13, see near hydrateIcons). Shown before re-asking any
-               sentence left with 0-1 stars, same mechanic as Speed Round/
-               Quick Match/Flash Card's own retry pass. -->
+               sentence left with 0-1 stars, same mechanic as Speed Match/
+               Match Practice/Flash Card's own retry pass. -->
           <div id="voice-coach-retry-intro-screen" class="module-screen" hidden></div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
@@ -3740,8 +3740,8 @@
       </div>
     </section>
 
-    <!-- ============ VIEW: QUICK MATCH MODULES (Eng-Ita / Ita-Eng) ============
-         Same multiple-choice/retry/mastery mechanics as Speed Round (see
+    <!-- ============ VIEW: MATCH PRACTICE MODULES (Eng-Ita / Ita-Eng) ============
+         Same multiple-choice/retry/mastery mechanics as Speed Match (see
          recordMultipleChoiceResult/buildMultipleChoiceOptions, shared by
          both) with no timer, no countdown bar, no 3-2-1 countdown screen
          and no "Mostra traduzione" (the answer itself IS the translation
@@ -3756,7 +3756,7 @@
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge" id="match-badge">Quick Match</span>
+              <span class="badge" id="match-badge">Match Practice</span>
               <span class="module-row-type" id="match-type-badge"></span>
             </div>
             <div class="header-actions-row">
@@ -3766,7 +3766,7 @@
             </div>
           </div>
 
-          <!-- START SCREEN: same dual-purpose pattern as Speed Round (full
+          <!-- START SCREEN: same dual-purpose pattern as Speed Match (full
                howItWorks the first time, short "Pronto?" prompt after) —
                it just leads straight into the quiz instead of gating a
                countdown, since there's no countdown here. -->
@@ -3788,7 +3788,7 @@
           <div id="qm-retry-intro-screen" hidden></div>
 
           <!-- QUIZ SCREEN: .sr-counter/.sr-direction/.sr-prompt/.sr-options/
-               .sr-reveal/.sr-summary below are Speed Round's own classes,
+               .sr-reveal/.sr-summary below are Speed Match's own classes,
                reused as-is (CLAUDE.md rule 13) — same look, zero new CSS,
                since nothing about their styling is actually Speed-Match-
                specific. qm-prompt-audio only ever fills in for the en-it
@@ -3845,7 +3845,7 @@
             </div>
           </div>
 
-          <!-- START SCREEN: same dual-purpose pattern as Speed Round/Quick
+          <!-- START SCREEN: same dual-purpose pattern as Speed Match/Quick
                Match — full howItWorks the first time, short "Pronto?"
                prompt after. -->
           <div id="dg-start-screen">
@@ -3904,7 +3904,7 @@
       </div>
     </section>
 
-    <!-- ============ VIEW: SPEED ROUND MODULES (Eng-Ita / Ita-Eng) ============
+    <!-- ============ VIEW: SPEED MATCH MODULES (Eng-Ita / Ita-Eng) ============
          One shared view for both directions — module.kind picks the
          direction and the istruzioni-moduli.json entry, everything else
          (markup, CSS, JS) is identical. Spiegazione+Help only appear on
@@ -3922,7 +3922,7 @@
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge" id="speed-match-badge">Speed Round</span>
+              <span class="badge" id="speed-match-badge">Speed Match</span>
               <span class="module-row-type" id="speed-match-type-badge"></span>
             </div>
             <div class="header-actions-row">
@@ -3992,7 +3992,7 @@
          One shared view/component for every level+direction combo —
          module.grade/flashcardDirection (see EPISODES) pick which grade's
          items to show and in which direction; nothing here is grade-specific. Unlike
-         Speed Round this reuses the standard header-actions + Help
+         Speed Match this reuses the standard header-actions + Help
          pattern, always visible except Guarda on the summary screen
          (CLAUDE.md rule 10). -->
     <section id="view-flashcard" class="view">
@@ -4362,8 +4362,8 @@
 
   /* ============================================================
      SHARED: "Box Doppia Scelta" + "Schermata Finale" components
-     (CLAUDE.md rule 13) — used by Voice Coach, Flash Card, Speed Round,
-     Quick Match, and Dialogo Ascolta e Ripeti. Configured once here, at
+     (CLAUDE.md rule 13) — used by Voice Coach, Flash Card, Speed Match,
+     Match Practice, and Dialogo Ascolta e Ripeti. Configured once here, at
      boot, before any module's own event listeners are wired further
      down in this same script — every target element already exists in
      the static HTML by the time this runs (this <script> sits at the
@@ -4387,7 +4387,7 @@
   }
 
   // Schermata Finale: the .sr-summary/.sr-summary-title shape (already
-  // shared verbatim as CSS classes by Speed Round/Quick Match/Flash
+  // shared verbatim as CSS classes by Speed Match/Match Practice/Flash
   // Card) plus the one explicit completion button every module needs
   // (CLAUDE.md rule 7) — same "Ho finito, torna alla mappa" label
   // everywhere, so it isn't re-typed per module either. Job 6 (3rd
@@ -4407,7 +4407,7 @@
 
   // Schermata Ripasso: the message shown once before a new retry pass
   // starts (whatever went wrong/unanswered comes back) — same panel shape
-  // for every module with a retry queue (Speed Round, Quick Match, Flash
+  // for every module with a retry queue (Speed Match, Match Practice, Flash
   // Card, Voice Coach), only continueBtnId/continueLabel differ per
   // caller. Deliberately its own visually prominent treatment (not a
   // plain page header + loose text like before) since this is an
@@ -4475,7 +4475,7 @@
   }
 
   // The ONE percentage scale reused everywhere a whole-session score needs
-  // an alto/medio/basso bucket — Speed Round, Quick Match, Flash Card and
+  // an alto/medio/basso bucket — Speed Match, Match Practice, Flash Card and
   // Voice Coach all read this SAME top-level CONFIG.percentageThresholds,
   // not a per-module copy.
   function percentageBucket(pct) {
@@ -4620,7 +4620,7 @@
   // module, going home — stops everything currently in flight for the
   // view being left: speech synthesis and every module's own pending
   // timers/sequences (Dialogo's line timer/suggestion/ready-countdown,
-  // Voice Coach's recording+its timeout/timer, Speed Round's per-question
+  // Voice Coach's recording+its timeout/timer, Speed Match's per-question
   // timer+its own 3-2-1, Flash Card's card-slide timeout). Called from
   // showView() itself — the one function every module-open/back-to-map/
   // go-home path already routes through — instead of each module
@@ -7534,7 +7534,7 @@
   var vcModule = null;
   var vcVariant = 'check'; // 'practice' | 'check' — set from module.voiceVariant in openVoiceCoach
   var vcLines = [];
-  // Queue-based pass navigation (same shape as Quick Match's qmQueue/
+  // Queue-based pass navigation (same shape as Match Practice's qmQueue/
   // qmRetryQueue/qmPassIndex/qmPassTotal, CLAUDE.md rule 13): the main
   // pass walks every line once; anything left with 0-1 stars at that
   // point comes back in a retry pass (Schermata Ripasso), repeating
@@ -7821,13 +7821,13 @@
   }
 
   // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
-  // Round/Quick Match/Flash Card reuse this same function+markup, never a
+  // Round/Match Practice/Flash Card reuse this same function+markup, never a
   // copy each. wasCorrect picks the message group from
   // messaggi-feedback.json's valvolaSicurezzaMessages: nonRiuscita (still
   // hasn't gotten it right at the max attempt) vs riuscita (got it right
   // despite needing several tries) — same reassuring-vs-recognition split
   // for every caller. onRetry/onNext are the two actions; a caller with no
-  // meaningful "try again right now" step (Speed Round/Quick Match/Flash
+  // meaningful "try again right now" step (Speed Match/Match Practice/Flash
   // Card, where an answer is already locked in once submitted) passes
   // onRetry as null/undefined and only "Vai avanti" shows.
   var attemptPopupOnRetry = null;
@@ -8111,7 +8111,7 @@
     }
 
     // Voice Practice only (job: "sdoppiare Voice Coach") — feeds the same
-    // per-word mastery store Speed Round/Quick Match/Flash Card use, a
+    // per-word mastery store Speed Match/Match Practice/Flash Card use, a
     // real measurement of this word in THIS sentence position; never
     // touched for Voice Check (unchanged from before the split). Unit id
     // is position-based (line + word index), stable across sessions since
@@ -8157,7 +8157,7 @@
     // Richiamo (Voice Check only — Voice Practice has no final ripasso
     // pass, see the module comment): a 0-1 star result queues this line
     // for a retry pass at the end of the module (same shared
-    // CONFIG.retryQueue.maxAttempts safety valve as Speed Round/Quick
+    // CONFIG.retryQueue.maxAttempts safety valve as Speed Match/Quick
     // Match/Flash Card — attemptNum already IS that counter here, no
     // separate one needed, CLAUDE.md rule 13). Membership always reflects
     // the LATEST evaluation of this viewing.
@@ -8335,12 +8335,12 @@
   });
 
   /* ============================================================
-     SHARED: multiple-choice quiz logic (Speed Round + Quick Match)
+     SHARED: multiple-choice quiz logic (Speed Match + Match Practice)
      Direction label, 4-option builder, and mastery/retry-queue
      recording are the same mechanics in both module types (CLAUDE.md
      rule 13) — module-specific state (own retryAttempts/retryQueue,
      own mastery unitId prefix) is passed in rather than hardcoded
-     here, so Speed Round and Quick Match keep fully independent retry
+     here, so Speed Match and Match Practice keep fully independent retry
      queues and never share mastery entries for the same vocabulary
      item. The max-attempts threshold itself is NOT module-specific —
      every caller passes the same CONFIG.retryQueue.maxAttempts.
@@ -8398,8 +8398,8 @@
   }
 
   /* ============================================================
-     MODULES: QUICK MATCH ENG-ITA / QUICK MATCH ITA-ENG
-     Same multiple-choice/retry/mastery mechanics as Speed Round below
+     MODULES: MATCH PRACTICE ENG-ITA / MATCH PRACTICE ITA-ENG
+     Same multiple-choice/retry/mastery mechanics as Speed Match below
      (shared via buildMultipleChoiceOptions/recordMultipleChoiceResult
      above — CLAUDE.md rule 13), minus everything timer-related: no
      time limit, no progress bar, no countdown, no Indietro (Speed
@@ -8454,14 +8454,14 @@
     // buttons existed in markup but were only ever un-hidden on start/
     // summary — bug fix, 8th collaudo). Spiegazione still hides on the
     // Schermata Finale alone (CLAUDE.md rule 10 — nothing left to explain
-    // there); Help never hides. No timer in Quick Match, so neither is
-    // ever disabled either (unlike Speed Round's srStartTimer/
+    // there); Help never hides. No timer in Match Practice, so neither is
+    // ever disabled either (unlike Speed Match's srStartTimer/
     // srDisableOptions lock).
     document.getElementById('match-watch-btn').hidden = name === 'summary';
     document.getElementById('match-help-btn').hidden = false;
   }
 
-  // Same dual-purpose start screen as Speed Round: full howItWorks the
+  // Same dual-purpose start screen as Speed Match: full howItWorks the
   // first time, short "Pronto?" prompt after — it just leads straight
   // into the quiz instead of gating a countdown, since there's none here.
   function qmRenderStartScreen(module) {
@@ -8479,8 +8479,8 @@
   }
 
   // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
-  // own mastery unitId prefix and own retry queue keep Quick Match's
-  // mastery independent from Speed Round's (the max-attempts threshold
+  // own mastery unitId prefix and own retry queue keep Match Practice's
+  // mastery independent from Speed Match's (the max-attempts threshold
   // itself is the one shared CONFIG.retryQueue.maxAttempts).
   function qmRecordResult(correct, declaredNonAttempt) {
     var attemptNum = recordMultipleChoiceResult({
@@ -8578,7 +8578,7 @@
 
   // Shared by a wrong tap and "Non lo so": reveal the correct answer and
   // wait for an explicit "Avanti" instead of auto-advancing, same pacing
-  // as Speed Round. Reads the answer straight off qmCurrentOptions rather
+  // as Speed Match. Reads the answer straight off qmCurrentOptions rather
   // than recomputing the direction logic again.
   function qmShowReveal() {
     var correctOpt = qmCurrentOptions.find(function (o) { return o.correct; });
@@ -8769,9 +8769,9 @@
   var dgFurthestIndex = -1; // Ripeti a Tempo only: highest dialogue index played this viewing — see dgApplySequenceLock
   var dgPaused = false;
   // Per-line countdown bar state (Ripeti a Tempo/Continuo only) — a
-  // single active timer at a time, same pattern as Speed Round's own
+  // single active timer at a time, same pattern as Speed Match's own
   // srTimeoutId, but pause-aware (dgPauseLineTimer/dgResumeLineTimer)
-  // since Dialogo Continuo can pause mid-bar and Speed Round never needs to.
+  // since Dialogo Continuo can pause mid-bar and Speed Match never needs to.
   var dgLineTimerTimeoutId = null;
   var dgLineTimerFillEl = null;
   var dgLineTimerRemainingMs = 0;
@@ -8799,7 +8799,7 @@
     document.getElementById('dialogo-help-btn').hidden = false;
   }
 
-  // Same dual-purpose start screen as Speed Round/Quick Match: full
+  // Same dual-purpose start screen as Speed Match/Match Practice: full
   // howItWorks the first time, short "Pronto?" prompt after.
   function dgRenderStartScreen(module) {
     var dismissed = isIntroDismissed(module.kind, getUserName());
@@ -8999,7 +8999,7 @@
   // bar inside a bubble, using the shared startTimerBar/freezeTimerBar
   // (see near srStartTimer) — remaining time is tracked in ms so
   // Dialogo Continuo's Pausa can freeze and later resume it exactly
-  // where it left off, unlike Speed Round's simpler one-shot timer.
+  // where it left off, unlike Speed Match's simpler one-shot timer.
   // Job 8 (2nd collaudo) + job 2 (3rd collaudo): keeps whichever toolbar
   // button this profile actually has (dg-next-line-btn for Ripeti a
   // Tempo, dg-pause-btn for Continuo — dgSetupToolbar never renders
@@ -9227,8 +9227,8 @@
   }
 
   // Dialogo Continuo only: the 3-2-1 before it starts playing on its
-  // own, same shape as Speed Round's srRunCountdown (not the same
-  // function — Speed Round always ends the same way, this one starts a
+  // own, same shape as Speed Match's srRunCountdown (not the same
+  // function — Speed Match always ends the same way, this one starts a
   // chain instead — CLAUDE.md rule 11 notes the resulting small
   // duplication rather than forcing a shared abstraction over it).
   function dgRunReadyCountdown() {
@@ -9415,7 +9415,7 @@
   });
 
   /* ============================================================
-     MODULES: SPEED ROUND ENG-ITA / SPEED ROUND ITA-ENG
+     MODULES: SPEED MATCH ENG-ITA / SPEED MATCH ITA-ENG
      Two separate map modules sharing one view and this one JS section —
      module.kind fixes the direction and the istruzioni-moduli.json entry
      for the whole session, everything else is identical. Flow: a start
@@ -9451,7 +9451,7 @@
   var srCurrentOptions = [];
   var srTimeoutId = null;
   var srCountdownTimeoutId = null;
-  // sfxAudioCtx is NOT Speed Round's own state despite sitting in this
+  // sfxAudioCtx is NOT Speed Match's own state despite sitting in this
   // block — it's the one shared AudioContext behind every sfxPlay*
   // function below, used by every module (censimento audit, job 1: the
   // old "sr" prefix on the whole sound library read as Speed-Match-only
@@ -9515,8 +9515,8 @@
   // button; each function reads ONLY its own CONFIG.sound.events entry,
   // so retuning a pitch/volume/duration in config is the only way to
   // change what plays, anywhere. "sfx" (not "sr"): this whole family is
-  // called from every module — Dialogo, Voice Coach, Quick Match, Flash
-  // Card, Speed Round alike — never Speed Round's own, so it needed a
+  // called from every module — Dialogo, Voice Coach, Match Practice, Flash
+  // Card, Speed Match alike — never Speed Match's own, so it needed a
   // prefix that says "global" the moment it stopped being one module's
   // (censimento audit, job 1). ----
   function sfxPlayCorrectSound() {
@@ -9531,7 +9531,7 @@
   // Traguardo: three ascending notes via sfxPlayTone in sequence (CLAUDE.md
   // rule 13 — no new synthesis technique), CONFIG.sound.events.traguardo's
   // own frequencies/durations/gap. Plays whenever a module closes with a
-  // positive or neutral outcome — Speed Round, Quick Match and Flash
+  // positive or neutral outcome — Speed Match, Match Practice and Flash
   // Card's own Finale (unconditionally: those have no verde/giallo
   // distinction), Dialogo's Finale only on "Sì, lo so" (never on "Non
   // ancora" — see dgFinishModule), Voice Practice/Voice Check's own Finale
@@ -9576,10 +9576,10 @@
   }
 
   // Shared, duration-as-parameter timer-bar mechanics (CLAUDE.md rule 13)
-  // — Speed Round below passes its own fixed CONFIG.speedMatch.
+  // — Speed Match below passes its own fixed CONFIG.speedMatch.
   // timeLimitSeconds; Dialogo Ripeti a Tempo/Continuo pass a different,
   // per-line duration instead (see dgLineDurationMs). Pure DOM/CSS —
-  // timeout scheduling stays with each caller since Speed Round's is a
+  // timeout scheduling stays with each caller since Speed Match's is a
   // simple one-shot while Dialogo's also needs to be pausable (see
   // dgPauseLineTimer/dgResumeLineTimer).
   function startTimerBar(fillEl, ms) {
@@ -9612,7 +9612,7 @@
     freezeTimerBar(document.getElementById('sr-timerbar-fill'));
   }
 
-  // Same non-attempt bug as Quick Match's qmDisableOptions (rule 13: mirrors
+  // Same non-attempt bug as Match Practice's qmDisableOptions (rule 13: mirrors
   // that fix exactly) — "Non lo so" must lock together with the options,
   // not separately, or a fast tap can overwrite a just-recorded correct
   // answer with a straight-to-rosso non-attempt.
@@ -9663,8 +9663,8 @@
   // flipping" (applyMasteryResult's normal one-level-at-a-time demotion is
   // untouched — timeout and a wrong tap still go through it as before).
   // Thin wrapper around the shared recordMultipleChoiceResult (rule 13) —
-  // supplies Speed Round's own state so its mastery unitId prefix and
-  // retry queue stay independent from Quick Match's (the max-attempts
+  // supplies Speed Match's own state so its mastery unitId prefix and
+  // retry queue stay independent from Match Practice's (the max-attempts
   // threshold itself is the one shared CONFIG.retryQueue.maxAttempts).
   function srRecordResult(correct, declaredNonAttempt) {
     var attemptNum = recordMultipleChoiceResult({
@@ -9985,7 +9985,7 @@
   // separate from fcRetryAttempts which only counts wrong ones) — jobs
   // 3+4's safety-valve popup fires when it reaches
   // CONFIG.retryQueue.attemptsReminderThreshold, same mechanic as Speed
-  // Round/Quick Match's recordMultipleChoiceResult.
+  // Round/Match Practice's recordMultipleChoiceResult.
   function fcRecordResult(result) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcGrade + ':' + fcCurrentItem.id + ':' + fcDirection;
@@ -10580,8 +10580,8 @@
   // the new utterance), so this must stay out of its way. Every element
   // whose own click handler calls toggleSpeak directly is excluded:
   //   - [data-say]: every "normal" listen/rate button (Repeat Aloud,
-  //     Story Cards, Voice Coach, Quick Match's prompt, Flash Card)
-  //   - [data-qm-listen-index]: Quick Match's per-option Mini Blocco
+  //     Story Cards, Voice Coach, Match Practice's prompt, Flash Card)
+  //   - [data-qm-listen-index]: Match Practice's per-option Mini Blocco
   //     Ascolto (it-en direction) — a future module reusing this same
   //     mini-listen pattern needs the same marker
   //   - .dg-bubble: Dialogo's whole bubble IS the listen trigger (no

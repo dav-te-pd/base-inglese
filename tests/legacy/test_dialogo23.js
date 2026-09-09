@@ -87,7 +87,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Regression: Speed Round timer bar after generalization ============
+  // ============ Regression: Speed Match timer bar after generalization ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -99,15 +99,15 @@ async function run() {
     await page.click('#sr-ready-btn');
     await page.waitForTimeout(4200); // 3-2-1 countdown
     const quizVisible = await page.isVisible('#sr-quiz-screen');
-    log('[Regression] Speed Round reaches quiz screen after countdown', quizVisible);
+    log('[Regression] Speed Match reaches quiz screen after countdown', quizVisible);
     const transitionDuration = await page.evaluate(() => getComputedStyle(document.getElementById('sr-timerbar-fill')).transitionDuration);
-    log('[Regression] Speed Round timer bar transition duration is 10s (CONFIG.speedMatch.timeLimitSeconds, unaffected by generalization)', transitionDuration === '10s');
+    log('[Regression] Speed Match timer bar transition duration is 10s (CONFIG.speedMatch.timeLimitSeconds, unaffected by generalization)', transitionDuration === '10s');
     const opts = await page.$$eval('#sr-options .sr-option', els => els.map(e => e.getAttribute('data-sr-index')));
     await page.click('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]');
     await page.waitForTimeout(150);
     const cls = await page.getAttribute('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]', 'class');
-    log('[Regression] Speed Round option click still classifies correct/wrong (srFreezeTimer via shared freezeTimerBar)', cls.includes('is-correct') || cls.includes('is-wrong'));
-    log('[Regression] No JS errors on Speed Round timer regression', errors.length === 0);
+    log('[Regression] Speed Match option click still classifies correct/wrong (srFreezeTimer via shared freezeTimerBar)', cls.includes('is-correct') || cls.includes('is-wrong'));
+    log('[Regression] No JS errors on Speed Match timer regression', errors.length === 0);
     await page.close();
   }
 

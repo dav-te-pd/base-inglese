@@ -241,7 +241,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ TASK 3: Quick Match / Speed Round / Flash Card now play Traguardo on completion ============
+  // ============ TASK 3: Match Practice / Speed Match / Flash Card now play Traguardo on completion ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -272,13 +272,13 @@ async function run() {
     }, null, { timeout: 20000 }).catch(() => {});
     const tones = await page.evaluate(() => window.__playedTones || []);
     const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
-    log('[3] Quick Match completion now plays the Traguardo sound (3 ascending notes)', traguardoTones.length >= 3);
+    log('[3] Match Practice completion now plays the Traguardo sound (3 ascending notes)', traguardoTones.length >= 3);
     const retryIntroHtmlHasClass = await page.evaluate(() => {
       // Even if never shown, verify the shared component actually generated .retry-intro markup.
       return document.getElementById('qm-retry-intro-screen').innerHTML.indexOf('retry-intro') !== -1;
     });
-    log('[3] Quick Match retry-intro screen markup comes from the shared renderRetryIntroScreen (.retry-intro class present)', retryIntroHtmlHasClass);
-    log('[3] No JS errors on Quick Match completion', errors.length === 0);
+    log('[3] Match Practice retry-intro screen markup comes from the shared renderRetryIntroScreen (.retry-intro class present)', retryIntroHtmlHasClass);
+    log('[3] No JS errors on Match Practice completion', errors.length === 0);
     await page.close();
   }
 

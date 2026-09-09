@@ -90,7 +90,7 @@ async function run() {
     await page.close();
   }
 
-  // --- Emoji removal + Quick Match text check ---
+  // --- Emoji removal + Match Practice text check ---
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];

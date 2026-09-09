@@ -1,4 +1,4 @@
-// Pilotaggio condiviso dei moduli a scelta multipla (Speed Round, Quick
+// Pilotaggio condiviso dei moduli a scelta multipla (Speed Match, Quick
 // Match) per i test.
 //
 // Nasce dalla correzione di Job11 in test_batch15.js e vale per tutti i
@@ -91,7 +91,7 @@ function readQuizState(page, prefix) {
         return { text: b.textContent.trim(), disabled: b.disabled };
       }),
       advanceVisible: vis(p + '-advance-btn'),
-      // Speed Round apre con "Pronto? Via!", Quick Match con "Inizia".
+      // Speed Match apre con "Pronto? Via!", Match Practice con "Inizia".
       startButtonId: has(p + '-ready-btn') ? p + '-ready-btn' : p + '-start-btn'
     };
   }, prefix);
@@ -148,7 +148,7 @@ async function playThroughQuiz(page, prefix, options) {
     }
 
     if (st.screen === 'countdown') {
-      // Il 3-2-1 iniziale di Speed Round: si aspetta che finisca da solo,
+      // Il 3-2-1 iniziale di Speed Match: si aspetta che finisca da solo,
       // senza indovinarne la durata.
       await waitForQuizChange(page, function (id) {
         var e = document.getElementById(id);

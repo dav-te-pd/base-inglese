@@ -301,8 +301,8 @@ toccato.
 | Prefisso / nome | Modulo che nomina | Cosa è oggi | Dove compare |
 |---|---|---|---|
 | `se*`, `storyCards`, `story-cards-*` | **Story Cards** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openStoryCards`, `renderStoryCards`, `storyCardsSkillIds`, `storyCardsRefreshExplanationStates`, `storyCardsIsUnlocked`, `storyCardsDeclarationsKey`, `storyCardsExplanationStatsKey`, `addSeExplanationStat`, …), la vista `view-story-cards`, ~20 id HTML, **e la chiave dati `storyCardsCompleteMessages` in `messaggi-feedback.json`** |
-| `match*`, `qm*` | **Quick Match** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
-| `speedMatch*`, `sr*` | **Speed Round** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
+| `match*`, `qm*` | **Match Practice** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
+| `speedMatch*`, `sr*` | **Speed Match** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
 | `flashcard` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
 

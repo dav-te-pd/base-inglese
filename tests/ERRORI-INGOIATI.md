@@ -27,6 +27,42 @@ sotto sono esattamente quella distinzione.
 
 ---
 
+## ⓪ Le asserzioni che nominano una cosa per negarla — e che nessuno strumento vede
+
+**È la famiglia più insidiosa delle tre, e non ha un conteggio: ha un esempio.**
+
+`tests/test_outcome_step_ids.js:375` verifica che un nome tolto **non** compaia:
+
+```js
+log('[D] Nessun titolo del pannello nomina un modulo che non esiste più',
+  testo.titoli.indexOf('Speak Easy') === -1);
+```
+
+**Durante la rinomina di «Speak Easy» in «Story Cards», una sostituzione
+meccanica l'avrebbe riscritta in `indexOf('Story Cards') === -1`.** Il test
+sarebbe rimasto **verde**, il conteggio delle asserzioni **invariato**, e da quel
+momento avrebbe provato l'esatto contrario: che il nome NUOVO non compaia — cioè
+avrebbe cominciato a fallire il giorno in cui l'app funzionava.
+
+**Perché nessuno dei nostri strumenti la prende:**
+
+| Strumento | Perché non la vede |
+|---|---|
+| la suite | resta verde: l'asserzione gira e passa |
+| `conta-asserzioni.js` | il numero non cambia: nessuna asserzione è sparita |
+| la verifica per sottrazione | il nome vecchio **è** sparito, come doveva |
+
+**La regola operativa, ed è l'unica difesa che abbiamo:** prima di una rinomina,
+si cercano le asserzioni che contengono il nome vecchio **dentro un confronto**
+(`indexOf`, `===`, `includes`) invece che dentro un'etichetta di log. Quelle si
+leggono una per una: un nome citato per essere **negato** non si rinomina mai.
+
+*(Nella rinomina 5 sono state trovate così, e lasciate. Nelle rinomine 3 e 4 il
+controllo è stato fatto e non ce n'erano: 46 occorrenze dentro stringhe, tutte
+etichette di `log()`.)*
+
+---
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

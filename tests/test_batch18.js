@@ -217,7 +217,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 1d: single choke point — Quick Match's Mini Blocco Ascolto still REPLACES, not stops ============
+  // ============ JOB 1d: single choke point — Match Practice's Mini Blocco Ascolto still REPLACES, not stops ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];

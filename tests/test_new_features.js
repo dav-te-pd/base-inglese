@@ -129,7 +129,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ D: Speed Round 3-2-1 plays a tone per digit, last one higher ============
+  // ============ D: Speed Match 3-2-1 plays a tone per digit, last one higher ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -144,10 +144,10 @@ async function run() {
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
     const tones = await page.evaluate(() => window.__playedTones);
     const readyTones = tones.filter(t => t.freq === 1568 || t.freq === 1976);
-    log('[D] Speed Round 3-2-1 plays exactly 3 tones', readyTones.length === 3);
-    log('[D] Speed Round: first two ticks use freq 1568', readyTones.length === 3 && readyTones[0].freq === 1568 && readyTones[1].freq === 1568);
-    log('[D] Speed Round: last tick uses finalFreq 1976', readyTones.length === 3 && readyTones[2].freq === 1976);
-    log('[D] No JS errors on Speed Round countdown', errors.length === 0);
+    log('[D] Speed Match 3-2-1 plays exactly 3 tones', readyTones.length === 3);
+    log('[D] Speed Match: first two ticks use freq 1568', readyTones.length === 3 && readyTones[0].freq === 1568 && readyTones[1].freq === 1568);
+    log('[D] Speed Match: last tick uses finalFreq 1976', readyTones.length === 3 && readyTones[2].freq === 1976);
+    log('[D] No JS errors on Speed Match countdown', errors.length === 0);
     await page.close();
   }
 
@@ -292,7 +292,7 @@ async function run() {
       var view = document.getElementById('view-match');
       return !!view && !view.hidden;
     });
-    log('[Regression] Quick Match still opens', qmVisible);
+    log('[Regression] Match Practice still opens', qmVisible);
     await page.close();
   }
 

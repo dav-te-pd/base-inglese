@@ -51,7 +51,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ JOB 2A: Quick Match "alto" bucket (answer everything right) ============
+  // ============ JOB 2A: Match Practice "alto" bucket (answer everything right) ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -105,7 +105,7 @@ async function run() {
       await page.waitForTimeout(150);
     }
     const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
-    log('[Job2A] Quick Match reached Schermata Finale (learned-answer strategy)', summaryVisible);
+    log('[Job2A] Match Practice reached Schermata Finale (learned-answer strategy)', summaryVisible);
     if (summaryVisible) {
       const subtitle = await page.$eval('#qm-summary-title-sub', el => el.textContent).catch(() => null);
       console.log('    -> subtitle: "' + subtitle + '"');

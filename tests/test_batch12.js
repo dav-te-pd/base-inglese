@@ -275,7 +275,7 @@ async function run() {
     log('[Job7] Voice Practice e Voice Check hanno i loro nomi',
       row('voicePractice').title === 'Voice Practice' && row('voiceCoach').title === 'Voice Check');
     log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === 'Dialogue: Real Dialogue');
-    log('[Job7] Speed Round si chiama Speed Match in entrambe le direzioni',
+    log('[Job7] Speed Match si chiama Speed Match in entrambe le direzioni',
       row('speedMatchEngIta').title.indexOf('Speed Match') === 0 && row('speedMatchItaEng').title.indexOf('Speed Match') === 0);
     // I due moduli nati dal componente della storia: nomi nuovi, stessa
     // categoria Studio.

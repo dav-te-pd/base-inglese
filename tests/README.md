@@ -287,7 +287,7 @@ Due censimenti, e servono in due momenti diversi di uno stesso rosso.
 millisecondi e subito dopo verifica qualcosa. Quando la CI segnala un rosso
 intermittente, si guarda lì prima di sospettare una regressione dell'app.
 
-`ERRORI-INGOIATI.md` elenca i `.catch(() => {})`, distinti in tre famiglie —
+`ERRORI-INGOIATI.md` elenca i `.catch(() => {})`, distinti in tre famiglie, **più una famiglia ⓪ che non riguarda i `.catch`**: le asserzioni che nominano un nome per **negarlo**, e che una rinomina meccanica riscriverebbe lasciandole verdi mentre provano il contrario. Nessuno dei tre strumenti (suite, conteggio asserzioni, verifica per sottrazione) le vede —
 attese soppresse, click che devono riuscire, opzionali legittimi. **Si guarda
 lì quando il rosso arriva da un punto che non lo spiega:** un `.catch` vuoto
 sopprime l'errore dove nasce e lo fa comparire dove non si può più
@@ -326,7 +326,7 @@ aprire il browser. Un riordino futuro non tocca più nessun test.
 
 Un elemento con l'attributo `hidden` che resta visibile perché una regola
 CSS gli dà un `display` proprio: è successo cinque volte in questo progetto
-(`.btn`, `.header-actions`, `header.app-header`, le schermate di Speed Round
+(`.btn`, `.header-actions`, `header.app-header`, le schermate di Speed Match
 e Flash Card). Non è sfortuna — `[hidden]{display:none}` arriva dal foglio
 predefinito del browser, il livello più debole della cascata, e qualunque
 regola d'autore lo batte.
@@ -365,6 +365,6 @@ che, di suo, nascondeva le regressioni.
 - `serve.js` — server statico senza dipendenze, usato da `npm run serve` e
   da `run_full_regression.sh`.
 - `quiz-driver.js` — pilotaggio condiviso dei moduli a scelta multipla (Speed
-  Round, Quick Match): sceglie le risposte dai dati dell'episodio invece che
+  Round, Match Practice): sceglie le risposte dai dati dell'episodio invece che
   dalla posizione dei pulsanti, e avanza aspettando cambiamenti di stato
   invece di tempi fissi.

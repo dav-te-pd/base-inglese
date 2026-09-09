@@ -113,7 +113,7 @@ async function run() {
     await page.close();
   }
 
-  // --- Regression: Quick Match still works with shared CONFIG.retryQueue.maxAttempts ---
+  // --- Regression: Match Practice still works with shared CONFIG.retryQueue.maxAttempts ---
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -123,12 +123,12 @@ async function run() {
     await page.click('[data-module="matchEngIta"]');
     await page.waitForTimeout(300);
     const introVisible = await page.isVisible('#qm-start-screen');
-    log('[Regression] Quick Match start screen visible', introVisible);
+    log('[Regression] Match Practice start screen visible', introVisible);
     await page.waitForFunction(() => document.getElementById('qm-start-btn') && !document.getElementById('qm-start-btn').disabled);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(200);
     const quizVisible = await page.isVisible('#qm-quiz-screen');
-    log('[Regression] Quick Match reaches quiz screen', quizVisible);
+    log('[Regression] Match Practice reaches quiz screen', quizVisible);
     // Always click option 0 to exercise the shared safety valve to completion.
     let iterations = 0;
     while (iterations++ < 150) {
@@ -144,12 +144,12 @@ async function run() {
       await page.waitForTimeout(650);
     }
     const qmSummaryVisible = await page.isVisible('#qm-summary-screen');
-    log('[Regression] Quick Match still terminates via shared safety valve', qmSummaryVisible);
-    log('[Regression] No JS errors on Quick Match', errors.length === 0);
+    log('[Regression] Match Practice still terminates via shared safety valve', qmSummaryVisible);
+    log('[Regression] No JS errors on Match Practice', errors.length === 0);
     await page.close();
   }
 
-  // --- Regression: Speed Round still works with shared CONFIG.retryQueue.maxAttempts ---
+  // --- Regression: Speed Match still works with shared CONFIG.retryQueue.maxAttempts ---
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -162,13 +162,13 @@ async function run() {
     await page.click('#sr-ready-btn');
     await page.waitForTimeout(4200);
     const srQuizVisible = await page.isVisible('#sr-quiz-screen');
-    log('[Regression] Speed Round reaches quiz screen after countdown', srQuizVisible);
+    log('[Regression] Speed Match reaches quiz screen after countdown', srQuizVisible);
     const opts = await page.$$eval('#sr-options .sr-option', els => els.map(e => e.getAttribute('data-sr-index')));
     await page.click('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]');
     await page.waitForTimeout(150);
     const cls = await page.getAttribute('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]', 'class');
-    log('[Regression] Speed Round option click still classifies correct/wrong', cls.includes('is-correct') || cls.includes('is-wrong'));
-    log('[Regression] No JS errors on Speed Round', errors.length === 0);
+    log('[Regression] Speed Match option click still classifies correct/wrong', cls.includes('is-correct') || cls.includes('is-wrong'));
+    log('[Regression] No JS errors on Speed Match', errors.length === 0);
     await page.close();
   }
 

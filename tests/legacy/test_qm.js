@@ -80,7 +80,7 @@ async function run() {
     log('matchEngIta is unlocked (current) after completing prior 3 modules @' + viewport.w,
       qmRowClass && qmRowClass.includes('current'));
 
-    // --- Open Quick Match Eng-Ita via real UI click ---
+    // --- Open Match Practice Eng-Ita via real UI click ---
     await openModuleFromMap(page, 'matchEngIta');
     const startVisible = await page.isVisible('#qm-start-screen');
     log('Eng-Ita start screen visible @' + viewport.w, startVisible);
@@ -184,10 +184,10 @@ async function run() {
     const masteryKeys = masteryRaw ? Object.keys(JSON.parse(masteryRaw)) : [];
     const hasMatchKeys = masteryKeys.some(k => k.startsWith('match:'));
     const hasSpeedmatchKeys = masteryKeys.some(k => k.startsWith('speedmatch:'));
-    log('Mastery has match: keys and no speedmatch: keys after only playing Quick Match @' + viewport.w,
+    log('Mastery has match: keys and no speedmatch: keys after only playing Match Practice @' + viewport.w,
       hasMatchKeys && !hasSpeedmatchKeys);
 
-    // --- Quick Match Ita-Eng: back at the map, now matchItaEng unlocked ---
+    // --- Match Practice Ita-Eng: back at the map, now matchItaEng unlocked ---
     const qmItaRowClass = await page.getAttribute('[data-module="matchItaEng"]', 'class');
     log('matchItaEng unlocked after completing matchEngIta @' + viewport.w,
       qmItaRowClass && qmItaRowClass.includes('current'));
@@ -236,15 +236,15 @@ async function run() {
     await page.click('#match-back-map');
     await page.waitForTimeout(150);
     const mapVisible = await page.isVisible('#map-main-screen');
-    log('Quick Match back-to-map button works @' + viewport.w, mapVisible);
+    log('Match Practice back-to-map button works @' + viewport.w, mapVisible);
 
-    log('No JS console/page errors during Quick Match run @' + viewport.w, errors.length === 0);
+    log('No JS console/page errors during Match Practice run @' + viewport.w, errors.length === 0);
     if (errors.length) errors.forEach(e => console.log('    error: ' + e));
 
     await page.close();
   }
 
-  // --- Regression: Speed Round still works after DIRECTION_LABEL/srBuildOptions/srRecordResult refactor ---
+  // --- Regression: Speed Match still works after DIRECTION_LABEL/srBuildOptions/srRecordResult refactor ---
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -253,21 +253,21 @@ async function run() {
     await bootAsUser(page, 'RegressionSR', { completedModules: ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng'] });
     await openModuleFromMap(page, 'speedMatchEngIta');
     const srStartVisible = await page.isVisible('#sr-start-screen');
-    log('[Regression] Speed Round start screen visible', srStartVisible);
+    log('[Regression] Speed Match start screen visible', srStartVisible);
     await page.waitForFunction(() => document.getElementById('sr-ready-btn') && !document.getElementById('sr-ready-btn').disabled);
     await page.click('#sr-ready-btn');
     await page.waitForTimeout(4200);
     const srQuizVisible = await page.isVisible('#sr-quiz-screen');
-    log('[Regression] Speed Round reaches quiz screen after countdown', srQuizVisible);
+    log('[Regression] Speed Match reaches quiz screen after countdown', srQuizVisible);
     const srDirectionText = await page.textContent('#sr-direction');
-    log('[Regression] Speed Round direction label renders via shared DIRECTION_LABEL', srDirectionText.includes('INGLESE'));
+    log('[Regression] Speed Match direction label renders via shared DIRECTION_LABEL', srDirectionText.includes('INGLESE'));
     const opts = await page.$$eval('#sr-options .sr-option', els => els.map(e => e.getAttribute('data-sr-index')));
     await page.click('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]');
     await page.waitForTimeout(150);
     const cls = await page.getAttribute('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]', 'class');
-    log('[Regression] Speed Round option click still classifies correct/wrong (srBuildOptions/srRecordResult delegation intact)',
+    log('[Regression] Speed Match option click still classifies correct/wrong (srBuildOptions/srRecordResult delegation intact)',
       cls.includes('is-correct') || cls.includes('is-wrong'));
-    log('[Regression] No JS errors on Speed Round', errors.length === 0);
+    log('[Regression] No JS errors on Speed Match', errors.length === 0);
     await page.close();
   }
 

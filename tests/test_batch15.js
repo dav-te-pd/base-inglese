@@ -115,7 +115,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ JOB 1: Traguardo timing (Quick Match) ============
+  // ============ JOB 1: Traguardo timing (Match Practice) ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -151,7 +151,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 2: ModuleRules on Quick Match/Speed Round, SelfScoreRules on Flash Card ============
+  // ============ JOB 2: ModuleRules on Match Practice/Speed Match, SelfScoreRules on Flash Card ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -169,7 +169,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 2b: Quick Match colors the map (all correct -> verde) ============
+  // ============ JOB 2b: Match Practice colors the map (all correct -> verde) ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -200,7 +200,7 @@ async function run() {
     await page.click('#qm-complete-btn');
     await page.waitForTimeout(200);
     const rowClass = await page.evaluate(() => document.querySelector('[data-module="matchEngIta"]').className);
-    log('[Job2b] Quick Match map row carries outcome-verde after all-correct run', rowClass.indexOf('outcome-verde') !== -1);
+    log('[Job2b] Match Practice map row carries outcome-verde after all-correct run', rowClass.indexOf('outcome-verde') !== -1);
     log('[Job2b] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -333,7 +333,7 @@ async function run() {
     await page.waitForTimeout(150);
     await openModule(page, 'matchEngIta');
     const qmType = await page.$eval('#match-type-badge', el => el.textContent).catch(() => null);
-    log('[Job6] Quick Match header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
+    log('[Job6] Match Practice header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
     log('[Job6] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -439,7 +439,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 11: first-pass-only score, spot-check on Speed Round ============
+  // ============ JOB 11: first-pass-only score, spot-check on Speed Match ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -462,7 +462,7 @@ async function run() {
       return !!row && /outcome-/.test(row.className);
     }, null, { timeout: 20000 });
     const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedMatchEngIta"]').className);
-    log('[Job11] Speed Round: first-pass-all-wrong-then-fixed-in-retry still saves rosso (not inflated by the retry pass)', rowClass11.indexOf('outcome-rosso') !== -1);
+    log('[Job11] Speed Match: first-pass-all-wrong-then-fixed-in-retry still saves rosso (not inflated by the retry pass)', rowClass11.indexOf('outcome-rosso') !== -1);
     log('[Job11] No JS errors', errors.length === 0);
     await page.close();
   }

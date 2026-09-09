@@ -56,7 +56,7 @@ async function openModule(page, moduleId) {
 // ---------------------------------------------------------------------------
 // GUIDARE IL QUIZ INVECE DI SPERARCI.
 //
-// Match Practice e Speed Round non espongono quale opzione sia quella giusta
+// Match Practice e Speed Match non espongono quale opzione sia quella giusta
 // (`qmCurrentOptions`/`srCurrentOptions` vivono dentro l'IIFE), quindi un test
 // che vuole osservare una risposta GIUSTA deve toccare e guardare cosa succede.
 // Fin qui e' inevitabile. Quello che NON e' inevitabile e' come si contava il
@@ -158,7 +158,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ Quick Match: "Non lo so" disables together with options after a CORRECT answer ============
+  // ============ Match Practice: "Non lo so" disables together with options after a CORRECT answer ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -186,7 +186,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Quick Match: Spiegazione + Help visible AND enabled during the quiz ============
+  // ============ Match Practice: Spiegazione + Help visible AND enabled during the quiz ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -203,8 +203,8 @@ async function run() {
     });
     log('[QM Task2] Spiegazione is visible during the quiz', state.watchHidden === false);
     log('[QM Task2] Help is visible during the quiz', state.helpHidden === false);
-    log('[QM Task3] Spiegazione stays enabled during the quiz (no timer in Quick Match)', state.watchDisabled === false);
-    log('[QM Task3] Help stays enabled during the quiz (no timer in Quick Match)', state.helpDisabled === false);
+    log('[QM Task3] Spiegazione stays enabled during the quiz (no timer in Match Practice)', state.watchDisabled === false);
+    log('[QM Task3] Help stays enabled during the quiz (no timer in Match Practice)', state.helpDisabled === false);
     // Clicking Spiegazione during the quiz should actually open the overlay.
     await page.click('#match-watch-btn');
     await page.waitForTimeout(100);
@@ -214,7 +214,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: "Non lo so" disables together with options, and resets per question ============
+  // ============ Speed Match: "Non lo so" disables together with options, and resets per question ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -261,7 +261,7 @@ async function run() {
     log('[SR Task1] Managed to observe a correct-answer tap within retries', contatorePrimaSR !== null);
     if (contatorePrimaSR !== null) {
       const dontKnowDisabledRightAfter = await page.evaluate(() => document.getElementById('sr-dontknow-btn').disabled);
-      log('[SR Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix, same as Quick Match)', dontKnowDisabledRightAfter === true);
+      log('[SR Task1] "Non lo so" is disabled immediately after a CORRECT tap (bug fix, same as Match Practice)', dontKnowDisabledRightAfter === true);
     }
     const dopoSR = contatorePrimaSR === null ? null : await attendiDomandaSuccessiva(page, 'sr', contatorePrimaSR);
     log('[SR Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
@@ -270,7 +270,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: Spiegazione + Help visible during the quiz, DISABLED while the timer bar runs, ENABLED once it stops ============
+  // ============ Speed Match: Spiegazione + Help visible during the quiz, DISABLED while the timer bar runs, ENABLED once it stops ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -328,7 +328,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: on a CORRECT answer, Spiegazione+Help stay DISABLED through the short pause (no flicker) ============
+  // ============ Speed Match: on a CORRECT answer, Spiegazione+Help stay DISABLED through the short pause (no flicker) ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -371,7 +371,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: "Non lo so" also unlocks Spiegazione/Help (a reveal case, same as a wrong tap) ============
+  // ============ Speed Match: "Non lo so" also unlocks Spiegazione/Help (a reveal case, same as a wrong tap) ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -397,7 +397,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: a TIMEOUT also unlocks Spiegazione/Help (the third reveal case) ============
+  // ============ Speed Match: a TIMEOUT also unlocks Spiegazione/Help (the third reveal case) ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -420,7 +420,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ Speed Round: leaving mid-timer (back to map) doesn't leave Spiegazione/Help stuck disabled ============
+  // ============ Speed Match: leaving mid-timer (back to map) doesn't leave Spiegazione/Help stuck disabled ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -441,7 +441,7 @@ async function run() {
     // Leave the module mid-timer via the Mappa button.
     await page.click('#speed-match-back-map');
     await page.waitForTimeout(150);
-    // Re-open Speed Round fresh: on the start screen the header must NOT be stuck disabled.
+    // Re-open Speed Match fresh: on the start screen the header must NOT be stuck disabled.
     await openModule(page, 'speedMatchEngIta');
     const freshState = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR cleanup] Re-opening after leaving mid-timer: Spiegazione is NOT stuck disabled (stopAllModuleActivity cleanup)', freshState === false);

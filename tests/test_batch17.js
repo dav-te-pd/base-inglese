@@ -259,7 +259,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 1e: Quick Match — options stay enabled while the prompt plays; answering stops it ============
+  // ============ JOB 1e: Match Practice — options stay enabled while the prompt plays; answering stops it ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -291,7 +291,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 1e-bis: Quick Match it-en — answering stops an option's own mini-listen audio ============
+  // ============ JOB 1e-bis: Match Practice it-en — answering stops an option's own mini-listen audio ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];

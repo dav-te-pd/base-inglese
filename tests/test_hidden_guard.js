@@ -6,7 +6,7 @@
 // Qualunque regola d'autore che imposti un display lo batte, a prescindere
 // dalla specificità, e un elemento con hidden resta visibile. In questo
 // progetto è successo cinque volte (.btn, .header-actions, header.app-header,
-// le schermate di Speed Round e Flash Card): ogni volta perché chi scriveva
+// le schermate di Speed Match e Flash Card): ogni volta perché chi scriveva
 // "display: flex" su una classe non poteva sapere che quella classe sarebbe
 // stata nascosta altrove.
 //

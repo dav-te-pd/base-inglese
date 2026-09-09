@@ -118,7 +118,7 @@ async function run() {
     log('No JS errors on Flash Card regression', errors.length === 0);
     await page.close();
   }
-  // Speed Round / Quick Match summary screens still work.
+  // Speed Match / Match Practice summary screens still work.
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -141,12 +141,12 @@ async function run() {
       await page.waitForTimeout(650);
     }
     const qmSummaryText = await page.textContent('#qm-summary-screen .sr-summary-title');
-    log('Quick Match summary screen still shows "Round completato!" via renderSummaryScreen', qmSummaryText.trim() === 'Round completato!');
+    log('Match Practice summary screen still shows "Round completato!" via renderSummaryScreen', qmSummaryText.trim() === 'Round completato!');
     await page.click('#qm-complete-btn');
     await page.waitForTimeout(200);
     const mapVisible = await page.isVisible('#map-main-screen');
-    log('Quick Match complete button still works (returns to map)', mapVisible);
-    log('No JS errors on Speed Round/Quick Match summary regression', errors.length === 0);
+    log('Match Practice complete button still works (returns to map)', mapVisible);
+    log('No JS errors on Speed Match/Match Practice summary regression', errors.length === 0);
     await page.close();
   }
 
@@ -160,7 +160,7 @@ async function run() {
     await bootAsUser(page, 'DGTester' + viewport.w, ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
 
     const rowClass = await page.getAttribute('[data-module="dialogoAscoltaRipeti"]', 'class');
-    log('dialogoAscoltaRipeti unlocked (current) after Quick Match @' + viewport.w, rowClass && rowClass.includes('current'));
+    log('dialogoAscoltaRipeti unlocked (current) after Match Practice @' + viewport.w, rowClass && rowClass.includes('current'));
 
     await openModuleFromMap(page, 'dialogoAscoltaRipeti');
     const startVisible = await page.isVisible('#dg-start-screen');

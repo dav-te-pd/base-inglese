@@ -165,7 +165,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
     const srTypeLabel = await page.$eval('[data-module="speedMatchEngIta"] .module-row-type', el => el.textContent);
-    log('[3] Speed Round mostra la categoria "Quiz"', srTypeLabel.indexOf('Quiz') === 0);
+    log('[3] Speed Match mostra la categoria "Quiz"', srTypeLabel.indexOf('Quiz') === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
     // system.
@@ -216,7 +216,7 @@ async function run() {
     await openModule(page, 'matchEngIta');
     await page.waitForTimeout(200);
     const retryHtml = await page.evaluate(() => document.getElementById('qm-retry-intro-screen').innerHTML);
-    log('[4e] Quick Match retry-intro text drops "finché non..."', retryHtml.indexOf('finché non') === -1);
+    log('[4e] Match Practice retry-intro text drops "finché non..."', retryHtml.indexOf('finché non') === -1);
     await page.close();
   }
 

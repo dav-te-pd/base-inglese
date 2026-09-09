@@ -51,7 +51,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ JOB 2: rotating subtitle on Speed Round Schermata Finale ============
+  // ============ JOB 2: rotating subtitle on Speed Match Schermata Finale ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -85,7 +85,7 @@ async function run() {
       await page.waitForTimeout(150);
     }
     const summaryVisible = await page.isVisible('#sr-summary-screen').catch(() => false);
-    log('[Job2] Speed Round reached Schermata Finale', summaryVisible);
+    log('[Job2] Speed Match reached Schermata Finale', summaryVisible);
     if (summaryVisible) {
       const title = await page.$eval('#sr-summary-title', el => el.textContent).catch(() => null);
       const subtitle = await page.$eval('#sr-summary-title-sub', el => el.textContent).catch(() => null);
@@ -118,7 +118,7 @@ async function run() {
     log('[Job2] moduleCompleteMessages has multiple distinct entries reachable (variety sanity, saw ' + seen.size + ' distinct in 6 tries)', seen.size >= 1);
   }
 
-  // ============ JOB 3+4: safety-valve popup fires on Quick Match, both variants ============
+  // ============ JOB 3+4: safety-valve popup fires on Match Practice, both variants ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -132,7 +132,7 @@ async function run() {
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
 
     // Answer wrong 3 times in a row on the same item by using "Non lo so" repeatedly —
-    // since Quick Match re-queues wrong items into a later retry pass, force through
+    // since Match Practice re-queues wrong items into a later retry pass, force through
     // by clicking dontknow each time an item appears, until the popup opens.
     let popupSeen = false;
     let popupTitle = null;
@@ -153,10 +153,10 @@ async function run() {
       if (retryContinueVisible) { await page.click('#qm-retry-continue-btn'); await page.waitForTimeout(120); continue; }
       await page.waitForTimeout(100);
     }
-    log('[Job3/4] Quick Match: safety-valve popup opens after repeated wrong/dontknow on same item', popupSeen);
-    log('[Job3/4] Quick Match: popup uses the "nonRiuscita" title ("Tranquillo, capita!" family)', popupTitle && (popupTitle.indexOf('Tranquillo') !== -1 || popupTitle.length > 3));
+    log('[Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item', popupSeen);
+    log('[Job3/4] Match Practice: popup uses the "nonRiuscita" title ("Tranquillo, capita!" family)', popupTitle && (popupTitle.indexOf('Tranquillo') !== -1 || popupTitle.length > 3));
     console.log('    -> popup title: "' + popupTitle + '"');
-    log('[Job3/4] Quick Match: "Riprova ancora" button is HIDDEN (no immediate re-ask in this module)', popupHasRetryBtn === true);
+    log('[Job3/4] Match Practice: "Riprova ancora" button is HIDDEN (no immediate re-ask in this module)', popupHasRetryBtn === true);
     log('[Job3/4] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();
