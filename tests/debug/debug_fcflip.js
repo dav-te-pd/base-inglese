@@ -28,7 +28,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'speakEasy', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'storyCards', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -42,7 +42,7 @@ async function run() {
   page.on('console', msg => console.log('PAGE:', msg.text()));
   page.on('pageerror', e => console.log('PAGEERROR:', e.message));
   await page.addInitScript(mockInit);
-  await bootAsUser(page, 'DebugFC', ['personalizzazione', 'repeatAloud', 'speakEasy']);
+  await bootAsUser(page, 'DebugFC', ['personalizzazione', 'repeatAloud', 'storyCards']);
   await page.click('[data-module="flashcardAEngIta"]');
   await page.waitForTimeout(300);
   const listenBtn = await page.$('#fc-card [data-say]');

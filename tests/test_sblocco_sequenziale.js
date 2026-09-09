@@ -114,7 +114,7 @@ async function run() {
     page.on('pageerror', e => errori.push('whyWeSayIt: ' + String(e).slice(0, 140)));
     await page.addInitScript(mockVoce);
     await apriModulo(page, 'SbloccoWws', 'whyWeSayIt');
-    await page.waitForFunction(() => document.querySelectorAll('#speak-easy-body .wws-card').length > 0,
+    await page.waitForFunction(() => document.querySelectorAll('#story-cards-body .wws-card').length > 0,
       null, { timeout: 20000 });
 
     const quante = await page.evaluate(() => document.querySelectorAll('.wws-card.is-ahead').length);
@@ -170,7 +170,7 @@ async function run() {
       const accentoRisolto = getComputedStyle(sonda).color;
       sonda.remove();
       const eAccento = c => c === accentoRisolto;
-      const bloccate = Array.from(document.querySelectorAll('.se-explanation.is-ahead'));
+      const bloccate = Array.from(document.querySelectorAll('.story-cards-explanation.is-ahead'));
       return {
         bloccate: bloccate.length,
         bordiAccento: bloccate.filter(el => eAccento(getComputedStyle(el).borderTopColor)).length,

@@ -44,7 +44,7 @@ async function run() {
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // ============ Map order + Speak Easy regression ============
+  // ============ Map order + Story Cards regression ============
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
@@ -58,16 +58,16 @@ async function run() {
     const srIdx = rowIds.indexOf('speedMatchEngIta');
     log('dialogoAscoltaRipeti sits after matchItaEng and before speedMatchEngIta', qmIIdx > -1 && qmIIdx < dgIdx && dgIdx < srIdx);
 
-    // Speak Easy regression: alignment must be identical to before (guide/esterno left, family right).
-    await bootAsUser(page, 'SpeakEasyTester', ['repeatAloud']);
-    await openModuleFromMap(page, 'speakEasy');
+    // Story Cards regression: alignment must be identical to before (guide/esterno left, family right).
+    await bootAsUser(page, 'StoryCardsTester', ['repeatAloud']);
+    await openModuleFromMap(page, 'storyCards');
     await page.waitForTimeout(300);
-    const introVisible = await page.isVisible('#speak-easy-intro-screen');
-    if (introVisible) { await page.click('#speak-easy-intro-start-btn').catch(() => {}); await page.waitForTimeout(150); }
+    const introVisible = await page.isVisible('#story-cards-intro-screen');
+    if (introVisible) { await page.click('#story-cards-intro-start-btn').catch(() => {}); await page.waitForTimeout(150); }
     const rowAligns = await page.$$eval('.chat-row', els => els.map(e => e.classList.contains('left') ? 'left' : 'right'));
-    log('Speak Easy still renders 7 chat rows', rowAligns.length === 7);
-    log('Speak Easy alignment unchanged: guide(esterno)=left, family=right', JSON.stringify(rowAligns) === JSON.stringify(['left', 'right', 'left', 'right', 'right', 'right', 'left']));
-    log('No JS errors on Speak Easy/order check', errors.length === 0);
+    log('Story Cards still renders 7 chat rows', rowAligns.length === 7);
+    log('Story Cards alignment unchanged: guide(esterno)=left, family=right', JSON.stringify(rowAligns) === JSON.stringify(['left', 'right', 'left', 'right', 'right', 'right', 'left']));
+    log('No JS errors on Story Cards/order check', errors.length === 0);
     await page.close();
   }
 
@@ -77,7 +77,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'VCRegression', ['repeatAloud', 'speakEasy']);
+    await bootAsUser(page, 'VCRegression', ['repeatAloud', 'storyCards']);
     await openModuleFromMap(page, 'voiceCoach');
     await page.waitForTimeout(300);
     const vcIntro = await page.isVisible('#voice-coach-intro-screen');
@@ -97,7 +97,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FCRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'speedMatchEngIta', 'speedMatchItaEng']);
+    await bootAsUser(page, 'FCRegression', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'speedMatchEngIta', 'speedMatchItaEng']);
     await openModuleFromMap(page, 'flashcardAEngIta');
     await page.waitForTimeout(300);
     const fcIntro = await page.isVisible('#fc-intro-screen');
@@ -124,7 +124,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRQMRegression', ['repeatAloud', 'speakEasy', 'voiceCoach']);
+    await bootAsUser(page, 'SRQMRegression', ['repeatAloud', 'storyCards', 'voiceCoach']);
     await openModuleFromMap(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.waitForFunction(() => document.getElementById('qm-start-btn') && !document.getElementById('qm-start-btn').disabled);
@@ -157,7 +157,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'DGTester' + viewport.w, ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
+    await bootAsUser(page, 'DGTester' + viewport.w, ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
 
     const rowClass = await page.getAttribute('[data-module="dialogoAscoltaRipeti"]', 'class');
     log('dialogoAscoltaRipeti unlocked (current) after Quick Match @' + viewport.w, rowClass && rowClass.includes('current'));
@@ -181,10 +181,10 @@ async function run() {
     log('Dialogo Help stays visible during exercise (no timer to protect) @' + viewport.w, helpVisibleMain);
 
     const bubbleCount = await page.$$eval('.dg-bubble', els => els.length);
-    log('Dialogo renders 7 bubbles (same dialogue as Speak Easy) @' + viewport.w, bubbleCount === 7);
+    log('Dialogo renders 7 bubbles (same dialogue as Story Cards) @' + viewport.w, bubbleCount === 7);
 
     const rowAligns = await page.$$eval('.dg-row', els => els.map(e => e.classList.contains('left') ? 'left' : 'right'));
-    log('Dialogo bubble alignment matches Speak Easy (guide/esterno=left, family=right) @' + viewport.w,
+    log('Dialogo bubble alignment matches Story Cards (guide/esterno=left, family=right) @' + viewport.w,
       JSON.stringify(rowAligns) === JSON.stringify(['left', 'right', 'left', 'right', 'right', 'right', 'left']));
 
     const micIconPresent = await page.evaluate(() => document.getElementById('view-dialogo').innerHTML.includes('mic'));
@@ -317,7 +317,7 @@ async function run() {
         if (!OrigAudioContext) return;
       });
     });
-    await bootAsUser(page, 'VerdeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
+    await bootAsUser(page, 'VerdeTester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
     // Patch srPlayTone-driven oscillator frequency capture via monkey-patching AudioContext.
     await page.evaluate(() => {
       const OrigAC = window.AudioContext || window.webkitAudioContext;
@@ -358,7 +358,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'ThemeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
+    await bootAsUser(page, 'ThemeTester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
     await openModuleFromMap(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');

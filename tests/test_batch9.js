@@ -208,7 +208,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 2: Repeat Aloud / Speak Easy DO have a Schermata Finale (structural check) ============
+  // ============ JOB 2: Repeat Aloud / Story Cards DO have a Schermata Finale (structural check) ============
   // Updated per later batch: every module now has a Schermata Finale (rule: "OGNI modulo ha la
   // Schermata Finale, nessuna eccezione"). The "Ho finito" button now opens the summary screen
   // instead of completing the module directly; the summary's own exit button completes it.
@@ -216,13 +216,13 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
     const raHasSummary = await page.evaluate(() => !!document.getElementById('repeat-aloud-summary-screen'));
-    const seHasSummary = await page.evaluate(() => !!document.getElementById('speak-easy-summary-screen'));
+    const storyCardsHasSummary = await page.evaluate(() => !!document.getElementById('story-cards-summary-screen'));
     const raHasCompleteBtn = await page.evaluate(() => !!document.getElementById('repeat-aloud-complete'));
-    const seHasCompleteBtn = await page.evaluate(() => !!document.getElementById('speak-easy-complete'));
+    const storyCardsHasCompleteBtn = await page.evaluate(() => !!document.getElementById('story-cards-complete'));
     log('[Job2 verify] Repeat Aloud DOES have a Schermata Finale element', raHasSummary);
     log('[Job2 verify] Repeat Aloud DOES have its own explicit completion button', raHasCompleteBtn);
-    log('[Job2 verify] Speak Easy DOES have a Schermata Finale element', seHasSummary);
-    log('[Job2 verify] Speak Easy DOES have its own explicit completion button', seHasCompleteBtn);
+    log('[Job2 verify] Story Cards DOES have a Schermata Finale element', storyCardsHasSummary);
+    log('[Job2 verify] Story Cards DOES have its own explicit completion button', storyCardsHasCompleteBtn);
     await page.close();
   }
 

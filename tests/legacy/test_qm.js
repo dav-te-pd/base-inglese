@@ -64,7 +64,7 @@ async function run() {
     page.on('requestfailed', req => errors.push('REQFAIL ' + req.url() + ' :: ' + (req.failure() && req.failure().errorText)));
     await page.addInitScript(mockInit);
 
-    await bootAsUser(page, 'Tester' + viewport.w, { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach'] });
+    await bootAsUser(page, 'Tester' + viewport.w, { completedModules: ['repeatAloud', 'storyCards', 'voiceCoach'] });
 
     // Order check via the rendered map list (DOM order = array order).
     const rowIds = await page.$$eval('#module-list [data-module]', els => els.map(e => e.getAttribute('data-module')));
@@ -250,7 +250,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'RegressionSR', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng'] });
+    await bootAsUser(page, 'RegressionSR', { completedModules: ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng'] });
     await openModuleFromMap(page, 'speedMatchEngIta');
     const srStartVisible = await page.isVisible('#sr-start-screen');
     log('[Regression] Speed Round start screen visible', srStartVisible);
@@ -277,7 +277,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'RegressionFC', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng'] });
+    await bootAsUser(page, 'RegressionFC', { completedModules: ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng'] });
     await openModuleFromMap(page, 'flashcardAEngIta');
     await page.waitForTimeout(300);
     const fcDirectionText = await page.evaluate(() => document.getElementById('fc-direction').textContent);

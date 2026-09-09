@@ -93,7 +93,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRTimerRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await bootAsUser(page, 'SRTimerRegression', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
     await openModuleFromMap(page, 'speedMatchEngIta');
     await page.waitForFunction(() => document.getElementById('sr-ready-btn') && !document.getElementById('sr-ready-btn').disabled);
     await page.click('#sr-ready-btn');
@@ -115,7 +115,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FormulaTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'FormulaTester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
     await openModuleFromMap(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
@@ -140,7 +140,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error' && !/ERR_CONNECTION_RESET|fonts\.googleapis/.test(msg.text())) errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'Mod2Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'Mod2Tester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
     await shrinkTimings(page);
 
     const rowClass = await page.getAttribute('[data-module="dialogoRipetiATempo"]', 'class');
@@ -256,7 +256,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error' && !/ERR_CONNECTION_RESET|fonts\.googleapis/.test(msg.text())) errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'Mod3Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo']);
+    await bootAsUser(page, 'Mod3Tester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo']);
     await shrinkTimings(page);
 
     await openModuleFromMap(page, 'dialogoContinuo');

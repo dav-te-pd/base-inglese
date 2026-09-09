@@ -165,8 +165,8 @@ async function run() {
   {
     const checks = [
       ['repeatAloud', '#repeat-aloud-title', 'Repeat Aloud'],
-      ['meetTheStory', '#speak-easy-title', 'Meet the Story'],
-      ['whyWeSayIt', '#speak-easy-title', 'Why We Say It'],
+      ['meetTheStory', '#story-cards-title', 'Meet the Story'],
+      ['whyWeSayIt', '#story-cards-title', 'Why We Say It'],
       ['matchEngIta', '#match-badge', 'Match Practice en→it'],
       ['dialogoAscoltaRipeti', '#dialogo-badge', 'Dialogue: Listen & Repeat'],
       ['speedMatchEngIta', '#speed-match-badge', 'Speed Match en→it'],

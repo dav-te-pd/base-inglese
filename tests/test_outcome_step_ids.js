@@ -112,15 +112,15 @@ async function doPersonalizzazione(page) {
 
 async function doStory(page, stepId) {
   await openStep(page, stepId);
-  await waitForAny(page, ['#speak-easy-intro-start-btn', '#speak-easy-complete']);
-  await clickIfVisible(page, '#speak-easy-intro-start-btn');
+  await waitForAny(page, ['#story-cards-intro-start-btn', '#story-cards-complete']);
+  await clickIfVisible(page, '#story-cards-intro-start-btn');
   await page.waitForFunction(() => {
-    const b = document.getElementById('speak-easy-complete');
+    const b = document.getElementById('story-cards-complete');
     return b && b.getClientRects().length > 0 && !b.disabled;
   }, null, { timeout: 15000 });
-  await page.click('#speak-easy-complete');
-  await page.waitForSelector('#speak-easy-complete-btn', { state: 'visible' });
-  await page.click('#speak-easy-complete-btn');
+  await page.click('#story-cards-complete');
+  await page.waitForSelector('#story-cards-complete-btn', { state: 'visible' });
+  await page.click('#story-cards-complete-btn');
   await backOnMap(page);
 }
 

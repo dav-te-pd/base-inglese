@@ -482,7 +482,7 @@
     // how a module gets judged:
     //   completionRules — no evaluation: verde/"Completato" the moment
     //     the student clicks the module's own completion button (Repeat
-    //     Aloud, Speak Easy, Your Story). The default for any module id
+    //     Aloud, Meet the Story, Your Story). The default for any module id
     //     with no entry here — nothing to declare for these.
     //   moduleRules — verde/giallo/rosso from the FIRST-PASS score
     //     against CONFIG.percentageThresholds (see moduleRulesLevel()).
@@ -494,7 +494,7 @@
     //   selfScoreRules — SAME verde/giallo/rosso math as moduleRules
     //     (moduleRulesLevel/percentageThresholds, no second copy), but the
     //     underlying number is a self-DECLARED percentage (Flash Card's
-    //     "Sì, la so" share, Speak Easy's "Sì, mi è chiara" share) rather
+    //     "Sì, la so" share, Why We Say It's "Sì, mi è chiara" share) rather
     //     than a verified right/wrong answer — kept as its own named rule,
     //     not folded into moduleRules, because it's a less reliable signal
     //     even though the color comes out of the identical formula.
@@ -2187,7 +2187,7 @@
   }
 
   /* Shared by every module's intro/main screen div added after Repeat
-     Aloud's (Speak Easy, Voice Coach, Flash Card): each is one level
+     Aloud's (Story Cards, Voice Coach, Flash Card): each is one level
      deeper than direct .card-body children, so needs the same flex
      column + gap .card-body already gives its own direct children.
      Repeat Aloud's own pair
@@ -2311,7 +2311,7 @@
      treatment as .retry-intro/.vc-cue (CLAUDE.md rule 11: reuse the
      established "important aside" look, not a new color). */
   /* ---------- Why We Say It: una card per battuta ----------
-     Il modulo aveva la grafica di Speak Easy, pensata per leggere un
+     Il modulo aveva la grafica di Story Cards, pensata per leggere un
      dialogo, non per studiare delle regole. Qui ogni battuta è una card:
      dentro, la bolla con la sua traduzione, e sotto la regola a tutta
      larghezza. La bolla resta allineata per chi parla (l'informazione c'è),
@@ -2413,7 +2413,7 @@
 
   /* La regola: riquadro col colore accento, non verde — non è un giudizio
      su come è andata, è "qui c'è qualcosa di nuovo". */
-  .se-explanation {
+  .story-cards-explanation {
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -2439,14 +2439,14 @@
     color: var(--accent);
   }
 
-  .se-explanation-title {
+  .story-cards-explanation-title {
     font-family: var(--font-display);
     font-weight: 600;
     font-size: 1rem;
     margin: 0;
   }
 
-  .se-explanation-text {
+  .story-cards-explanation-text {
     font-size: 0.9rem;
     margin: 0;
   }
@@ -2487,7 +2487,7 @@
      erano due stati opposti dipinti con lo stesso colore. Un accento scarso
      si vede da solo. Il tratteggio e l'attenuazione restano: sono loro a
      dire "bloccata", e non hanno bisogno di un colore per farlo. */
-  .se-explanation.is-ahead {
+  .story-cards-explanation.is-ahead {
     border-style: dashed;
     border-color: var(--border);
     background: none;
@@ -2496,11 +2496,11 @@
 
   /* Il "NUOVA REGOLA" è la seconda cosa che porta accento dentro il riquadro,
      ed è la più ripetuta: una volta per regola, nove volte per schermata. */
-  .se-explanation.is-ahead .wws-rule-kicker {
+  .story-cards-explanation.is-ahead .wws-rule-kicker {
     color: var(--text);
   }
 
-  .se-declared {
+  .story-cards-declared {
     display: inline-flex;
     align-items: center;
     gap: 5px;
@@ -2511,11 +2511,11 @@
     color: var(--correct-ink);
   }
 
-  .se-declared svg { width: 13px; height: 13px; }
+  .story-cards-declared svg { width: 13px; height: 13px; }
 
   /* Le due uscite del modulo, affiancate: sono due modi di andarsene, non
      un'azione e il suo ripensamento. */
-  .se-complete-row {
+  .story-cards-complete-row {
     display: flex;
     gap: 10px;
   }
@@ -2524,7 +2524,7 @@
      larghezza di gran parte degli Android — "Esci e riprendi dopo" usciva
      dallo schermo. Stesso rimedio dei tre pulsanti di risposta: possono
      andare a capo dentro il pulsante invece di allargarlo. */
-  .se-complete-row .btn {
+  .story-cards-complete-row .btn {
     flex: 1;
     min-width: 0;
     padding-left: 8px;
@@ -2533,7 +2533,7 @@
     line-height: 1.2;
   }
 
-  .se-selfcheck-question {
+  .story-cards-selfcheck-question {
     font-family: var(--font-mono);
     font-size: 0.7rem;
     letter-spacing: 0.03em;
@@ -2544,12 +2544,12 @@
 
   /* I tre pulsanti sulla stessa riga: sono tre risposte alla stessa
      domanda, e incolonnarli le faceva sembrare tre azioni diverse. */
-  .se-selfcheck-actions {
+  .story-cards-selfcheck-actions {
     display: flex;
     gap: 8px;
   }
 
-  .se-selfcheck-actions .btn {
+  .story-cards-selfcheck-actions .btn {
     flex: 1;
     min-width: 0;
     padding-left: 8px;
@@ -2567,13 +2567,13 @@
      grigio "Non mi è chiara" farebbe sembrare la prima giusta e la seconda
      sbagliata, mentre sono due risposte oneste alla stessa domanda.
      Nell'app l'accento vuol dire "comunicazione di sistema", non giudizio. */
-  .se-selfcheck-actions .btn.is-chosen {
+  .story-cards-selfcheck-actions .btn.is-chosen {
     background: var(--accent);
     color: var(--accent-ink);
     border-color: transparent;
   }
 
-  .se-selfcheck-followup {
+  .story-cards-selfcheck-followup {
     font-size: 0.85rem;
     opacity: 0.85;
     margin: 0;
@@ -2978,7 +2978,7 @@
      oltre la prossima raggiungibile, più sbiadita del dim temporaneo di
      is-locked (quello dice "aspetta un attimo", questo "non ancora, prima
      ascolta le precedenti"). L'altra variante è per dichiarazione, in Why
-     We Say It (vedi .wws-card.is-ahead e seRefreshExplanationStates). */
+     We Say It (vedi .wws-card.is-ahead e storyCardsRefreshExplanationStates). */
   .dg-bubble.is-ahead-locked {
     opacity: 0.35;
     pointer-events: none;
@@ -3529,18 +3529,18 @@
     </section>
 
     <!-- ============ VIEW: SPEAK EASY MODULE ============ -->
-    <section id="view-speak-easy" class="view">
+    <section id="view-story-cards" class="view">
       <div class="card">
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge" id="speak-easy-badge">Meet the Story</span>
-              <span class="module-row-type" id="speak-easy-type-badge"></span>
+              <span class="badge" id="story-cards-badge">Meet the Story</span>
+              <span class="module-row-type" id="story-cards-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="speak-easy-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speak-easy-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="story-cards-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-watch-btn">Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-help-btn">Help</button>
             </div>
           </div>
 
@@ -3548,49 +3548,49 @@
                checked; the header's "Spiegazione" always reopens the
                same content afterward as a popup instead (see
                openHowItWorksOverlay), never this screen again. -->
-          <div id="speak-easy-intro-screen" class="module-screen" hidden>
+          <div id="story-cards-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="speak-easy-intro-title">Spiegazione</h1>
+              <h1 id="story-cards-intro-title">Spiegazione</h1>
             </header>
-            <div class="overlay-text panel" id="speak-easy-intro-body"></div>
+            <div class="overlay-text panel" id="story-cards-intro-body"></div>
             <label class="ra-intro-checkbox">
-              <input type="checkbox" id="speak-easy-intro-dont-show-again">
+              <input type="checkbox" id="story-cards-intro-dont-show-again">
               <span>Non mostrarmi più questa schermata</span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="speak-easy-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="story-cards-intro-start-btn">Ho capito, inizia</button>
           </div>
 
           <!-- MAIN SCREEN -->
-          <div id="speak-easy-main-screen" class="module-screen">
+          <div id="story-cards-main-screen" class="module-screen">
             <header class="app-header">
-              <h1 id="speak-easy-title">Meet the Story</h1>
+              <h1 id="story-cards-title">Meet the Story</h1>
               <!-- Badge, titolo e sottotitolo vengono dal modulo aperto
                    (CONFIG.moduleLabels): questa vista ne serve due, e prima
                    diceva "Speak Easy" a entrambi — un nome che non esiste
                    più. -->
-              <p style="opacity:0.7; font-size:0.92rem;" id="speak-easy-subtitle"></p>
+              <p style="opacity:0.7; font-size:0.92rem;" id="story-cards-subtitle"></p>
             </header>
 
-            <div id="speak-easy-body"></div>
+            <div id="story-cards-body"></div>
 
             <!-- Riga discreta che spiega perché "Ho finito" è grigio, stessa
                  forma e stessa classe del box a doppia scelta di Dialogo
                  (.choice-box-hint) — testo da istruzioni-moduli.json's
-                 speakEasy.completeHint, mai scritto qui. -->
-            <p class="choice-box-hint" id="speak-easy-complete-hint" hidden></p>
+                 storyCards.completeHint, mai scritto qui. -->
+            <p class="choice-box-hint" id="story-cards-complete-hint" hidden></p>
 
-            <div class="se-complete-row">
-              <button type="button" class="btn btn-primary btn-block" id="speak-easy-complete">Ho finito</button>
+            <div class="story-cards-complete-row">
+              <button type="button" class="btn btn-primary btn-block" id="story-cards-complete">Ho finito</button>
               <!-- Solo durante un primo giro non ancora completato: salva le
                    dichiarazioni fatte finora senza completare il modulo.
                    Uscire da "← Mappa" invece non salva, come ovunque. -->
-              <button type="button" class="btn btn-secondary btn-block" id="speak-easy-resume-later" hidden>Esci e riprendi dopo</button>
+              <button type="button" class="btn btn-secondary btn-block" id="story-cards-resume-later" hidden>Esci e riprendi dopo</button>
             </div>
           </div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
                the shared renderSummaryScreen() (CLAUDE.md rule 13). -->
-          <div id="speak-easy-summary-screen" class="module-screen" hidden></div>
+          <div id="story-cards-summary-screen" class="module-screen" hidden></div>
         </div>
       </div>
     </section>
@@ -3652,7 +3652,7 @@
 
             <div class="vc-target" id="vc-target"></div>
 
-            <!-- Mostra pronuncia: same reveal pattern as Speak Easy's
+            <!-- Mostra pronuncia: same reveal pattern as Story Cards's
                  "Mostra traduzione" (.translation-toggle, CLAUDE.md rule
                  13) — reveals the line's own pronunciationTip (already
                  the vocabulary's field name, reused here per-line) as an
@@ -3828,7 +3828,7 @@
          Pausa/Riprendi vs nothing) is generated per profile by
          dgSetupToolbar, not hardcoded here — see the JS module comment
          for the full per-profile behavior. Same dialogue content as
-         Speak Easy, same shared dialogueLineAlign()/speakerLabel()
+         Story Cards, same shared dialogueLineAlign()/speakerLabel()
          (CLAUDE.md rule 13) — no new data, no new file. -->
     <section id="view-dialogo" class="view">
       <div class="card">
@@ -4232,14 +4232,14 @@
           <summary>"Prossima frase" (quante volte è stato usato)</summary>
           <div class="config-group-body" id="config-next-line-skips"></div>
         </details>
-        <!-- Job 10 (2nd collaudo): Speak Easy's "Cosa imparo qui" self-check
+        <!-- Job 10 (2nd collaudo): Story Cards's "Cosa imparo qui" self-check
              answers per linea, same accumulated-data reasoning as the two
              panels above (CLAUDE.md rule 13). Filled in by
              renderSeExplanationStatsPanel(), called alongside
              renderConfigPanel() whenever this overlay opens. -->
         <details class="config-group" open>
           <summary>Why We Say It — "Cosa imparo qui" (risposte all'autovalutazione)</summary>
-          <div class="config-group-body" id="config-se-explanation-stats"></div>
+          <div class="config-group-body" id="config-story-cards-explanation-stats"></div>
         </details>
         <!-- I colori delle voci (mastery), riga per riga. Stessa forma dei tre
              pannelli qui sopra (CLAUDE.md regola 13). Uno strumento per
@@ -4293,7 +4293,7 @@
   /* ============================================================
      AUDIO CONTEXT WARM-UP (bug fix)
      The first tone ever played through a freshly-created AudioContext
-     comes out distorted (most audible on Repeat Aloud/Speak Easy, the
+     comes out distorted (most audible on Repeat Aloud/Story Cards, the
      first modules to touch the audio system) — a one-buffer glitch
      while the context's pipeline spins up, not a bug in sfxPlayTone
      itself. Absorb that glitch on the user's first tap ANYWHERE on the
@@ -4503,7 +4503,7 @@
   renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
 
   renderSummaryScreen('repeat-aloud-summary-screen', 'repeat-aloud-summary-title', 'Esercizio completato!', 'repeat-aloud-complete-btn');
-  renderSummaryScreen('speak-easy-summary-screen', 'speak-easy-summary-title', 'Esercizio completato!', 'speak-easy-complete-btn');
+  renderSummaryScreen('story-cards-summary-screen', 'story-cards-summary-title', 'Esercizio completato!', 'story-cards-complete-btn');
   renderSummaryScreen('sr-summary-screen', 'sr-summary-title', 'Round completato!', 'sr-complete-btn');
   renderSummaryScreen('qm-summary-screen', 'qm-summary-title', 'Round completato!', 'qm-complete-btn');
   renderSummaryScreen('fc-summary-screen', 'fc-summary-title', 'Tutte le carte ripassate!', 'fc-complete-btn');
@@ -4593,7 +4593,7 @@
     customize: document.getElementById('view-customize'),
     map: document.getElementById('view-map'),
     repeatAloud: document.getElementById('view-repeat-aloud'),
-    speakEasy: document.getElementById('view-speak-easy'),
+    storyCards: document.getElementById('view-story-cards'),
     voiceCoach: document.getElementById('view-voice-coach'),
     match: document.getElementById('view-match'),
     dialogo: document.getElementById('view-dialogo'),
@@ -4958,7 +4958,7 @@
   }
 
   function renderSeExplanationStatsPanel() {
-    var el = document.getElementById('config-se-explanation-stats');
+    var el = document.getElementById('config-story-cards-explanation-stats');
     if (!el) return;
     var stats = loadSeExplanationStats(currentEpisode.id, getUserName());
     var lineIds = Object.keys(stats.byLine);
@@ -5567,7 +5567,7 @@
         // perché la categoria non esisteva ancora.
         personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
         repeatAloud: { kind: 'repeatAloud', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
-        // Due moduli, un componente solo (openSpeakEasy e dintorni), come i
+        // Due moduli, un componente solo (openStoryCards e dintorni), come i
         // tre Dialogue: storyProfile e' l'unica cosa che li distingue nel
         // comportamento, kind quella che da' a ciascuno i propri testi in
         // data/it/istruzioni-moduli.json (CLAUDE.md regola 8).
@@ -5609,7 +5609,7 @@
         // blocco che calcola episode.modules) — cambiare grado non tocca
         // né il componente né questo dizionario.
         // studio, not quiz (job: sei etichette) — self-paced, no time
-        // pressure, same as Repeat Aloud/Speak Easy/Match Practice.
+        // pressure, same as Repeat Aloud/Story Cards/Match Practice.
         flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/it/a1-episodio1-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
         flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/it/a1-episodio1-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
       },
@@ -5635,7 +5635,7 @@
         partenza: 'partenza'
       },
       // Maps a dialogue "speaker" id to the slotFields key used for their
-      // display name tag in the Speak Easy chat bubbles. A speaker with no
+      // display name tag in the Story Cards chat bubbles. A speaker with no
       // entry here (e.g. "guide") gets a fixed label instead.
       dialogueSpeakers: {
         papa: 'papa',
@@ -5890,7 +5890,7 @@
   // this is that decision, ready ahead of the screen itself. Only
   // modules that actually carry a verde/giallo/rosso outcome.level
   // count (ModuleRules or selfAssessment — see CONFIG.moduleOutcomeRules);
-  // a plain completionRules module (Repeat Aloud, Speak Easy, Your
+  // a plain completionRules module (Repeat Aloud, Meet the Story, Your
   // Story) has no judgment to weigh in, same as it never gets an
   // outcome-* class on its own map row. 'almenoUnRosso' wins over
   // 'gialloNoRosso' if both are present; an episode with no graded
@@ -5963,19 +5963,19 @@
     return usage;
   }
 
-  // Job 10 (2nd collaudo): Speak Easy's "Cosa imparo qui" self-check
+  // Job 10 (2nd collaudo): Story Cards's "Cosa imparo qui" self-check
   // answers, per dialogue line — same per-episode/per-user shape as
   // nextLineSkips above (CLAUDE.md rule 13), CUMULATIVE across every
   // time a line's self-check is answered (not overwritten): a line
   // whose count skews heavily "nonChiara" across sessions is a
   // signal the explanation itself needs rewriting, not a graded score.
-  function seExplanationStatsKey(episodeId, userName) {
-    return 'baseinglese:seExplanationStats:' + episodeId + ':' + userName;
+  function storyCardsExplanationStatsKey(episodeId, userName) {
+    return 'baseinglese:storyCardsExplanationStats:' + episodeId + ':' + userName;
   }
 
   function loadSeExplanationStats(episodeId, userName) {
     try {
-      var raw = localStorage.getItem(seExplanationStatsKey(episodeId, userName));
+      var raw = localStorage.getItem(storyCardsExplanationStatsKey(episodeId, userName));
       var parsed = raw ? JSON.parse(raw) : null;
       return (parsed && parsed.byLine) ? parsed : { byLine: {} };
     } catch (e) { return { byLine: {} }; }
@@ -5985,7 +5985,7 @@
     var stats = loadSeExplanationStats(episodeId, userName);
     if (!stats.byLine[lineId]) stats.byLine[lineId] = { chiara: 0, nonAncora: 0, nonChiara: 0 };
     stats.byLine[lineId][answer] = (stats.byLine[lineId][answer] || 0) + 1;
-    try { localStorage.setItem(seExplanationStatsKey(episodeId, userName), JSON.stringify(stats)); } catch (e) {}
+    try { localStorage.setItem(storyCardsExplanationStatsKey(episodeId, userName), JSON.stringify(stats)); } catch (e) {}
     return stats;
   }
 
@@ -6080,7 +6080,7 @@
   // the option's "it"/"en"/... column for select slots, or the raw text
   // as typed for any free-text slot. Used both for the exercise phrase
   // (English) and for dialogue lines (either language) and speaker tags
-  // (Italian) in Speak Easy.
+  // (Italian) in Story Cards.
   function resolveSlotValue(episode, key, rawValue, lang) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {
@@ -6601,7 +6601,7 @@
   function openModuleByKind(module) {
     if (module.kind === 'personalizzazione') openCustomize();
     else if (module.kind === 'repeatAloud') openRepeatAloud(module);
-    else if (module.storyProfile) openSpeakEasy(module);
+    else if (module.storyProfile) openStoryCards(module);
     else if (module.voiceVariant) openVoiceCoach(module);
     else if (module.kind === 'matchEngIta' || module.kind === 'matchItaEng') openMatch(module);
     else if (module.dialogoProfile) openDialogo(module);
@@ -6705,7 +6705,7 @@
   // L'UNICO modo di prendere il contenuto di un grado da un episodio.
   // Prima ogni modulo aveva la sua strada — data.vocabulary per Repeat
   // Aloud/Match Practice/Speed Match, data[CONFIG.flashcard.levels[…].vocabKey]
-  // per Flash Card, data.dialogue per Speak Easy/Voice Coach/Dialogo — tre nomi per
+  // per Flash Card, data.dialogue per Story Cards/Voice Coach/Dialogo — tre nomi per
   // la stessa domanda: "dammi le voci su cui lavora questo modulo". Ora la
   // domanda è una, e la risposta la decide il grado dichiarato dal modulo
   // (module.grade, in attesa che a deciderlo sia moduleOrder a coppie).
@@ -6746,7 +6746,7 @@
   // Il testo di una voce nella lingua chiesta, con i segnaposto già
   // riempiti. Serve perché i gradi C (frasi) e D (battute) contengono
   // {{papa}}, {{partenza}} e simili: un quiz su quei gradi mostrerebbe il
-  // segnaposto grezzo, come faceva Speak Easy prima che le battute
+  // segnaposto grezzo, come faceva Story Cards prima che le battute
   // passassero da fillTemplate. Sui gradi A e B, che segnaposto non ne
   // hanno, è un passaggio a vuoto — quindi si applica sempre, invece di
   // ricordarsi caso per caso quale grado ne ha bisogno.
@@ -6783,7 +6783,7 @@
       ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
   }
 
-  // ---- Shared full-screen module intro (Speak Easy, Voice Coach, Speed
+  // ---- Shared full-screen module intro (Story Cards, Voice Coach, Speed
   // Round, Flash Card, and — since the backlog fix below — Repeat Aloud's
   // own dismissal too, though its screen markup/render functions (ra-*)
   // stay standalone; see CLAUDE.md rule 11, flagged for a future
@@ -6991,33 +6991,33 @@
      episode with zero explanations (episode 1, for now) falls back to
      the plain completionRules badge — there's nothing to self-assess.
      ============================================================ */
-  var currentSpeakEasyModule = null;
+  var currentStoryCardsModule = null;
   // Le skill dell'episodio, in ordine di dialogo — l'ordine della lezione.
   // Una battuta puo' averne piu' di una (whatYouLearn e' una lista), quindi
   // l'unita' qui NON e' la battuta ma la singola skill: il suo id e'
-  // seSkillId(idBattuta, posizione), es. "d-1-s2".
-  var seSkillIds = [];
-  var seHasExplanations = false; // seSkillIds.length > 0 — distingue il modulo-lezione dal modulo-lettura
-  var seSessionAnswers = {}; // skillId -> 'chiara'|'nonAncora'|'nonChiara' — set di lavoro, NON ancora salvato
-  var seLastAvgPct = 0; // calcolato a "Ho finito", letto da speak-easy-complete-btn per saveModuleOutcome
-  var seReviewMode = false; // il modulo è già stato completato almeno una volta -> visita di ripasso
-  var seTexts = null; // i testi del modulo da istruzioni-moduli.json (kicker della regola, riga "niente di nuovo", motivo del lucchetto)
-  var seSelfCheck = null; // istruzioni-moduli.json's speakEasy.selfCheck (domanda + le tre risposte)
-  var seSelfCheckMessages = null; // istruzioni-moduli.json's whyWeSayIt.selfCheckMessages (le frasi di supporto dopo la risposta)
-  var seFollowupUsed = {}; // risposta -> frasi già mostrate in questa apertura del modulo, per non ripeterle
+  // storyCardsSkillId(idBattuta, posizione), es. "d-1-s2".
+  var storyCardsSkillIds = [];
+  var storyCardsHasExplanations = false; // storyCardsSkillIds.length > 0 — distingue il modulo-lezione dal modulo-lettura
+  var storyCardsSessionAnswers = {}; // skillId -> 'chiara'|'nonAncora'|'nonChiara' — set di lavoro, NON ancora salvato
+  var storyCardsLastAvgPct = 0; // calcolato a "Ho finito", letto da story-cards-complete-btn per saveModuleOutcome
+  var storyCardsReviewMode = false; // il modulo è già stato completato almeno una volta -> visita di ripasso
+  var storyCardsTexts = null; // i testi del modulo da istruzioni-moduli.json (kicker della regola, riga "niente di nuovo", motivo del lucchetto)
+  var storyCardsSelfCheck = null; // istruzioni-moduli.json's storyCards.selfCheck (domanda + le tre risposte)
+  var storyCardsSelfCheckMessages = null; // istruzioni-moduli.json's whyWeSayIt.selfCheckMessages (le frasi di supporto dopo la risposta)
+  var storyCardsFollowupUsed = {}; // risposta -> frasi già mostrate in questa apertura del modulo, per non ripeterle
 
   // Le dichiarazioni sopravvivono all'uscita SOLO se l'utente lo chiede:
   // "Esci e riprendi dopo" durante il primo giro, o il completamento. Uscire
   // da "← Mappa" non salva niente, come in ogni altro modulo — per questo
-  // seSessionAnswers resta un set di lavoro in memoria e questo store viene
+  // storyCardsSessionAnswers resta un set di lavoro in memoria e questo store viene
   // scritto in due punti soli, mai a ogni risposta.
-  // Distinto da seExplanationStats (addSeExplanationStat): quello è un
+  // Distinto da storyCardsExplanationStats (addSeExplanationStat): quello è un
   // conteggio cumulativo per capire quali spiegazioni sono scritte male,
   // questo è "cosa ha dichiarato adesso questo utente su questa battuta".
   // L'id di una skill dentro la sua battuta. Serve un id proprio perche' la
   // stessa battuta puo' portarne due (d-1: "Hello e Hi" e "Nice to meet
   // you"): dichiararne una non deve valere per l'altra.
-  function seSkillId(lineId, index) {
+  function storyCardsSkillId(lineId, index) {
     return lineId + '-s' + (index + 1);
   }
 
@@ -7027,62 +7027,62 @@
   // della stessa tre volte, che suonerebbe come un messaggio automatico.
   // Finite le venti, il giro riparte — con venti card servirebbe comunque un
   // ventunesimo testo, e ricominciare è meglio che restare senza.
-  function seFollowupText(answer) {
-    var entry = seSelfCheckMessages && seSelfCheckMessages[answer];
+  function storyCardsFollowupText(answer) {
+    var entry = storyCardsSelfCheckMessages && storyCardsSelfCheckMessages[answer];
     var bodies = entry && entry.bodies;
     if (!bodies || !bodies.length) return '';
-    var usate = seFollowupUsed[answer] || [];
+    var usate = storyCardsFollowupUsed[answer] || [];
     if (usate.length >= bodies.length) usate = [];
     var libere = bodies.filter(function (t) { return usate.indexOf(t) === -1; });
     var scelta = libere[Math.floor(Math.random() * libere.length)];
-    seFollowupUsed[answer] = usate.concat([scelta]);
+    storyCardsFollowupUsed[answer] = usate.concat([scelta]);
     return scelta;
   }
 
-  function seDeclarationsKey(episodeId, userName) {
-    return 'baseinglese:seDeclarations:' + episodeId + ':' + userName;
+  function storyCardsDeclarationsKey(episodeId, userName) {
+    return 'baseinglese:storyCardsDeclarations:' + episodeId + ':' + userName;
   }
 
   function loadSeDeclarations(episodeId, userName) {
     try {
-      var raw = localStorage.getItem(seDeclarationsKey(episodeId, userName));
+      var raw = localStorage.getItem(storyCardsDeclarationsKey(episodeId, userName));
       var parsed = raw ? JSON.parse(raw) : null;
       return (parsed && typeof parsed === 'object') ? parsed : {};
     } catch (e) { return {}; }
   }
 
   function saveSeDeclarations(episodeId, userName, answers) {
-    try { localStorage.setItem(seDeclarationsKey(episodeId, userName), JSON.stringify(answers)); } catch (e) {}
+    try { localStorage.setItem(storyCardsDeclarationsKey(episodeId, userName), JSON.stringify(answers)); } catch (e) {}
   }
 
   // Quante delle spiegazioni presenti nell'episodio sono state dichiarate
   // in questo giro — la base sia del blocco del completamento sia del
   // punteggio SelfScoreRules.
-  function seDeclaredCount() {
-    return seSkillIds.filter(function (id) { return !!seSessionAnswers[id]; }).length;
+  function storyCardsDeclaredCount() {
+    return storyCardsSkillIds.filter(function (id) { return !!storyCardsSessionAnswers[id]; }).length;
   }
 
-  function seAllDeclared() {
-    return seSkillIds.length > 0 && seDeclaredCount() === seSkillIds.length;
+  function storyCardsAllDeclared() {
+    return storyCardsSkillIds.length > 0 && storyCardsDeclaredCount() === storyCardsSkillIds.length;
   }
 
   // Primo giro: la lezione va avanti in ordine, quindi è apribile solo fino
   // alla prima spiegazione non ancora dichiarata. Al ripasso invece sono
   // tutte libere.
-  function seFirstUndeclaredIndex() {
-    for (var i = 0; i < seSkillIds.length; i++) {
-      if (!seSessionAnswers[seSkillIds[i]]) return i;
+  function storyCardsFirstUndeclaredIndex() {
+    for (var i = 0; i < storyCardsSkillIds.length; i++) {
+      if (!storyCardsSessionAnswers[storyCardsSkillIds[i]]) return i;
     }
-    return seSkillIds.length;
+    return storyCardsSkillIds.length;
   }
 
-  function seIsUnlocked(skillId) {
-    if (seReviewMode) return true;
-    var idx = seSkillIds.indexOf(skillId);
-    return idx !== -1 && idx <= seFirstUndeclaredIndex();
+  function storyCardsIsUnlocked(skillId) {
+    if (storyCardsReviewMode) return true;
+    var idx = storyCardsSkillIds.indexOf(skillId);
+    return idx !== -1 && idx <= storyCardsFirstUndeclaredIndex();
   }
 
-  // Shared by Speak Easy and every Dialogo module (CLAUDE.md rule 13) —
+  // Shared by Story Cards and every Dialogo module (CLAUDE.md rule 13) —
   // which side of the chat a line renders on. Driven by the line's own
   // "ruolo" ('esterno' | 'famiglia') in the episode data, never derived
   // from the speaker's name/id: names are personalizable per user, so a
@@ -7109,19 +7109,19 @@
   // (line.whatYouLearn, episode data, CLAUDE.md rule 4) explaining why a
   // phrase is built the way it is. Only rendered when a line actually has
   // one — the button doesn't appear otherwise (episode 1 has none yet,
-  // see seHasExplanations). Reveal + self-check both live inside the
+  // see storyCardsHasExplanations). Reveal + self-check both live inside the
   // same hidden block, toggled together by "Cosa imparo qui" — the
-  // self-check answer itself (data-se-answer) never hides again once
+  // self-check answer itself (data-story-cards-answer) never hides again once
   // given, so re-toggling the block open/closed doesn't lose it.
-  function renderSpeakEasy(data) {
+  function renderStoryCards(data) {
     // Il profilo (CONFIG.story.profiles) decide le due differenze fra Meet
     // the Story e Why We Say It: se la traduzione sta sempre in chiaro, e se
     // le skill si mostrano. Il resto del disegno è identico — è lo stesso
     // componente.
-    var profile = (CONFIG.story.profiles[currentSpeakEasyModule.storyProfile]) || {};
+    var profile = (CONFIG.story.profiles[currentStoryCardsModule.storyProfile]) || {};
     var withSkills = profile.skills !== false;
     var skillIds = [];
-    var itemsHtml = episodeGradeRequired(data, currentSpeakEasyModule.grade, currentSpeakEasyModule).map(function (line) {
+    var itemsHtml = episodeGradeRequired(data, currentStoryCardsModule.grade, currentStoryCardsModule).map(function (line) {
       var align = dialogueLineAlign(line);
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var italian = fillTemplate(line.italian, currentEpisode, currentValues, 'it');
@@ -7133,36 +7133,36 @@
       var skills = (line.whatYouLearn || []).filter(function (sk) { return sk && sk.body; });
       if (!withSkills) skills = [];
       var rulesHtml = skills.map(function (skill, i) {
-        var skillId = seSkillId(line.id, i);
+        var skillId = storyCardsSkillId(line.id, i);
         skillIds.push(skillId);
         // I segnaposto nelle skill si sostituiscono come in ogni altro testo
         // dell'episodio; le citazioni inglesi chiedono la propria lingua
         // con :en (vedi fillTemplate).
         var skillTitle = fillTemplate(skill.title, currentEpisode, currentValues, 'it');
         var skillBody = fillTemplate(skill.body, currentEpisode, currentValues, 'it');
-        var answersHtml = ((seSelfCheck && seSelfCheck.answers) || []).map(function (a) {
+        var answersHtml = ((storyCardsSelfCheck && storyCardsSelfCheck.answers) || []).map(function (a) {
           // Tutti e tre uguali all'apertura: nessuno è preselezionato, e
           // nessuno è "la risposta giusta" — sono tre risposte oneste alla
           // stessa domanda.
-          return '<button type="button" class="btn btn-secondary btn-sm" data-se-answer="' + a.value +
+          return '<button type="button" class="btn btn-secondary btn-sm" data-story-cards-answer="' + a.value +
             '" data-skill="' + skillId + '">' + a.button + '</button>';
         }).join('');
-        return '<div class="se-explanation" id="se-explanation-' + skillId + '" data-skill-block="' + skillId + '">' +
+        return '<div class="story-cards-explanation" id="story-cards-explanation-' + skillId + '" data-skill-block="' + skillId + '">' +
           '<div class="wws-rule-top">' +
-          '<span class="wws-rule-kicker">' + ((seTexts && seTexts.ruleKicker) || '') + '</span>' +
-          '<span class="se-declared" id="se-declared-' + skillId + '" hidden></span>' +
+          '<span class="wws-rule-kicker">' + ((storyCardsTexts && storyCardsTexts.ruleKicker) || '') + '</span>' +
+          '<span class="story-cards-declared" id="story-cards-declared-' + skillId + '" hidden></span>' +
           '</div>' +
-          '<p class="se-explanation-title">' + skillTitle + '</p>' +
-          '<p class="se-explanation-text" id="se-body-' + skillId + '">' + skillBody + '</p>' +
-          '<div class="se-selfcheck" data-se-skill="' + skillId + '">' +
-          '<p class="se-selfcheck-question">' + ((seSelfCheck && seSelfCheck.question) || '') + '</p>' +
-          '<div class="se-selfcheck-actions">' + answersHtml + '</div>' +
-          '<p class="se-selfcheck-followup" id="se-followup-' + skillId + '" hidden></p>' +
+          '<p class="story-cards-explanation-title">' + skillTitle + '</p>' +
+          '<p class="story-cards-explanation-text" id="story-cards-body-' + skillId + '">' + skillBody + '</p>' +
+          '<div class="story-cards-selfcheck" data-story-cards-skill="' + skillId + '">' +
+          '<p class="story-cards-selfcheck-question">' + ((storyCardsSelfCheck && storyCardsSelfCheck.question) || '') + '</p>' +
+          '<div class="story-cards-selfcheck-actions">' + answersHtml + '</div>' +
+          '<p class="story-cards-selfcheck-followup" id="story-cards-followup-' + skillId + '" hidden></p>' +
           '</div>' +
           '</div>';
       }).join('');
       var noRuleHtml = (withSkills && !skills.length)
-        ? '<p class="wws-no-rule">' + ((seTexts && seTexts.noRuleHint) || '') + '</p>'
+        ? '<p class="wws-no-rule">' + ((storyCardsTexts && storyCardsTexts.noRuleHint) || '') + '</p>'
         : '';
       return '<div class="wws-card" data-card="' + line.id + '">' +
         '<div class="wws-card-top">' +
@@ -7185,10 +7185,10 @@
         rulesHtml +
         '</div>';
     }).join('');
-    document.getElementById('speak-easy-body').innerHTML = '<div class="wws-list">' + itemsHtml + '</div>';
-    seSkillIds = skillIds;
-    seHasExplanations = skillIds.length > 0;
-    seRefreshExplanationStates();
+    document.getElementById('story-cards-body').innerHTML = '<div class="wws-list">' + itemsHtml + '</div>';
+    storyCardsSkillIds = skillIds;
+    storyCardsHasExplanations = skillIds.length > 0;
+    storyCardsRefreshExplanationStates();
   }
 
   // Ricalcola da zero lo stato di ogni card e di ogni regola: cosa è
@@ -7205,40 +7205,40 @@
   // lucchetto perché non si tocca. Unirle in un componente solo avrebbe
   // prodotto due varianti senza markup né CSS in comune: si sarebbe
   // condiviso il nome della funzione e nient'altro.
-  function seRefreshExplanationStates() {
+  function storyCardsRefreshExplanationStates() {
     var lockedCards = {};
-    seSkillIds.forEach(function (skillId) {
-      var answer = seSessionAnswers[skillId];
-      var unlocked = seIsUnlocked(skillId);
+    storyCardsSkillIds.forEach(function (skillId) {
+      var answer = storyCardsSessionAnswers[skillId];
+      var unlocked = storyCardsIsUnlocked(skillId);
       var cardId = skillId.replace(/-s\d+$/, '');
       if (!unlocked) lockedCards[cardId] = true;
 
       // Una regola non ancora raggiunta mostra SOLO il titolo: il corpo
       // sparisce, i pulsanti anche. Il titolo resta perché far vedere cosa
       // aspetta invoglia ad andare avanti.
-      var bodyEl = document.getElementById('se-body-' + skillId);
+      var bodyEl = document.getElementById('story-cards-body-' + skillId);
       if (bodyEl) bodyEl.hidden = !unlocked;
-      var ruleEl = document.getElementById('se-explanation-' + skillId);
+      var ruleEl = document.getElementById('story-cards-explanation-' + skillId);
       if (ruleEl) ruleEl.classList.toggle('is-ahead', !unlocked);
 
       // La spunta dice "hai risposto", non "va bene": senza etichetta
       // accanto, che altrimenti leggeva "✓ NON CHIARA". Cosa si è risposto
       // lo dice già il pulsante acceso.
-      var declaredEl = document.getElementById('se-declared-' + skillId);
+      var declaredEl = document.getElementById('story-cards-declared-' + skillId);
       if (declaredEl) {
         declaredEl.hidden = !answer;
         declaredEl.innerHTML = answer ? icon('check') : '';
       }
 
-      var selfcheckEl = document.querySelector('.se-selfcheck[data-se-skill="' + skillId + '"]');
+      var selfcheckEl = document.querySelector('.story-cards-selfcheck[data-story-cards-skill="' + skillId + '"]');
       if (selfcheckEl) {
         selfcheckEl.hidden = !unlocked;
-        selfcheckEl.querySelectorAll('[data-se-answer]').forEach(function (b) {
+        selfcheckEl.querySelectorAll('[data-story-cards-answer]').forEach(function (b) {
           // Si può cambiare idea sempre, anche durante il primo passaggio:
           // accorgersi a metà spiegazione di aver capito è normale, e la
           // dichiarazione serve a sapere cosa ripassare, non a incastrare.
           b.disabled = false;
-          b.classList.toggle('is-chosen', b.getAttribute('data-se-answer') === answer);
+          b.classList.toggle('is-chosen', b.getAttribute('data-story-cards-answer') === answer);
         });
       }
     });
@@ -7246,19 +7246,19 @@
     // Le card: bordo accento su quella corrente, attenuazione e lucchetto su
     // quelle più avanti. Una card senza regole non è mai bloccata e non
     // porta segno di stato — non c'è niente da dichiarare.
-    var currentCard = seCurrentCardId();
-    document.querySelectorAll('#speak-easy-body .wws-card').forEach(function (card) {
+    var currentCard = storyCardsCurrentCardId();
+    document.querySelectorAll('#story-cards-body .wws-card').forEach(function (card) {
       var cardId = card.getAttribute('data-card');
-      var cardSkills = seSkillIds.filter(function (id) { return id.indexOf(cardId + '-s') === 0; });
+      var cardSkills = storyCardsSkillIds.filter(function (id) { return id.indexOf(cardId + '-s') === 0; });
       // Piu' avanti della corrente si decide dalla POSIZIONE, non dalle skill.
       // Prima si leggeva lockedCards, che si popola solo scorrendo le skill:
       // una card senza regole non ci entrava mai, quindi restava non marcata
       // pur essendo piu' avanti — sbiadita in modo sbagliato E con il Blocco
       // Ascolto attivo. La guardia sul gestore era giusta, sbagliava chi
       // assegnava la classe.
-      // Il ripasso si esclude da solo: li' seCurrentCardIndex() vale Infinity,
+      // Il ripasso si esclude da solo: li' storyCardsCurrentCardIndex() vale Infinity,
       // e nessun indice e' maggiore di Infinity.
-      var isAhead = seCardIndex(cardId) > seCurrentCardIndex();
+      var isAhead = storyCardsCardIndex(cardId) > storyCardsCurrentCardIndex();
       card.classList.toggle('is-current', cardId === currentCard);
       card.classList.toggle('is-ahead', isAhead);
       var stateEl = document.getElementById('wws-state-' + cardId);
@@ -7267,9 +7267,9 @@
       // alcune card con la spunta e altre senza fanno chiedere se quelle
       // senza sono da fare. Prende la spunta da sola appena la sequenza la
       // supera — o subito, se non c'è più una sequenza (ripasso).
-      var superata = cardSkills.length === 0 && seCardIndex(cardId) < seCurrentCardIndex();
+      var superata = cardSkills.length === 0 && storyCardsCardIndex(cardId) < storyCardsCurrentCardIndex();
       var tutteDichiarate = superata ||
-        (cardSkills.length > 0 && cardSkills.every(function (id) { return !!seSessionAnswers[id]; }));
+        (cardSkills.length > 0 && cardSkills.every(function (id) { return !!storyCardsSessionAnswers[id]; }));
       stateEl.classList.toggle('is-done', tutteDichiarate);
       // Lo stesso stato, letto due volte: la spunta quando ci si ferma, il
       // fondo quando si scorre. Una card più avanti non è "fatta" nemmeno se
@@ -7280,107 +7280,107 @@
         stateEl.innerHTML = icon('check');
       } else if (isAhead) {
         stateEl.hidden = false;
-        stateEl.innerHTML = icon('lock') + '<span>' + ((seTexts && seTexts.lockedHint) || '') + '</span>';
+        stateEl.innerHTML = icon('lock') + '<span>' + ((storyCardsTexts && storyCardsTexts.lockedHint) || '') + '</span>';
       } else {
         stateEl.hidden = true;
         stateEl.innerHTML = '';
       }
     });
 
-    var completeBtn = document.getElementById('speak-easy-complete');
-    var hintEl = document.getElementById('speak-easy-complete-hint');
-    var resumeBtn = document.getElementById('speak-easy-resume-later');
+    var completeBtn = document.getElementById('story-cards-complete');
+    var hintEl = document.getElementById('story-cards-complete-hint');
+    var resumeBtn = document.getElementById('story-cards-resume-later');
     // Un episodio senza spiegazioni resta il modulo di sola lettura di
     // prima: nessun blocco, nessuna seconda uscita.
-    var gated = seHasExplanations && !seAllDeclared();
+    var gated = storyCardsHasExplanations && !storyCardsAllDeclared();
     completeBtn.disabled = gated;
     hintEl.hidden = !gated;
     // "Esci e riprendi dopo" ha senso solo dove c'è qualcosa da riprendere:
     // un primo giro non ancora finito. Al ripasso il modulo è già completo,
     // e uscire senza confermare è esattamente ciò che fa "← Mappa".
-    resumeBtn.hidden = !(seHasExplanations && !seReviewMode && !seAllDeclared());
+    resumeBtn.hidden = !(storyCardsHasExplanations && !storyCardsReviewMode && !storyCardsAllDeclared());
   }
 
   // La card su cui si sta lavorando: quella che contiene la prima skill non
   // ancora dichiarata. Al ripasso non ce n'è una — sono tutte aperte.
-  function seCurrentCardId() {
-    if (seReviewMode) return null;
-    var next = seSkillIds[seFirstUndeclaredIndex()];
+  function storyCardsCurrentCardId() {
+    if (storyCardsReviewMode) return null;
+    var next = storyCardsSkillIds[storyCardsFirstUndeclaredIndex()];
     return next ? next.replace(/-s\d+$/, '') : null;
   }
 
   // La posizione di una card nella lista, e quella della card corrente:
   // servono a sapere se la sequenza ha già superato una card senza regole.
   // Senza card corrente (ripasso, o tutto dichiarato) sono tutte superate.
-  function seCardIndex(cardId) {
+  function storyCardsCardIndex(cardId) {
     var cards = Array.prototype.map.call(
-      document.querySelectorAll('#speak-easy-body .wws-card'),
+      document.querySelectorAll('#story-cards-body .wws-card'),
       function (c) { return c.getAttribute('data-card'); });
     return cards.indexOf(cardId);
   }
 
-  function seCurrentCardIndex() {
-    var current = seCurrentCardId();
+  function storyCardsCurrentCardIndex() {
+    var current = storyCardsCurrentCardId();
     if (!current) return Infinity;
-    return seCardIndex(current);
+    return storyCardsCardIndex(current);
   }
 
-  function seShowScreen(name) {
-    document.getElementById('speak-easy-intro-screen').hidden = name !== 'intro';
-    document.getElementById('speak-easy-main-screen').hidden = name !== 'main';
-    document.getElementById('speak-easy-summary-screen').hidden = name !== 'summary';
+  function storyCardsShowScreen(name) {
+    document.getElementById('story-cards-intro-screen').hidden = name !== 'intro';
+    document.getElementById('story-cards-main-screen').hidden = name !== 'main';
+    document.getElementById('story-cards-summary-screen').hidden = name !== 'summary';
     // Nothing to explain on the completion screen — hide Spiegazione
     // there (CLAUDE.md rule 10, same as every other module's Schermata
     // Finale); Help stays available everywhere.
-    document.getElementById('speak-easy-watch-btn').hidden = name === 'summary';
+    document.getElementById('story-cards-watch-btn').hidden = name === 'summary';
   }
 
-  function openSpeakEasy(module) {
-    currentSpeakEasyModule = module;
-    document.getElementById('speak-easy-title').innerHTML = moduleNameHtml(module.label);
-    document.getElementById('speak-easy-badge').textContent = module.label;
-    document.getElementById('speak-easy-subtitle').textContent = module.subtitle || '';
-    document.getElementById('speak-easy-type-badge').textContent = moduleTypeLabel(module);
-    document.getElementById('speak-easy-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    seSkillIds = [];
-    seHasExplanations = false;
-    seLastAvgPct = 0;
+  function openStoryCards(module) {
+    currentStoryCardsModule = module;
+    document.getElementById('story-cards-title').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('story-cards-badge').textContent = module.label;
+    document.getElementById('story-cards-subtitle').textContent = module.subtitle || '';
+    document.getElementById('story-cards-type-badge').textContent = moduleTypeLabel(module);
+    document.getElementById('story-cards-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    storyCardsSkillIds = [];
+    storyCardsHasExplanations = false;
+    storyCardsLastAvgPct = 0;
     // Modulo già completato almeno una volta = visita di ripasso: niente
     // sequenza obbligata, niente "Esci e riprendi dopo", si riapre solo
     // quello che si vuole rivedere.
-    seReviewMode = loadModuleProgress(currentEpisode.id, getUserName()).completed.indexOf(module.id) !== -1;
+    storyCardsReviewMode = loadModuleProgress(currentEpisode.id, getUserName()).completed.indexOf(module.id) !== -1;
     // Riparte da dove si era arrivati: le dichiarazioni salvate (da un
     // "Esci e riprendi dopo", o dal completamento di un giro precedente)
     // sono il punto di partenza, non una lavagna pulita.
-    seSessionAnswers = loadSeDeclarations(currentEpisode.id, getUserName());
-    seFollowupUsed = {};
-    showView('speakEasy');
+    storyCardsSessionAnswers = loadSeDeclarations(currentEpisode.id, getUserName());
+    storyCardsFollowupUsed = {};
+    showView('storyCards');
     if (isIntroDismissed(module.kind, getUserName())) {
-      seShowScreen('main');
+      storyCardsShowScreen('main');
     } else {
-      document.getElementById('speak-easy-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'speak-easy-intro-title', 'speak-easy-intro-body', currentSpeakEasyModule.label);
-      seShowScreen('intro');
+      document.getElementById('story-cards-intro-dont-show-again').checked = false;
+      renderIntroContent(module.kind, 'story-cards-intro-title', 'story-cards-intro-body', currentStoryCardsModule.label);
+      storyCardsShowScreen('intro');
     }
     // Le due fonti servono entrambe PRIMA di disegnare: i testi del
     // self-check (domanda, le tre risposte) vengono da istruzioni-moduli.json
-    // come ogni altro testo, quindi renderSpeakEasy non può partire prima —
+    // come ogni altro testo, quindi renderStoryCards non può partire prima —
     // stessa forma già usata da openVoiceCoach.
     Promise.all([loadEpisodeData(module), loadModuleInstructions()]).then(function (results) {
-      if (currentSpeakEasyModule !== module) return;
+      if (currentStoryCardsModule !== module) return;
       var instructions = results[1][module.kind] || {};
-      seTexts = instructions;
-      seSelfCheck = instructions.selfCheck || null;
-      seSelfCheckMessages = instructions.selfCheckMessages || null;
-      document.getElementById('speak-easy-complete-hint').textContent = instructions.completeHint || '';
-      renderSpeakEasy(results[0]);
+      storyCardsTexts = instructions;
+      storyCardsSelfCheck = instructions.selfCheck || null;
+      storyCardsSelfCheckMessages = instructions.selfCheckMessages || null;
+      document.getElementById('story-cards-complete-hint').textContent = instructions.completeHint || '';
+      renderStoryCards(results[0]);
     }).catch(function () {
-      if (currentSpeakEasyModule !== module) return;
-      showLoadError(function () { openSpeakEasy(module); });
+      if (currentStoryCardsModule !== module) return;
+      showLoadError(function () { openStoryCards(module); });
     });
   }
 
-  document.getElementById('speak-easy-body').addEventListener('click', function (e) {
+  document.getElementById('story-cards-body').addEventListener('click', function (e) {
     // Sblocco Sequenziale, variante per dichiarazione: una card piu' avanti
     // della corrente non risponde a NIENTE — ne' al Blocco Ascolto (il
     // pulsante e le velocita'), ne' a un tocco qualunque. Prima .is-ahead
@@ -7396,8 +7396,8 @@
 
     var listenBtn = e.target.closest('[data-say]');
     if (listenBtn) {
-      var data = episodeDataCache[currentSpeakEasyModule.dataFile];
-      var line = data && episodeGrade(data, currentSpeakEasyModule.grade).find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
+      var data = episodeDataCache[currentStoryCardsModule.dataFile];
+      var line = data && episodeGrade(data, currentStoryCardsModule.grade).find(function (l) { return l.id === listenBtn.getAttribute('data-say'); });
       if (!line) return;
       var english = fillTemplate(line.english, currentEpisode, currentValues, 'en');
       var rateAttr = listenBtn.getAttribute('data-rate');
@@ -7407,21 +7407,21 @@
       return;
     }
     // Risposta al self-check. Registra la dichiarazione nel set di lavoro
-    // (seSessionAnswers, che alimenta la percentuale SelfScoreRules) e un
+    // (storyCardsSessionAnswers, che alimenta la percentuale SelfScoreRules) e un
     // conteggio cumulativo per battuta (addSeExplanationStat — "una
     // spiegazione poco chiara a molti studenti è scritta male", un segnale
     // che vogliamo anche fra sessioni diverse). Il set di lavoro NON viene
     // salvato qui: lo si scrive solo su "Esci e riprendi dopo" o sul
     // completamento, così uscire da "← Mappa" non lascia traccia.
-    var answerBtn = e.target.closest('[data-se-answer]');
+    var answerBtn = e.target.closest('[data-story-cards-answer]');
     if (answerBtn) {
       if (answerBtn.disabled) return;
-      var answer = answerBtn.getAttribute('data-se-answer');
+      var answer = answerBtn.getAttribute('data-story-cards-answer');
       var answerSkillId = answerBtn.getAttribute('data-skill');
-      seSessionAnswers[answerSkillId] = answer;
+      storyCardsSessionAnswers[answerSkillId] = answer;
       addSeExplanationStat(currentEpisode.id, getUserName(), answerSkillId, answer);
-      var followupEl = document.getElementById('se-followup-' + answerSkillId);
-      var followupText = seFollowupText(answer);
+      var followupEl = document.getElementById('story-cards-followup-' + answerSkillId);
+      var followupText = storyCardsFollowupText(answer);
       if (followupText) {
         followupEl.textContent = followupText;
         followupEl.removeAttribute('hidden');
@@ -7432,51 +7432,51 @@
       // ancora dichiarata, quindi si sposta da sé. Prima serviva anche
       // aprire e chiudere a mano le spiegazioni, che ora non si aprono più
       // — sono sempre lì, e a cambiare è cosa se ne legge.
-      seRefreshExplanationStates();
+      storyCardsRefreshExplanationStates();
     }
   });
 
-  document.getElementById('speak-easy-back-map').addEventListener('click', openEpisodeMap);
+  document.getElementById('story-cards-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('speak-easy-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(currentSpeakEasyModule, { dismissPref: introDismissPref(currentSpeakEasyModule.kind) });
+  document.getElementById('story-cards-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(currentStoryCardsModule, { dismissPref: introDismissPref(currentStoryCardsModule.kind) });
   });
 
-  document.getElementById('speak-easy-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed(currentSpeakEasyModule.kind, getUserName(), document.getElementById('speak-easy-intro-dont-show-again').checked);
-    seShowScreen('main');
+  document.getElementById('story-cards-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed(currentStoryCardsModule.kind, getUserName(), document.getElementById('story-cards-intro-dont-show-again').checked);
+    storyCardsShowScreen('main');
   });
 
-  document.getElementById('speak-easy-help-btn').addEventListener('click', function () {
-    openHelpFor(currentSpeakEasyModule);
+  document.getElementById('story-cards-help-btn').addEventListener('click', function () {
+    openHelpFor(currentStoryCardsModule);
   });
 
-  document.getElementById('speak-easy-complete').addEventListener('click', function () {
+  document.getElementById('story-cards-complete').addEventListener('click', function () {
     // Il blocco vive qui e non solo sull'attributo disabled del pulsante
     // (CLAUDE.md regola 20): i punti da cui si può arrivare a completare un
     // modulo si moltiplicano, la funzione resta una.
-    if (seHasExplanations && !seAllDeclared()) return;
+    if (storyCardsHasExplanations && !storyCardsAllDeclared()) return;
     // Same reasoning as Repeat Aloud's own complete button above —
     // Traguardo fires here (declaring the study done), never on "← Mappa"
     // nor on the summary's own exit button below.
     sfxPlayTraguardoSound();
-    seShowScreen('summary');
+    storyCardsShowScreen('summary');
     // Completare È una conferma esplicita: le dichiarazioni diventano
     // definitive, e a un giro di ripasso successivo sovrascrivono quelle di
     // prima (stesso principio di saveModuleOutcome, che riscrive sempre).
-    if (seHasExplanations) {
-      saveSeDeclarations(currentEpisode.id, getUserName(), seSessionAnswers);
+    if (storyCardsHasExplanations) {
+      saveSeDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
     }
     // SelfScoreRules: la percentuale è congelata QUI, su un giro in cui ogni
     // spiegazione è stata aperta e dichiarata — non ci sono più risposte
     // mancanti a spingerla verso lo zero. Un episodio senza spiegazioni non
     // ha niente da autovalutare e resta sul messaggio neutro di sempre.
-    if (seHasExplanations) {
-      var chiaraCount = seSkillIds.filter(function (id) { return seSessionAnswers[id] === 'chiara'; }).length;
-      seLastAvgPct = Math.round((chiaraCount / seSkillIds.length) * 100);
-      applyOutcomeSubtitle('speak-easy-summary-title-sub', 'speakEasyCompleteMessages', percentageBucket(seLastAvgPct));
+    if (storyCardsHasExplanations) {
+      var chiaraCount = storyCardsSkillIds.filter(function (id) { return storyCardsSessionAnswers[id] === 'chiara'; }).length;
+      storyCardsLastAvgPct = Math.round((chiaraCount / storyCardsSkillIds.length) * 100);
+      applyOutcomeSubtitle('story-cards-summary-title-sub', 'storyCardsCompleteMessages', percentageBucket(storyCardsLastAvgPct));
     } else {
-      applyOutcomeSubtitle('speak-easy-summary-title-sub', 'studioCompleteMessages', 'default');
+      applyOutcomeSubtitle('story-cards-summary-title-sub', 'studioCompleteMessages', 'default');
     }
   });
 
@@ -7484,19 +7484,19 @@
   // metà. Salva le dichiarazioni fatte e torna alla mappa SENZA completare
   // il modulo — niente Traguardo, niente Schermata Finale, niente colore
   // sulla mappa: non è un esito, è un segnalibro.
-  document.getElementById('speak-easy-resume-later').addEventListener('click', function () {
-    saveSeDeclarations(currentEpisode.id, getUserName(), seSessionAnswers);
+  document.getElementById('story-cards-resume-later').addEventListener('click', function () {
+    saveSeDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
     openEpisodeMap();
   });
 
-  document.getElementById('speak-easy-complete-btn').addEventListener('click', function () {
+  document.getElementById('story-cards-complete-btn').addEventListener('click', function () {
     // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
     // number behind it is the student's own declared "Sì, mi è chiara"
     // share — only saved when there was something to self-assess at all.
-    if (seHasExplanations && CONFIG.moduleOutcomeRules[currentSpeakEasyModule.moduleId] === 'selfScoreRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), currentSpeakEasyModule.id, { level: moduleRulesLevel(seLastAvgPct), pct: seLastAvgPct });
+    if (storyCardsHasExplanations && CONFIG.moduleOutcomeRules[currentStoryCardsModule.moduleId] === 'selfScoreRules') {
+      saveModuleOutcome(currentEpisode, getUserName(), currentStoryCardsModule.id, { level: moduleRulesLevel(storyCardsLastAvgPct), pct: storyCardsLastAvgPct });
     }
-    markModuleCompleted(currentEpisode, getUserName(), currentSpeakEasyModule.id);
+    markModuleCompleted(currentEpisode, getUserName(), currentStoryCardsModule.id);
     openEpisodeMap();
   });
 
@@ -7521,7 +7521,7 @@
      Recording mechanics, mic-trouble detection, star rating and the
      shared safety-valve popup are identical either way — everything in
      this section not explicitly gated on vcVariant runs for both.
-     Reads every line of the same "dialogue" section Speak Easy already
+     Reads every line of the same "dialogue" section Story Cards already
      uses (loadEpisodeData reuses the cache — no extra request), one
      sentence at a time. Recording happens through this module's own
      SpeechRecognition instance; the recognized text is held (never
@@ -8757,7 +8757,7 @@
      Reads the same "dialogue" section of the episode's data file Speak
      Easy already reads (loadEpisodeData's cache, no extra request) —
      dialogueLineAlign()/speakerLabel() are the exact same functions
-     Speak Easy uses, tokenize() is Voice Coach's own word counter
+     Story Cards uses, tokenize() is Voice Coach's own word counter
      (CLAUDE.md rule 13). "L'hai imparato?"/etc. is always a single
      self-assessment for the WHOLE dialogue (verde/giallo module
      outcome), never per-word — no mastery entries are touched here.
@@ -9535,7 +9535,7 @@
   // Card's own Finale (unconditionally: those have no verde/giallo
   // distinction), Dialogo's Finale only on "Sì, lo so" (never on "Non
   // ancora" — see dgFinishModule), Voice Practice/Voice Check's own Finale
-  // below, Repeat Aloud/Speak Easy's own completion button (their own
+  // below, Repeat Aloud/Story Cards's own completion button (their own
   // click IS the completion event — see CONFIG.sound's own comment).
   function sfxPlayTraguardoSound() {
     var cfg = CONFIG.sound.events.traguardo;
@@ -10510,7 +10510,7 @@
   // cancels any audio already playing rather than being blocked by it
   // (see each module's own click handlers — Flash Card's fcFlip, Quick
   // Match's .sr-option/qm-dontknow-btn, Voice Coach's vc-record-btn/
-  // vcNextLine/voice-coach-retry-btn, Repeat Aloud/Speak Easy's own
+  // vcNextLine/voice-coach-retry-btn, Repeat Aloud/Story Cards's own
   // complete buttons).
   // lockModuleHeader(prefix, locked) is the one piece that's still a
   // real lock, kept for Voice Coach's RECORDING direction only (setVcState
@@ -10580,7 +10580,7 @@
   // the new utterance), so this must stay out of its way. Every element
   // whose own click handler calls toggleSpeak directly is excluded:
   //   - [data-say]: every "normal" listen/rate button (Repeat Aloud,
-  //     Speak Easy, Voice Coach, Quick Match's prompt, Flash Card)
+  //     Story Cards, Voice Coach, Quick Match's prompt, Flash Card)
   //   - [data-qm-listen-index]: Quick Match's per-option Mini Blocco
   //     Ascolto (it-en direction) — a future module reusing this same
   //     mini-listen pattern needs the same marker

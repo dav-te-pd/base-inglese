@@ -412,7 +412,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 10: Speak Easy — mechanism present, but episode 1 has no explanations yet ============
+  // ============ JOB 10: Story Cards — mechanism present, but episode 1 has no explanations yet ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -426,12 +426,12 @@ async function run() {
     await page.waitForTimeout(200);
     const explanationButtonCount = await page.evaluate(() => document.querySelectorAll('[data-toggle-explanation]').length);
     log('[Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno', explanationButtonCount === 0);
-    await page.click('#speak-easy-complete');
+    await page.click('#story-cards-complete');
     await page.waitForTimeout(150);
-    const subtitle = await page.$eval('#speak-easy-summary-title-sub', el => el.textContent).catch(() => null);
+    const subtitle = await page.$eval('#story-cards-summary-title-sub', el => el.textContent).catch(() => null);
     const data10 = await page.evaluate(() => fetch('data/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
-    await page.click('#speak-easy-complete-btn');
+    await page.click('#story-cards-complete-btn');
     await page.waitForTimeout(150);
     const rowClass10 = await page.evaluate(() => document.querySelector('[data-module="whyWeSayIt"]').className);
     log('[Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato)', !/outcome-(verde|giallo|rosso)/.test(rowClass10));

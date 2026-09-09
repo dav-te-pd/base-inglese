@@ -121,23 +121,23 @@ davvero `attemptRule`.
   `fillTemplate`, `renderIntroContent`, `openHelpFor`, `showView`.
 
 #### Meet the Story / Why We Say It — `meetTheStory`, `whyWeSayIt`
-- **Componente unico:** `openSpeakEasy()` (7701) + `renderSpeakEasy()` (7491).
-  Vista `view-speak-easy`. Il nome "Speak Easy" **non descrive più nessuno dei
+- **Componente unico:** `openStoryCards()` (7701) + `renderStoryCards()` (7491).
+  Vista `view-story-cards`. Il nome "Story Cards" **non descrive più nessuno dei
   due moduli** (§ 2.4).
 - **Profilo:** `CONFIG.story.profiles[module.storyProfile]` (riga 293) — l'unica
   differenza è `skills: false` (meet) / `skills: true` (why).
 - **Contenuto:** grado D (le battute). Why We Say It aggiunge, sotto ogni battuta,
   le sue `whatYouLearn` — **8 skill su 9 battute** nell'episodio 1 (`d-1` ne porta
   due, alcune battute nessuna). Una skill senza `body` è scartata (7508).
-- **Sblocco Sequenziale, variante per dichiarazione** — `seRefreshExplanationStates()`
+- **Sblocco Sequenziale, variante per dichiarazione** — `storyCardsRefreshExplanationStates()`
   (7583): una skill più avanti mostra solo il titolo, il corpo e i pulsanti spariscono.
-  Solo al primo giro: `seReviewMode` (7714) spegne la sequenza a modulo già completato.
+  Solo al primo giro: `storyCardsReviewMode` (7714) spegne la sequenza a modulo già completato.
 - **Autovalutazione:** tre risposte da `istruzioni-moduli.json → whyWeSayIt.selfCheck`.
-  Registrate in `seSessionAnswers` (memoria) + `addSeExplanationStat` (cumulativo,
+  Registrate in `storyCardsSessionAnswers` (memoria) + `addSeExplanationStat` (cumulativo,
   fra sessioni). Salvate su disco **solo** con "Esci e riprendi dopo" (7839) o al
   completamento (7819) — uscire da "← Mappa" non lascia traccia.
 - **Punteggio:** `% di "chiara" su tutte le skill`, congelato a "Ho finito" (7827).
-- **Completamento:** `#speak-easy-complete` → Schermata Finale → `#speak-easy-complete-btn`.
+- **Completamento:** `#story-cards-complete` → Schermata Finale → `#story-cards-complete-btn`.
   Il blocco "non hai dichiarato tutto" vive nella funzione, non solo sul pulsante (7809).
 
 #### Repeat Aloud — `repeatAloud`
@@ -238,7 +238,7 @@ davvero `attemptRule`.
 | `loadEpisodeData(module)` | 7088 | `fetch` + cache + ricaduta sul fallback | tutti i moduli con `dataFile` |
 | `episodeGrade(data, grade)` | 7114 | **L'unico** accesso al contenuto di un grado | tutti i moduli con contenuto |
 | `itemText(item, lang)` | 7126 | Testo di una voce con segnaposto già riempiti | Repeat Aloud, Match Practice, Speed Match, Flash Card, `buildMultipleChoiceOptions` |
-| `fillTemplate(text, ep, values, lang)` | 6581 | Sostituisce `{{chiave}}` e `{{chiave:en}}` | `itemText`, Speak Easy, Dialogo, Voice Coach |
+| `fillTemplate(text, ep, values, lang)` | 6581 | Sostituisce `{{chiave}}` e `{{chiave:en}}` | `itemText`, Story Cards, Dialogo, Voice Coach |
 | `moduleStepId(moduleId, seenBefore)` | 6270 | Id del passo (`-2`, `-3` dalle apparizioni successive) | il blocco che calcola `episode.modules` |
 | `moduleTypeLabel(module)` | 7216 | "Studio · Parole"; omette il grado quando la categoria lo contiene | mappa + intestazione di ogni modulo |
 | `moduleNameHtml(name)` | 7205 | Stacca il suffisso `en→it` in uno `<span>` | mappa + intestazioni |
@@ -284,8 +284,8 @@ davvero `attemptRule`.
 | `baseinglese:moduleOutcome:<ep>:<utente>` | `moduleOutcomeKey` (6342) | `idPasso -> { level, ... }` |
 | `baseinglese:mastery:<ep>:<utente>` | `masteryStorageKey` (6069) | `unitId -> { level, streak }` |
 | `baseinglese:<ep>:custom:<utente>` | `customValuesKey` (6593) | valori di personalizzazione |
-| `baseinglese:seDeclarations:<ep>:<utente>` | `seDeclarationsKey` (7417) | dichiarazioni di Why We Say It |
-| `baseinglese:seExplanationStats:<ep>:<utente>` | `seExplanationStatsKey` (6445) | conteggio cumulativo per skill |
+| `baseinglese:storyCardsDeclarations:<ep>:<utente>` | `storyCardsDeclarationsKey` (7417) | dichiarazioni di Why We Say It |
+| `baseinglese:storyCardsExplanationStats:<ep>:<utente>` | `storyCardsExplanationStatsKey` (6445) | conteggio cumulativo per skill |
 | `baseinglese:audioUsage:<ep>:<utente>` | `audioUsageKey` (6396) | secondi di audio inviati per modulo |
 | `baseinglese:nextLineSkips:<ep>:<utente>` | `nextLineSkipsKey` (6420) | quante volte si è saltata una battuta |
 | `baseinglese:helpRequests:<utente>` | `helpRequestsKey` (5501) | richieste di aiuto |
@@ -300,7 +300,7 @@ toccato.
 
 | Prefisso / nome | Modulo che nomina | Cosa è oggi | Dove compare |
 |---|---|---|---|
-| `se*`, `speakEasy`, `speak-easy-*` | **Speak Easy** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openSpeakEasy`, `renderSpeakEasy`, `seSkillIds`, `seRefreshExplanationStates`, `seIsUnlocked`, `seDeclarationsKey`, `seExplanationStatsKey`, `addSeExplanationStat`, …), la vista `view-speak-easy`, ~20 id HTML, **e la chiave dati `speakEasyCompleteMessages` in `messaggi-feedback.json`** |
+| `se*`, `storyCards`, `story-cards-*` | **Story Cards** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openStoryCards`, `renderStoryCards`, `storyCardsSkillIds`, `storyCardsRefreshExplanationStates`, `storyCardsIsUnlocked`, `storyCardsDeclarationsKey`, `storyCardsExplanationStatsKey`, `addSeExplanationStat`, …), la vista `view-story-cards`, ~20 id HTML, **e la chiave dati `storyCardsCompleteMessages` in `messaggi-feedback.json`** |
 | `match*`, `qm*` | **Quick Match** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
 | `speedMatch*`, `sr*` | **Speed Round** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
@@ -630,8 +630,8 @@ schema di chiamata.
 
 ### 4.7 Altre cose viste, più piccole
 
-- `openSpeakEasy` (7704-7705) scrive in `#speak-easy-badge` e `#speak-easy-subtitle`
-  oltre che in `#speak-easy-title` e `#speak-easy-type-badge`: quattro elementi per
+- `openStoryCards` (7704-7705) scrive in `#story-cards-badge` e `#story-cards-subtitle`
+  oltre che in `#story-cards-title` e `#story-cards-type-badge`: quattro elementi per
   due informazioni. Da verificare se i primi due sono ancora visibili.
 - `#vc-warning` (8335) e `#warning` (10900) usano `style.display` diretto invece di
   `hidden`, i due punti fuori convenzione già noti e lasciati apposta.
@@ -752,5 +752,5 @@ una migrazione è già in conto.
 
 **Nel frattempo:** nessuna rinomina, e **ogni nome nuovo segue il nome attuale del
 modulo, mai quello vecchio.** Le tre funzioni `se*` nate nel giro precedente —
-`seFollowupText` (7405), `seCardIndex` (7678), `seCurrentCardIndex` (7685) — entrano
+`storyCardsFollowupText` (7405), `storyCardsCardIndex` (7678), `storyCardsCurrentCardIndex` (7685) — entrano
 nella lista del § 2.4 insieme alle altre: sono nuove, ma portano già un prefisso morto.

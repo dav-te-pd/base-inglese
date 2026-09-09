@@ -37,7 +37,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FCTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng']);
+    await bootAsUser(page, 'FCTester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng']);
     await page.click('[data-module="flashcardAEngIta"]');
     await page.waitForTimeout(300);
 
@@ -96,7 +96,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'EmojiTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng']);
+    await bootAsUser(page, 'EmojiTester', ['repeatAloud', 'storyCards', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng']);
 
     // Flash Card summary screen text (no emoji).
     await page.click('[data-module="flashcardAEngIta"]');

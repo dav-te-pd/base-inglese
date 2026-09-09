@@ -165,7 +165,7 @@ async function run() {
     await openModule(page, 'whyWeSayIt');
     await page.waitForTimeout(400);
     const warnings = await page.evaluate(() => window.__consoleWarnings || []);
-    log('[Job2b] Speak Easy (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere', warnings.length === 0);
+    log('[Job2b] Story Cards (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere', warnings.length === 0);
     console.log('    -> warnings: ' + JSON.stringify(warnings));
     log('[Job2b] No JS errors', errors.length === 0);
     await page.close();
@@ -225,7 +225,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 4: Speak Easy plays Traguardo on completion ============
+  // ============ JOB 4: Story Cards plays Traguardo on completion ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -238,12 +238,12 @@ async function run() {
     // "Ho finito" e' bloccato finche' ogni skill non e' dichiarata: si
     // attraversa la lezione, come farebbe l'utente.
     await declareAllSkills(page);
-    await page.click('#speak-easy-complete');
+    await page.click('#story-cards-complete');
     await page.waitForTimeout(400);
     const tones = await page.evaluate(() => window.__playedTones || []);
     const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
-    log('[Job4] Speak Easy plays the Traguardo sound on "Ho finito"', traguardoTones.length >= 3);
-    log('[Job4] Speak Easy: No JS errors', errors.length === 0);
+    log('[Job4] Story Cards plays the Traguardo sound on "Ho finito"', traguardoTones.length >= 3);
+    log('[Job4] Story Cards: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();
   }

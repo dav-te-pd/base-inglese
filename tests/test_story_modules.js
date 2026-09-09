@@ -264,7 +264,7 @@ async function bootAsUser(page, userName, moduleId) {
 
 async function openStory(page, moduleId) {
   await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForFunction(() => document.querySelectorAll('#speak-easy-body .wws-card').length > 0, null, { timeout: 20000 });
+  await page.waitForFunction(() => document.querySelectorAll('#story-cards-body .wws-card').length > 0, null, { timeout: 20000 });
 }
 
 // Tutto lo stato che serve, letto in un'unica valutazione sincrona dentro la
@@ -274,46 +274,46 @@ function readState(page) {
     const vis = el => !!el && el.getClientRects().length > 0;
     const visId = id => vis(document.getElementById(id));
     const cards = Array.from(document.querySelectorAll('.wws-card'));
-    const regole = Array.from(document.querySelectorAll('.se-explanation'));
-    const selfchecks = Array.from(document.querySelectorAll('.se-selfcheck'));
+    const regole = Array.from(document.querySelectorAll('.story-cards-explanation'));
+    const selfchecks = Array.from(document.querySelectorAll('.story-cards-selfcheck'));
     return {
       battute: cards.length,
       corrente: cards.filter(c => c.classList.contains('is-current')).map(c => c.getAttribute('data-card')),
       avanti: cards.filter(c => c.classList.contains('is-ahead')).map(c => c.getAttribute('data-card')),
       skill: regole.length,
       skillIds: regole.map(r => r.getAttribute('data-skill-block')),
-      titoli: Array.from(document.querySelectorAll('.se-explanation-title')).map(el => el.textContent),
-      titoliVisibili: Array.from(document.querySelectorAll('.se-explanation-title')).filter(vis).length,
-      corpiVisibili: Array.from(document.querySelectorAll('.se-explanation-text')).filter(vis).length,
+      titoli: Array.from(document.querySelectorAll('.story-cards-explanation-title')).map(el => el.textContent),
+      titoliVisibili: Array.from(document.querySelectorAll('.story-cards-explanation-title')).filter(vis).length,
+      corpiVisibili: Array.from(document.querySelectorAll('.story-cards-explanation-text')).filter(vis).length,
       selfcheckVisibili: selfchecks.filter(vis).length,
-      scelti: Array.from(document.querySelectorAll('.se-selfcheck-actions .btn.is-chosen')).map(b => b.getAttribute('data-skill')),
-      spunte: Array.from(document.querySelectorAll('.se-declared')).filter(vis).map(el => el.textContent.trim()),
+      scelti: Array.from(document.querySelectorAll('.story-cards-selfcheck-actions .btn.is-chosen')).map(b => b.getAttribute('data-skill')),
+      spunte: Array.from(document.querySelectorAll('.story-cards-declared')).filter(vis).map(el => el.textContent.trim()),
       lucchetti: Array.from(document.querySelectorAll('.wws-state')).filter(el => vis(el) && !el.classList.contains('is-done')).length,
       senzaRegola: Array.from(document.querySelectorAll('.wws-no-rule')).filter(vis).length,
       pulsantiTraduzione: document.querySelectorAll('[data-toggle-translation]').length,
-      preselezionati: document.querySelectorAll('.se-selfcheck-actions .btn-primary').length,
-      rispostaDisabilitata: Array.from(document.querySelectorAll('[data-se-answer]')).filter(b => b.disabled).length,
-      spunteConTesto: Array.from(document.querySelectorAll('.se-declared')).filter(el => el.textContent.trim().length > 0).length,
+      preselezionati: document.querySelectorAll('.story-cards-selfcheck-actions .btn-primary').length,
+      rispostaDisabilitata: Array.from(document.querySelectorAll('[data-story-cards-answer]')).filter(b => b.disabled).length,
+      spunteConTesto: Array.from(document.querySelectorAll('.story-cards-declared')).filter(el => el.textContent.trim().length > 0).length,
       // Il Blocco Ascolto e la traduzione stanno DENTRO la bolla.
       audioNellaBolla: document.querySelectorAll('.wws-bubble .repeat-item-audio').length,
-      sceltoColore: (() => { const b = document.querySelector('.se-selfcheck-actions .btn.is-chosen'); return b ? getComputedStyle(b).backgroundColor : null; })(),
+      sceltoColore: (() => { const b = document.querySelector('.story-cards-selfcheck-actions .btn.is-chosen'); return b ? getComputedStyle(b).backgroundColor : null; })(),
       accento: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
       spunteCard: Array.from(document.querySelectorAll('.wws-state.is-done')).filter(el => el.getClientRects().length > 0).map(el => el.id),
       traduzioniVisibili: Array.from(document.querySelectorAll('.wws-italian')).filter(vis).length,
       // La traduzione sta dentro la bolla, la regola no.
       traduzioniNellaBolla: document.querySelectorAll('.wws-bubble .wws-italian').length,
-      regoleNellaBolla: document.querySelectorAll('.wws-bubble .se-explanation').length,
+      regoleNellaBolla: document.querySelectorAll('.wws-bubble .story-cards-explanation').length,
       bolleColoriDiversi: new Set(Array.from(document.querySelectorAll('.wws-card:not(.is-ahead) .wws-bubble')).map(b => getComputedStyle(b).backgroundColor)).size,
-      rispostesuUnaRiga: (() => { const a = document.querySelector('.se-selfcheck-actions'); return a ? getComputedStyle(a).flexDirection : null; })(),
-      usciteSuUnaRiga: getComputedStyle(document.querySelector('.se-complete-row')).flexDirection,
+      rispostesuUnaRiga: (() => { const a = document.querySelector('.story-cards-selfcheck-actions'); return a ? getComputedStyle(a).flexDirection : null; })(),
+      usciteSuUnaRiga: getComputedStyle(document.querySelector('.story-cards-complete-row')).flexDirection,
       bordoCorrente: (() => { const c = document.querySelector('.wws-card.is-current'); return c ? getComputedStyle(c).borderTopWidth : null; })(),
-      completaDisabilitato: document.getElementById('speak-easy-complete').disabled,
-      hintVisibile: visId('speak-easy-complete-hint'),
-      hintTesto: (document.getElementById('speak-easy-complete-hint') || {}).textContent || '',
-      riprendiVisibile: visId('speak-easy-resume-later'),
-      skillConSegnaposto: Array.from(document.querySelectorAll('.se-explanation-text, .se-explanation-title'))
+      completaDisabilitato: document.getElementById('story-cards-complete').disabled,
+      hintVisibile: visId('story-cards-complete-hint'),
+      hintTesto: (document.getElementById('story-cards-complete-hint') || {}).textContent || '',
+      riprendiVisibile: visId('story-cards-resume-later'),
+      skillConSegnaposto: Array.from(document.querySelectorAll('.story-cards-explanation-text, .story-cards-explanation-title'))
         .filter(el => /\{\{|\{[a-zA-Z]/.test(el.textContent)).length,
-      corpiSkill: Array.from(document.querySelectorAll('.se-explanation-text')).map(el => el.textContent),
+      corpiSkill: Array.from(document.querySelectorAll('.story-cards-explanation-text')).map(el => el.textContent),
       segnapostoGrezzi: Array.from(document.querySelectorAll('.wws-english, .wws-italian')).filter(el => /\{\{/.test(el.textContent)).length
     };
   });
@@ -328,9 +328,9 @@ function coloreAtteso(hex) {
 }
 
 async function dichiara(page, skillId, valore) {
-  await page.locator('.se-selfcheck[data-se-skill="' + skillId + '"] [data-se-answer="' + valore + '"]').click();
+  await page.locator('.story-cards-selfcheck[data-story-cards-skill="' + skillId + '"] [data-story-cards-answer="' + valore + '"]').click();
   await page.waitForFunction(id => {
-    const el = document.getElementById('se-declared-' + id);
+    const el = document.getElementById('story-cards-declared-' + id);
     return el && el.getClientRects().length > 0;
   }, skillId, { timeout: 10000 });
 }
@@ -477,7 +477,7 @@ async function run() {
     const frasi = [];
     for (const id of skillIds) {
       await dichiara(page, id, 'nonChiara');
-      frasi.push(await page.$eval('#se-followup-' + id, el => el.textContent));
+      frasi.push(await page.$eval('#story-cards-followup-' + id, el => el.textContent));
       if (id === 'd-1-s2') {
         spunte = await page.evaluate(() => Array.from(document.querySelectorAll('.wws-state.is-done')).map(el => el.id));
         log('[B1] Superata la prima card, quella senza regole prende la spunta',
@@ -532,7 +532,7 @@ async function run() {
 
     await openStory(page, 'whyWeSayIt');
     await dichiara(page, 'd-1-s1', 'chiara');
-    await page.locator('#speak-easy-back-map').click();
+    await page.locator('#story-cards-back-map').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     await openStory(page, 'whyWeSayIt');
     let st = await readState(page);
@@ -540,7 +540,7 @@ async function run() {
 
     await dichiara(page, 'd-1-s1', 'chiara');
     await dichiara(page, 'd-1-s2', 'nonChiara');
-    await page.locator('#speak-easy-resume-later').click();
+    await page.locator('#story-cards-resume-later').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const completato = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('baseinglese:modules:episode1:Story_Uscite')).completed.indexOf('whyWeSayIt') !== -1);
@@ -565,12 +565,12 @@ async function run() {
     // Primo giro completo: tutte chiare -> 100% -> verde.
     await openStory(page, 'whyWeSayIt');
     for (const id of skillIds) await dichiara(page, id, 'chiara');
-    await page.locator('#speak-easy-complete').click();
+    await page.locator('#story-cards-complete').click();
     await page.waitForFunction(() => {
-      const el = document.getElementById('speak-easy-summary-screen');
+      const el = document.getElementById('story-cards-summary-screen');
       return el && el.getClientRects().length > 0;
     }, null, { timeout: 10000 });
-    await page.locator('#speak-easy-complete-btn').click();
+    await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const primoEsito = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:Story_Ripasso')).whyWeSayIt);
@@ -589,12 +589,12 @@ async function run() {
     // Al ripasso le regole sono già tutte leggibili: non c'è niente da
     // riaprire, si cambia direttamente la risposta.
     await dichiara(page, 'd-1-s1', 'nonChiara');
-    await page.locator('#speak-easy-complete').click();
+    await page.locator('#story-cards-complete').click();
     await page.waitForFunction(() => {
-      const el = document.getElementById('speak-easy-summary-screen');
+      const el = document.getElementById('story-cards-summary-screen');
       return el && el.getClientRects().length > 0;
     }, null, { timeout: 10000 });
-    await page.locator('#speak-easy-complete-btn').click();
+    await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const secondoEsito = await page.evaluate(() =>
       JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:Story_Ripasso')).whyWeSayIt);

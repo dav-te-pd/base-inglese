@@ -25,8 +25,8 @@ async function run() {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate((userName) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: ['personalizzazione','repeatAloud','speakEasy','voiceCoach'] }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','matchEngIta'].forEach(k => {
+    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: ['personalizzazione','repeatAloud','storyCards','voiceCoach'] }));
+    ['mappaEpisodio','personalizzazione','repeatAloud','storyCards','voiceCoach','matchEngIta'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, 'DebugQM');

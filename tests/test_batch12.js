@@ -281,7 +281,7 @@ async function run() {
     // categoria Studio.
     log('[Job7] Meet the Story e Why We Say It hanno i loro nomi',
       row('meetTheStory').title === 'Meet the Story' && row('whyWeSayIt').title === 'Why We Say It');
-    log('[Job7] "Speak Easy" non compare piu\' in mappa', rows.every(r => r.title !== 'Speak Easy'));
+    log('[Job7] "Story Cards" non compare piu\' in mappa', rows.every(r => r.title !== 'Story Cards'));
     // Six-label job (later turn) replaced these four categories — all
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are

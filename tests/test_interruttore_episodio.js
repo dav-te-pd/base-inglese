@@ -107,10 +107,10 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
   await apriMappa(page);
   await page.click('[data-module="meetTheStory"]');
   await page.waitForFunction(() => {
-    const b = document.getElementById('speak-easy-body');
+    const b = document.getElementById('story-cards-body');
     return !!b && b.textContent.trim().length > 0;
   }, { timeout: 15000 });
-  return page.evaluate(() => document.getElementById('speak-easy-body').textContent);
+  return page.evaluate(() => document.getElementById('story-cards-body').textContent);
 }
 
 (async () => {

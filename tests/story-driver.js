@@ -12,7 +12,7 @@
 const { loadGrade } = require('./quiz-driver');
 
 // Gli id delle skill del grado D, nell'ordine della lezione. Stessa regola
-// di seSkillId() in index.html: idBattuta + '-s' + posizione.
+// di storyCardsSkillId() in index.html: idBattuta + '-s' + posizione.
 function skillIds(grade) {
   const ids = [];
   loadGrade(grade || 'D').forEach(function (line) {
@@ -29,16 +29,16 @@ function skillIds(grade) {
 async function declareAllSkills(page, valore, grade) {
   const risposta = valore || 'chiara';
   for (const id of skillIds(grade)) {
-    await page.locator('.se-selfcheck[data-se-skill="' + id + '"] [data-se-answer="' + risposta + '"]').click();
+    await page.locator('.story-cards-selfcheck[data-story-cards-skill="' + id + '"] [data-story-cards-answer="' + risposta + '"]').click();
     await page.waitForFunction(function (skillId) {
-      const el = document.getElementById('se-declared-' + skillId);
+      const el = document.getElementById('story-cards-declared-' + skillId);
       return el && el.getClientRects().length > 0;
     }, id, { timeout: 10000 });
   }
   // "Ho finito" si sblocca solo quando sono tutte dichiarate: aspettare
   // quello è aspettare la condizione vera, non il tempo che ci mette.
   await page.waitForFunction(function () {
-    const btn = document.getElementById('speak-easy-complete');
+    const btn = document.getElementById('story-cards-complete');
     return btn && !btn.disabled;
   }, null, { timeout: 10000 });
 }

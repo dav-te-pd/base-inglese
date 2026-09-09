@@ -189,7 +189,7 @@ async function run() {
     const rules = await page.evaluate(() => window.APP_CONFIG.moduleOutcomeRules);
     log('[Config] moduleOutcomeRules.voiceCoach === "moduleRules"', rules && rules.voiceCoach === 'moduleRules');
     log('[Config] moduleOutcomeRules declares selfAssessment for the 3 Dialogo modules', rules && rules.dialogoAscoltaRipeti === 'selfAssessment' && rules.dialogoRipetiATempo === 'selfAssessment' && rules.dialogoContinuo === 'selfAssessment');
-    // whyWeSayIt (ex speakEasy) declares 'selfScoreRules' —
+    // whyWeSayIt (ex storyCards) declares 'selfScoreRules' —
     // repeatAloud stays undefined (default completionRules, unchanged).
     log('[Config] repeatAloud has no entry (default = completionRules); whyWeSayIt = selfScoreRules', rules && rules.repeatAloud === undefined && rules.whyWeSayIt === 'selfScoreRules');
     await page.close();

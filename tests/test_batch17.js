@@ -176,7 +176,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 1c: Speak Easy — nothing locks; "Ho finito" stops audio on touch ============
+  // ============ JOB 1c: Story Cards — nothing locks; "Ho finito" stops audio on touch ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -189,16 +189,16 @@ async function run() {
     await bootAsUser(page, 'T17Job1c', stepsBefore('meetTheStory'));
     await openModule(page, 'meetTheStory');
     await page.waitForTimeout(200);
-    const listenBtn = await page.$('#speak-easy-body [data-say]');
+    const listenBtn = await page.$('#story-cards-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
     await page.waitForTimeout(100);
     const stateDuring = await page.evaluate(() => ({
-      complete: document.getElementById('speak-easy-complete').disabled,
-      watch: document.getElementById('speak-easy-watch-btn').disabled
+      complete: document.getElementById('story-cards-complete').disabled,
+      watch: document.getElementById('story-cards-watch-btn').disabled
     }));
     log('[Job1c] "Ho finito" stays enabled during listen audio', stateDuring.complete === false);
     log('[Job1c] Spiegazione stays enabled during listen audio', stateDuring.watch === false);
-    await page.click('#speak-easy-complete');
+    await page.click('#story-cards-complete');
     await page.waitForTimeout(50);
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1c] "Ho finito" stops the audio on touch', speakingAfter === false);

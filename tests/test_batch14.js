@@ -134,7 +134,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 3: Repeat Aloud / Speak Easy now have a Schermata Finale ============
+  // ============ JOB 3: Repeat Aloud / Story Cards now have a Schermata Finale ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -174,15 +174,15 @@ async function run() {
     await page.waitForTimeout(300);
     // "Ho finito" e' bloccato finche' ogni skill non e' dichiarata.
     await declareAllSkills(page);
-    await page.click('#speak-easy-complete');
+    await page.click('#story-cards-complete');
     await page.waitForTimeout(150);
-    const summaryVisible = await page.evaluate(() => !document.getElementById('speak-easy-summary-screen').hidden);
-    log('[Job3] Speak Easy: clicking "Ho finito" opens the Schermata Finale', summaryVisible);
-    await page.click('#speak-easy-complete-btn');
+    const summaryVisible = await page.evaluate(() => !document.getElementById('story-cards-summary-screen').hidden);
+    log('[Job3] Story Cards: clicking "Ho finito" opens the Schermata Finale', summaryVisible);
+    await page.click('#story-cards-complete-btn');
     await page.waitForTimeout(150);
     const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T14SE');
-    log('[Job3] Speak Easy: summary\'s own button completes the module', completedAfter.indexOf('whyWeSayIt') !== -1);
-    log('[Job3] Speak Easy: No JS errors', errors.length === 0);
+    log('[Job3] Story Cards: summary\'s own button completes the module', completedAfter.indexOf('whyWeSayIt') !== -1);
+    log('[Job3] Story Cards: No JS errors', errors.length === 0);
     await page.close();
   }
 
