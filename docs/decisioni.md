@@ -71,25 +71,15 @@ misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli
 ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
 tutto è in `main`.
 
-**Fase 1: i passi 1 e 2 sono fatti e verificati. I passi 3 e 4 sono scritti e
-BLOCCATI su una decisione di chi guida il progetto.**
+**Fase 1: i passi 1, 2, 3 e 4 sono fatti e verificati, tutti in `main`.**
 
-Il codice è a posto: suite **41 file su 42 verdi**, conteggio **933 come il
-baseline**. L'unico rosso è `test_struttura_corso.js`, e non è un difetto del
-codice: la tabella «Ordine attuale — 22 passaggi» di
-`docs/it/struttura-corso.md` nomina ancora `quickMatchEngIta`,
-`quickMatchItaEng`, `speedRoundEngIta`, `speedRoundItaEng`, e quel test
-confronta proprio quella tabella con `CONFIG.sequences`.
+Resta il **passo 5** — `se* → storyCards*` — e poi il **6**, gli episodi.
 
-**Otto celle da cambiare in un file di contenuto** (righe 68, 69, 73, 74, 78,
-79, 84, 85) — regola 33: non si tocca di iniziativa. Il rosso è il test che fa
-il suo mestiere, non un guasto.
-
-**Finché quelle otto celle non cambiano, i passi 3 e 4 NON confluiscono in
-`main`.** Restano su `claude/verifica-in-corso`, commit `38e4164`.
-
-Il prossimo dopo di loro è il **passo 5**, quello che **non si interrompe** —
-non va cominciato senza una sessione intera davanti. Un passo per volta, con la fermata in mezzo, e non
+⚠️ **Il passo 5 NON si interrompe.** Quattro strati insieme, e un `se-` mancato
+in una regola CSS non fa fallire nessun test: `test_hidden_guard.js` costruisce
+gli elementi *a partire dalle* regole, quindi una regola orfana passa verde.
+Fermarsi a metà lascia un repository verde e sbagliato. **Non va cominciato
+senza una sessione intera davanti, e senza il via di chi guida il progetto.** Un passo per volta, con la fermata in mezzo, e non
 si comincia senza il via di chi guida il progetto.
 
 *Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
@@ -151,8 +141,8 @@ il sospettato più piccolo possibile**.*
 |---|---|---|---|
 | **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina.<br><br>**FATTO il 2026-09-08.** Undici in `index.html` (la definizione più dieci chiamate) e una in `tests/test_scala_colori.js`. Verificato prima che `shuffle` non collidesse con niente: nel codice non esisteva, nemmeno come parola. Allineate anche le **nove** occorrenze in `docs/validazione.md`, che descrive il codice e avrebbe continuato a nominare una funzione inesistente. **`docs/it/struttura-corso.md` NON è stato toccato** (regola 33): la sua tabella dichiara la rinomina da fare, ed è la fonte, non un registro di stato. | ☑ | **sì** |
 | **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`.<br><br>**SCRITTA il 2026-09-09, in attesa della suite.** 33 sostituzioni in 27 file: 4 valori di `kind` in `index.html`, la chiave di `istruzioni-moduli.json`, 26 nei test (di cui 4 in `tests/debug/`, che non è nella suite), 2 in `docs/validazione.md`. Verificato prima che il `kind` non venga mai usato per costruire un id del DOM — serve solo a `data[module.kind]` e alla chiave `introDismissed:` — quindi nessuna collisione con `#view-flashcard` e compagnia.<br><br>**VERIFICATO il 2026-09-09:** suite verde su 42 file, conteggio **933, uguale al baseline**. In `main`. | ☑ | **sì** |
-| **3** | `quickMatch* → match*` (con `match-*`, `view-match`; **non** `qm-`)<br><br>**SCRITTO il 2026-09-09, insieme al 4.** In verifica. | ◐ | **NO** — vedi i divieti |
-| **4** | `speedRound* → speedMatch*` (con `speed-match-*`, `view-speed-match`; **non** `sr-`)<br><br>**SCRITTO il 2026-09-09, insieme al 3.** In verifica. | ◐ | **sì** |
+| **3** | `quickMatch* → match*` (con `match-*`, `view-match`; **non** `qm-`)<br><br>**FATTO il 2026-09-09, insieme al 4.** Verifica per SOTTRAZIONE (il nome vecchio deve sparire, mai «il nuovo c'è»): `\bmatch\b` pesca `str.match()` e `CONFIG.matching`, che è tutt'altro. Ha trovato **24 residui che la misura non aveva contato**, fra cui `openQuickMatch` — un nome di funzione con la maiuscola interna, che una ricerca sul nome nudo non prende. Suite verde, 933. | ☑ | **NO** — vedi i divieti |
+| **4** | `speedRound* → speedMatch*` (con `speed-match-*`, `view-speed-match`; **non** `sr-`)<br><br>**FATTO il 2026-09-09, insieme al 3.** 515 sostituzioni previste + 24 residui, in 47 file. Segue anche il prefisso delle chiavi mastery (`'quickmatch'`→`'match'`, `'speedround'`→`'speedmatch'`): scrive il nome per esteso, quindi segue — e le voci mastery di quei due moduli restano orfane, accettato perché si riparte da zero. **Sopravvive una occorrenza di proposito:** `speedRoundMessages` in `messaggi-feedback.json`, dato morto — dargli un nome corrente lo farebbe sembrare vivo. Suite verde, 933. | ☑ | **sì** |
 | **5** | `se* → storyCards*` — con `se-*`, `speak-easy-*`, `view-speak-easy` e i due namespace `seDeclarations:` / `seExplanationStats:`. **Una sessione sola.** | ☐ | **sì**, ma solo DOPO che è finito per intero |
 | **6** | Gli episodi, **un commit solo**: `episode1 → gate`, `episode2 → aircraft-door`; `docs/it/ → docs/inglese/it/` e `data/it/ → data/inglese/it/` (~111 riferimenti a percorsi); i file rinominati in `inglese-it-gate.md` / `inglese-it-gate.json`; **`messaggi-feedback.json` con il percorso portato in una costante** (oggi è scritto dentro la riga di `fetch`, ed è l'unico dei tre che uno spostamento di cartelle può rompere senza comparire in nessun elenco); le regole 4 e 26 di `CLAUDE.md`. | ☐ | **sì** — e qui la fase 1 confluisce in `main` |
 
