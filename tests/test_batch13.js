@@ -44,7 +44,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -120,7 +120,7 @@ async function run() {
     const confirmAreaHidden = await page.evaluate(() => document.getElementById('vc-confirm-area').hidden);
     log('[6b] Confirm/Send area never opened (recording was discarded, not offered for sending)', confirmAreaHidden);
     const usageAfterDiscard = await page.evaluate((u) => {
-      var raw = localStorage.getItem('baseinglese:audioSecondsSent:episode1:' + u);
+      var raw = localStorage.getItem('baseinglese:audioSecondsSent:gate:' + u);
       return raw ? JSON.parse(raw) : null;
     }, 'T13Silence');
     log('[6b][6c] A silence-discarded recording is never counted in audio-seconds-sent', usageAfterDiscard === null);
@@ -168,7 +168,7 @@ async function run() {
     await page.waitForTimeout(150);
     await page.click('#vc-send-btn');
     await page.waitForTimeout(150);
-    const usage = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:audioSecondsSent:episode1:' + u) || '{}'), 'T13Usage');
+    const usage = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:audioSecondsSent:gate:' + u) || '{}'), 'T13Usage');
     log('[6c] Sending a recording writes a per-module audio-seconds entry', usage.byModule && usage.byModule.voicePractice > 0);
     console.log('    -> voicePractice seconds recorded: ' + (usage.byModule && usage.byModule.voicePractice));
 

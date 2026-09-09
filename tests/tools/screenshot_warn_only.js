@@ -16,7 +16,7 @@ async function run() {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate((u) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + u, JSON.stringify({ completed: ['personalizzazione', 'repeatAloud'] }));
+    localStorage.setItem('baseinglese:modules:gate:' + u, JSON.stringify({ completed: ['personalizzazione', 'repeatAloud'] }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + u, '1');
   }, 'ShotWarnOnly');

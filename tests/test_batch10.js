@@ -69,7 +69,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -114,7 +114,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
-    const episodeData = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()));
+    const episodeData = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()));
     const text = JSON.stringify(episodeData);
     const hasOldPlaceholders = /\{\{(papaName|mammaName|figliaName|figlioName|cittaPartenza)\}\}/.test(text);
     log('[Job2b] No old-style placeholder tokens remain in the episode data file', !hasOldPlaceholders);
@@ -134,7 +134,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.route('**/data/it/a1-episodio1-inglese.json', async (route) => {
+    await page.route('**/data/inglese/it/inglese-it-gate.json', async (route) => {
       const response = await route.fetch();
       const json = await response.json();
       if (json.levels.D.items && json.levels.D.items.length) {

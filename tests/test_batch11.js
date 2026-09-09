@@ -75,7 +75,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -177,7 +177,7 @@ async function run() {
   const LINE_COUNT = await (async () => {
     const p = await browser.newPage();
     await p.goto(BASE);
-    const n = await p.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
+    const n = await p.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.D.items.length));
     await p.close();
     return n;
   })();
@@ -243,7 +243,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -270,7 +270,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -299,7 +299,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -327,7 +327,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
-    const afterFirst = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterFirst = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     log('[Redo] First attempt (all correct) is verde', afterFirst === 'verde');
 
     // Redo, now all wrong -> should DOWNGRADE to rosso (a re-attempt going
@@ -338,7 +338,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
-    const afterSecond = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterSecond = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterSecond = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Second attempt (all wrong) REPLACES verde with rosso (downgrade honored)', afterSecond === 'rosso' && rowAfterSecond.indexOf('outcome-rosso') !== -1 && rowAfterSecond.indexOf('outcome-verde') === -1);
 
@@ -349,7 +349,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
-    const afterThird = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterThird = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterThird = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Third attempt (all correct again) REPLACES rosso with verde (upgrade honored)', afterThird === 'verde' && rowAfterThird.indexOf('outcome-verde') !== -1 && rowAfterThird.indexOf('outcome-rosso') === -1);
     log('[Redo] No JS errors', errors.length === 0);
@@ -379,7 +379,7 @@ async function run() {
     for (let i = 0; i < bubbleCount; i++) { await page.locator('.dg-bubble').nth(i).click(); await page.waitForTimeout(400); }
     await page.click('#dg-know-it-btn');
     await page.waitForTimeout(300);
-    const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}'), 'T11Final');
+    const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
     log('[Modulo Finale prep] Dialogo (selfAssessment) writes the same { level } shape ModuleRules writes', outcomes.dialogoAscoltaRipeti && outcomes.dialogoAscoltaRipeti.level === 'verde');
     log('[Modulo Finale prep] No JS errors', errors.length === 0);
     await page.close();

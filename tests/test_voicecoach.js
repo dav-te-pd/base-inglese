@@ -64,7 +64,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
   }, { userName, completedModules });
@@ -165,11 +165,11 @@ async function run() {
   const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
   log('[4d] Traguardo sound played on Voice Coach\'s Schermata Finale', traguardoTones.length >= 3);
 
-  const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'VCTester');
+  const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
   log('[4d] Module NOT marked completed until the explicit button is clicked', completedBeforeClick.indexOf('voiceCoach') === -1);
   await page.click('#voice-coach-complete-btn');
   await page.waitForTimeout(150);
-  const completedAfterClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'VCTester');
+  const completedAfterClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
   log('[4d] Clicking it marks voiceCoach completed and returns to the map', completedAfterClick.indexOf('voiceCoach') !== -1);
 
   log('No JS errors across the whole Voice Coach flow', errors.length === 0);

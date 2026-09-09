@@ -71,7 +71,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, extraStorage }) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
@@ -149,7 +149,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.route('**/data/it/a1-episodio1-inglese.json', async (route) => {
+    await page.route('**/data/inglese/it/inglese-it-gate.json', async (route) => {
       const res = await route.fetch();
       const json = await res.json();
       // Nel grado che Voice Check legge DAVVERO (la lettera della sua coppia

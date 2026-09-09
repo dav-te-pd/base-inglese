@@ -9,7 +9,7 @@ const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const BASE = APP_URL;
 
-const EPISODE_DATA = JSON.parse(fs.readFileSync(repoPath('data', 'it', 'a1-episodio1-inglese.json'), 'utf8'));
+const EPISODE_DATA = JSON.parse(fs.readFileSync(repoPath('data', 'it', 'inglese-it-gate.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -30,8 +30,8 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:gate:customizeSeen:' + userName, '1');
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });

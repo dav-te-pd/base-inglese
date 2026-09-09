@@ -45,7 +45,7 @@ async function apriConOrdine(page, utente, ordine, extra) {
       // Dal 2026-09-08 non esiste piu' un ordine globale: la forma sbagliata
       // si costruisce dando all'episodio un moduleOrder proprio, che e' una
       // delle due strade ammesse (l'altra e' dichiarare una sequenza).
-      JSON.stringify({ episodes: { episode1: { moduleOrder: ordine } } }));
+      JSON.stringify({ episodes: { gate: { moduleOrder: ordine } } }));
     (extra || []).forEach(([k, v]) => localStorage.setItem(k.replace('{u}', utente), v));
   }, { ordine, extra, utente });
   await page.reload();
@@ -59,8 +59,8 @@ async function apriConOrdine(page, utente, ordine, extra) {
 function statoDopo(page, utente, stepId) {
   return page.evaluate(({ utente, stepId }) => {
     const vis = el => !!el && el.getClientRects().length > 0;
-    const prog = JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + utente) || '{}');
-    const esiti = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + utente) || '{}');
+    const prog = JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + utente) || '{}');
+    const esiti = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + utente) || '{}');
     return {
       completati: prog.completed || [],
       completato: (prog.completed || []).indexOf(stepId) !== -1,
@@ -126,7 +126,7 @@ async function run() {
     // la migrazione non deve scriverne il completamento.
     await apriConOrdine(page, 'CortoMigra',
       [{ module: 'repeatAloud', grade: 'A' }, { module: 'matchEngIta', grade: 'A' }],
-      [['baseinglese:episode1:customizeSeen:{u}', '1']]);
+      [['baseinglese:gate:customizeSeen:{u}', '1']]);
     const s = await statoDopo(page, 'CortoMigra', 'personalizzazione');
     log('[C] La migrazione non scrive un passo che l\'episodio non dichiara',
         s.completato === false);

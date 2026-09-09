@@ -86,8 +86,8 @@ async function run() {
     page.on('pageerror', e => errori.push('[B] ' + String(e).slice(0, 140)));
     await boot(page, 'SeqNome', null);
     const c = await page.evaluate(() => ({
-      dichiarata: window.APP_CONFIG.episodes.episode1.sequence,
-      esiste: !!(window.APP_CONFIG.sequences || {})[window.APP_CONFIG.episodes.episode1.sequence],
+      dichiarata: window.APP_CONFIG.episodes.gate.sequence,
+      esiste: !!(window.APP_CONFIG.sequences || {})[window.APP_CONFIG.episodes.gate.sequence],
       quante: Object.keys(window.APP_CONFIG.sequences || {}).length,
       vecchia: typeof window.APP_CONFIG.moduleOrderDefault
     }));
@@ -100,14 +100,14 @@ async function run() {
   // ── [C] Le quattro possibilità ──────────────────────────────────────────
   const casi = [
     { nome: 'tutte e due', utente: 'SeqDue',
-      ov: { episodes: { episode1: { sequence: 'narrativo-standard', moduleOrder: [{ module: 'repeatAloud', grade: 'A' }] } } },
+      ov: { episodes: { gate: { sequence: 'narrativo-standard', moduleOrder: [{ module: 'repeatAloud', grade: 'A' }] } } },
       errore: true },
     { nome: 'niente', utente: 'SeqNiente',
-      ov: { episodes: { episode1: {} } }, errore: true },
+      ov: { episodes: { gate: {} } }, errore: true },
     { nome: 'una sequenza che non esiste', utente: 'SeqFinta',
-      ov: { episodes: { episode1: { sequence: 'non-esiste' } } }, errore: true },
+      ov: { episodes: { gate: { sequence: 'non-esiste' } } }, errore: true },
     { nome: 'solo moduleOrder', utente: 'SeqOrdine',
-      ov: { episodes: { episode1: { moduleOrder: [{ module: 'repeatAloud', grade: 'A' }] } } },
+      ov: { episodes: { gate: { moduleOrder: [{ module: 'repeatAloud', grade: 'A' }] } } },
       errore: false, passi: ['repeatAloud'] }
   ];
   for (const caso of casi) {

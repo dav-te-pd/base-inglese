@@ -212,7 +212,7 @@
       silenceTimeoutSeconds: 3,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
-      // documented in data/it/messaggi-feedback.json's percentageRule.
+      // documented in data/inglese/it/messaggi-feedback.json's percentageRule.
       starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 },
       // Progressive mic-trouble detection: counts CONSECUTIVE recordings
       // where the recognizer heard no words at all — not a wrong word,
@@ -368,7 +368,7 @@
     // episodio, non qui: questa è solo la lista da cui la vista di
     // riordino fa scegliere, e da cui il pulsante del grado cicla. ----
     grades: ['A', 'B', 'C', 'D'],
-    // ---- Come si chiama ogni grado per lo studente (docs/it/struttura-corso.md).
+    // ---- Come si chiama ogni grado per lo studente (docs/inglese/it/struttura-corso.md).
     // La lettera è l'identificativo tecnico — codice, dati, Pannello Admin —
     // e allo studente non dice niente: senza il nome, gli esercizi sembrano
     // ripetersi senza motivo, invece di lavorare su cose diverse. Si mostra
@@ -386,7 +386,7 @@
     // Una sequenza è una lista di COPPIE { module, grade }: quale modulo, e
     // su quale grado. Lo stesso modulo può comparire più volte su gradi
     // diversi (Flash Card sul grado A e sul grado B); il grado NON vive nel
-    // descrittore del modulo (EPISODES.episode1.modulesById), che resta
+    // descrittore del modulo (EPISODES.gate.modulesById), che resta
     // uguale per tutte le sue apparizioni. Un modulo che non legge contenuto
     // dall'episodio (Personalizza) non ha grade.
     //
@@ -436,12 +436,12 @@
     // ENTRAMBE è un errore, e viene detto invece che risolto in silenzio
     // scegliendone una (resolveEpisodeOrder).
     episodes: {
-      episode1: { sequence: 'narrativo-standard' },
-      // L'ordine è uno solo per tutto il corso (docs/it/struttura-corso.md):
+      gate: { sequence: 'narrativo-standard' },
+      // L'ordine è uno solo per tutto il corso (docs/inglese/it/struttura-corso.md):
       // un episodio può sovrascriverlo, ma è l'eccezione, e l'episodio 2 non
       // lo è — ha tutti e quattro i gradi, quindi i ventidue passi lo
       // percorrono per intero.
-      episode2: { sequence: 'narrativo-standard' }
+      'aircraft-door': { sequence: 'narrativo-standard' }
     },
     // Quale episodio apre l'app. È un parametro come gli altri (regola 3) e
     // non uno stato nascosto: il Pannello Admin gli dà un menu invece del
@@ -453,7 +453,7 @@
     // del corso nascerà lì, con il suo disegno. Questo interruttore serve a
     // RAGGIUNGERE un episodio per provarlo, e non deve diventare per
     // sbaglio il modo in cui gli studenti ne cambiano.
-    episodioCorrente: 'episode1',
+    episodioCorrente: 'gate',
     // ---- Module "type" labels (see each modulesById entry's own `type`)
     // — shown next to a module's name on the map so the student knows
     // what to expect before opening it. Purely declarative for now: not
@@ -465,7 +465,7 @@
     // moduleOutcomeRules below regardless of which of these it shows —
     // "studio" is not a promise of "ungraded", just "no time pressure".
     moduleTypes: {
-      // Le sei categorie (docs/it/struttura-corso.md). Dicono allo studente cosa
+      // Le sei categorie (docs/inglese/it/struttura-corso.md). Dicono allo studente cosa
       // lo aspetta, NON se verrà valutato: ogni modulo registra il risultato,
       // sempre. La differenza fra studio e quiz non è la valutazione, è la
       // pressione — nello studio si va al proprio ritmo, nel quiz c'è il tempo
@@ -530,7 +530,7 @@
     // indicizzata per id del passo, vale identica a ogni apparizione del
     // modulo nell'ordine. ----
     // ---- Module display names — the ONE place a module's name/subtitle
-    // is written. Keyed by module id (same keys as EPISODES.episode1.
+    // is written. Keyed by module id (same keys as EPISODES.gate.
     // modulesById), read by the Object.keys(EPISODES).forEach computed-
     // modules block (near moduleProgressKey) which attaches them onto
     // every module object as .label/.subtitle — every existing reader of
@@ -625,7 +625,7 @@
         { value: 'filippo', it: 'Filippo', en: 'Philip', fr: '', es: '', de: '' }
       ],
       // Il cognome non ha una forma inglese: la colonna en e' identica per
-      // costruzione, non per svista (docs/it/episodio-1.md). Sta qui e non nel
+      // costruzione, non per svista (docs/inglese/it/inglese-it-gate.md). Sta qui e non nel
       // file episodio perche' e' una tabella di personalizzazione, condivisa
       // fra episodi e lingue (CLAUDE.md regola 4).
       cognome: [
@@ -648,7 +648,7 @@
         { value: 'milano', it: 'Milano', en: 'Milan', fr: '', es: '', de: '' }
       ],
       // Criterio di ammissione delle destinazioni: solo paesi che in
-      // italiano vogliono la preposizione "in" (docs/it/episodio-1.md, nota 9).
+      // italiano vogliono la preposizione "in" (docs/inglese/it/inglese-it-gate.md, nota 9).
       // "We are going to {{destinazione}}" si traduce "Andiamo in ...", e una
       // riga della tabella non puo' portarsi dietro una preposizione propria
       // senza complicare il testo: "negli Stati Uniti" non entra, e per
@@ -3390,7 +3390,7 @@
                hasStartedEpisodeModules) — changing the personalization
                now would invalidate that progress, so a deliberate typed
                confirmation is required before entering the editor. Text
-               + confirm phrase come from data/it/istruzioni-moduli.json's
+               + confirm phrase come from data/inglese/it/istruzioni-moduli.json's
                personalizzazione.midEpisodeWarning (CLAUDE.md rule 8).
                .danger-panel is deliberately the only place in the app
                with this treatment — data destruction happens here and
@@ -3882,7 +3882,7 @@
             <div class="dg-list" id="dg-list"></div>
 
             <!-- Explains why the box below is greyed out until every line
-                 has been heard (job 3) — text from data/it/istruzioni-moduli.json's
+                 has been heard (job 3) — text from data/inglese/it/istruzioni-moduli.json's
                  dialogoShared.choiceBoxHint (see dgStartExercise), toggled
                  by dgUpdateChoiceBoxLock alongside the box's own disabled
                  state. -->
@@ -4446,7 +4446,7 @@
   // above, or bodyText for Schermata Ripasso); this fills in the second,
   // picked at random each time the screen is actually shown (not once at
   // boot, when these two render functions run). Prose pools live in
-  // data/it/messaggi-feedback.json like every other feedback message —
+  // data/inglese/it/messaggi-feedback.json like every other feedback message —
   // reuses the SAME loadFeedbackMessages()/pickRandom() pair Voice
   // Coach's star messages and the safety-valve popup already use, not a
   // second mechanism for the same kind of thing.
@@ -5329,7 +5329,12 @@
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
   // shared across episodes and keyed by module kind — never hardcoded
   // here. Fetched once and cached, same pattern as episode data.
-  var MODULE_INSTRUCTIONS_FILE = 'data/it/istruzioni-moduli.json';
+  var MODULE_INSTRUCTIONS_FILE = 'data/inglese/it/istruzioni-moduli.json';
+  // Il quarto file di dati, e l'unico che fino al 2026-09-09 aveva il percorso
+  // scritto dentro la riga di fetch invece che qui. Era l'unico dei tre che
+  // uno spostamento di cartelle poteva rompere in silenzio: non compariva in
+  // nessun elenco di percorsi, stava in mezzo a una funzione.
+  var FEEDBACK_MESSAGES_FILE = 'data/inglese/it/messaggi-feedback.json';
   var moduleInstructionsCache = null;
 
   function loadModuleInstructions() {
@@ -5534,23 +5539,23 @@
      needs only its own JSON file, never a change here.
      ============================================================ */
   var EPISODES = {
-    episode1: {
-      id: 'episode1',
+    gate: {
+      id: 'gate',
       badge: 'Episodio 1',
       // Same file every one of this episode's modules already reads (one
       // file per episode, CLAUDE.md rule 4) — used here just to resolve
       // personalizationTablesUsed before Customize can render, sharing
       // loadEpisodeData's own cache (no extra request).
-      dataFile: 'data/it/a1-episodio1-inglese.json',
+      dataFile: 'data/inglese/it/inglese-it-gate.json',
       // Each module's own data, unordered — la sequenza dell'episodio (or
-      // this episode's own override in CONFIG.episodes.episode1, if it
+      // this episode's own override in CONFIG.episodes.gate, if it
       // declared one — see near "Module step order") is the ONLY place
       // that decides the sequence; modules.map below just resolves that
       // order against this dictionary. Never hardcode a module's name or
       // order inside the map-rendering code. dataFile is the external
       // data source for that module's content (CLAUDE.md rule 4).
       // howItWorks/helpReminder text for each module kind lives in
-      // data/it/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
+      // data/inglese/it/istruzioni-moduli.json (CLAUDE.md rule 8), not here.
       // `type` (studio/quiz/test) is purely declarative for now — shown
       // next to the module on the map (see MODULE_TYPE_LABEL) but not
       // yet wired to map colors or to the valvola/richiamo mechanics.
@@ -5562,17 +5567,17 @@
       // computed-modules block below), keyed by these same ids, so the
       // displayed name lives in exactly one place (CLAUDE.md).
       modulesById: {
-        // Categoria "Inizio" (docs/it/struttura-corso.md): è preparazione, non
+        // Categoria "Inizio" (docs/inglese/it/struttura-corso.md): è preparazione, non
         // studio. Prima era uno "studio" con l'etichetta sovrascritta a mano,
         // perché la categoria non esisteva ancora.
         personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
         // Due moduli, un componente solo (openStoryCards e dintorni), come i
         // tre Dialogue: storyProfile e' l'unica cosa che li distingue nel
         // comportamento, kind quella che da' a ciascuno i propri testi in
-        // data/it/istruzioni-moduli.json (CLAUDE.md regola 8).
-        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/it/a1-episodio1-inglese.json', storyProfile: 'meet', type: 'studio' },
-        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/it/a1-episodio1-inglese.json', storyProfile: 'why', type: 'studio' },
+        // data/inglese/it/istruzioni-moduli.json (CLAUDE.md regola 8).
+        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/inglese/it/inglese-it-gate.json', storyProfile: 'meet', type: 'studio' },
+        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/inglese/it/inglese-it-gate.json', storyProfile: 'why', type: 'studio' },
         // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — one
         // shared component (openVoiceCoach and friends, see its own JS
         // comment), voiceVariant is the only thing that tells them apart.
@@ -5581,26 +5586,26 @@
         // Voice Check's FirstAttemptRule (vcEvaluate branches on this
         // very field) —
         // own kind for its own howItWorks/helpReminder text and
-        // intro-dismiss flag (data/it/istruzioni-moduli.json).
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/it/a1-episodio1-inglese.json', voiceVariant: 'practice', type: 'studio' },
+        // intro-dismiss flag (data/inglese/it/istruzioni-moduli.json).
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/inglese/it/inglese-it-gate.json', voiceVariant: 'practice', type: 'studio' },
         // Check: same id ('voiceCoach') the single pre-split module had —
         // still the ONE place ModuleRules/the retry-queue ripasso live,
         // unchanged from before the split.
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/it/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/inglese/it/inglese-it-gate.json', voiceVariant: 'check', type: 'quiz' },
         // Match Practice: studio, not quiz (job: sei etichette) — no time
         // pressure, self-paced, same as Flash Card.
-        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
-        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
+        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
+        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'studio' },
         // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
         // share their own category (job: sei etichette) — distinct from
         // plain "studio" since a dialogue plays out with its own pacing.
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/it/a1-episodio1-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/it/a1-episodio1-inglese.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/it/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/inglese/it/inglese-it-gate.json', dialogoProfile: 'continuo', type: 'dialogo' },
         // Speed Match: quiz, not a separate "a tempo" category (job: sei
         // etichette) — the time pressure IS what makes it a quiz here.
-        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
-        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
+        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'quiz' },
+        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/inglese/it/inglese-it-gate.json', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // Il grado dice QUALI voci, la direzione da che verso mostrarle:
@@ -5610,8 +5615,8 @@
         // né il componente né questo dizionario.
         // studio, not quiz (job: sei etichette) — self-paced, no time
         // pressure, same as Repeat Aloud/Story Cards/Match Practice.
-        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/it/a1-episodio1-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/it/a1-episodio1-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
+        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-gate.json', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-gate.json', flashcardDirection: 'it-en', type: 'studio' }
       },
       // Maps a {{placeholder}} used in dialogue lines to the slotFields key
       // that supplies its value. Episode 1's own placeholder names are
@@ -5649,7 +5654,7 @@
       // cameriere, un poliziotto) aggiunge una riga qui e basta.
       dialogueSpeakerLabels: {
         // "Hostess al gate", non "Guida": i nomi descrivono, non etichettano
-        // (docs/it/episodio-1.md, nota 5). La chiave resta 'guide' perche' e'
+        // (docs/inglese/it/inglese-it-gate.md, nota 5). La chiave resta 'guide' perche' e'
         // l'id tecnico gia' scritto in ogni battuta del file episodio;
         // allinearla al personaggio e' registrato in docs/decisioni.md.
         guide: 'Hostess al gate',
@@ -5668,14 +5673,14 @@
         { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
       ]
     },
-    // Episodio 2 — "Sulla porta dell'aereo" (docs/it/episodio-2.md).
+    // Episodio 2 — "Sulla porta dell'aereo" (docs/inglese/it/inglese-it-aircraft-door.md).
     // Stessi moduli dell'episodio 1: quello che cambia e' il file dati, il
     // cast e l'unico slot. La sequenza NON sta qui ma in
-    // CONFIG.episodes.episode2 (regola 4), come per ogni altro episodio.
-    episode2: {
-      id: 'episode2',
+    // CONFIG.episodes['aircraft-door'] (regola 4), come per ogni altro episodio.
+    'aircraft-door': {
+      id: 'aircraft-door',
       badge: 'Episodio 2',
-      dataFile: 'data/it/a1-episodio2-inglese.json',
+      dataFile: 'data/inglese/it/inglese-it-aircraft-door.json',
       // `segments` non c'e', e non e' una dimenticanza: quel campo lo legge
       // solo buildTargetTokens, cioe' la vista `pronunciation`, che non e'
       // raggiungibile da nessun punto dell'app (nessuno chiama
@@ -5683,23 +5688,23 @@
       // sembrerebbe una frase che esiste ed e' vuota.
       modulesById: {
         personalizzazione: { kind: 'personalizzazione', type: 'inizio' },
-        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
-        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/it/a1-episodio2-inglese.json', storyProfile: 'meet', type: 'studio' },
-        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/it/a1-episodio2-inglese.json', storyProfile: 'why', type: 'studio' },
-        voicePractice: { kind: 'voicePractice', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'practice', type: 'studio' },
-        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'check', type: 'quiz' },
-        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
-        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
-        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
-        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
-        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
-        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
-        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
-        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
-        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
+        repeatAloud: { kind: 'repeatAloud', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
+        meetTheStory: { kind: 'meetTheStory', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', storyProfile: 'meet', type: 'studio' },
+        whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', storyProfile: 'why', type: 'studio' },
+        voicePractice: { kind: 'voicePractice', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', voiceVariant: 'practice', type: 'studio' },
+        voiceCoach: { kind: 'voiceCoach', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', voiceVariant: 'check', type: 'quiz' },
+        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
+        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'studio' },
+        dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
+        dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
+        dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', dialogoProfile: 'continuo', type: 'dialogo' },
+        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'quiz' },
+        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', type: 'quiz' },
+        flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', flashcardDirection: 'en-it', type: 'studio' },
+        flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/inglese/it/inglese-it-aircraft-door.json', flashcardDirection: 'it-en', type: 'studio' }
       },
       // Un solo segnaposto in tutto l'episodio: {{destinazione}} in d7
-      // (docs/it/episodio-2.md, PASSO 10). Gli slot della famiglia non sono
+      // (docs/inglese/it/inglese-it-aircraft-door.md, PASSO 10). Gli slot della famiglia non sono
       // usati — il padre dice "my wife", non un nome.
       dialoguePlaceholderMap: {
         destinazione: 'destinazione'
@@ -5711,7 +5716,7 @@
       // provato, ed e' cosi' che si e' visto.
       dialogueSpeakers: {},
       // Le etichette sono quelle della colonna "Chi" della tabella delle
-      // battute in docs/it/episodio-2.md, copiate e non inventate:
+      // battute in docs/inglese/it/inglese-it-aircraft-door.md, copiate e non inventate:
       // "Hostess" (alla porta dell'aereo non c'e' un'altra hostess da cui
       // distinguerla), "Papa'", "Tutti".
       dialogueSpeakerLabels: {
@@ -5895,7 +5900,7 @@
   // outcome-* class on its own map row. 'almenoUnRosso' wins over
   // 'gialloNoRosso' if both are present; an episode with no graded
   // modules at all defaults to 'tuttiVerdi' (nothing to flag). Reads
-  // data/it/messaggi-feedback.json's episodeFinalMessages[caseKey] for the
+  // data/inglese/it/messaggi-feedback.json's episodeFinalMessages[caseKey] for the
   // actual text (compliment first, then an optional trailing tip) —
   // never write the copy here.
   function episodeFinalOutcomeCase(episode, userName) {
@@ -7783,13 +7788,13 @@
     }
   });
 
-  // ---- star rating + feedback/attempt messages (data/it/messaggi-feedback.json) ----
+  // ---- star rating + feedback/attempt messages (FEEDBACK_MESSAGES_FILE) ----
   var vcFeedbackDataCache = null;
   var STAR_MESSAGE_KEYS = { 1: 'basso', 2: 'medio', 3: 'alto' };
 
   function loadFeedbackMessages() {
     if (vcFeedbackDataCache) return Promise.resolve(vcFeedbackDataCache);
-    return fetch('data/it/messaggi-feedback.json')
+    return fetch(FEEDBACK_MESSAGES_FILE)
       .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
       .catch(function () {
         throw new Error('no feedback messages available');

@@ -45,7 +45,7 @@ const ESCLUDI_DESCRIZIONI = true;
 //
 // Conteneva 'places.destinations': un magazzino di paesi che nessuno nominava,
 // in attesa dell'episodio 2. L'attesa è finita il 2026-09-08 —
-// data/it/a1-episodio2-inglese.json dichiara lo slot `destinazione` con
+// data/inglese/it/inglese-it-aircraft-door.json dichiara lo slot `destinazione` con
 // `table: "places.destinations"` — e la chiave è tornata viva.
 //
 // La riga non è stata tolta a mano: **è stato questo test a chiederlo**.
@@ -83,7 +83,7 @@ function regioneDiRicerca() {
 }
 
 // Tutti i .json sotto data/, a qualunque profondità: i dati stanno in una
-// cartella per lingua (data/it/, e domani data/de/), quindi un readdir piatto
+// cartella per lingua (data/inglese/it/, e domani data/de/), quindi un readdir piatto
 // non troverebbe più niente — e non troverebbe niente in silenzio, perché una
 // regione di ricerca vuota fa solo segnalare più chiavi, non fallire.
 function tuttiIJson(dir) {

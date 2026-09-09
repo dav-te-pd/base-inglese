@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260908c**
+**Versione: 20260909a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -63,9 +63,11 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni.
 
-   - **I dati stanno sotto `data/{lingua}/`, i loro sorgenti markdown sotto `docs/{lingua}/`**, dove *lingua* è quella dello **studente** — non quella che impara. Oggi esiste una sola edizione, `it` (italiano → inglese), e resta l'unica finché l'inglese non è finito.
+   - **I dati stanno sotto `data/{lingua-che-si-impara}/{lingua-studente}/`, i loro sorgenti markdown sotto `docs/{lingua-che-si-impara}/{lingua-studente}/`.** Oggi: `data/inglese/it/` e `docs/inglese/it/` — si impara l'inglese, si parte dall'italiano. È l'unica edizione finché l'inglese non è finito.
 
-     **Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla COPPIA di lingue, non alla lingua che si impara: *"I have ten years"* è una trappola italiana e non tedesca, quindi un'edizione tedesca non è `docs/it/` tradotto — è un contenuto suo. Le edizioni future nascono **copiando la cartella e sostituendo i contenuti**, e **una correzione fatta in `it/` NON deve arrivare nelle altre**: se una cosa va corretta ovunque, va corretta ovunque a mano, di proposito.
+     **Le due lingue nel percorso, in quest'ordine, perché il catalogo cresce per lingua imparata:** venti episodi di inglese per italiani, poi magari inglese per tedeschi. `inglese/` raccoglie, `it/` distingue. Fino al 2026-09-09 la cartella era una sola (`data/it/`) e diceva solo da dove si parte.
+
+     **Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla COPPIA di lingue, non alla lingua che si impara: *"I have ten years"* è una trappola italiana e non tedesca, quindi un'edizione tedesca non è `docs/inglese/it/` tradotto — è un contenuto suo. Le edizioni future nascono **copiando la cartella e sostituendo i contenuti**, e **una correzione fatta in `it/` NON deve arrivare nelle altre**: se una cosa va corretta ovunque, va corretta ovunque a mano, di proposito.
 
      Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/decisioni.md`, `docs/censimento-moduli.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
 
@@ -73,7 +75,11 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      Una cartella per una lingua si crea quando c'è qualcosa da metterci, mai in anticipo.
 
-   - **Un unico file per episodio**, mai spezzettato in file separati per modulo. Nomenclatura ufficiale: `data/{lingua-studente}/{livello}-episodio{numero}-{lingua-che-si-impara}.json` (es. `data/it/a1-episodio1-inglese.json`): la cartella dice da quale lingua si parte, il nome del file dove si arriva. I gradi sono condivisi tra più moduli e devono restare un'unica fonte di verità: ogni modulo legge il proprio grado dallo stesso file episodio, non ne duplica il contenuto in un file suo. I moduli che oggi ci leggono dentro sono Meet the Story, Why We Say It, Repeat Aloud, Voice Practice, Voice Check, Match Practice (en→it, it→en), Speed Match (en→it, it→en), Flash Card (en→it, it→en) e i tre Dialogue (Listen & Repeat, Repeat in Time, Real Dialogue). **Previsti ma non ancora costruiti**: Scrittura e il Test di verifica finale — non esistono nel codice, quindi non cercarli.
+   - **Un unico file per episodio**, mai spezzettato in file separati per modulo. Nomenclatura ufficiale: `data/{lingua-che-si-impara}/{lingua-studente}/{lingua-che-si-impara}-{lingua-studente}-{id}.json` — es. `data/inglese/it/inglese-it-gate.json`, con il markdown gemello `docs/inglese/it/inglese-it-gate.md`.
+
+     **Il nome ripete le due lingue del percorso, ed è voluto:** il file esce dal repository — cartella Download, poi una chat — e lì il percorso si perde. `gate.json` da solo non dice niente.
+
+     **Il livello NON sta nel nome, e non è per accorciare:** il livello non è una proprietà dell'episodio, è un'etichetta su un tratto di sequenza. Un episodio non «è» A1.2: sta in un tratto che si chiama così, e se lo si sposta cambia gruppo. Metterlo nel nome, o in una cartella, congelerebbe una posizione — lo stesso errore di `episode1`. **L'id invece non cambia mai:** `gate`, `aircraft-door` — descrittivo, in inglese, congelato. I gradi sono condivisi tra più moduli e devono restare un'unica fonte di verità: ogni modulo legge il proprio grado dallo stesso file episodio, non ne duplica il contenuto in un file suo. I moduli che oggi ci leggono dentro sono Meet the Story, Why We Say It, Repeat Aloud, Voice Practice, Voice Check, Match Practice (en→it, it→en), Speed Match (en→it, it→en), Flash Card (en→it, it→en) e i tre Dialogue (Listen & Repeat, Repeat in Time, Real Dialogue). **Previsti ma non ancora costruiti**: Scrittura e il Test di verifica finale — non esistono nel codice, quindi non cercarli.
    - **Le tabelle di personalizzazione** (nomi, città, paesi — oggi `APP_CONFIG.people` / `APP_CONFIG.places`) restano separate dai file episodio: un file episodio vi fa riferimento (es. "usa la tabella nomi-papà"), non le duplica al suo interno. Sono condivise fra tutti gli episodi **della stessa edizione**, non fra edizioni: i nomi propri plausibili sono quelli di chi studia, e un'edizione tedesca vuole i suoi. Quando usciranno da `APP_CONFIG` — lavoro previsto, non ancora fatto — andranno sotto `data/{lingua}/` come tutto il resto dell'edizione.
 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` espressioni (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`.
@@ -124,7 +130,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
-8. **I testi di un modulo vivono sempre in `data/{lingua}/istruzioni-moduli.json`** (oggi `data/it/istruzioni-moduli.json`), mai scritti nel codice del componente. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
+8. **I testi di un modulo vivono sempre in `data/{lingua}/istruzioni-moduli.json`** (oggi `data/inglese/it/istruzioni-moduli.json`), mai scritti nel codice del componente.
+
+    **Non è l'unico file di testi condivisi: ce n'è un secondo, `messaggi-feedback.json`**, con i messaggi di fine modulo e quelli dei tentativi. I due si distinguono così: qui i testi che spiegano **come si usa** un modulo, lì quelli che **rispondono a un esito**. Entrambi si raggiungono da una costante in cima allo script (`MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`), mai con il percorso scritto dentro una riga di `fetch`. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
 
     **Non tutte le chiavi sono moduli, ed è voluto.** `mappaEpisodio` è la mappa dell'episodio: modulo non è, ma ha una schermata sua e quindi i suoi due testi come tutti. `dialogoShared` è il blocco condiviso dai tre Dialogue, e **non ha né `howItWorks` né `helpReminder`**: non è un modulo, non ha una schermata propria da spiegare, e i testi che porta servono ai tre che la schermata ce l'hanno. Nessuna delle due è una dimenticanza da sistemare. Sono condivisi tra gli episodi della stessa edizione — non sono contenuto specifico di un episodio, quindi non vivono nel file episodio della regola 4 — ma non fra edizioni: sono testo che lo studente legge nella propria lingua. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 
@@ -193,8 +201,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 26. **Due file in `docs/` sono la fonte, e non vanno mai scavalcati da quello che viene detto in chat.**
 
-    - **`docs/{lingua}/episodio-N.md`, uno per episodio di ogni edizione** — il contenuto di quell'episodio. Da lì viene scritto `data/{lingua}/{livello}-episodio{N}-{lingua-che-si-impara}.json`, la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
-    - **`docs/{lingua}/struttura-corso.md`, uno per edizione** — la struttura: ordine dei moduli con i loro gradi, nomi dei gradi mostrati allo studente, categorie, regole di esito. Da lì vengono aggiornate le voci corrispondenti di `APP_CONFIG`. Vale per l'intero corso di quell'edizione, non per un episodio: un ordine per episodio significherebbe riordinarlo venti volte.
+    - **`docs/{lingua-che-si-impara}/{lingua-studente}/{edizione}-{id}.md`, uno per episodio** (es. `docs/inglese/it/inglese-it-gate.md`) — il contenuto di quell'episodio. Da lì viene scritto `data/{lingua}/{livello}-episodio{N}-{lingua-che-si-impara}.json`, la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
+    - **`docs/{lingua-che-si-impara}/{lingua-studente}/struttura-corso.md`, uno per edizione** — la struttura: ordine dei moduli con i loro gradi, nomi dei gradi mostrati allo studente, categorie, regole di esito. Da lì vengono aggiornate le voci corrispondenti di `APP_CONFIG`. Vale per l'intero corso di quell'edizione, non per un episodio: un ordine per episodio significherebbe riordinarlo venti volte.
 
       *Sta sotto la lingua perché i nomi dei gradi sono testo che lo studente legge — "Parole", "Espressioni" — e un'edizione tedesca vuole i suoi. **Da sapere:** `CONFIG.grades`, `CONFIG.gradeNames`, `CONFIG.moduleTypes` e `CONFIG.sequences` sono oggi valori globali singoli, quindi con una seconda edizione due file `struttura-corso.md` rivendicherebbero la stessa voce di configurazione. Va risolto prima di aggiungere la seconda lingua, non adesso.*
 
@@ -216,7 +224,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     *Perché c'è: un file episodio dichiarava un certo numero di skill, e quel numero era esatto — ma le skill stavano su meno battute, e la struttura di allora ne ammetteva una sola per battuta. Il numero tornava, la forma no: contarle è servito a vederlo prima di scrivere il file dati, non dopo.*
 
-30. **Lo "Sblocco Sequenziale" è un meccanismo con un nome, e ha due varianti che restano separate.** L'idea è una: più avanti non si va finché non si è fatto qui. Le due varianti sono **per ascolto** (Ripeti a Tempo — `dgApplySequenceLock`) e **per dichiarazione** (Why We Say It — `seRefreshExplanationStates`).
+30. **Lo "Sblocco Sequenziale" è un meccanismo con un nome, e ha due varianti che restano separate.** L'idea è una: più avanti non si va finché non si è fatto qui. Le due varianti sono **per ascolto** (Ripeti a Tempo — `dgApplySequenceLock`) e **per dichiarazione** (Why We Say It — `storyCardsRefreshExplanationStates`).
 
     Condividono l'idea e il nome, non il markup né il CSS: nella prima un passo avanti è una bolla sbiadita e inerte, nella seconda una card che resta leggibile, mostra il titolo della regola che aspetta e dice col lucchetto perché non si tocca. Unirle in un componente solo produrrebbe due varianti senza niente in comune se non il nome di una funzione. **Chi ne tocca una guardi l'altra**: i due punti del codice si citano a vicenda apposta.
 
@@ -420,6 +428,10 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     Questa regola esiste perché la prossima decisione sulla mastery non torni
     a vivere solo dentro un `+1`.*
 
+
+40. **Un lavoro a più passi sta sempre nella lista attività**, un elemento per passo, con il progresso vero quando c'è: durante una corsa lunga il testo di stato porta un numero che cambia — `Suite 15/42`, `strato 2/6` — aggiornato ogni paio di minuti. **Il pallino che gira è un'animazione, non una misura:** da solo non distingue «sta lavorando» da «si è fermato».
+
+    *Perché c'è: è la prima cosa del progetto che chi guida può verificare **senza chiedermela**. Fino a qui l'unica era la CI, che prova `main` e non quello che sto facendo adesso. E serve proprio perché il mio strumento può mentire: il 2026-09-07 dicevo «la suite sta girando» su un'attesa rotta, mentre un task appeso da due ore era visibile a lui e non a me (regola 37). L'alternativa — chiedere ogni dieci minuti — è una difesa che si basa sul ricordarsene, cioè quella che cede.*
 
 ## Riferimenti operativi
 

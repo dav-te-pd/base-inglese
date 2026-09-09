@@ -26,8 +26,8 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:gate:customizeSeen:' + userName, '1');
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
   }, { userName, completedModules });
   await page.click('#go-episode');
@@ -278,14 +278,14 @@ async function run() {
 
     // Explicit completion required (rule 7).
     const progressBefore = await page.evaluate((u) => {
-      var raw = localStorage.getItem('baseinglese:modules:episode1:' + u);
+      var raw = localStorage.getItem('baseinglese:modules:gate:' + u);
       return raw ? JSON.parse(raw).completed.includes('dialogoAscoltaRipeti') : false;
     }, 'DGTester' + viewport.w);
     log('Dialogo NOT marked completed before clicking finish button @' + viewport.w, !progressBefore);
     await page.click('#dg-complete-btn');
     await page.waitForTimeout(200);
     const progressAfter = await page.evaluate((u) => {
-      var raw = localStorage.getItem('baseinglese:modules:episode1:' + u);
+      var raw = localStorage.getItem('baseinglese:modules:gate:' + u);
       return raw ? JSON.parse(raw).completed.includes('dialogoAscoltaRipeti') : false;
     }, 'DGTester' + viewport.w);
     log('Dialogo marked completed only after explicit "Ho finito" click @' + viewport.w, progressAfter);
@@ -295,7 +295,7 @@ async function run() {
     const badgeText = await page.textContent('[data-module="dialogoAscoltaRipeti"] .module-state-badge');
     log('Dialogo map row shows outcome-giallo class after "Non ancora" @' + viewport.w, rowClassAfter.includes('outcome-giallo'));
     log('Dialogo map badge shows "Da rivedere" after "Non ancora" @' + viewport.w, badgeText.trim() === 'Da rivedere');
-    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'DGTester' + viewport.w);
+    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'DGTester' + viewport.w);
     log('Dialogo touches NO per-word mastery entries @' + viewport.w, !masteryRaw || Object.keys(JSON.parse(masteryRaw)).length === 0);
 
     log('No JS console/page errors during Dialogo Ascolta e Ripeti run @' + viewport.w, errors.length === 0);

@@ -202,7 +202,7 @@ async function bootSeeded(page, userName, completed) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:episode1:' + arg.userName,
+    localStorage.setItem('baseinglese:modules:gate:' + arg.userName,
       JSON.stringify({ completed: arg.completed }));
   }, { userName: userName, completed: completed });
   await page.click('#go-episode');
@@ -244,7 +244,7 @@ async function run() {
     const r4 = await readRow(page, passo4);
     const r9 = await readRow(page, passo9);
     const salvati = await page.evaluate(function (u) {
-      return localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}';
+      return localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}';
     }, USER);
     const esiti = JSON.parse(salvati);
 
@@ -346,9 +346,9 @@ async function run() {
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bootFresh(page);
     const atteso = await page.evaluate(function (utente) {
-      localStorage.setItem('baseinglese:audioSecondsSent:episode1:' + utente,
+      localStorage.setItem('baseinglese:audioSecondsSent:gate:' + utente,
         JSON.stringify({ byModule: { 'voicePractice': 12.5, 'voicePractice-2': 7.5 } }));
-      localStorage.setItem('baseinglese:nextLineSkips:episode1:' + utente,
+      localStorage.setItem('baseinglese:nextLineSkips:gate:' + utente,
         JSON.stringify({ byModule: { 'dialogoRipetiATempo': 3 } }));
       // Il nome atteso si LEGGE dalla configurazione, non si ricopia qui.
       return window.APP_CONFIG.moduleLabels.voicePractice.name;

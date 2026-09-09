@@ -72,7 +72,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
@@ -106,8 +106,8 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T1Reorder', []);
-    const episodesOverride = await page.evaluate(() => window.APP_CONFIG.episodes.episode1.moduleOrder);
-    log('[1] episode1 declares no own moduleOrder (reads the global default)', episodesOverride === undefined);
+    const episodesOverride = await page.evaluate(() => window.APP_CONFIG.episodes.gate.moduleOrder);
+    log('[1] gate declares no own moduleOrder (reads the global default)', episodesOverride === undefined);
     const globalOrder = await page.evaluate(() => window.APP_CONFIG.sequences['narrativo-standard'].slice());
     // Ogni voce è una coppia { module, grade } (CONFIG.sequences):
     // il grado sta lì, non più nel descrittore del modulo.

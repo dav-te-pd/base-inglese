@@ -26,10 +26,10 @@ async function bootAsUser(page, userName, { skipCustomize = true, completedModul
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, skipCustomize, completedModules }) => {
     if (skipCustomize) {
-      localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
+      localStorage.setItem('baseinglese:gate:customizeSeen:' + userName, '1');
     }
     if (completedModules.length) {
-      localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+      localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     }
     // Avoid the map's own one-time intro re-appearing every single time we
     // navigate back to it during this test run (its "don't show again" is
@@ -171,16 +171,16 @@ async function run() {
     log('Eng-Ita Spiegazione hidden on summary (rule 10) @' + viewport.w, !watchBtnOnSummary);
 
     // Explicit completion required.
-    const progressBefore = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + document.title) || '{}'));
+    const progressBefore = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + document.title) || '{}'));
     await page.click('#qm-complete-btn');
     await page.waitForTimeout(200);
-    const progressAfterRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:modules:episode1:' + u), 'Tester' + viewport.w);
+    const progressAfterRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:modules:gate:' + u), 'Tester' + viewport.w);
     const progressAfter = progressAfterRaw ? JSON.parse(progressAfterRaw) : { completed: [] };
     log('Eng-Ita module marked completed after explicit "Ho finito" click @' + viewport.w,
       progressAfter.completed.includes('matchEngIta'));
 
     // Mastery separation: match: keys exist, no speedmatch: keys yet.
-    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'Tester' + viewport.w);
+    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'Tester' + viewport.w);
     const masteryKeys = masteryRaw ? Object.keys(JSON.parse(masteryRaw)) : [];
     const hasMatchKeys = masteryKeys.some(k => k.startsWith('match:'));
     const hasSpeedmatchKeys = masteryKeys.some(k => k.startsWith('speedmatch:'));
@@ -224,7 +224,7 @@ async function run() {
     // "Non lo so" -> declared non-attempt -> mastery straight to rosso, prefix match:.
     await page.click('#qm-dontknow-btn');
     await page.waitForTimeout(150);
-    const masteryRaw2 = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'Tester' + viewport.w);
+    const masteryRaw2 = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'Tester' + viewport.w);
     const mastery2 = JSON.parse(masteryRaw2);
     const itEnEntry = Object.keys(mastery2).find(k => k.startsWith('match:') && k.endsWith(':it-en') && mastery2[k].level === 'rosso');
     log('Ita-Eng "Non lo so" writes a match:*:it-en rosso mastery entry @' + viewport.w, !!itEnEntry);

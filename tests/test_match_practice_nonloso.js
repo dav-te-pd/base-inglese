@@ -99,7 +99,7 @@ function statoDelModulo(page) {
   await page.fill('#name-input', UTENTE);
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
-  await page.evaluate(a => localStorage.setItem('baseinglese:modules:episode1:' + a.u,
+  await page.evaluate(a => localStorage.setItem('baseinglese:modules:gate:' + a.u,
     JSON.stringify({ completed: a.c })), { u: UTENTE, c: stepsBefore('matchEngIta') });
   await page.reload();
   await page.waitForSelector('#go-episode', { state: 'visible' });

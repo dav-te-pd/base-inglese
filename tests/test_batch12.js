@@ -74,7 +74,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, kinds }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     // flashcardAEngIta/flashcardAItaEng share ONE kind, 'flashcard'
     // (intro-dismiss is keyed by kind, not module id) — not in ALL_MODULES.
     kinds.concat(['mappaEpisodio', 'flashcard']).forEach(k => {
@@ -164,7 +164,7 @@ async function run() {
   const LINE_COUNT = await (async () => {
     const p = await browser.newPage();
     await p.goto(BASE);
-    const n = await p.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.D.items.length));
+    const n = await p.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.D.items.length));
     await p.close();
     return n;
   })();
@@ -286,7 +286,7 @@ async function run() {
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are
     // "Quiz".
-    // L'etichetta e' "categoria · grado" (docs/it/struttura-corso.md): la
+    // L'etichetta e' "categoria · grado" (docs/inglese/it/struttura-corso.md): la
     // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
     // Il grado atteso viene dall'ordine, non riscritto qui.
     log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',
@@ -351,7 +351,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voicePractice"]');
       return { level: outcomes.voicePractice && outcomes.voicePractice.level, rowClass: row ? row.className : null };
     }, 'T12Practice');
@@ -363,7 +363,7 @@ async function run() {
     log('[Job5] Voice Practice NOW writes a moduleOutcome (ModuleRules, LastAttemptRule)', state.level === 'verde');
     log('[Job5] Map row carries outcome-verde', state.rowClass && state.rowClass.indexOf('outcome-verde') !== -1);
 
-    const mastery = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:episode1:' + u) || '{}'), 'T12Practice');
+    const mastery = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}'), 'T12Practice');
     const masteryKeys = Object.keys(mastery).filter(k => k.indexOf('voicepractice:') === 0);
     log('[Job5] Voice Practice fed the per-word mastery store (voicepractice: unit ids present)', masteryKeys.length > 0);
 
@@ -414,7 +414,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level };
     }, 'T12Check');
     log('[Job5] Voice Check STILL uses ModuleRules (all-wrong -> rosso, unchanged from before the split)', state.level === 'rosso');

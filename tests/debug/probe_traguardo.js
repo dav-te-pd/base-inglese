@@ -52,7 +52,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio','personalizzazione','repeatAloud','storyCards','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -72,7 +72,7 @@ async function run() {
   console.log('start btn visible:', startVisible);
   if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
 
-  const vocab = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
+  const vocab = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
   const engToIta = {}; const itaToEng = {};
   vocab.forEach(v => { engToIta[v.english] = v.italian; itaToEng[v.italian] = v.english; });
 

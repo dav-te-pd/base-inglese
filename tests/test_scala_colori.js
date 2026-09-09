@@ -79,7 +79,7 @@ async function preparaEApri(page, utente, semina, promotionStreak) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
 
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:episode1:' + arg.utente,
+    localStorage.setItem('baseinglese:modules:gate:' + arg.utente,
       JSON.stringify({ completed: arg.prima }));
     localStorage.setItem('baseinglese:configOverrides',
       JSON.stringify({ mastery: { promotionStreak: arg.streak } }));
@@ -98,9 +98,9 @@ async function preparaEApri(page, utente, semina, promotionStreak) {
     const store = {};
     (arg.ids || []).forEach(function (id) { store[id] = arg.semina; });
     if (arg.semina) {
-      localStorage.setItem('baseinglese:mastery:episode1:' + arg.utente, JSON.stringify(store));
+      localStorage.setItem('baseinglese:mastery:gate:' + arg.utente, JSON.stringify(store));
     } else {
-      localStorage.removeItem('baseinglese:mastery:episode1:' + arg.utente);
+      localStorage.removeItem('baseinglese:mastery:gate:' + arg.utente);
     }
     return store;
   }, { utente: utente, semina: semina.stato, ids: semina.unitIds });
@@ -124,14 +124,14 @@ async function rispondi(page, utente, esito) {
   await page.waitForSelector(btn, { state: 'visible' });
   await page.click(btn);
   await page.waitForFunction(function (u) {
-    const raw = localStorage.getItem('baseinglese:mastery:episode1:' + u);
+    const raw = localStorage.getItem('baseinglese:mastery:gate:' + u);
     return !!raw && Object.keys(JSON.parse(raw)).length > 0;
   }, utente, { timeout: 15000 });
 }
 
 function leggiScala(page, utente) {
   return page.evaluate(function (u) {
-    return JSON.parse(localStorage.getItem('baseinglese:mastery:episode1:' + u) || '{}');
+    return JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}');
   }, utente);
 }
 

@@ -55,7 +55,7 @@ solo gradi C e D.*
 
 | Data | Cosa | Commit |
 |---|---|---|
-| 2026-09-07 | `data/it/a1-episodio1-inglese.json` riscritto da `docs/it/episodio-1.md`: i numeri dichiarati nella fonte (15 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot) non corrispondevano al file dati (16, 7, 10, 9), quindi l'app mostrava un contenuto diverso da quello deciso. Il grado C non ricopia più le battute a mano: dove la fonte scrive `= dN` la frase viene dalla battuta, così non possono divergere. `episodeTitle` da "Presentarsi" ad "Al gate", ed etichetta del personaggio da "Guida" a "Hostess al gate". | titolo: `Il file episodio riscritto dalla sua fonte` |
+| 2026-09-07 | `data/inglese/it/inglese-it-gate.json` riscritto da `docs/inglese/it/inglese-it-gate.md`: i numeri dichiarati nella fonte (15 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot) non corrispondevano al file dati (16, 7, 10, 9), quindi l'app mostrava un contenuto diverso da quello deciso. Il grado C non ricopia più le battute a mano: dove la fonte scrive `= dN` la frase viene dalla battuta, così non possono divergere. `episodeTitle` da "Presentarsi" ad "Al gate", ed etichetta del personaggio da "Guida" a "Hostess al gate". | titolo: `Il file episodio riscritto dalla sua fonte` |
 
 ## Why We Say It
 

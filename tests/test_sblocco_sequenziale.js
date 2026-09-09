@@ -59,7 +59,7 @@ async function apriModulo(page, utente, moduleId) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(({ utente, completed, moduleId }) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + utente, JSON.stringify({ completed }));
+    localStorage.setItem('baseinglese:modules:gate:' + utente, JSON.stringify({ completed }));
     ['mappaEpisodio', 'personalizzazione', moduleId]
       .forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + utente, '1'));
   }, { utente, completed: stepsBefore(moduleId), moduleId });

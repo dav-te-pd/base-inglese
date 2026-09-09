@@ -159,8 +159,8 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
       });
       log('[B] La scelta e\' salvata negli override, non solo in memoria', salvato === secondo, String(salvato));
       const battute = await battuteDiMeetTheStory(page, secondo, 'InterruttoreB');
-      const attesa2 = primaBattuta('data/it/a1-episodio2-inglese.json');
-      const attesa1 = primaBattuta('data/it/a1-episodio1-inglese.json');
+      const attesa2 = primaBattuta('data/inglese/it/inglese-it-aircraft-door.json');
+      const attesa1 = primaBattuta('data/inglese/it/inglese-it-gate.json');
       log('[B] Meet the Story mostra la prima battuta del file dell\'episodio scelto',
         battute.indexOf(attesa2) !== -1, 'cercata: ' + attesa2);
       log('[B] E NON quella dell\'episodio 1: il contenuto e\' cambiato davvero',
@@ -189,7 +189,7 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     if (andata && ritorno) {
       const battute = await battuteDiMeetTheStory(page, ids[0], 'InterruttoreC');
       log('[C] Tornando al primo episodio torna il contenuto del primo',
-        battute.indexOf(primaBattuta('data/it/a1-episodio1-inglese.json')) !== -1);
+        battute.indexOf(primaBattuta('data/inglese/it/inglese-it-gate.json')) !== -1);
     }
     log('[C] Nessun errore JS', errors.length === 0, errors.join(' | '));
     await page.close();

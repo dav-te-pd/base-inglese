@@ -59,7 +59,7 @@ const mockVoce = () => {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode');
   await page.evaluate(function (a) {
-    localStorage.setItem('baseinglese:modules:episode1:' + a.utente, JSON.stringify({ completed: a.prima }));
+    localStorage.setItem('baseinglese:modules:gate:' + a.utente, JSON.stringify({ completed: a.prima }));
     // Le schermate di spiegazione a tutto schermo si saltano: qui interessa
     // il modulo, non la sua introduzione.
     a.kinds.forEach(function (k) { localStorage.setItem('baseinglese:introDismissed:' + k + ':' + a.utente, '1'); });

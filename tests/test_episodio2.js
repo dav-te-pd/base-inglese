@@ -1,5 +1,5 @@
-// PROTEGGE: che `data/it/a1-episodio2-inglese.json` continui a dire quello che
-// dichiara la sua fonte, `docs/it/episodio-2.md`. I due file cambiano insieme
+// PROTEGGE: che `data/inglese/it/inglese-it-aircraft-door.json` continui a dire quello che
+// dichiara la sua fonte, `docs/inglese/it/inglese-it-aircraft-door.md`. I due file cambiano insieme
 // una volta ogni tanto, e quando divergono non crolla niente: i moduli si
 // aprono pieni e hanno l'aria giusta: semplicemente insegnano una cosa che il
 // documento non dice più.
@@ -32,8 +32,8 @@
 const fs = require('fs');
 const { repoPath } = require('./test-env');
 
-const FONTE = 'docs/it/episodio-2.md';
-const DATI = 'data/it/a1-episodio2-inglese.json';
+const FONTE = 'docs/inglese/it/inglese-it-aircraft-door.md';
+const DATI = 'data/inglese/it/inglese-it-aircraft-door.json';
 
 // Stessa forma del riquadro dell'episodio 1: ogni numero si prende COL SUO
 // NOME accanto, mai per posizione.

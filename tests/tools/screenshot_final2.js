@@ -17,7 +17,7 @@ async function run() {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate((u) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + u, JSON.stringify({ completed: [] }));
+    localStorage.setItem('baseinglese:modules:gate:' + u, JSON.stringify({ completed: [] }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
   }, 'ScreenshotUser2');
   await page.click('#go-episode');

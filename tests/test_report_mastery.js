@@ -49,7 +49,7 @@ async function apriPannello(page, colori) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
   if (colori) {
     await page.evaluate(({ utente, colori }) => {
-      localStorage.setItem('baseinglese:mastery:episode1:' + utente, JSON.stringify(colori));
+      localStorage.setItem('baseinglese:mastery:gate:' + utente, JSON.stringify(colori));
     }, { utente: UTENTE, colori });
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
@@ -101,7 +101,7 @@ async function run() {
     log('[Report] Il conto per livello e\' quello vero', /2 · 2 · 2/.test(stato.testo));
 
     // ── La terza, quella che conta: leggere non scrive ──
-    const dopo = await page.evaluate(() => localStorage.getItem('baseinglese:mastery:episode1:ReportMastery'));
+    const dopo = await page.evaluate(() => localStorage.getItem('baseinglese:mastery:gate:ReportMastery'));
     log('[Report] Aprire il pannello non cambia un byte della mastery',
         dopo === JSON.stringify(COLORI));
     await page.close();

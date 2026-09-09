@@ -18,8 +18,8 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:gate:customizeSeen:' + userName, '1');
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
   }, { userName, completedModules });
   await page.click('#go-episode');
@@ -102,7 +102,7 @@ async function run() {
 
     // Mastery: confirm every "wrong" item was eventually force-accepted rosso
     // (i.e. maxAttempts=3 fired), reading straight from localStorage.
-    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'FCTester2');
+    const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'FCTester2');
     const mastery = JSON.parse(masteryRaw);
     const fcEntries = Object.keys(mastery).filter(k => k.startsWith('flashcard-a:'));
     const allRosso = fcEntries.length > 0 && fcEntries.every(k => mastery[k].level === 'rosso');

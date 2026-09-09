@@ -33,7 +33,7 @@ const { stepsBefore } = require('./module-order');
 
 const PASSO = 'matchEngIta';
 const PRIMA = stepsBefore(PASSO);
-const FILE_EPISODIO = 'a1-episodio1-inglese.json';
+const FILE_EPISODIO = 'inglese-it-gate.json';
 
 // I testi attesi si leggono dal JSON, non si ricopiano qui: se qualcuno li
 // cambia nel file, il test continua a valere; se qualcuno li riporta dentro
@@ -73,7 +73,7 @@ async function finoAllaMappa(page, utente) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
 
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:episode1:' + arg.utente,
+    localStorage.setItem('baseinglese:modules:gate:' + arg.utente,
       JSON.stringify({ completed: arg.prima }));
     ['mappaEpisodio', 'personalizzazione', 'matchEngIta'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + arg.utente, '1');

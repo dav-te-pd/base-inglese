@@ -71,7 +71,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -154,12 +154,12 @@ async function run() {
     log('[Job3] Repeat Aloud summary hides Spiegazione (rule 10)', watchHidden);
     const stillOnRepeatAloud = await page.evaluate(() => document.getElementById('view-repeat-aloud').classList.contains('is-active'));
     log('[Job3] Not navigated away yet — still on Repeat Aloud', stillOnRepeatAloud);
-    const completedBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:modules:episode1:' + u); return raw ? JSON.parse(raw).completed : []; }, 'T14RA');
+    const completedBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:modules:gate:' + u); return raw ? JSON.parse(raw).completed : []; }, 'T14RA');
     log('[Job3] Module not marked completed until the summary\'s own button is clicked', completedBefore.indexOf('repeatAloud') === -1);
     await page.click('#repeat-aloud-complete-btn');
     await page.waitForTimeout(150);
     const onMap = await page.evaluate(() => document.getElementById('view-map').classList.contains('is-active'));
-    const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T14RA');
+    const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T14RA');
     log('[Job3] Repeat Aloud: summary\'s own button completes + returns to the map', onMap && completedAfter.indexOf('repeatAloud') !== -1);
     log('[Job3] Repeat Aloud: No JS errors', errors.length === 0);
     await page.close();
@@ -180,7 +180,7 @@ async function run() {
     log('[Job3] Story Cards: clicking "Ho finito" opens the Schermata Finale', summaryVisible);
     await page.click('#story-cards-complete-btn');
     await page.waitForTimeout(150);
-    const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:episode1:' + u) || '{}').completed, 'T14SE');
+    const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T14SE');
     log('[Job3] Story Cards: summary\'s own button completes the module', completedAfter.indexOf('whyWeSayIt') !== -1);
     log('[Job3] Story Cards: No JS errors', errors.length === 0);
     await page.close();
@@ -271,7 +271,7 @@ async function run() {
     await page.waitForTimeout(60); // audio ends fast (fake synth, 20ms), bar starts (long, 5s+)
     const timerRunning = await page.$eval('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]', el => el.classList.contains('dg-bubble-timer'));
     log('[Job7b] Countdown bar is running before skipping', timerRunning);
-    const skipsBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:nextLineSkips:episode1:' + u); return raw ? JSON.parse(raw).byModule.dialogoRipetiATempo : undefined; }, 'T14NextLine');
+    const skipsBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:nextLineSkips:gate:' + u); return raw ? JSON.parse(raw).byModule.dialogoRipetiATempo : undefined; }, 'T14NextLine');
     // The skip click, the "is it disabled right after" read, and the
     // attempted double-click-while-disabled all happen inside ONE
     // evaluate() instead of three separate round-trips (deterministic
@@ -289,7 +289,7 @@ async function run() {
     const skipResult = await page.evaluate((args) => {
       var bubble = document.querySelector('.dg-bubble[data-line-id="' + args.bubbleId + '"]');
       var nextBtn = document.getElementById('dg-next-line-btn');
-      var key = 'baseinglese:nextLineSkips:episode1:' + args.userName;
+      var key = 'baseinglese:nextLineSkips:gate:' + args.userName;
       nextBtn.click(); // the real "skip" tap
       var timerStoppedAfterSkip = !bubble.classList.contains('dg-bubble-timer');
       var wasDisabled = nextBtn.disabled;

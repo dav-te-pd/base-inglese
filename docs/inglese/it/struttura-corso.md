@@ -116,80 +116,81 @@ Un modulo produce un tipo di dato diverso a seconda di com'è fatto, e la regola
 
 ## I nomi in codice
 
-*Decisi il 2026-09-08. Sono la fonte della **rinomina unica** registrata in
-`docs/decisioni.md`: da qui vengono i nomi, non dalla conversazione in cui sono
-stati scelti.*
+*Decisi il 2026-09-08, **eseguiti il 2026-09-09**. Erano la «rinomina unica»
+registrata in `docs/decisioni.md`; adesso sono lo stato del codice.*
 
-I nomi mostrati allo studente stanno in `CONFIG.moduleLabels` e non cambiano.
-Questa sezione riguarda i nomi che si leggono solo nel codice — `kind`, id dei
-moduli, funzioni — e che nel tempo hanno smesso di dire cosa nominano.
+I nomi mostrati allo studente stanno in `CONFIG.moduleLabels` e non sono
+cambiati. Questa sezione riguarda i nomi che si leggono solo nel codice — `kind`,
+id dei moduli, funzioni — e che nel tempo avevano smesso di dire cosa nominavano.
 
-| Oggi | Domani | Perché |
+| Si chiamava | Si chiama | Perché |
 |---|---|---|
-| `se*` | `storyCards*` | Il componente mostra le battute di un dialogo una sotto l'altra, come carte. **`cards` da solo si confonderebbe con Flash Card, che è un'altra cosa: le une si scorrono, l'altra si gira.** E *story* è già la parola che usiamo — Meet the Story, Your Story. Il nome vecchio veniva da "Speak Easy", un modulo che non esiste più. |
-| `srShuffle` | `shuffle` | Mescola, e basta: nessun modulo può reclamarlo. È lo stesso caso di `srPlayTraguardoSound`, già corretto — regola 18, un nome condiviso non porta il prefisso del primo modulo che l'ha introdotto. |
+| `se*` | `storyCards*` | Il componente mostra le battute di un dialogo una sotto l'altra, come carte. **`cards` da solo si sarebbe confuso con Flash Card, che è un'altra cosa: le une si scorrono, l'altra si gira.** E *story* era già la parola che usiamo — Meet the Story, Your Story. Il nome vecchio veniva da "Speak Easy", un modulo che non esiste più. |
+| `srShuffle` | `shuffle` | Mescola, e basta: nessun modulo poteva reclamarlo. Stesso caso di `srPlayTraguardoSound`, corretto prima — regola 18, un nome condiviso non porta il prefisso del primo modulo che l'ha introdotto. |
 | `quickMatch*` | `match*` | È il nome che lo studente legge già (*Match Practice*), senza il suffisso della direzione. |
-| `speedRound*` | `speedMatch*` | Idem (*Speed Match*). "Round" non dice niente che "Match" non dica meglio. |
-| `flashcardLevelA` | `flashcard` | Il grado vive nella coppia `{ module, grade }`, non nel `kind`: quel descrittore gira già sul grado A **e** sul grado B, quindi il nome mente. `flashcard` è anche il nome che tutto il resto del codice usa già (la vista, gli id, le classi). |
+| `speedRound*` | `speedMatch*` | Idem (*Speed Match*). "Round" non diceva niente che "Match" non dicesse meglio. |
+| `flashcardLevelA` | `flashcard` | Il grado vive nella coppia `{ module, grade }`, non nel `kind`: quel descrittore girava già sul grado A **e** sul grado B, quindi il nome mentiva. `flashcard` era anche il nome che tutto il resto del codice usava già. |
+| `episode1`, `episode2` | `gate`, `aircraft-door` | Un numero è una posizione, e le posizioni si spostano. Un id descrittivo no. |
+
+**E la prosa è seguita, in un passo suo (il 4-bis).** «Quick Match» e «Speed
+Round» erano rimasti vivi in 22 file — commenti ed etichette dei test, cioè il
+posto che si legge davvero — perché la verifica cercava la forma col trattino e
+non quella con lo spazio. Da lì la regola sulle quattro forme in
+`docs/decisioni.md`.
 
 ### Cosa segue il nome, e cosa no
 
 Un modulo porta il proprio nome su **tre strati**, e non si muovono tutti
 insieme:
 
-1. **il `kind` e l'id del modulo** — `quickMatchEngIta`, `speedRoundItaEng`.
+1. **il `kind` e l'id del modulo** — `matchEngIta`, `speedMatchItaEng`.
    Questi seguono sempre: sono la chiave con cui il modulo si nomina, e sono
-   la stessa chiave che indicizza `data/it/istruzioni-moduli.json` e i
+   la stessa chiave che indicizza `data/inglese/it/istruzioni-moduli.json` e i
    progressi salvati.
-2. **gli id e le classi in kebab** — `#view-quick-match`, `#speed-round-badge`,
-   `#speak-easy-body`. Questi seguono, perché **scrivono il nome per esteso**:
-   `speak-easy` in 54 punti è il nome di un modulo che non esiste più, scritto
-   a lettere.
+2. **gli id e le classi in kebab** — `#view-match`, `#speed-match-badge`,
+   `#story-cards-body`. Questi seguono, perché **scrivono il nome per esteso**:
+   `speak-easy` in 54 punti era il nome di un modulo che non esisteva più,
+   scritto a lettere.
 3. **le abbreviazioni di due lettere — `qm-`, `sr-`, `fc*`. Queste NON
    seguono, ed è una decisione, non una dimenticanza.**
 
    **Ma la ragione non è che sono corte: è che accanto a loro esiste una forma
-   lunga che segue al posto loro.** `qm-` sta accanto a `quickMatchEngIta`, che
-   diventa `matchEngIta`; `sr-` accanto a `speedRoundItaEng`, che diventa
+   lunga che segue al posto loro.** `qm-` stava accanto a `quickMatchEngIta`,
+   diventato `matchEngIta`; `sr-` accanto a `speedRoundItaEng`, diventato
    `speedMatchItaEng`. Il nome del modulo si aggiorna comunque, in un posto che
    si legge; la sigla resta come scorciatoia interna e non promette niente a
    nessuno. Nessuno legge `#sr-options` e ne conclude "Speed Round". Farle
-   seguire triplicherebbe il lavoro senza chiarire niente.
+   seguire avrebbe triplicato il lavoro senza chiarire niente.
 
-   **`se*` NON è in questa famiglia, e per questo segue.** In JavaScript non
-   esiste nessun `speakEasyCardIndex` accanto a `seCardIndex`: **la sigla È il
-   nome**, non la sua abbreviazione. Se non seguisse, la riga «`se*` →
-   `storyCards*`» della tabella qui sopra non avrebbe nessun contenuto in JS, e
-   il componente continuerebbe a chiamarsi con l'iniziale di un modulo che non
-   esiste — cioè quella rinomina non farebbe la cosa per cui è stata decisa.
+   **`se*` NON era in questa famiglia, e per questo ha seguito.** In JavaScript
+   non esisteva nessun `speakEasyCardIndex` accanto a `seCardIndex`: **la sigla
+   ERA il nome**, non la sua abbreviazione. Se non avesse seguito, la riga
+   «`se*` → `storyCards*`» non avrebbe avuto nessun contenuto in JS, e il
+   componente si chiamerebbe ancora con l'iniziale di un modulo che non esiste.
 
    **La prova, per chi fra sei mesi troverà `sr-` e si chiederà perché quella no
-   e questa sì:** togli mentalmente la sigla e guarda cosa resta. Tolto `sr-`,
+   e quella sì:** togli mentalmente la sigla e guarda cosa resta. Tolto `sr-`,
    il modulo si chiama ancora `speedMatchEngIta` e nessuno è confuso. Tolto
-   `se*`, non resta niente: quel componente non ha nessun altro nome in tutto
-   il codice.
+   `se*`, non restava niente: quel componente non aveva nessun altro nome in
+   tutto il codice.
 
-   *Stessa prova, stesso esito, per `srShuffle` nella tabella qui sopra:* segue
-   perché non è un elemento di Speed Match — è una funzione che usano sei
-   moduli, e lì la sigla una promessa la fa.
+   *Stessa prova, stesso esito, per `srShuffle`:* ha seguito perché non era un
+   elemento di Speed Match — è una funzione che usano sei moduli, e lì la sigla
+   una promessa la faceva.
 
-   *(Il punto 3 diceva l'opposto fino al 2026-09-09: elencava `se*` fra le sigle
-   che non seguono, in contraddizione con la tabella. L'errore è stato trovato
-   andando a eseguire quella riga, non scrivendola.)*
-
-**Il rischio di questa decisione, scritto perché non si scopra da solo:** dopo
-la rinomina `sr` non starà più per niente. È accettato. Chi trova `sr-` fra sei
-mesi deve poter leggere qui che è stato deciso, non dimenticato.
+**Il prezzo di questa decisione, scritto perché non si scopra da solo:** oggi
+`sr` non sta più per niente. È accettato. Chi trova `sr-` deve poter leggere qui
+che è stato deciso, non dimenticato.
 
 ### Cosa cambia per chi studia
 
-**Niente a schermo, ma i progressi salvati ripartono da zero.** I `kind` e gli
+**Niente a schermo, ma i progressi salvati sono ripartiti da zero.** I `kind` e gli
 id dei moduli sono le chiavi con cui i progressi vivono nel `localStorage`:
 cambiarli non li sposta, li lascia orfani. Vale per quattro delle cinque
 rinomine, non solo per gli id degli episodi.
 
-Per questo la rinomina si fa **finché siamo gli unici utenti**, e prima di un
-collaudo su profilo nuovo — non dopo.
+Per questo la rinomina è stata fatta **finché eravamo gli unici utenti**, e prima
+del collaudo su profilo nuovo — non dopo.
 
 ---
 

@@ -22,7 +22,7 @@ const { stepsBefore } = require('./module-order');
 const { loadGrade, loadEpisode } = require('./quiz-driver');
 
 // I numeri attesi si LEGGONO dalla fonte, non si ricopiano qui. Il riquadro
-// "Numeri attesi nel JSON" in testa a docs/it/episodio-1.md è la dichiarazione
+// "Numeri attesi nel JSON" in testa a docs/inglese/it/inglese-it-gate.md è la dichiarazione
 // (CLAUDE.md regola 26), il file dati è l'esecuzione: questo test confronta le
 // due, non "ieri contro oggi".
 //
@@ -32,8 +32,8 @@ const { loadGrade, loadEpisode } = require('./quiz-driver');
 // controllo da manutenere. È già successo: l'episodio è passato da 16 a 15
 // voci nel grado A e questo file è diventato rosso senza che niente fosse
 // rotto. Stessa forma di test_struttura_corso.js, che legge
-// docs/it/struttura-corso.md invece di ricopiarne le tabelle.
-const FONTE = 'docs/it/episodio-1.md';
+// docs/inglese/it/struttura-corso.md invece di ricopiarne le tabelle.
+const FONTE = 'docs/inglese/it/inglese-it-gate.md';
 
 // Ogni numero si prende COL SUO NOME accanto, mai per posizione: se un giorno
 // il riquadro viene riscritto in un altro ordine, un lettore posizionale
@@ -71,7 +71,7 @@ function numeriAttesiDallaFonte() {
 // perfetti e il contenuto sbagliato — è successo, ed è il difetto che questo
 // blocco esiste per prendere.
 //
-// Le tabelle di docs/it/episodio-1.md sono la fonte (regola 26), il JSON
+// Le tabelle di docs/inglese/it/inglese-it-gate.md sono la fonte (regola 26), il JSON
 // l'esecuzione: qui si confrontano CARATTERE PER CARATTERE.
 function tabellaSotto(testo, titolo) {
   const i = testo.indexOf(titolo);
@@ -254,7 +254,7 @@ async function bootAsUser(page, userName, moduleId) {
   await page.waitForSelector('#go-episode');
   const completed = stepsBefore(moduleId);
   await page.evaluate(({ userName, completed }) => {
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed }));
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed }));
     ['mappaEpisodio', 'meetTheStory', 'whyWeSayIt'].forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1'));
   }, { userName, completed });
   await page.click('#go-episode');
@@ -348,7 +348,7 @@ async function run() {
   const battuteConDueSkill = battute.filter(l => (l.whatYouLearn || []).length > 1);
   const battuteConSkill = battute.filter(l => (l.whatYouLearn || []).length > 0);
 
-  // I numeri LETTI dal riquadro in testa a docs/it/episodio-1.md e confrontati
+  // I numeri LETTI dal riquadro in testa a docs/inglese/it/inglese-it-gate.md e confrontati
   // col file dati vero (CLAUDE.md regola 29). Non sono scritti qui: se la fonte
   // e i dati divergono lo dice questo test, e non c'è niente da aggiornare a
   // mano quando l'episodio cambia.
@@ -507,7 +507,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
-    await page.evaluate(() => localStorage.setItem('baseinglese:episode1:custom:Story_Lingue', JSON.stringify({ partenza: 'torino' })));
+    await page.evaluate(() => localStorage.setItem('baseinglese:gate:custom:Story_Lingue', JSON.stringify({ partenza: 'torino' })));
     await page.reload();
     await page.waitForSelector('#go-episode');
     await page.click('#go-episode');
@@ -543,7 +543,7 @@ async function run() {
     await page.locator('#story-cards-resume-later').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const completato = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:modules:episode1:Story_Uscite')).completed.indexOf('whyWeSayIt') !== -1);
+      JSON.parse(localStorage.getItem('baseinglese:modules:gate:Story_Uscite')).completed.indexOf('whyWeSayIt') !== -1);
     log('[C] "Esci e riprendi dopo" NON completa il modulo', completato === false);
 
     await openStory(page, 'whyWeSayIt');
@@ -573,7 +573,7 @@ async function run() {
     await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const primoEsito = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:Story_Ripasso')).whyWeSayIt);
+      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:Story_Ripasso')).whyWeSayIt);
     log('[D] Tutte chiare -> 100% -> verde', !!primoEsito && primoEsito.pct === 100 && primoEsito.level === 'verde');
 
     await openStory(page, 'whyWeSayIt');
@@ -597,7 +597,7 @@ async function run() {
     await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const secondoEsito = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:episode1:Story_Ripasso')).whyWeSayIt);
+      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:Story_Ripasso')).whyWeSayIt);
     log('[D] Il ripasso riscrive l\'esito con la nuova percentuale', secondoEsito.pct === Math.round(((attesi.skill - 1) / attesi.skill) * 100));
     log('[D] Nessun errore JS', errors.length === 0);
     await page.close();

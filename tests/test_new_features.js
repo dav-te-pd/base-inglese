@@ -46,8 +46,8 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
-    localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem('baseinglese:gate:customizeSeen:' + userName, '1');
+    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
   }, { userName, completedModules });
   await page.click('#go-episode');
@@ -65,7 +65,7 @@ async function run() {
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
   const ALL_COMPLETE = allSteps();
 
-  // ============ A: default module order matches CONFIG.episodes.episode1.moduleOrder ============
+  // ============ A: default module order matches CONFIG.episodes.gate.moduleOrder ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -80,7 +80,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ A: reordering CONFIG.episodes.episode1.moduleOrder changes render order ============
+  // ============ A: reordering CONFIG.episodes.gate.moduleOrder changes render order ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
@@ -101,8 +101,8 @@ async function run() {
     await page.click('#onboarding-form button[type=submit]');
     await page.waitForTimeout(100);
     await page.evaluate((u) => {
-      localStorage.setItem('baseinglese:episode1:customizeSeen:' + u, '1');
-      localStorage.setItem('baseinglese:modules:episode1:' + u, JSON.stringify({ completed: [] }));
+      localStorage.setItem('baseinglese:gate:customizeSeen:' + u, '1');
+      localStorage.setItem('baseinglese:modules:gate:' + u, JSON.stringify({ completed: [] }));
       localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
     }, 'ReorderTester');
     await page.click('#go-episode');

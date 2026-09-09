@@ -28,15 +28,15 @@ poi il CSS, poi tutto il resto del JavaScript in un secondo `<script>` chiuso in
 una IIFE. Non c'è build, non ci sono moduli, non c'è nessuna dipendenza esterna
 oltre ai Google Fonts.
 
-Il contenuto sta in tre file dentro `data/it/`, letti via `fetch`. **Nessuna
+Il contenuto sta in tre file dentro `data/inglese/it/`, letti via `fetch`. **Nessuna
 copia dentro `index.html`**: se un file non arriva, il rifiuto sale fino al
 chiamante e finisce nella schermata d'errore (`showLoadError`).
 
 | File | Chi lo legge |
 |---|---|
-| `data/it/a1-episodio1-inglese.json` | `loadEpisodeData()` |
-| `data/it/istruzioni-moduli.json` | `loadModuleInstructions()` |
-| `data/it/messaggi-feedback.json` | `loadFeedbackMessages()` |
+| `data/inglese/it/inglese-it-gate.json` | `loadEpisodeData()` |
+| `data/inglese/it/istruzioni-moduli.json` | `loadModuleInstructions()` |
+| `data/inglese/it/messaggi-feedback.json` | `loadFeedbackMessages()` |
 
 > **Aggiornato il 2026-09-06:** fino a quella data i tre file avevano una copia
 > inline (`window.FALLBACK_*`) che serviva all'artifact di claude.ai. Artifact e
@@ -54,7 +54,7 @@ episodio+utente (elencate al § 2.3).
 ### 1.0 Come si legge la tabella
 
 - **Grado** — arriva dalla coppia `{ module, grade }` della sequenza dell'episodio (`CONFIG.sequences`)
-  (riga 409), **non** dal descrittore in `EPISODES.episode1.modulesById` (riga 6144).
+  (riga 409), **non** dal descrittore in `EPISODES.gate.modulesById` (riga 6144).
 - **Id del passo** — `moduleStepId()` (riga 6270): la prima apparizione di un modulo
   tiene l'id nudo, le successive prendono `-2`, `-3`. È l'id con cui si salvano
   progressi ed esiti.
@@ -304,7 +304,7 @@ toccato.
 | `match*`, `qm*` | **Match Practice** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
 | `speedMatch*`, `sr*` | **Speed Match** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
-| `flashcard` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
+| `flashcard` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.gate.modulesById`, chiave di `istruzioni-moduli.json` |
 
 **Il caso più delicato è `shuffle`.** Non è una funzione di Speed Match: la
 chiamano Match Practice, Flash Card, Voice Coach e `buildMultipleChoiceOptions`.
@@ -433,7 +433,7 @@ Elenco completo di ciò che è emerso, dal più al meno sostanziale.
 | `.slice(-6)` | 5607 | Lunghezza della parola magica `config` |
 
 **Tabelle di etichette scritte nel codice** (la regola 8 di `CLAUDE.md` chiede che i
-testi che lo studente legge stiano in `data/it/istruzioni-moduli.json`)
+testi che lo studente legge stiano in `data/inglese/it/istruzioni-moduli.json`)
 
 | Costante | Riga | Contenuto |
 |---|---|---|
@@ -535,7 +535,7 @@ legge i due badge dalla mappa:
 passo 4  matchEngIta     badge: "Da riprovare"   classi esito: [outcome-rosso]
 passo 9  matchEngIta-2   badge: "Completato"     classi esito: []
 
-baseinglese:moduleOutcome:episode1:ProvaEsitoPassi
+baseinglese:moduleOutcome:gate:ProvaEsitoPassi
 {"matchEngIta":{"level":"rosso","pct":0},"matchItaEng":{"level":"rosso","pct":0},
  "flashcardAEngIta":{"level":"verde","pct":100},"flashcardAItaEng":{"level":"verde","pct":100}}
 ```
@@ -557,14 +557,14 @@ il caso in cui l'informazione sarebbe più utile è esattamente quello in cui ma
 Il campo `moduleId` esisteva già su ogni passo (costruito a 6285) e non lo leggeva
 nessuno. Le altre due strade sono state scartate: ricadere sul `moduleId` lascia in
 piedi la possibilità di divergere; dichiarare le regole nella coppia dell'ordine
-sposta la configurazione in `docs/it/struttura-corso.md` e fa crescere la tabella con
+sposta la configurazione in `docs/inglese/it/struttura-corso.md` e fa crescere la tabella con
 l'ordine. `CONFIG.attemptRule` non è stata reindicizzata ma **tolta**: la sua
 distinzione era già in `module.voiceVariant`.
 
 `tests/test_outcome_step_ids.js` è stato rovesciato ed è entrato nella suite: da
 "dimostra il difetto" a "dimostra che la regola arriva a ogni apparizione".
 
-### 4.2 `docs/it/struttura-corso.md` dice una cosa che il codice non fa
+### 4.2 `docs/inglese/it/struttura-corso.md` dice una cosa che il codice non fa
 
 La tabella "Le regole di esito" assegna `moduleRules` a Match Practice e Voice
 Practice e `selfScoreRules` a Flash Card — **senza distinguere le apparizioni**.
@@ -602,12 +602,12 @@ schema di chiamata.
 - **La vista `view-pronunciation` per intero.** `startPronunciationExercise()`
   (10616) è l'unico ingresso, e **nessuno la chiama** (verificato: sole occorrenze,
   la definizione). Con lei restano irraggiungibili: `renderPhrase`,
-  `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.episode1.segments`,
+  `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.gate.segments`,
   la seconda istanza `SpeechRecognition` (10897 in poi), `#phrase`, `#mic-btn`,
   `#speak-btn`, `#status`, `#transcript`, `#warning`, `#pronunciation-hint`,
   `LEVEL_CLASS`, e la voce `pronunciation` di `views`. È l'esercizio originale
   dell'app, prima che esistessero i moduli.
-  → `EPISODES.episode1.segments` (6236) descrive ancora la vecchia frase, con uno
+  → `EPISODES.gate.segments` (6236) descrive ancora la vecchia frase, con uno
   slot `destinazione` che non esiste più tra gli slot dell'episodio: `slotDefault`
   restituirebbe `undefined`. Non esplode solo perché non ci arriva nessuno.
 - **`applyRotatingSubtitle()`** (5261): definita, mai chiamata. È stata sostituita
@@ -635,7 +635,7 @@ schema di chiamata.
   due informazioni. Da verificare se i primi due sono ancora visibili.
 - `#vc-warning` (8335) e `#warning` (10900) usano `style.display` diretto invece di
   `hidden`, i due punti fuori convenzione già noti e lasciati apposta.
-- `CONFIG.episodes.episode1` è `{}`: nessun episodio sovrascrive l'ordine globale.
+- `CONFIG.episodes.gate` è `{}`: nessun episodio sovrascrive l'ordine globale.
   Il ramo `(CONFIG.episodes[episodeId] && ... .moduleOrder)` (6276) non è mai vero
   oggi.
 - `applyConfigOverrides` (736) sostituisce **l'intera sezione di primo livello**.
@@ -675,7 +675,7 @@ per sbaglio mentre si sistema la tabella.
 |---|---|---|---|
 | **A — indicizzare per `moduleId`** | Tutte le apparizioni di uno stesso modulo condividono la regola, per costruzione: non è più possibile darne una diversa alla seconda. | Cinque righe (i quattro pulsanti di completamento più le due letture di `attemptRule`); la configurazione non cambia di una virgola. | Nessuno tecnico. Si perde un grado di libertà che oggi nessuno usa. |
 | **B — ricaduta `[id]` poi `[moduleId]`** | Default identico ad A, ma resta possibile dichiarare un'eccezione per un singolo passo scrivendo `'matchEngIta-2': '…'`. | Le stesse cinque righe più una funzione condivisa che fa la ricaduta — altrimenti la si riscrive cinque volte. | La chiave del passo è **generata** (`-2`, `-3`) e si sposta quando si riordina: un'eccezione scritta a mano si stacca in silenzio dal passo che voleva descrivere. |
-| **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/it/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
+| **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/inglese/it/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
 
 ### D2 — Il passo 16 (Voice Practice sul grado C) deve usare `lastAttempt`?
 
@@ -689,7 +689,7 @@ per sbaglio mentre si sistema la tabella.
 
 | | Cosa comporta |
 |---|---|
-| **Toglierla** | Spariscono `startPronunciationExercise`, `renderPhrase`, `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.episode1.segments`, la seconda istanza `SpeechRecognition` (10897 in poi), il markup della vista e i suoi sei elementi. Con loro l'unico lettore di `LEVEL_CLASS`. |
+| **Toglierla** | Spariscono `startPronunciationExercise`, `renderPhrase`, `currentPhraseText`, `submitAttempt`, `buildTargetTokens`, `EPISODES.gate.segments`, la seconda istanza `SpeechRecognition` (10897 in poi), il markup della vista e i suoi sei elementi. Con loro l'unico lettore di `LEVEL_CLASS`. |
 | **L'ostacolo vero** | `tokenize`, `alignWords`, `classify` — e le loro `levenshtein`, `similarity`, `stripForCompare` — **stanno in quel blocco ma le usa Voice Coach** (8372-8386) **e Dialogo** (`dgLineDurationMs`, 9256). Vanno spostate in un punto condiviso, non cancellate: è la parte che rende la rimozione non banale, ed è anche il momento giusto per dare loro un posto proprio (regola 18). |
 | **Tenerla** | Costa zero oggi. È l'**unico posto in cui la mastery viene riletta per disegnare qualcosa**: se domani si costruisce la composizione per colore, `renderPhrase` è già il modello di come si mostrano rosso/giallo/verde a schermo — l'unico esempio funzionante che l'app abbia. |
 
