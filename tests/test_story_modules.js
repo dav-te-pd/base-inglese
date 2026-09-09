@@ -444,6 +444,50 @@ async function run() {
     log('[B] Il pulsante scelto è blu accento, non verde', st.sceltoColore === coloreAtteso(st.accento));
     log('[B] La spunta è sola, senza etichetta accanto', st.spunte.length === 1 && st.spunteConTesto === 0);
     log('[B] Si può cambiare risposta anche durante il primo giro', st.rispostaDisabilitata === 0);
+
+    // 2026-09-09 (C.2): il magazzino tiene la risposta CORRENTE, non la somma
+    // dei tocchi. Prima ogni risposta faceva +1 e nessuno toccava quella di
+    // prima: una card del collaudo è arrivata a "chiara 3 · non chiara 3",
+    // cioè SEI VOTI DA UNA PERSONA SOLA — e il pannello dice di sé che quel
+    // numero segnala le spiegazioni da riscrivere, quindi decideva un lavoro
+    // editoriale contando i ripensamenti.
+    //
+    // Si legge il magazzino, non il pannello: il difetto sta in cosa viene
+    // SCRITTO, e un pannello che mostra bene un dato sbagliato passerebbe.
+    const vociStat = () => page.evaluate((u) => {
+      const raw = localStorage.getItem('baseinglese:storyCardsExplanationStats:gate:' + u);
+      const parsed = raw ? JSON.parse(raw) : null;
+      return parsed && parsed.byLine ? { versione: parsed.versione, voce: parsed.byLine['d-1-s1'] } : null;
+    }, 'Story_Why');
+
+    const dopoPrima = await vociStat();
+    log('[B/C.2] La prima risposta lascia una voce sola, senza ripensamenti',
+      !!dopoPrima && !!dopoPrima.voce && dopoPrima.voce.corrente === 'chiara' &&
+      dopoPrima.voce.chiara === 1 && dopoPrima.voce.cambi === 0, JSON.stringify(dopoPrima));
+
+    await dichiara(page, 'd-1-s1', 'nonChiara');
+    const dopoCambio = await vociStat();
+    log('[B/C.2] Cambiare idea SPOSTA il voto: quello di prima torna a zero',
+      !!dopoCambio && dopoCambio.voce.corrente === 'nonChiara' &&
+      dopoCambio.voce.chiara === 0 && dopoCambio.voce.nonChiara === 1, JSON.stringify(dopoCambio));
+    log('[B/C.2] ...e conta il ripensamento, che è il segnale in più',
+      !!dopoCambio && dopoCambio.voce.cambi === 1, JSON.stringify(dopoCambio));
+
+    await dichiara(page, 'd-1-s1', 'nonChiara');
+    const dopoUguale = await vociStat();
+    log('[B/C.2] Rispondere UGUALE non muove niente, nemmeno i ripensamenti',
+      !!dopoUguale && dopoUguale.voce.cambi === 1 && dopoUguale.voce.nonChiara === 1,
+      JSON.stringify(dopoUguale));
+
+    // La somma dei tre contatori non può superare il numero di battute
+    // dichiarate: se lo supera, qualcuno sta di nuovo sommando i tocchi.
+    const somma = dopoUguale ? dopoUguale.voce.chiara + dopoUguale.voce.nonAncora + dopoUguale.voce.nonChiara : -1;
+    log('[B/C.2] Una battuta vale UN voto in tutto, comunque la si tocchi', somma === 1,
+      'somma dei tre contatori: ' + somma);
+
+    // Si rimette "chiara" per non lasciare il resto del blocco su uno stato
+    // che non ha scelto lui.
+    await dichiara(page, 'd-1-s1', 'chiara');
     log('[B] Una spunta sola: la seconda skill della stessa battuta è ancora da dichiarare', st.spunte.length === 1);
     log('[B] "Ho finito" ancora bloccato con una sola dichiarata', st.completaDisabilitato === true);
 

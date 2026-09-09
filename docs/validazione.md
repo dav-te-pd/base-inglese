@@ -133,7 +133,7 @@ davvero `attemptRule`.
   (7583): una skill più avanti mostra solo il titolo, il corpo e i pulsanti spariscono.
   Solo al primo giro: `storyCardsReviewMode` (7714) spegne la sequenza a modulo già completato.
 - **Autovalutazione:** tre risposte da `istruzioni-moduli.json → whyWeSayIt.selfCheck`.
-  Registrate in `storyCardsSessionAnswers` (memoria) + `addSeExplanationStat` (cumulativo,
+  Registrate in `storyCardsSessionAnswers` (memoria) + `storyCardsRecordExplanationAnswer` (la risposta corrente,
   fra sessioni). Salvate su disco **solo** con "Esci e riprendi dopo" (7839) o al
   completamento (7819) — uscire da "← Mappa" non lascia traccia.
 - **Punteggio:** `% di "chiara" su tutte le skill`, congelato a "Ho finito" (7827).
@@ -285,7 +285,7 @@ davvero `attemptRule`.
 | `baseinglese:mastery:<ep>:<utente>` | `masteryStorageKey` (6069) | `unitId -> { level, streak }` |
 | `baseinglese:<ep>:custom:<utente>` | `customValuesKey` (6593) | valori di personalizzazione |
 | `baseinglese:storyCardsDeclarations:<ep>:<utente>` | `storyCardsDeclarationsKey` (7417) | dichiarazioni di Why We Say It |
-| `baseinglese:storyCardsExplanationStats:<ep>:<utente>` | `storyCardsExplanationStatsKey` (6445) | conteggio cumulativo per skill |
+| `baseinglese:storyCardsExplanationStats:<ep>:<utente>` | `storyCardsExplanationStatsKey` (6445) | la risposta corrente per skill, più i ripensamenti |
 | `baseinglese:audioUsage:<ep>:<utente>` | `audioUsageKey` (6396) | secondi di audio inviati per modulo |
 | `baseinglese:nextLineSkips:<ep>:<utente>` | `nextLineSkipsKey` (6420) | quante volte si è saltata una battuta |
 | `baseinglese:helpRequests:<utente>` | `helpRequestsKey` (5501) | richieste di aiuto |
@@ -300,7 +300,7 @@ toccato.
 
 | Prefisso / nome | Modulo che nomina | Cosa è oggi | Dove compare |
 |---|---|---|---|
-| `se*`, `storyCards`, `story-cards-*` | **Story Cards** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openStoryCards`, `renderStoryCards`, `storyCardsSkillIds`, `storyCardsRefreshExplanationStates`, `storyCardsIsUnlocked`, `storyCardsDeclarationsKey`, `storyCardsExplanationStatsKey`, `addSeExplanationStat`, …), la vista `view-story-cards`, ~20 id HTML, **e la chiave dati `storyCardsCompleteMessages` in `messaggi-feedback.json`** |
+| `se*`, `storyCards`, `story-cards-*` | **Story Cards** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openStoryCards`, `renderStoryCards`, `storyCardsSkillIds`, `storyCardsRefreshExplanationStates`, `storyCardsIsUnlocked`, `storyCardsDeclarationsKey`, `storyCardsExplanationStatsKey`, `storyCardsRecordExplanationAnswer`, …), la vista `view-story-cards`, ~20 id HTML, **e la chiave dati `storyCardsCompleteMessages` in `messaggi-feedback.json`** |
 | `match*`, `qm*` | **Match Practice** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
 | `speedMatch*`, `sr*` | **Speed Match** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |

@@ -4276,7 +4276,7 @@
         <!-- Job 10 (2nd collaudo): Story Cards's "Cosa imparo qui" self-check
              answers per linea, same accumulated-data reasoning as the two
              panels above (CLAUDE.md rule 13). Filled in by
-             renderSeExplanationStatsPanel(), called alongside
+             renderStoryCardsExplanationStatsPanel(), called alongside
              renderConfigPanel() whenever this overlay opens. -->
         <details class="config-group" open>
           <summary>Why We Say It — "Cosa imparo qui" (risposte all'autovalutazione)</summary>
@@ -5008,27 +5008,46 @@
       '<div class="config-audio-usage-row config-audio-usage-total"><span>Totale episodio</span><span>' + total + '</span></div>';
   }
 
-  function renderSeExplanationStatsPanel() {
+  var STORY_CARDS_ANSWER_LABEL = { chiara: 'chiara', nonAncora: 'non ancora', nonChiara: 'non chiara' };
+
+  function renderStoryCardsExplanationStatsPanel() {
     var el = document.getElementById('config-story-cards-explanation-stats');
     if (!el) return;
-    var stats = loadSeExplanationStats(currentEpisode.id, getUserName());
+    var stats = loadStoryCardsExplanationStats(currentEpisode.id, getUserName());
     var lineIds = Object.keys(stats.byLine);
     var rowsHtml = lineIds.map(function (id) {
       var s = stats.byLine[id];
-      return '<div class="config-audio-usage-row"><span>' + id + '</span><span>chiara ' + s.chiara +
-        ' · non ancora ' + s.nonAncora + ' · non chiara ' + s.nonChiara + '</span></div>';
+      var corrente = s.corrente ? STORY_CARDS_ANSWER_LABEL[s.corrente] : '—';
+      var cambi = s.cambi ? ' · cambiata ' + s.cambi + (s.cambi === 1 ? ' volta' : ' volte') : '';
+      return '<div class="config-audio-usage-row"><span>' + id + '</span><span>' + corrente + cambi + '</span></div>';
     }).join('');
+    // I due segnali sono diversi e si leggono diversamente, quindi si dicono
+    // diversamente: la riga dice DOVE sta ognuno adesso, il totale quanti ci
+    // stanno. E i due numeri non si sommano fra loro — uno conta persone,
+    // l'altro ripensamenti.
+    var tot = { chiara: 0, nonAncora: 0, nonChiara: 0, cambi: 0 };
+    lineIds.forEach(function (id) {
+      var s = stats.byLine[id];
+      ['chiara', 'nonAncora', 'nonChiara'].forEach(function (k) { tot[k] += (s[k] || 0); });
+      tot.cambi += (s.cambi || 0);
+    });
     el.innerHTML =
       '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' + currentEpisode.id +
-      '. Una battuta con molte risposte "non chiara" segnala una spiegazione da riscrivere.</p>' +
-      (rowsHtml || '<p class="config-field-hint">Nessuna risposta finora.</p>');
+      '. Ogni battuta tiene la risposta <strong>corrente</strong>: cambiare idea sposta il voto, non ne aggiunge uno. ' +
+      'Una battuta ferma su "non chiara" segnala una spiegazione da riscrivere; una <strong>cambiata pi\u00f9 volte</strong> ' +
+      'segnala una spiegazione <strong>ambigua</strong>, che \u00e8 un difetto diverso. ' +
+      'Oggi i profili sono uno, quindi i totali per risposta valgono quante battute ci stanno sopra.</p>' +
+      (rowsHtml || '<p class="config-field-hint">Nessuna risposta finora.</p>') +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>chiara · non ancora · non chiara</span><span>' +
+      tot.chiara + ' · ' + tot.nonAncora + ' · ' + tot.nonChiara + '</span></div>' +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>ripensamenti in tutto</span><span>' + tot.cambi + '</span></div>';
   }
 
   function openConfigPanel() {
     renderConfigPanel();
     renderAudioUsagePanel();
     renderNextLineSkipsPanel();
-    renderSeExplanationStatsPanel();
+    renderStoryCardsExplanationStatsPanel();
     renderMasteryPanel();
     configPanelOverlayEl.classList.add('is-open');
   }
@@ -6034,28 +6053,79 @@
     return usage;
   }
 
-  // Job 10 (2nd collaudo): Story Cards's "Cosa imparo qui" self-check
-  // answers, per dialogue line — same per-episode/per-user shape as
-  // nextLineSkips above (CLAUDE.md rule 13), CUMULATIVE across every
-  // time a line's self-check is answered (not overwritten): a line
-  // whose count skews heavily "nonChiara" across sessions is a
-  // signal the explanation itself needs rewriting, not a graded score.
+  /* ============================================================
+     LE RISPOSTE ALL'AUTOVALUTAZIONE DI "COSA IMPARO QUI"
+
+     Serve a rispondere a UNA domanda: quali spiegazioni vanno riscritte.
+     Il pannello lo dice di se stesso — "una battuta con molte risposte non
+     chiara segnala una spiegazione da riscrivere" — quindi il numero che
+     mostra decide un lavoro editoriale, e deve contare la cosa giusta.
+
+     Fino al 2026-09-09 contava la cosa sbagliata. Ogni risposta faceva +1 e
+     nessuno toccava il contatore della risposta precedente: una card del
+     collaudo e' arrivata a "chiara 3 · non chiara 3", cioe' SEI VOTI DA UNA
+     PERSONA SOLA. Il numero non era rotto — era esattamente quello che il
+     codice era scritto per produrre — ma rispondeva a "quante volte e' stato
+     premuto un pulsante", che non e' la domanda.
+
+     Adesso ogni voce tiene la risposta CORRENTE e i tre contatori dicono
+     quanti stanno su quella risposta adesso: cambiare idea sposta il voto
+     invece di aggiungerne uno.
+
+     E c'e' un contatore in piu', `cambi`, che NON e' un premio di
+     consolazione per il dato che si perde. "L'ho letta, ho creduto di aver
+     capito, poi no" e' il profilo di una spiegazione AMBIGUA, distinta da
+     una difficile: prima quel segnale stava dentro il rumore dei sei voti,
+     separato ne fa due.
+
+     ⚠️ Da sapere leggendo il pannello OGGI: il magazzino e' per utente, e
+     l'utente e' uno. Quindi i tre contatori valgono 0 o 1 per battuta, ed e'
+     giusto cosi' — diventano un conteggio di persone quando i profili
+     saranno piu' di uno. Il numero che dice qualcosa adesso e' `cambi`.
+     ============================================================ */
+
+  // La forma del magazzino ha un numero, e serve a una cosa sola: i dati
+  // scritti con la forma vecchia non si possono leggere con questa (i
+  // contatori significavano un'altra cosa) e vanno buttati, non migrati.
+  // Migrarli vorrebbe dire indovinare quale fosse la risposta corrente
+  // guardando quale contatore e' piu' alto, che e' falso appena qualcuno ha
+  // cambiato idea due volte — cioe' proprio nei casi che ci interessano.
+  var STORY_CARDS_STATS_VERSIONE = 2;
+
   function storyCardsExplanationStatsKey(episodeId, userName) {
     return 'baseinglese:storyCardsExplanationStats:' + episodeId + ':' + userName;
   }
 
-  function loadSeExplanationStats(episodeId, userName) {
+  function vuotoStoryCardsExplanationStats() {
+    return { versione: STORY_CARDS_STATS_VERSIONE, byLine: {} };
+  }
+
+  function loadStoryCardsExplanationStats(episodeId, userName) {
     try {
       var raw = localStorage.getItem(storyCardsExplanationStatsKey(episodeId, userName));
       var parsed = raw ? JSON.parse(raw) : null;
-      return (parsed && parsed.byLine) ? parsed : { byLine: {} };
-    } catch (e) { return { byLine: {} }; }
+      if (parsed && parsed.versione === STORY_CARDS_STATS_VERSIONE && parsed.byLine) return parsed;
+      return vuotoStoryCardsExplanationStats();
+    } catch (e) { return vuotoStoryCardsExplanationStats(); }
   }
 
-  function addSeExplanationStat(episodeId, userName, lineId, answer) {
-    var stats = loadSeExplanationStats(episodeId, userName);
-    if (!stats.byLine[lineId]) stats.byLine[lineId] = { chiara: 0, nonAncora: 0, nonChiara: 0 };
-    stats.byLine[lineId][answer] = (stats.byLine[lineId][answer] || 0) + 1;
+  // Registra la risposta CORRENTE di una battuta. Non e' piu' un "add", e il
+  // nome lo dice: legge quella di prima, la toglie da dove stava, mette la
+  // nuova, e alza `cambi` solo se la risposta e' davvero diversa. Rispondere
+  // due volte la stessa cosa non muove niente — prima era vero per caso
+  // (il pulsante gia' scelto non produceva un secondo evento), adesso e' una
+  // regola scritta, che e' la differenza fra un comportamento e una fortuna.
+  function storyCardsRecordExplanationAnswer(episodeId, userName, lineId, answer) {
+    var stats = loadStoryCardsExplanationStats(episodeId, userName);
+    var voce = stats.byLine[lineId];
+    if (!voce) voce = stats.byLine[lineId] = { corrente: null, cambi: 0, chiara: 0, nonAncora: 0, nonChiara: 0 };
+    if (voce.corrente === answer) return stats;
+    if (voce.corrente) {
+      voce[voce.corrente] = Math.max(0, (voce[voce.corrente] || 0) - 1);
+      voce.cambi = (voce.cambi || 0) + 1;
+    }
+    voce[answer] = (voce[answer] || 0) + 1;
+    voce.corrente = answer;
     try { localStorage.setItem(storyCardsExplanationStatsKey(episodeId, userName), JSON.stringify(stats)); } catch (e) {}
     return stats;
   }
@@ -7158,7 +7228,7 @@
   // da "← Mappa" non salva niente, come in ogni altro modulo — per questo
   // storyCardsSessionAnswers resta un set di lavoro in memoria e questo store viene
   // scritto in due punti soli, mai a ogni risposta.
-  // Distinto da storyCardsExplanationStats (addSeExplanationStat): quello è un
+  // Distinto da storyCardsExplanationStats (storyCardsRecordExplanationAnswer): quello è un
   // conteggio cumulativo per capire quali spiegazioni sono scritte male,
   // questo è "cosa ha dichiarato adesso questo utente su questa battuta".
   // L'id di una skill dentro la sua battuta. Serve un id proprio perche' la
@@ -7557,20 +7627,23 @@
       speakListenBlock(listenBtn, fillTemplate(line.english, currentEpisode, currentValues, 'en'));
       return;
     }
-    // Risposta al self-check. Registra la dichiarazione nel set di lavoro
-    // (storyCardsSessionAnswers, che alimenta la percentuale SelfScoreRules) e un
-    // conteggio cumulativo per battuta (addSeExplanationStat — "una
-    // spiegazione poco chiara a molti studenti è scritta male", un segnale
-    // che vogliamo anche fra sessioni diverse). Il set di lavoro NON viene
-    // salvato qui: lo si scrive solo su "Esci e riprendi dopo" o sul
-    // completamento, così uscire da "← Mappa" non lascia traccia.
+    // Risposta al self-check. Registra la dichiarazione in due posti diversi,
+    // che rispondono a due domande diverse:
+    //   - storyCardsSessionAnswers, il set di lavoro, che alimenta la
+    //     percentuale SelfScoreRules di QUESTO passaggio;
+    //   - storyCardsRecordExplanationAnswer, la risposta corrente per battuta,
+    //     che sopravvive alla sessione: "una spiegazione poco chiara a molti
+    //     studenti è scritta male" è un segnale editoriale, non un punteggio.
+    // Il set di lavoro NON viene salvato qui: lo si scrive solo su "Esci e
+    // riprendi dopo" o sul completamento, così uscire da "← Mappa" non lascia
+    // traccia.
     var answerBtn = e.target.closest('[data-story-cards-answer]');
     if (answerBtn) {
       if (answerBtn.disabled) return;
       var answer = answerBtn.getAttribute('data-story-cards-answer');
       var answerSkillId = answerBtn.getAttribute('data-skill');
       storyCardsSessionAnswers[answerSkillId] = answer;
-      addSeExplanationStat(currentEpisode.id, getUserName(), answerSkillId, answer);
+      storyCardsRecordExplanationAnswer(currentEpisode.id, getUserName(), answerSkillId, answer);
       var followupEl = document.getElementById('story-cards-followup-' + answerSkillId);
       var followupText = storyCardsFollowupText(answer);
       if (followupText) {
