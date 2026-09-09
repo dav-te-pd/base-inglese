@@ -19,6 +19,13 @@
 // battuta ricopiata in un test invecchia e rompe la CI senza che niente sia
 // rotto (docs/decisioni.md, i quattro valori ricopiati).
 //
+// PROTEGGE ANCHE, dal 2026-09-09 (C.4): che il pulsante di casa e il badge in
+// mappa nominino lo STESSO episodio. La stringa era incollata nell'HTML e
+// nessuno gliela riscriveva, quindi sull'episodio 2 il pulsante diceva
+// "Episodio 1" mentre la mappa, un tocco dopo, diceva "Episodio 2".
+// L'asserzione confronta le due schermate FRA LORO, non con un testo atteso
+// scritto qui: e' il requisito vero, e un badge ricopiato invecchierebbe.
+//
 // LIMITE DICHIARATO: si guarda UN modulo (Meet the Story, il primo che mostra
 // contenuto dell'episodio). Che tutti gli altri ventuno passi leggano il file
 // giusto non e' verificato qui: quello che li lega al file e' il descrittore
@@ -158,7 +165,24 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
         return ov ? JSON.parse(ov).episodioCorrente : null;
       });
       log('[B] La scelta e\' salvata negli override, non solo in memoria', salvato === secondo, String(salvato));
+      // 2026-09-09 (C.4): le due schermate devono NOMINARE LO STESSO EPISODIO.
+      // Il pulsante di casa aveva la stringa incollata nell'HTML e nessuno
+      // gliela riscriveva: sull'episodio 2 diceva "Inizia Episodio 1" mentre la
+      // mappa, un tocco dopo, diceva "Episodio 2" — due schermate della stessa
+      // app che si contraddicevano.
+      //
+      // Non si confronta con un testo atteso scritto qui: si confronta il
+      // pulsante CON IL BADGE IN MAPPA, che e' il requisito vero (le due
+      // schermate concordano) e non una copia dell'implementazione. Un badge
+      // ricopiato nel test invecchierebbe al primo episodio nuovo.
+      const pulsanteCasa = (await page.textContent('#go-episode')).trim();
+
       const battute = await battuteDiMeetTheStory(page, secondo, 'InterruttoreB');
+      const badgeMappa = (await page.evaluate(() =>
+        (document.getElementById('map-episode-badge') || {}).textContent || '')).trim();
+      log('[B] Il pulsante di casa e il badge in mappa nominano lo stesso episodio',
+        !!badgeMappa && pulsanteCasa.indexOf(badgeMappa) !== -1,
+        'pulsante: "' + pulsanteCasa + '"  |  mappa: "' + badgeMappa + '"');
       const attesa2 = primaBattuta('data/inglese/it/inglese-it-aircraft-door.json');
       const attesa1 = primaBattuta('data/inglese/it/inglese-it-gate.json');
       log('[B] Meet the Story mostra la prima battuta del file dell\'episodio scelto',

@@ -3389,7 +3389,7 @@
           <div class="theme-picker" id="theme-picker" role="group" aria-label="Scegli tema colore"></div>
 
           <div class="home-actions">
-            <button type="button" class="btn btn-primary btn-block" id="go-episode">Inizia Episodio 1</button>
+            <button type="button" class="btn btn-primary btn-block" id="go-episode">Inizia</button>
             <button type="button" class="switch-user" id="switch-user">Non sei tu? Cambia nome</button>
           </div>
         </div>
@@ -4781,6 +4781,16 @@
   function goHome() {
     var name = getUserName();
     document.getElementById('home-greeting').textContent = 'Ciao, ' + name + '!';
+    // Il pulsante nomina l'episodio che si aprira' davvero, letto dalla stessa
+    // fonte degli altri tre punti che mostrano il badge (personalizzazione,
+    // mappa). Fino al 2026-09-09 la stringa "Inizia Episodio 1" era incollata
+    // nell'HTML e nessuno gliela riscriveva: sull'episodio 2 il pulsante diceva
+    // "Episodio 1" mentre la mappa, due tocchi dopo, diceva "Episodio 2".
+    //
+    // Nel markup resta il solo verbo, "Inizia": un testo statico che nomina un
+    // episodio e' vero al massimo per uno, mentre "Inizia" e' vero sempre —
+    // anche nel caso in cui questa riga non girasse.
+    document.getElementById('go-episode').textContent = 'Inizia ' + currentEpisode.badge;
     showView('home');
   }
 
