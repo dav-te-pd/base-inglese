@@ -10,7 +10,7 @@
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
 # Ultimo aggiornamento: 2026-09-09
-# Totale: 952
+# Totale: 956
 test_attendi.js 6
 test_avviso_microfono.js 31
 test_batch10.js 23
@@ -46,7 +46,7 @@ test_hidden_guard.js 4
 test_interruttore_episodio.js 14
 test_match_practice_nonloso.js 6
 test_new_features.js 29
-test_outcome_step_ids.js 17
+test_outcome_step_ids.js 21
 test_report_mastery.js 8
 test_sblocco_sequenziale.js 16
 test_scala_colori.js 24
