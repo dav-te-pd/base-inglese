@@ -145,15 +145,37 @@ insieme:
    `#speak-easy-body`. Questi seguono, perché **scrivono il nome per esteso**:
    `speak-easy` in 54 punti è il nome di un modulo che non esiste più, scritto
    a lettere.
-3. **le abbreviazioni di due lettere** — `qm-`, `sr-`, `fc*`, e `se*` stesso
-   nei nomi di funzione. **Queste NON seguono, ed è una decisione, non una
-   dimenticanza.** Nessuno legge `#sr-options` e ne conclude "Speed Round":
-   sono sigle interne che non fanno nessuna promessa sul nome del modulo.
-   Farle seguire triplica il lavoro senza chiarire niente.
+3. **le abbreviazioni di due lettere — `qm-`, `sr-`, `fc*`. Queste NON
+   seguono, ed è una decisione, non una dimenticanza.**
 
-   *L'unica eccezione è già nella tabella qui sopra:* `srShuffle` **segue**,
-   perché non è un elemento di Speed Round — è una funzione che usano sei
+   **Ma la ragione non è che sono corte: è che accanto a loro esiste una forma
+   lunga che segue al posto loro.** `qm-` sta accanto a `quickMatchEngIta`, che
+   diventa `matchEngIta`; `sr-` accanto a `speedRoundItaEng`, che diventa
+   `speedMatchItaEng`. Il nome del modulo si aggiorna comunque, in un posto che
+   si legge; la sigla resta come scorciatoia interna e non promette niente a
+   nessuno. Nessuno legge `#sr-options` e ne conclude "Speed Round". Farle
+   seguire triplicherebbe il lavoro senza chiarire niente.
+
+   **`se*` NON è in questa famiglia, e per questo segue.** In JavaScript non
+   esiste nessun `speakEasyCardIndex` accanto a `seCardIndex`: **la sigla È il
+   nome**, non la sua abbreviazione. Se non seguisse, la riga «`se*` →
+   `storyCards*`» della tabella qui sopra non avrebbe nessun contenuto in JS, e
+   il componente continuerebbe a chiamarsi con l'iniziale di un modulo che non
+   esiste — cioè quella rinomina non farebbe la cosa per cui è stata decisa.
+
+   **La prova, per chi fra sei mesi troverà `sr-` e si chiederà perché quella no
+   e questa sì:** togli mentalmente la sigla e guarda cosa resta. Tolto `sr-`,
+   il modulo si chiama ancora `speedMatchEngIta` e nessuno è confuso. Tolto
+   `se*`, non resta niente: quel componente non ha nessun altro nome in tutto
+   il codice.
+
+   *Stessa prova, stesso esito, per `srShuffle` nella tabella qui sopra:* segue
+   perché non è un elemento di Speed Match — è una funzione che usano sei
    moduli, e lì la sigla una promessa la fa.
+
+   *(Il punto 3 diceva l'opposto fino al 2026-09-09: elencava `se*` fra le sigle
+   che non seguono, in contraddizione con la tabella. L'errore è stato trovato
+   andando a eseguire quella riga, non scrivendola.)*
 
 **Il rischio di questa decisione, scritto perché non si scopra da solo:** dopo
 la rinomina `sr` non starà più per niente. È accettato. Chi trova `sr-` fra sei
