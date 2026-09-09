@@ -3,6 +3,18 @@
 // torna a colorare il passo 4 e a lasciare grigio il passo 9 a parità di
 // risposte, in silenzio — che è com'era prima della correzione del 2026-09-05.
 //
+// E, dal 2026-09-09 (blocco [D]): che nei due pannelli-report due apparizioni
+// dello stesso modulo si DISTINGUANO. Sono due difetti diversi nella stessa
+// riga, e il secondo è nato dopo che il primo era chiuso: prima il nome del
+// passo non si risolveva affatto ("voicePractice-2"), poi si risolveva
+// benissimo ma i due Voice Practice avevano il nome IDENTICO, perché la label
+// di un passo non portava il grado. Due righe indistinguibili in un pannello
+// che esiste per dire DOVE sono finiti i secondi.
+//
+// L'asserzione sta sulla distinguibilità (riga[0] !== riga[1]), non su una
+// stringa attesa: è quello che il pannello deve garantire, e una stringa
+// attesa ricopierebbe l'implementazione invece di difendere il comportamento.
+//
 // Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
 // docs/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
 // apparizione in poi è 'matchEngIta-2', invece che con l'id del MODULO),
@@ -350,8 +362,15 @@ async function run() {
         JSON.stringify({ byModule: { 'voicePractice': 12.5, 'voicePractice-2': 7.5 } }));
       localStorage.setItem('baseinglese:nextLineSkips:gate:' + utente,
         JSON.stringify({ byModule: { 'dialogoRipetiATempo': 3 } }));
-      // Il nome atteso si LEGGE dalla configurazione, non si ricopia qui.
-      return window.APP_CONFIG.moduleLabels.voicePractice.name;
+      // I nomi attesi si LEGGONO dalla configurazione, non si ricopiano qui.
+      return {
+        modulo: window.APP_CONFIG.moduleLabels.voicePractice.name,
+        // I due Voice Practice della sequenza girano su gradi diversi: e' il
+        // grado a distinguerli, quindi e' il grado che dev'essere a schermo.
+        gradoB: window.APP_CONFIG.gradeNames.B,
+        gradoC: window.APP_CONFIG.gradeNames.C,
+        gradoD: window.APP_CONFIG.gradeNames.D
+      };
     }, USER);
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
@@ -366,11 +385,39 @@ async function run() {
       };
     });
     log('[D] La SECONDA apparizione mostra il nome del modulo, non l\'id del passo',
-      testo.audio.indexOf('voicePractice-2') === -1 && testo.audio.indexOf(atteso) !== -1);
+      testo.audio.indexOf('voicePractice-2') === -1 && testo.audio.indexOf(atteso.modulo) !== -1);
     log('[D] E anche la prima lo mostra (non si è rotta l\'altra metà)',
-      testo.audio.indexOf('voicePractice') === -1 || testo.audio.indexOf(atteso) !== -1);
+      testo.audio.indexOf('voicePractice') === -1 || testo.audio.indexOf(atteso.modulo) !== -1);
     log('[D] Lo stesso vale per il pannello "Prossima frase"',
       testo.skips.indexOf('dialogoRipetiATempo') === -1);
+
+    // 2026-09-09 — il difetto DIVERSO, nella stessa riga di codice. Il nome si
+    // risolveva benissimo: erano i due Voice Practice ad averlo IDENTICO,
+    // perche' la label di un passo non portava il grado. Due righe
+    // indistinguibili in un pannello che esiste per dire DOVE sono finiti i
+    // secondi. Si conta quante righe portano il nome del modulo e si guarda che
+    // NON siano uguali fra loro: l'asserzione sta sulla distinguibilita', non
+    // su una stringa attesa, perche' e' quello che il pannello deve garantire.
+    const righeVP = testo.audio.split('\n')
+      .map(function (r) { return r.trim(); })
+      .filter(function (r) { return r.indexOf(atteso.modulo) === 0; });
+    log('[D] Le due apparizioni di Voice Practice producono DUE righe',
+      righeVP.length === 2, 'righe trovate: ' + JSON.stringify(righeVP));
+    log('[D] ...e le due righe sono DISTINGUIBILI fra loro',
+      righeVP.length === 2 && righeVP[0] !== righeVP[1],
+      'le due righe leggono uguale: ' + JSON.stringify(righeVP));
+    log('[D] Ognuna porta il nome del grado su cui gira quel passo',
+      righeVP.join(' | ').indexOf(atteso.gradoB) !== -1 &&
+      righeVP.join(' | ').indexOf(atteso.gradoC) !== -1,
+      'attesi "' + atteso.gradoB + '" e "' + atteso.gradoC + '" in: ' + JSON.stringify(righeVP));
+    // La LATENTE: i salti di battuta non collidono oggi (i tre Dialogue
+    // compaiono una volta ciascuno), ma il pannello passa dalla stessa
+    // composizione. Si verifica che ci passi davvero, non che collida.
+    // LIMITE DICHIARATO: non esiste oggi una sequenza con un Dialogue ripetuto,
+    // quindi la collisione vera li' dentro non viene esercitata da nessuno.
+    log('[D] Anche i salti di battuta passano dalla stessa composizione (la latente)',
+      testo.skips.indexOf(atteso.gradoD) !== -1,
+      'atteso "' + atteso.gradoD + '" in: ' + JSON.stringify(testo.skips));
     log('[D] Nessun titolo del pannello nomina un modulo che non esiste più',
       testo.titoli.indexOf('Speak Easy') === -1);
     log('[D] Nessun errore JS', errori.length === 0);

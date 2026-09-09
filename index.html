@@ -5135,16 +5135,31 @@
   // seconda apparizione in poi la chiave non esiste e il pannello cadeva sul
   // nome tecnico: "voicePractice-2" invece di "Voice Practice".
   //
-  // E' l'ottava e la nona lettura della stessa famiglia: la correzione del
+  // E' l'ottava e la nona lettura di quella famiglia: la correzione del
   // 2026-09-05 ne sistemo' sette (vedi docs/correzioni.md) e questi due punti
-  // non furono guardati. Da qui in poi ce n'e' uno solo da guardare.
+  // non furono guardati. Da allora, di quella famiglia, non ne resta nessuna.
+  //
+  // ⚠️ Ma "quella famiglia e' chiusa" NON vuol dire "i nomi dei passi sono a
+  // posto", ed e' quello che questa riga sembrava dire quando diceva "da qui
+  // in poi ce n'e' uno solo da guardare". E' successo di nuovo il 2026-09-09,
+  // in una forma diversa: la chiave si risolveva benissimo, ma la label del
+  // passo non portava il GRADO, quindi i due Voice Practice avevano lo stesso
+  // identico nome e nel contatore audio comparivano due righe indistinguibili.
+  // Principio giusto, elenco corto — la stessa cosa della regola sulle forme.
+  //
+  // Da qui il withGradeName qui sotto. Il grado si aggiunge SEMPRE, non solo
+  // quando due passi collidono: una regola "aggiungilo se serve" farebbe
+  // dipendere il nome di un passo da cosa c'e' nel RESTO della sequenza, e lo
+  // stesso passo si chiamerebbe in due modi a seconda dei vicini. In un
+  // pannello-report il grado e' informazione, non rumore: dice su cosa quei
+  // secondi sono stati spesi.
   //
   // Un passo spento o sparito da un riordino non si trova piu': si mostra la
   // chiave grezza, come faceva prima. Meglio una chiave che una riga in meno.
   function stepLabel(stepId) {
     var passi = (currentEpisode && currentEpisode.modules) || [];
     for (var i = 0; i < passi.length; i++) {
-      if (passi[i].id === stepId) return passi[i].label || stepId;
+      if (passi[i].id === stepId) return withGradeName(passi[i].label || stepId, passi[i].grade);
     }
     return stepId;
   }
@@ -6943,16 +6958,36 @@
   // "Studio · Parole": la categoria dice cosa aspettarsi, il grado su cosa si
   // sta lavorando. Un modulo senza grado (Your Story) mostra la sola
   // categoria — non c'è un "su cosa" da dire.
+  // Il nome del grado attaccato a un'etichetta, col separatore condiviso.
+  // Lo usano DUE composizioni diverse — la categoria di un modulo
+  // (moduleTypeLabel: "Studio · Parole") e il nome di un passo nei
+  // pannelli-report (stepLabel: "Voice Practice · Frasi") — e la regola
+  // dell'omissione vive qui una volta sola invece che in tutte e due
+  // (CLAUDE.md regola 13). Il grado è l'unica cosa che distingue due
+  // apparizioni dello stesso modulo (regola 4), quindi è anche l'unica cosa
+  // che può distinguerne le etichette.
+  function withGradeName(testo, grade) {
+    var gradeName = grade && CONFIG.gradeNames[grade];
+    if (!gradeName) return testo;
+    // "Studia il dialogo · Dialogo" non aggiunge niente: quando il nome del
+    // grado è già contenuto in quello che precede, il grado si omette. È il
+    // caso dei tre Dialogue, e non riguarda gli altri moduli.
+    //
+    // Il confronto è testuale e resta testuale di proposito. I NOMI dei tre
+    // Dialogue sono in inglese ("Dialogue: Repeat in Time") e il grado in
+    // italiano ("Dialogo"), quindi nei pannelli-report l'omissione non scatta
+    // e la riga legge "Dialogue: Repeat in Time · Dialogo": un filo ridondante,
+    // e va bene così. Renderlo furbo vorrebbe dire far combaciare due lingue a
+    // naso — e sbaglierebbe il giorno in cui un modulo si chiama "Dialogo
+    // qualcosa" ma gira su un altro grado.
+    if (testo && testo.toLowerCase().indexOf(gradeName.toLowerCase()) !== -1) return testo;
+    return testo ? testo + CONFIG.gradeSeparator + gradeName : gradeName;
+  }
+
   function moduleTypeLabel(module) {
     var typeInfo = CONFIG.moduleTypes[module.type];
     var category = module.typeLabel || (typeInfo && typeInfo.label) || '';
-    var gradeName = module.grade && CONFIG.gradeNames[module.grade];
-    if (!gradeName) return category;
-    // "Studia il dialogo · Dialogo" non aggiunge niente: quando il nome del
-    // grado è già contenuto nella categoria, il grado si omette. È il caso
-    // dei tre Dialogue, e non riguarda gli altri moduli.
-    if (category && category.toLowerCase().indexOf(gradeName.toLowerCase()) !== -1) return category;
-    return category ? category + CONFIG.gradeSeparator + gradeName : gradeName;
+    return withGradeName(category, module.grade);
   }
 
   // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
