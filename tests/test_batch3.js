@@ -75,8 +75,8 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:quickMatchEngIta:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:matchEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:speedMatchEngIta:' + userName, '1');
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
   }, { userName, completedModules, extraStorage });
   await page.click('#go-episode');
@@ -92,7 +92,7 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
+  const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
 
   // ============ 1: config panel via ?config query param ============
   {
@@ -160,11 +160,11 @@ async function run() {
     await page.close();
   }
   {
-    // Check speedRound/dialogo module rows show their current category once reachable.
+    // Check speedMatch/dialogo module rows show their current category once reachable.
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
-    const srTypeLabel = await page.$eval('[data-module="speedRoundEngIta"] .module-row-type', el => el.textContent);
+    const srTypeLabel = await page.$eval('[data-module="speedMatchEngIta"] .module-row-type', el => el.textContent);
     log('[3] Speed Round mostra la categoria "Quiz"', srTypeLabel.indexOf('Quiz') === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
@@ -187,16 +187,16 @@ async function run() {
     const d = ISTRUZIONI;
     const flags = {
       repeatAloudWrite: d.repeatAloud.howItWorks.body.indexOf('carta e penna') !== -1,
-      speedRoundNoWrite: d.speedRoundEngIta.howItWorks.body.indexOf('non serve scrivere') !== -1,
+      speedMatchNoWrite: d.speedMatchEngIta.howItWorks.body.indexOf('non serve scrivere') !== -1,
       voiceCoachNoWrite: d.voiceCoach.howItWorks.body.indexOf('non serve scrivere') !== -1,
       dialogoContinuoNoWrite: d.dialogoContinuo.howItWorks.body.indexOf('non serve scrivere') !== -1,
       dialogoAscoltaWrite: d.dialogoAscoltaRipeti.howItWorks.body.indexOf('carta e penna') !== -1,
-      speedRoundNoCartaPenna: d.speedRoundEngIta.howItWorks.body.indexOf('carta e penna') === -1
+      speedMatchNoCartaPenna: d.speedMatchEngIta.howItWorks.body.indexOf('carta e penna') === -1
     };
     log('[4b] repeatAloud gets the "carta e penna" tip', flags.repeatAloudWrite);
     log('[4b] dialogoAscoltaRipeti gets the "carta e penna" tip', flags.dialogoAscoltaWrite);
-    log('[4c] speedRound gets the "non serve scrivere" tip', flags.speedRoundNoWrite);
-    log('[4c] speedRound does NOT also get the "carta e penna" tip', flags.speedRoundNoCartaPenna);
+    log('[4c] speedMatch gets the "non serve scrivere" tip', flags.speedMatchNoWrite);
+    log('[4c] speedMatch does NOT also get the "carta e penna" tip', flags.speedMatchNoCartaPenna);
     log('[4c] voiceCoach gets the "non serve scrivere" tip', flags.voiceCoachNoWrite);
     log('[4c] dialogoContinuo gets the "non serve scrivere" tip', flags.dialogoContinuoNoWrite);
   }
@@ -213,7 +213,7 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T4eRetry', ALL_BEFORE_SR);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     await page.waitForTimeout(200);
     const retryHtml = await page.evaluate(() => document.getElementById('qm-retry-intro-screen').innerHTML);
     log('[4e] Quick Match retry-intro text drops "finché non..."', retryHtml.indexOf('finché non') === -1);

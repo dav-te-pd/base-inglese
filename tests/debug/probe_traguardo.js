@@ -53,7 +53,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -66,7 +66,7 @@ async function run() {
   const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
   await page.addInitScript(mockInit);
   await bootAsUser(page, 'ProbeQM', ['personalizzazione', 'repeatAloud', 'speakEasy', 'flashcardAEngIta', 'flashcardAItaEng']);
-  await page.click('[data-module="quickMatchEngIta"]');
+  await page.click('[data-module="matchEngIta"]');
   await page.waitForTimeout(250);
   const startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
   console.log('start btn visible:', startVisible);

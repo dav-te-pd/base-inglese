@@ -38,9 +38,9 @@ async function run() {
 
   const checks = [
     ['repeatAloud', '#repeat-aloud-intro-title', 'Repeat Aloud'],
-    ['quickMatchEngIta', '#qm-start-title', 'Match Practice en→it'],
+    ['matchEngIta', '#qm-start-title', 'Match Practice en→it'],
     ['dialogoAscoltaRipeti', '#dg-start-title', 'Dialogue: Listen & Repeat'],
-    ['speedRoundEngIta', '#sr-start-title', 'Speed Match en→it'],
+    ['speedMatchEngIta', '#sr-start-title', 'Speed Match en→it'],
     ['flashcardAEngIta', '#fc-intro-title', 'Flash Card'] // known gap: shared JSON kind -> generic title, no direction
   ];
 

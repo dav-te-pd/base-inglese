@@ -10,8 +10,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('quickMatchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedRoundEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -72,7 +72,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -86,7 +86,7 @@ async function openModule(page, moduleId) {
 }
 
 const ALL_BEFORE_VP = stepsBefore('voicePractice');
-const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchEngIta');
 const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
 
 async function run() {
@@ -193,7 +193,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T14Ripasso', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);

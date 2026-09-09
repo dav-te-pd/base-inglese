@@ -1,12 +1,12 @@
 // PROTEGGE: che ogni parametro di APP_CONFIG sia nominato da qualcuno.
 // Senza, una manopola smette di muovere qualcosa e resta nel Pannello Admin:
 // si gira, non succede niente, e non c'è modo di accorgersene guardando
-// l'app. È già successo con speedRound.pointsPerCorrect (decisione D4,
+// l'app. È già successo con speedMatch.pointsPerCorrect (decisione D4,
 // docs/correzioni.md).
 //
 // COME CERCA, e perché non nel modo ovvio.
 // Il modo ovvio sarebbe cercare il percorso puntato letterale
-// ("CONFIG.speedRound.timeLimitSeconds"). Misurato su questo file: segnala
+// ("CONFIG.speedMatch.timeLimitSeconds"). Misurato su questo file: segnala
 // 104 chiavi su 141, quasi tutte lette davvero — l'app indicizza a runtime
 // (CONFIG.moduleTypes[module.type], CONFIG.sound.events[nome],
 // CONFIG.gradeNames[grado]) e quel percorso non compare mai come testo. Un

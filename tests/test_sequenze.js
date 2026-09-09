@@ -76,7 +76,7 @@ async function run() {
     // moduleStepId cambiasse, i progressi della prima e della seconda si
     // sovrascriverebbero a vicenda.
     log('[A] La seconda apparizione di un modulo tiene il suo suffisso',
-        inMappa.indexOf('quickMatchEngIta') !== -1 && inMappa.indexOf('quickMatchEngIta-2') !== -1);
+        inMappa.indexOf('matchEngIta') !== -1 && inMappa.indexOf('matchEngIta-2') !== -1);
     await page.close();
   }
 

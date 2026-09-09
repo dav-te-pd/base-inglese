@@ -82,8 +82,8 @@ async function run() {
     const dg1 = rowIds.indexOf('dialogoAscoltaRipeti');
     const dg2 = rowIds.indexOf('dialogoRipetiATempo');
     const dg3 = rowIds.indexOf('dialogoContinuo');
-    const sr = rowIds.indexOf('speedRoundEngIta');
-    log('Order: ascoltaRipeti < ripetiATempo < continuo < speedRoundEngIta', dg1 > -1 && dg1 < dg2 && dg2 < dg3 && dg3 < sr);
+    const sr = rowIds.indexOf('speedMatchEngIta');
+    log('Order: ascoltaRipeti < ripetiATempo < continuo < speedMatchEngIta', dg1 > -1 && dg1 < dg2 && dg2 < dg3 && dg3 < sr);
     await page.close();
   }
 
@@ -93,15 +93,15 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRTimerRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
-    await openModuleFromMap(page, 'speedRoundEngIta');
+    await bootAsUser(page, 'SRTimerRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo']);
+    await openModuleFromMap(page, 'speedMatchEngIta');
     await page.waitForFunction(() => document.getElementById('sr-ready-btn') && !document.getElementById('sr-ready-btn').disabled);
     await page.click('#sr-ready-btn');
     await page.waitForTimeout(4200); // 3-2-1 countdown
     const quizVisible = await page.isVisible('#sr-quiz-screen');
     log('[Regression] Speed Round reaches quiz screen after countdown', quizVisible);
     const transitionDuration = await page.evaluate(() => getComputedStyle(document.getElementById('sr-timerbar-fill')).transitionDuration);
-    log('[Regression] Speed Round timer bar transition duration is 10s (CONFIG.speedRound.timeLimitSeconds, unaffected by generalization)', transitionDuration === '10s');
+    log('[Regression] Speed Round timer bar transition duration is 10s (CONFIG.speedMatch.timeLimitSeconds, unaffected by generalization)', transitionDuration === '10s');
     const opts = await page.$$eval('#sr-options .sr-option', els => els.map(e => e.getAttribute('data-sr-index')));
     await page.click('#sr-options .sr-option[data-sr-index="' + opts[0] + '"]');
     await page.waitForTimeout(150);
@@ -115,7 +115,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FormulaTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'FormulaTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
     await openModuleFromMap(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
@@ -140,7 +140,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error' && !/ERR_CONNECTION_RESET|fonts\.googleapis/.test(msg.text())) errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'Mod2Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti']);
+    await bootAsUser(page, 'Mod2Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti']);
     await shrinkTimings(page);
 
     const rowClass = await page.getAttribute('[data-module="dialogoRipetiATempo"]', 'class');
@@ -256,7 +256,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error' && !/ERR_CONNECTION_RESET|fonts\.googleapis/.test(msg.text())) errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'Mod3Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo']);
+    await bootAsUser(page, 'Mod3Tester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo']);
     await shrinkTimings(page);
 
     await openModuleFromMap(page, 'dialogoContinuo');

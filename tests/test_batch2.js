@@ -69,8 +69,8 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:quickMatchEngIta:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:matchEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:speedMatchEngIta:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:flashcard:' + userName, '1');
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
   }, { userName, completedModules, extraStorage });
@@ -87,7 +87,7 @@ async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
+  const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
 
   // ============ TASK 6: Personalizzazione visible in map, first, unlocked ============
   {

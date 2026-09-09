@@ -5,7 +5,7 @@
 //
 // Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
 // docs/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
-// apparizione in poi è 'quickMatchEngIta-2', invece che con l'id del MODULO),
+// apparizione in poi è 'matchEngIta-2', invece che con l'id del MODULO),
 // e per quel motivo stava fuori dalla suite: un test che asserisce un difetto
 // diventa rosso proprio quando il difetto viene corretto. Corretto il difetto
 // (index.html: sette letture passate a .moduleId, CONFIG.attemptRule tolta e
@@ -137,7 +137,7 @@ async function doRepeatAloud(page, stepId) {
 
 // Sbagliate al primo giro, giuste al ripasso: punteggio 0% (rosso) e coda di
 // ripasso che si svuota in un solo giro, senza forzature.
-async function doQuickMatch(page, stepId) {
+async function doMatch(page, stepId) {
   await openStep(page, stepId);
   await waitForAny(page, ['#qm-start-screen', '#qm-quiz-screen']);
   const vocabulary = loadGrade(gradeOf(stepId));
@@ -215,8 +215,8 @@ async function run() {
   const log = (msg, ok) => { risultati.push(ok); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
   const ids = stepIds();
-  const passo4 = ids[3];   // quickMatchEngIta   (prima apparizione)
-  const passo9 = ids[8];   // quickMatchEngIta-2 (seconda apparizione)
+  const passo4 = ids[3];   // matchEngIta   (prima apparizione)
+  const passo9 = ids[8];   // matchEngIta-2 (seconda apparizione)
   const passo12 = ids[11]; // voicePractice      (prima apparizione)
   const passo16 = ids[15]; // voicePractice-2    (seconda apparizione)
 
@@ -234,12 +234,12 @@ async function run() {
     await doPersonalizzazione(page);            // 1
     await doStory(page, ids[1]);                // 2  meetTheStory
     await doRepeatAloud(page, ids[2]);          // 3  repeatAloud
-    await doQuickMatch(page, ids[3]);           // 4  quickMatchEngIta
-    await doQuickMatch(page, ids[4]);           // 5  quickMatchItaEng
+    await doMatch(page, ids[3]);           // 4  matchEngIta
+    await doMatch(page, ids[4]);           // 5  matchItaEng
     await doFlashcard(page, ids[5]);            // 6  flashcardAEngIta
     await doFlashcard(page, ids[6]);            // 7  flashcardAItaEng
     await doRepeatAloud(page, ids[7]);          // 8  repeatAloud-2
-    await doQuickMatch(page, ids[8]);           // 9  quickMatchEngIta-2
+    await doMatch(page, ids[8]);           // 9  matchEngIta-2
 
     const r4 = await readRow(page, passo4);
     const r9 = await readRow(page, passo9);

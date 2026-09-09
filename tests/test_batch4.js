@@ -30,7 +30,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, extraStorage }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
@@ -57,10 +57,10 @@ async function run() {
     whyWeSayIt: { name: 'Why We Say It', subtitle: 'Perché si dice così' },
     voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
     voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
-    quickMatchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
-    quickMatchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
-    speedRoundEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
-    speedRoundItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
+    matchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
+    matchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
+    speedMatchEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
+    speedMatchItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
     flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
     flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
     dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
@@ -98,12 +98,12 @@ async function run() {
     log('[T1] dialogo.pausaPerParola has a non-technical description', !!dialogoPausaDesc && dialogoPausaDesc.length > 5);
     console.log('    -> "' + dialogoPausaDesc + '"');
 
-    const srTimeDesc = await page.$eval('[data-config-path="speedRound.timeLimitSeconds"]', el => {
+    const srTimeDesc = await page.$eval('[data-config-path="speedMatch.timeLimitSeconds"]', el => {
       var wrap = el.closest('.config-field');
       var d = wrap && wrap.querySelector('.config-field-description');
       return d ? d.textContent : null;
     }).catch(() => null);
-    log('[T1] speedRound.timeLimitSeconds has a description', !!srTimeDesc);
+    log('[T1] speedMatch.timeLimitSeconds has a description', !!srTimeDesc);
     console.log('    -> "' + srTimeDesc + '"');
 
     // A field with no description entry should render with NO gap/placeholder line
@@ -146,10 +146,10 @@ async function run() {
     }
 
     // direction span styling check for one en->it module
-    const dirSpanText = await page.$eval('[data-module="quickMatchEngIta"] .module-row-title .module-name-direction', el => el.textContent).catch(() => null);
+    const dirSpanText = await page.$eval('[data-module="matchEngIta"] .module-row-title .module-name-direction', el => el.textContent).catch(() => null);
     log('[T2] "en→it" suffix is wrapped in .module-name-direction span', dirSpanText === 'en→it');
-    const dirFontSize = await page.$eval('[data-module="quickMatchEngIta"] .module-row-title .module-name-direction', el => getComputedStyle(el).fontSize).catch(() => null);
-    const parentFontSize = await page.$eval('[data-module="quickMatchEngIta"] .module-row-title', el => getComputedStyle(el).fontSize).catch(() => null);
+    const dirFontSize = await page.$eval('[data-module="matchEngIta"] .module-row-title .module-name-direction', el => getComputedStyle(el).fontSize).catch(() => null);
+    const parentFontSize = await page.$eval('[data-module="matchEngIta"] .module-row-title', el => getComputedStyle(el).fontSize).catch(() => null);
     log('[T2] direction suffix renders smaller than parent name (computed font-size)', dirFontSize && parentFontSize && parseFloat(dirFontSize) < parseFloat(parentFontSize));
 
     // typeLabel for personalizzazione is now "Inizio"
@@ -167,9 +167,9 @@ async function run() {
       ['repeatAloud', '#repeat-aloud-title', 'Repeat Aloud'],
       ['meetTheStory', '#speak-easy-title', 'Meet the Story'],
       ['whyWeSayIt', '#speak-easy-title', 'Why We Say It'],
-      ['quickMatchEngIta', '#quick-match-badge', 'Match Practice en→it'],
+      ['matchEngIta', '#match-badge', 'Match Practice en→it'],
       ['dialogoAscoltaRipeti', '#dialogo-badge', 'Dialogue: Listen & Repeat'],
-      ['speedRoundEngIta', '#speed-round-badge', 'Speed Match en→it'],
+      ['speedMatchEngIta', '#speed-match-badge', 'Speed Match en→it'],
       ['flashcardAEngIta', '#flashcard-badge', 'Flash Card en→it']
     ];
     for (const [moduleId, selector, expected] of checks) {

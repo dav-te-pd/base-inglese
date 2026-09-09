@@ -75,7 +75,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:speedMatchEngIta:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:dialogoAscoltaRipeti:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:dialogoRipetiATempo:' + userName, '1');
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
@@ -89,7 +89,7 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
+const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
 // voiceCoach (job 5: Voice Check) is now LAST in the order — needs every
 // other module completed first.
 const ALL_BEFORE_VC = stepsBefore('voiceCoach');
@@ -236,9 +236,9 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T9Sound', ALL_BEFORE_SR);
-    await page.evaluate(() => { window.APP_CONFIG.speedRound.countdownStepMs = 60; });
+    await page.evaluate(() => { window.APP_CONFIG.speedMatch.countdownStepMs = 60; });
     await page.evaluate(toneCapture);
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.waitForTimeout(400);
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });

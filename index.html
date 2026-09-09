@@ -241,8 +241,8 @@
       // "Avanti" — no final ripasso pass for this module.
       maxAttemptsPerPhrase: 3
     },
-    // ---- Speed Round quiz (speedRoundEngIta / speedRoundItaEng modules) ----
-    speedRound: {
+    // ---- Speed Round quiz (speedMatchEngIta / speedMatchItaEng modules) ----
+    speedMatch: {
       // Seconds on the countdown bar before a question times out
       // (timeout is treated the same as a wrong answer).
       timeLimitSeconds: 10,
@@ -261,17 +261,17 @@
       // judgment reads the same one) — none of the three is duplicated
       // here.
     },
-    // ---- Quick Match quiz (quickMatchEngIta / quickMatchItaEng modules) ----
-    // Same multiple-choice/retry/mastery mechanics as speedRound above
+    // ---- Quick Match quiz (matchEngIta / matchItaEng modules) ----
+    // Same multiple-choice/retry/mastery mechanics as speedMatch above
     // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
     // see the comment near those), just untimed: no timeLimitSeconds or
     // countdownSeconds here since there's no timer or countdown to
-    // configure. feedbackPauseMs is its own key (not reusing speedRound's)
+    // configure. feedbackPauseMs is its own key (not reusing speedMatch's)
     // so the two can be tuned independently later — same default value
     // today, kept separate on purpose. Retry-queue safety valve threshold
     // and the end-of-module message bucket are both shared — see
     // CONFIG.retryQueue.maxAttempts and CONFIG.percentageThresholds.
-    quickMatch: {
+    match: {
       feedbackPauseMs: 600
     },
     // ---- Dialogo modules: ONE parametrized component, three profiles ----
@@ -409,24 +409,24 @@
         { module: 'personalizzazione' },
         { module: 'meetTheStory', grade: 'D' },
         { module: 'repeatAloud', grade: 'A' },
-        { module: 'quickMatchEngIta', grade: 'A' },
-        { module: 'quickMatchItaEng', grade: 'A' },
+        { module: 'matchEngIta', grade: 'A' },
+        { module: 'matchItaEng', grade: 'A' },
         { module: 'flashcardAEngIta', grade: 'A' },
         { module: 'flashcardAItaEng', grade: 'A' },
         { module: 'repeatAloud', grade: 'B' },
-        { module: 'quickMatchEngIta', grade: 'B' },
-        { module: 'quickMatchItaEng', grade: 'B' },
+        { module: 'matchEngIta', grade: 'B' },
+        { module: 'matchItaEng', grade: 'B' },
         { module: 'flashcardAEngIta', grade: 'B' },
         { module: 'voicePractice', grade: 'B' },
         { module: 'whyWeSayIt', grade: 'D' },
-        { module: 'quickMatchEngIta', grade: 'C' },
-        { module: 'quickMatchItaEng', grade: 'C' },
+        { module: 'matchEngIta', grade: 'C' },
+        { module: 'matchItaEng', grade: 'C' },
         { module: 'voicePractice', grade: 'C' },
         { module: 'dialogoAscoltaRipeti', grade: 'D' },
         { module: 'dialogoRipetiATempo', grade: 'D' },
         { module: 'dialogoContinuo', grade: 'D' },
-        { module: 'speedRoundEngIta', grade: 'C' },
-        { module: 'speedRoundItaEng', grade: 'C' },
+        { module: 'speedMatchEngIta', grade: 'C' },
+        { module: 'speedMatchItaEng', grade: 'C' },
         { module: 'voiceCoach', grade: 'C' }
       ]
     },
@@ -504,10 +504,10 @@
     moduleOutcomeRules: {
       voiceCoach: 'moduleRules',
       voicePractice: 'moduleRules',
-      quickMatchEngIta: 'moduleRules',
-      quickMatchItaEng: 'moduleRules',
-      speedRoundEngIta: 'moduleRules',
-      speedRoundItaEng: 'moduleRules',
+      matchEngIta: 'moduleRules',
+      matchItaEng: 'moduleRules',
+      speedMatchEngIta: 'moduleRules',
+      speedMatchItaEng: 'moduleRules',
       flashcardAEngIta: 'selfScoreRules',
       flashcardAItaEng: 'selfScoreRules',
       // Meet the Story non compare qui: e' il primo contatto con la
@@ -554,10 +554,10 @@
       // have, now meaning specifically its evaluated half.
       voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
       voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
-      quickMatchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
-      quickMatchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
-      speedRoundEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
-      speedRoundItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
+      matchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
+      matchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
+      speedMatchEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
+      speedMatchItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
       flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
       flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
       dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
@@ -723,11 +723,11 @@
       'voiceCoach.micIssue.restartSuggestionAt': 'Dopo quante registrazioni vuote di fila viene proposto di ricominciare l\'esercizio.',
       'voiceCoach.micIssue.confirmedAt': 'Dopo quante registrazioni vuote di fila il problema viene dato per confermato, con il pulsante per tornare alla mappa.',
       'voicePractice.maxAttemptsPerPhrase': 'Quante volte in tutto si può registrare la stessa frase in Voice Practice ("Esercitati ancora" incluso il primo tentativo), prima che si prosegua senza ripasso finale.',
-      'speedRound.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
-      'speedRound.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
-      'speedRound.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',
-      'speedRound.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia 3-2-1.',
-      'quickMatch.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
+      'speedMatch.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
+      'speedMatch.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
+      'speedMatch.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',
+      'speedMatch.countdownStepMs': 'Millisecondi tra una cifra e l\'altra del conto alla rovescia 3-2-1.',
+      'match.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
       'dialogo.pausaBase': 'Millisecondi di base della barra a tempo di ogni battuta, prima di aggiungere il tempo per le sue parole.',
       'dialogo.pausaPerParola': 'Millisecondi aggiunti alla barra a tempo per ogni parola della battuta.',
       'dialogo.pausaMassima': 'Durata massima della barra a tempo per una battuta, in millisecondi, qualunque sia la sua lunghezza.',
@@ -2752,7 +2752,7 @@
      #qm-*-screen ids (own, since they're different DOM elements) but
      Speed Round's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
      .sr-reveal/.sr-summary CLASSES verbatim — see the markup comment on
-     view-quick-match. Only the Ita-Eng per-option mini listen button
+     view-match. Only the Ita-Eng per-option mini listen button
      needs a new layout rule. */
   #qm-start-screen,
   #qm-retry-intro-screen,
@@ -3751,18 +3751,18 @@
          English options its own compact icon-only "mini" listen button
          (always default rate) — the Italian prompt itself has no audio at
          all, since it's the user's own language. -->
-    <section id="view-quick-match" class="view">
+    <section id="view-match" class="view">
       <div class="card">
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge" id="quick-match-badge">Quick Match</span>
-              <span class="module-row-type" id="quick-match-type-badge"></span>
+              <span class="badge" id="match-badge">Quick Match</span>
+              <span class="module-row-type" id="match-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="quick-match-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="quick-match-watch-btn" hidden>Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="quick-match-help-btn" hidden>Help</button>
+              <button type="button" class="btn btn-secondary" id="match-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-watch-btn" hidden>Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-help-btn" hidden>Help</button>
             </div>
           </div>
 
@@ -3790,7 +3790,7 @@
           <!-- QUIZ SCREEN: .sr-counter/.sr-direction/.sr-prompt/.sr-options/
                .sr-reveal/.sr-summary below are Speed Round's own classes,
                reused as-is (CLAUDE.md rule 13) — same look, zero new CSS,
-               since nothing about their styling is actually Speed-Round-
+               since nothing about their styling is actually Speed-Match-
                specific. qm-prompt-audio only ever fills in for the en-it
                direction (see qmRenderQuestion). -->
           <div id="qm-quiz-screen" hidden>
@@ -3917,18 +3917,18 @@
          layout (see .header-2row near .top-row) keeps ← Mappa pinned
          left and Help pinned right either way — hiding Spiegazione just
          empties the middle column, nothing else moves. -->
-    <section id="view-speed-round" class="view">
+    <section id="view-speed-match" class="view">
       <div class="card">
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge" id="speed-round-badge">Speed Round</span>
-              <span class="module-row-type" id="speed-round-type-badge"></span>
+              <span class="badge" id="speed-match-badge">Speed Round</span>
+              <span class="module-row-type" id="speed-match-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="speed-round-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-watch-btn" hidden>Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-round-help-btn" hidden>Help</button>
+              <button type="button" class="btn btn-secondary" id="speed-match-back-map">← Mappa</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-watch-btn" hidden>Spiegazione</button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-help-btn" hidden>Help</button>
             </div>
           </div>
 
@@ -4595,9 +4595,9 @@
     repeatAloud: document.getElementById('view-repeat-aloud'),
     speakEasy: document.getElementById('view-speak-easy'),
     voiceCoach: document.getElementById('view-voice-coach'),
-    quickMatch: document.getElementById('view-quick-match'),
+    match: document.getElementById('view-match'),
     dialogo: document.getElementById('view-dialogo'),
-    speedRound: document.getElementById('view-speed-round'),
+    speedMatch: document.getElementById('view-speed-match'),
     flashcard: document.getElementById('view-flashcard'),
     pronunciation: document.getElementById('view-pronunciation'),
     error: document.getElementById('view-error')
@@ -4633,7 +4633,7 @@
     dgClearAllTimers();
     vcResetRecording();
     srClearTimer();
-    lockModuleHeader('speed-round', false);
+    lockModuleHeader('speed-match', false);
     if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
     fcClearNavTimeout();
     closeAttemptPopup();
@@ -5589,8 +5589,8 @@
         voiceCoach: { kind: 'voiceCoach', dataFile: 'data/it/a1-episodio1-inglese.json', voiceVariant: 'check', type: 'quiz' },
         // Match Practice: studio, not quiz (job: sei etichette) — no time
         // pressure, self-paced, same as Flash Card.
-        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
+        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
+        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'studio' },
         // All three "Dialogo Completo" modules (see CONFIG.dialogo.profiles)
         // share their own category (job: sei etichette) — distinct from
         // plain "studio" since a dialogue plays out with its own pacing.
@@ -5599,8 +5599,8 @@
         dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/it/a1-episodio1-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
         // Speed Match: quiz, not a separate "a tempo" category (job: sei
         // etichette) — the time pressure IS what makes it a quiz here.
-        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
+        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
+        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/it/a1-episodio1-inglese.json', type: 'quiz' },
         // kind is shared between directions on purpose: both read the same
         // level-based (not direction-based) istruzioni-moduli.json entry.
         // Il grado dice QUALI voci, la direzione da che verso mostrarle:
@@ -5688,13 +5688,13 @@
         whyWeSayIt: { kind: 'whyWeSayIt', dataFile: 'data/it/a1-episodio2-inglese.json', storyProfile: 'why', type: 'studio' },
         voicePractice: { kind: 'voicePractice', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'practice', type: 'studio' },
         voiceCoach: { kind: 'voiceCoach', dataFile: 'data/it/a1-episodio2-inglese.json', voiceVariant: 'check', type: 'quiz' },
-        quickMatchEngIta: { kind: 'quickMatchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
-        quickMatchItaEng: { kind: 'quickMatchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
+        matchEngIta: { kind: 'matchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
+        matchItaEng: { kind: 'matchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'studio' },
         dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
         dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'ripetiATempo', type: 'dialogo' },
         dialogoContinuo: { kind: 'dialogoContinuo', dataFile: 'data/it/a1-episodio2-inglese.json', dialogoProfile: 'continuo', type: 'dialogo' },
-        speedRoundEngIta: { kind: 'speedRoundEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
-        speedRoundItaEng: { kind: 'speedRoundItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
+        speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
+        speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: 'data/it/a1-episodio2-inglese.json', type: 'quiz' },
         flashcardAEngIta: { kind: 'flashcard', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'en-it', type: 'studio' },
         flashcardAItaEng: { kind: 'flashcard', dataFile: 'data/it/a1-episodio2-inglese.json', flashcardDirection: 'it-en', type: 'studio' }
       },
@@ -6603,9 +6603,9 @@
     else if (module.kind === 'repeatAloud') openRepeatAloud(module);
     else if (module.storyProfile) openSpeakEasy(module);
     else if (module.voiceVariant) openVoiceCoach(module);
-    else if (module.kind === 'quickMatchEngIta' || module.kind === 'quickMatchItaEng') openQuickMatch(module);
+    else if (module.kind === 'matchEngIta' || module.kind === 'matchItaEng') openMatch(module);
     else if (module.dialogoProfile) openDialogo(module);
-    else if (module.kind === 'speedRoundEngIta' || module.kind === 'speedRoundItaEng') openSpeedRound(module);
+    else if (module.kind === 'speedMatchEngIta' || module.kind === 'speedMatchItaEng') openSpeedMatch(module);
     else if (module.flashcardDirection) openFlashcard(module);
     // Il ramo finale che mancava. Senza, un modulo il cui kind non
     // corrisponde a niente diventava una riga cliccabile che NON FA NULLA:
@@ -8404,7 +8404,7 @@
      above — CLAUDE.md rule 13), minus everything timer-related: no
      time limit, no progress bar, no countdown, no Indietro (Speed
      Round doesn't have one either). Own mastery unitId prefix
-     ('quickmatch:') and own retry-queue/attempts state, so mastery is
+     ('match:') and own retry-queue/attempts state, so mastery is
      tracked separately per exercise type even for the same vocabulary
      item. No "Mostra traduzione" in either direction — the 4-option
      answer IS the translation here. Eng-Ita shows a full listen block
@@ -8415,7 +8415,7 @@
      .qm-option-row; the Italian prompt has no audio at all, since
      it's the user's own language.
      ============================================================ */
-  var QM_DIRECTION_BY_KIND = { quickMatchEngIta: 'en-it', quickMatchItaEng: 'it-en' };
+  var QM_DIRECTION_BY_KIND = { matchEngIta: 'en-it', matchItaEng: 'it-en' };
 
   var qmModule = null;
   var qmDirection = 'en-it'; // fixed for the whole module session
@@ -8425,7 +8425,7 @@
   var qmRetryAttempts = {}; // itemId -> times wrong/declared-non-attempt this session
   var qmAttemptCounts = {}; // itemId -> total attempts (right or wrong) this session, for the safety-valve popup
   var qmFirstTryCorrectCount = 0; // job 2A: items answered correctly on their very first attempt this session
-  var qmLastAvgPct = 0; // qmFinishModule's own pct, held for quick-match-complete-btn's saveModuleOutcome call (ModuleRules)
+  var qmLastAvgPct = 0; // qmFinishModule's own pct, held for match-complete-btn's saveModuleOutcome call (ModuleRules)
   var qmPassIndex = 0;
   var qmPassTotal = 0;
   var qmInRetryPass = false; // job: "Ripasso" badge, see qmRenderQuestion
@@ -8457,8 +8457,8 @@
     // there); Help never hides. No timer in Quick Match, so neither is
     // ever disabled either (unlike Speed Round's srStartTimer/
     // srDisableOptions lock).
-    document.getElementById('quick-match-watch-btn').hidden = name === 'summary';
-    document.getElementById('quick-match-help-btn').hidden = false;
+    document.getElementById('match-watch-btn').hidden = name === 'summary';
+    document.getElementById('match-help-btn').hidden = false;
   }
 
   // Same dual-purpose start screen as Speed Round: full howItWorks the
@@ -8488,7 +8488,7 @@
       direction: qmDirection,
       correct: correct,
       declaredNonAttempt: declaredNonAttempt,
-      unitPrefix: 'quickmatch',
+      unitPrefix: 'match',
       retryAttempts: qmRetryAttempts,
       attemptCounts: qmAttemptCounts,
       retryQueue: qmRetryQueue,
@@ -8599,7 +8599,7 @@
     // comment): qmFirstTryCorrectCount
     // only ever increments on an item's very first attempt, so this pct is
     // already frozen before the ripasso pass — same number feeds both the
-    // message tone here and the ModuleRules map badge (quick-match-complete-btn).
+    // message tone here and the ModuleRules map badge (match-complete-btn).
     var pct = qmVocab.length ? Math.round((qmFirstTryCorrectCount / qmVocab.length) * 100) : 0;
     qmLastAvgPct = pct;
     applyOutcomeSubtitle('qm-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
@@ -8619,23 +8619,23 @@
     qmNextQuestion();
   }
 
-  function openQuickMatch(module) {
+  function openMatch(module) {
     qmModule = module;
     qmDirection = QM_DIRECTION_BY_KIND[module.kind];
     qmVocab = [];
-    document.getElementById('quick-match-badge').innerHTML = moduleNameHtml(module.label);
-    document.getElementById('quick-match-type-badge').textContent = moduleTypeLabel(module);
+    document.getElementById('match-badge').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('match-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('qm-prompt').textContent = '';
     document.getElementById('qm-options').innerHTML = '';
     qmRenderStartScreen(module);
     qmShowScreen('start');
-    showView('quickMatch');
+    showView('match');
     loadEpisodeData(module).then(function (data) {
       if (qmModule !== module) return;
       qmVocab = episodeGradeRequired(data, module.grade, module);
     }).catch(function () {
       if (qmModule !== module) return;
-      showLoadError(function () { openQuickMatch(module); });
+      showLoadError(function () { openMatch(module); });
     });
   }
 
@@ -8647,7 +8647,7 @@
     qmStartQuiz();
   });
 
-  document.getElementById('quick-match-watch-btn').addEventListener('click', function () {
+  document.getElementById('match-watch-btn').addEventListener('click', function () {
     openHowItWorksOverlay(qmModule, { dismissPref: introDismissPref(qmModule.kind) });
   });
 
@@ -8670,7 +8670,7 @@
       sfxPlayCorrectSound();
       attemptNum = qmRecordResult(true);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: true };
-      setTimeout(qmGoNext, CONFIG.quickMatch.feedbackPauseMs);
+      setTimeout(qmGoNext, CONFIG.match.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
       sfxPlayWrongSound();
@@ -8717,11 +8717,11 @@
     openEpisodeMap();
   });
 
-  document.getElementById('quick-match-back-map').addEventListener('click', function () {
+  document.getElementById('match-back-map').addEventListener('click', function () {
     openEpisodeMap();
   });
 
-  document.getElementById('quick-match-help-btn').addEventListener('click', function () {
+  document.getElementById('match-help-btn').addEventListener('click', function () {
     openHelpFor(qmModule);
   });
 
@@ -9432,7 +9432,7 @@
      on the start/summary screens, Guarda alone hiding again on summary
      (CLAUDE.md rule 10); no Indietro.
      ============================================================ */
-  var SR_DIRECTION_BY_KIND = { speedRoundEngIta: 'en-it', speedRoundItaEng: 'it-en' };
+  var SR_DIRECTION_BY_KIND = { speedMatchEngIta: 'en-it', speedMatchItaEng: 'it-en' };
 
   var srModule = null;
   var srDirection = 'en-it'; // fixed for the whole module session
@@ -9454,7 +9454,7 @@
   // sfxAudioCtx is NOT Speed Round's own state despite sitting in this
   // block — it's the one shared AudioContext behind every sfxPlay*
   // function below, used by every module (censimento audit, job 1: the
-  // old "sr" prefix on the whole sound library read as Speed-Round-only
+  // old "sr" prefix on the whole sound library read as Speed-Match-only
   // and invited exactly this kind of misplacement).
   var sfxAudioCtx = null;
 
@@ -9576,7 +9576,7 @@
   }
 
   // Shared, duration-as-parameter timer-bar mechanics (CLAUDE.md rule 13)
-  // — Speed Round below passes its own fixed CONFIG.speedRound.
+  // — Speed Round below passes its own fixed CONFIG.speedMatch.
   // timeLimitSeconds; Dialogo Ripeti a Tempo/Continuo pass a different,
   // per-line duration instead (see dgLineDurationMs). Pure DOM/CSS —
   // timeout scheduling stays with each caller since Speed Round's is a
@@ -9598,14 +9598,14 @@
 
   function srStartTimer() {
     srClearTimer();
-    var seconds = CONFIG.speedRound.timeLimitSeconds;
+    var seconds = CONFIG.speedMatch.timeLimitSeconds;
     startTimerBar(document.getElementById('sr-timerbar-fill'), seconds * 1000);
     srTimeoutId = setTimeout(srHandleTimeout, seconds * 1000);
     // Spiegazione/Help don't tolerate an interruption while the time bar
     // is running (CLAUDE.md rule 13 reuse: same lockModuleHeader Voice
     // Coach uses for its recording lock) — released again in
     // srDisableOptions, the choke point every question-ending path shares.
-    lockModuleHeader('speed-round', true);
+    lockModuleHeader('speed-match', true);
   }
 
   function srFreezeTimer() {
@@ -9635,8 +9635,8 @@
     // that happens specifically while the per-question timer bar runs
     // (srStartTimer locks, srDisableOptions releases) — that's the "azioni
     // che non tollerano interruzioni" exception, not a visibility one.
-    document.getElementById('speed-round-watch-btn').hidden = name === 'summary';
-    document.getElementById('speed-round-help-btn').hidden = false;
+    document.getElementById('speed-match-watch-btn').hidden = name === 'summary';
+    document.getElementById('speed-match-help-btn').hidden = false;
   }
 
   // First time (not dismissed): full howItWorks explanation + checkbox +
@@ -9672,7 +9672,7 @@
       direction: srDirection,
       correct: correct,
       declaredNonAttempt: declaredNonAttempt,
-      unitPrefix: 'speedround',
+      unitPrefix: 'speedmatch',
       retryAttempts: srRetryAttempts,
       attemptCounts: srAttemptCounts,
       retryQueue: srRetryQueue,
@@ -9762,7 +9762,7 @@
     // header stays locked through that sub-second pause instead of
     // flashing on and off with nothing to actually read (adjustment,
     // 9th collaudo).
-    lockModuleHeader('speed-round', false);
+    lockModuleHeader('speed-match', false);
   }
 
   function srHandleTimeout() {
@@ -9806,35 +9806,35 @@
 
   function srRunCountdown() {
     srShowScreen('countdown');
-    var n = CONFIG.speedRound.countdownSeconds;
+    var n = CONFIG.speedMatch.countdownSeconds;
     var el = document.getElementById('sr-countdown-number');
     function tick() {
       if (n <= 0) { srCountdownTimeoutId = null; srStartQuiz(); return; }
       el.textContent = n;
       sfxPlayReadyCountdownSound(n === 1);
       n--;
-      srCountdownTimeoutId = setTimeout(tick, CONFIG.speedRound.countdownStepMs);
+      srCountdownTimeoutId = setTimeout(tick, CONFIG.speedMatch.countdownStepMs);
     }
     tick();
   }
 
-  function openSpeedRound(module) {
+  function openSpeedMatch(module) {
     srModule = module;
     srDirection = SR_DIRECTION_BY_KIND[module.kind];
     srVocab = [];
-    document.getElementById('speed-round-badge').innerHTML = moduleNameHtml(module.label);
-    document.getElementById('speed-round-type-badge').textContent = moduleTypeLabel(module);
+    document.getElementById('speed-match-badge').innerHTML = moduleNameHtml(module.label);
+    document.getElementById('speed-match-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('sr-prompt').textContent = '';
     document.getElementById('sr-options').innerHTML = '';
     srRenderStartScreen(module);
     srShowScreen('start');
-    showView('speedRound');
+    showView('speedMatch');
     loadEpisodeData(module).then(function (data) {
       if (srModule !== module) return;
       srVocab = episodeGradeRequired(data, module.grade, module);
     }).catch(function () {
       if (srModule !== module) return;
-      showLoadError(function () { openSpeedRound(module); });
+      showLoadError(function () { openSpeedMatch(module); });
     });
   }
 
@@ -9846,7 +9846,7 @@
     srRunCountdown();
   });
 
-  document.getElementById('speed-round-watch-btn').addEventListener('click', function () {
+  document.getElementById('speed-match-watch-btn').addEventListener('click', function () {
     openHowItWorksOverlay(srModule, { dismissPref: introDismissPref(srModule.kind) });
   });
 
@@ -9863,7 +9863,7 @@
       sfxPlayCorrectSound();
       attemptNum = srRecordResult(true);
       if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: true };
-      setTimeout(srGoNext, CONFIG.speedRound.feedbackPauseMs);
+      setTimeout(srGoNext, CONFIG.speedMatch.feedbackPauseMs);
     } else {
       btn.classList.add('is-wrong');
       sfxPlayWrongSound();
@@ -9901,9 +9901,9 @@
 
   // Timers are stopped centrally by showView()'s own stopAllModuleActivity()
   // (see near its definition) — not repeated here.
-  document.getElementById('speed-round-back-map').addEventListener('click', openEpisodeMap);
+  document.getElementById('speed-match-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('speed-round-help-btn').addEventListener('click', function () {
+  document.getElementById('speed-match-help-btn').addEventListener('click', function () {
     openHelpFor(srModule);
   });
 

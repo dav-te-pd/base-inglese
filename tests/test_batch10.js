@@ -70,7 +70,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
     // Repeat Aloud alone uses its own separate localStorage key
@@ -99,9 +99,9 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
     const thresholds = await page.evaluate(() => window.APP_CONFIG.percentageThresholds);
-    const oldLocation = await page.evaluate(() => window.APP_CONFIG.speedRound.percentageThresholds);
+    const oldLocation = await page.evaluate(() => window.APP_CONFIG.speedMatch.percentageThresholds);
     log('[Job1] CONFIG.percentageThresholds exists at the neutral top-level location', thresholds && thresholds.basso === 1 && thresholds.medio === 50 && thresholds.alto === 80);
-    log('[Job1] CONFIG.speedRound.percentageThresholds no longer exists (moved, not duplicated)', oldLocation === undefined);
+    log('[Job1] CONFIG.speedMatch.percentageThresholds no longer exists (moved, not duplicated)', oldLocation === undefined);
     await page.close();
   }
 

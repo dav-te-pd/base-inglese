@@ -9,8 +9,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('quickMatchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedRoundEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
@@ -76,7 +76,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -105,10 +105,10 @@ async function dismissAttemptPopupIfOpen(page) {
   return false;
 }
 
-const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchEngIta');
 const ALL_BEFORE_VP = stepsBefore('voicePractice');
 const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
-const ALL_BEFORE_SR = stepsBefore('speedRoundEngIta');
+const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
 
 async function run() {
   const browser = await launchBrowser();
@@ -122,7 +122,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job1', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
@@ -158,9 +158,9 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job2', []);
-    log('[Job2 config] moduleOutcomeRules has quickMatchEngIta/speedRoundEngIta = moduleRules', await page.evaluate(() =>
-      window.APP_CONFIG.moduleOutcomeRules.quickMatchEngIta === 'moduleRules' &&
-      window.APP_CONFIG.moduleOutcomeRules.speedRoundEngIta === 'moduleRules'));
+    log('[Job2 config] moduleOutcomeRules has matchEngIta/speedMatchEngIta = moduleRules', await page.evaluate(() =>
+      window.APP_CONFIG.moduleOutcomeRules.matchEngIta === 'moduleRules' &&
+      window.APP_CONFIG.moduleOutcomeRules.speedMatchEngIta === 'moduleRules'));
     log('[Job2 config] moduleOutcomeRules.flashcardAEngIta = selfScoreRules', await page.evaluate(() =>
       window.APP_CONFIG.moduleOutcomeRules.flashcardAEngIta === 'selfScoreRules'));
     log('[Job2 config] moduleOutcomeRules.whyWeSayIt = selfScoreRules', await page.evaluate(() =>
@@ -176,7 +176,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job2b', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab2 = await page.evaluate(() => fetch('data/it/a1-episodio1-inglese.json').then(r => r.json()).then(d => d.levels.A.items));
@@ -199,7 +199,7 @@ async function run() {
     await page.waitForTimeout(300);
     await page.click('#qm-complete-btn');
     await page.waitForTimeout(200);
-    const rowClass = await page.evaluate(() => document.querySelector('[data-module="quickMatchEngIta"]').className);
+    const rowClass = await page.evaluate(() => document.querySelector('[data-module="matchEngIta"]').className);
     log('[Job2b] Quick Match map row carries outcome-verde after all-correct run', rowClass.indexOf('outcome-verde') !== -1);
     log('[Job2b] No JS errors', errors.length === 0);
     await page.close();
@@ -255,7 +255,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job4', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     // Ogni risposta sbagliata: così ogni voce finisce nella coda di ripasso e
     // si attraversano entrambe le schermate di Ripasso (con maxAttempts = 3
     // sono esattamente due, poi tutto viene accettato d'ufficio). Prima il
@@ -303,7 +303,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job5', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     var startVisible4 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible4) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const sizes = await page.evaluate(() => {
@@ -331,8 +331,8 @@ async function run() {
     log('[Job6] Repeat Aloud header shows type badge "Studio · <grado>"', raType.indexOf('Studio') === 0);
     await page.click('#repeat-aloud-back-map');
     await page.waitForTimeout(150);
-    await openModule(page, 'quickMatchEngIta');
-    const qmType = await page.$eval('#quick-match-type-badge', el => el.textContent).catch(() => null);
+    await openModule(page, 'matchEngIta');
+    const qmType = await page.$eval('#match-type-badge', el => el.textContent).catch(() => null);
     log('[Job6] Quick Match header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
     log('[Job6] No JS errors', errors.length === 0);
     await page.close();
@@ -446,7 +446,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job11', ALL_BEFORE_SR);
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     // Tutto sbagliato al primo giro, tutto giusto al ripasso: il punteggio
     // salvato deve restare quello del primo giro (rosso), non essere gonfiato
     // dal ripasso. Prima il test cliccava alla cieca la prima opzione in
@@ -458,10 +458,10 @@ async function run() {
     });
     await page.locator('#sr-complete-btn').click();
     await page.waitForFunction(() => {
-      var row = document.querySelector('[data-module="speedRoundEngIta"]');
+      var row = document.querySelector('[data-module="speedMatchEngIta"]');
       return !!row && /outcome-/.test(row.className);
     }, null, { timeout: 20000 });
-    const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedRoundEngIta"]').className);
+    const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedMatchEngIta"]').className);
     log('[Job11] Speed Round: first-pass-all-wrong-then-fixed-in-retry still saves rosso (not inflated by the retry pass)', rowClass11.indexOf('outcome-rosso') !== -1);
     log('[Job11] No JS errors', errors.length === 0);
     await page.close();

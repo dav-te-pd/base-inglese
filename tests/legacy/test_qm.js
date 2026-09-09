@@ -69,23 +69,23 @@ async function run() {
     // Order check via the rendered map list (DOM order = array order).
     const rowIds = await page.$$eval('#module-list [data-module]', els => els.map(e => e.getAttribute('data-module')));
     const vcIdx = rowIds.indexOf('voiceCoach');
-    const qmEIdx = rowIds.indexOf('quickMatchEngIta');
-    const qmIIdx = rowIds.indexOf('quickMatchItaEng');
-    const srIdx = rowIds.indexOf('speedRoundEngIta');
-    log('order voiceCoach < quickMatchEngIta < quickMatchItaEng < speedRoundEngIta @' + viewport.w,
+    const qmEIdx = rowIds.indexOf('matchEngIta');
+    const qmIIdx = rowIds.indexOf('matchItaEng');
+    const srIdx = rowIds.indexOf('speedMatchEngIta');
+    log('order voiceCoach < matchEngIta < matchItaEng < speedMatchEngIta @' + viewport.w,
       vcIdx > -1 && vcIdx < qmEIdx && qmEIdx < qmIIdx && qmIIdx < srIdx);
 
-    // quickMatchEngIta should now be the unlocked "current" module.
-    const qmRowClass = await page.getAttribute('[data-module="quickMatchEngIta"]', 'class');
-    log('quickMatchEngIta is unlocked (current) after completing prior 3 modules @' + viewport.w,
+    // matchEngIta should now be the unlocked "current" module.
+    const qmRowClass = await page.getAttribute('[data-module="matchEngIta"]', 'class');
+    log('matchEngIta is unlocked (current) after completing prior 3 modules @' + viewport.w,
       qmRowClass && qmRowClass.includes('current'));
 
     // --- Open Quick Match Eng-Ita via real UI click ---
-    await openModuleFromMap(page, 'quickMatchEngIta');
+    await openModuleFromMap(page, 'matchEngIta');
     const startVisible = await page.isVisible('#qm-start-screen');
     log('Eng-Ita start screen visible @' + viewport.w, startVisible);
 
-    const header2row = await page.$('#view-quick-match .header-2row');
+    const header2row = await page.$('#view-match .header-2row');
     log('Eng-Ita header-2row present @' + viewport.w, !!header2row);
 
     await page.waitForFunction(() => document.getElementById('qm-start-btn') && !document.getElementById('qm-start-btn').disabled);
@@ -101,7 +101,7 @@ async function run() {
     const rateButtons = await page.$$('#qm-prompt-audio .rate-btn');
     log('Eng-Ita rate buttons (100/75/50%) present @' + viewport.w, rateButtons.length === 3);
 
-    const translationBtn = await page.$('#view-quick-match [data-toggle-translation]');
+    const translationBtn = await page.$('#view-match [data-toggle-translation]');
     log('Eng-Ita has NO "Mostra traduzione" button @' + viewport.w, !translationBtn);
 
     // Click the listen icon to make sure toggleSpeak wiring doesn't throw.
@@ -167,7 +167,7 @@ async function run() {
     }
     const finalSummaryVisible = await page.isVisible('#qm-summary-screen');
     log('Eng-Ita reaches summary screen (retry-queue + safety valve terminate correctly) @' + viewport.w, finalSummaryVisible);
-    const watchBtnOnSummary = await page.isVisible('#quick-match-watch-btn');
+    const watchBtnOnSummary = await page.isVisible('#match-watch-btn');
     log('Eng-Ita Spiegazione hidden on summary (rule 10) @' + viewport.w, !watchBtnOnSummary);
 
     // Explicit completion required.
@@ -177,24 +177,24 @@ async function run() {
     const progressAfterRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:modules:episode1:' + u), 'Tester' + viewport.w);
     const progressAfter = progressAfterRaw ? JSON.parse(progressAfterRaw) : { completed: [] };
     log('Eng-Ita module marked completed after explicit "Ho finito" click @' + viewport.w,
-      progressAfter.completed.includes('quickMatchEngIta'));
+      progressAfter.completed.includes('matchEngIta'));
 
-    // Mastery separation: quickmatch: keys exist, no speedround: keys yet.
+    // Mastery separation: match: keys exist, no speedmatch: keys yet.
     const masteryRaw = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'Tester' + viewport.w);
     const masteryKeys = masteryRaw ? Object.keys(JSON.parse(masteryRaw)) : [];
-    const hasQuickmatchKeys = masteryKeys.some(k => k.startsWith('quickmatch:'));
-    const hasSpeedroundKeys = masteryKeys.some(k => k.startsWith('speedround:'));
-    log('Mastery has quickmatch: keys and no speedround: keys after only playing Quick Match @' + viewport.w,
-      hasQuickmatchKeys && !hasSpeedroundKeys);
+    const hasMatchKeys = masteryKeys.some(k => k.startsWith('match:'));
+    const hasSpeedmatchKeys = masteryKeys.some(k => k.startsWith('speedmatch:'));
+    log('Mastery has match: keys and no speedmatch: keys after only playing Quick Match @' + viewport.w,
+      hasMatchKeys && !hasSpeedmatchKeys);
 
-    // --- Quick Match Ita-Eng: back at the map, now quickMatchItaEng unlocked ---
-    const qmItaRowClass = await page.getAttribute('[data-module="quickMatchItaEng"]', 'class');
-    log('quickMatchItaEng unlocked after completing quickMatchEngIta @' + viewport.w,
+    // --- Quick Match Ita-Eng: back at the map, now matchItaEng unlocked ---
+    const qmItaRowClass = await page.getAttribute('[data-module="matchItaEng"]', 'class');
+    log('matchItaEng unlocked after completing matchEngIta @' + viewport.w,
       qmItaRowClass && qmItaRowClass.includes('current'));
     const activeViewId = await page.evaluate(() => document.querySelector('.view.is-active') && document.querySelector('.view.is-active').id);
     const mapMainHidden = await page.evaluate(() => document.getElementById('map-main-screen') && document.getElementById('map-main-screen').hidden);
     console.log('DEBUG before openModuleFromMap: activeView=' + activeViewId + ' mapMainHidden=' + mapMainHidden);
-    await openModuleFromMap(page, 'quickMatchItaEng');
+    await openModuleFromMap(page, 'matchItaEng');
     await page.waitForFunction(() => document.getElementById('qm-start-btn') && !document.getElementById('qm-start-btn').disabled);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(200);
@@ -218,22 +218,22 @@ async function run() {
     const revealStillHidden = await page.isVisible('#qm-reveal');
     log('Ita-Eng reveal still hidden after mini-listen click @' + viewport.w, !revealStillHidden);
 
-    const translationBtnIt = await page.$('#view-quick-match [data-toggle-translation]');
+    const translationBtnIt = await page.$('#view-match [data-toggle-translation]');
     log('Ita-Eng has NO "Mostra traduzione" button @' + viewport.w, !translationBtnIt);
 
-    // "Non lo so" -> declared non-attempt -> mastery straight to rosso, prefix quickmatch:.
+    // "Non lo so" -> declared non-attempt -> mastery straight to rosso, prefix match:.
     await page.click('#qm-dontknow-btn');
     await page.waitForTimeout(150);
     const masteryRaw2 = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:episode1:' + u), 'Tester' + viewport.w);
     const mastery2 = JSON.parse(masteryRaw2);
-    const itEnEntry = Object.keys(mastery2).find(k => k.startsWith('quickmatch:') && k.endsWith(':it-en') && mastery2[k].level === 'rosso');
-    log('Ita-Eng "Non lo so" writes a quickmatch:*:it-en rosso mastery entry @' + viewport.w, !!itEnEntry);
+    const itEnEntry = Object.keys(mastery2).find(k => k.startsWith('match:') && k.endsWith(':it-en') && mastery2[k].level === 'rosso');
+    log('Ita-Eng "Non lo so" writes a match:*:it-en rosso mastery entry @' + viewport.w, !!itEnEntry);
 
     await page.click('#qm-advance-btn');
     await page.waitForTimeout(150);
 
     // Back to map.
-    await page.click('#quick-match-back-map');
+    await page.click('#match-back-map');
     await page.waitForTimeout(150);
     const mapVisible = await page.isVisible('#map-main-screen');
     log('Quick Match back-to-map button works @' + viewport.w, mapVisible);
@@ -250,8 +250,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'RegressionSR', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng'] });
-    await openModuleFromMap(page, 'speedRoundEngIta');
+    await bootAsUser(page, 'RegressionSR', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng'] });
+    await openModuleFromMap(page, 'speedMatchEngIta');
     const srStartVisible = await page.isVisible('#sr-start-screen');
     log('[Regression] Speed Round start screen visible', srStartVisible);
     await page.waitForFunction(() => document.getElementById('sr-ready-btn') && !document.getElementById('sr-ready-btn').disabled);
@@ -277,7 +277,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'RegressionFC', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng'] });
+    await bootAsUser(page, 'RegressionFC', { completedModules: ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng'] });
     await openModuleFromMap(page, 'flashcardAEngIta');
     await page.waitForTimeout(300);
     const fcDirectionText = await page.evaluate(() => document.getElementById('fc-direction').textContent);

@@ -31,12 +31,12 @@ const UTENTE = 'ReportMastery';
 // esercizi diversi e due direzioni sulla stessa voce (a-hello), più le due
 // posizioni di una battuta di Voice Practice.
 const COLORI = {
-  'quickmatch:a-hello:it-en': { level: 'rosso', streak: 0 },
+  'match:a-hello:it-en': { level: 'rosso', streak: 0 },
   'voicepractice:d-1:1': { level: 'verde', streak: 1 },
-  'quickmatch:a-hello:en-it': { level: 'verde', streak: 0 },
+  'match:a-hello:en-it': { level: 'verde', streak: 0 },
   'flashcard-A:a-hello:en-it': { level: 'giallo', streak: 1 },
   'voicepractice:d-1:0': { level: 'rosso', streak: 0 },
-  'speedround:c-1:en-it': { level: 'giallo', streak: 0 }
+  'speedmatch:c-1:en-it': { level: 'giallo', streak: 0 }
 };
 
 async function apriPannello(page, colori) {

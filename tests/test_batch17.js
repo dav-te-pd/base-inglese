@@ -64,7 +64,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -77,7 +77,7 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-const ALL_BEFORE_QM = stepsBefore('quickMatchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchEngIta');
 const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
 const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
@@ -266,7 +266,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T17Job1e', ALL_BEFORE_QM);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const promptListenBtn = await page.$('#qm-prompt-audio [data-say]');
@@ -297,8 +297,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1ebis', ALL_BEFORE_QM.concat(['quickMatchEngIta']));
-    await openModule(page, 'quickMatchItaEng');
+    await bootAsUser(page, 'T17Job1ebis', ALL_BEFORE_QM.concat(['matchEngIta']));
+    await openModule(page, 'matchItaEng');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const miniListenBtn = await page.$('#qm-options [data-qm-listen-index]');

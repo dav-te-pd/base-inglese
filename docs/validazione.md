@@ -71,24 +71,24 @@ episodio+utente (elencate al § 2.3).
 | 1 | `personalizzazione` | Your Story | Inizio | — | 8 slot | `completionRules` | — | no |
 | 2 | `meetTheStory` | Meet the Story | Studio | D | 9 | `completionRules` | — | no |
 | 3 | `repeatAloud` | Repeat Aloud | Studio | A | 16 | `completionRules` | — | no |
-| 4 | `quickMatchEngIta` | Match Practice en→it | Studio | A | 16 | `moduleRules` | primo (fisso) | sì |
-| 5 | `quickMatchItaEng` | Match Practice it→en | Studio | A | 16 | `moduleRules` | primo (fisso) | sì |
+| 4 | `matchEngIta` | Match Practice en→it | Studio | A | 16 | `moduleRules` | primo (fisso) | sì |
+| 5 | `matchItaEng` | Match Practice it→en | Studio | A | 16 | `moduleRules` | primo (fisso) | sì |
 | 6 | `flashcardAEngIta` | Flash Card en→it | Studio | A | 16 | `selfScoreRules` | primo (fisso) | sì |
 | 7 | `flashcardAItaEng` | Flash Card it→en | Studio | A | 16 | `selfScoreRules` | primo (fisso) | sì |
 | 8 | `repeatAloud-2` | Repeat Aloud | Studio | B | 7 | `completionRules` | — | no |
-| 9 | `quickMatchEngIta-2` | Match Practice en→it | Studio | B | 7 | ⚠️ `completionRules` | primo (fisso) | sì |
-| 10 | `quickMatchItaEng-2` | Match Practice it→en | Studio | B | 7 | ⚠️ `completionRules` | primo (fisso) | sì |
+| 9 | `matchEngIta-2` | Match Practice en→it | Studio | B | 7 | ⚠️ `completionRules` | primo (fisso) | sì |
+| 10 | `matchItaEng-2` | Match Practice it→en | Studio | B | 7 | ⚠️ `completionRules` | primo (fisso) | sì |
 | 11 | `flashcardAEngIta-2` | Flash Card en→it | Studio | B | 7 | ⚠️ `completionRules` | primo (fisso) | sì |
 | 12 | `voicePractice` | Voice Practice | Studio | B | 7 | `moduleRules` | `lastAttempt` | no |
 | 13 | `whyWeSayIt` | Why We Say It | Studio | D | 9 righe / 8 skill | `selfScoreRules` | — | no |
-| 14 | `quickMatchEngIta-3` | Match Practice en→it | Studio | C | 10 | ⚠️ `completionRules` | primo (fisso) | sì |
-| 15 | `quickMatchItaEng-3` | Match Practice it→en | Studio | C | 10 | ⚠️ `completionRules` | primo (fisso) | sì |
+| 14 | `matchEngIta-3` | Match Practice en→it | Studio | C | 10 | ⚠️ `completionRules` | primo (fisso) | sì |
+| 15 | `matchItaEng-3` | Match Practice it→en | Studio | C | 10 | ⚠️ `completionRules` | primo (fisso) | sì |
 | 16 | `voicePractice-2` | Voice Practice | Studio | C | 10 | ⚠️ `completionRules` | ⚠️ primo | no |
 | 17 | `dialogoAscoltaRipeti` | Dialogue: Listen & Repeat | Studia il dialogo | D | 9 | `selfAssessment` | — | no |
 | 18 | `dialogoRipetiATempo` | Dialogue: Repeat in Time | Studia il dialogo | D | 9 | `selfAssessment` | — | no |
 | 19 | `dialogoContinuo` | Dialogue: Real Dialogue | Studia il dialogo | D | 9 | `selfAssessment` | — | no |
-| 20 | `speedRoundEngIta` | Speed Match en→it | Quiz | C | 10 | `moduleRules` | primo (fisso) | sì |
-| 21 | `speedRoundItaEng` | Speed Match it→en | Quiz | C | 10 | `moduleRules` | primo (fisso) | sì |
+| 20 | `speedMatchEngIta` | Speed Match en→it | Quiz | C | 10 | `moduleRules` | primo (fisso) | sì |
+| 21 | `speedMatchItaEng` | Speed Match it→en | Quiz | C | 10 | `moduleRules` | primo (fisso) | sì |
 | 22 | `voiceCoach` | Voice Check | Quiz | C | 10 | `moduleRules` | `firstAttempt` | sì |
 
 Le ⚠️ sono **sei passi su ventidue che perdono la propria regola di esito** perché
@@ -147,8 +147,8 @@ davvero `attemptRule`.
 - **Niente valutazione, niente ripasso.** Completamento manuale a due passi:
   `#repeat-aloud-complete` (Traguardo + Schermata Finale) → `#repeat-aloud-complete-btn`.
 
-#### Match Practice en→it / it→en — `quickMatchEngIta`, `quickMatchItaEng`
-- **Componente:** `openQuickMatch()` (8912). Direzione da
+#### Match Practice en→it / it→en — `matchEngIta`, `matchItaEng`
+- **Componente:** `openMatch()` (8912). Direzione da
   `QM_DIRECTION_BY_KIND[module.kind]` (8708).
 - **Domande:** una per ogni voce del grado, in ordine casuale (`shuffle`).
   Quattro opzioni: la giusta più **tre distrattori pescati a caso** dallo stesso
@@ -158,7 +158,7 @@ davvero `attemptRule`.
   `CONFIG.retryQueue.maxAttempts` (3), a quel punto è forzata a rosso.
 - **Punteggio:** `qmFirstTryCorrectCount / qmVocab.length` (8893) — solo primi
   tentativi, congelato prima del ripasso.
-- **Mastery:** prefisso `quickmatch:<idVoce>:<direzione>`.
+- **Mastery:** prefisso `match:<idVoce>:<direzione>`.
 - **Audio:** en→it un Blocco Ascolto sotto la domanda; it→en un mini-pulsante per
   ciascuna delle quattro opzioni inglesi.
 
@@ -215,13 +215,13 @@ davvero `attemptRule`.
   `CONFIG.moduleOutcomeRules`** (§ 4.3). La scatola delle due risposte si sblocca
   solo quando ogni battuta è stata sentita (`dgUpdateChoiceBoxLock`, 9184).
 
-#### Speed Match en→it / it→en — `speedRoundEngIta`, `speedRoundItaEng`
-- **Componente:** `openSpeedRound()` (10101). Stessa logica a quattro opzioni di
+#### Speed Match en→it / it→en — `speedMatchEngIta`, `speedMatchItaEng`
+- **Componente:** `openSpeedMatch()` (10101). Stessa logica a quattro opzioni di
   Match Practice (funzioni condivise), più il tempo.
-- **Tempo:** `CONFIG.speedRound.timeLimitSeconds` (10 s) per domanda; lo scadere
+- **Tempo:** `CONFIG.speedMatch.timeLimitSeconds` (10 s) per domanda; lo scadere
   vale come risposta sbagliata (`srHandleTimeout`, 10048). Prima del quiz, un 3-2-1
   (`srRunCountdown`, 10087).
-- **Mastery:** prefisso `speedround:` — **coda di ripasso e mastery separate da
+- **Mastery:** prefisso `speedmatch:` — **coda di ripasso e mastery separate da
   quelle di Match Practice**, anche sulle stesse voci.
 - **Punteggio:** identico a Match Practice (primo tentativo).
 
@@ -301,8 +301,8 @@ toccato.
 | Prefisso / nome | Modulo che nomina | Cosa è oggi | Dove compare |
 |---|---|---|---|
 | `se*`, `speakEasy`, `speak-easy-*` | **Speak Easy** | Il modulo non esiste più: il componente serve **Meet the Story** e **Why We Say It** | ~28 identificativi JS (`openSpeakEasy`, `renderSpeakEasy`, `seSkillIds`, `seRefreshExplanationStates`, `seIsUnlocked`, `seDeclarationsKey`, `seExplanationStatsKey`, `addSeExplanationStat`, …), la vista `view-speak-easy`, ~20 id HTML, **e la chiave dati `speakEasyCompleteMessages` in `messaggi-feedback.json`** |
-| `quickMatch*`, `qm*` | **Quick Match** | Si chiama **Match Practice** | `CONFIG.quickMatch`, gli id dei moduli `quickMatchEngIta`/`quickMatchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-quick-match`, gli id HTML `qm-*`, `quick-match-*` |
-| `speedRound*`, `sr*` | **Speed Round** | Si chiama **Speed Match** | `CONFIG.speedRound`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-round`, gli id HTML `sr-*` |
+| `match*`, `qm*` | **Quick Match** | Si chiama **Match Practice** | `CONFIG.match`, gli id dei moduli `matchEngIta`/`matchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-match`, gli id HTML `qm-*`, `match-*` |
+| `speedMatch*`, `sr*` | **Speed Round** | Si chiama **Speed Match** | `CONFIG.speedMatch`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-match`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
 | `flashcard` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
 
@@ -361,7 +361,7 @@ prefisso di modulo:
 ```js
 // riga 8664 — Match Practice e Speed Match
 var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
-//   unitPrefix vale 'quickmatch' (8781) o 'speedround' (9955)
+//   unitPrefix vale 'match' (8781) o 'speedmatch' (9955)
 // riga 10273 — Flash Card
 var unitId = 'flashcard-' + fcGrade + ':' + fcCurrentItem.id + ':' + fcDirection;
 // riga 8445 — Voice Practice
@@ -369,8 +369,8 @@ var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;
 ```
 
 La stessa parola dell'episodio 1 può quindi avere fino a **sette** voci distinte:
-`quickmatch:<id>:en-it`, `quickmatch:<id>:it-en`, `speedround:<id>:en-it`,
-`speedround:<id>:it-en`, `flashcard-A:<id>:en-it`, `flashcard-A:<id>:it-en`,
+`match:<id>:en-it`, `match:<id>:it-en`, `speedmatch:<id>:en-it`,
+`speedmatch:<id>:it-en`, `flashcard-A:<id>:en-it`, `flashcard-A:<id>:it-en`,
 `flashcard-B:<id>:…`. Voice Practice non usa nemmeno l'id della voce: indicizza per
 **posizione della parola dentro la battuta** (`voicepractice:<idBattuta>:<indice>`),
 quindi non è confrontabile con le altre. Esiste infine un ottavo spazio di nomi,
@@ -500,7 +500,7 @@ if (CONFIG.moduleOutcomeRules[vcModule.id] === 'moduleRules') { ... }
 CONFIG.attemptRule[vcModule.id] === 'lastAttempt'
 ```
 
-Dalla seconda apparizione in poi, `moduleStepId()` (6270) produce `quickMatchEngIta-2`,
+Dalla seconda apparizione in poi, `moduleStepId()` (6270) produce `matchEngIta-2`,
 `flashcardAEngIta-2`, `voicePractice-2` … e in `moduleOutcomeRules` quelle chiavi non
 ci sono. La condizione è falsa, `saveModuleOutcome` **non viene chiamato**, il modulo
 resta sul badge "Completato" grigio.
@@ -509,11 +509,11 @@ resta sul badge "Completato" grigio.
 
 | Passo | Id | Regola dichiarata per il modulo | Regola applicata |
 |---|---|---|---|
-| 9 | `quickMatchEngIta-2` | `moduleRules` | `completionRules` |
-| 10 | `quickMatchItaEng-2` | `moduleRules` | `completionRules` |
+| 9 | `matchEngIta-2` | `moduleRules` | `completionRules` |
+| 10 | `matchItaEng-2` | `moduleRules` | `completionRules` |
 | 11 | `flashcardAEngIta-2` | `selfScoreRules` | `completionRules` |
-| 14 | `quickMatchEngIta-3` | `moduleRules` | `completionRules` |
-| 15 | `quickMatchItaEng-3` | `moduleRules` | `completionRules` |
+| 14 | `matchEngIta-3` | `moduleRules` | `completionRules` |
+| 15 | `matchItaEng-3` | `moduleRules` | `completionRules` |
 | 16 | `voicePractice-2` | `moduleRules` + `lastAttempt` | `completionRules` + **primo tentativo** |
 
 Il passo 16 è colpito due volte: oltre a non colorare la mappa, `attemptRule` cade su
@@ -532,11 +532,11 @@ risposte nei due Match Practice en→it (sbagliate al primo giro, giuste al ripa
 legge i due badge dalla mappa:
 
 ```
-passo 4  quickMatchEngIta     badge: "Da riprovare"   classi esito: [outcome-rosso]
-passo 9  quickMatchEngIta-2   badge: "Completato"     classi esito: []
+passo 4  matchEngIta     badge: "Da riprovare"   classi esito: [outcome-rosso]
+passo 9  matchEngIta-2   badge: "Completato"     classi esito: []
 
 baseinglese:moduleOutcome:episode1:ProvaEsitoPassi
-{"quickMatchEngIta":{"level":"rosso","pct":0},"quickMatchItaEng":{"level":"rosso","pct":0},
+{"matchEngIta":{"level":"rosso","pct":0},"matchItaEng":{"level":"rosso","pct":0},
  "flashcardAEngIta":{"level":"verde","pct":100},"flashcardAItaEng":{"level":"verde","pct":100}}
 ```
 
@@ -592,7 +592,7 @@ schema di chiamata.
 
 | Voce | Stato |
 |---|---|
-| ~~`CONFIG.speedRound.pointsPerCorrect: 50`~~ | **Tolto** (decisione D4, § 6). Non era mai letta, e una descrizione in `configFieldDescriptions` la faceva comparire nel Pannello Admin come manopola che non muove niente. Il punteggio a punti non esiste più: `srFinishModule` (10059) dice esplicitamente che punteggio e percentuale sono stati tolti. |
+| ~~`CONFIG.speedMatch.pointsPerCorrect: 50`~~ | **Tolto** (decisione D4, § 6). Non era mai letta, e una descrizione in `configFieldDescriptions` la faceva comparire nel Pannello Admin come manopola che non muove niente. Il punteggio a punti non esiste più: `srFinishModule` (10059) dice esplicitamente che punteggio e percentuale sono stati tolti. |
 | `CONFIG.places.destinations` | **Mai referenziata.** Nessun file episodio la nomina in `personalizationTablesUsed`; lo slot `destinazione` è stato tolto dall'episodio 1. Resta disponibile per un episodio futuro — ma oggi è configurazione senza lettore. |
 | `messaggi-feedback.json → speedRoundMessages` | **Mai letta.** Nessun `data.speedRoundMessages` da nessuna parte in `index.html`. (L'unica occorrenza era nella copia di sicurezza, tolta il 2026-09-06 insieme all'artifact: ora la chiave sta solo nel file di dati, e non la legge nessuno.) |
 | `module.typeLabel` | **Mai impostata.** `moduleTypeLabel` (7218) apre con `module.typeLabel || ...`: nessun oggetto modulo porta quel campo. Ramo morto, residuo di quando la categoria di Your Story era sovrascritta a mano. |
@@ -622,8 +622,8 @@ schema di chiamata.
 |---|---|
 | Nome del grado | `CONFIG.gradeNames` (`A: 'Parole'`, riga 377) **e** `levels.A.label` nel file episodio. Il codice legge solo il primo; il secondo non è letto da nessuno. |
 | Durata dello scorrimento della carta | `FC_SLIDE_MS = 260` in JS **e** la transizione di `.fc-card` in CSS, allineate a mano. |
-| `feedbackPauseMs: 600` | `CONFIG.speedRound` **e** `CONFIG.quickMatch`, stesso valore, tenuti separati di proposito. |
-| `countdownStepMs: 800` | `CONFIG.speedRound` **e** `CONFIG.dialogo`, idem. |
+| `feedbackPauseMs: 600` | `CONFIG.speedMatch` **e** `CONFIG.match`, stesso valore, tenuti separati di proposito. |
+| `countdownStepMs: 800` | `CONFIG.speedMatch` **e** `CONFIG.dialogo`, idem. |
 | Le tre soglie percentuali | `CONFIG.percentageThresholds` (1/50/80) **e** `CONFIG.voiceCoach.starThresholds` (1/50/80): stessi numeri, due scale, nessun legame nel codice. Cambiarne una sola sfalserebbe stelle e colore del modulo senza che niente lo segnali. |
 | Il testo introduttivo di ogni modulo | `howItWorks` in `istruzioni-moduli.json` è mostrato sia a schermo intero sia nel popup — un solo dato, due percorsi (`renderIntroContent` / `openHowItWorksOverlay`); non è una duplicazione, ma i due percorsi vanno tenuti allineati a mano. |
 | Lo stile del sottotitolo di modulo | ripetuto inline in ogni vista di modulo nell'HTML (già segnalato in una revisione precedente, ancora aperto). |
@@ -674,7 +674,7 @@ per sbaglio mentre si sistema la tabella.
 | | Cosa comporta | Costo | Rischio |
 |---|---|---|---|
 | **A — indicizzare per `moduleId`** | Tutte le apparizioni di uno stesso modulo condividono la regola, per costruzione: non è più possibile darne una diversa alla seconda. | Cinque righe (i quattro pulsanti di completamento più le due letture di `attemptRule`); la configurazione non cambia di una virgola. | Nessuno tecnico. Si perde un grado di libertà che oggi nessuno usa. |
-| **B — ricaduta `[id]` poi `[moduleId]`** | Default identico ad A, ma resta possibile dichiarare un'eccezione per un singolo passo scrivendo `'quickMatchEngIta-2': '…'`. | Le stesse cinque righe più una funzione condivisa che fa la ricaduta — altrimenti la si riscrive cinque volte. | La chiave del passo è **generata** (`-2`, `-3`) e si sposta quando si riordina: un'eccezione scritta a mano si stacca in silenzio dal passo che voleva descrivere. |
+| **B — ricaduta `[id]` poi `[moduleId]`** | Default identico ad A, ma resta possibile dichiarare un'eccezione per un singolo passo scrivendo `'matchEngIta-2': '…'`. | Le stesse cinque righe più una funzione condivisa che fa la ricaduta — altrimenti la si riscrive cinque volte. | La chiave del passo è **generata** (`-2`, `-3`) e si sposta quando si riordina: un'eccezione scritta a mano si stacca in silenzio dal passo che voleva descrivere. |
 | **C — la regola nella coppia dell'ordine** | `{ module, grade, rule }`: `docs/it/struttura-corso.md` diventa la fonte unica anche per l'esito, e ordine + grado + regola si leggono in una riga sola. | 22 righe da riscrivere, `moduleOutcomeRules` da smontare, la vista di riordino del Pannello Admin da estendere (oggi mostra modulo e grado), e un default da definire per le coppie che non la dichiarano. | Se la vecchia tabella resta "per compatibilità", nasce subito una seconda fonte di verità. |
 
 ### D2 — Il passo 16 (Voice Practice sul grado C) deve usare `lastAttempt`?
@@ -734,7 +734,7 @@ giallo; il quarto a verde) e **due** per il primo scalino. Alzare il numero non 
 risposta: rallenterebbe anche le risposte verificate per compensare una sola fonte
 inaffidabile. **Il problema non è quanto in fretta si sale, è chi può far salire.**
 
-### D4 — `CONFIG.speedRound.pointsPerCorrect`
+### D4 — `CONFIG.speedMatch.pointsPerCorrect`
 
 **Tolto.** Il punteggio a punti non esiste più nel codice. Una manopola visibile nel
 Pannello Admin che non muove niente è peggio di una assente: chi la gira crede di aver
@@ -743,7 +743,7 @@ cambiato qualcosa. Rimossa la chiave e la sua riga in `configFieldDescriptions`.
 ### D6 — I nomi obsoleti del § 2.4
 
 **Si rinominano tutti insieme, ma non ora e mai senza migrazione.** Toccano id salvati
-in `localStorage` (`quickMatchEngIta`, `speedRoundEngIta`, `voiceCoach` sono chiavi
+in `localStorage` (`matchEngIta`, `speedMatchEngIta`, `voiceCoach` sono chiavi
 dentro `baseinglese:modules:*` e `baseinglese:moduleOutcome:*`): una rinomina non è
 cosmetica, azzererebbe i progressi di chi sta già usando l'app.
 

@@ -50,7 +50,7 @@ function tabellaSotto(testo, titolo) {
   return out.slice(1); // via l'intestazione
 }
 
-// "`quickMatchEngIta` — Match Practice `en→it`" -> "quickMatchEngIta"
+// "`matchEngIta` — Match Practice `en→it`" -> "matchEngIta"
 function idModulo(cella) {
   const m = cella.match(/`([A-Za-z][A-Za-z0-9]*)`/);
   return m ? m[1] : null;

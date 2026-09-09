@@ -31,7 +31,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -57,9 +57,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('speedRoundEngIta');
+    const idx = ALL_MODULES.indexOf('speedMatchEngIta');
     await bootAsUser(page, 'T7Rotate', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.waitForTimeout(300);
     const startVisible = await page.isVisible('#sr-ready-btn').catch(() => false);
     if (startVisible) { await page.click('#sr-ready-btn'); await page.waitForTimeout(50); }
@@ -124,9 +124,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('quickMatchEngIta');
+    const idx = ALL_MODULES.indexOf('matchEngIta');
     await bootAsUser(page, 'T7ValveQM', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     const startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }

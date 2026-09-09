@@ -26,13 +26,13 @@ async function run() {
   await page.waitForTimeout(100);
   await page.evaluate((userName) => {
     localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: ['personalizzazione','repeatAloud','speakEasy','voiceCoach'] }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','quickMatchEngIta'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','speakEasy','voiceCoach','matchEngIta'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, 'DebugQM');
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-  await page.click('[data-module="quickMatchEngIta"]');
+  await page.click('[data-module="matchEngIta"]');
   await page.waitForTimeout(300);
   console.log('start btn visible:', await page.isVisible('#qm-start-btn').catch(()=>false));
   await page.click('#qm-start-btn').catch(()=>{});

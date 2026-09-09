@@ -24,7 +24,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.evaluate(({ userName, completedModules }) => {
     localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -164,8 +164,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMDontKnowTester', stepsBefore('quickMatchEngIta'));
-    await openModule(page, 'quickMatchEngIta');
+    await bootAsUser(page, 'QMDontKnowTester', stepsBefore('matchEngIta'));
+    await openModule(page, 'matchEngIta');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200);
     const beforeDisabled = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
@@ -192,13 +192,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMHeaderTester', stepsBefore('quickMatchItaEng'));
-    await openModule(page, 'quickMatchItaEng');
+    await bootAsUser(page, 'QMHeaderTester', stepsBefore('matchItaEng'));
+    await openModule(page, 'matchItaEng');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200);
     const state = await page.evaluate(() => {
-      var w = document.getElementById('quick-match-watch-btn');
-      var h = document.getElementById('quick-match-help-btn');
+      var w = document.getElementById('match-watch-btn');
+      var h = document.getElementById('match-help-btn');
       return { watchHidden: w.hidden, watchDisabled: w.disabled, helpHidden: h.hidden, helpDisabled: h.disabled };
     });
     log('[QM Task2] Spiegazione is visible during the quiz', state.watchHidden === false);
@@ -206,7 +206,7 @@ async function run() {
     log('[QM Task3] Spiegazione stays enabled during the quiz (no timer in Quick Match)', state.watchDisabled === false);
     log('[QM Task3] Help stays enabled during the quiz (no timer in Quick Match)', state.helpDisabled === false);
     // Clicking Spiegazione during the quiz should actually open the overlay.
-    await page.click('#quick-match-watch-btn');
+    await page.click('#match-watch-btn');
     await page.waitForTimeout(100);
     const overlayVisible = await page.isVisible('#howitworks-overlay').catch(() => false);
     log('[QM Task2] Spiegazione click opens the overlay mid-quiz', overlayVisible);
@@ -224,13 +224,13 @@ async function run() {
       // Speed up the per-question timer + 3-2-1 so the test stays fast.
       window.__preConfigOverride = true;
     });
-    await bootAsUser(page, 'SRDontKnowTester', stepsBefore('speedRoundEngIta'));
+    await bootAsUser(page, 'SRDontKnowTester', stepsBefore('speedMatchEngIta'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 30; // long enough that the timeout never fires mid-test
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 30; // long enough that the timeout never fires mid-test
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300); // 3-2-1 countdown
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -276,17 +276,17 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRHeaderTester', stepsBefore('speedRoundItaEng'));
+    await bootAsUser(page, 'SRHeaderTester', stepsBefore('speedMatchItaEng'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundItaEng');
+    await openModule(page, 'speedMatchItaEng');
     // Buttons should be visible+enabled on the start screen (before the countdown/timer ever runs).
     const startState = await page.evaluate(() => {
-      var w = document.getElementById('speed-round-watch-btn');
-      var h = document.getElementById('speed-round-help-btn');
+      var w = document.getElementById('speed-match-watch-btn');
+      var h = document.getElementById('speed-match-help-btn');
       return { watchHidden: w.hidden, watchDisabled: w.disabled, helpHidden: h.hidden, helpDisabled: h.disabled };
     });
     log('[SR Task2] Spiegazione visible on start screen', startState.watchHidden === false);
@@ -296,8 +296,8 @@ async function run() {
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
     const duringTimer = await page.evaluate(() => {
-      var w = document.getElementById('speed-round-watch-btn');
-      var h = document.getElementById('speed-round-help-btn');
+      var w = document.getElementById('speed-match-watch-btn');
+      var h = document.getElementById('speed-match-help-btn');
       return { watchHidden: w.hidden, watchDisabled: w.disabled, helpHidden: h.hidden, helpDisabled: h.disabled };
     });
     log('[SR Task2] Spiegazione stays visible while the quiz timer runs (bug fix — was hidden entirely before)', duringTimer.watchHidden === false);
@@ -314,8 +314,8 @@ async function run() {
     {
       if (gotWrong) {
         const afterWrong = await page.evaluate(() => {
-          var w = document.getElementById('speed-round-watch-btn');
-          var h = document.getElementById('speed-round-help-btn');
+          var w = document.getElementById('speed-match-watch-btn');
+          var h = document.getElementById('speed-match-help-btn');
           return { watchDisabled: w.disabled, helpDisabled: h.disabled };
         });
         log('[SR Task3-adj] Spiegazione re-enabled once the WRONG-answer reveal is shown (something to read)', afterWrong.watchDisabled === false);
@@ -334,13 +334,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRCorrectNoFlickerTester', stepsBefore('speedRoundEngIta'));
+    await bootAsUser(page, 'SRCorrectNoFlickerTester', stepsBefore('speedMatchEngIta'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -356,13 +356,13 @@ async function run() {
         // feedback). Per un evento che non deve accadere non esiste una
         // condizione da aspettare — e' l'eccezione dichiarata in
         // tests/ATTESE-FISSE.md.
-        const rightAfterTap = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+        const rightAfterTap = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione stays DISABLED right after a CORRECT tap (nothing to read, no flicker)', rightAfterTap === true);
         await page.waitForTimeout(300); // still mid-pause (feedbackPauseMs 600)
-        const midPause = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+        const midPause = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione still DISABLED mid-pause, before auto-advance (the exact flicker this fixes)', midPause === true);
         await page.waitForTimeout(500); // past feedbackPauseMs, into the next question's timer
-        const nextQuestion = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+        const nextQuestion = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione still DISABLED into the next question (its own timer just re-locked it)', nextQuestion === true);
       }
     }
@@ -377,21 +377,21 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRDontKnowUnlocksTester', stepsBefore('speedRoundItaEng'));
+    await bootAsUser(page, 'SRDontKnowUnlocksTester', stepsBefore('speedMatchItaEng'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundItaEng');
+    await openModule(page, 'speedMatchItaEng');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
-    const lockedBefore = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+    const lockedBefore = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR Task3-adj] Spiegazione is locked while the timer runs, right before "Non lo so"', lockedBefore === true);
     await page.click('#sr-dontknow-btn');
     await page.waitForTimeout(30);
-    const unlockedAfter = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+    const unlockedAfter = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR Task3-adj] Spiegazione unlocks right after "Non lo so" (its own reveal is a case to read)', unlockedAfter === false);
     log('[SR Task3-adj] No JS errors', errors.length === 0);
     await page.close();
@@ -403,18 +403,18 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRTimeoutUnlocksTester', stepsBefore('speedRoundEngIta'));
+    await bootAsUser(page, 'SRTimeoutUnlocksTester', stepsBefore('speedMatchEngIta'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 0.2; // let it expire quickly
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 0.2; // let it expire quickly
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
     await page.waitForFunction(() => !document.getElementById('sr-reveal').hidden, { timeout: 3000 });
-    const unlockedAfterTimeout = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+    const unlockedAfterTimeout = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR Task3-adj] Spiegazione unlocks right after a TIMEOUT reveal (the third reveal case)', unlockedAfterTimeout === false);
     log('[SR Task3-adj] No JS errors', errors.length === 0);
     await page.close();
@@ -426,24 +426,24 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRLeaveMidTimerTester', stepsBefore('speedRoundEngIta'));
+    await bootAsUser(page, 'SRLeaveMidTimerTester', stepsBefore('speedMatchEngIta'));
     await page.evaluate(() => {
-      window.APP_CONFIG.speedRound.timeLimitSeconds = 30;
-      window.APP_CONFIG.speedRound.countdownSeconds = 1;
-      window.APP_CONFIG.speedRound.countdownStepMs = 30;
+      window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
+      window.APP_CONFIG.speedMatch.countdownSeconds = 1;
+      window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
-    const midTimerDisabled = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+    const midTimerDisabled = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR cleanup] Header is disabled mid-timer, as expected, right before leaving', midTimerDisabled === true);
     // Leave the module mid-timer via the Mappa button.
-    await page.click('#speed-round-back-map');
+    await page.click('#speed-match-back-map');
     await page.waitForTimeout(150);
     // Re-open Speed Round fresh: on the start screen the header must NOT be stuck disabled.
-    await openModule(page, 'speedRoundEngIta');
-    const freshState = await page.evaluate(() => document.getElementById('speed-round-watch-btn').disabled);
+    await openModule(page, 'speedMatchEngIta');
+    const freshState = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR cleanup] Re-opening after leaving mid-timer: Spiegazione is NOT stuck disabled (stopAllModuleActivity cleanup)', freshState === false);
     log('[SR cleanup] No JS errors', errors.length === 0);
     await page.close();

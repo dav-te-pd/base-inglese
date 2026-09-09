@@ -135,10 +135,10 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRSoundTester', stepsBefore('speedRoundEngIta'));
-    await page.evaluate(() => { window.APP_CONFIG.speedRound.countdownStepMs = 60; });
+    await bootAsUser(page, 'SRSoundTester', stepsBefore('speedMatchEngIta'));
+    await page.evaluate(() => { window.APP_CONFIG.speedMatch.countdownStepMs = 60; });
     await page.evaluate(toneCapture);
-    await openModule(page, 'speedRoundEngIta');
+    await openModule(page, 'speedMatchEngIta');
     await page.waitForTimeout(400);
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
@@ -206,25 +206,25 @@ async function run() {
     const groupCount = await page.$$eval('#config-panel-body .config-group', els => els.length);
     log('[B] Panel shows grouped sections (details per top-level CONFIG key)', groupCount > 3);
 
-    // Open the speedRound group and edit timeLimitSeconds live.
-    const speedRoundSummary = await page.evaluate(() => {
+    // Open the speedMatch group and edit timeLimitSeconds live.
+    const speedMatchSummary = await page.evaluate(() => {
       var groups = Array.from(document.querySelectorAll('#config-panel-body .config-group'));
-      var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'speedRound'; });
+      var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'speedMatch'; });
       if (!g) return false;
       g.open = true;
       return true;
     });
-    log('[B] speedRound group found and opened', speedRoundSummary);
-    const input = await page.$('input[data-config-path="speedRound.timeLimitSeconds"]');
-    log('[B] Scalar field for speedRound.timeLimitSeconds rendered', !!input);
+    log('[B] speedMatch group found and opened', speedMatchSummary);
+    const input = await page.$('input[data-config-path="speedMatch.timeLimitSeconds"]');
+    log('[B] Scalar field for speedMatch.timeLimitSeconds rendered', !!input);
     if (input) {
       await input.fill('7');
       await input.evaluate(el => el.dispatchEvent(new Event('change', { bubbles: true })));
       await page.waitForTimeout(50);
-      const liveValue = await page.evaluate(() => window.APP_CONFIG.speedRound.timeLimitSeconds);
+      const liveValue = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
       log('[B] Editing a scalar field updates window.APP_CONFIG live (7)', liveValue === 7);
       const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
-      log('[B] Change is persisted to localStorage overrides', stored.speedRound && stored.speedRound.timeLimitSeconds === 7);
+      log('[B] Change is persisted to localStorage overrides', stored.speedMatch && stored.speedMatch.timeLimitSeconds === 7);
     }
 
     // Invalid JSON in an array field shows an inline error and does not apply.
@@ -259,7 +259,7 @@ async function run() {
     // Persistence across reload (without reset).
     await page.reload();
     await page.waitForTimeout(150);
-    const persisted = await page.evaluate(() => window.APP_CONFIG.speedRound.timeLimitSeconds);
+    const persisted = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     log('[B] Change persists across reload via boot-time override merge (7)', persisted === 7);
 
     // Reset restores defaults.
@@ -271,9 +271,9 @@ async function run() {
     await page.waitForTimeout(100);
     await page.click('#config-panel-reset-btn');
     await page.waitForTimeout(300);
-    const afterReset = await page.evaluate(() => window.APP_CONFIG.speedRound.timeLimitSeconds);
+    const afterReset = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     const overridesCleared = await page.evaluate(() => localStorage.getItem('baseinglese:configOverrides'));
-    log('[B] Reset restores speedRound.timeLimitSeconds to default (10)', afterReset === 10);
+    log('[B] Reset restores speedMatch.timeLimitSeconds to default (10)', afterReset === 10);
     log('[B] Reset clears the localStorage overrides key', overridesCleared === null);
 
     log('[B] No JS errors during config panel test', errors.length === 0);
@@ -286,10 +286,10 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FullRegression', stepsBefore('quickMatchEngIta'));
-    await openModule(page, 'quickMatchEngIta');
+    await bootAsUser(page, 'FullRegression', stepsBefore('matchEngIta'));
+    await openModule(page, 'matchEngIta');
     const qmVisible = await page.evaluate(() => {
-      var view = document.getElementById('view-quick-match');
+      var view = document.getElementById('view-match');
       return !!view && !view.hidden;
     });
     log('[Regression] Quick Match still opens', qmVisible);

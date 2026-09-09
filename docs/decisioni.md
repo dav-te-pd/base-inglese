@@ -71,9 +71,11 @@ misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli
 ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
 tutto è in `main`.
 
-**Fase 1: i passi 1 e 2 sono fatti e verificati.**
-Il prossimo è il **passo 3**, che **va insieme al 4** — o tutti e due, o
-nessuno dei due (vedi i divieti). Un passo per volta, con la fermata in mezzo, e non
+**Fase 1: i passi 1 e 2 sono fatti e verificati. I passi 3 e 4 sono scritti
+insieme e in attesa della suite.** Se questa sessione cade adesso, l'albero ha
+le due rinomine ma non la loro verifica: si rilancia la suite completa prima di
+qualunque altra cosa. Il prossimo dopo di loro è il **passo 5**, quello che **non
+si interrompe** — non va cominciato senza una sessione intera davanti. Un passo per volta, con la fermata in mezzo, e non
 si comincia senza il via di chi guida il progetto.
 
 *Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
@@ -135,8 +137,8 @@ il sospettato più piccolo possibile**.*
 |---|---|---|---|
 | **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina.<br><br>**FATTO il 2026-09-08.** Undici in `index.html` (la definizione più dieci chiamate) e una in `tests/test_scala_colori.js`. Verificato prima che `shuffle` non collidesse con niente: nel codice non esisteva, nemmeno come parola. Allineate anche le **nove** occorrenze in `docs/validazione.md`, che descrive il codice e avrebbe continuato a nominare una funzione inesistente. **`docs/it/struttura-corso.md` NON è stato toccato** (regola 33): la sua tabella dichiara la rinomina da fare, ed è la fonte, non un registro di stato. | ☑ | **sì** |
 | **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`.<br><br>**SCRITTA il 2026-09-09, in attesa della suite.** 33 sostituzioni in 27 file: 4 valori di `kind` in `index.html`, la chiave di `istruzioni-moduli.json`, 26 nei test (di cui 4 in `tests/debug/`, che non è nella suite), 2 in `docs/validazione.md`. Verificato prima che il `kind` non venga mai usato per costruire un id del DOM — serve solo a `data[module.kind]` e alla chiave `introDismissed:` — quindi nessuna collisione con `#view-flashcard` e compagnia.<br><br>**VERIFICATO il 2026-09-09:** suite verde su 42 file, conteggio **933, uguale al baseline**. In `main`. | ☑ | **sì** |
-| **3** | `quickMatch* → match*` (con `quick-match-*`, `view-quick-match`; **non** `qm-`) | ☐ | **NO** — vedi i divieti |
-| **4** | `speedRound* → speedMatch*` (con `speed-round-*`, `view-speed-round`; **non** `sr-`) | ☐ | **sì** |
+| **3** | `quickMatch* → match*` (con `match-*`, `view-match`; **non** `qm-`)<br><br>**SCRITTO il 2026-09-09, insieme al 4.** In verifica. | ◐ | **NO** — vedi i divieti |
+| **4** | `speedRound* → speedMatch*` (con `speed-match-*`, `view-speed-match`; **non** `sr-`)<br><br>**SCRITTO il 2026-09-09, insieme al 3.** In verifica. | ◐ | **sì** |
 | **5** | `se* → storyCards*` — con `se-*`, `speak-easy-*`, `view-speak-easy` e i due namespace `seDeclarations:` / `seExplanationStats:`. **Una sessione sola.** | ☐ | **sì**, ma solo DOPO che è finito per intero |
 | **6** | Gli episodi, **un commit solo**: `episode1 → gate`, `episode2 → aircraft-door`; `docs/it/ → docs/inglese/it/` e `data/it/ → data/inglese/it/` (~111 riferimenti a percorsi); i file rinominati in `inglese-it-gate.md` / `inglese-it-gate.json`; **`messaggi-feedback.json` con il percorso portato in una costante** (oggi è scritto dentro la riga di `fetch`, ed è l'unico dei tre che uno spostamento di cartelle può rompere senza comparire in nessun elenco); le regole 4 e 26 di `CLAUDE.md`. | ☐ | **sì** — e qui la fase 1 confluisce in `main` |
 
@@ -174,7 +176,7 @@ righe di codice. Ed è anche la preparazione del punto unico che serve a Supabas
 |---|---|---|---|
 | **14** | Le 19 attese fisse di `test_batch19` che fanno da guardia a un'asserzione. **1–1,5 giorni**, la più grossa della fase. Il modello è già scritto e verde: `tests/test_match_practice_nonloso.js`. | ☐ | **sì**, un'asserzione per volta |
 | **15** | I quattro valori ricopiati nei test. ~1 ora. ⚠️ Non portare via anche i `length === 3`: quelli sono **requisiti**, non copie — il riquadro in fondo a questo file lo spiega. | ☐ | **sì** |
-| **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file), `levels.X.label` (morto: unica occorrenza in un commento), i due `if` adiacenti in `vcEvaluate`, i quattro test con funzioni quasi identiche. *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
+| **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file) e `tests/debug/` (6 file, aggiunto il 2026-09-09: quattro file che nessuno lancia sono quattro file che possono mentire senza che nessuno se ne accorga), `levels.X.label` (morto: unica occorrenza in un commento), i due `if` adiacenti in `vcEvaluate`, i quattro test con funzioni quasi identiche. *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
 | **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
 
 ### Fase delle stringhe — quando si vuole, purché intera

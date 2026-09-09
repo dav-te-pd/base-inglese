@@ -9,8 +9,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('quickMatchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedRoundEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -76,8 +76,8 @@ async function bootAsUser(page, userName, completedModules) {
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:quickMatchEngIta:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:matchEngIta:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:speedMatchEngIta:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:flashcard:' + userName, '1');
   }, { userName, completedModules });
   await page.click('#go-episode');
@@ -90,8 +90,8 @@ async function openModule(page, moduleId) {
 }
 
 const BEFORE_VC = stepsBefore('flashcardAEngIta');
-const BEFORE_QM = stepsBefore('quickMatchEngIta');
-const BEFORE_SR = stepsBefore('speedRoundEngIta');
+const BEFORE_QM = stepsBefore('matchEngIta');
+const BEFORE_SR = stepsBefore('speedMatchEngIta');
 const BEFORE_FC = stepsBefore('flashcardAEngIta');
 
 async function run() {
@@ -249,7 +249,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3QMSound', BEFORE_QM);
     await page.evaluate(toneCapture);
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);

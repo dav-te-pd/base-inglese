@@ -53,10 +53,10 @@ async function run() {
     await bootAsUser(page, 'OrderTester', []);
 
     const rowIds = await page.$$eval('#module-list [data-module]', els => els.map(e => e.getAttribute('data-module')));
-    const qmIIdx = rowIds.indexOf('quickMatchItaEng');
+    const qmIIdx = rowIds.indexOf('matchItaEng');
     const dgIdx = rowIds.indexOf('dialogoAscoltaRipeti');
-    const srIdx = rowIds.indexOf('speedRoundEngIta');
-    log('dialogoAscoltaRipeti sits after quickMatchItaEng and before speedRoundEngIta', qmIIdx > -1 && qmIIdx < dgIdx && dgIdx < srIdx);
+    const srIdx = rowIds.indexOf('speedMatchEngIta');
+    log('dialogoAscoltaRipeti sits after matchItaEng and before speedMatchEngIta', qmIIdx > -1 && qmIIdx < dgIdx && dgIdx < srIdx);
 
     // Speak Easy regression: alignment must be identical to before (guide/esterno left, family right).
     await bootAsUser(page, 'SpeakEasyTester', ['repeatAloud']);
@@ -97,7 +97,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FCRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'dialogoAscoltaRipeti', 'speedRoundEngIta', 'speedRoundItaEng']);
+    await bootAsUser(page, 'FCRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'dialogoAscoltaRipeti', 'speedMatchEngIta', 'speedMatchItaEng']);
     await openModuleFromMap(page, 'flashcardAEngIta');
     await page.waitForTimeout(300);
     const fcIntro = await page.isVisible('#fc-intro-screen');
@@ -125,7 +125,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'SRQMRegression', ['repeatAloud', 'speakEasy', 'voiceCoach']);
-    await openModuleFromMap(page, 'quickMatchEngIta');
+    await openModuleFromMap(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.waitForFunction(() => document.getElementById('qm-start-btn') && !document.getElementById('qm-start-btn').disabled);
     await page.click('#qm-start-btn');
@@ -157,7 +157,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     page.on('console', msg => { if (msg.type() === 'error') errors.push(msg.text()); });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'DGTester' + viewport.w, ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng']);
+    await bootAsUser(page, 'DGTester' + viewport.w, ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
 
     const rowClass = await page.getAttribute('[data-module="dialogoAscoltaRipeti"]', 'class');
     log('dialogoAscoltaRipeti unlocked (current) after Quick Match @' + viewport.w, rowClass && rowClass.includes('current'));
@@ -317,7 +317,7 @@ async function run() {
         if (!OrigAudioContext) return;
       });
     });
-    await bootAsUser(page, 'VerdeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng']);
+    await bootAsUser(page, 'VerdeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
     // Patch srPlayTone-driven oscillator frequency capture via monkey-patching AudioContext.
     await page.evaluate(() => {
       const OrigAC = window.AudioContext || window.webkitAudioContext;
@@ -358,7 +358,7 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'ThemeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng']);
+    await bootAsUser(page, 'ThemeTester', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
     await openModuleFromMap(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');

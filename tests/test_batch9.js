@@ -31,7 +31,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','quickMatchEngIta','quickMatchItaEng','speedRoundEngIta','speedRoundItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -57,9 +57,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('quickMatchEngIta');
+    const idx = ALL_MODULES.indexOf('matchEngIta');
     await bootAsUser(page, 'T9QMAlto', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'quickMatchEngIta');
+    await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);
@@ -123,7 +123,7 @@ async function run() {
     await page.goto(BASE);
     // Can't call closured percentageBucket directly; instead verify CONFIG.percentageThresholds
     // is the exact source used, by reading it from window.APP_CONFIG (which IS exposed).
-    // Moved out of CONFIG.speedRound to this neutral top-level spot in a
+    // Moved out of CONFIG.speedMatch to this neutral top-level spot in a
     // later turn (see percentageBucket's own comment) — this assertion was
     // stale from before that move.
     const thresholds = await page.evaluate(() => window.APP_CONFIG.percentageThresholds);

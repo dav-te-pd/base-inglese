@@ -134,7 +134,7 @@
       "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
     }
   },
-  "speedRoundEngIta": {
+  "speedMatchEngIta": {
     "howItWorks": {
       "title": "Speed Match en→it",
       "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
@@ -144,7 +144,7 @@
       "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
     }
   },
-  "speedRoundItaEng": {
+  "speedMatchItaEng": {
     "howItWorks": {
       "title": "Speed Match it→en",
       "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
@@ -214,7 +214,7 @@
       "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>"
     }
   },
-  "quickMatchEngIta": {
+  "matchEngIta": {
     "howItWorks": {
       "title": "Match Practice en→it",
       "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
@@ -224,7 +224,7 @@
       "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
     }
   },
-  "quickMatchItaEng": {
+  "matchItaEng": {
     "howItWorks": {
       "title": "Match Practice it→en",
       "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"

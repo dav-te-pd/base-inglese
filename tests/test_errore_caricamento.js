@@ -31,7 +31,7 @@ const path = require('path');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
-const PASSO = 'quickMatchEngIta';
+const PASSO = 'matchEngIta';
 const PRIMA = stepsBefore(PASSO);
 const FILE_EPISODIO = 'a1-episodio1-inglese.json';
 
@@ -75,7 +75,7 @@ async function finoAllaMappa(page, utente) {
   await page.evaluate(function (arg) {
     localStorage.setItem('baseinglese:modules:episode1:' + arg.utente,
       JSON.stringify({ completed: arg.prima }));
-    ['mappaEpisodio', 'personalizzazione', 'quickMatchEngIta'].forEach(function (k) {
+    ['mappaEpisodio', 'personalizzazione', 'matchEngIta'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + arg.utente, '1');
     });
   }, { utente: utente, prima: PRIMA });
@@ -160,11 +160,11 @@ async function run() {
   // ---- [C] "Riprova" rifà l'apertura fallita ----
   await page.unroute('**/' + FILE_EPISODIO);
   await page.click('#load-error-retry');
-  await page.waitForSelector('#view-quick-match.is-active', { state: 'attached', timeout: 15000 });
+  await page.waitForSelector('#view-match.is-active', { state: 'attached', timeout: 15000 });
   const dopoRiprova = await page.evaluate(function () {
     return {
       erroreVisibile: document.getElementById('view-error').getClientRects().length > 0,
-      moduloAttivo: document.getElementById('view-quick-match').classList.contains('is-active')
+      moduloAttivo: document.getElementById('view-match').classList.contains('is-active')
     };
   });
   log('[C] "Riprova" apre davvero il modulo che era fallito', dopoRiprova.moduloAttivo);
@@ -188,7 +188,7 @@ async function run() {
   await page.unroute('**/' + FILE_EPISODIO);
   await finoAllaMappa(page, 'ErroreE');
   await page.click('[data-module="' + PASSO + '"]');
-  await page.waitForSelector('#view-quick-match.is-active', { state: 'attached', timeout: 15000 });
+  await page.waitForSelector('#view-match.is-active', { state: 'attached', timeout: 15000 });
   const sano = await page.evaluate(function () {
     return document.getElementById('view-error').getClientRects().length > 0;
   });

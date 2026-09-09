@@ -174,10 +174,10 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
     const events = await page.evaluate(() => window.APP_CONFIG.sound.events);
-    const oldLoc = await page.evaluate(() => window.APP_CONFIG.speedRound.sound);
+    const oldLoc = await page.evaluate(() => window.APP_CONFIG.speedMatch.sound);
     log('[Job1] CONFIG.sound.events has corretto/sbagliato/countdown/ready/traguardo',
       events && events.corretto && events.sbagliato && events.countdown && events.ready && events.traguardo);
-    log('[Job1] CONFIG.speedRound.sound no longer exists (moved, not duplicated)', oldLoc === undefined);
+    log('[Job1] CONFIG.speedMatch.sound no longer exists (moved, not duplicated)', oldLoc === undefined);
     await page.close();
   }
 
@@ -271,12 +271,12 @@ async function run() {
     // la posizione cambia a ogni riordino, l'identita' del passo no.
     const row = id => rows[ids.indexOf(id)] || {};
     log('[Job7] Match Practice si chiama cosi\' in entrambe le direzioni',
-      row('quickMatchEngIta').title.indexOf('Match Practice') === 0 && row('quickMatchItaEng').title.indexOf('Match Practice') === 0);
+      row('matchEngIta').title.indexOf('Match Practice') === 0 && row('matchItaEng').title.indexOf('Match Practice') === 0);
     log('[Job7] Voice Practice e Voice Check hanno i loro nomi',
       row('voicePractice').title === 'Voice Practice' && row('voiceCoach').title === 'Voice Check');
     log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === 'Dialogue: Real Dialogue');
     log('[Job7] Speed Round si chiama Speed Match in entrambe le direzioni',
-      row('speedRoundEngIta').title.indexOf('Speed Match') === 0 && row('speedRoundItaEng').title.indexOf('Speed Match') === 0);
+      row('speedMatchEngIta').title.indexOf('Speed Match') === 0 && row('speedMatchItaEng').title.indexOf('Speed Match') === 0);
     // I due moduli nati dal componente della storia: nomi nuovi, stessa
     // categoria Studio.
     log('[Job7] Meet the Story e Why We Say It hanno i loro nomi',
@@ -298,7 +298,7 @@ async function run() {
     // gradi diversi, e le due righe devono dirlo.
     log('[Job7] L\'etichetta porta il nome del grado accanto alla categoria',
       row('repeatAloud').type === 'Studio · Parole' && row('repeatAloud-2').type === 'Studio · Espressioni');
-    log('[Job7] Un quiz sulle frasi lo dice', row('speedRoundEngIta').type === 'Quiz · Frasi');
+    log('[Job7] Un quiz sulle frasi lo dice', row('speedMatchEngIta').type === 'Quiz · Frasi');
     log('[Job7] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

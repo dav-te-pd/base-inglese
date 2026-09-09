@@ -37,7 +37,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FCTester2', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng']);
+    await bootAsUser(page, 'FCTester2', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng']);
     await page.click('[data-module="flashcardAEngIta"]');
     await page.waitForTimeout(300);
     const introVisible = await page.isVisible('#fc-intro-screen');
@@ -120,7 +120,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'QMRegression', ['repeatAloud', 'speakEasy', 'voiceCoach']);
-    await page.click('[data-module="quickMatchEngIta"]');
+    await page.click('[data-module="matchEngIta"]');
     await page.waitForTimeout(300);
     const introVisible = await page.isVisible('#qm-start-screen');
     log('[Regression] Quick Match start screen visible', introVisible);
@@ -155,8 +155,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng']);
-    await page.click('[data-module="speedRoundEngIta"]');
+    await bootAsUser(page, 'SRRegression', ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng']);
+    await page.click('[data-module="speedMatchEngIta"]');
     await page.waitForTimeout(300);
     await page.waitForFunction(() => document.getElementById('sr-ready-btn') && !document.getElementById('sr-ready-btn').disabled);
     await page.click('#sr-ready-btn');

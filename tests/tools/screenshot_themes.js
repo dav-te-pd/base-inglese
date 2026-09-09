@@ -21,7 +21,7 @@ async function run() {
   await page.waitForTimeout(100);
   await page.evaluate((u) => {
     localStorage.setItem('baseinglese:episode1:customizeSeen:' + u, '1');
-    localStorage.setItem('baseinglese:modules:episode1:' + u, JSON.stringify({ completed: ['repeatAloud', 'speakEasy', 'voiceCoach', 'quickMatchEngIta', 'quickMatchItaEng'] }));
+    localStorage.setItem('baseinglese:modules:episode1:' + u, JSON.stringify({ completed: ['repeatAloud', 'speakEasy', 'voiceCoach', 'matchEngIta', 'matchItaEng'] }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
   }, 'ThemeShot');
   await page.click('#go-episode');
