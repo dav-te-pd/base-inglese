@@ -163,7 +163,7 @@ davvero `attemptRule`.
   ciascuna delle quattro opzioni inglesi.
 
 #### Flash Card en→it / it→en — `flashcardAEngIta`, `flashcardAItaEng`
-- **Componente:** `openFlashcard()` (10468). `kind` **`flashcardLevelA` per
+- **Componente:** `openFlashcard()` (10468). `kind` **`flashcard` per
   entrambe le direzioni e per entrambi i gradi** su cui compare (A e B) — il nome
   del `kind` è rimasto legato al livello A (§ 2.4).
 - **Flusso:** una carta per voce, girata a mano, poi "Sì, la so" / "Non ancora",
@@ -304,7 +304,7 @@ toccato.
 | `quickMatch*`, `qm*` | **Quick Match** | Si chiama **Match Practice** | `CONFIG.quickMatch`, gli id dei moduli `quickMatchEngIta`/`quickMatchItaEng`, i `kind` omonimi, ~25 funzioni/variabili `qm*`, la vista `view-quick-match`, gli id HTML `qm-*`, `quick-match-*` |
 | `speedRound*`, `sr*` | **Speed Round** | Si chiama **Speed Match** | `CONFIG.speedRound`, gli id dei moduli, i `kind`, ~30 funzioni/variabili `sr*`, la vista `view-speed-round`, gli id HTML `sr-*` |
 | `voiceCoach` | **Voice Coach** | Il modulo si chiama **Voice Check**; ma `voiceCoach` nomina **anche** il componente condiviso con Voice Practice e la sezione `CONFIG.voiceCoach`, che contiene valori letti da entrambi (`starThresholds`, `micIssue`) | id del modulo, `kind`, `CONFIG.voiceCoach`, ~40 `vc*`, vista `view-voice-coach` |
-| `flashcardLevelA` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
+| `flashcard` | il livello A | È il `kind` usato per **tutte** le Flash Card, anche quelle sul grado B (passo 11) | `EPISODES.episode1.modulesById`, chiave di `istruzioni-moduli.json` |
 
 **Il caso più delicato è `shuffle`.** Non è una funzione di Speed Match: la
 chiamano Match Practice, Flash Card, Voice Coach e `buildMultipleChoiceOptions`.

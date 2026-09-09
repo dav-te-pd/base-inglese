@@ -71,7 +71,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:quickMatchEngIta:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:flashcardLevelA:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:flashcard:' + userName, '1');
     if (extraStorage) Object.keys(extraStorage).forEach(k => localStorage.setItem(k, extraStorage[k]));
   }, { userName, completedModules, extraStorage });
   await page.click('#go-episode');

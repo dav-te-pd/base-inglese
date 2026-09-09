@@ -71,9 +71,15 @@ misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli
 ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
 tutto è in `main`.
 
-**La fase 1 è cominciata: il passo 1 è fatto.** Il prossimo è il **passo 2**
-(`flashcardLevelA → flashcard`), e non va cominciato senza il via di chi guida il
-progetto — un passo per volta, con la fermata in mezzo.
+**Fase 1: il passo 1 è fatto, il passo 2 è scritto e in attesa della suite.**
+Il prossimo dopo di lui è il **passo 3**, che **va insieme al 4** — o tutti e due, o
+nessuno dei due (vedi i divieti). Un passo per volta, con la fermata in mezzo, e non
+si comincia senza il via di chi guida il progetto.
+
+*Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
+invariato: finché la verifica non è passata resta ◐. Al passo 1 era stato messo a ☑
+nello stesso commit della modifica — è andata bene, ma per un momento il file diceva
+«fatto» su un lavoro non ancora verificato.*
 
 ## I divieti — leggerli PRIMA di prendere un passo
 
@@ -128,7 +134,7 @@ il sospettato più piccolo possibile**.*
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
 | **1** | `srShuffle → shuffle` — 11 occorrenze, nessuno stato salvato, nessun DOM, nessun file dati. È il giro di taratura del metodo: se la suite va rossa qui, il problema è il metodo, non la rinomina.<br><br>**FATTO il 2026-09-08.** Undici in `index.html` (la definizione più dieci chiamate) e una in `tests/test_scala_colori.js`. Verificato prima che `shuffle` non collidesse con niente: nel codice non esisteva, nemmeno come parola. Allineate anche le **nove** occorrenze in `docs/validazione.md`, che descrive il codice e avrebbe continuato a nominare una funzione inesistente. **`docs/it/struttura-corso.md` NON è stato toccato** (regola 33): la sua tabella dichiara la rinomina da fare, ed è la fonte, non un registro di stato. | ☑ | **sì** |
-| **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`. | ☐ | **sì** |
+| **2** | `flashcardLevelA → flashcard` — un `kind`. Prima rinomina che attraversa `data/…/istruzioni-moduli.json` e `introDismissed:`.<br><br>**SCRITTA il 2026-09-09, in attesa della suite.** 33 sostituzioni in 27 file: 4 valori di `kind` in `index.html`, la chiave di `istruzioni-moduli.json`, 26 nei test (di cui 4 in `tests/debug/`, che non è nella suite), 2 in `docs/validazione.md`. Verificato prima che il `kind` non venga mai usato per costruire un id del DOM — serve solo a `data[module.kind]` e alla chiave `introDismissed:` — quindi nessuna collisione con `#view-flashcard` e compagnia. | ◐ | — |
 | **3** | `quickMatch* → match*` (con `quick-match-*`, `view-quick-match`; **non** `qm-`) | ☐ | **NO** — vedi i divieti |
 | **4** | `speedRound* → speedMatch*` (con `speed-round-*`, `view-speed-round`; **non** `sr-`) | ☐ | **sì** |
 | **5** | `se* → storyCards*` — con `se-*`, `speak-easy-*`, `view-speak-easy` e i due namespace `seDeclarations:` / `seExplanationStats:`. **Una sessione sola.** | ☐ | **sì**, ma solo DOPO che è finito per intero |

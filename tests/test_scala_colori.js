@@ -83,7 +83,7 @@ async function preparaEApri(page, utente, semina, promotionStreak) {
       JSON.stringify({ completed: arg.prima }));
     localStorage.setItem('baseinglese:configOverrides',
       JSON.stringify({ mastery: { promotionStreak: arg.streak } }));
-    ['mappaEpisodio', 'personalizzazione', 'flashcardLevelA'].forEach(function (k) {
+    ['mappaEpisodio', 'personalizzazione', 'flashcard'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + arg.utente, '1');
     });
   }, { utente: utente, prima: PRIMA, streak: promotionStreak });

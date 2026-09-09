@@ -75,9 +75,9 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, kinds }) => {
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    // flashcardAEngIta/flashcardAItaEng share ONE kind, 'flashcardLevelA'
+    // flashcardAEngIta/flashcardAItaEng share ONE kind, 'flashcard'
     // (intro-dismiss is keyed by kind, not module id) — not in ALL_MODULES.
-    kinds.concat(['mappaEpisodio', 'flashcardLevelA']).forEach(k => {
+    kinds.concat(['mappaEpisodio', 'flashcard']).forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules, kinds: ALL_KINDS });

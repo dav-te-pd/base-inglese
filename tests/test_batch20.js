@@ -32,7 +32,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.evaluate(({ userName, completedModules }) => {
     localStorage.setItem('baseinglese:episode1:customizeSeen:' + userName, '1');
     if (completedModules) localStorage.setItem('baseinglese:modules:episode1:' + userName, JSON.stringify({ completed: completedModules }));
-    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcardLevelA', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
+    ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach', 'voicePractice', 'quickMatchEngIta', 'quickMatchItaEng', 'speedRoundEngIta', 'speedRoundItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
   }, { userName, completedModules });
@@ -58,7 +58,7 @@ async function run() {
     await page.addInitScript(mockInit);
     // NOT the intro-dismiss shortcut used elsewhere here — we want a
     // deterministic first card, and the intro-dismiss list already
-    // covers flashcardLevelA regardless of direction.
+    // covers flashcard regardless of direction.
     await bootAsUser(page, 'ContentFCItaEng', stepsBefore('flashcardAItaEng'));
     await openModule(page, 'flashcardAItaEng');
     await page.waitForTimeout(200);

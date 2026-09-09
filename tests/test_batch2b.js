@@ -78,7 +78,7 @@ async function bootAsUser(page, userName, completedModules) {
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:quickMatchEngIta:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:speedRoundEngIta:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:flashcardLevelA:' + userName, '1');
+    localStorage.setItem('baseinglese:introDismissed:flashcard:' + userName, '1');
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
