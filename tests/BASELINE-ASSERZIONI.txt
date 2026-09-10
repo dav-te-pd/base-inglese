@@ -9,9 +9,9 @@
 # Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
-# Ultimo aggiornamento: 2026-09-09
-# Totale: 971
-test_attendi.js 6
+# Ultimo aggiornamento: 2026-09-10
+# Totale: 1041
+test_attendi.js 17
 test_avviso_microfono.js 31
 test_batch10.js 23
 test_batch11.js 26
