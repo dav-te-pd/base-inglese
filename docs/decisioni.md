@@ -432,11 +432,8 @@ non è un anticipo: è un lavoro da rifare.
 | **N.6** | **Lo streak che non si azzera cadendo**, da valutare **coi dati veri**, non a tavolino. | collaudo del 2026-09-09 |
 | **N.7** | **La schermata con l'elenco degli episodi e lo sblocco in serie.** Oggi l'app è **a film**: un episodio per volta, scelto dal Pannello Admin. Le tre ragioni stanno nella fase 1-bis, e la più forte è che «finito» dipende dagli undici moduli ancora da costruire — scriverlo adesso è scriverlo contro una mappa che cambierà. **La sequenza degli episodi NON slitta**: quella è un dato e resta nella fase 1-bis. Slitta la schermata, che è prodotto. | deciso il 2026-09-09 |
 | **N.8** | **Un avviso prima di perdere l'avanzamento.** Uscendo con «← Mappa» si perde quello che si è fatto — è la regola del gesto, decisa e giusta — **ma nessuno lo dice.** La forma: un pop con due tasti, che esce **solo se** c'è già qualcosa nel magazzino temporaneo. Chi entra e guarda non lo vede; chi ha risposto sì, e quindi ha qualcosa da perdere. *Non è un avviso generico: è un avviso che sa se serve.* ⚠️ Nasce dalla ③, che ha creato la cosa da perdere. **Dopo l'episodio 5.** | collaudo del 2026-09-10 |
-| **N.10** | **I tasti si rinominano guardandoli TUTTI INSIEME, non uno per volta.** Prima di toccare un nome serve verificare se il funzionamento è coerente ovunque o se qualche modulo fa una cosa sua: la domanda «questo tasto fa dappertutto la stessa cosa?» ha una risposta sola, e un modulo per volta la fa rispondere N volte in N modi. *Stessa forma della lettura finale di `componenti-singoli.md` (passo 24): il controllo è **leggere l'elenco intero**, non cercare.* **Dopo l'episodio 5.** | collaudo del 2026-09-10 |
+| **N.9** | **I tasti si rinominano guardandoli TUTTI INSIEME, non uno per volta.** Prima di toccare un nome serve verificare se il funzionamento è coerente ovunque o se qualche modulo fa una cosa sua: la domanda «questo tasto fa dappertutto la stessa cosa?» ha una risposta sola, e un modulo per volta la fa rispondere N volte in N modi. *Stessa forma della lettura finale di `componenti-singoli.md` (passo 24): il controllo è **leggere l'elenco intero**, non cercare.* **Dopo l'episodio 5.** | collaudo del 2026-09-10 |
 
-*N.9 non è assegnata, e la buca è voluta: **N.10** è il numero dato in chat il
-2026-09-10 e si tiene com'è. I numeri non si inventano e non si rinumerano —
-una buca visibile dice «qui manca qualcosa», una rinumerazione silenziosa no.*
 
 ## Le invarianti, valide per tutta la catena
 
