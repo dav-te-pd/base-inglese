@@ -38,6 +38,7 @@ test_batch9.js 22
 test_blocco_ascolto.js 19
 test_config_letta.js 3
 test_conta_asserzioni.js 12
+test_conta_attese.js 10
 test_dialogo_extra.js 20
 test_episodi_corti.js 9
 test_episodio2.js 9

@@ -363,10 +363,77 @@ non era stato scritto niente.
 
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
-| **14** | Le 19 attese fisse di `test_batch19` che fanno da guardia a un'asserzione. **1–1,5 giorni**, la più grossa della fase. Il modello è già scritto e verde: `tests/test_match_practice_nonloso.js`. | ☐ | **sì**, un'asserzione per volta |
+| **14a** | **Misurare le famiglie prima di convertire, e generare il censimento.** **FATTO E VERIFICATO il 2026-09-10** — ⬇︎ i numeri veri sono qui sotto. | ☑ | **sì** |
+| **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima. | ☐ | **sì**, una famiglia per volta |
 | **15** | I quattro valori ricopiati nei test. ~1 ora. ⚠️ Non portare via anche i `length === 3`: quelli sono **requisiti**, non copie — il riquadro in fondo a questo file lo spiega. | ☐ | **sì** |
 | **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file) e `tests/debug/` (6 file, aggiunto il 2026-09-09: quattro file che nessuno lancia sono quattro file che possono mentire senza che nessuno se ne accorga), `levels.X.label` (morto: unica occorrenza in un commento), i due `if` adiacenti in `vcEvaluate`, i quattro test con funzioni quasi identiche. *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
 | **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
+
+
+#### Il risultato del 14a — 2026-09-10
+
+**Il passo 14 come era scritto non esisteva più.** Diceva «le 19 attese fisse di
+`test_batch19`»: erano diventate **7** (il passo 0a-bis ne ha riscritte molte, e
+il file è sceso da 28 attese a 17). E il problema vero non era in quel file.
+
+| | |
+|---|---|
+| Attese a tempo in tutta la suite | **480** |
+| Di queste, **guardie** (il verde dipende da quel numero) | **180** |
+| Navigazione (se è corta il test si rompe aspettando, non passa) | 300 |
+| Quante ne dichiarava `ATTESE-FISSE.md` scritto a mano | 141 |
+
+⚠️ **E il censimento era morto senza che nessuno lo sapesse.** Andando a leggere
+le sue 141 righe nel codice di oggi: **140 numeri di riga su 141 erano
+sbagliati**, 4 indicavano righe che non esistono più, e ne mancavano decine
+dello stesso tipo (`test_batch7.js` ne dichiarava 3 e ne ha 4, `test_batch9.js`
+ne dichiarava 2 e ne ha 3). *Avevamo pianificato la fase 3 su un documento
+morto, e l'unico modo di accorgersene era andare a leggere le righe invece di
+fidarsi del conto.*
+
+**Da qui: `ATTESE-FISSE.md` non si scrive più a mano — lo genera
+`tests/tools/conta-attese.js`**, che identifica ogni punto con **l'asserzione
+che protegge** e non col numero di riga. Una riga si sposta a ogni commit;
+l'etichetta di un'asserzione no, e se cambia è perché qualcuno l'ha cambiata di
+proposito. Lo strumento ha il suo test (`tests/test_conta_attese.js`), per la
+ragione di `conta-asserzioni.js`: una misura che si guasta non lo dice.
+
+#### Le famiglie, e la forma che ognuna può riusare
+
+*Raggruppare per file dice chi ha il problema; raggruppare per **cosa aspettano**
+dice quante forme servono a chiuderlo. **Sono undici famiglie per 180 punti**, e
+per nove di esse una forma verde nella suite **esiste già.***
+
+| Cosa si aspetta | Quante | Forma verde già in casa |
+|---|---|---|
+| un pulsante o una classe che cambia stato | **52** | `waitForFunction` su `disabled`/`classList` — 8 usi |
+| un suono o la voce | **29** | l'attesa su `speechSynthesis.speaking` / `__playedTones` — 11 usi, nata a `test_batch5.js` Job1 |
+| una schermata che compare o sparisce | **28** | `waitForSelector({ state: 'visible' \| 'hidden' })` — 73 usi |
+| una scrittura nel `localStorage` | **18** | `waitForFunction` sullo store — 5 usi, e `rispondiECompleta` in `test_scala_colori.js` |
+| *altro* | **18** | ⚠️ da guardare a mano: è il residuo della classificazione, non una famiglia |
+| un testo che si riempie | **16** | **`attendiSottotitoloEsito`** (`tests/attese.js`) — la forma nata il 2026-09-10 |
+| un valore di configurazione o di dati | 5 | `waitForFunction` su `window.APP_CONFIG` |
+| uno stile calcolato | 5 | `waitForFunction` su `getComputedStyle` |
+| una misura di geometria | 3 | *nessuna: le tre vanno guardate a mano* |
+| un elenco di elementi che si ridisegna | 3 | `waitForFunction` sul conteggio — il modello di `test_match_practice_nonloso.js` |
+| la console (asserzione negativa) | 3 | **nessuna, e non serve**: le asserzioni negative sono già esentate per deroga dichiarata — verificare che *non* sia successo niente richiede di aspettare un tempo |
+
+**Cosa vuol dire per il 14b.** Non sono 180 lavori: sono **nove forme**, di cui
+sei già scritte e verdi, più due gruppi piccoli da guardare a mano (*altro* e la
+geometria, 21 punti in tutto). La forma si scrive una volta in `tests/attese.js`
+e le chiamate la usano — come è appena successo con le cinque corse del
+sottotitolo: quaranta righe più cinque chiamate.
+
+⚠️ **Le 7 di `test_batch19` non si fanno prima**: sono nelle famiglie qui sopra,
+e farle a parte vorrebbe dire scriverle due volte, una adesso a mano e una dopo
+con la forma.
+
+⚠️ **Il limite del numero, dichiarato**: 180 viene da un'euristica sul testo
+(«fra l'attesa e il `log` non c'è nient'altro»), verificata a mano su
+`test_batch19` — 17 punti su 17 — e a campione su `test_batch7` e `test_batch9`.
+Dice **quanto è largo il problema e dove sta**: l'elenco si legge, non si esegue.
+*Prima di oggi il numero era 141 e nessuno sapeva che fosse falso; adesso è 180
+e sappiamo esattamente con che regola è stato ottenuto.*
 
 ### Fase delle stringhe — quando si vuole, purché intera
 
