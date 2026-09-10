@@ -385,8 +385,19 @@ async function run() {
     // Ogni target ha almeno una parola sotto di se': se comparisse una riga di
     // target senza le sue parole, vorrebbe dire che la media ha preso il posto
     // del dettaglio invece di affiancarlo.
+    // C.1 (2026-09-10): le chiavi sono separate per VARIANTE, non per ordine.
+    // Le due hanno regole diverse su quale tentativo conta (Last vs First), e
+    // sulla stessa chiave nessun lettore saprebbe quale l'ha prodotta.
+    log('[C.1] Voice Practice non scrive NIENTE nelle voci di Voice Check',
+      Object.keys(mastery).every(k => k.indexOf('voicecheck:') !== 0),
+      Object.keys(mastery).filter(k => k.indexOf('voicecheck:') === 0).join(', '));
+    // ⚠️ La condizione `.length > 0` NON e' una cintura: senza, questa riga e'
+    // verde quando perTarget e' VUOTO ([].every() e' vero), cioe' proprio nel
+    // caso in cui il modulo ha smesso di scrivere. Famiglia ⓪-bis di
+    // tests/ERRORI-INGOIATI.md. Misurato il 2026-09-10 sulla gemella di Voice
+    // Check: col gate rimesso a 'practice' restava verde.
     log('[Job5] Ogni riga di target ha le sue parole accanto',
-      perTarget.every(t => perParola.some(w => w.indexOf(t + ':') === 0)));
+      perTarget.length > 0 && perTarget.every(t => perParola.some(w => w.indexOf(t + ':') === 0)));
     log('[Job5] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();
@@ -418,7 +429,82 @@ async function run() {
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level };
     }, 'T12Check');
     log('[Job5] Voice Check STILL uses ModuleRules (all-wrong -> rosso, unchanged from before the split)', state.level === 'rosso');
+
+    // ── C.1: Voice Check scrive, ed e' la STRADA B ──────────────────────
+    // Fino al 2026-09-10 questo modulo calcolava pairResults e le stelle e poi
+    // buttava tutto: era il modulo SENZA AIUTI — niente ripasso nello stesso
+    // passaggio, niente ritentativo, niente opzioni fra cui scegliere — cioe'
+    // il segnale piu' pulito che l'app produca, ed era l'unico che non
+    // conservava.
+    //
+    // ⚠️ Il giro appena fatto e' esattamente quello che distingue le due
+    // strade, e non e' un caso: ogni battuta e' stata sbagliata al PRIMO
+    // tentativo e poi data GIUSTA nel ripasso.
+    //   strada B (quella scelta): conta il primo -> tutto rosso
+    //   strada A (a ogni tentativo): il ripasso avrebbe promosso -> giallo
+    // Un'asserzione che guardasse solo "ci sono delle chiavi" sarebbe verde in
+    // tutti e due i casi, cioe' non proverebbe la decisione ma solo che
+    // qualcuno scrive.
+    const colori = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}'), 'T12Check');
+    const chiaviCheck = Object.keys(colori).filter(k => k.indexOf('voicecheck:') === 0);
+    log('[C.1] Voice Check scrive i colori delle voci', chiaviCheck.length > 0, Object.keys(colori).join(', '));
+    log('[C.1] ...in voci SUE: nessuna finisce dentro quelle di Voice Practice',
+      Object.keys(colori).length > 0 && Object.keys(colori).every(k => k.indexOf('voicecheck:') === 0),
+      Object.keys(colori).filter(k => k.indexOf('voicecheck:') !== 0).join(', '));
+    // Per battuta E per parola, come Voice Practice: la media dice quanto vale
+    // la battuta, le parole dicono DOVE si rompe.
+    const perParola = chiaviCheck.filter(k => /:\d+$/.test(k));
+    const perBattuta = chiaviCheck.filter(k => !/:\d+$/.test(k));
+    log('[C.1] Una riga per la battuta intera', perBattuta.length > 0, perBattuta.join(', '));
+    log('[C.1] E una riga per ogni parola dentro quella battuta', perParola.length > perBattuta.length,
+      perParola.length + ' parole su ' + perBattuta.length + ' battute');
+    // Vedi la gemella di Voice Practice sopra: senza `.length > 0` questa riga
+    // e' verde quando non e' stato scritto NIENTE.
+    log('[C.1] Ogni battuta scritta ha le sue parole accanto',
+      perBattuta.length > 0 && perBattuta.every(b => perParola.some(w => w.indexOf(b + ':') === 0)));
+    // ⚠️ SI GUARDA LA STRISCIA, NON SOLO IL LIVELLO, e non e' pignoleria:
+    // guardando il solo livello questa riga e' VERDE anche sotto la strada A.
+    // Misurato il 2026-09-10 rimettendo `scriveIColori = true`: con
+    // promotionStreak a 2 una sola risposta giusta NON promuove, quindi la
+    // giusta del ripasso porta { rosso, 0 } a { rosso, 1 } — il livello non si
+    // muove, e l'asserzione che si chiamava "STRADA B" non distingueva le due
+    // strade. La striscia si', ed e' l'unico segno che il ripasso ha scritto.
+    //   strada B: { rosso, 0 }   strada A: { rosso, 1 }
+    log('[C.1] STRADA B: conta il PRIMO tentativo — la giusta del ripasso non ha scritto niente',
+      chiaviCheck.length > 0 && chiaviCheck.every(k => colori[k].level === 'rosso' && colori[k].streak === 0),
+      JSON.stringify(chiaviCheck.slice(0, 4).map(k => k + '=' + colori[k].level + '/' + colori[k].streak)));
+
     log('[Job5] No JS errors', errors.length === 0);
+    if (errors.length) console.log(errors);
+    await page.close();
+  }
+
+  // ============ C.1 + il gesto: Voice Check non fa eccezione ============
+  // La regola del gesto vive in tests/test_mastery_al_gesto.js, e la sua
+  // asserzione strutturale ([A]: saveMastery ha un solo punto di chiamata) la
+  // rende gia' vera per QUALUNQUE modulo, questo compreso. Il caso di Voice
+  // Check sta qui e non li' per una ragione sola: la macchina del microfono
+  // (mockInit + vcAnswerLine) e' in questo file, e ricopiarla sarebbe la
+  // duplicazione che la regola 13 esiste per evitare.
+  {
+    const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    const idx = ALL_MODULES.indexOf('voiceCoach');
+    await bootAsUser(page, 'T12CheckMappa', ALL_MODULES.slice(0, idx));
+    await openModule(page, 'voiceCoach');
+    await page.waitForTimeout(300);
+    await vcCompleteLineRight(page);
+    const primaDiUscire = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
+    log('[C.1] Rispondere non scrive: il colore aspetta il pulsante come in ogni altro modulo',
+      primaDiUscire === null || Object.keys(JSON.parse(primaDiUscire)).length === 0, String(primaDiUscire));
+    await page.click('#voice-coach-back-map');
+    await page.waitForTimeout(250);
+    const dopoMappa = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
+    log('[C.1] Uscendo da "← Mappa" non resta nessuna voce di Voice Check',
+      dopoMappa === null || Object.keys(JSON.parse(dopoMappa)).length === 0, String(dopoMappa));
+    log('[C.1] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();
   }

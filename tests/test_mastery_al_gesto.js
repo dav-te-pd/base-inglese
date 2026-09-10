@@ -45,12 +45,17 @@
 //    magazzini diversi. Per questo [B] misura due numeri, non uno.
 //
 // LIMITE DICHIARATO: dei moduli che scrivono voci qui se ne guida uno
-// (Match Practice en→it). Gli altri sette sono coperti da [A], che è più forte
-// di un confronto a campione — ma se un modulo smettesse di CHIAMARE
+// (Match Practice en→it). Gli altri sono coperti da [A], che è più forte di un
+// confronto a campione — ma se un modulo smettesse di CHIAMARE
 // recordPendingMastery, e quindi non registrasse più niente, qui non si
 // vedrebbe. Quel caso lo prendono i test dei singoli moduli (test_batch12 per
-// Voice Practice, test_scala_colori per Flash Card, test_batch15 per i quiz),
-// che il magazzino lo leggono pieno dopo il completamento.
+// Voice Practice e Voice Check, test_scala_colori per Flash Card, test_batch15
+// per i quiz), che il magazzino lo leggono pieno dopo il completamento.
+//
+// E il caso di VOICE CHECK con "← Mappa" sta in test_batch12 e non qui, per
+// una ragione sola: la macchina del microfono (il mock del riconoscimento
+// vocale) è in quel file, e ricopiarla qui sarebbe la duplicazione che la
+// regola 13 esiste per evitare. La regola resta questa; lì c'è il suo caso.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');

@@ -4290,7 +4290,7 @@
              direzione, e i colori si muovono a ogni risposta.
              NON mostra quante volte una voce e' stata scritta: quel dato non
              esiste. Una voce di mastery e' { level, streak } e nessuno dei
-             tre scrittori tiene un contatore; mostrarlo vorrebbe dire
+             moduli che la scrivono tiene un contatore; mostrarlo vorrebbe dire
              cambiare cosa si salva, cioe' la logica che questo pannello
              esiste per osservare senza disturbare. -->
         <details class="config-group" open>
@@ -4995,7 +4995,7 @@
     }).join('');
     el.innerHTML =
       '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' +
-      currentEpisode.id + '. La chiave e\' <code>esercizio:voce:direzione</code>: la stessa parola ha una riga per ogni esercizio e per ogni direzione, ed e\' voluto. Voice Practice indicizza per POSIZIONE nella battuta (<code>voicepractice:d-1:0</code>), non per id della voce. Il numero di scritture non c\'e\': non viene salvato.</p>' +
+      currentEpisode.id + '. La chiave e\' <code>esercizio:voce:direzione</code>: la stessa parola ha una riga per ogni esercizio e per ogni direzione, ed e\' voluto. Voice Practice e Voice Check aggiungono una dimensione: <code>voicepractice:b-and-you</code> e\' la battuta intera, <code>voicepractice:b-and-you:0</code> e\' la prima parola DENTRO quella battuta — la stessa parola vale un\'altra cosa da sola e in mezzo a un\'espressione. Le due varianti hanno prefissi diversi perche\' hanno regole diverse su quale tentativo conta. Il numero di scritture non c\'e\': non viene salvato.</p>' +
       '<div class="config-audio-usage-row config-audio-usage-total"><span>Voci in tutto</span><span>' + chiavi.length + '</span></div>' +
       '<div class="config-audio-usage-row"><span>rosso · giallo · verde</span><span>' +
       perLivello.rosso + ' · ' + perLivello.giallo + ' · ' + perLivello.verde + '</span></div>' +
@@ -7833,13 +7833,17 @@
          no final ripasso pass; DOES color the map via ModuleRules, scored
          by the LATEST attempt on each phrase (LastAttemptRule, see
          vcEvaluate) since retrying means "I want to get better",
-         not a frozen first try; also feeds the per-word mastery store (a
-         real measurement — see the practice-only block in vcEvaluate).
+         not a frozen first try.
        - check: no retry button at all (one recording per phrase) but
          keeps the existing retry-QUEUE/Schermata Ripasso pass and
          ModuleRules map color scored by the FIRST attempt only
-         (FirstAttemptRule, see vcEvaluate), unchanged from before the
-         split.
+         (FirstAttemptRule, see vcEvaluate).
+     ENTRAMBE alimentano i colori delle voci, ognuna nelle proprie
+     (vcMasteryPrefix: 'voicepractice:' / 'voicecheck:'), e con la stessa
+     regola con cui ognuna calcola le stelle — practice a ogni tentativo,
+     check solo al primo. Voice Check ha scritto per la prima volta il
+     2026-09-10: prima calcolava il dato per parola e lo buttava, ed era il
+     modulo SENZA AIUTI, cioe' il segnale piu' pulito che l'app produca.
      Recording mechanics, mic-trouble detection, star rating and the
      shared safety-valve popup are identical either way — everything in
      this section not explicitly gated on vcVariant runs for both.
@@ -7855,6 +7859,21 @@
      ============================================================ */
   var vcModule = null;
   var vcVariant = 'check'; // 'practice' | 'check' — set from module.voiceVariant in openVoiceCoach
+
+  // Il prefisso delle voci di mastery, UNO PER VARIANTE, e sta in una funzione
+  // invece che scritto a mano nei due punti che lo usano. Scriverlo due volte
+  // E' il difetto: basterebbe togliere il gate sulla variante senza accorgersi
+  // che il prefisso resta quello dell'altra, e Voice Check comincerebbe a
+  // scrivere DENTRO le voci di Voice Practice — sulla stessa chiave, dove
+  // nessun lettore potrebbe piu' sapere quale delle due l'ha prodotta.
+  //
+  // Le due varianti hanno regole diverse su QUALE tentativo conta (Last vs
+  // First, vedi vcEvaluate): due regole sulla stessa chiave sono due risposte
+  // diverse alla stessa domanda. Per questo le chiavi sono separate, e non per
+  // ordine.
+  function vcMasteryPrefix() {
+    return vcVariant === 'practice' ? 'voicepractice:' : 'voicecheck:';
+  }
   var vcLines = [];
   // Queue-based pass navigation (same shape as Match Practice's qmQueue/
   // qmRetryQueue/qmPassIndex/qmPassTotal, CLAUDE.md rule 13): the main
@@ -8430,12 +8449,38 @@
       vcFirstAttemptPercents.push(pct);
     }
 
-    // Voice Practice only (job: "sdoppiare Voice Coach") — feeds the same
-    // per-word mastery store Speed Match/Match Practice/Flash Card use, a
-    // real measurement of this word in THIS sentence position; never
-    // touched for Voice Check (unchanged from before the split). Unit id
-    // is position-based (line + word index), stable across sessions since
-    // a line's own word content doesn't change.
+    // I COLORI DELLE VOCI — le scrivono TUTTE E DUE le varianti, ognuna
+    // nelle proprie (vcMasteryPrefix). L'unita' e' la parola dentro QUESTA
+    // battuta: 'voicepractice:b-and-you:0' e' "and" dentro "and you?", che e'
+    // un'abilita' diversa da "and" da sola nel grado A — accento e ritmo
+    // cambiano. Piu' la riga del TARGET, la battuta intera, poco sotto.
+    //
+    // ⚠️ QUALE TENTATIVO SCRIVE, e sono due regole diverse:
+    //
+    //   practice — OGNI tentativo. La scala e' fatta per accumulare, e
+    //     allenarsi e' accumulare: tre tentativi sono tre passaggi nella
+    //     scala. ⚠️ Non e' la LastAttemptRule: quella vale per il BADGE
+    //     della mappa (vcLastAttemptPercentByLine), che tiene solo l'ultimo.
+    //     Il nome dice una cosa che qui non succede — registrato in
+    //     docs/decisioni.md fra i nomi che mentono.
+    //   check — SOLO il primo (strada B). Le stelle di Voice Check gia' fanno
+    //     cosi' (FirstAttemptRule): se i colori scrivessero a ogni tentativo,
+    //     lo stesso modulo terrebbe due risposte diverse alla stessa domanda.
+    //     Il ripasso resta e non segna niente — serve a farti sentire come si
+    //     dice subito dopo aver sbagliato: e' insegnamento, non misura. Per
+    //     imparare c'e' Voice Practice, e quello scrive.
+    //
+    // ⚠️ CONSEGUENZA DICHIARATA, e non si compensa: in Voice Check una
+    // registrazione MUTA al primo tentativo lascia quella battuta SENZA
+    // COLORE, perche' il secondo tentativo non e' piu' il primo. E' voluto —
+    // una voce che manca e' assenza di dato (regola 39), e qui non abbiamo
+    // sentito niente, quindi non c'e' niente da giudicare. Aspettare invece
+    // "il primo tentativo SENTITO" seguirebbe un "primo" diverso da quello
+    // delle stelle, che e' esattamente il difetto che le chiavi separate
+    // esistono per evitare.
+    //   (Il badge, in quel caso, segna 0% — cioe' "hai sbagliato tutto"
+    //   mentre la verita' e' "non ti abbiamo sentito". E' un difetto suo,
+    //   registrato in docs/decisioni.md; non si corregge da qui.)
     // La condizione sul riconoscimento vuoto NON e' una soglia sul rumore: e'
     // la regola spostata da COME e' finita la registrazione a COSA ha
     // prodotto. Il ramo che scartava la registrazione muta (il timeout di
@@ -8449,9 +8494,10 @@
     // motore che molla. Se non abbiamo sentito niente, non c'e' niente da
     // giudicare — e il timeout di silenzio torna a fare solo il suo mestiere,
     // decidere QUANDO smettere di registrare, che e' comodita' e non dato.
-    if (vcVariant === 'practice' && recognizedWords.length > 0) {
+    var scriveIColori = vcVariant === 'practice' || attemptNum === 1;
+    if (scriveIColori && recognizedWords.length > 0) {
       pairs.forEach(function (pair, i) {
-        recordPendingMastery('voicepractice:' + line.id + ':' + pair.targetIndex, pairResults[i]);
+        recordPendingMastery(vcMasteryPrefix() + line.id + ':' + pair.targetIndex, pairResults[i]);
       });
       // E il TARGET: la voce intera, con la media delle parole. Il criterio e'
       // "dove ci sono le stelle, quello e' il dato da registrare" — le stelle
@@ -8467,7 +8513,7 @@
       // CONFIG.percentageThresholds, le stesse soglie con cui la percentuale
       // diventa un colore ovunque nell'app (regola 3 e regola 13).
       var esitoTarget = { alto: 'correct', medio: 'similar', basso: 'wrong' }[percentageBucket(pct)];
-      recordPendingMastery('voicepractice:' + line.id, esitoTarget);
+      recordPendingMastery(vcMasteryPrefix() + line.id, esitoTarget);
     }
 
     // Richiamo (Voice Check only — Voice Practice has no final ripasso

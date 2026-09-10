@@ -19,7 +19,7 @@
 //
 // LIMITE DICHIARATO: il pannello non mostra QUANTE VOLTE una voce è stata
 // scritta, e questo test non lo verifica, perché quel dato non esiste: una
-// voce di mastery è { level, streak } e nessuno dei tre scrittori tiene un
+// voce di mastery è { level, streak } e nessun modulo che la scrive tiene un
 // contatore.
 
 const { launchBrowser, APP_URL } = require('./test-env');
@@ -27,9 +27,11 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const BASE = APP_URL;
 const UTENTE = 'ReportMastery';
 
-// Colori scritti a mano nella forma esatta dei tre scrittori veri: due
-// esercizi diversi e due direzioni sulla stessa voce (a-hello), più le due
-// posizioni di una battuta di Voice Practice.
+// Colori scritti a mano nella forma esatta che i moduli producono davvero:
+// due esercizi diversi e due direzioni sulla stessa voce (a-hello), più le due
+// posizioni di una battuta di Voice Practice. Il pannello è indifferente al
+// prefisso — elenca le chiavi che trova — quindi qui non serve una riga per
+// ogni modulo: serve una riga per ogni FORMA di chiave.
 const COLORI = {
   'match:a-hello:it-en': { level: 'rosso', streak: 0 },
   'voicepractice:d-1:1': { level: 'verde', streak: 1 },

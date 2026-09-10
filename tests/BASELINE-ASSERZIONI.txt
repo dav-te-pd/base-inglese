@@ -15,7 +15,7 @@ test_attendi.js 6
 test_avviso_microfono.js 31
 test_batch10.js 23
 test_batch11.js 26
-test_batch12.js 47
+test_batch12.js 57
 test_batch13.js 21
 test_batch14.js 38
 test_batch15.js 39

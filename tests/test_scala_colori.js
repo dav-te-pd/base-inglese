@@ -32,8 +32,17 @@
 //
 //    LIMITE DICHIARATO, ed è la conseguenza vera di ②: **in Flash Card una
 //    risposta sbagliata non può restare tale fino alla fine.** La carta
-//    sbagliata torna nel giro di ripasso, e il modulo non arriva alla
-//    Schermata Finale finché non la si dà giusta. Le due prove di
+//    sbagliata torna nel giro di ripasso.
+//
+//    ⚠️ Non è «il modulo non finisce finché non la dai giusta» — così diceva
+//    questa riga il 2026-09-10, ed era falso: al tetto di
+//    CONFIG.retryQueue.maxAttempts la voce viene accettata a forza come rosso
+//    e il giro si chiude comunque, esattamente come in Match Practice. **Ma
+//    per quella strada la voce viene forzata SCAVALCANDO la scala**, quindi
+//    non serve lo stesso a misurare la retrocessione — la conclusione non
+//    cambia, la ragione sì. *Una frase che spiega un limite e ne dà una
+//    ragione sbagliata è peggio di una che non lo spiega: chi la legge smette
+//    di guardare.* Le due prove di
 //    RETROCESSIONE ([B] ed [E]) leggono quindi lo stato dopo DUE risposte —
 //    la sbagliata e la giusta del ripasso — e il valore atteso è calcolato
 //    sulla sequenza intera. Accanto a ciascuna è scritto quale valore
