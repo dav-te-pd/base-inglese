@@ -502,6 +502,44 @@ non è un anticipo: è un lavoro da rifare.
 | **N.9** | **I tasti si rinominano guardandoli TUTTI INSIEME, non uno per volta.** Prima di toccare un nome serve verificare se il funzionamento è coerente ovunque o se qualche modulo fa una cosa sua: la domanda «questo tasto fa dappertutto la stessa cosa?» ha una risposta sola, e un modulo per volta la fa rispondere N volte in N modi. *Stessa forma della lettura finale di `componenti-singoli.md` (passo 24): il controllo è **leggere l'elenco intero**, non cercare.* **Dopo l'episodio 5.** | collaudo del 2026-09-10 |
 
 
+## La famiglia: la conoscenza che ogni file deve ricordarsi da solo
+
+*Non è una lista di lavori: è una **forma di difetto**, e ne abbiamo già visti
+tre. Serve saperla riconoscere, perché il quarto caso non somiglierà ai primi
+tre — somiglierà a «quel file è scritto male».*
+
+**La forma.** Una cosa che vale per tutti — come si disegna un pulsante, che un
+testo arriva da un fetch, che un popup intercetta i click — non sta in nessun
+posto: **sta nella testa di chi scrive**, e ogni file la ricorda o non la
+ricorda. Chi la ricorda la scrive a modo suo. Chi non la ricorda produce un
+difetto che nessun test vede, perché ogni file passa i propri verdi.
+
+| | Caso | Copie trovate | Chiuso con |
+|---|---|---|---|
+| ① | **Il Blocco Ascolto** (2026-09-09) | 7 copie del markup + 5 della coda del gestore | `renderListenBlock` |
+| ② | **Il sottotitolo che arriva da un fetch** (2026-09-10) | 5 punti, 3 con un'attesa a tempo e 2 con nessuna | `attendiSottotitoloEsito` (`tests/attese.js`) |
+| ③ | **Il popup dei tentativi** (2026-09-10) | **12 copie in 10 file, in 8 formulazioni** — e un undicesimo file che non lo nominava affatto | `chiudiPopupTentativiSeAperto` (`tests/quiz-driver.js`) |
+
+⚠️ **Il terzo è quello che insegna di più, perché il file «colpevole» era
+`test_batch19` — quello che avevamo già riscritto al passo 0a-bis.** Non era
+scritto male: gli mancava una conoscenza che nessuno gli aveva dato, e che gli
+altri dieci si tenevano ognuno per sé. *Il difetto non è nel file che non sa: è
+che sapere fosse un compito di memoria.*
+
+**E il dato che cambia il 14b.** Chiudendo il popup sono sparite **dieci attese
+a tempo**, senza averle cercate: la forma condivisa aspetta lo stato vero, e le
+copie che aspettavano 80/100/120/150 ms sono venute via da sole. Quindi:
+
+> ⚠️ **Le 180 guardie del 14a scendono mentre si chiudono le famiglie, e il
+> conto va rifatto DOPO ogni chiusura, non prima.** Pianificare il 14b sul
+> numero di stamattina significherebbe pianificarlo su un numero che il lavoro
+> stesso sta cambiando. Si rigenera con `node tests/tools/conta-attese.js`.
+
+*Ed è la stessa lezione del censimento morto, vista dall'altra parte: lì il
+numero era vecchio perché nessuno lo ricalcolava; qui sarebbe vecchio perché il
+lavoro lo consuma. In tutti e due i casi la difesa è la stessa — **il numero si
+genera, non si ricorda.***
+
 ## Le invarianti, valide per tutta la catena
 
 - **Venti suite invece di un macello.** Nel dubbio fra una corsa e due, se ne fanno due:
@@ -532,6 +570,83 @@ non è un anticipo: è un lavoro da rifare.
 | 2026-09-06 · nomi decisi il 2026-09-08 | **La rinomina unica: cinque nomi in un lavoro solo.** `se* → storyCards*`, `srShuffle → shuffle`, `quickMatch* → match*`, `speedRound* → speedMatch*`, `flashcardLevelA → flashcard`, più gli id degli episodi `gate → gate` e `aircraft-door → aircraft-door`. **I nomi e le loro ragioni stanno in `docs/inglese/it/struttura-corso.md`, sezione «I nomi in codice»** — qui c'è la decisione di eseguirla, non i nomi. Segue il `kind`/id del modulo e lo strato in kebab (`speak-easy-*`, `quick-match-*`); **NON seguono le sigle di due lettere** (`qm-`, `sr-`, `fc*`), e questa è una decisione scritta, non una dimenticanza. | I nomi vecchi sono prefissi ereditati dal primo modulo che li ha introdotti, o nomi che mentono: `flashcardLevelA` si porta dentro il grado A mentre lo stesso descrittore gira sul grado B, e `se*` viene da «Speak Easy», un modulo che non esiste più — scritto per esteso in **54 punti** come `speak-easy-*`. **E la premessa da correggere: non è solo l'id dell'episodio a toccare i progressi salvati.** `se*` nomina due namespace del `localStorage` (`seDeclarations:`, `seExplanationStats:`), e i `kind`/id dei moduli sono le chiavi di `modules:`, `moduleOutcome:`, `audioSecondsSent:`, `nextLineSkips:` e `introDismissed:`. Quattro rinomine su cinque lasciano dati orfani, non una. | **Prima di un collaudo su profilo nuovo**, finché siamo gli unici utenti e non c'è niente da migrare. **Una rinomina per volta, suite completa fra una e l'altra**, dal più piccolo al più grande: `shuffle` → `flashcard` → `match*` → `speedMatch*` → `storyCards*` → gli id degli episodi. Così il primo rosso ha sempre il sospettato più piccolo possibile. Non va più insieme a Supabase. |
 
 ## Difetti silenziosi trovati e non ancora corretti
+
+### ⚠️ IL MODULO SI APRE PRIMA DI AVERE QUELLO CHE GLI SERVE — misurato il 2026-09-10
+
+**Riprodotto, non ipotizzato.** Ritardando di due secondi il fetch di
+`messaggi-feedback.json` e premendo il microfono, esce lo stesso errore del log
+della CI #99: `TypeError: Cannot read properties of null (reading 'english')`.
+
+**La catena, e nessun anello è un caso:**
+
+1. `openVoiceCoach` disegna la schermata e **abilita `vc-record-btn`** — la
+   condizione è solo `!VCSpeechRecognition`, cioè «il browser sa ascoltare»,
+   non «il modulo ha una battuta».
+2. `#vc-target` mostra ancora `"Caricamento..."` e `vcCurrentLineObj` è `null`.
+3. La battuta viene impostata solo dentro
+   `Promise.all([loadEpisodeData(module), loadFeedbackMessages()]).then(...)` —
+   e **quel `Promise.all` aspetta anche `messaggi-feedback.json`**, che è un
+   fetch vero: i dati dell'episodio sono già in cache (`openModuleFromMap`
+   aspetta `ensureEpisodeSlotFields` prima di aprire qualunque modulo), quel
+   file no.
+4. Il gestore del pulsante microfono fa `tokenize(vcTargetText())`, cioè
+   `vcCurrentLine().english`, **senza guardia**. Su `null` esplode.
+
+⚠️ **NON è un difetto dei test: è dell'app.** Uno studente su una rete lenta
+vede il microfono acceso sopra la scritta «Caricamento...», preme, e **non
+succede niente** — nessun messaggio, nessuna spiegazione, nessuna schermata
+d'errore. La regola 35 non lo copre: quella difende il **fallimento** del
+caricamento, non la **finestra** in cui sta ancora arrivando.
+
+**E la finestra vale per TUTTI e otto i moduli, non per Voice Coach.** Misurato
+uno per uno: in quella finestra il pulsante di lavoro è presente e **attivo** in
+otto casi su otto. Solo Voice Coach ci **muore** dentro perché dereferenzia; gli
+altri sette accettano un gesto che non fa niente — che è più silenzioso e non
+per questo migliore. **L'unico che si difende è Why We Say It**, il cui pulsante
+è spento.
+
+⚠️ **È il terzo difetto in due giorni causato da `messaggi-feedback.json`**, dopo
+il sottotitolo della Schermata Finale e le cinque corse dei test. Non è una
+coincidenza: **è l'unico fetch che nessuno aspetta**, perché sembra un dettaglio
+di testo e invece sta dentro il `Promise.all` che decide quando un modulo è
+pronto.
+
+**Cosa NON è.** Due ipotesi sono state misurate e scartate, e vanno scritte
+perché non tornino: *(a)* non è l'episodio che arriva tardi — `openModuleFromMap`
+lo aspetta, e ritardando quel file il modulo semplicemente non si apre; *(b)* non
+è stato ereditato da un modulo precedente — `[A]`, `[B]` e `[C]` del test usano
+pagine e utenti diversi, e `vcCurrentLineObj` **è** azzerata all'apertura.
+
+**Come si correggerebbe, e va deciso, non dedotto.** Una guardia che ritorna
+stringa vuota è un cerotto: nasconde il problema invece di chiuderlo. Le strade
+vere sono due — **tenere spenti i pulsanti di lavoro finché il modulo non è
+pronto**, oppure **non aprire il modulo finché non lo è** (cioè spostare l'attesa
+dove sta già per l'episodio, in `openModuleFromMap`). La prima è locale e
+onesta; la seconda è una riga sola e chiude tutti e otto i moduli insieme.
+
+### ⚠️ Tre variabili di Voice Coach sopravvivono da un modulo all'altro
+
+Trovate misurando il difetto qui sopra, e **non lo spiegano**: sono un difetto a
+sé, ancora senza sintomo. Delle 31 variabili di stato del modulo,
+`openVoiceCoach` ne reimposta 17 e `vcResetRecording` (con `clearVcTimeout`,
+`stopVcTimer`, `setVcState`) ne copre altre. Restano fuori:
+
+| | Cosa fa | Cosa può succedere |
+|---|---|---|
+| `vcCurrentEvaluated` | abilita «Avanti» | «Avanti» attivo all'apertura senza aver risposto |
+| `vcLastAvgPct` | il punteggio che finisce nel `moduleOutcome` | un modulo prende il voto del precedente |
+| `vcRecordStartedAt` | la durata della registrazione | secondi di audio attribuiti al modulo sbagliato |
+
+*(`vcFeedbackDataCache` è una cache voluta, `vcRecognition` l'oggetto creato una
+volta, `vcScorePercents` è scritta e letta nello stesso giro: non sono orfane.)*
+
+⚠️ **La ragione per cui pesa più dei tre casi**: la pulizia di questo modulo è
+divisa in **due posti** — `openVoiceCoach` e `vcResetRecording` — e quello che
+non sta in nessuno dei due sopravvive **senza che nessuno lo decida**. È la
+stessa forma della famiglia qui sopra: la conoscenza «questa variabile va
+azzerata» è un compito di memoria.
+
+
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
@@ -691,6 +806,7 @@ scadere, o si sa che niente la farà, e si scrive quale dei due.
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
+| 2026-09-10 | **Due commit ravvicinati fanno fallire «pages build and deployment».** Successo il 2026-09-10 due volte di fila (corse #168 e #169): fra un push e l'altro passavano diciotto minuti, e la seconda pubblicazione ha trovato la prima ancora in corso. ⚠️ **Non è un difetto nostro e non sta nel codice** — nessuno dei due commit toccava `index.html`. **Si sistema da sola al push successivo**, e infatti la #170 è verde. | Serve scritta qui per una ragione sola: **perché la prossima volta nessuno la cerchi nel codice.** Una corsa rossa accanto a una verde, sullo stesso commit, è esattamente la cosa che fa perdere mezz'ora a chi non sa che le due non c'entrano niente fra loro. | **Niente da fare**, se non riconoscerla. Se un giorno diventasse frequente, la strada è fare meno push ravvicinati su `main` — cioè la stessa disciplina del ramo di verifica. |
 | 2026-09-10 | **`actions/checkout@v4` e `actions/setup-node@v4` vanno alzate a `@v5`.** GitHub le sta forzando su Node 24 perché Node 20 è deprecato sui runner, e ogni corsa stampa il warning. ⚠️ **NON è la causa di nessun rosso**: quelle azioni girano *prima* dei test, e `npm test` gira sul Node 22 che `setup-node` installa — la stessa versione del container (v22.22.2). Verificato il 2026-09-10 mentre si cercava altro. | **Una riga di manutenzione, non un'emergenza.** Il warning oggi è un preavviso: quando GitHub toglierà del tutto il supporto, quelle azioni smetteranno di partire e la CI diventerà rossa per un motivo che non c'entra niente con l'app — e succederà senza preavviso ulteriore, perché il preavviso è questo. | **Quando si tocca il workflow per un'altra ragione**, o al primo segnale che la scadenza si avvicina. Non con un giro apposta. |
 | 2026-09-05 | La divergenza **off/seen** in `tests/module-order.js`: il file riscrive a mano la regola di `moduleStepId()` e conta le apparizioni in modo diverso dall'app. | Correggerla adesso significa mantenere due copie della stessa regola. | **Non si corregge: sparisce da sola** quando l'identità del passo sarà `modulo + grado`, perché non ci sarà più niente da contare. |
 | 2026-09-06 | I testi dell'avviso microfono (`vcUpdateMicNotice`, titolo e corpo dei tre livelli) sono scritti nel codice invece che in `data/{lingua}/istruzioni-moduli.json`, insieme ad altre ~25 frasi già note nella stessa condizione. | Regola 8: se è testo che lo studente legge e non è contenuto dell'episodio, sta nel JSON. Sparsi nel codice non si possono correggere senza toccare `index.html`, e in una seconda edizione non si possono tradurre affatto. | **È un lavoro solo**, non venticinque: si fa quando ci arriveremo, tutto insieme. Spostarne una alla volta lascia il problema e raddoppia i posti dove cercare. |

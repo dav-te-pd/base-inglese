@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260909b**
+**Versione: 20260910a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -190,6 +190,24 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 19. **Un test non deve mai dipendere da quanto è veloce la macchina che lo esegue.** Se verifica uno stato transitorio, legge lo stato interno dentro un'unica chiamata sincrona invece di correre contro un timer con round-trip separati. Un mock che semplifica troppo la realtà (es. una sintesi vocale che finisce all'istante invece che in modo asincrono come quella vera) dà una sicurezza falsa — nasconde proprio i bug che dipendono da un ordine di eventi asincrono.
 
+    ⚠️ **E IL FATTO CHE MANCAVA, senza il quale questa regola non si può
+    applicare: il container di lavoro è SISTEMATICAMENTE più veloce del runner
+    della CI, e la differenza è stabile.** Non è un'intermittenza: una corsa
+    persa là si vince **sempre** qui. Misurato il 2026-09-10 — sei giri verdi in
+    locale e due corse rosse su due, sullo stesso commit.
+
+    Ne discende che **rilanciare un test in locale non può escludere questa
+    famiglia**: dieci giri darebbero dieci verdi e la conclusione sbagliata
+    («allora era un flake»). Un rosso della CI che non si riproduce qui **non è
+    un mistero: ha un nome** — è un'asserzione che legge uno stato prodotto in
+    modo asincrono senza aspettarlo.
+
+    *Perché questa aggiunta, e non è un dettaglio: il 2026-09-10 questa regola è
+    stata violata da chi l'aveva appena letta. Non mancava la regola — mancava
+    il fatto. **Una regola che non si può applicare perché manca il fatto è una
+    regola che si viola avendola letta**, ed è la stessa forma della 41: l'elenco
+    delle forme c'era, e non è stato usato perché non aveva i comandi.*
+
 20. **Quando si blocca un'azione, il blocco vive nella funzione che la esegue, non solo nel pulsante o listener che la richiama** — i punti da cui si può richiamare una funzione si moltiplicano nel tempo, la funzione resta una sola.
 
 21. **`stopAllModuleActivity()` è il punto unico di pulizia quando si lascia un modulo.** Timer, registrazioni, sequenze in corso di qualunque modulo — presente o futuro — si azzerano lì (chiamata da `showView()`), mai dentro il singolo pulsante "← Mappa" di un modulo.
@@ -252,6 +270,17 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     **Un test che non sa dire cosa protegge non va scritto.** Se la riga esce come "verifica che la funzione X funzioni", il test sta ricopiando l'implementazione invece di difendere un comportamento, e passerà anche quando l'app è rotta.
 
     Vale anche al contrario: **un limite noto si scrive lì**, invece di lasciarlo scoprire a chi si fiderà del verde. Un test che copre metà di un comportamento e lo dichiara protegge più di uno che sembra coprirlo tutto.
+
+    ⚠️ **E un guasto che uccide il test NON BASTA: serve il guasto REALISTICO
+    che la forma vecchia non reggeva e la nuova sì.** Sono due prove diverse, e
+    solo la seconda dice che la correzione serve.
+
+    *Il caso, 2026-09-10.* Un'asserzione correva contro un fetch. Rompendo il
+    fetch del tutto la riga diventava rossa — ma quello prova solo che
+    l'asserzione **sa morire**. La prova vera è stata ritardare il fetch di due
+    secondi, cioè la macchina lenta, esagerata: **la forma nuova regge e quella
+    vecchia cade.** Vedere solo il timeout avrebbe lasciato credere di aver
+    verificato una cosa che non era stata verificata.
 
     *Perché c'è: la mappa in `tests/README.md` è servita a vedere i buchi, non a documentare — e li ha trovati contando cosa NON era protetto. È anche il motivo per cui il conto dei file non si scrive qui: quella tabella cresce di una riga per ogni test nuovo, un totale scritto altrove no. Senza la riga in testa, quel lavoro va rifatto da capo ogni volta leggendo le asserzioni una per una, che è esattamente il motivo per cui non lo fa nessuno.*
 
@@ -383,7 +412,23 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     non ha modo di controllare queste risposte: se ne accorge solo per caso.
     E la sessione successiva non era lì a impararlo.*
 
-38. **Si lancia sempre la suite completa in locale prima di spingere.** La CI
+38. **LA VERIFICA È DUE COSE: LA SUITE LOCALE E LA CI, GUARDATE ENTRAMBE.**
+
+    **La suite locale dice «non ci sono regressioni». Non dice «non ci sono
+    corse»** — vedi la regola 19: il container è più veloce del runner, e una
+    corsa persa là si vince sempre qui.
+
+    **E la CI si LEGGE, non si dà per andata.** Il 2026-09-10 tre corse
+    consecutive hanno dato tre esiti diversi sullo stesso albero, e due rosse
+    sono passate inosservate perché si aspettava la terza dando per scontate le
+    prime. *Credere a un risultato invece di leggerlo è la stessa forma della
+    misura che non misura (regola 37): non somiglia a un errore, somiglia a un
+    risultato.*
+
+    Quindi, a ogni merge: si legge l'esito della corsa **di quel commit**, e lo
+    si riporta — verde o rossa. Non «aspetto la prossima».
+
+    Si lancia sempre la suite completa in locale prima di spingere. La CI
     resta, ma come rete su una macchina che non è la mia — non come primo
     controllo.
 
