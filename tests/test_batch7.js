@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
+const { attendiSottotitoloEsito } = require('./attese');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -88,6 +89,12 @@ async function run() {
     log('[Job2] Speed Match reached Schermata Finale', summaryVisible);
     if (summaryVisible) {
       const title = await page.$eval('#sr-summary-title', el => el.textContent).catch(() => null);
+      // Il sottotitolo arriva da un fetch, non con la schermata: si aspetta
+      // che sia stato riempito davvero (tests/attese.js). Qui la corsa si
+      // vinceva per FORTUNA — durante il quiz la valvola dei tentativi e la
+      // Schermata Ripasso avevano già scaldato la cache dei messaggi. Quale
+      // modulo la scaldi e quale no non è una cosa da tenere a mente.
+      await attendiSottotitoloEsito(page, 'sr-summary-title-sub');
       const subtitle = await page.$eval('#sr-summary-title-sub', el => el.textContent).catch(() => null);
       log('[Job2] Fixed title is "Round completato!"', title === 'Round completato!');
       log('[Job2] Rotating subtitle is non-empty and from moduleCompleteMessages', !!subtitle && subtitle.length > 5);

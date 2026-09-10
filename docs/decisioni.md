@@ -510,6 +510,34 @@ diversamente, e nessuno l'ha mai deciso.*
 *Stessa famiglia: la CI diventa rossa e chi la legge non sa se è rotta l'app o il
 test. Vanno guardate in un giro solo — **dopo il collaudo**, sono mezza giornata.*
 
+### ⚠️ IL RUNNER DELLA CI È PIÙ LENTO DEL CONTAINER, E LA DIFFERENZA È STABILE
+
+**Misurato il 2026-09-10, e va saputo prima della fase 4.** La corsa #95
+(`test_mastery_al_gesto.js`, un'asserzione su 25) è stata **rossa due volte su
+due in CI e verde sei volte su sei in locale, sullo stesso commit.**
+
+**Non è un'intermittenza: è una differenza stabile fra le due macchine.** Una
+corsa che si perde là e si vince qui **non si riproduce in locale, per quante
+volte la si rilanci** — rilanciarla dieci volte darebbe dieci verdi e la
+conclusione sbagliata («allora era un flake»).
+
+Quindi, operativamente, e serve durante lo spacchettamento dove ogni rosso deve
+avere un sospettato solo:
+
+- **Un rosso della CI che non si riproduce in locale NON è un mistero e non è un
+  flake: ha un nome.** Si cerca un'asserzione che legge uno stato prodotto in
+  modo asincrono — un fetch, un `setTimeout`, un'animazione — senza aspettarlo.
+- **La suite locale non può escludere questa famiglia**, ed è il suo limite
+  strutturale: il verde locale dice «non ci sono regressioni», non «non ci sono
+  corse». Le corse le trova solo una macchina più lenta.
+- Il gemello di questa riga sta in `tests/attese.js`, che è la forma con cui si
+  correggono.
+
+*E il resto dello strumento ha funzionato: il contatore ha detto 998 esatte
+(quindi non era un file che non partiva), la CI ha detto quale file, e il passo
+«Output completo dei file falliti» ha detto quale riga. **Ha fallito una riga,
+non la suite.***
+
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
 | 2026-09-07 | **`test_batch19.js` non ha un punto da correggere: ne ha diciannove.** Delle 28 attese fisse del file, **19 fanno da guardia a un'asserzione** — dopo l'attesa, e prima di qualunque altra azione, si legge uno stato e ci si asserisce sopra. **Due usano lo stesso identico schema**: `waitForTimeout(800)` con accanto il commento «feedbackPauseMs (600) then auto-advance», righe 104 (`[QM Task1]`) e 179 (`[SR Task1]`) — cioè 600 più un margine, sommati a mente. Restano vere anche le due cose registrate qui il 2026-09-07: il `.catch(() => {})` sul click di `#sr-ready-btn` che sopprime il fallimento dove nasce, e la `waitForTimeout(300)` ridondante subito dopo. | **La correzione di ieri era GIUSTA MA PARZIALE, e chi legge questa riga fra un mese deve sapere che il file è stato capito a metà.** Sistemava il punto che aveva fallito e lasciava in piedi diciotto punti della stessa identica forma, uno dei quali *identico carattere per carattere*. Il rosso in CI cadeva su una riga diversa a ogni corsa — 139 in una, 244 in un'altra — ed è il segno che si stava guardando un esemplare invece della specie. Una sonda locale su 8 giri non ha riprodotto il rosso: i due sospetti rimasti (la risposta giusta capitata sull'**ultima** domanda del passaggio, dove la «domanda successiva» non esiste; e un runner più lento del margine) **non sono dimostrati**. Quello che è dimostrato è la causa condivisa: **il test non controlla lo stato che misura.**<br><br>**2026-09-08 — RIPRODOTTO IN LOCALE, e non è raro: 2 giri rossi su 3**, sullo stesso codice, tutti su `[SR Task1]` (Speed Match). Il gemello `[QM Task1]` non cade più perché la sua asserzione è stata rifatta in `tests/test_match_practice_nonloso.js`, dove la situazione si **costruisce** invece di sperarci: lì non si risponde mai giusto sull'ultima domanda del passaggio. `[SR Task1]` ha il difetto identico e intatto: il ciclo tocca **sempre la prima opzione** fra quattro (una corretta e tre distrattori, `buildMultipleChoiceOptions`) e, se in tutto il giro non gliene capita una giusta, esce con `gotCorrect` falso — e l'asserzione dopo la `waitForTimeout(800)` legge uno stato che non è mai arrivato.<br><br>**E c'è la prova che serve al contatore delle asserzioni:** quando cade, il file ne esegue **39 invece di 40**. La quarantesima vive dentro il ramo `gotCorrect` e semplicemente non gira. Il verde/rosso lo dice perché due asserzioni falliscono; ma un ciclo che si esaurisce **senza** far fallire niente sparirebbe in silenzio, ed è esattamente il caso che il passo 0a esiste per vedere. | **Alla prossima apertura di quel file, e si riscrive tutto il gruppo, non il punto che ha fallito.** Il modello è già scritto e verde: `tests/test_match_practice_nonloso.js` porta la stessa asserzione di `[QM Task1]` aspettando *quello che il lavoro produce* (la domanda successiva a schermo) invece di 800 ms, e leggendo lo stato dentro la stessa chiamata che aspetta. |
@@ -599,6 +627,7 @@ scadere, o si sa che niente la farà, e si scrive quale dei due.
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
+| 2026-09-10 | **`actions/checkout@v4` e `actions/setup-node@v4` vanno alzate a `@v5`.** GitHub le sta forzando su Node 24 perché Node 20 è deprecato sui runner, e ogni corsa stampa il warning. ⚠️ **NON è la causa di nessun rosso**: quelle azioni girano *prima* dei test, e `npm test` gira sul Node 22 che `setup-node` installa — la stessa versione del container (v22.22.2). Verificato il 2026-09-10 mentre si cercava altro. | **Una riga di manutenzione, non un'emergenza.** Il warning oggi è un preavviso: quando GitHub toglierà del tutto il supporto, quelle azioni smetteranno di partire e la CI diventerà rossa per un motivo che non c'entra niente con l'app — e succederà senza preavviso ulteriore, perché il preavviso è questo. | **Quando si tocca il workflow per un'altra ragione**, o al primo segnale che la scadenza si avvicina. Non con un giro apposta. |
 | 2026-09-05 | La divergenza **off/seen** in `tests/module-order.js`: il file riscrive a mano la regola di `moduleStepId()` e conta le apparizioni in modo diverso dall'app. | Correggerla adesso significa mantenere due copie della stessa regola. | **Non si corregge: sparisce da sola** quando l'identità del passo sarà `modulo + grado`, perché non ci sarà più niente da contare. |
 | 2026-09-06 | I testi dell'avviso microfono (`vcUpdateMicNotice`, titolo e corpo dei tre livelli) sono scritti nel codice invece che in `data/{lingua}/istruzioni-moduli.json`, insieme ad altre ~25 frasi già note nella stessa condizione. | Regola 8: se è testo che lo studente legge e non è contenuto dell'episodio, sta nel JSON. Sparsi nel codice non si possono correggere senza toccare `index.html`, e in una seconda edizione non si possono tradurre affatto. | **È un lavoro solo**, non venticinque: si fa quando ci arriveremo, tutto insieme. Spostarne una alla volta lascia il problema e raddoppia i posti dove cercare. |
 | 2026-09-09 | **La terza dipendenza da `index.html` letto come testo**, aggiunta di proposito da `test_blocco_ascolto.js`: conta le occorrenze del markup del pulsante per impedire all'ottava copia di nascere. | È una scelta, non una distrazione, ed è dichiarata anche in cima al test. Un test che aprisse i sei moduli e li confrontasse proverebbe **meno**: direbbe che i sei di oggi si assomigliano, non che domani non se ne aggiunge un settimo a mano. Il prezzo è che se il markup del pulsante cambia, quella riga va aggiornata — **ed è voluto: è esattamente il momento in cui qualcuno deve accorgersi che sta toccando un pezzo condiviso.** | **Si guarda tutta insieme** quando le tre dipendenze diventeranno un problema, non una per volta. |

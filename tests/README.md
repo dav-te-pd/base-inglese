@@ -370,3 +370,13 @@ che, di suo, nascondeva le regressioni.
   Round, Match Practice): sceglie le risposte dai dati dell'episodio invece che
   dalla posizione dei pulsanti, e avanza aspettando cambiamenti di stato
   invece di tempi fissi.
+- `attese.js` — le attese che **non** sono a tempo: aspettano lo stato vero.
+  Oggi una sola, `attendiSottotitoloEsito`, e sta in un modulo condiviso perché
+  la usano cinque punti in quattro file — cinque copie della stessa attesa sono
+  cinque occasioni di scriverne una diversa. ⚠️ Nasce dal caso del 2026-09-10:
+  il sottotitolo di una Schermata Finale arriva da un **fetch**, non con la
+  schermata, e chi lo legge appena la schermata compare sta correndo. La corsa
+  si vinceva o si perdeva a seconda di **chi avesse già scaldato la cache dei
+  messaggi** — Speed Match sì, il Dialogo no — cosa che nessuno può tenere a
+  mente modulo per modulo. Sei giri verdi in locale, due corse di CI rosse su
+  due, stesso commit.

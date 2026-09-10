@@ -1,6 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
+const { attendiSottotitoloEsito } = require('./attese');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
@@ -427,7 +428,9 @@ async function run() {
     const explanationButtonCount = await page.evaluate(() => document.querySelectorAll('[data-toggle-explanation]').length);
     log('[Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno', explanationButtonCount === 0);
     await page.click('#story-cards-complete');
-    await page.waitForTimeout(150);
+    // Vedi tests/attese.js: il sottotitolo arriva da un fetch, non con la
+    // schermata. I 150 ms che c'erano qui erano una scommessa.
+    await attendiSottotitoloEsito(page, 'story-cards-summary-title-sub');
     const subtitle = await page.$eval('#story-cards-summary-title-sub', el => el.textContent).catch(() => null);
     const data10 = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);

@@ -50,7 +50,7 @@ non deve accadere non esiste una condizione da aspettare. Lì il modo di
 fallire è un verde generoso, non un rosso casuale, quindi non sono da
 convertire. Un esempio commentato è in `test_batch5.js`, Job1.
 
-**Totale: 144 punti in 25 file** (aggiornato a mano quando cambia).
+**Totale: 141 punti in 25 file** (aggiornato a mano quando cambia).
 
 ## Già corretti
 Tenuti qui come riferimento di com'è fatta la conversione:
@@ -66,6 +66,27 @@ Tenuti qui come riferimento di com'è fatta la conversione:
   task 3 — avanzavano con attese fisse dentro cicli limitati. Ora usano
   `playThroughQuiz` di `tests/quiz-driver.js`, che aspetta cambiamenti di
   stato reali.
+- **I sottotitoli delle Schermate Finali, 2026-09-10 — tre attese tolte**
+  (`test_batch9.js` ×2, `test_batch15.js` ×1). Aspettavano 150 ms sperando che
+  il fetch di `messaggi-feedback.json` facesse in tempo: `applyOutcomeSubtitle`
+  svuota l'elemento SUBITO e lo riempie dentro `loadFeedbackMessages().then(...)`.
+  Ora usano `attendiSottotitoloEsito` di `tests/attese.js`, che aspetta che il
+  testo ci sia davvero.
+
+  ⚠️ **Nello stesso giro sono stati corretti due punti che in questo elenco non
+  c'erano** — `test_batch7.js` Job2 e `test_mastery_al_gesto.js` [C] — e la
+  ragione per cui mancavano è la parte che vale: **non avevano nessuna attesa
+  davanti alla lettura**, quindi non erano attese fisse da censire. Erano corse
+  nude. *Questo file elenca le attese scritte male; non può elencare quelle che
+  non sono state scritte affatto* — stessa forma della famiglia ⓪ di
+  `ERRORI-INGOIATI.md`.
+
+  ⚠️ **E il motivo per cui quelle corse si vincevano quasi sempre**: in Speed
+  Match la valvola dei tentativi e la Schermata Ripasso leggono gli stessi
+  messaggi DURANTE il quiz, quindi al riepilogo la cache è già calda e il
+  `.then` risolve in un microtask; nel Dialogo il fetch è vero ed è il primo.
+  **Non è una questione di millisecondi, è una questione di chi ha scaldato la
+  cache** — e nessuno può tenerlo a mente modulo per modulo.
 
 ## Elenco
 
@@ -120,11 +141,10 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 - riga 129 — `await page.waitForTimeout(150);`
 - riga 171 — `await page.waitForTimeout(200);`
 
-### `test_batch9.js` — 4
+### `test_batch9.js` — 2
 - riga 104 — `await page.waitForTimeout(150);`
-- riga 172 — `await page.waitForTimeout(150);`
-- riga 200 — `await page.waitForTimeout(150);`
 - riga 239 — `if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); }`
+- *(due attese davanti al sottotitolo del Dialogo tolte il 2026-09-10 — vedi «Già corretti»)*
 
 ### `test_batch10.js` — 7
 - riga 146 — `await page.waitForTimeout(400);`
@@ -173,7 +193,7 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 - riga 340 — `await page.waitForTimeout(2200);`
 - riga 359 — `await page.waitForTimeout(150);`
 
-### `test_batch15.js` — 11
+### `test_batch15.js` — 10
 - riga 139 — `await page.waitForTimeout(300);`
 - riga 195 — `await page.waitForTimeout(200);`
 - riga 216 — `await page.waitForTimeout(150);`
@@ -183,8 +203,8 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 - riga 364 — `if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }`
 - riga 369 — `if (firstBubble) { await firstBubble.click(); await page.waitForTimeout(400); }`
 - riga 417 — `await page.waitForTimeout(200);`
-- riga 421 — `await page.waitForTimeout(150);`
-- riga 426 — `await page.waitForTimeout(150);`
+- riga 426 — `await page.waitForTimeout(150);` *(dopo «Ho finito, torna alla mappa»: aspetta che la MAPPA si ridisegni, non il sottotitolo — resta)*
+- *(l'attesa davanti al sottotitolo di Why We Say It tolta il 2026-09-10 — vedi «Già corretti»)*
 
 ### `test_batch16.js` — 11
 - riga 124 — `if (dgStartVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); }`

@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
+const { attendiSottotitoloEsito } = require('./attese');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -170,7 +171,12 @@ async function run() {
       await page.waitForTimeout(400);
     }
     await page.click('#dg-not-yet-btn');
-    await page.waitForTimeout(150);
+    // Non 150 ms sperando che il fetch dei messaggi ce la faccia: si aspetta
+    // che il sottotitolo sia stato riempito (tests/attese.js). L'asserzione
+    // vera resta quella sotto — che il testo sia UNO DI QUELLI del file — ed è
+    // più forte di "non è andato in timeout"; l'attesa serve solo a non farla
+    // fallire per un motivo che non è il suo.
+    await attendiSottotitoloEsito(page, 'dg-summary-title-sub');
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Non ancora" subtitle: "' + subtitle + '"');
     const data = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));
@@ -198,7 +204,8 @@ async function run() {
       await page.waitForTimeout(400);
     }
     await page.click('#dg-know-it-btn');
-    await page.waitForTimeout(150);
+    // Vedi il gemello "Non ancora" qui sopra.
+    await attendiSottotitoloEsito(page, 'dg-summary-title-sub');
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Si lo so" subtitle: "' + subtitle + '"');
     const data = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));

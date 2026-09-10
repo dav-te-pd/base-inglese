@@ -61,6 +61,7 @@ const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { stepsBefore, gradeOf } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
+const { attendiSottotitoloEsito } = require('./attese');
 
 const BASE = APP_URL;
 let passed = 0, failed = 0;
@@ -271,8 +272,18 @@ async function run() {
       !dopoRisposta.esiti.dialogoAscoltaRipeti, JSON.stringify(dopoRisposta.esiti));
     // Il sottotitolo e il suono restano attaccati all'autovalutazione: si
     // separa cosa si MOSTRA da cosa si SCRIVE, non si sposta la risposta.
-    const sottotitolo = await page.$eval('#dg-summary-title-sub', el => el.textContent.trim());
-    log('[C] La Schermata Finale risponde comunque alla dichiarazione', sottotitolo.length > 0, sottotitolo);
+    //
+    // ⚠️ QUESTA RIGA È ROSSA QUANDO SCADE IL TEMPO, e va letta così. Il
+    // sottotitolo arriva da un fetch (applyOutcomeSubtitle -> loadFeedbackMessages),
+    // quindi non c'è al momento in cui la Schermata Finale compare: leggerlo
+    // subito è una corsa. La scriveva così il 2026-09-10, ed era verde sei
+    // volte su sei in locale e rossa due su due in CI — non un'intermittenza,
+    // una macchina più lenta. Adesso si aspetta lo stato vero, e il fallimento
+    // è che entro quindici secondi quel sottotitolo non sia mai comparso.
+    const arrivato = await attendiSottotitoloEsito(page, 'dg-summary-title-sub');
+    const sottotitolo = arrivato ? await page.$eval('#dg-summary-title-sub', el => el.textContent.trim()) : '';
+    log('[C] La Schermata Finale risponde alla dichiarazione — entro 15s, o questa riga è rossa per timeout',
+      arrivato, arrivato ? sottotitolo : 'TIMEOUT: il sottotitolo è rimasto vuoto');
 
     await tornaAllaMappa(page, '#dialogo-back-map');
     const dopoMappa = await leggiTutto(page, 'GestoDialogo');
