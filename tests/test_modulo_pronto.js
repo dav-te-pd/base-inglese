@@ -63,11 +63,20 @@ async function run() {
   // ── ② Strutturale: non apre il browser ──────────────────────────────
   {
     const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-    const corpo = (html.split('function openModuleFromMap(')[1] || '').slice(0, 1600);
+    // Il corpo fino alla sua chiusura, non un numero di caratteri: i commenti
+    // dentro quella funzione sono cresciuti e una finestra fissa li tagliava,
+    // facendo fallire le asserzioni per il motivo sbagliato.
+    const dopo = html.split('function openModuleFromMap(')[1] || '';
+    const corpo = dopo.slice(0, dopo.indexOf('\n  }') + 4);
     log('[A] openModuleFromMap aspetta la personalizzazione dell\'episodio',
       /ensureEpisodeSlotFields\(/.test(corpo));
     log('[A] ...E il contenuto che il modulo leggerà, prima di aprirlo',
       /loadEpisodeData\(module\)/.test(corpo), corpo.split('\n').slice(0, 3).join(' / '));
+    // ⚠️ E l'eccezione, che la prima versione di questa riga NON aveva:
+    // Personalizza non legge il file dell'episodio, e chiederglielo apre la
+    // schermata d'errore su un modulo che funziona. Costò cinque file rossi.
+    log('[A] ...ma solo per i moduli che un file lo leggono davvero',
+      /module\.dataFile \?/.test(corpo), corpo.slice(0, 200));
     log('[A] Le due attese stanno PRIMA di openModuleByKind, non dopo',
       corpo.indexOf('loadEpisodeData(module)') !== -1 &&
       corpo.indexOf('loadEpisodeData(module)') < corpo.indexOf('openModuleByKind('));
@@ -132,6 +141,41 @@ async function run() {
     await page.waitForTimeout(2200);
     log('[B] Nessun errore nemmeno dopo che il file dei messaggi è arrivato',
       errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ── L'eccezione: un modulo che NON legge il file dell'episodio ──────
+  // Personalizza è l'unico dei sedici senza `dataFile`. Il primo giro di
+  // questa correzione glielo chiedeva lo stesso, e la schermata d'errore
+  // compariva su un modulo perfettamente funzionante. Il test di allora non
+  // se ne accorgeva perché guidava solo Voice Coach: **è il buco che ha
+  // lasciato passare l'errore**, e questo blocco è quel buco chiuso.
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(String(e).slice(0, 100)));
+    await page.addInitScript(mockInit);
+    await page.goto(APP_URL);
+    if (!(await page.isVisible('#name-input').catch(() => false))) {
+      await page.click('#switch-user');
+      await page.waitForSelector('#name-input', { state: 'visible' });
+    }
+    await page.fill('#name-input', 'SenzaDataFile');
+    await page.click('#onboarding-form button[type=submit]');
+    await page.waitForSelector('#go-episode', { state: 'visible' });
+    await page.evaluate(() => localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:SenzaDataFile', '1'));
+    await page.click('#go-episode');
+    await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0, null, { timeout: 20000 });
+    await page.click('[data-module="personalizzazione"]');
+    await page.waitForTimeout(600);
+    const stato = await page.evaluate(() => {
+      const vis = id => { const e = document.getElementById(id); return !!e && e.getClientRects().length > 0; };
+      return { errore: vis('view-error'), personalizza: vis('view-customize') };
+    });
+    log('[C] Personalizza si apre: chi non legge un file episodio non lo aspetta',
+      stato.personalizza === true, JSON.stringify(stato));
+    log('[C] ...e NON compare la schermata d\'errore', stato.errore === false, JSON.stringify(stato));
+    log('[C] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
 

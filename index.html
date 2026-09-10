@@ -6832,7 +6832,16 @@
     // otto moduli: scartata perche' sarebbe stata la NONA famiglia della
     // conoscenza che ogni file deve ricordarsi da solo (vedi docs/decisioni.md),
     // aggiunta proprio mentre ne stiamo chiudendo quattro.
-    Promise.all([ensureEpisodeSlotFields(currentEpisode), loadEpisodeData(module)]).then(function () {
+    // ⚠️ Personalizza NON legge il file dell'episodio: nel suo descrittore non
+    // c'e' `dataFile` (MODULE_DESCRIPTORS), ed e' l'unica eccezione fra i
+    // sedici. Chiederglielo lo fa fallire e apre la schermata d'errore su un
+    // modulo che funziona — misurato il 2026-09-10, cinque file di test rossi
+    // alla prima corsa di questa riga. La condizione si legge dal descrittore,
+    // non da un elenco a parte da tenere allineato a mano.
+    Promise.all([
+      ensureEpisodeSlotFields(currentEpisode),
+      module.dataFile ? loadEpisodeData(module) : Promise.resolve(null)
+    ]).then(function () {
       currentValues = loadCustomValues(currentEpisode, getUserName());
       openModuleByKind(module);
     }).catch(function () {
