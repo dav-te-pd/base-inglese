@@ -1,6 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
 const { attendiSottotitoloEsito } = require('./attese');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -71,8 +72,7 @@ async function run() {
     for (let i = 0; i < 150; i++) {
       const summaryVisible = await page.isVisible('#sr-summary-screen').catch(() => false);
       if (summaryVisible) break;
-      const popupOpen = await page.evaluate(() => document.getElementById('attempt-popup').classList.contains('is-open'));
-      if (popupOpen) { await page.click('#attempt-popup-next'); await page.waitForTimeout(100); continue; }
+      if (await chiudiPopupTentativiSeAperto(page)) continue;
       const advanceVisible = await page.isVisible('#sr-advance-btn').catch(() => false);
       if (advanceVisible) { await page.click('#sr-advance-btn'); await page.waitForTimeout(150); continue; }
       const retryContinueVisible = await page.isVisible('#sr-retry-continue-btn').catch(() => false);

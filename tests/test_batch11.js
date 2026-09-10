@@ -1,6 +1,7 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { allSteps } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // I messaggi si leggono dal file, non dalla pagina. Prima si leggeva
@@ -106,11 +107,7 @@ async function vcAnswerLine(page, transcript) {
   await page.waitForTimeout(150);
   await page.click('#vc-send-btn');
   await page.waitForTimeout(180);
-  const popupOpen = await page.evaluate(() => {
-    var el = document.getElementById('attempt-popup');
-    return el && el.classList.contains('is-open');
-  });
-  if (popupOpen) { await page.click('#attempt-popup-next'); await page.waitForTimeout(120); }
+  await chiudiPopupTentativiSeAperto(page);
 }
 
 // A NON-empty but 0%-correct transcript — recognizedWords.length > 0 so

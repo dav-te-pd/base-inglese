@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -108,11 +109,7 @@ async function run() {
     // while this test is driving repeated attempts — dismiss it via "Vai
     // avanti" so it doesn't block subsequent clicks in this same test flow.
     async function dismissAttemptPopupIfOpen() {
-      const isOpen = await page.evaluate(() => document.getElementById('attempt-popup').classList.contains('is-open'));
-      if (isOpen) {
-        await page.click('#attempt-popup-next');
-        await page.waitForTimeout(80);
-      }
+      await chiudiPopupTentativiSeAperto(page);
     }
 
     // Split so a caller can inspect #vc-mic-notice right after evaluate,

@@ -67,6 +67,41 @@ function correctAnswerFor(vocabulary, prompt) {
   return null;
 }
 
+// La valvola di sicurezza (CONFIG.retryQueue.attemptsReminderThreshold) apre un
+// popup a meta' quiz, e il suo sfondo INTERCETTA I CLICK: finche' resta aperto,
+// qualunque `page.click` su un pulsante sotto va in timeout dopo trenta secondi
+// e il file muore senza dire perche'.
+//
+// ⚠️ Sta qui, in un pezzo condiviso, perche' il 2026-09-10 la CI e' morta
+// proprio cosi': `test_batch19.js` non nomina `attempt-popup` da nessuna parte
+// — zero occorrenze — e sul runner, piu' lento, bastano poche risposte
+// sbagliate in piu' perche' la valvola scatti. Il file e' morto a meta',
+// eseguendo 995 asserzioni invece di 1008.
+//
+// E il difetto non e' che quel file sia scritto male: e' che **sapere del
+// popup era una cosa che ogni file doveva ricordarsi da solo.** Misurate lo
+// stesso giorno: DODICI copie in dieci file, in otto formulazioni diverse —
+// chi aspettava 80 ms dopo il click, chi 100, chi 120, chi 150. Stessa forma
+// del Blocco Ascolto e del sottotitolo.
+//
+// Ritorna true se il popup c'era ed e' stato chiuso, false se non c'era: cosi'
+// chi chiama puo' contarlo o asserirlo. E aspetta che sia CHIUSO davvero
+// invece di contare millisecondi — se il popup e' ancora li' il click
+// successivo fallisce comunque.
+async function chiudiPopupTentativiSeAperto(page) {
+  const aperto = await page.evaluate(function () {
+    var el = document.getElementById('attempt-popup');
+    return !!el && el.classList.contains('is-open');
+  }).catch(function () { return false; });
+  if (!aperto) return false;
+  await page.click('#attempt-popup-next').catch(function () {});
+  await page.waitForFunction(function () {
+    var el = document.getElementById('attempt-popup');
+    return !el || !el.classList.contains('is-open');
+  }, null, { timeout: 10000 }).catch(function () {});
+  return true;
+}
+
 // Tutto lo stato che serve, in una sola valutazione sincrona dentro la
 // pagina.
 function readQuizState(page, prefix) {
@@ -128,11 +163,7 @@ async function playThroughQuiz(page, prefix, options) {
     if (onState && (await onState(st)) === 'stop') return 'stopped';
 
     if (st.popupOpen) {
-      await page.locator('#attempt-popup-next').click();
-      await waitForQuizChange(page, function () {
-        var p = document.getElementById('attempt-popup');
-        return !p || !p.classList.contains('is-open');
-      });
+      await chiudiPopupTentativiSeAperto(page);
       continue;
     }
 
@@ -224,4 +255,4 @@ async function playThroughQuiz(page, prefix, options) {
   throw new Error('Il modulo "' + prefix + '" non ha raggiunto la Schermata Finale entro ' + maxSteps + ' passi');
 }
 
-module.exports = { loadEpisode, loadGrade, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz };
+module.exports = { loadEpisode, loadGrade, correctAnswerFor, readQuizState, waitForQuizChange, playThroughQuiz, chiudiPopupTentativiSeAperto };

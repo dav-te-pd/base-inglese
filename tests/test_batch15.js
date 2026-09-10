@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const { attendiSottotitoloEsito } = require('./attese');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
@@ -93,18 +94,7 @@ async function openModule(page, moduleId) {
 // The safety-valve popup (attemptsReminderThreshold) can appear mid-quiz
 // and blocks further option clicks until dismissed — always check for it
 // before trying to interact with the quiz itself.
-async function dismissAttemptPopupIfOpen(page) {
-  const isOpen = await page.evaluate(() => {
-    var el = document.getElementById('attempt-popup');
-    return !!el && el.classList.contains('is-open');
-  }).catch(() => false);
-  if (isOpen) {
-    await page.click('#attempt-popup-next', { timeout: 1000 }).catch(() => {});
-    await page.waitForTimeout(150);
-    return true;
-  }
-  return false;
-}
+const dismissAttemptPopupIfOpen = chiudiPopupTentativiSeAperto;
 
 const ALL_BEFORE_QM = stepsBefore('matchEngIta');
 const ALL_BEFORE_VP = stepsBefore('voicePractice');

@@ -1,6 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { declareAllSkills } = require('./story-driver');
 const { allSteps } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -288,8 +289,7 @@ async function run() {
       await page.waitForTimeout(300);
       await page.click('#vc-send-btn').catch(() => {});
       await page.waitForTimeout(100);
-      const isOpen = await page.evaluate(() => document.getElementById('attempt-popup').classList.contains('is-open'));
-      if (isOpen) { await page.click('#attempt-popup-next'); await page.waitForTimeout(80); }
+      await chiudiPopupTentativiSeAperto(page);
       // Voice Check has no retry button (job 5) — advance via "Avanti" instead.
       if (i < 5) { await page.click('#vc-next-btn').catch(() => {}); await page.waitForTimeout(80); }
     }

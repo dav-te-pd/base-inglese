@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -99,11 +100,7 @@ async function vcAnswerLine(page, transcript) {
   await page.waitForTimeout(150);
   await page.click('#vc-send-btn');
   await page.waitForTimeout(180);
-  const popupOpen = await page.evaluate(() => {
-    var el = document.getElementById('attempt-popup');
-    return el && el.classList.contains('is-open');
-  });
-  if (popupOpen) { await page.click('#attempt-popup-next'); await page.waitForTimeout(120); }
+  await chiudiPopupTentativiSeAperto(page);
 }
 
 const WRONG_TRANSCRIPT = 'xyzzy xyzzy xyzzy xyzzy xyzzy xyzzy xyzzy xyzzy xyzzy xyzzy';

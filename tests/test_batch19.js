@@ -1,5 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { stepsBefore } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -114,6 +115,12 @@ async function toccaFinoA(page, p, voluto) {
   const maxPassaggi = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
   const limite = (partenza.totale || 1) * (maxPassaggi + 1) + 5;
   for (let mosse = 0; mosse < limite; mosse++) {
+    // ⚠️ PRIMA DI TUTTO il popup della valvola di sicurezza: il suo sfondo
+    // intercetta i click, quindi finche' e' aperto ogni click qui sotto va in
+    // timeout dopo trenta secondi e il file muore senza dire perche'. E' morto
+    // cosi' in CI il 2026-09-10 (995 asserzioni invece di 1008), perche'
+    // questo file non nominava `attempt-popup` da nessuna parte.
+    if (await chiudiPopupTentativiSeAperto(page)) continue;
     const st = await statoQuiz(page, p);
     if (st.riepilogo) return null;
     if (st.ripasso) { await page.click('#' + p + '-retry-continue-btn'); continue; }

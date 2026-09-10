@@ -1,6 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
+const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -79,18 +80,7 @@ async function openModule(page, moduleId) {
   await page.waitForTimeout(250);
 }
 
-async function dismissAttemptPopupIfOpen(page) {
-  const isOpen = await page.evaluate(() => {
-    var el = document.getElementById('attempt-popup');
-    return !!el && el.classList.contains('is-open');
-  }).catch(() => false);
-  if (isOpen) {
-    await page.click('#attempt-popup-next', { timeout: 1000 }).catch(() => {});
-    await page.waitForTimeout(150);
-    return true;
-  }
-  return false;
-}
+const dismissAttemptPopupIfOpen = chiudiPopupTentativiSeAperto;
 
 const ALL_BEFORE_QM = stepsBefore('matchEngIta');
 const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
