@@ -617,12 +617,59 @@ lo aspetta, e ritardando quel file il modulo semplicemente non si apre; *(b)* no
 è stato ereditato da un modulo precedente — `[A]`, `[B]` e `[C]` del test usano
 pagine e utenti diversi, e `vcCurrentLineObj` **è** azzerata all'apertura.
 
-**Come si correggerebbe, e va deciso, non dedotto.** Una guardia che ritorna
-stringa vuota è un cerotto: nasconde il problema invece di chiuderlo. Le strade
-vere sono due — **tenere spenti i pulsanti di lavoro finché il modulo non è
-pronto**, oppure **non aprire il modulo finché non lo è** (cioè spostare l'attesa
-dove sta già per l'episodio, in `openModuleFromMap`). La prima è locale e
-onesta; la seconda è una riga sola e chiude tutti e otto i moduli insieme.
+**CORRETTO il 2026-09-10, e la misura ha cambiato la correzione invece di
+confermarla.**
+
+⚠️ **La causa non era «il modulo si apre presto»: era un PRECARICAMENTO
+TRAVESTITO DA DIPENDENZA.** Il `Promise.all` aspettava
+`loadFeedbackMessages()` — e `results[1]` **non veniva mai letto**. Il modulo
+restava «in caricamento» per un file di testi che non gli serviva per aprirsi.
+
+*La prova che era una riga copiata e non una scelta di qualcuno: `openStoryCards`
+fa lo stesso `Promise.all` con `loadModuleInstructions()` e `results[1]` **lo usa
+davvero** — i testi del self-check, l'hint del completamento. Là serve; qui no.*
+
+**I due numeri, prima e dopo** (`tests/tools/misura-finestra-apertura.js`):
+
+| | Finestra fra «il microfono è acceso» e «la battuta c'è» |
+|---|---|
+| prima | **17 ms** di mediana (8–30) — **tutti** dovuti a quel file |
+| dopo | **1 ms**, e al click la battuta è già a schermo |
+| prima, con la rete lenta simulata (2 s) | `TypeError` **3 volte su 3** |
+| dopo, stessa rete lenta | nessun errore, la battuta c'è comunque |
+
+**① Tolto il precaricamento** da `openVoiceCoach`: una riga, e toglie la causa
+invece di gestirla. **② E `openModuleFromMap` aspetta anche `loadEpisodeData`**,
+non solo `ensureEpisodeSlotFields` — il punto unico da cui passano tutti e otto
+i moduli.
+
+⚠️ **Il beneficio di ② è dichiarato TEORICO nel codice**, perché chi lo trova non
+lo tolga credendolo inutile: dopo ① la finestra è già chiusa in pratica, e ②
+serve a renderla **impossibile** invece che irraggiungibile — cioè a coprire il
+giorno in cui un modulo avrà un `dataFile` suo o verrà aperto da un punto che
+non è la mappa.
+
+⚠️ **La strada scartata, e la ragione dello scarto vale più della scelta:**
+spegnere i pulsanti di lavoro in ognuno degli otto moduli sarebbe stata la
+**nona famiglia** della conoscenza che ogni file deve ricordarsi da solo —
+aggiunta proprio mentre ne stiamo chiudendo quattro.
+
+⚠️ **E IL SEGNALE DI CARICAMENTO È STATO RITIRATO DALLA MISURA.** Era già stato
+proposto e accettato: «la riga della mappa mostra di star caricando». Poi il
+numero — **17 ms** — l'ha reso rumore: un avviso che compare e sparisce in
+diciassette millisecondi sfarfalla, ed è peggio del nulla. *Diciassette
+millisecondi non sono un secondo, e la differenza si vede solo misurando.*
+
+**La conseguenza da tenere a mente, scritta anche nel codice:** quel
+precaricamento **scaldava la cache dei messaggi per tutti i moduli**, senza che
+nessuno lo avesse deciso. Verificati uno per uno i cinque lettori di
+`messaggi-feedback.json`: **nessuno si appoggiava a quella cache calda** — ognuno
+fa il proprio fetch con il proprio `.catch`, e `openAttemptPopup` mostra
+addirittura un testo di ripiego prima che il dato arrivi. Ma **le attese dei test
+su quei testi diventano più importanti, non meno**: chi le rimettesse a tempo le
+vedrebbe cadere prima.
+
+Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ### ⚠️ Tre variabili di Voice Coach sopravvivono da un modulo all'altro
 
@@ -634,17 +681,26 @@ sé, ancora senza sintomo. Delle 31 variabili di stato del modulo,
 | | Cosa fa | Cosa può succedere |
 |---|---|---|
 | `vcCurrentEvaluated` | abilita «Avanti» | «Avanti» attivo all'apertura senza aver risposto |
-| `vcLastAvgPct` | il punteggio che finisce nel `moduleOutcome` | un modulo prende il voto del precedente |
+| **`vcLastAvgPct`** | **il punteggio che finisce nel `moduleOutcome`, cioè IL VOTO CHE SI VEDE SULLA MAPPA** | **un modulo prende il voto del precedente** |
 | `vcRecordStartedAt` | la durata della registrazione | secondi di audio attribuiti al modulo sbagliato |
 
 *(`vcFeedbackDataCache` è una cache voluta, `vcRecognition` l'oggetto creato una
 volta, `vcScorePercents` è scritta e letta nello stesso giro: non sono orfane.)*
 
+⚠️ **`vcLastAvgPct` merita di essere nominata da sola: è un VOTO che
+sopravvive.** Un giorno darà a un modulo un punteggio che non ha guadagnato — e
+quel voto finisce sulla mappa, dove lo studente lo legge come un giudizio su di
+sé. **Che oggi sia «senza sintomo» è precisamente il motivo per cui è
+pericolosa**: è la stessa forma dei difetti silenziosi — funziona finché non
+funziona, e quando si rompe si rompe altrove.
+
 ⚠️ **La ragione per cui pesa più dei tre casi**: la pulizia di questo modulo è
 divisa in **due posti** — `openVoiceCoach` e `vcResetRecording` — e quello che
 non sta in nessuno dei due sopravvive **senza che nessuno lo decida**. È la
 stessa forma della famiglia qui sopra: la conoscenza «questa variabile va
-azzerata» è un compito di memoria.
+azzerata» è un compito di memoria. **Le tre orfane si guardano insieme a questa
+divisione, che è la causa** — correggerle una per una lascerebbe in piedi il
+motivo per cui esistono.
 
 
 

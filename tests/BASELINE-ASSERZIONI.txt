@@ -47,6 +47,7 @@ test_hidden_guard.js 4
 test_interruttore_episodio.js 15
 test_mastery_al_gesto.js 25
 test_match_practice_nonloso.js 6
+test_modulo_pronto.js 8
 test_new_features.js 29
 test_outcome_step_ids.js 21
 test_report_mastery.js 8

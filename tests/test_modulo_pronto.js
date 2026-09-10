@@ -1,0 +1,144 @@
+// PROTEGGE: che un modulo non mostri una schermata che si può toccare prima di
+// avere il contenuto su cui lavorare.
+//
+// Cosa si perde senza questo file. Il 2026-09-10 `openVoiceCoach` disegnava la
+// schermata e ACCENDEVA il microfono, mentre la battuta arrivava solo dentro un
+// `Promise.all` che aspettava anche `messaggi-feedback.json` — un file di TESTI
+// il cui risultato non veniva nemmeno letto. Premere il microfono in quella
+// finestra faceva esplodere `vcTargetText()` su una battuta nulla:
+// `TypeError: Cannot read properties of null (reading 'english')`.
+//
+// **Non era un difetto dei test.** In CI è costato una corsa rossa, ma per uno
+// studente su una rete lenta era un microfono acceso sopra la scritta
+// «Caricamento...» che, premuto, non fa niente e non dice perché. Nessun
+// messaggio, nessuna schermata d'errore: la regola 35 difende il FALLIMENTO del
+// caricamento, non la FINESTRA in cui sta ancora arrivando.
+//
+// COME, e sono due strade per due domande diverse.
+//
+// ① «La finestra c'è ancora?» non si risponde aprendo il modulo e guardando —
+//    in condizioni normali dura un millisecondo e non si vede. Si risponde
+//    RITARDANDO il fetch: due secondi, cioè la rete lenta esagerata. È il
+//    guasto realistico della regola 32 — rompere il fetch del tutto proverebbe
+//    solo che l'asserzione sa morire, non che la correzione serve. Misurato:
+//    con la forma vecchia esplode 3 volte su 3, con questa regge.
+//
+// ② «Il modulo aspetta i suoi dati?» è strutturale, e si guarda in
+//    `openModuleFromMap`: è il punto unico da cui passano tutti e otto i
+//    moduli, e deve aspettare SIA la personalizzazione SIA il contenuto.
+//    L'alternativa scartata era spegnere i pulsanti in ognuno degli otto
+//    moduli — sarebbe stata la nona famiglia della conoscenza che ogni file
+//    deve ricordarsi da solo (docs/decisioni.md).
+//
+// LIMITE DICHIARATO: si guida un modulo solo, Voice Coach, perché è l'unico che
+// nella finestra ESPLODE — gli altri sette accettano un gesto che non fa
+// niente, che è più silenzioso e non per questo migliore. Quel caso qui non si
+// vede: lo prende l'asserzione strutturale ②, che vale per tutti.
+
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { stepsBefore } = require('./module-order');
+
+let passed = 0, failed = 0;
+function log(nome, ok, extra) {
+  if (ok) { passed++; console.log('OK   - ' + nome); }
+  else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
+}
+
+const mockInit = () => {
+  Object.defineProperty(window, 'speechSynthesis', { value: {
+    speak(u) { if (u.onstart) u.onstart(); setTimeout(function () { if (u.onend) u.onend(); }, 10); },
+    cancel() {}, pause() {}, resume() {},
+    getVoices() { return [{ name: 'F', lang: 'en-US' }]; }, onvoiceschanged: null
+  }, configurable: true });
+  window.SpeechSynthesisUtterance = function (t) { this.text = t; };
+  function FakeRec() { this.onstart = null; this.onend = null; this.onresult = null; this.onerror = null; }
+  FakeRec.prototype.start = function () { if (this.onstart) this.onstart(); };
+  FakeRec.prototype.stop = function () { if (this.onend) this.onend(); };
+  FakeRec.prototype.abort = function () {};
+  window.SpeechRecognition = FakeRec; window.webkitSpeechRecognition = FakeRec;
+};
+
+async function run() {
+  // ── ② Strutturale: non apre il browser ──────────────────────────────
+  {
+    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+    const corpo = (html.split('function openModuleFromMap(')[1] || '').slice(0, 1600);
+    log('[A] openModuleFromMap aspetta la personalizzazione dell\'episodio',
+      /ensureEpisodeSlotFields\(/.test(corpo));
+    log('[A] ...E il contenuto che il modulo leggerà, prima di aprirlo',
+      /loadEpisodeData\(module\)/.test(corpo), corpo.split('\n').slice(0, 3).join(' / '));
+    log('[A] Le due attese stanno PRIMA di openModuleByKind, non dopo',
+      corpo.indexOf('loadEpisodeData(module)') !== -1 &&
+      corpo.indexOf('loadEpisodeData(module)') < corpo.indexOf('openModuleByKind('));
+    // Il precaricamento travestito da dipendenza non deve tornare: il modulo
+    // non aspetta un file di testi per aprirsi.
+    const apreVoiceCoach = (html.split('function openVoiceCoach(')[1] || '').slice(0, 4000);
+    log('[A] Aprire Voice Coach NON aspetta il file dei messaggi di feedback',
+      !/Promise\.all\(\[[^\]]*loadFeedbackMessages/.test(apreVoiceCoach));
+  }
+
+  const browser = await launchBrowser();
+
+  // ── ① Il guasto realistico: la rete lenta, esagerata ────────────────
+  {
+    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(String(e).slice(0, 100)));
+    await page.addInitScript(mockInit);
+    // Due secondi su un file di TESTI: se il modulo lo aspettasse ancora,
+    // qui la battuta non ci sarebbe e il microfono sarebbe già premibile.
+    await page.route('**/messaggi-feedback.json', async (route) => {
+      await new Promise(r => setTimeout(r, 2000));
+      await route.continue();
+    });
+    await page.goto(APP_URL);
+    if (!(await page.isVisible('#name-input').catch(() => false))) {
+      await page.click('#switch-user');
+      await page.waitForSelector('#name-input', { state: 'visible' });
+    }
+    await page.fill('#name-input', 'ModuloPronto');
+    await page.click('#onboarding-form button[type=submit]');
+    await page.waitForSelector('#go-episode', { state: 'visible' });
+    await page.evaluate((p) => {
+      localStorage.setItem('baseinglese:modules:gate:ModuloPronto', JSON.stringify({ completed: p }));
+      ['mappaEpisodio', 'personalizzazione', 'voicePractice', 'voiceCoach']
+        .forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':ModuloPronto', '1'));
+    }, stepsBefore('voiceCoach'));
+    await page.click('#go-episode');
+    await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0, null, { timeout: 20000 });
+    await page.click('[data-module="voiceCoach"]');
+    await page.waitForSelector('#vc-record-btn', { state: 'visible', timeout: 20000 });
+
+    // Il momento che conta: la schermata c'è, e si legge cosa mostra PRIMA di
+    // toccarla. Nessuna attesa in mezzo — se il contenuto non è già qui, la
+    // finestra esiste ancora.
+    const appena = await page.evaluate(() => ({
+      target: document.getElementById('vc-target').textContent,
+      microfonoSpento: document.getElementById('vc-record-btn').disabled
+    }));
+    log('[B] Appena la schermata è visibile, la battuta C\'È GIÀ',
+      appena.target && appena.target !== 'Caricamento...', 'il target diceva: "' + appena.target + '"');
+
+    // E il gesto che il difetto rendeva pericoloso, fatto davvero.
+    if (!appena.microfonoSpento) await page.click('#vc-record-btn', { timeout: 3000 }).catch(() => {});
+    await page.waitForTimeout(300);
+    log('[B] Premere il microfono non solleva nessun errore', errori.length === 0, errori.join(' | '));
+    log('[B] ...e in particolare nessun TypeError sulla battuta assente',
+      !errori.some(e => /reading 'english'/.test(e)), errori.join(' | '));
+
+    // Il file di testi arriva DOPO, e quando arriva il modulo funziona lo
+    // stesso: toglierlo dall'apertura non lo ha tolto dall'app.
+    await page.waitForTimeout(2200);
+    log('[B] Nessun errore nemmeno dopo che il file dei messaggi è arrivato',
+      errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  await browser.close();
+  console.log('');
+  console.log('=== MODULO PRONTO SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
+  process.exit(failed === 0 ? 0 : 1);
+}
+
+run().catch(e => { console.error(e); process.exit(1); });

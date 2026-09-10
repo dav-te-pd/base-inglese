@@ -6813,7 +6813,26 @@
   // synchronous localStorage read, so refreshing it here even when already
   // set costs nothing and keeps it correct after a user switch.
   function openModuleFromMap(module) {
-    ensureEpisodeSlotFields(currentEpisode).then(function () {
+    // I dati che il modulo leggera' devono esserci PRIMA che la sua schermata
+    // compaia, ed e' il punto unico dove garantirlo per tutti e otto:
+    // ensureEpisodeSlotFields per la personalizzazione, loadEpisodeData per il
+    // contenuto. Oggi sono lo stesso file, quindi il secondo e' gia' in cache
+    // quando il primo ha finito — **e scriverlo lo stesso trasforma in una
+    // garanzia quella che oggi e' una coincidenza.**
+    //
+    // ⚠️ IL BENEFICIO DI QUESTA RIGA E' TEORICO, e va scritto perche' chi la
+    // trova non la tolga credendola inutile: dopo aver levato il
+    // precaricamento da openVoiceCoach (vedi il commento li') la finestra
+    // "schermata pronta, dati assenti" e' gia' chiusa in pratica. Questa riga
+    // serve a renderla **impossibile** invece che irraggiungibile — cioe' a
+    // coprire il giorno in cui un modulo avra' un dataFile suo, o verra'
+    // aperto da un punto che non e' la mappa.
+    //
+    // La strada alternativa era spegnere i pulsanti di lavoro in ognuno degli
+    // otto moduli: scartata perche' sarebbe stata la NONA famiglia della
+    // conoscenza che ogni file deve ricordarsi da solo (vedi docs/decisioni.md),
+    // aggiunta proprio mentre ne stiamo chiudendo quattro.
+    Promise.all([ensureEpisodeSlotFields(currentEpisode), loadEpisodeData(module)]).then(function () {
       currentValues = loadCustomValues(currentEpisode, getUserName());
       openModuleByKind(module);
     }).catch(function () {
@@ -8369,9 +8388,33 @@
       renderIntroContent(module.kind, 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label);
       vcShowScreen('intro');
     }
-    Promise.all([loadEpisodeData(module), loadFeedbackMessages().catch(function () { return null; })]).then(function (results) {
+    // ⚠️ QUI C'ERA UN PRECARICAMENTO TRAVESTITO DA DIPENDENZA, e va saputo
+    // perche' e' costato tre difetti in due giorni. Questo Promise.all
+    // aspettava anche `loadFeedbackMessages()`, il cui risultato NON veniva
+    // mai letto: il modulo restava "in caricamento" finche' non arrivava un
+    // file di TESTI che non gli serviva per aprirsi.
+    //
+    // Misurato il 2026-09-10: la finestra fra "il microfono e' acceso" e "la
+    // battuta c'e'" durava 17 ms di mediana **tutti dovuti a quel file** —
+    // l'episodio e' sempre in cache, perche' openModuleFromMap aspetta
+    // ensureEpisodeSlotFields che l'ha gia' caricato. Su una rete lenta quei
+    // millisecondi diventano secondi, e in quella finestra premere il
+    // microfono faceva esplodere `vcTargetText()` su una battuta nulla.
+    //
+    // La prova che era una riga copiata e non una scelta: openStoryCards fa lo
+    // stesso Promise.all con loadModuleInstructions() e results[1] LO USA
+    // davvero (i testi del self-check). La' serve; qui no.
+    //
+    // ⚠️ E la conseguenza da tenere a mente, per chi legge fra sei mesi: quel
+    // precaricamento SCALDAVA LA CACHE dei messaggi per tutti i moduli, senza
+    // che nessuno lo avesse deciso. Adesso ogni lettore fa il proprio fetch
+    // quando gli serve — sono cinque, tutti gia' asincroni e con il proprio
+    // .catch (verificato uno per uno). **Quindi le attese dei test su quei
+    // testi diventano piu' importanti, non meno**: chi le rimettesse a tempo
+    // (tests/attese.js, attendiSottotitoloEsito) le vedrebbe cadere prima.
+    loadEpisodeData(module).then(function (data) {
       if (vcModule !== module) return;
-      vcLines = episodeGradeRequired(results[0], module.grade, module);
+      vcLines = episodeGradeRequired(data, module.grade, module);
       vcQueue = vcLines.map(function (l) { return l.id; });
       vcPassTotal = vcQueue.length;
       vcInRetryPass = false;
