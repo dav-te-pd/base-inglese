@@ -252,6 +252,69 @@ cronologia nuova.
 |---|---|---|---|
 | **13** | Le cinque righe della sezione «La mastery: dove va il dato» qui sotto: la D3, il dato sul target, Voice Check che calcola e non scrive, i colori parcheggiati, il report per grado. *Perché qui: il collaudo su profilo nuovo **è** l'esperimento che le informa.* ⚠️ Gira su uno strumento non ancora tarato: se un rosso diventa ambiguo, **si anticipa il passo 14** invece di rilanciare la suite sperando. | ☐ | **sì**, riga per riga |
 
+#### Le cinque voci della 2-bis, decise il 2026-09-10
+
+| | Voce | Stato |
+|---|---|---|
+| **①** | **Il dato si registra sul target** (Voice Practice). Già fatto: la riga per la voce intera convive con quelle per parola. | ☑ |
+| **②** | **Voice Check scrive, strada B** — solo il primo tentativo, in voci sue (`voicecheck:<battuta>` e `voicecheck:<battuta>:<indice>`). Vedi C.1. **Va DOPO la ③**, e non è un ordine di comodo: nascendo dentro il magazzino in sospeso prende il gesto gratis, invece di essere il nono punto da convertire. | ☐ |
+| **③** | **I colori si travasano al pulsante.** ⬇︎ | ◐ |
+| **④** | **I colori parcheggiati.** *Chiude come voce, con una nota accanto al mix:* le battute del grado D prendono un colore **solo** da Voice Practice e Voice Check; i tre moduli Dialogo non ne producono nessuno, perché la loro è un'autovalutazione sull'intero dialogo, non una misura per voce. Non è un buco da riempire: è la ragione per cui l'esito del Dialogo vive in `moduleOutcome` e non nella mastery. | ☐ |
+| **⑤** | **Il report per grado.** È prodotto, non strumento: più avanti. | ☐ |
+| **D3** | **Sospesa** — vedi N.4: torna quando esisterà un colore sopra i compartimenti. | ⛔ |
+
+**③ — Il gesto sceglie cosa si salva.** Fino al 2026-09-10 otto moduli scrivevano
+la mastery **a ogni risposta**, e il Dialogo scriveva l'esito **all'autovalutazione**.
+Chi rispondeva a tre domande e usciva da «← Mappa» si portava dietro tre colori per
+sempre, senza aver dichiarato niente e senza che il modulo risultasse fatto.
+
+| Gesto | Cosa si salva |
+|---|---|
+| **«Ho finito»** | esito + voci + completato |
+| **«Esci e riprendi dopo»** | solo le risposte già dichiarate (solo Why We Say It) |
+| **«← Mappa»** | niente |
+
+*Perché la seconda uscita esiste solo lì, ed è una differenza voluta: Match Practice
+dura venticinque secondi, Why We Say It può durare giorni. Non conta che i moduli si
+comportino uguale — conta che nessuno faccia una cosa che non sappiamo.*
+
+**Come è fatto.** `pendingMastery` è il magazzino in sospeso; `recordPendingMastery`
+sostituisce `applyMasteryResult` + `saveMastery` nei tre punti che scrivevano
+(`recordMultipleChoiceResult`, `fcRecordResult`, il blocco di Voice Practice in
+`vcEvaluate`); `commitPendingMastery` è il travaso, chiamato da `completeModule`, la
+coda condivisa che ha sostituito **sette** copie della sequenza esito → completamento →
+mappa; `clearPendingMastery` vive in `stopAllModuleActivity` (regola 21), non nel
+«← Mappa» di un modulo. Il Dialogo separa cosa **mostra** da cosa **scrive**: suono,
+Schermata Finale e sottotitolo restano all'autovalutazione, l'esito aspetta il pulsante.
+
+⚠️ **Why We Say It aveva DUE magazzini con due regole diverse, e solo uno rispettava il
+gesto.** Le dichiarazioni erano già attaccate al pulsante; i conteggi editoriali
+(`storyCardsRecordExplanationAnswer`) si scrivevano a ogni risposta. Adesso passano da
+una coda che il gesto travasa — **una lista in ordine, non l'ultima risposta**: quel
+magazzino conta anche i **cambi di idea**, e riassumere il giro in un valore solo
+perderebbe proprio quel segnale.
+
+⚠️ **Un effetto voluto e non ovvio, scritto nel codice accanto a
+`hasStartedEpisodeModules`:** l'avviso «hai già cominciato» di Personalizza vede meno
+gente, perché chi è uscito da «← Mappa» non ha più nessuna voce nel magazzino. Non è un
+effetto da compensare — è la stessa regola applicata a un posto in più. *Prima quell'avviso
+mentiva: diceva «hai già cominciato» a chi aveva fatto tre click e se n'era andato.*
+
+⚠️ **La nota che il prossimo non può dedurre, e che sta accanto a `pendingMastery`:**
+oggi nessun modulo mostra i colori **mentre gira**, quindi un oggetto in memoria basta.
+Se domani un modulo li disegnasse durante l'esercizio, dovrà leggere **il pending e il
+magazzino**, non solo il magazzino.
+
+⚠️ **E la conseguenza sui test, che non era prevista e va saputa:** in Flash Card una
+risposta sbagliata **non può restare tale fino alla fine** — la carta torna nel giro di
+ripasso. `test_scala_colori.js` leggeva la scala dopo una risposta sola; adesso porta il
+modulo in fondo su un mazzo ridotto a **una carta** e, per le due prove di
+retrocessione, legge lo stato dopo due risposte con l'attesa calcolata sulla sequenza
+intera. Il limite è dichiarato in testa al file.
+
+**Due nomi del passo 5 chiusi qui dentro**: `saveSeDeclarations` →
+`saveStoryCardsDeclarations`, `loadSeDeclarations` → `loadStoryCardsDeclarations`.
+
 ### Fase 3 — la taratura dello strumento
 
 | | Passo | Stato | Fermata sicura dopo? |

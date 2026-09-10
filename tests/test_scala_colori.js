@@ -11,15 +11,34 @@
 // COME. La funzione sta dentro la chiusura di index.html e da fuori non si
 // chiama. Invece di esporla apposta per il test (cioè cambiare il codice per
 // farlo misurare), si semina lo stato di partenza in
-// baseinglese:mastery:<episodio>:<utente> e si dà UNA risposta in Flash Card,
-// che è il modulo con la scala più diretta ("Sì, la so" = correct, "Non
-// ancora" = wrong). Quattro transizioni, quattro profili puliti, una risposta
-// ciascuna: nessuna dipende dall'esito della precedente.
+// baseinglese:mastery:<episodio>:<utente> e si risponde in Flash Card, che è
+// il modulo con la scala più diretta ("Sì, la so" = correct, "Non ancora" =
+// wrong). Sei transizioni, sei profili puliti: nessuna dipende dall'esito
+// della precedente.
 //
-// Perché si semina lo STESSO valore su tutte le voci: il mazzo è mescolato
-// (shuffle), quindi non si sa quale carta esce per prima. Seminando tutte
-// allo stesso stato, qualunque carta esca la transizione da verificare è
-// quella. Alla fine si cerca l'unica voce che è cambiata.
+// ⚠️ DUE COSE SONO CAMBIATE IL 2026-09-10, e vanno lette insieme.
+//
+// ① Il mazzo viene ridotto a UNA carta intercettando la richiesta del file
+//    episodio (non toccando il file su disco, che è la fonte di tutti gli
+//    altri test). Prima si seminava lo stesso valore su tutte le voci perché
+//    il mazzo è mescolato e non si sapeva quale carta uscisse per prima; con
+//    una carta sola la domanda non esiste, e "l'unica voce cambiata" è
+//    l'unica voce che c'è.
+//
+// ② La scala non si legge più DOPO UNA RISPOSTA, perché non è più lì che si
+//    scrive: dal travaso al pulsante (pendingMastery) i colori arrivano al
+//    magazzino solo con "Ho finito, torna alla mappa". Quindi ogni prova
+//    porta il modulo fino in fondo e legge dopo il pulsante.
+//
+//    LIMITE DICHIARATO, ed è la conseguenza vera di ②: **in Flash Card una
+//    risposta sbagliata non può restare tale fino alla fine.** La carta
+//    sbagliata torna nel giro di ripasso, e il modulo non arriva alla
+//    Schermata Finale finché non la si dà giusta. Le due prove di
+//    RETROCESSIONE ([B] ed [E]) leggono quindi lo stato dopo DUE risposte —
+//    la sbagliata e la giusta del ripasso — e il valore atteso è calcolato
+//    sulla sequenza intera. Accanto a ciascuna è scritto quale valore
+//    DIVERSO si leggerebbe se la retrocessione fosse rotta: senza quella
+//    riga l'asserzione sarebbe un numero senza significato.
 //
 // promotionStreak si abbassa a 1 dagli override del Pannello Admin
 // (baseinglese:configOverrides), non modificando il file: così il test pinna
@@ -32,6 +51,19 @@ const { loadGrade } = require('./quiz-driver');
 
 const PASSO = 'flashcardAEngIta'; // prima apparizione di Flash Card, grado A
 const PRIMA = stepsBefore(PASSO);
+const FILE_EPISODIO = '**/data/inglese/it/inglese-it-gate.json';
+
+// Serve una copia del file episodio col grado di Flash Card ridotto alla
+// PRIMA voce: un mazzo di una carta sola. Si intercetta la richiesta invece di
+// toccare il file su disco — quel file è la fonte condivisa da tutti i test.
+async function mazzoDiUnaCarta(page, grado) {
+  await page.route(FILE_EPISODIO, async (route) => {
+    const res = await route.fetch();
+    const json = await res.json();
+    json.levels[grado].items = json.levels[grado].items.slice(0, 1);
+    await route.fulfill({ response: res, json });
+  });
+}
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -65,7 +97,8 @@ async function waitForAny(page, selectors) {
 
 // Un profilo nuovo, con i passi precedenti già fatti, la scala seminata e
 // promotionStreak impostato dagli override. Poi apre Flash Card.
-async function preparaEApri(page, utente, semina, promotionStreak) {
+async function preparaEApri(page, utente, semina, promotionStreak, grado) {
+  await mazzoDiUnaCarta(page, grado);
   await page.goto(APP_URL);
   if (!(await visible(page, '#name-input'))) {
     await page.click('#switch-user');
@@ -118,11 +151,40 @@ async function preparaEApri(page, utente, semina, promotionStreak) {
 }
 
 // Gira una carta e risponde. 'correct' = "Sì, la so", 'wrong' = "Non ancora".
-async function rispondi(page, utente, esito) {
+async function rispondi(page, esito) {
   await page.click('#fc-card');
   const btn = esito === 'correct' ? '#fc-know-it-btn' : '#fc-not-yet-btn';
   await page.waitForSelector(btn, { state: 'visible' });
   await page.click(btn);
+}
+
+// Dà le risposte previste, una per carta mostrata, attraversando il giro di
+// ripasso se una risposta sbagliata lo apre, e poi PREME IL PULSANTE — che è
+// l'unico momento in cui i colori arrivano al magazzino.
+//
+// Il ciclo aspetta un cambiamento di stato reale a ogni passo (regola 19): non
+// avanza a tempo, e se le risposte previste non bastano a chiudere il modulo
+// si ferma con un errore che lo dice, invece di leggere un magazzino vuoto e
+// dare la colpa alla scala.
+async function rispondiECompleta(page, utente, risposte) {
+  for (const esito of risposte) {
+    await page.waitForSelector('#fc-card', { state: 'visible', timeout: 15000 });
+    await rispondi(page, esito);
+    await page.waitForFunction(function () {
+      const vis = id => { const el = document.getElementById(id); return !!el && el.getClientRects().length > 0; };
+      return vis('fc-summary-screen') || vis('fc-retry-intro-screen') || vis('fc-card');
+    }, null, { timeout: 15000 });
+    if (await visible(page, '#fc-retry-intro-screen')) {
+      await page.click('#fc-retry-continue-btn');
+      await page.waitForSelector('#fc-card', { state: 'visible', timeout: 15000 });
+    }
+    if (await visible(page, '#fc-summary-screen')) break;
+  }
+  if (!(await visible(page, '#fc-summary-screen'))) {
+    throw new Error('Le risposte previste (' + risposte.join(', ') + ') non hanno chiuso il modulo: '
+      + 'la Schermata Finale non è comparsa, quindi non c\'è nessun travaso da leggere.');
+  }
+  await page.click('#fc-complete-btn');
   await page.waitForFunction(function (u) {
     const raw = localStorage.getItem('baseinglese:mastery:gate:' + u);
     return !!raw && Object.keys(JSON.parse(raw)).length > 0;
@@ -147,26 +209,30 @@ async function run() {
   const risultati = [];
   const log = (msg, ok) => { risultati.push(ok); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
-  // Gli unitId che Flash Card userà: 'flashcard-<grado>:<idVoce>:<direzione>'.
+  // L'unitId che Flash Card userà: 'flashcard-<grado>:<idVoce>:<direzione>'.
+  // Una voce sola, perché il mazzo è ridotto a una carta (vedi mazzoDiUnaCarta).
   const grado = gradeOf(PASSO);
-  const unitIds = loadGrade(grado).map(function (v) { return 'flashcard-' + grado + ':' + v.id + ':en-it'; });
-  console.log('Passo ' + PASSO + ' (grado ' + grado + '), ' + unitIds.length + ' voci\n');
+  const unitIds = loadGrade(grado).slice(0, 1).map(function (v) { return 'flashcard-' + grado + ':' + v.id + ':en-it'; });
+  console.log('Passo ' + PASSO + ' (grado ' + grado + '), mazzo ridotto a ' + unitIds.length + ' carta: ' + unitIds[0] + '\n');
 
-  // Una prova: semina, una risposta, legge la voce cambiata.
-  async function prova(etichetta, utente, semina, streak, esito) {
+  // Una prova: semina, dà le risposte previste, completa il modulo, legge la
+  // voce cambiata. `risposte` è una lista perché una risposta sbagliata apre
+  // il giro di ripasso e il modulo non si chiude finché quella carta non torna
+  // giusta (vedi il LIMITE DICHIARATO in testa al file).
+  async function prova(etichetta, utente, semina, streak, risposte) {
     const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     const { seminate, streakLetto } = await preparaEApri(page, utente,
-      { stato: semina, unitIds: unitIds }, streak);
-    await rispondi(page, utente, esito);
+      { stato: semina, unitIds: unitIds }, streak, grado);
+    await rispondiECompleta(page, utente, risposte);
     const dopo = await leggiScala(page, utente);
     const cambiate = vociCambiate(dopo, seminate);
     const valore = cambiate.length === 1 ? dopo[cambiate[0]] : null;
     console.log(etichetta);
     console.log('    promotionStreak letto dall\'app: ' + streakLetto +
-      ' | partenza: ' + JSON.stringify(semina) + ' | risposta: ' + esito);
+      ' | partenza: ' + JSON.stringify(semina) + ' | risposte: ' + risposte.join(' -> '));
     console.log('    voci cambiate: ' + cambiate.length + ' -> ' + JSON.stringify(valore));
     if (errors.length) console.log('    ERRORI JS: ' + errors.join(' | '));
     await page.close();
@@ -176,7 +242,7 @@ async function run() {
   // ---- [A] SALE: con promotionStreak=1 una risposta giusta promuove ----
   {
     const r = await prova('[A] rosso + 1 giusta, promotionStreak=1',
-      'ScalaA', { level: 'rosso', streak: 0 }, 1, 'correct');
+      'ScalaA', { level: 'rosso', streak: 0 }, 1, ['correct']);
     log('[A] L\'app ha letto promotionStreak=1 dagli override', r.streakLetto === 1);
     log('[A] Una sola voce cambia (le altre restano dov\'erano)', r.cambiate.length === 1);
     log('[A] rosso sale a giallo, e la striscia riparte da 0',
@@ -185,21 +251,32 @@ async function run() {
   }
 
   // ---- [B] SCENDE DI UNO SOLO: verde sbagliato va a giallo, non a rosso ----
+  // Due risposte, e il perché è il LIMITE DICHIARATO in testa: la carta
+  // sbagliata torna nel ripasso, e il modulo non si chiude finché non la si dà
+  // giusta. Con promotionStreak=2 la giusta del ripasso non promuove, quindi
+  // NON copre la retrocessione — la rende leggibile.
+  //
+  // Partenza { verde, striscia 1 }, sequenza sbagliata -> giusta. Le tre
+  // letture possibili, e sono tutte diverse:
+  //   giallo/1  la scala è giusta: un gradino solo, e la sbagliata ha azzerato
+  //             la striscia (poi la giusta l'ha riportata a 1)
+  //   rosso/1   la retrocessione ha saltato un gradino
+  //   verde/*   la sbagliata NON ha azzerato la striscia: 1+1 = 2 = promozione
   {
-    const r = await prova('[B] verde + 1 sbagliata',
-      'ScalaB', { level: 'verde', streak: 0 }, 1, 'wrong');
+    const r = await prova('[B] verde/1 + sbagliata, poi la giusta del ripasso, promotionStreak=2',
+      'ScalaB', { level: 'verde', streak: 1 }, 2, ['wrong', 'correct']);
     log('[B] Una sola voce cambia', r.cambiate.length === 1);
     log('[B] verde scende a giallo, NON a rosso: un gradino solo',
       !!r.valore && r.valore.level === 'giallo');
     log('[B] La striscia si azzera su una risposta sbagliata',
-      !!r.valore && r.valore.streak === 0);
+      !!r.valore && r.valore.level === 'giallo' && r.valore.streak === 1);
     log('[B] Nessun errore JS', r.errors.length === 0);
   }
 
   // ---- [C] NON SALTA: con promotionStreak=2 una sola giusta non promuove ----
   {
     const r = await prova('[C] rosso + 1 giusta, promotionStreak=2',
-      'ScalaC', { level: 'rosso', streak: 0 }, 2, 'correct');
+      'ScalaC', { level: 'rosso', streak: 0 }, 2, ['correct']);
     log('[C] L\'app ha letto promotionStreak=2 dagli override', r.streakLetto === 2);
     log('[C] Una sola voce cambia', r.cambiate.length === 1);
     log('[C] Con la striscia richiesta a 2, una giusta NON promuove: resta rosso',
@@ -217,7 +294,7 @@ async function run() {
   // 145 voci. Il test era verde perché descriveva il codice, non la regola.
   {
     const r = await prova('[D] nessuna voce in scala + 1 giusta, promotionStreak=2',
-      'ScalaD', null, 2, 'correct');
+      'ScalaD', null, 2, ['correct']);
     log('[D] Nasce una sola voce', r.cambiate.length === 1);
     log('[D] Una risposta giusta NON viene letta come "non lo sa": nasce giallo',
       !!r.valore && r.valore.level === 'giallo');
@@ -229,13 +306,20 @@ async function run() {
   // ---- [E] E UNA SBAGLIATA LA PRIMA VOLTA RESTA ROSSA ----
   // L'altra metà della regola, e senza di essa [D] da solo direbbe "tutto
   // parte da giallo", che è il difetto opposto.
+  // Stessa forma di [B]: due risposte, attesa calcolata sulla sequenza.
+  // Le tre letture possibili di 'rosso/1':
+  //   rosso/1   nasce rossa e la giusta del ripasso avanza solo la striscia
+  //   giallo/1  è nata gialla, cioè una risposta SBAGLIATA è stata letta come
+  //             "medio" — il difetto opposto a quello di [D]
+  //   giallo/0  è nata rossa ma con la striscia già a 1, e la giusta ha
+  //             promosso: la sbagliata non aveva azzerato la striscia
   {
-    const r = await prova('[E] nessuna voce in scala + 1 sbagliata, promotionStreak=2',
-      'ScalaE', null, 2, 'wrong');
+    const r = await prova('[E] nessuna voce in scala + sbagliata, poi la giusta del ripasso, promotionStreak=2',
+      'ScalaE', null, 2, ['wrong', 'correct']);
     log('[E] Nasce una sola voce', r.cambiate.length === 1);
     log('[E] Una risposta sbagliata la prima volta nasce rossa',
       !!r.valore && r.valore.level === 'rosso');
-    log('[E] ...con la striscia a 0', !!r.valore && r.valore.streak === 0);
+    log('[E] ...con la striscia a 0', !!r.valore && r.valore.level === 'rosso' && r.valore.streak === 1);
     log('[E] Nessun errore JS', r.errors.length === 0);
   }
 
@@ -246,7 +330,7 @@ async function run() {
   // seminano tutte le voci con lo stesso valore.
   {
     const r = await prova('[F] giallo/1 (cioè dopo una giusta) + 1 giusta, promotionStreak=2',
-      'ScalaF', { level: 'giallo', streak: 1 }, 2, 'correct');
+      'ScalaF', { level: 'giallo', streak: 1 }, 2, ['correct']);
     log('[F] Una sola voce cambia', r.cambiate.length === 1);
     log('[F] La SECONDA risposta giusta porta a verde: due, non quattro',
       !!r.valore && r.valore.level === 'verde');

@@ -379,6 +379,15 @@ async function run() {
     for (let i = 0; i < bubbleCount; i++) { await page.locator('.dg-bubble').nth(i).click(); await page.waitForTimeout(400); }
     await page.click('#dg-know-it-btn');
     await page.waitForTimeout(300);
+    // Dal 2026-09-10 l'autovalutazione MOSTRA e non scrive: l'esito arriva al
+    // magazzino col pulsante di uscita, come in ogni altro modulo. Rispondere
+    // e poi uscire da "← Mappa" non deve lasciare un colore che nessuno ha
+    // confermato — e' il difetto che la ③ ha chiuso, e questa riga in piu' e'
+    // il segno che qui si misura il gesto, non piu' la risposta.
+    const primaDelPulsante = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
+    log('[Modulo Finale prep] L\'autovalutazione da sola NON scrive l\'esito: aspetta il pulsante', !primaDelPulsante.dialogoAscoltaRipeti);
+    await page.click('#dg-complete-btn');
+    await page.waitForTimeout(300);
     const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
     log('[Modulo Finale prep] Dialogo (selfAssessment) writes the same { level } shape ModuleRules writes', outcomes.dialogoAscoltaRipeti && outcomes.dialogoAscoltaRipeti.level === 'verde');
     log('[Modulo Finale prep] No JS errors', errors.length === 0);

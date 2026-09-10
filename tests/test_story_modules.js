@@ -267,6 +267,18 @@ async function openStory(page, moduleId) {
   await page.waitForFunction(() => document.querySelectorAll('#story-cards-body .wws-card').length > 0, null, { timeout: 20000 });
 }
 
+// Il gesto che SCRIVE, e il rientro. Dal 2026-09-10 nessuno dei due magazzini
+// di Why We Say It si scrive a ogni risposta: si scrivono su "Esci e riprendi
+// dopo" e sul completamento, cosi' uscire da "← Mappa" non lascia traccia.
+// Quindi per leggere il magazzino DOPO una risposta bisogna fare il gesto —
+// che e' esattamente cio' che si vuole misurare, non un giro in piu' per
+// comodita' del test.
+async function riprendiDopoERientra(page, moduleId) {
+  await page.click('#story-cards-resume-later');
+  await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0, null, { timeout: 20000 });
+  await openStory(page, moduleId);
+}
+
 // Tutto lo stato che serve, letto in un'unica valutazione sincrona dentro la
 // pagina (CLAUDE.md regola 19).
 function readState(page) {
@@ -460,12 +472,20 @@ async function run() {
       return parsed && parsed.byLine ? { versione: parsed.versione, voce: parsed.byLine['d-1-s1'] } : null;
     }, 'Story_Why');
 
+    // ⚠️ Prima di ogni lettura si fa il GESTO. La risposta da sola non scrive
+    // piu' niente: e la riga qui sotto lo prova, invece di darlo per buono.
+    const primaDelGesto = await vociStat();
+    log('[B/C.2] La risposta da sola non scrive niente: il magazzino aspetta il gesto',
+      primaDelGesto === null || !primaDelGesto.voce, JSON.stringify(primaDelGesto));
+
+    await riprendiDopoERientra(page, 'whyWeSayIt');
     const dopoPrima = await vociStat();
     log('[B/C.2] La prima risposta lascia una voce sola, senza ripensamenti',
       !!dopoPrima && !!dopoPrima.voce && dopoPrima.voce.corrente === 'chiara' &&
       dopoPrima.voce.chiara === 1 && dopoPrima.voce.cambi === 0, JSON.stringify(dopoPrima));
 
     await dichiara(page, 'd-1-s1', 'nonChiara');
+    await riprendiDopoERientra(page, 'whyWeSayIt');
     const dopoCambio = await vociStat();
     log('[B/C.2] Cambiare idea SPOSTA il voto: quello di prima torna a zero',
       !!dopoCambio && dopoCambio.voce.corrente === 'nonChiara' &&
@@ -474,6 +494,7 @@ async function run() {
       !!dopoCambio && dopoCambio.voce.cambi === 1, JSON.stringify(dopoCambio));
 
     await dichiara(page, 'd-1-s1', 'nonChiara');
+    await riprendiDopoERientra(page, 'whyWeSayIt');
     const dopoUguale = await vociStat();
     log('[B/C.2] Rispondere UGUALE non muove niente, nemmeno i ripensamenti',
       !!dopoUguale && dopoUguale.voce.cambi === 1 && dopoUguale.voce.nonChiara === 1,

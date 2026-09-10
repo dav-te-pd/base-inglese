@@ -14,7 +14,7 @@
 test_attendi.js 6
 test_avviso_microfono.js 31
 test_batch10.js 23
-test_batch11.js 25
+test_batch11.js 26
 test_batch12.js 47
 test_batch13.js 21
 test_batch14.js 38
@@ -44,6 +44,7 @@ test_episodio2.js 9
 test_errore_caricamento.js 13
 test_hidden_guard.js 4
 test_interruttore_episodio.js 15
+test_mastery_al_gesto.js 25
 test_match_practice_nonloso.js 6
 test_new_features.js 29
 test_outcome_step_ids.js 21
@@ -51,6 +52,6 @@ test_report_mastery.js 8
 test_sblocco_sequenziale.js 16
 test_scala_colori.js 24
 test_sequenze.js 14
-test_story_modules.js 92
+test_story_modules.js 93
 test_struttura_corso.js 9
 test_voicecoach.js 25

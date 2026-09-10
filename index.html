@@ -4678,6 +4678,16 @@
     if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
     fcClearNavTimeout();
     closeAttemptPopup();
+    // Regola 21: anche i due magazzini in sospeso si azzerano QUI, non dentro
+    // il "← Mappa" di un modulo. Lasciare un modulo senza premere "Ho finito"
+    // butta via quello che si era accumulato — è precisamente la regola del
+    // gesto, applicata nel punto unico che ogni uscita attraversa.
+    //
+    // L'ordine con completeModule non è un caso: il travaso avviene PRIMA di
+    // openEpisodeMap(), che è ciò che porta qui. Chi salva ha già salvato
+    // quando questa riga gira.
+    clearPendingMastery();
+    storyCardsClearPendingStats();
   }
 
   function showView(name) {
@@ -5612,6 +5622,66 @@
   }
 
   /* ============================================================
+     MASTERY IN SOSPESO — il gesto sceglie cosa si salva
+
+     Un modulo che gira NON scrive piu' i colori nel magazzino: li tiene
+     qui. Il travaso nel magazzino vero avviene in un punto solo,
+     commitPendingMastery, chiamato da completeModule — cioe' dal pulsante
+     "Ho finito". Le tre uscite, e sono una regola, non un caso:
+
+       "Ho finito"            -> esito + voci + completato
+       "Esci e riprendi dopo" -> solo le risposte gia' dichiarate
+       "← Mappa"              -> niente
+
+     Perche': uscire con "← Mappa" dopo tre risposte lasciava tre colori
+     scritti per sempre, senza che l'utente avesse dichiarato niente. Il
+     pulsante E' il gesto; quello che non passa dal pulsante non e' successo.
+
+     ⚠️ Oggi nessuno mostra i colori MENTRE un modulo gira: i lettori di
+     loadMastery sono i tre punti che scrivevano, il pannello admin,
+     hasStartedEpisodeModules e la vista morta `pronunciation`. Per questo qui
+     basta un oggetto in memoria. SE domani un modulo disegnasse i colori
+     durante l'esercizio, dovra' leggere il pending E il magazzino, non solo
+     il magazzino — altrimenti mostrerebbe il colore di ieri su una risposta
+     di adesso.
+     ============================================================ */
+  var pendingMastery = {};
+
+  function clearPendingMastery() {
+    pendingMastery = {};
+  }
+
+  // Sostituisce applyMasteryResult + saveMastery nei punti che scrivono.
+  // `result` e' o un esito da far passare per la scala ('correct' | 'similar'
+  // | 'wrong'), o una voce gia' pronta ({ level, streak }) per i due casi che
+  // la scala la scavalcano apposta: il "Non lo so" dichiarato e il
+  // force-accept della coda di ripasso. Ritorna la voce risultante, cosi' chi
+  // chiama puo' usarla senza rileggere.
+  function recordPendingMastery(unitId, result) {
+    var corrente = pendingMastery[unitId];
+    if (corrente === undefined) {
+      corrente = loadMastery(currentEpisode.id, getUserName())[unitId];
+    }
+    pendingMastery[unitId] = (typeof result === 'string')
+      ? applyMasteryResult(corrente, result)
+      : result;
+    return pendingMastery[unitId];
+  }
+
+  // Il travaso. E' l'UNICO punto dell'app che scrive il magazzino della
+  // mastery: se un giorno saveMastery( ricompare altrove, quel modulo ha
+  // ricominciato a scrivere senza il gesto — ed e' esattamente cio' che
+  // tests/test_mastery_al_gesto.js conta.
+  function commitPendingMastery(episodeId, userName) {
+    var chiavi = Object.keys(pendingMastery);
+    if (chiavi.length === 0) return;
+    var mastery = loadMastery(episodeId, userName);
+    chiavi.forEach(function (k) { mastery[k] = pendingMastery[k]; });
+    saveMastery(episodeId, userName, mastery);
+    clearPendingMastery();
+  }
+
+  /* ============================================================
      EPISODES — costruito dalla sequenza, non scritto a mano
 
      Un episodio dichiara SOLO quello che è suo: il badge e il contenuto del
@@ -5915,6 +5985,27 @@
     var outcomes = loadModuleOutcomes(episode.id, userName);
     outcomes[moduleId] = outcome;
     try { localStorage.setItem(moduleOutcomeKey(episode.id, userName), JSON.stringify(outcomes)); } catch (e) {}
+  }
+
+  // La coda condivisa dei SETTE pulsanti "Ho finito, torna alla mappa":
+  // esito (solo per i moduli che ne hanno uno), travaso dei colori,
+  // completamento, mappa. Prima erano sette copie della stessa sequenza, e
+  // tre di quelle copie scrivevano l'esito con la stessa riga scritta tre
+  // volte.
+  //
+  // `esito` assente vuol dire "questo modulo non da' un colore alla mappa"
+  // (Repeat Aloud, Meet the Story, Your Story: CONFIG.moduleOutcomeRules non
+  // li nomina) — non "salva senza esito". Chi chiama decide guardando
+  // moduleOutcomeRules, come faceva prima.
+  //
+  // L'ordine conta: l'esito e le voci si scrivono PRIMA di openEpisodeMap(),
+  // che passa da showView() e quindi da stopAllModuleActivity(), che azzera
+  // il pending. Travaso, poi mappa — mai il contrario.
+  function completeModule(module, esito) {
+    if (esito) saveModuleOutcome(currentEpisode, getUserName(), module.id, esito);
+    commitPendingMastery(currentEpisode.id, getUserName());
+    markModuleCompleted(currentEpisode, getUserName(), module.id);
+    openEpisodeMap();
   }
 
   // Modulo Finale (not yet built) needs to pick one of three contents —
@@ -6482,6 +6573,15 @@
   // reopening Personalizza now needs the mid-episode wipe warning below;
   // none of them means the episode hasn't really started yet, so editing
   // stays free.
+  //
+  // ⚠️ Dal travaso al pulsante (pendingMastery) questo avviso vede MENO
+  // gente, ed è voluto: chi ha risposto a tre domande e poi è uscito con
+  // "← Mappa" non ha più nessuna voce nel magazzino, quindi qui risulta non
+  // aver cominciato. È la stessa regola applicata a un posto in più, non un
+  // effetto collaterale da compensare: se quelle risposte non esistono, non
+  // esiste nemmeno il progresso che l'avviso proteggeva. Prima l'avviso
+  // mentiva — diceva "hai già cominciato" a chi aveva fatto tre click e se
+  // n'era andato.
   function hasStartedEpisodeModules(episode, userName) {
     var progress = loadModuleProgress(episode.id, userName);
     var completedBeyondCustomize = progress.completed.filter(function (id) { return id !== 'personalizzazione'; });
@@ -7152,8 +7252,9 @@
   });
 
   document.getElementById('repeat-aloud-complete-btn').addEventListener('click', function () {
-    markModuleCompleted(currentEpisode, getUserName(), currentRepeatAloudModule.id);
-    openEpisodeMap();
+    // Nessun esito: CONFIG.moduleOutcomeRules non nomina repeatAloud, quindi
+    // questo modulo non colora la mappa. Non e' una dimenticanza.
+    completeModule(currentRepeatAloudModule, null);
   });
 
   /* ============================================================
@@ -7187,6 +7288,29 @@
   var storyCardsSelfCheck = null; // istruzioni-moduli.json's storyCards.selfCheck (domanda + le tre risposte)
   var storyCardsSelfCheckMessages = null; // istruzioni-moduli.json's whyWeSayIt.selfCheckMessages (le frasi di supporto dopo la risposta)
   var storyCardsFollowupUsed = {}; // risposta -> frasi già mostrate in questa apertura del modulo, per non ripeterle
+  // Le risposte date in questo giro, NELL'ORDINE in cui sono state date, in
+  // attesa del gesto che le salva. È una lista e non "l'ultima risposta"
+  // apposta: storyCardsRecordExplanationAnswer conta anche i CAMBI di idea, e
+  // riassumere il giro in un valore solo perderebbe proprio quel conteggio.
+  // Il travaso non è un riassunto: è la stessa sequenza, scritta più tardi.
+  var storyCardsPendingStats = [];
+
+  // Il travaso del secondo magazzino, gemello di commitPendingMastery.
+  // Questo modulo ne ha DUE — le dichiarazioni (il set di lavoro) e i
+  // conteggi editoriali — e fino al 2026-09-10 solo il primo rispettava il
+  // gesto: i conteggi si scrivevano a ogni risposta, quindi uscire da
+  // "← Mappa" lasciava comunque una traccia. Due magazzini dello stesso
+  // modulo con due regole diverse; adesso la regola è una.
+  function storyCardsCommitPendingStats() {
+    storyCardsPendingStats.forEach(function (voce) {
+      storyCardsRecordExplanationAnswer(currentEpisode.id, getUserName(), voce.skillId, voce.answer);
+    });
+    storyCardsPendingStats = [];
+  }
+
+  function storyCardsClearPendingStats() {
+    storyCardsPendingStats = [];
+  }
 
   // Le dichiarazioni sopravvivono all'uscita SOLO se l'utente lo chiede:
   // "Esci e riprendi dopo" durante il primo giro, o il completamento. Uscire
@@ -7225,7 +7349,7 @@
     return 'baseinglese:storyCardsDeclarations:' + episodeId + ':' + userName;
   }
 
-  function loadSeDeclarations(episodeId, userName) {
+  function loadStoryCardsDeclarations(episodeId, userName) {
     try {
       var raw = localStorage.getItem(storyCardsDeclarationsKey(episodeId, userName));
       var parsed = raw ? JSON.parse(raw) : null;
@@ -7233,7 +7357,7 @@
     } catch (e) { return {}; }
   }
 
-  function saveSeDeclarations(episodeId, userName, answers) {
+  function saveStoryCardsDeclarations(episodeId, userName, answers) {
     try { localStorage.setItem(storyCardsDeclarationsKey(episodeId, userName), JSON.stringify(answers)); } catch (e) {}
   }
 
@@ -7547,7 +7671,7 @@
     // Riparte da dove si era arrivati: le dichiarazioni salvate (da un
     // "Esci e riprendi dopo", o dal completamento di un giro precedente)
     // sono il punto di partenza, non una lavagna pulita.
-    storyCardsSessionAnswers = loadSeDeclarations(currentEpisode.id, getUserName());
+    storyCardsSessionAnswers = loadStoryCardsDeclarations(currentEpisode.id, getUserName());
     storyCardsFollowupUsed = {};
     showView('storyCards');
     if (isIntroDismissed(module.kind, getUserName())) {
@@ -7599,23 +7723,24 @@
       speakListenBlock(listenBtn, fillTemplate(line.english, currentEpisode, currentValues, 'en'));
       return;
     }
-    // Risposta al self-check. Registra la dichiarazione in due posti diversi,
-    // che rispondono a due domande diverse:
+    // Risposta al self-check. Alimenta due magazzini diversi, che rispondono
+    // a due domande diverse:
     //   - storyCardsSessionAnswers, il set di lavoro, che alimenta la
     //     percentuale SelfScoreRules di QUESTO passaggio;
-    //   - storyCardsRecordExplanationAnswer, la risposta corrente per battuta,
-    //     che sopravvive alla sessione: "una spiegazione poco chiara a molti
-    //     studenti è scritta male" è un segnale editoriale, non un punteggio.
-    // Il set di lavoro NON viene salvato qui: lo si scrive solo su "Esci e
-    // riprendi dopo" o sul completamento, così uscire da "← Mappa" non lascia
-    // traccia.
+    //   - storyCardsPendingStats, la coda dei conteggi editoriali: "una
+    //     spiegazione poco chiara a molti studenti è scritta male" è un
+    //     segnale per chi scrive, non un punteggio per lo studente.
+    // NESSUNO dei due viene salvato qui: si scrivono su "Esci e riprendi
+    // dopo" o sul completamento, così uscire da "← Mappa" non lascia traccia.
+    // Prima il secondo si scriveva a ogni risposta, e quella traccia la
+    // lasciava.
     var answerBtn = e.target.closest('[data-story-cards-answer]');
     if (answerBtn) {
       if (answerBtn.disabled) return;
       var answer = answerBtn.getAttribute('data-story-cards-answer');
       var answerSkillId = answerBtn.getAttribute('data-skill');
       storyCardsSessionAnswers[answerSkillId] = answer;
-      storyCardsRecordExplanationAnswer(currentEpisode.id, getUserName(), answerSkillId, answer);
+      storyCardsPendingStats.push({ skillId: answerSkillId, answer: answer });
       var followupEl = document.getElementById('story-cards-followup-' + answerSkillId);
       var followupText = storyCardsFollowupText(answer);
       if (followupText) {
@@ -7661,7 +7786,8 @@
     // definitive, e a un giro di ripasso successivo sovrascrivono quelle di
     // prima (stesso principio di saveModuleOutcome, che riscrive sempre).
     if (storyCardsHasExplanations) {
-      saveSeDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
+      saveStoryCardsDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
+      storyCardsCommitPendingStats();
     }
     // SelfScoreRules: la percentuale è congelata QUI, su un giro in cui ogni
     // spiegazione è stata aperta e dichiarata — non ci sono più risposte
@@ -7681,7 +7807,8 @@
   // il modulo — niente Traguardo, niente Schermata Finale, niente colore
   // sulla mappa: non è un esito, è un segnalibro.
   document.getElementById('story-cards-resume-later').addEventListener('click', function () {
-    saveSeDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
+    saveStoryCardsDeclarations(currentEpisode.id, getUserName(), storyCardsSessionAnswers);
+    storyCardsCommitPendingStats();
     openEpisodeMap();
   });
 
@@ -7689,11 +7816,10 @@
     // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
     // number behind it is the student's own declared "Sì, mi è chiara"
     // share — only saved when there was something to self-assess at all.
-    if (storyCardsHasExplanations && CONFIG.moduleOutcomeRules[currentStoryCardsModule.moduleId] === 'selfScoreRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), currentStoryCardsModule.id, { level: moduleRulesLevel(storyCardsLastAvgPct), pct: storyCardsLastAvgPct });
-    }
-    markModuleCompleted(currentEpisode, getUserName(), currentStoryCardsModule.id);
-    openEpisodeMap();
+    var esito = (storyCardsHasExplanations && CONFIG.moduleOutcomeRules[currentStoryCardsModule.moduleId] === 'selfScoreRules')
+      ? { level: moduleRulesLevel(storyCardsLastAvgPct), pct: storyCardsLastAvgPct }
+      : null;
+    completeModule(currentStoryCardsModule, esito);
   });
 
   /* ============================================================
@@ -8324,10 +8450,8 @@
     // giudicare — e il timeout di silenzio torna a fare solo il suo mestiere,
     // decidere QUANDO smettere di registrare, che e' comodita' e non dato.
     if (vcVariant === 'practice' && recognizedWords.length > 0) {
-      var mastery = loadMastery(currentEpisode.id, getUserName());
       pairs.forEach(function (pair, i) {
-        var unitId = 'voicepractice:' + line.id + ':' + pair.targetIndex;
-        mastery[unitId] = applyMasteryResult(mastery[unitId], pairResults[i]);
+        recordPendingMastery('voicepractice:' + line.id + ':' + pair.targetIndex, pairResults[i]);
       });
       // E il TARGET: la voce intera, con la media delle parole. Il criterio e'
       // "dove ci sono le stelle, quello e' il dato da registrare" — le stelle
@@ -8343,9 +8467,7 @@
       // CONFIG.percentageThresholds, le stesse soglie con cui la percentuale
       // diventa un colore ovunque nell'app (regola 3 e regola 13).
       var esitoTarget = { alto: 'correct', medio: 'similar', basso: 'wrong' }[percentageBucket(pct)];
-      var targetId = 'voicepractice:' + line.id;
-      mastery[targetId] = applyMasteryResult(mastery[targetId], esitoTarget);
-      saveMastery(currentEpisode.id, getUserName(), mastery);
+      recordPendingMastery('voicepractice:' + line.id, esitoTarget);
     }
 
     // Richiamo (Voice Check only — Voice Practice has no final ripasso
@@ -8493,11 +8615,9 @@
     // that is (first-pass vs. latest-attempt) is vcVariant's own call
     // (see vcEvaluate), already baked into vcLastAvgPct by
     // vcFinishModule.
-    if (CONFIG.moduleOutcomeRules[vcModule.moduleId] === 'moduleRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), vcModule.id, { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct });
-    }
-    markModuleCompleted(currentEpisode, getUserName(), vcModule.id);
-    openEpisodeMap();
+    completeModule(vcModule, CONFIG.moduleOutcomeRules[vcModule.moduleId] === 'moduleRules'
+      ? { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct }
+      : null);
   });
 
   document.getElementById('attempt-popup-retry').addEventListener('click', function () {
@@ -8565,12 +8685,9 @@
   // popup, same mechanic as Voice Coach's vcAttempts). Returns that count.
   function recordMultipleChoiceResult(params) {
     var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
-    var userName = getUserName();
-    var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = params.declaredNonAttempt
+    recordPendingMastery(unitId, params.declaredNonAttempt
       ? { level: 'rosso', streak: 0 }
-      : applyMasteryResult(mastery[unitId], params.correct ? 'correct' : 'wrong');
-    saveMastery(currentEpisode.id, userName, mastery);
+      : (params.correct ? 'correct' : 'wrong'));
 
     var attemptNum = (params.attemptCounts[params.item.id] || 0) + 1;
     params.attemptCounts[params.item.id] = attemptNum;
@@ -8581,8 +8698,7 @@
       if (attempts >= params.maxRetryAttempts) {
         // Give up retrying this one — force-accept as rosso so the retry
         // loop can't run forever on a single stubborn item.
-        mastery[unitId] = { level: 'rosso', streak: 0 };
-        saveMastery(currentEpisode.id, userName, mastery);
+        recordPendingMastery(unitId, { level: 'rosso', streak: 0 });
       } else if (params.retryQueue.indexOf(params.item.id) === -1) {
         params.retryQueue.push(params.item.id);
       }
@@ -8900,11 +9016,9 @@
   document.getElementById('qm-complete-btn').addEventListener('click', function () {
     // ModuleRules (CONFIG.moduleOutcomeRules), same reference wiring as
     // Voice Coach's own complete-btn: verified answers, first-pass pct.
-    if (CONFIG.moduleOutcomeRules[qmModule.moduleId] === 'moduleRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), qmModule.id, { level: moduleRulesLevel(qmLastAvgPct), pct: qmLastAvgPct });
-    }
-    markModuleCompleted(currentEpisode, getUserName(), qmModule.id);
-    openEpisodeMap();
+    completeModule(qmModule, CONFIG.moduleOutcomeRules[qmModule.moduleId] === 'moduleRules'
+      ? { level: moduleRulesLevel(qmLastAvgPct), pct: qmLastAvgPct }
+      : null);
   });
 
   document.getElementById('match-back-map').addEventListener('click', function () {
@@ -8956,6 +9070,7 @@
   var dgProfile = null;
   var dgDialogue = [];
   var dgHeardIds = []; // line ids heard at least once this viewing
+  var dgLastOutcome = null; // l'autovalutazione dichiarata, in attesa del pulsante (vedi dgFinishModule)
   var dgFurthestIndex = -1; // Ripeti a Tempo only: highest dialogue index played this viewing — see dgApplySequenceLock
   var dgPaused = false;
   // Per-line countdown bar state (Ripeti a Tempo/Continuo only) — a
@@ -9383,13 +9498,19 @@
   // level: 'verde' ("Sì, lo so") | 'giallo' ("Non ancora") — a single
   // self-assessment for the whole dialogue, not per-word: this module
   // never touches loadMastery/saveMastery. Traguardo plays only on verde.
+  //
+  // ⚠️ Qui si MOSTRA, non si scrive: suono, Schermata Finale e sottotitolo
+  // restano attaccati all'autovalutazione — e' li' che lo studente dichiara,
+  // ed e' li' che deve sentirsi rispondere. L'esito invece aspetta il
+  // pulsante, come in ogni altro modulo: rispondere "Sì, lo so" e poi uscire
+  // con "← Mappa" scriveva un colore che nessuno aveva confermato.
   function dgFinishModule(level) {
     if (level === 'verde') sfxPlayTraguardoSound();
-    saveModuleOutcome(currentEpisode, getUserName(), dgModule.id, {
+    dgLastOutcome = {
       level: level,
       linesListened: dgHeardIds.length,
       linesTotal: dgDialogue.length
-    });
+    };
     dgShowScreen('summary');
     applyOutcomeSubtitle('dg-summary-title-sub', 'dialogoCompleteMessages', level === 'verde' ? 'siLoSo' : 'nonAncora');
   }
@@ -9486,6 +9607,7 @@
     dgProfile = CONFIG.dialogo.profiles[module.dialogoProfile];
     dgDialogue = [];
     dgHeardIds = [];
+    dgLastOutcome = null;
     dgClearAllTimers();
     document.getElementById('dialogo-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('dialogo-type-badge').textContent = moduleTypeLabel(module);
@@ -9594,8 +9716,9 @@
   });
 
   document.getElementById('dg-complete-btn').addEventListener('click', function () {
-    markModuleCompleted(currentEpisode, getUserName(), dgModule.id);
-    openEpisodeMap();
+    // dgLastOutcome e' sempre pieno qui: alla Schermata Finale ci si arriva
+    // solo da dgFinishModule. Il null e' la rete, non il caso normale.
+    completeModule(dgModule, dgLastOutcome);
   });
 
   // Timers/synth are stopped centrally by showView()'s own
@@ -10084,11 +10207,9 @@
   });
 
   document.getElementById('sr-complete-btn').addEventListener('click', function () {
-    if (CONFIG.moduleOutcomeRules[srModule.moduleId] === 'moduleRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), srModule.id, { level: moduleRulesLevel(srLastAvgPct), pct: srLastAvgPct });
-    }
-    markModuleCompleted(currentEpisode, getUserName(), srModule.id);
-    openEpisodeMap();
+    completeModule(srModule, CONFIG.moduleOutcomeRules[srModule.moduleId] === 'moduleRules'
+      ? { level: moduleRulesLevel(srLastAvgPct), pct: srLastAvgPct }
+      : null);
   });
 
   // Timers are stopped centrally by showView()'s own stopAllModuleActivity()
@@ -10181,10 +10302,7 @@
   function fcRecordResult(result) {
     fcPassResults[fcCurrentItem.id] = result;
     var unitId = 'flashcard-' + fcGrade + ':' + fcCurrentItem.id + ':' + fcDirection;
-    var userName = getUserName();
-    var mastery = loadMastery(currentEpisode.id, userName);
-    mastery[unitId] = applyMasteryResult(mastery[unitId], result);
-    saveMastery(currentEpisode.id, userName, mastery);
+    recordPendingMastery(unitId, result);
 
     var attemptNum = (fcAttemptCounts[fcCurrentItem.id] || 0) + 1;
     fcAttemptCounts[fcCurrentItem.id] = attemptNum;
@@ -10196,8 +10314,7 @@
       var attempts = (fcRetryAttempts[fcCurrentItem.id] || 0) + 1;
       fcRetryAttempts[fcCurrentItem.id] = attempts;
       if (attempts >= CONFIG.retryQueue.maxAttempts) {
-        mastery[unitId] = { level: 'rosso', streak: 0 };
-        saveMastery(currentEpisode.id, userName, mastery);
+        recordPendingMastery(unitId, { level: 'rosso', streak: 0 });
         fcPassResults[fcCurrentItem.id] = 'correct';
       }
     }
@@ -10447,11 +10564,9 @@
   document.getElementById('fc-complete-btn').addEventListener('click', function () {
     // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
     // number behind it is the student's own declared "Sì, la so" share.
-    if (CONFIG.moduleOutcomeRules[fcModule.moduleId] === 'selfScoreRules') {
-      saveModuleOutcome(currentEpisode, getUserName(), fcModule.id, { level: moduleRulesLevel(fcLastAvgPct), pct: fcLastAvgPct });
-    }
-    markModuleCompleted(currentEpisode, getUserName(), fcModule.id);
-    openEpisodeMap();
+    completeModule(fcModule, CONFIG.moduleOutcomeRules[fcModule.moduleId] === 'selfScoreRules'
+      ? { level: moduleRulesLevel(fcLastAvgPct), pct: fcLastAvgPct }
+      : null);
   });
 
   // The slide-nav timeout is stopped centrally by showView()'s own
@@ -10630,10 +10745,13 @@
       }
     });
 
+    // Vista morta (vedi il commento su `segments` in EPISODES): passa dal
+    // pending come tutti e travasa subito, perche' qui non c'e' nessun
+    // pulsante "Ho finito" a cui attaccare il gesto. Sparisce con la vista.
     Object.keys(unitResults).forEach(function (unitId) {
-      currentMastery[unitId] = applyMasteryResult(currentMastery[unitId], unitResults[unitId]);
+      currentMastery[unitId] = recordPendingMastery(unitId, unitResults[unitId]);
     });
-    saveMastery(currentEpisode.id, getUserName(), currentMastery);
+    commitPendingMastery(currentEpisode.id, getUserName());
 
     renderPhrase();
     transcriptEl.innerHTML = '<strong>Hai detto:</strong> ' + (recognizedText ? recognizedText : '(nessun testo riconosciuto)');
