@@ -257,7 +257,7 @@ cronologia nuova.
 | | Voce | Stato |
 |---|---|---|
 | **①** | **Il dato si registra sul target** (Voice Practice). Già fatto: la riga per la voce intera convive con quelle per parola. | ☑ |
-| **②** | **Voice Check scrive, strada B** — solo il primo tentativo, in voci sue (`voicecheck:<battuta>` e `voicecheck:<battuta>:<indice>`). Vedi C.1. **Va DOPO la ③**, e non è un ordine di comodo: nascendo dentro il magazzino in sospeso prende il gesto gratis, invece di essere il nono punto da convertire. **FATTO E VERIFICATO il 2026-09-10.** ⬇︎ | ☑ |
+| **②** | **Voice Check scrive, strada B** — solo il primo tentativo, in voci sue (`voicecheck:<battuta>` e `voicecheck:<battuta>:<indice>`). Vedi C.1. **Va DOPO la ③**, e non è un ordine di comodo: nascendo dentro il magazzino in sospeso prende il gesto gratis, invece di essere il nono punto da convertire. **FATTO E VERIFICATO il 2026-09-10** — suite verde, 1008 asserzioni in 44 file. ⬇︎ | ☑ |
 | **③** | **I colori si travasano al pulsante.** ⬇︎ **FATTO E VERIFICATO il 2026-09-10** — suite verde, 998 asserzioni in 44 file. | ☑ |
 | **④** | **I colori parcheggiati.** *Chiude come voce, con una nota accanto al mix:* le battute del grado D prendono un colore **solo** da Voice Practice e Voice Check; i tre moduli Dialogo non ne producono nessuno, perché la loro è un'autovalutazione sull'intero dialogo, non una misura per voce. Non è un buco da riempire: è la ragione per cui l'esito del Dialogo vive in `moduleOutcome` e non nella mastery. | ☐ |
 | **⑤** | **Il report per grado.** È prodotto, non strumento: più avanti. | ☐ |
