@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260910a**
+**Versione: 20260910b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -46,7 +46,7 @@ affidabile.
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
 | `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
 | `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |
-| `tests/tools/attendi.sh` | L'attesa scritta nella forma giusta una volta sola (regola 37). Si usa questo invece di riscriverla a mano: `tests/tools/attendi.sh <log> "ALL FILES GREEN" "SOME FILES FAILED"`. |
+| `tests/tools/attendi.sh` | L'attesa scritta nella forma giusta una volta sola (regola 37). Si usa questo invece di riscriverla a mano: `tests/tools/attendi.sh <log> "ALL FILES GREEN" "SOME FILES FAILED"`. **Si arrende da sola e dice quale dei due guasti ha davanti**: uscita 2 «è vivo e non finisce», 3 «è morto o non è mai partito» — perché un'attesa col solo tetto, davanti a un lavoro morto, direbbe «ho aspettato troppo» invece di «ho aspettato un cadavere». |
 | `tests/ATTESE-FISSE.md` | Le attese a tempo che fanno da guardia a un'asserzione. **Si guarda qui quando un test diventa rosso**, prima di cercare una regressione. |
 | `tests/ERRORI-INGOIATI.md` | I `.catch` vuoti dei test, distinti fra legittimi e sopprimenti. Si guarda qui quando un rosso arriva da un punto che non lo spiega. |
 | `tests/test-env.js` | Il punto unico da cui i test prendono Playwright, l'indirizzo dell'app e i percorsi (regola 24). |

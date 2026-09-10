@@ -39,9 +39,45 @@ tests/tools/attendi.sh <file-di-log> <marcatore-ok> <marcatore-ko> [secondi-max]
 tests/tools/attendi.sh /tmp/suite.log "ALL FILES GREEN" "SOME FILES FAILED"
 ```
 
-Esce **0** se trova il marcatore di successo, **1** se trova quello di
-fallimento, **2** se scade il tempo massimo — e in quel caso lo dice, invece di
-lasciar credere che il lavoro sia finito bene.
+Variabili d'ambiente: `ATTENDI_INTERVALLO` (ogni quanti secondi guarda il log,
+default 15) e `ATTENDI_SILENZIO` (dopo quanti secondi di log fermo dichiara
+morto il lavoro, default 600).
+
+**Si arrende da sola, e dice quale dei due guasti ha davanti.** Sono due, e
+serve un rilevatore per ciascuno:
+
+| Il lavoro | Cosa fa il log | Chi se ne accorge |
+|---|---|---|
+| è **vivo** ma non finisce | continua a crescere | solo il **tetto** di tempo |
+| è **morto** | smette di crescere | solo il **silenzio** |
+
+Un'attesa col solo tetto, davanti a un lavoro morto, dice «ho aspettato
+troppo»: non ha aspettato troppo, **ha aspettato un cadavere**. Un'attesa col
+solo silenzio, davanti a un lavoro vivo che non finisce, non parla mai.
+
+| Uscita | Significa |
+|---|---|
+| **0** | trovato il marcatore di successo |
+| **1** | trovato il marcatore di fallimento |
+| **2** | tetto scaduto, ma il log cresce ancora: lavoro **vivo** e non finito |
+| **3** | il log è fermo, o non è mai stato scritto: lavoro **morto** o mai partito |
+| **64** | argomenti passati male (`EX_USAGE`): l'attesa non è nemmeno partita |
+
+Il **3** ha due frasi distinte, perché portano a due ricerche diverse: «ha
+scritto e poi ha smesso — cerca il processo» e «non ha mai scritto niente —
+controlla il percorso del log». Il secondo è il guasto più stupido e più
+frequente, e prima produceva novanta minuti di attesa su un file che nessuno
+avrebbe mai scritto.
+
+**Da dove viene il 600.** Misurato il 2026-09-10 sui 46 file della suite:
+`run_full_regression.sh` scrive sul log `=== nome.js ===` *prima* di lanciare un
+file e il `tail -3` *dopo*, quindi il silenzio massimo legittimo non è una
+stima — è la forma dello script, cioè la durata del file più lento. Quel giorno
+**192 s** (`test_avviso_microfono`), su **1019 s** di suite intera. La soglia sta
+a 3,1× il file più lento. Se un giorno un file supera i 600 s, questa attesa
+dichiarerà morto un lavoro vivo *una volta*, e lo dirà in modo riconoscibile; i
+tempi per file si rimisurano dagli mtime dei `tests/*.result.txt` dell'ultima
+corsa.
 
 Perché esiste (CLAUDE.md regola 37): un'attesa agganciata al **nome di un
 processo** trova sé stessa e non finisce mai (`pgrep -f X` cerca `X` anche
