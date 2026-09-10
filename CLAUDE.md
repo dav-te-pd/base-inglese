@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260910b**
+**Versione: 20260910c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -271,6 +271,12 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     Vale anche al contrario: **un limite noto si scrive lì**, invece di lasciarlo scoprire a chi si fiderà del verde. Un test che copre metà di un comportamento e lo dichiara protegge più di uno che sembra coprirlo tutto.
 
+    ⚠️ **Ma dichiarare un limite non è difendersi da quel limite** — vedi la
+    regola 42. Il 2026-09-10 un limite scritto in testa a un file diceva
+    esattamente dove il test non guardava, e un'ora dopo chi l'aveva scritto si
+    è fidato lo stesso del verde. La dichiarazione serve a chi legge dopo; non
+    serve a chi la scrive.
+
     ⚠️ **E un guasto che uccide il test NON BASTA: serve il guasto REALISTICO
     che la forma vecchia non reggeva e la nuova sì.** Sono due prove diverse, e
     solo la seconda dice che la correzione serve.
@@ -527,6 +533,46 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     verificato tre forme credendo di averne verificate cinque. **Un elenco di
     nomi si legge e si crede di averlo applicato; un elenco di comandi o lo si
     esegue o non lo si esegue, e la differenza si vede.***
+
+42. **UN TEST CHE DICHIARA DI GUIDARE UN CASO SOLO NON BASTA A PROTEGGERE
+    UNA RIGA CHE VALE PER TUTTI.**
+
+    **Se la riga è condivisa, il test deve toccare almeno il caso più
+    DIVERSO — non il più comodo.**
+
+    *L'esempio del 2026-09-10, e senza il caso vero questa resterebbe una
+    raccomandazione.* Una riga aggiunta a `openModuleFromMap` — il punto unico
+    da cui passano **tutti** i moduli — chiedeva `loadEpisodeData` a ciascuno.
+    Il test nuovo, `test_modulo_pronto.js`, guidava **Voice Coach**. La suite è
+    andata rossa su cinque file, e il caso caduto era **Personalizza: l'unico
+    dei sedici moduli senza `dataFile`.** Su di lui `fetch(undefined)` falliva,
+    il `.catch` apriva la schermata d'errore, e un modulo che funziona mostrava
+    un guasto.
+
+    **Il test guidava il caso più simile a quello che si stava scrivendo.** Non
+    è un caso: il caso comodo è sempre quello che si ha già in mano, montato,
+    con la pagina aperta. Il caso diverso costa dieci minuti in più ed è l'unico
+    che prova qualcosa.
+
+    ⚠️ **E il limite era già dichiarato in testa al file** (regola 32): la riga
+    diceva esattamente dove il test non guardava. Un'ora dopo mi sono fidato lo
+    stesso. **Un limite dichiarato dice dove non guardi; non ti impedisce di
+    fidarti.** È la stessa forma della 19 e della 41 — una frase che descrive un
+    comportamento cede, dove un comando o un numero no.
+
+    **Quindi la parte operativa, ed è l'unica difesa che non si dimentica:
+    quando una modifica tocca una riga condivisa, nel riepilogo si NOMINA il
+    caso più diverso e si dice COSA lo rende diverso** — «Personalizza, l'unico
+    senza `dataFile`». *Un caso nominato è un caso guardato; un caso non
+    nominato è indistinguibile da uno non cercato.* E se guardando l'elenco
+    tutti i casi sembrano uguali, quella è la risposta da scrivere — non il
+    permesso di saltare il giro.
+
+    **Come si trova il caso più diverso:** si guarda l'elenco vero — i sedici
+    descrittori in `EPISODES.<episodio>.modulesById`, i ventidue passi di una
+    sequenza, i lettori di un file — e si cerca **chi manca di qualcosa che
+    hanno tutti gli altri**, non chi è più complicato. Personalizza non era il
+    modulo più complesso: era quello a cui mancava un campo.
 
 ## Riferimenti operativi
 
