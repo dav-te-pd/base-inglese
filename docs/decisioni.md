@@ -745,6 +745,56 @@ una famiglia è lavoro vero. **Il totale di 154 non è un piano**: è un punto d
 partenza da cui ogni famiglia toglie la sua parte, e la toglie **solo
 leggendola**.
 
+## 14b ③ — il triage della famiglia «un suono o la voce» (11 settembre)
+
+**29 punti dichiarati, 12 da convertire.** E una **quinta categoria** che le
+altre due famiglie non avevano, con dentro **nove punti** — il gruppo più
+numeroso della famiglia.
+
+| | n | |
+|---|---|---|
+| **da convertire** | **12** | il suono parte, il tono viene registrato |
+| ⑤ **il tempo È la cosa misurata** | **9** | ⚠️ nuova, vedi sotto |
+| negative | 5 | il Traguardo che NON suona, l'audio che NON parte |
+| già vero | 2 | *«still speaking, not stopped»* |
+| misclassificata | 1 | legge un pulsante, non un suono |
+
+### ⚠️ LA QUINTA CATEGORIA, e non è quella che ci aspettavamo
+
+L'ipotesi era *«l'audio ha un tempo suo: aspettare che finisca di parlare
+potrebbe essere legittimamente un tempo»*. **La forma vera è più precisa, e più
+pericolosa:**
+
+> **ASPETTARE RENDEREBBE L'ASSERZIONE BANALMENTE VERA.**
+
+I nove punti verificano tutti la stessa cosa — *«toccare qualcos'altro
+INTERROMPE l'audio»*, cioè la Regola Azione Critica (regola 16). Leggono
+`speechSynthesis.speaking === false` **cinquanta millisecondi dopo il tocco**.
+
+**Il fatto misurato:** il finto sintetizzatore (`mockInit`) si spegne **da solo
+dopo 500 ms** — `setTimeout(() => { this.speaking = false; ... }, 500)`.
+
+Quindi un'attesa «finché non parla più» **tornerebbe entro 500 ms comunque**, che
+il tocco abbia interrotto l'audio oppure no. L'asserzione *«il tocco l'ha
+fermato»* diventerebbe *«prima o poi ha smesso»* — **vera sempre**, e nessun
+rosso lo direbbe.
+
+⚠️ **È la conversione più pericolosa incontrata finora, più del gruppo «già
+vero».** Quella si riconosce perché lo stato non cambia mai; questa **somiglia a
+una transizione legittima** — c'è un `true` che diventa `false`, e il codice
+convertito si legge benissimo. *Quello che si perde non è il valore: è
+l'ISTANTE in cui viene letto, e l'istante non si vede nel diff.*
+
+**I cinquanta millisecondi non sono un margine tarato a occhio: sono la
+distanza fra «l'ha fermato il tocco» e «è finito da solo».**
+
+### Cosa dicono i tre triage
+
+**20/29 · 20/52 · 12/29.** Meno della metà, tre volte su tre. E ogni famiglia ha
+aggiunto una categoria che le precedenti non avevano: la ② le negative e le «già
+vere», la ① le misclassificate, la ③ questa. *Il triage non è un filtro noto da
+applicare: è una lettura che ogni volta trova una forma nuova.*
+
 ## ⚠️ PRIMA DELLA FASE 4 — l'app finirà dietro un login, e questo cambia COME si divide
 
 **Deciso da chi guida il progetto l'11 settembre. Non è lavoro per adesso: è un
