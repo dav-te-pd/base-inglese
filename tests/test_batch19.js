@@ -111,10 +111,45 @@ function statoQuiz(page, p) {
 // ('giusta' o 'sbagliata'). Restituisce il contatore della domanda su cui e'
 // successo, oppure null se il giro e' finito senza — e in quel caso il test
 // che la chiama deve fallire dicendolo, non proseguire su una schermata a caso.
+//
+// ⚠️ E QUANDO SI ARRENDE, DICE PERCHE'. Non e' un ornamento: questa funzione
+// torna `null` per CINQUE ragioni diverse — il riepilogo raggiunto, la
+// schermata sbagliata, le opzioni sparite, il contatore illeggibile, il budget
+// di mosse esaurito — e l'asserzione che la legge ne riporta UNA sola, sempre
+// la stessa: «Managed to observe a correct-answer tap within retries».
+//
+// Il caso vero, 2026-09-11: `[SR Task1]` e' andato rosso in CI e verde in
+// locale (regola 19), e il log della CI non conteneva **niente** con cui
+// distinguere quelle cinque. Due ipotesi sono state costruite leggendo il
+// codice e MISURATE, e tutte e due sono cadute: il countdown a 1 secondo
+// lascia il blocco verde (40/40), e schermata, opzioni e contatore compaiono
+// nello stesso istante (35 ms, misurato) quindi il waitForFunction li copre
+// gia'. Restava solo una terza ipotesi da inventare — e inventarla sarebbe
+// stato il difetto, non la correzione.
+//
+// E' la stessa lezione di `attendi.sh`, che non dice «tempo scaduto» ma
+// distingue «e' vivo e non finisce» da «e' morto»: un guasto che non sa
+// nominarsi costringe chi lo trova a indovinare. Il motivo finisce nel
+// `.result.txt`, che e' esattamente il file che la CI stampa quando il verde
+// non c'e'.
+//
+// ⚠️ E il budget: se il contatore non si legge, `totale` e' null e il limite
+// crolla da ~30 mosse a 8 SENZA CHE NIENTE LO DICA. Anche quello ora si vede.
 async function toccaFinoA(page, p, voluto) {
   const partenza = await statoQuiz(page, p);
   const maxPassaggi = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
   const limite = (partenza.totale || 1) * (maxPassaggi + 1) + 5;
+  const arrenditi = (motivo, mosse, st) => {
+    console.log('    -> toccaFinoA(' + p + ', ' + voluto + ') si arrende: ' + motivo +
+      ' | mosse ' + mosse + '/' + limite +
+      ' | totale letto alla partenza: ' + partenza.totale +
+      (st ? ' | stato: ' + JSON.stringify(st) : ''));
+    return null;
+  };
+  if (partenza.totale === null) {
+    console.log('    -> ATTENZIONE: contatore illeggibile alla partenza ("' + partenza.contatore +
+      '"), il budget di mosse scende a ' + limite);
+  }
   for (let mosse = 0; mosse < limite; mosse++) {
     // ⚠️ PRIMA DI TUTTO il popup della valvola di sicurezza: il suo sfondo
     // intercetta i click, quindi finche' e' aperto ogni click qui sotto va in
@@ -123,10 +158,11 @@ async function toccaFinoA(page, p, voluto) {
     // questo file non nominava `attempt-popup` da nessuna parte.
     if (await chiudiPopupTentativiSeAperto(page)) continue;
     const st = await statoQuiz(page, p);
-    if (st.riepilogo) return null;
+    if (st.riepilogo) return arrenditi('il giro e\' finito (riepilogo) senza mai incontrare una risposta ' + voluto, mosse, st);
     if (st.ripasso) { await page.click('#' + p + '-retry-continue-btn'); continue; }
     if (st.revealAperto) { await page.click('#' + p + '-advance-btn'); continue; }
-    if (!st.quiz || !st.opzioni) return null;
+    if (!st.quiz) return arrenditi('la schermata del quiz non e\' quella attiva', mosse, st);
+    if (!st.opzioni) return arrenditi('nessuna opzione a schermo', mosse, st);
     if (st.indice !== null && st.indice === st.totale) {
       await page.click('#' + p + '-dontknow-btn');
       continue;
@@ -140,7 +176,7 @@ async function toccaFinoA(page, p, voluto) {
       document.querySelector('#' + pre + '-options .sr-option.is-wrong') === null, p);
     if ((voluto === 'giusta') === giusta) return prima;
   }
-  return null;
+  return arrenditi('esaurite le mosse senza incontrare una risposta ' + voluto, limite, null);
 }
 
 // L'attesa della domanda successiva, nella forma giusta: non un numero di

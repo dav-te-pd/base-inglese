@@ -909,6 +909,33 @@ sono mai stati il vero. Il conto vero, misurato con lo strumento corretto:
 le precedenti non avevano. *Il triage non è un filtro noto da applicare: è una
 lettura che ogni volta trova una forma nuova.*
 
+## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
+
+**Condizione: alla prossima CI rossa su quel blocco, si legge il motivo che ora
+la funzione stampa — e si chiude con quello, invece di ricominciare a
+ipotizzare.**
+
+Il fatto: rosso in CI su `16dd7bd`, verde in locale, due asserzioni cadute più
+una **non partita** (39 su 40 — e a vederlo è stato il contatore delle
+asserzioni, non il conto dei rossi). Il blocco gemello senza orologio
+(`[QM Task1]`) è passato. Il file registra in testa che lo stesso `[SR Task1]`
+era già rosso **2 giri su 3 l'8 settembre**.
+
+**Due ipotesi misurate e cadute**, e vanno scritte perché nessuno le rifaccia:
+
+| ipotesi | misura | esito |
+|---|---|---|
+| il countdown di Speed Match scade fra il click e la lettura dell'esito | `timeLimitSeconds` a 1 | **verde, 40/40** — e il blocco alza già il limite a 30 apposta |
+| la schermata compare prima delle opzioni | sonda a 10 ms | **compaiono insieme** (35 ms): il `waitForFunction` le copre già |
+
+⚠️ **Quello che è stato fatto NON è una correzione della causa**: `toccaFinoA`
+adesso dice **quale delle cinque uscite** ha preso, con mosse su budget e il
+totale letto alla partenza. *Un guasto che non sa nominarsi costringe chi lo
+trova a indovinare — ed è la stessa forma di `attendi.sh`.*
+
+**Difetto latente segnalato dalla stessa riga:** se il contatore non si legge,
+`totale` è `null` e il budget di mosse crolla da ~30 a **8**, in silenzio.
+
 ## ⚠️ PRIMA DELLA FASE 4 — l'app finirà dietro un login, e questo cambia COME si divide
 
 **Deciso da chi guida il progetto l'11 settembre. Non è lavoro per adesso: è un
