@@ -10,7 +10,7 @@
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
 # Ultimo aggiornamento: 2026-09-11
-# Totale: 1095
+# Totale: 1096
 test_attendi.js 17
 test_attendi_ci.js 21
 test_attese_condivise.js 25
@@ -34,7 +34,7 @@ test_batch4.js 69
 test_batch4b.js 10
 test_batch5.js 22
 test_batch6.js 12
-test_batch7.js 11
+test_batch7.js 12
 test_batch8.js 8
 test_batch9.js 22
 test_blocco_ascolto.js 19
