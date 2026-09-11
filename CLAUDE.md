@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260910c**
+**Versione: 20260911a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -573,6 +573,76 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     sequenza, i lettori di un file — e si cerca **chi manca di qualcosa che
     hanno tutti gli altri**, non chi è più complicato. Personalizza non era il
     modulo più complesso: era quello a cui mancava un campo.
+
+43. **OGNI COMMIT CHE NON È UN PASSO DELLA CATENA SCRIVE LA PROPRIA RIGA,
+    NELLO STESSO COMMIT.**
+
+    Non a fine giornata, non al merge, non «quando sarà stabile» — nello stesso
+    `git commit`, come già fanno i test (regola 23) e le correzioni.
+
+    ⚠️ **E LA VERIFICA È MECCANICA, non un promemoria:**
+
+    > **UN COMMIT CHE TOCCA CODICE O TEST E NON TOCCA UN REGISTRO È UN COMMIT
+    > CHE NON HA REGISTRATO NIENTE.**
+
+    `git show --name-only` lo dice in un secondo, su qualunque commit, anche a
+    mesi di distanza. Non dipende da come è scritto il messaggio né da cosa
+    qualcuno si ricorda: **il file c'è nel diff o non c'è.**
+
+    *La prima forma di questo controllo guardava il **messaggio** — «un commit
+    il cui messaggio non nomina il registro che ha toccato è un commit che quel
+    registro non l'ha scritto». **Misurata sui quindici commit del 2026-09-10
+    dava otto falsi allarmi su quindici**: dodici commit toccavano
+    `decisioni.md` e solo quattro lo nominavano. Era una misura che non misura
+    (regola 37) messa a guardia della regola che serve a non averne. Il diff non
+    ha questo difetto.*
+
+    **Il caso vero, misurato:** il 2026-09-10, quindici commit, **uno solo** un
+    passo della catena. `decisioni.md` toccato **12 volte su 15** — lo stato
+    della catena veniva scritto quasi sempre. **`correzioni.md` UNA volta su
+    quindici.** *Il buco non era «registrare»: era registrare **quello che era
+    stato corretto**.* Il giorno dopo è servito un giro di allineamento per
+    recuperare due correzioni dell'app, tre condizioni scadute e una motivazione
+    falsa scritta il giorno prima.
+
+    **Dove va la riga — tre categorie, e non serve un posto nuovo:**
+
+    | Il commit | Dove va la riga |
+    |---|---|
+    | ha **corretto** qualcosa | `docs/correzioni.md` |
+    | ha **trovato** qualcosa e non l'ha corretto | `docs/decisioni.md`, con la sua **condizione** |
+    | ha **cambiato la catena** (uno stato, un numero, una motivazione) | la riga della catena, subito |
+
+    ⚠️ **IL LIMITE, e sta DENTRO la regola perché il caso è previsto:** una
+    correzione può nascere **dentro** un altro lavoro e scoprirsi a suite già
+    lanciata — e la regola 36 dice che mentre la suite gira l'albero non si
+    tocca. Lì la riga nello stesso commit non ci può stare. **In quel caso è un
+    commit SUO, subito dopo il verde** — mai un rinvio a fine giornata. *Una
+    regola creduta assoluta si viola la prima volta che non lo è, e da lì in poi
+    non la si applica più.*
+
+    *Perché esiste, e la ragione vale più della regola: quello che non finisce
+    nei file non resta da nessuna parte — resta **nella conversazione**. E **la
+    chat non sopravvive al container**: è la stessa cosa che è già costata i 25
+    file della suite (regola 22), il censimento morto e la lista attività
+    (regola 40).*
+
+    ⚠️ **E la frase che tiene insieme tutto il resto:**
+
+    > **NOI CAMBIAMO SENZA SAPERE, E LUI DECIDE SENZA CHIEDERE.**
+
+    *Sono i due modi in cui una decisione smette di essere una decisione. La
+    prima metà — il codice cambia e nessuno sa che una scelta è stata cambiata —
+    è il motivo per cui una proposta va messa in discussione invece che
+    eseguita. La seconda — chi scrive sceglie da solo dove la richiesta taceva —
+    è il motivo per cui si **dichiara prima di costruire** (regola 31). Insieme
+    hanno prodotto il rosso iniziale della mastery: una decisione che viveva
+    dentro un `+1`, che nessuno aveva preso e che nessuna riga diceva (regola
+    39), e stavano per produrre tre correzioni sbagliate in due giorni.*
+
+    **Questa regola è quello che resta quando la conversazione finisce.** Non
+    serviva un posto nuovo: i due file c'erano già. Serviva un **momento**, ed è
+    quello del commit.
 
 ## Riferimenti operativi
 

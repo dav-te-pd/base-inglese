@@ -109,10 +109,10 @@ resto sono difetti trovati strada facendo e strumenti:
 è il motivo per cui questo file era rimasto indietro — è costruito per una catena
 pianificata, e quella giornata non lo è stata.*
 
-⚠️ **Resta una domanda aperta, posta l'11 settembre e non ancora decisa:** dove si
-registrano i lavori **fuori catena** *mentre succedono*, invece che il giorno dopo
-con un giro di allineamento. Finché non è decisa, questo file si allinea a mano —
-e questa riga sta qui per dire che è un buco noto, non una dimenticanza.
+**Quel buco è stato chiuso l'11 settembre, ed è la regola 43 di `CLAUDE.md`:** la
+riga nasce **col commit**, non il giorno dopo, e la verifica è sul **diff** — *un
+commit che tocca codice o test e non tocca un registro è un commit che non ha
+registrato niente*. Non un posto nuovo: i due file c'erano già. Un **momento**.
 
 *Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
 invariato: finché la verifica non è passata resta ◐. Al passo 1 era stato messo a ☑

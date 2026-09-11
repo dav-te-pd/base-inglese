@@ -63,6 +63,7 @@ codice. Stanno qui perché `decisioni.md` deve svuotarsi.*
 
 | Data | Cosa | Commit |
 |---|---|---|
+| 2026-09-11 | **Regola 43 — ogni commit che non è un passo della catena scrive la propria riga, nello stesso commit**, e la verifica è sul **diff**, non sul messaggio: *un commit che tocca codice o test e non tocca un registro è un commit che non ha registrato niente*. Nasce dai quindici commit del 2026-09-10: `decisioni.md` toccato **12 volte su 15**, `correzioni.md` **una**. Il buco non era «registrare» ma registrare **quello che era stato corretto**, e il giorno dopo è servito un giro di allineamento. ⚠️ La prima forma del controllo guardava il messaggio e **dava otto falsi allarmi su quindici** — misurata, non intuita, e scartata per questo. | titolo: `Regola 43: la riga nasce col commit, e la verifica è sul diff` |
 | 2026-09-08 | **Regola 40 — un lavoro a più passi sta sempre nella lista attività**, un elemento per passo, col progresso vero (`Suite 15/42`) aggiornato ogni paio di minuti. *Il pallino che gira è un'animazione, non una misura: da solo non distingue «sta lavorando» da «si è fermato».* È la prima cosa del progetto che chi guida può verificare **senza chiedermela**. *(La riga stava in `decisioni.md` con la condizione «va in `CLAUDE.md` come regola permanente»: eseguita, e chiusa qui l'11 settembre — era rimasta aperta a torto.)* | `b314924` *(entrata insieme al passo 6)* |
 
 ## Contenuto dell'episodio
