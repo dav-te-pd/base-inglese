@@ -42,4 +42,50 @@ async function attendiSottotitoloEsito(page, elId, timeoutMs) {
   }
 }
 
-module.exports = { attendiSottotitoloEsito };
+// ── LA SCHERMATA CHE COMPARE O SPARISCE ──────────────────────────────────────
+//
+// Famiglia ② del 14b: 30 punti censiti l'11 settembre, 29 veri (il trentesimo
+// vive dentro il file FINTO di test_conta_attese.js ed è un dato di prova).
+// Tutti avevano la stessa forma: si clicca, si aspettano 50-600 ms scelti a
+// occhio, e poi si legge `.hidden` dando per scontato che nel frattempo sia
+// successo. Su una macchina più lenta quel «nel frattempo» non succede, e
+// l'asserzione legge lo stato di PRIMA — cioè dice il falso senza rompersi.
+//
+// La forma non è nuova: `waitForSelector({ state })` è già usata 73 volte in
+// questa suite. Quello che mancava era il VALORE DI RITORNO. Un
+// `waitForSelector` nudo SOLLEVA allo scadere del tempo, e il file muore con
+// un `TimeoutError` che non dice quale comportamento si è rotto; restituendo
+// true/false, **lo scadere del tempo diventa l'asserzione che fallisce**, con
+// il suo testo. È la stessa scelta di `attendiSottotitoloEsito` qui sopra, e
+// il motivo per cui sono due funzioni riusate invece di due righe ricopiate.
+//
+// DUE NOMI E NON UNO CON UN PARAMETRO: `attendiVisibile(page, sel)` si legge al
+// sito di chiamata, `attendi(page, sel, true)` no — un booleano posizionale non
+// dice cosa fa. Stessa ragione per cui `renderListenBlock` ha preso `mini` come
+// nome invece di una posizione.
+//
+// ⚠️ LIMITE DICHIARATO, e riguarda solo `attendiNascosto`: per Playwright
+// «hidden» è vero anche quando l'elemento **non esiste più**. Dove il test deve
+// dire «c'è, ma è nascosto» — non «è sparito» — il controllo sull'esistenza
+// resta al chiamante, che è quello che serve per la regola 12: la guardia
+// `[hidden]{display:none!important}` protegge elementi che nel DOM ci sono.
+
+async function attendiVisibile(page, selettore, timeoutMs) {
+  try {
+    await page.waitForSelector(selettore, { state: 'visible', timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function attendiNascosto(page, selettore, timeoutMs) {
+  try {
+    await page.waitForSelector(selettore, { state: 'hidden', timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = { attendiSottotitoloEsito, attendiVisibile, attendiNascosto };

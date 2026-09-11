@@ -594,6 +594,72 @@ lavoro lo cambia in **tutte e due** le direzioni. In entrambi i casi la difesa �
 la stessa — **il numero si genera, non si ricorda.** E la ragione per cui questa
 riga era falsa è che l'avevo ricordato invece di generarlo.*
 
+## ⚠️ 14b — LA FAMIGLIA NON È UNA LISTA DI LAVORO (misurato l'11 settembre)
+
+**Il 14b si è fermato al primo giro, ed è la cosa più utile che poteva
+produrre.** La famiglia ② — *«una schermata che compare o sparisce»*, 30 punti —
+è stata scelta apposta perché la forma esisteva già. Guardando i siti uno per
+uno prima di toccarli, **nove su ventinove non sono conversioni sicure**, e tre
+di quei nove renderebbero il test **peggiore** invece che migliore.
+
+*(Il trentesimo punto non è un'attesa vera: vive dentro l'array `FINTO` di
+`test_conta_attese.js`, cioè è il dato di prova con cui lo strumento misura sé
+stesso. Convertirlo romperebbe il test del contatore.)*
+
+### La causa, ed è la cosa da portarsi dietro
+
+**Il censimento classifica per COSA SI LEGGE, non per COME VIENE USATO.** Vede
+`.hidden` e scrive «una schermata che compare o sparisce» — e ha ragione sul
+cosa. Ma non può vedere se quella lettura serve a dire *«è comparsa»* oppure
+*«NON è comparsa»*, che sono l'opposto l'una dell'altra e hanno bisogno di due
+cose diverse.
+
+> **Una famiglia dice dove guardare. Non è una lista di lavoro.**
+> Ogni famiglia vuole un giro di triage prima della conversione, e il triage va
+> fatto **leggendo i siti**, non fidandosi dell'etichetta.
+
+### I nove, in tre gruppi — e il terzo è quello che pesa
+
+**① Asserzioni NEGATIVE (3+2 parziali): non si può aspettare un non-evento.**
+`test_batch14.js` *«NO silence warning fires mid-speech»*, `test_batch13.js`
+*«no silence warning»*, `test_batch8.js` *«forcing a click does NOT
+advance»* — più due miste, `test_dialogo_extra.js` (una classe che deve essere
+sparita) e `test_modulo_pronto.js` (la schermata d'errore che NON deve
+comparire). **Lì i millisecondi SONO la misura**, ed è la stessa deroga già
+dichiarata per le tre asserzioni negative sulla console.
+
+**② Un'asserzione VACUA, che è un difetto di oggi:** `test_batch16.js` riga 186
+scrive `log('[Job2] After Riprendi, still on the dialogue screen', stillOnMain
+=== true || true)`. **`x || true` è sempre vero: quella riga non può fallire.**
+È la famiglia ⓪-bis di `tests/ERRORI-INGOIATI.md` — un'asserzione che nomina una
+cosa per non verificarla. Trovata convertendo, non cercandola.
+
+**③ TRE CHE LA CONVERSIONE PEGGIOREREBBE, e nessuno se ne accorgerebbe.**
+`test_batch3b.js` *(«Mostra pronuncia» è nascosto quando la battuta non ha
+`pronunciationTip`; il testo è nascosto per default)* e `test_batch14.js` *(il
+badge «Ripasso» è nascosto durante il giro principale)** aspettano e poi
+verificano che qualcosa sia **nascosto — ma era nascosto già prima**.
+`attendiNascosto` lì tornerebbe `true` **al primo istante**, senza aver
+verificato niente: il test passerebbe da *lento ma onesto* a **istantaneo e
+vuoto**.
+
+> ⚠️ **È il caso che rende il 14b pericoloso se fatto meccanicamente.** Una
+> conversione sbagliata non lascia un rosso da diagnosticare: lascia un **verde
+> che non prova più niente**, e il conto delle guardie *scende* — cioè il numero
+> con cui misuriamo il progresso **migliora proprio quando il lavoro fa danno**.
+> È la regola 37 applicata al 14b stesso.
+
+**Restano 20 conversioni sicure su 29**, tutte della forma «si clicca, una
+schermata deve comparire». Le due forme — `attendiVisibile` e `attendiNascosto`
+in `tests/attese.js` — **sono scritte**, con il loro limite dichiarato (per
+Playwright «hidden» è vero anche per un elemento che non esiste più).
+
+**Cosa serve decidere prima di riprendere:** se le 20 si fanno e le 9 si
+lasciano con una riga accanto che dice perché; e se il conteggio delle guardie
+va scorporato — perché una guardia legittima (negativa, o su uno stato già
+vero) non è un debito da chiudere, e tenerla nel totale fa sembrare il 14b più
+grande di quello che è.
+
 ## Le tre cose della sera del 2026-09-10, e in che ordine
 
 *Decise insieme dopo il ①+B. Stanno qui e non nella fase 2-bis perché non sono
