@@ -67,7 +67,30 @@ const FINE = '<!-- FINE GENERATO -->';
 // Le attese VERE: aspettano uno stato, non un numero. Chi ne incontra una
 // prima di un log e' navigazione, perche' l'asserzione dipende da quella e
 // non dai millisecondi.
-const ATTESA_VERA = /waitForSelector|waitForFunction|waitForEvent|waitForLoadState|waitForURL|attendiSottotitoloEsito|attendiVisibile|attendiNascosto|playThroughQuiz|waitForQuizChange|rispondiECompleta|riprendiDopoERientra/;
+//
+// ⚠️ I NOMI DEL MAGAZZINO SI LEGGONO DA `attese.js`, NON SI ELENCANO QUI — ed
+// e' una correzione, non un'eleganza. Fino al 2026-09-11 questo elenco era
+// scritto a mano e si era fermato ai tre helper che esistevano quando e' nato
+// (attendiSottotitoloEsito, attendiVisibile, attendiNascosto). Nel frattempo
+// ne erano arrivati cinque — attendiAbilitato, attendiDisabilitato,
+// attendiClasse, attendiCheParla, attendiTono — e lo strumento non li
+// riconosceva come attese vere: ogni `waitForTimeout` che stava PRIMA di una
+// conversione veniva promosso da navigazione a GUARDIA. **Il censimento
+// contava come debito nuovo l'effetto del lavoro che il debito lo stava
+// togliendo**, ed e' la regola 37 applicata allo strumento che serve a
+// misurare: una misura che non misura, e non lo dice.
+//
+// Misurato: sei promozioni false subito dopo la famiglia del localStorage, e
+// un numero da tre famiglie che era piu' alto del vero.
+//
+// Leggere gli export invece di elencarli chiude la questione per sempre: una
+// funzione nuova nel magazzino e' riconosciuta il giorno stesso, senza che
+// nessuno si ricordi di aggiungerla qui.
+const NOMI_MAGAZZINO = Object.keys(require(path.join(CARTELLA_TEST, 'attese.js')));
+const ATTESA_VERA = new RegExp([
+  'waitForSelector', 'waitForFunction', 'waitForEvent', 'waitForLoadState', 'waitForURL',
+  'playThroughQuiz', 'waitForQuizChange', 'rispondiECompleta', 'riprendiDopoERientra'
+].concat(NOMI_MAGAZZINO).join('|'));
 const LOG = /(?<![\w.])log\(/;
 
 // ⚠️ IL MARCATORE DELLE ATTESE LEGITTIME, e non e' burocrazia: senza, il conto

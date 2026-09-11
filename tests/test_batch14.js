@@ -160,10 +160,16 @@ async function run() {
     const completedBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:modules:gate:' + u); return raw ? JSON.parse(raw).completed : []; }, 'T14RA');
     log('[Job3] Module not marked completed until the summary\'s own button is clicked', completedBefore.indexOf('repeatAloud') === -1);
     await page.click('#repeat-aloud-complete-btn');
-    await page.waitForTimeout(150);
-    const onMap = await page.evaluate(() => document.getElementById('view-map').classList.contains('is-active'));
+    // ⚠️ QUI L'ASSERZIONE LEGGEVA ENTRAMBI GLI EFFETTI DEL GESTO — la mappa
+    // tornata attiva E la scrittura — quindi non restava niente su cui
+    // aspettare: qualunque approdo avrebbe reso vera per costruzione la meta'
+    // dell'asserzione (criterio in testa a tests/attese.js). Per questo e'
+    // spezzata in due: l'attesa DIVENTA la prima asserzione e si dichiara per
+    // quello che e', la seconda resta una lettura vera sul magazzino.
+    const tornatoSullaMappa = await attendiClasse(page, '#view-map', 'is-active');
+    log('[Job3] Repeat Aloud: summary\'s own button returns to the map', tornatoSullaMappa);
     const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T14RA');
-    log('[Job3] Repeat Aloud: summary\'s own button completes + returns to the map', onMap && completedAfter.indexOf('repeatAloud') !== -1);
+    log('[Job3] Repeat Aloud: summary\'s own button completes the module', completedAfter.indexOf('repeatAloud') !== -1);
     log('[Job3] Repeat Aloud: No JS errors', errors.length === 0);
     await page.close();
   }
@@ -181,7 +187,7 @@ async function run() {
     const summaryVisible = await attendiVisibile(page, '#story-cards-summary-screen');
     log('[Job3] Story Cards: clicking "Ho finito" opens the Schermata Finale', summaryVisible);
     await page.click('#story-cards-complete-btn');
-    await page.waitForTimeout(150);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const completedAfter = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T14SE');
     log('[Job3] Story Cards: summary\'s own button completes the module', completedAfter.indexOf('whyWeSayIt') !== -1);
     log('[Job3] Story Cards: No JS errors', errors.length === 0);

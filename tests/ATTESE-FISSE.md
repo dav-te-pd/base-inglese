@@ -134,17 +134,17 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 
 ## Elenco — generato il 2026-09-11
 
-**90 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
+**56 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
 il verde di un'asserzione, e che si puo' sostituire con un'attesa sullo stato
 vero. **E' questo il numero su cui si misura il 14b**, e l'unico che deve
 scendere.
 
 | | quante |
 |---|---|
-| **guardie da convertire** — il debito | **90** |
-| guardie **legittime** — marcate nel sito, NON sono debito | 57 |
-| attese di **navigazione** — se sono corte il test si rompe, non passa | 278 |
-| in tutto | 425 |
+| **guardie da convertire** — il debito | **56** |
+| guardie **legittime** — marcate nel sito, NON sono debito | 60 |
+| attese di **navigazione** — se sono corte il test si rompe, non passa | 295 |
+| in tutto | 411 |
 
 ⚠️ **I tre numeri non si sommano in uno solo, ed e' il punto.** Una guardia
 legittima verifica che una cosa NON accada, oppure uno stato che era gia' vero:
@@ -164,17 +164,14 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 
 | cosa si aspetta | quante |
 |---|---|
-| altro | 22 |
-| una scrittura nel localStorage | 18 |
+| altro | 20 |
 | un testo che si riempie | 16 |
-| un suono o la voce | 11 |
 | un valore di configurazione o di dati | 5 |
 | uno stile calcolato | 5 |
-| un pulsante o una classe che cambia stato | 3 |
 | la console (asserzione negativa) | 3 |
 | una misura di geometria | 3 |
 | un elenco di elementi che si ridisegna | 3 |
-| una schermata che compare o sparisce | 1 |
+| una scrittura nel localStorage | 1 |
 
 ### Le guardie, una per una
 
@@ -186,35 +183,16 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 | `test_batch10.js` | 400 | apertura modulo | la console (asserzione negativa) | [Job2b] Story Cards (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere | 168 |
 | `test_batch10.js` | 150 | click | uno stile calcolato | [Job3] All heard-check indicators are visible from the start (not hidden) | 187 |
 | `test_batch10.js` | 500 | click | uno stile calcolato | [Job3] First bubble is-heard after listening, with a check icon | 199 |
-| `test_batch10.js` | 300 | apertura modulo | un suono o la voce | [Job4] Repeat Aloud plays the Traguardo sound on "Ho finito" | 219 |
-| `test_batch10.js` | 300 | apertura modulo | un suono o la voce | [Job4] Story Cards plays the Traguardo sound on "Ho finito" | 239 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [ModuleRules] First-pass 100% saves level "verde" | 241 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [ModuleRules] First-pass 0% (every line force-accepted wrong, not skipped) saves level "rosso" | 268 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [ModuleRules] Mixed first-pass score ( state.pct %) saves level "giallo" | 297 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [Redo] First attempt (all correct) is verde | 326 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [Redo] Second attempt (all wrong) REPLACES verde with rosso (downgrade honored) | 337 |
-| `test_batch11.js` | 200 | click | una scrittura nel localStorage | [Redo] Third attempt (all correct again) REPLACES rosso with verde (upgrade honored) | 348 |
-| `test_batch11.js` | 300 | click | una scrittura nel localStorage | [Modulo Finale prep] L'autovalutazione da sola NON scrive l'esito: aspetta il pulsante | 378 |
-| `test_batch11.js` | 300 | click | una scrittura nel localStorage | [Modulo Finale prep] Dialogo (selfAssessment) writes the same { level } shape ModuleRules writes | 387 |
 | `test_batch12.js` | 300 | apertura modulo | un testo che si riempie | [Job5] Voice Practice badge/title show "Voice Practice" | 314 |
 | `test_batch12.js` | 180 | click | altro | [Job5] Voice Practice never shows the Schermata Ripasso (no final retry pass) | 343 |
-| `test_batch12.js` | 200 | click | una scrittura nel localStorage | [Job5] Voice Practice NOW writes a moduleOutcome (ModuleRules, LastAttemptRule) | 350 |
 | `test_batch12.js` | 300 | apertura modulo | un testo che si riempie | [Job5] Voice Check badge/title show "Voice Check" | 413 |
-| `test_batch12.js` | 200 | click | una scrittura nel localStorage | [Job5] Voice Check STILL uses ModuleRules (all-wrong -> rosso, unchanged from before the split) | 424 |
-| `test_batch12.js` | 300 | apertura modulo | una scrittura nel localStorage | [C.1] Rispondere non scrive: il colore aspetta il pulsante come in ogni altro modulo | 495 |
-| `test_batch12.js` | 250 | click | una scrittura nel localStorage | [C.1] Uscendo da "← Mappa" non resta nessuna voce di Voice Check | 501 |
-| `test_batch12.js` | 150 | click | un suono o la voce | [Job1] Flash Card "Sì, la so" plays the Corretto tone (880Hz) | 521 |
 | `test_batch13.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [6a] CONFIG.voiceCoach.silenceTimeoutSeconds exists (default 3) | 75 |
 | `test_batch13.js` | 50 | nessuna azione riconosciuta | altro | [6a] silenceTimeoutSeconds is editable in the config panel | 85 |
-| `test_batch13.js` | 150 | click | una scrittura nel localStorage | [6c] Sending a recording writes a per-module audio-seconds entry | 173 |
-| `test_batch13.js` | 150 | digitazione | un testo che si riempie | [6c] Config panel audio-usage section mentions Voice Practice | 182 |
+| `test_batch13.js` | 150 | nessuna azione riconosciuta | una scrittura nel localStorage | [6c] Sending a recording writes a per-module audio-seconds entry | 180 |
+| `test_batch13.js` | 150 | digitazione | un testo che si riempie | [6c] Config panel audio-usage section mentions Voice Practice | 189 |
 | `test_batch14.js` | 100 | click | la console (asserzione negativa) | [Job2] No JS errors after the warm-up tap | 136 |
 | `test_batch14.js` | 300 | apertura modulo | un testo che si riempie | [Job3] "Ho finito" button no longer claims "torna alla mappa" (it opens the summary now) | 149 |
-| `test_batch14.js` | 150 | click | una scrittura nel localStorage | [Job3] Repeat Aloud: summary's own button completes returns to the map | 163 |
-| `test_batch14.js` | 150 | click | una scrittura nel localStorage | [Job3] Story Cards: summary's own button completes the module | 184 |
-| `test_batch14.js` | 150 | click | una misura di geometria | [Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden | 372 |
-| `test_batch15.js` | 650 | click | un suono o la voce | [Job1] Traguardo (3 ascending notes) played at least once | 134 |
-| `test_batch15.js` | 300 | click | un pulsante o una classe che cambia stato | [Job2b] Match Practice map row carries outcome-verde after all-correct run | 190 |
+| `test_batch14.js` | 150 | click | una misura di geometria | [Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden | 378 |
 | `test_batch15.js` | 150 | click | un testo che si riempie | [Job3] After attempt 1, label reads "TENTATIVO 1 DI 3" | 213 |
 | `test_batch15.js` | 80 | click | un testo che si riempie | [Job3] Immediately after "Riprova" (before recording), label already reads "TENTATIVO 2 DI 3" | 218 |
 | `test_batch15.js` | 80 | click | un testo che si riempie | [Job3] Before the LAST (3rd) attempt, label already reads "TENTATIVO 3 DI 3" (not stuck at 2) | 227 |
@@ -227,32 +205,19 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 | `test_batch16.js` | 200 | click | un testo che si riempie | [Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi" | 168 |
 | `test_batch16.js` | 200 | apertura modulo | altro | [Job3] "fc-level-label" (module category text inside the module) no longer exists | 211 |
 | `test_batch16.js` | 150 | click | altro | [Job3] "Ripasso" badge becomes visible during the retry pass | 240 |
-| `test_batch16.js` | 200 | apertura modulo | un suono o la voce | [Job5] Audio is actually speaking right before the flip | 290 |
-| `test_batch16.js` | 150 | click | un suono o la voce | [Job6] Clicking "Ho finito, torna alla mappa" plays the "uscita" tone | 327 |
 | `test_batch16.js` | 200 | apertura modulo | una misura di geometria | [Job7] "← Mappa" sits at the row's left edge | 345 |
 | `test_batch16.js` | 200 | apertura modulo | uno stile calcolato | [Job8] Voice Coach counter and Flash Card counter share the same CSS class | 382 |
-| `test_batch17.js` | 100 | click | altro | [Job1a] First bubble is is-active while its audio plays | 99 |
 | `test_batch17.js` | 700 | click | un elenco di elementi che si ridisegna | [Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle) | 108 |
-| `test_batch17.js` | 150 | click | un suono o la voce | [Job1e-bis] Option mini-listen audio is actually playing | 302 |
-| `test_batch17.js` | 550 | click | un suono o la voce | [Job1f] Listen button works again right after a flip (no stuck "speaking" state) | 359 |
-| `test_batch18.js` | 100 | click | un pulsante o una classe che cambia stato | [Job2c] Countdown profile reaches its per-line timer normally (dgActiveBubble change is a no-op here) | 138 |
-| `test_batch18.js` | 200 | apertura modulo | un suono o la voce | [Job1a] Audio is playing before touching Spiegazione | 157 |
-| `test_batch18.js` | 200 | apertura modulo | un suono o la voce | [Job1b] Card audio is playing before touching Help | 179 |
-| `test_batch2.js` | 150 | click | una scrittura nel localStorage | [6a] Completing Personalizzazione marks it via markModuleCompleted | 118 |
 | `test_batch20.js` | 200 | click | un testo che si riempie | [Content] Match Practice it→en: direction label reads "ITALIANO → INGLESE" | 98 |
 | `test_batch20.js` | 30 | click | un testo che si riempie | [Content] Match Practice it→en: the correct option is that same entry's ENGLISH translation | 107 |
 | `test_batch2b.js` | 100 | digitazione | un testo che si riempie | [1] Config panel shows one reorder row per module | 121 |
 | `test_batch2b.js` | 50 | click | un valore di configurazione o di dati | [1] Clicking "down" swaps the first two entries live in APP_CONFIG | 132 |
 | `test_batch3.js` | 250 | click | un testo che si riempie | [2] Popup title row 1 is the fixed "Spiegazione" kicker | 133 |
 | `test_batch3.js` | 200 | apertura modulo | un testo che si riempie | [4e] Match Practice retry-intro text drops "finché non..." | 217 |
-| `test_batch3b.js` | 60 | click | altro | [7] Enabled once every line has been heard at least once | 206 |
 | `test_batch4.js` | 50 | nessuna azione riconosciuta | altro | [T1] At least one .config-field-description rendered | 88 |
 | `test_batch4b.js` | 300 | click | un testo che si riempie | [Spiegazione] moduleId intro name = " expected " (got " text ") | 56 |
 | `test_batch5.js` | 600 | nessuna azione riconosciuta | altro | [Job1] No NEW utterance was queued after leaving (sequence did not continue) | 121 |
-| `test_batch5.js` | 80 | click | un suono o la voce | [Job1b] Ripeti a Tempo is speaking line 1 | 139 |
 | `test_batch5.js` | 600 | apertura modulo | altro | [Job1b] No further utterance queued after switching to a different module | 149 |
-| `test_batch5.js` | 300 | apertura modulo | una schermata che compare o sparisce | [Job5] dialogoContinuo: Spiegazione disabled during the 3-2-1 ready countdown | 170 |
-| `test_batch5.js` | 2650 | nessuna azione riconosciuta | un pulsante o una classe che cambia stato | [Job5] modId : Spiegazione disabled while a line plays (Regola Azione Critica) | 180 |
 | `test_batch6.js` | 80 | click | altro | [Job6] Attempt 1 evaluated empty: still no notice (streak=1 < warningAt=2) | 148 |
 | `test_batch6.js` | 80 | click | altro | [Job6] 6 wrong-but-recognized attempts never trigger the mic notice | 238 |
 | `test_batch7.js` | 50 | evaluate | altro | [Job2] moduleCompleteMessages has multiple distinct entries reachable (variety sanity, saw seen.size distinct in 6 tries) | 120 |
@@ -267,9 +232,7 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 | `test_modulo_pronto.js` | 2200 | nessuna azione riconosciuta | altro | [B] Nessun errore nemmeno dopo che il file dei messaggi è arrivato | 141 |
 | `test_new_features.js` | 50 | evaluate | un valore di configurazione o di dati | [B] Editing a scalar field updates window.APP_CONFIG live (7) | 223 |
 | `test_new_features.js` | 150 | caricamento pagina | un valore di configurazione o di dati | [B] Change persists across reload via boot-time override merge (7) | 261 |
-| `test_new_features.js` | 300 | click | una scrittura nel localStorage | [B] Reset restores speedMatch.timeLimitSeconds to default (10) | 273 |
 | `test_voicecoach.js` | 100 | click | altro | [4c] Test actually forced at least one bad-star line | 132 |
-| `test_voicecoach.js` | 150 | click | una scrittura nel localStorage | [4d] Clicking it marks voiceCoach completed and returns to the map | 170 |
 
 ### Le guardie legittime — marcate nel sito, e perche'
 
@@ -282,6 +245,9 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 | `test_batch10.js` | 400 | [Job4] Repeat Aloud "← Mappa" (leaving without completing) does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo senza completare il Traguardo NON deve suonare |
 | `test_batch10.js` | 400 | [Job4] Voice Coach mic-confirmed exit does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — l'uscita dall'avviso microfono NON deve suonare il Traguardo |
 | `test_batch10.js` | 400 | [Job4] Dialogo "Non ancora" still does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — «Non ancora» NON deve suonare il Traguardo |
+| `test_batch11.js` | 300 | [Modulo Finale prep] L'autovalutazione da sola NON scrive l'esito: aspetta il pulsante | l'asserzione qui sotto verifica che una scrittura NON avvenga — rispondere all'autovalutazione non deve lasciare un esito. Un non-evento non si aspetta: il tempo E' la misura, e un'attesa sullo stato tornerebbe solo piu' tardi con lo stesso nulla |
+| `test_batch12.js` | 300 | [C.1] Rispondere non scrive: il colore aspetta il pulsante come in ogni altro modulo | la guardia serve all'asserzione NEGATIVA qui sotto — «rispondere non scrive». Un non-evento non si aspetta: allungare il tempo rafforza la prova, uno stato da attendere non esiste |
+| `test_batch12.js` | 250 | [C.1] Uscendo da "← Mappa" non resta nessuna voce di Voice Check | l'asserzione qui sotto verifica che una scrittura NON sia rimasta — uscire dalla mappa non deve lasciare una voce di mastery. Un non-evento non si aspetta: il tempo E' la misura |
 | `test_batch13.js` | 200 | [6b] Still recording just before the (shrunk) silence timeout fires | si legge PRIMA che il timeout di silenzio scatti — registrare gia' partita, si prova che non si e' fermata |
 | `test_batch13.js` | 500 | [6b] Recognized speech before the timeout: no silence warning (false-discard guard) | prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto |
 | `test_batch14.js` | 500 | [Job1] Continuous speech: NO silence warning fires mid-speech | prova che un avviso NON compare — ben oltre il timeout di 150ms |
@@ -344,24 +310,24 @@ fallisce, non passa per sbaglio. Contate per sapere quante sono.*
 
 | file | navigazione |
 |---|---|
-| `test_batch10.js` | 14 |
+| `test_batch10.js` | 16 |
 | `test_batch11.js` | 23 |
-| `test_batch12.js` | 13 |
+| `test_batch12.js` | 14 |
 | `test_batch13.js` | 10 |
 | `test_batch14.js` | 10 |
-| `test_batch15.js` | 13 |
-| `test_batch16.js` | 18 |
-| `test_batch17.js` | 18 |
-| `test_batch18.js` | 13 |
+| `test_batch15.js` | 15 |
+| `test_batch16.js` | 20 |
+| `test_batch17.js` | 21 |
+| `test_batch18.js` | 16 |
 | `test_batch19.js` | 10 |
 | `test_batch2.js` | 4 |
 | `test_batch20.js` | 6 |
 | `test_batch2b.js` | 6 |
 | `test_batch3.js` | 5 |
-| `test_batch3b.js` | 5 |
+| `test_batch3b.js` | 6 |
 | `test_batch4.js` | 4 |
 | `test_batch4b.js` | 3 |
-| `test_batch5.js` | 11 |
+| `test_batch5.js` | 14 |
 | `test_batch6.js` | 14 |
 | `test_batch7.js` | 22 |
 | `test_batch8.js` | 14 |

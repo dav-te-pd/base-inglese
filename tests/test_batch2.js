@@ -115,7 +115,21 @@ async function run() {
     // Complete it (start-episode) -> back to map, personalizzazione completed, repeatAloud unlocked.
     await page.waitForFunction(() => document.getElementById('slot-grid').children.length > 0);
     await page.click('#start-episode');
-    await page.waitForTimeout(150);
+    // L'attesa sta sull'ULTIMO effetto del gesto — la mappa tornata attiva —
+    // non sulla scrittura che l'asserzione legge. Due ragioni, e sono
+    // separate. (1) La scrittura e' l'effetto piu' PRECOCE:
+    // startEpisodeFromCustomize fa markModuleCompleted e POI openEpisodeMap,
+    // quindi aspettare la scrittura lascerebbe scoperto tutto il resto.
+    // (2) L'effetto su cui si aspetta non puo' essere quello che
+    // l'asserzione legge, o l'asserzione diventa vera per costruzione.
+    //
+    // ⚠️ E qui, unico fra i tredici punti di questa famiglia, la corsa e'
+    // VERA: il gestore e' asincrono — ensureEpisodeSlotFields(...).then(...)
+    // — mentre tutti gli altri completano dentro il click. Vedi 0601b87:
+    // e' il commit che l'ha reso asincrono, e questi 150ms sono passati da
+    // «non guardano niente» a «sono l'unica cosa fra il test e una corsa»
+    // senza che nessuno toccasse il test.
+    await attendiClasse(page, '#view-map', 'is-active');
     const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T6NewUser');
     log('[6a] Completing Personalizzazione marks it via markModuleCompleted', completed && completed.indexOf('personalizzazione') !== -1);
     // Il passo che si sblocca è quello SUCCESSIVO nell'ordine, qualunque

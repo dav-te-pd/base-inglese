@@ -23,6 +23,55 @@
 // Misurato: sei giri in locale sempre verdi, due corse di CI su due rosse.
 // **Non un'intermittenza: una differenza stabile fra le due macchine.**
 
+// ============================================================================
+// ⚠️ COME SI SCEGLIE L'APPRODO — il criterio, e vale per OGNI conversione,
+// non per la famiglia che l'ha fatto scrivere.
+//
+//   L'EFFETTO SU CUI ASPETTI NON PUO' ESSERE QUELLO CHE L'ASSERZIONE LEGGE.
+//   ALTRIMENTI DIVENTA VERA PER COSTRUZIONE.
+//
+// Sono due scoperte diverse che sono la stessa cosa.
+//
+// La prima (2026-09-11, famiglia «un suono o la voce»): nove punti leggevano
+// `speaking === false` 50 ms dopo un tocco. Il finto sintetizzatore si spegne
+// da solo dopo 500 ms, quindi «finche' non parla piu'» sarebbe tornato vero
+// ANCHE SENZA NESSUN TOCCO: l'attesa avrebbe misurato la stessa cosa che
+// l'asserzione voleva provare. Quello che si perde non e' il valore: e'
+// l'ISTANTE in cui viene letto, e l'istante non si vede nel diff.
+//
+// La seconda (2026-09-11, famiglia «una scrittura nel localStorage»): la
+// famiglia prende il nome da cio' che l'asserzione LEGGE, e quello e' l'effetto
+// piu' PRECOCE del gesto, non l'ultimo. In `completeModule` l'ordine e'
+// scrivi l'esito -> travasa la mastery -> segna completato -> ridisegna la
+// mappa. Aspettare la scrittura significa fermarsi al primo effetto e leggere
+// tutto il resto scoperto; aspettare la classe della riga sulla mappa
+// renderebbe vera per costruzione l'asserzione che quella classe la verifica.
+// L'approdo giusto era il terzo: `#view-map.is-active`, l'ULTIMO effetto e
+// l'unico che nessuna di quelle asserzioni legge.
+//
+// **Quindi la regola operativa: si guarda l'ULTIMO effetto del gesto, e se
+// l'asserzione legge anche quello, l'asserzione si SPEZZA** — l'attesa diventa
+// la prima delle due e si dichiara per quello che e'. Succede: due dei tredici
+// punti di quella famiglia leggevano entrambi gli effetti.
+//
+// ⚠️ E UNA COSA CHE IL VERDE LOCALE NON SA DIRE, misurata lo stesso giorno.
+// Messe a 0 ms, due attese sono rimaste verdi tutte e due: una stava davanti a
+// un gestore SINCRONO (non guardava niente) e l'altra davanti a un gestore
+// ASINCRONO (una corsa vera, vinta perche' il container e' veloce — regola
+// 19). **La misura non le ha distinte. A distinguerle e' stato il codice: il
+// `.then(` c'e' o non c'e'.** Una misura che non distingue va riportata per
+// quello che e', non interpretata.
+//
+// ⚠️ E PERCHE' SI CONVERTE ANCHE UNA GUARDIA CHE OGGI NON GUARDA NIENTE:
+// `test_batch2.js` aspettava 150 ms dopo «Inizia l'episodio» quando il gestore
+// era sincrono. Il commit 0601b87 l'ha reso asincrono
+// (`ensureEpisodeSlotFields(...).then(...)`), e quei 150 ms sono passati da
+// «non guardano niente» a «sono l'unica cosa fra il test e una corsa» —
+// **senza che nessuno toccasse il test, e senza che niente lo dicesse.**
+// Una guardia inutile oggi e' un'assicurazione che costa una riga contro un
+// cambiamento che e' gia' avvenuto una volta.
+// ============================================================================
+
 // Aspetta che un sottotitolo di esito sia stato RIEMPITO davvero.
 //
 // Ritorna true/false invece di sollevare, così chi chiama può farne

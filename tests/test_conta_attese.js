@@ -57,6 +57,32 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
+// ⚠️ UN BLOCCO PER OGNI FUNZIONE DEL MAGAZZINO, GENERATO DAI SUOI EXPORT.
+//
+// Il caso vero, 2026-09-11: l'elenco delle "attese vere" dentro lo strumento
+// era scritto a mano e si era fermato ai tre helper che esistevano quando era
+// nato. Ne erano arrivati altri cinque, e ogni `waitForTimeout` che stava PRIMA
+// di una conversione veniva promosso da navigazione a guardia: **il censimento
+// contava come debito nuovo l'effetto del lavoro che il debito lo stava
+// togliendo.** Il conto era 79 dove il vero era 56, e niente lo diceva.
+//
+// Questo blocco non elenca i nomi: li LEGGE da `attese.js`. Una funzione nuova
+// nel magazzino porta qui il suo caso il giorno stesso, senza che nessuno se ne
+// ricordi — ed e' la differenza fra un elenco e un comando (CLAUDE.md regola
+// 41). Se un giorno lo strumento smettesse di riconoscerne una, la riga [A]
+// qui sotto conterebbe piu' di tre guardie e lo direbbe.
+const MAGAZZINO = Object.keys(require('./attese'));
+const BLOCCHI_MAGAZZINO = MAGAZZINO.map(function (nome, i) {
+  return [
+    "",
+    "  // (F" + i + ") NAVIGAZIONE: fermata da " + nome + ", che e' un'attesa VERA",
+    "  await page.click('#nav" + i + "');",
+    "  await page.waitForTimeout(" + (900 + i) + ");",
+    "  await " + nome + "(page, '#stato" + i + "');",
+    "  log('[F" + i + "] fermata da " + nome + "', true);"
+  ].join('\n');
+});
+
 const FINTO = [
   "async function run() {",
   "  // (1) GUARDIA: fra l'attesa e il log non c'e' nient'altro",
@@ -93,8 +119,8 @@ const FINTO = [
   "  await page.waitForTimeout(400); // ATTESA-LEGITTIMA",
   "  const cosa = await page.isVisible('#l');",
   "  log('[U] marcata senza motivo', cosa);",
-  "}"
-].join('\n');
+  ""
+].concat(BLOCCHI_MAGAZZINO, ["}"]).join('\n');
 
 function esegui(percorsoFinto, callback) {
   execFile(process.execPath, [STRUMENTO, percorsoFinto], { cwd: repoPath() },
@@ -166,9 +192,15 @@ function run() {
       log('[E] Il totale dice i tre numeri separati, non uno solo',
         /guardie da convertire/.test(stdout) && /NON sono debito/.test(stdout));
 
-      // Il conto della navigazione: due, e vanno dette, non nascoste.
+      // Il conto della navigazione va detto, non nascosto: due dal corpo fisso
+      // del finto, piu' una per ogni funzione del magazzino. Il numero si
+      // CALCOLA dagli export invece di essere scritto qui — scriverlo a mano
+      // e' l'errore che questo stesso test e' appena servito a trovare nello
+      // strumento, e non ha senso ricommetterlo nel test che lo protegge.
+      const navAttese = 2 + MAGAZZINO.length;
       const navRiga = mie(secNav)[0] || '';
-      log('[D] Le due attese di navigazione sono contate a parte', /\|\s*2\s*\|/.test(navRiga), navRiga);
+      log('[D] Le attese di navigazione (' + navAttese + ') sono contate a parte',
+        new RegExp('\\|\\s*' + navAttese + '\\s*\\|').test(navRiga), navRiga);
     } finally {
       fs.rmSync(tmp, { recursive: true, force: true });
     }

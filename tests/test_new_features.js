@@ -269,8 +269,29 @@ async function run() {
     await page.click('body');
     for (const ch of 'config') await page.keyboard.press(ch);
     await page.waitForTimeout(100);
+    // ⚠️ QUESTO PUNTO NON E' COME GLI ALTRI DODICI DELLA FAMIGLIA: la guardia
+    // non sta davanti a una scrittura, sta davanti a un location.reload() (il
+    // gestore di #config-panel-reset-btn in index.html). Il censimento l'ha
+    // messo qui per la lettura di configOverrides qui sotto, ma la corsa e'
+    // un'altra — e vera: se il boot non e' finito, window.APP_CONFIG non
+    // esiste ancora e la lettura ESPLODE invece di fallire.
+    //
+    // L'approdo non poteva essere uno stato dell'app. Misurato: dopo il reload
+    // ogni candidato e' gia' vero (#view-onboarding nasce is-active nel
+    // markup) oppure e' proprio cio' che l'asserzione legge — e l'effetto su
+    // cui si aspetta non puo' essere quello che l'asserzione legge, o diventa
+    // vero per costruzione (criterio in testa a tests/attese.js).
+    //
+    // L'unico fatto che il gesto produce, osservabile senza essere letto, e'
+    // che il DOCUMENTO e' stato sostituito: si timbra prima, si aspetta che il
+    // timbro sparisca. Resta INLINE e non entra in tests/attese.js: e' un sito
+    // solo, e una forma condivisa su un sito solo e' una funzione da difendere
+    // per sempre senza nessuno che la usi.
+    await page.evaluate(() => { window.__primaDelReload = true; });
     await page.click('#config-panel-reset-btn');
-    await page.waitForTimeout(300);
+    const ricaricata = await page.waitForFunction(() => !window.__primaDelReload, null, { timeout: 15000 })
+      .then(() => true).catch(() => false);
+    log('[B] Reset ricarica la pagina: il documento e\' stato sostituito', ricaricata);
     const afterReset = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     const overridesCleared = await page.evaluate(() => localStorage.getItem('baseinglese:configOverrides'));
     log('[B] Reset restores speedMatch.timeLimitSeconds to default (10)', afterReset === 10);

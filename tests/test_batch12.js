@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiTono } = require('./attese');
+const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -347,7 +347,7 @@ async function run() {
     log('[Job5] Reaches the summary screen', summaryReached);
 
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
       var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voicePractice"]');
@@ -421,7 +421,7 @@ async function run() {
     await vcCompleteModule(page, () => true, 1, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
       var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level };
@@ -492,13 +492,13 @@ async function run() {
     const idx = ALL_MODULES.indexOf('voiceCoach');
     await bootAsUser(page, 'T12CheckMappa', ALL_MODULES.slice(0, idx));
     await openModule(page, 'voiceCoach');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(300); // ATTESA-LEGITTIMA: la guardia serve all'asserzione NEGATIVA qui sotto — «rispondere non scrive». Un non-evento non si aspetta: allungare il tempo rafforza la prova, uno stato da attendere non esiste
     await vcCompleteLineRight(page);
     const primaDiUscire = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
     log('[C.1] Rispondere non scrive: il colore aspetta il pulsante come in ogni altro modulo',
       primaDiUscire === null || Object.keys(JSON.parse(primaDiUscire)).length === 0, String(primaDiUscire));
     await page.click('#voice-coach-back-map');
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(250); // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che una scrittura NON sia rimasta — uscire dalla mappa non deve lasciare una voce di mastery. Un non-evento non si aspetta: il tempo E' la misura
     const dopoMappa = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
     log('[C.1] Uscendo da "← Mappa" non resta nessuna voce di Voice Check',
       dopoMappa === null || Object.keys(JSON.parse(dopoMappa)).length === 0, String(dopoMappa));

@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -238,7 +238,7 @@ async function run() {
     const summaryVisible = await attendiVisibile(page, '#voice-coach-summary-screen');
     log('[ModuleRules] Voice Coach (all correct) reaches the summary screen', summaryVisible);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
       var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
@@ -265,7 +265,7 @@ async function run() {
     await vcCompleteModule(page, () => true, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
       var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
@@ -294,7 +294,7 @@ async function run() {
     await vcCompleteModule(page, (i) => i % 3 === 0, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
       var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
@@ -323,7 +323,7 @@ async function run() {
     await vcCompleteModule(page, () => false, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const afterFirst = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     log('[Redo] First attempt (all correct) is verde', afterFirst === 'verde');
 
@@ -334,7 +334,7 @@ async function run() {
     await vcCompleteModule(page, () => true, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const afterSecond = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterSecond = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Second attempt (all wrong) REPLACES verde with rosso (downgrade honored)', afterSecond === 'rosso' && rowAfterSecond.indexOf('outcome-rosso') !== -1 && rowAfterSecond.indexOf('outcome-verde') === -1);
@@ -345,7 +345,7 @@ async function run() {
     await vcCompleteModule(page, () => false, LINE_COUNT * 2 + 4);
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const afterThird = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterThird = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Third attempt (all correct again) REPLACES rosso with verde (upgrade honored)', afterThird === 'verde' && rowAfterThird.indexOf('outcome-verde') !== -1 && rowAfterThird.indexOf('outcome-rosso') === -1);
@@ -375,7 +375,7 @@ async function run() {
     const bubbleCount = await page.locator('.dg-bubble').count();
     for (let i = 0; i < bubbleCount; i++) { await page.locator('.dg-bubble').nth(i).click(); await page.waitForTimeout(400); }
     await page.click('#dg-know-it-btn');
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(300); // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che una scrittura NON avvenga — rispondere all'autovalutazione non deve lasciare un esito. Un non-evento non si aspetta: il tempo E' la misura, e un'attesa sullo stato tornerebbe solo piu' tardi con lo stesso nulla
     // Dal 2026-09-10 l'autovalutazione MOSTRA e non scrive: l'esito arriva al
     // magazzino col pulsante di uscita, come in ogni altro modulo. Rispondere
     // e poi uscire da "← Mappa" non deve lasciare un colore che nessuno ha
@@ -384,7 +384,7 @@ async function run() {
     const primaDelPulsante = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
     log('[Modulo Finale prep] L\'autovalutazione da sola NON scrive l\'esito: aspetta il pulsante', !primaDelPulsante.dialogoAscoltaRipeti);
     await page.click('#dg-complete-btn');
-    await page.waitForTimeout(300);
+    await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
     log('[Modulo Finale prep] Dialogo (selfAssessment) writes the same { level } shape ModuleRules writes', outcomes.dialogoAscoltaRipeti && outcomes.dialogoAscoltaRipeti.level === 'verde');
     log('[Modulo Finale prep] No JS errors', errors.length === 0);

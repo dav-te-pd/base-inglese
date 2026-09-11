@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiDisabilitato, attendiTono, attendiVisibile } = require('./attese');
+const { attendiClasse, attendiDisabilitato, attendiTono, attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -167,9 +167,18 @@ async function run() {
   const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
   log('[4d] Module NOT marked completed until the explicit button is clicked', completedBeforeClick.indexOf('voiceCoach') === -1);
   await page.click('#voice-coach-complete-btn');
-  await page.waitForTimeout(150);
+  // ⚠️ DIFETTO TROVATO, e non e' una conseguenza della conversione: l'etichetta
+  // diceva «...and returns to the map», ma l'asserzione controllava SOLO il
+  // completamento. Il ritorno alla mappa era DICHIARATO e mai verificato — chi
+  // leggeva il nome del test credeva che quel comportamento fosse protetto, ed
+  // e' il difetto della regola 32 visto da un'altra porta. Spezzarla lo rende
+  // vero invece che dichiarato, e da' all'attesa il suo approdo (l'ULTIMO
+  // effetto del gesto, non la scrittura che l'altra asserzione legge —
+  // criterio in testa a tests/attese.js).
+  const tornatoSullaMappa = await attendiClasse(page, '#view-map', 'is-active');
+  log('[4d] Clicking it returns to the map', tornatoSullaMappa);
   const completedAfterClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
-  log('[4d] Clicking it marks voiceCoach completed and returns to the map', completedAfterClick.indexOf('voiceCoach') !== -1);
+  log('[4d] Clicking it marks voiceCoach completed', completedAfterClick.indexOf('voiceCoach') !== -1);
 
   log('No JS errors across the whole Voice Coach flow', errors.length === 0);
   if (errors.length) console.log('ERRORS:', errors);

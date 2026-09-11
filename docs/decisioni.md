@@ -74,6 +74,18 @@ Pianificato sui numeri del 14a, **rimisurati l'11 settembre: 186 guardie, non
 180.** Il conto si rigenera con `node tests/tools/conta-attese.js`, non si
 ricorda.
 
+**A che punto è, l'11 settembre sera: 186 → 56.** Chiuse le famiglie ①, ②, ③ e
+④. ⚠️ **I numeri intermedi scritti durante la giornata — 154, 108, 90 — erano
+GONFIATI**: lo strumento non riconosceva cinque delle otto funzioni del
+magazzino e promuoveva a guardia le attese che stavano prima di una conversione.
+Corretto, e il perché sta in «14b ④». *Il 186 del 14a invece è giusto: nessuna
+di quelle funzioni esisteva ancora.*
+
+**Cosa resta, e sono poche forme:** «un testo che si riempie» (16), «altro»
+(20 — ⚠️ è il residuo della classificazione, probabilmente non è una famiglia),
+poi configurazione (5), stile (5), console negativa (3), geometria (3), elenchi
+(3), e la rimandata di `test_batch13` (1).
+
 ### Cosa è chiuso
 
 | | |
@@ -382,7 +394,7 @@ non era stato scritto niente.
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
 | **14a** | **Misurare le famiglie prima di convertire, e generare il censimento.** **FATTO E VERIFICATO il 2026-09-10** — suite verde, 1018 asserzioni in 45 file. ⬇︎ i numeri veri sono qui sotto. | ☑ | **sì** |
-| **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima.<br><br>⚠️ **OGNI FAMIGLIA VUOLE UN GIRO DI LETTURA PRIMA DELLA CONVERSIONE, e il numero della famiglia è DOVE GUARDARE, non quanto lavoro c'è** (aggiunto l'11 settembre, dopo il primo giro). Il censimento classifica per **cosa si legge**, non per **come viene usato**: vede `.hidden` e scrive «una schermata che compare o sparisce», e ha ragione sul cosa — ma non può vedere se quella lettura serve a dire *«è comparsa»* o *«NON è comparsa»*, che sono l'opposto. Sulla famiglia ② erano **9 punti su 29**: cinque negative (l'attesa È la misura), una vacua, e tre che la conversione avrebbe **svuotato** — uno stato già vero prima dell'attesa, che convertito tornerebbe al primo istante.<br><br>⚠️ **Una conversione sbagliata non lascia un rosso: lascia un verde che non prova più niente — e il conto scende, cioè il numero migliora proprio quando il lavoro fa danno.** Da qui il terzo secchio del contatore e il marcatore `// ATTESA-LEGITTIMA: <motivo>` scritto nel sito, che lo strumento raccoglie da solo.<br><br>**② FATTA il 2026-09-11** — `attendiVisibile` / `attendiNascosto` in `tests/attese.js`, 21 chiamate in 13 file, 8 marcate legittime, e la vacua di `test_batch16` corretta. **186 → 154 guardie da convertire.** | ◐ | **sì**, una famiglia per volta |
+| **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima.<br><br>⚠️ **OGNI FAMIGLIA VUOLE UN GIRO DI LETTURA PRIMA DELLA CONVERSIONE, e il numero della famiglia è DOVE GUARDARE, non quanto lavoro c'è** (aggiunto l'11 settembre, dopo il primo giro). Il censimento classifica per **cosa si legge**, non per **come viene usato**: vede `.hidden` e scrive «una schermata che compare o sparisce», e ha ragione sul cosa — ma non può vedere se quella lettura serve a dire *«è comparsa»* o *«NON è comparsa»*, che sono l'opposto. Sulla famiglia ② erano **9 punti su 29**: cinque negative (l'attesa È la misura), una vacua, e tre che la conversione avrebbe **svuotato** — uno stato già vero prima dell'attesa, che convertito tornerebbe al primo istante.<br><br>⚠️ **Una conversione sbagliata non lascia un rosso: lascia un verde che non prova più niente — e il conto scende, cioè il numero migliora proprio quando il lavoro fa danno.** Da qui il terzo secchio del contatore e il marcatore `// ATTESA-LEGITTIMA: <motivo>` scritto nel sito, che lo strumento raccoglie da solo.<br><br>**② FATTA il 2026-09-11** — `attendiVisibile` / `attendiNascosto` in `tests/attese.js`, 21 chiamate in 13 file, 8 marcate legittime, e la vacua di `test_batch16` corretta.<br><br>**① ③ ④ FATTE lo stesso giorno.** ① `attendiAbilitato`/`attendiDisabilitato`/`attendiClasse`; ③ `attendiCheParla`/`attendiTono` e la quinta categoria; ④ nessuna funzione nuova — l'approdo era `#view-map.is-active`.<br><br>⚠️ **IL CRITERIO CHE NE ESCE, e vale per le famiglie che restano: l'effetto su cui aspetti non può essere quello che l'asserzione legge, o diventa vera per costruzione.** Sta in testa a `tests/attese.js`.<br><br>**186 → 56 guardie da convertire** (i numeri intermedi della giornata erano gonfiati da un difetto dello strumento: vedi «14b ④»). | ◐ | **sì**, una famiglia per volta |
 | **15** | I quattro valori ricopiati nei test. ~1 ora. ⚠️ Non portare via anche i `length === 3`: quelli sono **requisiti**, non copie — il riquadro in fondo a questo file lo spiega. | ☐ | **sì** |
 | **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file) e `tests/debug/` (6 file, aggiunto il 2026-09-09: quattro file che nessuno lancia sono quattro file che possono mentire senza che nessuno se ne accorga), `levels.X.label` (morto: unica occorrenza in un commento), i quattro test con funzioni quasi identiche. *(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ② li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
 | **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
@@ -794,6 +806,108 @@ distanza fra «l'ha fermato il tocco» e «è finito da solo».**
 aggiunto una categoria che le precedenti non avevano: la ② le negative e le «già
 vere», la ① le misclassificate, la ③ questa. *Il triage non è un filtro noto da
 applicare: è una lettura che ogni volta trova una forma nuova.*
+
+## 14b ④ — la famiglia «una scrittura nel localStorage» (11 settembre)
+
+**18 punti dichiarati, 13 convertiti.** E due cose che valgono più delle tredici
+conversioni: **il criterio che sceglie l'approdo**, e **un difetto nello
+strumento di misura** che rendeva falsi i numeri delle tre famiglie precedenti.
+
+| | n | |
+|---|---|---|
+| **convertiti** | **13** | approdo `attendiClasse(page, '#view-map', 'is-active')` — **zero funzioni nuove** |
+| legittime | 3 | negative: «NON scrive», «non resta nessuna voce» |
+| **rimandata** | 1 | `test_batch13` — il suo approdo appartiene alla famiglia «un testo che si riempie» |
+| fuori famiglia | 1 | `test_new_features` — la guardia sta davanti a un `location.reload()`, non a una scrittura (convertita lo stesso, con forma sua) |
+
+### ⚠️ IL CRITERIO CHE SCEGLIE L'APPRODO — e vale per ogni conversione futura
+
+> **L'EFFETTO SU CUI ASPETTI NON PUÒ ESSERE QUELLO CHE L'ASSERZIONE LEGGE.
+> ALTRIMENTI DIVENTA VERA PER COSTRUZIONE.**
+
+**È la ⑤ di ieri e la ⑥ di oggi viste come una cosa sola**, ed è il motivo per
+cui non si sceglie l'approdo guardando il nome della famiglia. La ⑤ era l'audio
+che si spegne da solo; la ⑥ è questa:
+
+> **LA FAMIGLIA PRENDE IL NOME DA CIÒ CHE L'ASSERZIONE LEGGE, E QUELLO È
+> L'EFFETTO PIÙ PRECOCE DEL GESTO — NON L'ULTIMO.**
+
+In `completeModule` (`index.html`) l'ordine è *scrivi l'esito → travasa la
+mastery → segna completato → **ridisegna la mappa***. Aspettare la scrittura
+significa fermarsi al primo effetto e leggere scoperto tutto il resto;
+aspettare la classe della riga sulla mappa renderebbe vera per costruzione
+l'asserzione che quella classe la verifica. **L'approdo giusto era il terzo:
+`#view-map.is-active`, l'ultimo effetto e l'unico che nessuna di quelle
+asserzioni legge.**
+
+**Quindi la regola operativa: si guarda l'ULTIMO effetto del gesto; e se
+l'asserzione legge anche quello, l'asserzione si SPEZZA** — l'attesa diventa la
+prima delle due e si dichiara per quello che è. È successo su **due punti su
+tredici**. Il criterio sta scritto in testa a `tests/attese.js`, dove lo trova
+chi converte la prossima famiglia.
+
+### ⚠️ LA MISURA CHE NON HA DISTINTO
+
+Messe a **0 ms**, due attese sono rimaste **verdi tutte e due**: una stava
+davanti a un gestore **sincrono** (non guardava niente), l'altra davanti a un
+gestore **asincrono** — una corsa vera, vinta solo perché il container è veloce
+(regola 19). `test_batch14` 38/38, `test_batch2` 22/22.
+
+**La misura non le ha distinte. A distinguerle è stato il codice: il `.then(`
+c'è o non c'è.** *Una misura che dà un risultato inutile va riportata per quello
+che è, non interpretata: qui il verde locale non separa la guardia inutile dalla
+corsa vinta per velocità.*
+
+### ⚠️ PERCHÉ SI CONVERTE ANCHE UNA GUARDIA CHE OGGI NON GUARDA NIENTE
+
+`test_batch2.js` aspettava 150 ms dopo «Inizia l'episodio» quando il gestore era
+**sincrono**. Il commit **`0601b87`** l'ha reso asincrono
+(`ensureEpisodeSlotFields(...).then(...)`), e quei 150 ms sono passati da *«non
+guardano niente»* a *«sono l'unica cosa fra il test e una corsa»* — **senza che
+nessuno toccasse il test, e senza che niente lo dicesse.**
+
+> **UNA GUARDIA INUTILE OGGI È UN'ASSICURAZIONE CHE COSTA UNA RIGA CONTRO UN
+> CAMBIAMENTO CHE È GIÀ AVVENUTO UNA VOLTA.**
+
+Vale per tutte le famiglie che restano. *E la prova che serviva non è il fetch
+rotto: iniettati 800 ms dentro quella promise, la forma vecchia cade (20/22) e
+la nuova regge (22/22).*
+
+### ⚠️ E IL NUMERO SU CUI SI PIANIFICAVA ERA SBAGLIATO — 90 era 56
+
+Rigenerando il censimento dopo le conversioni, il conto scendeva da 90 a **79**
+invece che a 73: **sei guardie nuove comparse dal nulla**. Non erano nuove.
+
+`tests/tools/conta-attese.js` teneva l'elenco delle «attese vere» **scritto a
+mano**, fermo ai tre helper che esistevano quando era nato. Nel frattempo ne
+erano arrivati cinque — `attendiAbilitato`, `attendiDisabilitato`,
+`attendiClasse`, `attendiCheParla`, `attendiTono` — e lo strumento non li
+riconosceva: **ogni `waitForTimeout` che stava PRIMA di una conversione veniva
+promosso da navigazione a guardia.**
+
+> **IL CENSIMENTO CONTAVA COME DEBITO NUOVO L'EFFETTO DEL LAVORO CHE IL DEBITO
+> LO STAVA TOGLIENDO.**
+
+È la regola 37 applicata allo strumento che serve a misurare. Corretto leggendo
+`module.exports` di `attese.js` invece di elencarli, così una funzione nuova è
+riconosciuta il giorno stesso.
+
+**Cosa cambia nei numeri già scritti, e va detto perché sono stati usati per
+pianificare:** il **186 del 14a è giusto** (nessuna di quelle funzioni esisteva
+ancora). **Tutti i numeri dopo la famiglia ① sono gonfiati** — 154, 108, 90 non
+sono mai stati il vero. Il conto vero, misurato con lo strumento corretto:
+
+> **186 → 56 guardie da convertire. Le famiglie ①, ② e ③ erano CHIUSE del
+> tutto: «un suono o la voce» (11), «un pulsante o una classe» (3) e «una
+> schermata» (1) erano residui dello strumento, non lavoro rimasto.**
+
+*Nessun numero di questa catena è stato corretto a memoria: è stato rigenerato.*
+
+### Cosa dicono i quattro triage
+
+**20/29 · 20/52 · 12/29 · 13/18.** E ogni famiglia ha aggiunto una categoria che
+le precedenti non avevano. *Il triage non è un filtro noto da applicare: è una
+lettura che ogni volta trova una forma nuova.*
 
 ## ⚠️ PRIMA DELLA FASE 4 — l'app finirà dietro un login, e questo cambia COME si divide
 

@@ -170,6 +170,13 @@ async function run() {
     await page.evaluate(() => document.getElementById('vc-record-btn').click()); // stop
     await page.waitForTimeout(150);
     await page.click('#vc-send-btn');
+    // RIMANDATA alla famiglia «un testo che si riempie», e il motivo e' che
+    // l'approdo giusto e' suo. Qui non c'e' nessun cambio di schermata: il
+    // modulo resta aperto, addAudioSecondsSent e' la PRIMA riga sincrona del
+    // gestore e l'ULTIMO effetto e' vcEvaluate(), che riempie #vc-feedback.
+    // Costruire adesso una forma per questo unico sito significherebbe
+    // scrivere una funzione condivisa con un utente solo — e' la stessa soglia
+    // per cui attendiClasseAssente non esiste. Si chiude con quella famiglia.
     await page.waitForTimeout(150);
     const usage = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:audioSecondsSent:gate:' + u) || '{}'), 'T13Usage');
     log('[6c] Sending a recording writes a per-module audio-seconds entry', usage.byModule && usage.byModule.voicePractice > 0);
