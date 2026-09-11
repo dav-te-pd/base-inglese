@@ -129,7 +129,7 @@ async function run() {
     const nextEnabled = await page.$eval('#vc-next-btn', el => !el.disabled);
     log('[4a] "Avanti" becomes enabled right after evaluation (line ' + (i + 1) + ')', nextEnabled);
     await page.click('#vc-next-btn');
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia
   }
   log('[4c] Test actually forced at least one bad-star line', sawRetryQueueEntry);
 

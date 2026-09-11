@@ -152,7 +152,12 @@ async function attendiNascosto(page, selettore, timeoutMs) {
 // e un nome per ognuna sarebbe un elenco che cresce a ogni classe nuova.
 //
 // ⚠️ NON ESISTE `attendiClasseAssente`, ED È UNA DECISIONE, NON UNA
-// DIMENTICANZA. Tre dei 26 punti aspettano che una classe **sparisca**. Su
+// DIMENTICANZA — **e il contatore si muove: erano tre, poi quattro, dal
+// 2026-09-11 sono CINQUE.** Il quinto è `test_batch10.js`, la spunta di
+// ascolto del Dialogo: lì l'unico approdo possibile sarebbe la bolla che perde
+// `is-active`. Il numero si scrive perché la soglia sia verificabile invece che
+// ricordata: **a DIECI la funzione si fa, e siamo a metà.**
+// Tre dei 26 punti aspettano che una classe **sparisca**. Su
 // quei tre la classe c'è davvero prima, quindi la conversione sarebbe sicura —
 // ma tre siti non giustificano una funzione da difendere per sempre, e il
 // rischio è **asimmetrico**: sbagliarla produce un test vuoto, cioè la cosa

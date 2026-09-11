@@ -74,16 +74,20 @@ Pianificato sui numeri del 14a, **rimisurati l'11 settembre: 186 guardie, non
 180.** Il conto si rigenera con `node tests/tools/conta-attese.js`, non si
 ricorda.
 
-**A che punto è, l'11 settembre sera: 186 → 39.** Chiuse le famiglie ①, ②, ③,
-④ e ⑤. ⚠️ **I numeri intermedi scritti durante la giornata — 154, 108, 90 — erano
+**IL 14b È CHIUSO: 186 → 0 guardie da convertire.** Tutte le famiglie, «altro»
+compreso, e i cinque gruppi piccoli — che si sono rivelati **tre gesti letti da
+cinque angoli**. ⚠️ **I numeri intermedi scritti durante la giornata — 154, 108, 90 — erano
 GONFIATI**: lo strumento non riconosceva cinque delle otto funzioni del
 magazzino e promuoveva a guardia le attese che stavano prima di una conversione.
 Corretto, e il perché sta in «14b ④». *Il 186 del 14a invece è giusto: nessuna
 di quelle funzioni esisteva ancora.*
 
-**Cosa resta:** «altro» (20 — ⚠️ è il residuo della classificazione,
-probabilmente non è una famiglia: da guardare sapendo questo), configurazione
-(5), stile (5), console negativa (3), geometria (3), elenchi (3).
+**Non resta niente del 14b.** Le 186 guardie sono diventate **0 da convertire**
+e **76 legittime marcate nel sito con il loro motivo** — il resto è navigazione,
+che non è mai stata debito. *Il numero che contava non era «quante ne ho
+convertite»: era «quante ne restano senza una spiegazione», e adesso è zero.*
+
+**Il prossimo passo della fase 3 è il 15.**
 
 ### Cosa è chiuso
 
@@ -1086,6 +1090,81 @@ rileggeva le stesse cinque righe per arrivare alla stessa conclusione.
 **Condizione:** quando si incontra prosa che spiega una scelta in un punto dove
 uno strumento passa e non la vede, si marca. *Non si va a cercarle adesso: si
 marcano quando si incontrano.*
+
+## 14b — I CINQUE GRUPPI PICCOLI, E IL 14b CHIUSO A ZERO (11 settembre)
+
+**22 punti guardati INSIEME invece che in cinque triage separati. 186 → 0.**
+
+> **TRE GESTI LETTI DA CINQUE ANGOLI.**
+
+| gesto | n | le etichette del censimento che ci cadono dentro |
+|---|---|---|
+| **A** apertura di un modulo *(asincrona)* | 6 | console ×2, geometria ×2, stile ×1, elenchi ×1 |
+| **B** caricamento della pagina | 4 | configurazione ×3, console ×1 |
+| **C** un click dentro il modulo *(sincrono)* | 8 | stile ×3, configurazione ×2, elenchi ×2, geometria ×1 |
+| **D** riassunto di un ciclo | 3 | — |
+| **E** il tempo È la misura | 1 | elenchi |
+
+### ⚠️ LA RIGA CHE CAMBIA COME SI GUARDANO LE FAMIGLIE
+
+> **Il censimento classifica per COSA SI LEGGE, e cosa si legge non dice niente
+> su cosa si aspetta. Font-size, larghezza in pixel, numero di elementi e
+> warning in console sono LETTURE DIVERSE DELLO STESSO ISTANTE.**
+
+**Le etichette del censimento sono un INDICE, non una tassonomia.** È la sesta
+categoria vista su scala: sei punti, quattro etichette diverse, un gesto solo.
+
+⚠️ **E ne segue una cosa che vale per il metodo, non per questo passo: se
+avessimo fatto cinque triage separati avremmo trovato lo stesso gesto cinque
+volte senza accorgercene — e forse costruito cinque forme per una cosa sola.
+Guardarli insieme non è stata una comodità: è stato il modo di vedere che erano
+tre.**
+
+### Il caso più diverso, e la misura più allarmante della giornata
+
+`test_batch16` [Job8] è l'unico blocco che apre **due moduli** e ne confronta le
+letture. Misurato: leggendo `#fc-counter` **mentre si è ancora su Voice Coach**,
+i valori sono **identici** a `#vc-counter` — `sr-counter`, `IBM Plex Mono`,
+`700`, `18.4px`. Gli elementi delle viste non attive restano nel DOM, quindi
+`getComputedStyle` risponde lo stesso.
+
+> **Un approdo sbagliato lì non produce un rosso: produce un VERDE che prova che
+> un contatore è uguale a sé stesso.**
+
+Per questo le due viste si nominano una per una, invece di un approdo generico
+*«una vista diversa dalla mappa»* che sarebbe già vero per la prima.
+
+### Il gesto B: misurato E spiegato
+
+Campionando il boot ogni 5 ms, fra «contesto non ancora esistente» e «tutto
+pronto» **non c'è nessuno stato intermedio osservabile**. E la ragione
+strutturale lo rende definitivo: **`page.goto` risolve sull'evento `load`, e lo
+script dell'app è INLINE in `index.html`** — quindi ha già girato. Tre attese
+tolte, non convertite.
+
+### L'unico punto che resta a tempo, e il contatore che si muove
+
+`test_batch10`: la spunta `is-heard` arriva alla **fine dell'audio** (~380 ms,
+campionato) ed è **esattamente ciò che l'asserzione legge** (regola 44). L'unico
+altro effetto di quell'istante è la bolla che **perde** `is-active` — misurato,
+cambiano nello stesso render — e quella sarebbe un'attesa su una classe che
+**sparisce**.
+
+⚠️ **È il QUINTO sito che vorrebbe `attendiClasseAssente`. La soglia dichiarata
+è dieci, e adesso il numero è scritto in `tests/attese.js`: siamo a metà.** *Una
+soglia con un contatore che si muove è verificabile; una soglia ricordata no.*
+
+### ⚠️ E la forma che è ricapitata a chi l'aveva appena scritta
+
+Su quel punto erano state scritte **dieci righe** di motivazione misurata — e
+**nessun marcatore**. Il censimento continuava a contarlo come debito. È
+esattamente *«una spiegazione che lo strumento non sa leggere è una spiegazione
+che va riscritta ogni volta»*, registrata poche ore prima leggendo
+`test_batch5`. **L'ha presa il contatore, non chi l'aveva scritta: `3` invece di
+`0`.**
+
+*Non l'ho applicata avendola scritta. Lo strumento sì — ed è tutto il motivo per
+cui il marcatore esiste.*
 
 ## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
 

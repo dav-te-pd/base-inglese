@@ -160,7 +160,7 @@ async function run() {
       if (advanceVisible) { await page.click('#qm-advance-btn'); await page.waitForTimeout(120); continue; }
       const retryContinueVisible = await page.isVisible('#qm-retry-continue-btn').catch(() => false);
       if (retryContinueVisible) { await page.click('#qm-retry-continue-btn'); await page.waitForTimeout(120); continue; }
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(100); // ATTESA-LEGITTIMA: e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia
     }
     log('[Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item', popupSeen);
     log('[Job3/4] Match Practice: popup uses the "nonRiuscita" title ("Tranquillo, capita!" family)', popupTitle && (popupTitle.indexOf('Tranquillo') !== -1 || popupTitle.length > 3));

@@ -213,7 +213,10 @@ async function apriPasso(page, passo) {
   // ---------------------------------------------------------------
   await apriPasso(page, 'matchItaEng');
   await page.click('#qm-start-btn').catch(() => {});
-  await page.waitForTimeout(500);
+  // Niente attesa: misurato campionando ogni 5 ms, le quattro righe del Mini
+  // ci sono gia' al primo campione dopo il click — il gestore dello start
+  // disegna le opzioni in modo sincrono. E il numero di righe e' cio' che
+  // l'asserzione conta, quindi non puo' fare da approdo a se stesso.
 
   const mini = await page.evaluate(() => {
     const righe = Array.from(document.querySelectorAll('#qm-options .qm-option-row'));
@@ -237,7 +240,9 @@ async function apriPasso(page, passo) {
   // ---------------------------------------------------------------
   await apriPasso(page, 'dialogoRipetiATempo');
   await page.click('#dg-start-btn').catch(() => {});
-  await page.waitForTimeout(600);
+  // Niente attesa: misurato, subito dopo il click ci sono 9 bolle di cui 8
+  // gia' `is-ahead-locked`, e il valore non cambia piu' — lo Sblocco
+  // Sequenziale si applica al render. I 600 ms non guardavano niente.
 
   const dialogo = await page.evaluate(() => {
     const avanti = document.querySelector('.dg-bubble.is-ahead-locked');

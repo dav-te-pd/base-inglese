@@ -134,17 +134,17 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 
 ## Elenco — generato il 2026-09-11
 
-**22 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
+**0 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
 il verde di un'asserzione, e che si puo' sostituire con un'attesa sullo stato
 vero. **E' questo il numero su cui si misura il 14b**, e l'unico che deve
 scendere.
 
 | | quante |
 |---|---|
-| **guardie da convertire** — il debito | **22** |
-| guardie **legittime** — marcate nel sito, NON sono debito | 71 |
-| attese di **navigazione** — se sono corte il test si rompe, non passa | 295 |
-| in tutto | 388 |
+| **guardie da convertire** — il debito | **0** |
+| guardie **legittime** — marcate nel sito, NON sono debito | 77 |
+| attese di **navigazione** — se sono corte il test si rompe, non passa | 291 |
+| in tutto | 368 |
 
 ⚠️ **I tre numeri non si sommano in uno solo, ed e' il punto.** Una guardia
 legittima verifica che una cosa NON accada, oppure uno stato che era gia' vero:
@@ -177,39 +177,11 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 
 | cosa si aspetta | quante |
 |---|---|
-| un valore di configurazione o di dati | 5 |
-| uno stile calcolato | 5 |
-| altro | 3 |
-| la console (asserzione negativa) | 3 |
-| una misura di geometria | 3 |
-| un elenco di elementi che si ridisegna | 3 |
 
 ### Le guardie, una per una
 
 | file | ms | dopo | aspetta | asserzione protetta | riga (al 2026-09-11) |
 |---|---|---|---|---|---|
-| `test_batch10.js` | 400 | apertura modulo | la console (asserzione negativa) | [Job2b] Unresolved placeholder logs a console warning naming it | 150 |
-| `test_batch10.js` | 400 | apertura modulo | la console (asserzione negativa) | [Job2b] Story Cards (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere | 168 |
-| `test_batch10.js` | 150 | click | uno stile calcolato | [Job3] All heard-check indicators are visible from the start (not hidden) | 187 |
-| `test_batch10.js` | 500 | click | uno stile calcolato | [Job3] First bubble is-heard after listening, with a check icon | 199 |
-| `test_batch13.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [6a] CONFIG.voiceCoach.silenceTimeoutSeconds exists (default 3) | 76 |
-| `test_batch14.js` | 100 | click | la console (asserzione negativa) | [Job2] No JS errors after the warm-up tap | 136 |
-| `test_batch14.js` | 150 | click | una misura di geometria | [Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden | 383 |
-| `test_batch15.js` | 150 | click | uno stile calcolato | [Job5] .ripasso-badge font-size equals .sr-direction font-size | 303 |
-| `test_batch15.js` | 150 | click | una misura di geometria | [Job7] "Help" width unchanged whether Spiegazione is visible or hidden | 353 |
-| `test_batch15.js` | 200 | apertura modulo | un elenco di elementi che si ridisegna | [Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno | 429 |
-| `test_batch16.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [Job1b] CONFIG.people.papa.francesco really has a different EN value (regression bait present) | 135 |
-| `test_batch16.js` | 150 | click | altro | [Job3] "Ripasso" badge becomes visible during the retry pass | 252 |
-| `test_batch16.js` | 200 | apertura modulo | una misura di geometria | [Job7] "← Mappa" sits at the row's left edge | 357 |
-| `test_batch16.js` | 200 | apertura modulo | uno stile calcolato | [Job8] Voice Coach counter and Flash Card counter share the same CSS class | 394 |
-| `test_batch17.js` | 700 | click | un elenco di elementi che si ridisegna | [Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle) | 108 |
-| `test_batch2b.js` | 50 | click | un valore di configurazione o di dati | [1] Clicking "down" swaps the first two entries live in APP_CONFIG | 133 |
-| `test_batch7.js` | 100 | click | altro | [Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item | 163 |
-| `test_blocco_ascolto.js` | 500 | click | un elenco di elementi che si ridisegna | [4] Ogni opzione it→en ha il suo Mini Blocco Ascolto | 216 |
-| `test_blocco_ascolto.js` | 600 | click | uno stile calcolato | [5] Anche la bolla bloccata del Dialogo porta .is-tap-locked | 240 |
-| `test_new_features.js` | 50 | evaluate | un valore di configurazione o di dati | [B] Editing a scalar field updates window.APP_CONFIG live (7) | 223 |
-| `test_new_features.js` | 150 | caricamento pagina | un valore di configurazione o di dati | [B] Change persists across reload via boot-time override merge (7) | 261 |
-| `test_voicecoach.js` | 100 | click | altro | [4c] Test actually forced at least one bad-star line | 132 |
 
 ### Le guardie legittime — marcate nel sito, e perche'
 
@@ -219,6 +191,7 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 
 | file | ms | asserzione protetta | perche' resta |
 |---|---|---|---|
+| `test_batch10.js` | 500 | [Job3] First bubble is-heard after listening, with a check icon | la spunta `is-heard` arriva alla fine dell'audio ed e' esattamente cio' che l'asserzione legge (regola 44); l'unico altro effetto di quell'istante e' una classe che SPARISCE, e attendiClasseAssente non esiste per decisione dichiarata |
 | `test_batch10.js` | 400 | [Job4] Repeat Aloud "← Mappa" (leaving without completing) does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo senza completare il Traguardo NON deve suonare |
 | `test_batch10.js` | 400 | [Job4] Voice Coach mic-confirmed exit does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — l'uscita dall'avviso microfono NON deve suonare il Traguardo |
 | `test_batch10.js` | 400 | [Job4] Dialogo "Non ancora" still does NOT play Traguardo | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — «Non ancora» NON deve suonare il Traguardo |
@@ -229,6 +202,7 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 | `test_batch13.js` | 200 | [6b] Still recording just before the (shrunk) silence timeout fires | si legge PRIMA che il timeout di silenzio scatti — registrare gia' partita, si prova che non si e' fermata |
 | `test_batch13.js` | 500 | [6b] Recognized speech before the timeout: no silence warning (false-discard guard) | prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto |
 | `test_batch14.js` | 500 | [Job1] Continuous speech: NO silence warning fires mid-speech | prova che un avviso NON compare — ben oltre il timeout di 150ms |
+| `test_batch14.js` | 100 | [Job2] No JS errors after the warm-up tap | l'asserzione qui sotto e' negativa — nessun errore JS dopo il tocco di riscaldamento. Un errore che non arriva non ha una condizione da aspettare: si lascia una finestra e si guarda se e' rimasta vuota |
 | `test_batch14.js` | 150 | [Job4] "Ripasso" badge hidden during the main pass | il badge "Ripasso" e' gia' nascosto — si prova che NON compaia nel giro principale |
 | `test_batch14.js` | 150 | [Job7a] Dialogue has at least 3 lines to test sequencing | NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si conta quante bolle ci sono |
 | `test_batch14.js` | 100 | [Job7a] Clicking the locked line 3 does nothing (no audio starts) | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — cliccare una battuta bloccata NON deve far partire nessun audio |
@@ -241,7 +215,9 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 | `test_batch16.js` | 200 | [Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi" | verifica che un click su un pulsante DISABILITATO non produca niente — il testo deve restare "Pausa". Non c'e' nessuno stato da attendere: aspettarne uno significherebbe aspettare l'evento che non deve accadere |
 | `test_batch16.js` | 150 | [Job2] After pausing, button reads "Riprendi" | misto e nessuna delle due meta' e' convertibile: il TESTO del pulsante non ha una forma condivisa (e' la famiglia «un testo che si riempie»), e lo stato abilitato era gia' vero prima della pausa |
 | `test_batch16.js` | 300 | [Job2] After Riprendi, still on the dialogue screen (not stuck/crashed) | prova che riprendendo NON si esce dalla schermata del dialogo |
+| `test_batch16.js` | 150 | [Job3] "Ripasso" badge becomes visible during the retry pass | e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia |
 | `test_batch16.js` | 50 | [Job5] Flipping the card while audio plays stops it immediately (Regola Azione Critica) | l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile) |
+| `test_batch17.js` | 700 | [Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle) | qui il TEMPO E' LA COSA MISURATA. Si ritocca la stessa bolla mentre parla e si verifica che NON nasca un secondo countdown: e' un non-evento, e la finestra deve coprire l'audio (500 ms) piu' il timer. Aspettare uno stato significherebbe aspettare il duplicato che non deve arrivare |
 | `test_batch17.js` | 100 | [Job1a-bis] Spiegazione stays enabled during a line's own audio | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — Spiegazione NON deve spegnersi mentre l'audio parla (regola 16) |
 | `test_batch17.js` | 100 | [Job1b] "Ho finito" stays enabled during word audio | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — "Ho finito" NON deve spegnersi durante l'audio di una parola (regola 16) |
 | `test_batch17.js` | 50 | [Job1b] "Ho finito" stops the word audio on touch (stop-on-touch, not a lock) | l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile) |
@@ -275,6 +251,7 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 | `test_batch5.js` | 600 | [Job1b] No further utterance queued after switching to a different module | l'asserzione qui sotto e' negativa — nessuna battuta accodata dopo essere passati a un ALTRO modulo. Un evento che non deve accadere non ha una condizione da aspettare: si lascia una finestra e si verifica che sia rimasta vuota |
 | `test_batch6.js` | 80 | [Job6] Attempt 1 evaluated empty: still no notice (streak=1 < warningAt=2) | la guardia serve all'asserzione NEGATIVA di fine ciclo — al primo tentativo l'avviso microfono NON deve comparire (streak=1 < warningAt=2). Non c'e' nessuno stato da attendere: aspettarne uno significherebbe aspettare l'avviso che non deve arrivare |
 | `test_batch6.js` | 80 | [Job6] 6 wrong-but-recognized attempts never trigger the mic notice | l'asserzione dopo il ciclo e' negativa: sei tentativi sbagliati ma RICONOSCIUTI non devono far comparire l'avviso microfono, che segnala un guasto del microfono e non una pronuncia sbagliata. Il tempo E' la misura |
+| `test_batch7.js` | 100 | [Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item | e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia |
 | `test_batch8.js` | 80 | [Job1] "Avanti" re-enables once a recording IS recognized (streak resets) | NON e' una guardia: questa attesa sta dentro un ramo condizionale che serve a superare la Schermata Ripasso, e l'asserzione che il censimento le attribuisce sta molto piu' giu', dopo altro codice. La finestra di sedici righe dello strumento l'ha agganciata al log sbagliato |
 | `test_batch8.js` | 150 | [Job1] Forcing a click on the disabled "Avanti" does NOT advance/complete the module | prova che la Schermata Finale NON compare dopo un click forzato |
 | `test_batch8.js` | 200 | [Job1b] Module row is NOT "completed" after leaving via the mic-notice map button | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo dall'avviso microfono il modulo NON deve risultare completato |
@@ -288,8 +265,9 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 | `test_modulo_pronto.js` | 600 | [C] Personalizza si apre: chi non legge un file episodio non lo aspetta | prova che la schermata d'errore NON compare su un modulo senza dataFile |
 | `test_new_features.js` | 150 | [A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior) | NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si legge l'ELENCO dei moduli in mappa |
 | `test_new_features.js` | 100 | [B] Typing "config" INSIDE a text input does NOT open the panel | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — scrivere "config" DENTRO un campo di testo NON deve aprire il pannello |
-| `test_new_features.js` | 50 | [B] Escape closes the config panel | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello |
+| `test_new_features.js` | 50 | [B] Escape closes the config panel | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono CINQUE (il quinto e' la spunta di ascolto in test_batch10, 2026-09-11), e cinque non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello |
 | `test_voicecoach.js` | 250 | [4a] "Avanti" starts disabled on the first sentence | "Avanti" nasce disabilitato sulla prima battuta: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
+| `test_voicecoach.js` | 100 | [4c] Test actually forced at least one bad-star line | e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia |
 
 ### Attese di navigazione, per file
 
@@ -298,13 +276,13 @@ fallisce, non passa per sbaglio. Contate per sapere quante sono.*
 
 | file | navigazione |
 |---|---|
-| `test_batch10.js` | 16 |
+| `test_batch10.js` | 15 |
 | `test_batch11.js` | 23 |
 | `test_batch12.js` | 14 |
 | `test_batch13.js` | 10 |
-| `test_batch14.js` | 10 |
+| `test_batch14.js` | 9 |
 | `test_batch15.js` | 15 |
-| `test_batch16.js` | 19 |
+| `test_batch16.js` | 17 |
 | `test_batch17.js` | 21 |
 | `test_batch18.js` | 16 |
 | `test_batch19.js` | 10 |

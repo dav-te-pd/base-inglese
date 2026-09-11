@@ -105,7 +105,7 @@ async function run() {
     log('[Job1a] Spiegazione still locks here (countdown profile, unchanged)', watchLocked === true);
     // Re-tap the SAME (active) bubble mid-audio -> must still be a no-op.
     await page.evaluate(() => document.querySelector('.dg-bubble').click());
-    await page.waitForTimeout(700); // let the original audio (500ms) + timer settle
+    await page.waitForTimeout(700); // ATTESA-LEGITTIMA: qui il TEMPO E' LA COSA MISURATA. Si ritocca la stessa bolla mentre parla e si verifica che NON nasca un secondo countdown: e' un non-evento, e la finestra deve coprire l'audio (500 ms) piu' il timer. Aspettare uno stato significherebbe aspettare il duplicato che non deve arrivare
     const timerCount = await page.evaluate(() => document.querySelectorAll('.dg-bubble.dg-bubble-timer').length);
     log('[Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle)', timerCount <= 1);
     log('[Job1a] No JS errors', errors.length === 0);

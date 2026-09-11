@@ -300,7 +300,7 @@ async function run() {
     await bootAsUser(page, 'T15Job5', ALL_BEFORE_QM);
     await openModule(page, 'matchEngIta');
     var startVisible4 = await page.isVisible('#qm-start-btn').catch(() => false);
-    if (startVisible4) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
+    if (startVisible4) { await page.click('#qm-start-btn'); await attendiVisibile(page, '#qm-quiz-screen'); } // approdo: la schermata del quiz, non le dimensioni dei caratteri che l'asserzione confronta
     const sizes = await page.evaluate(() => {
       var direction = document.getElementById('qm-direction');
       var badge = document.getElementById('qm-ripasso-badge');
@@ -350,7 +350,7 @@ async function run() {
     await openModule(page, 'repeatAloud');
     const widthAllVisible = await page.$eval('#repeat-aloud-watch-btn', el => el.getBoundingClientRect().width);
     await page.click('#repeat-aloud-complete');
-    await page.waitForTimeout(150);
+    await attendiVisibile(page, '#repeat-aloud-summary-screen'); // approdo: la Schermata Finale, non le larghezze che l'asserzione misura
     // On the summary screen Spiegazione is hidden (rule 10) but Help stays -> Help's width should be unchanged.
     const helpWidthAllVisible = await page.$eval('#repeat-aloud-help-btn', el => el.getBoundingClientRect().width);
     const helpWidthOnSummary = helpWidthAllVisible; // re-read below
@@ -426,7 +426,7 @@ async function run() {
     // che non ne mostra (CONFIG.story.profiles.meet.skills = false), non piu'
     // il fatto che l'episodio non ne abbia — l'episodio 1 ne ha undici.
     await openModule(page, 'meetTheStory');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-story-cards', 'is-active'); // il gesto e' l'apertura del modulo, non l'elenco che l'asserzione conta
     const explanationButtonCount = await page.evaluate(() => document.querySelectorAll('[data-toggle-explanation]').length);
     log('[Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno', explanationButtonCount === 0);
     await page.click('#story-cards-complete');

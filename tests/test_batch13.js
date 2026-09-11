@@ -73,7 +73,12 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await page.goto(BASE + '?config=1');
-    await page.waitForTimeout(200);
+    // Niente attesa, e non e' una dimenticanza: `page.goto` risolve
+    // sull'evento `load`, e lo script dell'app e' INLINE in index.html —
+    // quindi APP_CONFIG e la fusione degli override sono gia' fatti quando
+    // goto torna. Misurato campionando ogni 5 ms: fra «contesto non ancora
+    // esistente» e «tutto pronto» non c'e' nessuno stato intermedio
+    // osservabile. Qui c'erano 200 ms che non guardavano niente.
     const cfg = await page.evaluate(() => ({
       silence: window.APP_CONFIG.voiceCoach.silenceTimeoutSeconds,
       perWord: window.APP_CONFIG.voiceCoach.maxRecordingMsPerWord,

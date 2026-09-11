@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiTono } = require('./attese');
+const { attendiClasse, attendiTono } = require('./attese');
 const { declareAllSkills } = require('./story-driver');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -147,7 +147,11 @@ async function run() {
     const idx = ALL_MODULES.indexOf('whyWeSayIt');
     await bootAsUser(page, 'T10Warn', ALL_MODULES.slice(0, idx));
     await openModule(page, 'whyWeSayIt');
-    await page.waitForTimeout(400);
+    // Il censimento chiama questo punto «la console», ma la console non e' il
+    // gesto: il gesto e' l'APERTURA DEL MODULO, ed e' asincrona
+    // (openModuleFromMap). Il warning lo emette il render, quindi l'approdo e'
+    // la vista attiva — che nessuna delle due asserzioni di questo blocco legge.
+    await attendiClasse(page, '#view-story-cards', 'is-active');
     const warnings = await page.evaluate(() => window.__consoleWarnings || []);
     const hasWarning = warnings.some(w => w.indexOf('nonExistentSlot') !== -1);
     log('[Job2b] Unresolved placeholder logs a console warning naming it', hasWarning);
@@ -165,7 +169,12 @@ async function run() {
     const idx = ALL_MODULES.indexOf('whyWeSayIt');
     await bootAsUser(page, 'T10NoWarn', ALL_MODULES.slice(0, idx));
     await openModule(page, 'whyWeSayIt');
-    await page.waitForTimeout(400);
+    // ⚠️ Qui l'asserzione e' NEGATIVA (zero warning) e l'approdo serve piu' che
+    // mai: senza, un modulo non ancora aperto non emette warning e la riga
+    // sarebbe vera PER IL MOTIVO SBAGLIATO. Aspettare la vista attiva
+    // garantisce che il render sia avvenuto e che quindi il warning, se ci
+    // fosse, sia gia' stato emesso.
+    await attendiClasse(page, '#view-story-cards', 'is-active');
     const warnings = await page.evaluate(() => window.__consoleWarnings || []);
     log('[Job2b] Story Cards (real dialogue, untouched) logs ZERO placeholder warnings — rename is consistent everywhere', warnings.length === 0);
     console.log('    -> warnings: ' + JSON.stringify(warnings));
@@ -182,9 +191,13 @@ async function run() {
     const idx = ALL_MODULES.indexOf('dialogoAscoltaRipeti');
     await bootAsUser(page, 'T10Check', ALL_MODULES.slice(0, idx));
     await openModule(page, 'dialogoAscoltaRipeti');
-    await page.waitForTimeout(300);
+    await attendiClasse(page, '#view-dialogo', 'is-active'); // il gesto e' l'apertura del modulo, asincrona; `isVisible` qui sotto non aspetta niente da solo
     const startBtnVisible = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); }
+    if (startBtnVisible) { await page.click('#dg-start-btn'); }
+    // Niente attesa dopo lo start: il gestore disegna le bolle e le spunte in
+    // modo sincrono — misurato, subito dopo il click ci sono gia' tutte e nove
+    // le bolle. E le spunte sono cio' che le due asserzioni qui sotto leggono,
+    // quindi non potrebbero comunque fare da approdo a se stesse (regola 44).
 
     const checksVisibleBefore = await page.$$eval('.dg-heard-check', els => els.every(el => {
       const cs = getComputedStyle(el);
@@ -196,7 +209,22 @@ async function run() {
 
     // Click just the first bubble
     await page.locator('.dg-bubble').first().click();
-    await page.waitForTimeout(500);
+    // ⚠️ RESTA A TEMPO, e il motivo e' misurato, non supposto. La spunta
+    // `is-heard` arriva alla FINE dell'audio (~380 ms col sintetizzatore finto,
+    // campionato ogni 5 ms) — ed e' esattamente cio' che l'asserzione legge,
+    // quindi aspettarla la renderebbe vera per costruzione (CLAUDE.md regola
+    // 44). L'unico altro effetto di quell'istante e' che la bolla PERDE
+    // `is-active`: misurato, i due cambiano nello stesso render. Ma quello
+    // sarebbe un'attesa su una classe che SPARISCE, e `attendiClasseAssente`
+    // non esiste per decisione dichiarata (soglia: dieci siti).
+    // **Quinto sito che la vorrebbe. Alla soglia manca la meta'.**
+    //
+    // ⚠️ E il marcatore qui sotto NON e' burocrazia sopra queste dieci righe:
+    // senza, il censimento conta questo punto come debito a ogni giro. E' la
+    // stessa cosa trovata in test_batch5 poche ore fa — «una spiegazione che lo
+    // strumento non sa leggere e' una spiegazione che va riscritta ogni volta»
+    // — ed e' ricapitata subito, a chi l'aveva appena scritta.
+    await page.waitForTimeout(500); // ATTESA-LEGITTIMA: la spunta `is-heard` arriva alla fine dell'audio ed e' esattamente cio' che l'asserzione legge (regola 44); l'unico altro effetto di quell'istante e' una classe che SPARISCE, e attendiClasseAssente non esiste per decisione dichiarata
     const firstIsHeard = await page.$eval('.dg-heard-check', el => el.classList.contains('is-heard'));
     const firstHasCheckIcon = await page.$eval('.dg-heard-check', el => el.innerHTML.indexOf('svg') !== -1);
     const restAreEmpty = await page.$$eval('.dg-heard-check', els => els.slice(1).every(el => !el.classList.contains('is-heard') && getComputedStyle(el).display !== 'none'));

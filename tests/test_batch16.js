@@ -132,7 +132,12 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await page.goto(BASE);
-    await page.waitForTimeout(200);
+    // Niente attesa, e non e' una dimenticanza: `page.goto` risolve
+    // sull'evento `load`, e lo script dell'app e' INLINE in index.html —
+    // quindi APP_CONFIG e la fusione degli override sono gia' fatti quando
+    // goto torna. Misurato campionando ogni 5 ms: fra «contesto non ancora
+    // esistente» e «tutto pronto» non c'e' nessuno stato intermedio
+    // osservabile. Qui c'erano 200 ms che non guardavano niente.
     const check = await page.evaluate(() => {
       var cfg = window.APP_CONFIG;
       var papaOpt = cfg.people.papa.find(function (o) { return o.value === 'francesco'; });
@@ -249,7 +254,7 @@ async function run() {
       // see renderChoiceBox: secondaryBtnId comes before primaryBtnId.
       const nonBtn = await page.$('#fc-not-yet-btn');
       if (nonBtn) { await nonBtn.click({ timeout: 1000 }).catch(() => {}); }
-      await page.waitForTimeout(150);
+      await page.waitForTimeout(150); // ATTESA-LEGITTIMA: e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia
     }
     log('[Job3] "Ripasso" badge becomes visible during the retry pass', reachedRetry);
     log('[Job3] No JS errors', errors.length === 0);
@@ -354,7 +359,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T16Job7', stepsBefore('flashcardAEngIta'));
     await openModule(page, 'flashcardAEngIta');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-flashcard', 'is-active'); // il gesto e' l'apertura del modulo, non la geometria che l'asserzione misura
     const rects = await page.evaluate(() => {
       var row = document.querySelector('#view-flashcard .header-actions-row');
       var mappa = document.getElementById('flashcard-back-map').getBoundingClientRect();
@@ -382,16 +387,27 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T16Job8', ALL_BEFORE_VC);
     await openModule(page, 'voiceCoach');
-    await page.waitForTimeout(200);
+    // ⚠️ IL CASO PIU' DIVERSO DI QUESTO GIRO, e per questo si converte per
+    // primo: e' l'unico blocco che apre DUE moduli e confronta le due letture.
+    // Qui un approdo generico — «una vista diversa dalla mappa e' attiva» —
+    // sarebbe gia' vero per il PRIMO modulo quando si apre il secondo, e la
+    // lettura di #fc-counter avverrebbe mentre si e' ancora su Voice Coach.
+    //
+    // E non fallirebbe: gli elementi delle viste non attive restano nel DOM,
+    // quindi getComputedStyle risponde lo stesso e il confronto tornerebbe
+    // VERO — provando che un contatore e' uguale a se' stesso. **Un approdo
+    // sbagliato qui non produce un rosso: produce un verde che prova la cosa
+    // sbagliata.** Per questo le due viste si nominano una per una.
+    await attendiClasse(page, '#view-voice-coach', 'is-active');
     const vcStyle = await page.evaluate(() => {
       var el = document.getElementById('vc-counter');
       var cs = getComputedStyle(el);
       return { family: cs.fontFamily, weight: cs.fontWeight, size: cs.fontSize, cls: el.className };
     });
     await page.click('#voice-coach-back-map');
-    await page.waitForTimeout(150);
+    await attendiClasse(page, '#view-map', 'is-active');
     await openModule(page, 'flashcardAEngIta');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-flashcard', 'is-active');
     const fcStyle = await page.evaluate(() => {
       var el = document.getElementById('fc-counter');
       var cs = getComputedStyle(el);

@@ -220,7 +220,10 @@ async function run() {
     if (input) {
       await input.fill('7');
       await input.evaluate(el => el.dispatchEvent(new Event('change', { bubbles: true })));
-      await page.waitForTimeout(50);
+      // Niente attesa: il gestore del campo scrive APP_CONFIG in modo sincrono
+      // dentro l'evento, quindi il valore e' gia' 7 quando l'evaluate torna. E
+      // APP_CONFIG e' cio' che l'asserzione legge, quindi non puo' fare da
+      // approdo a se stesso (CLAUDE.md regola 44).
       const liveValue = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
       log('[B] Editing a scalar field updates window.APP_CONFIG live (7)', liveValue === 7);
       const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
@@ -252,13 +255,15 @@ async function run() {
 
     // Escape closes the panel.
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono CINQUE (il quinto e' la spunta di ascolto in test_batch10, 2026-09-11), e cinque non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello
     const closedByEscape = await page.evaluate(() => !document.getElementById('config-panel-overlay').classList.contains('is-open'));
     log('[B] Escape closes the config panel', closedByEscape);
 
     // Persistence across reload (without reset).
     await page.reload();
-    await page.waitForTimeout(150);
+    // Come `goto`: `reload` risolve sull'evento `load` e lo script e' inline,
+    // quindi la fusione degli override e' gia' avvenuta. 150 ms che non
+    // guardavano niente.
     const persisted = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     log('[B] Change persists across reload via boot-time override merge (7)', persisted === 7);
 

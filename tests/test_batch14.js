@@ -133,7 +133,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await page.goto(BASE);
     await page.click('body');
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — nessun errore JS dopo il tocco di riscaldamento. Un errore che non arriva non ha una condizione da aspettare: si lascia una finestra e si guarda se e' rimasta vuota
     log('[Job2] No JS errors after the warm-up tap', errors.length === 0);
     await page.close();
   }
@@ -377,10 +377,10 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T14MappaWidth', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud'); // Mappa + Spiegazione + Help all visible
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '#view-repeat-aloud', 'is-active'); // il gesto e' l'apertura del modulo, non la geometria che l'asserzione misura
     const widthAllVisible = await page.$eval('#repeat-aloud-back-map', el => el.getBoundingClientRect().width);
     await page.click('#repeat-aloud-complete'); // -> summary screen, Spiegazione hides, only Mappa+Help left... but back-map row is per-screen; header stays same row regardless
-    await page.waitForTimeout(150);
+    await attendiVisibile(page, '#repeat-aloud-summary-screen'); // approdo: la Schermata Finale, non la larghezza che l'asserzione misura
     const widthOnSummary = await page.$eval('#repeat-aloud-back-map', el => el.getBoundingClientRect().width);
     log('[Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden', Math.abs(widthAllVisible - widthOnSummary) < 1);
     log('[Job9a] No JS errors', errors.length === 0);

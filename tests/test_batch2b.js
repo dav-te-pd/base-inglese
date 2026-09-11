@@ -130,7 +130,10 @@ async function run() {
     const firstLabel = await page.$eval('.config-module-order-row:nth-child(1) .config-module-order-label', el => el.textContent);
     log('[1] First row label is Personalizza\'s own label', firstLabel === 'Your Story');
     await page.click('.config-module-order-row:nth-child(1) [data-order-move="down"]');
-    await page.waitForTimeout(50);
+    // Niente attesa: il gestore del riordino riscrive APP_CONFIG e ridisegna le
+    // righe in modo SINCRONO, quindi il valore e' gia' quello nuovo quando il
+    // click torna. E l'approdo non potrebbe comunque essere APP_CONFIG, che e'
+    // esattamente cio' che l'asserzione legge (CLAUDE.md regola 44).
     const newOrder = await page.evaluate(() => window.APP_CONFIG.sequences['narrativo-standard'].slice());
     log('[1] Clicking "down" swaps the first two entries live in APP_CONFIG', newOrder[0].module === globalOrder[1].module && newOrder[1].module === globalOrder[0].module);
     const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
