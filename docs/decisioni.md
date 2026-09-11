@@ -62,39 +62,57 @@ vale la pena di essere mantenuta.
 
 ## Dove siamo adesso
 
-**Passo C fatto** (i file bastano a riprendere la catena) **e le quattro correzioni a
-`CLAUDE.md` fatte** — la riga nel cappello che manda qui, la mappa «Dove sta cosa», le
-regole 4 e 33 che nominano la cartella invece di elencare i file, versione `20260908c`.
+*Riscritta l'11 settembre 2026. La versione precedente dichiarava finite le fasi
+1-bis e 2 e poi diceva «il prossimo passo è la fase 1-bis»: si contraddiceva da
+sola, e non nominava niente di quello che è successo il 9 e il 10 settembre.
+**È la prima sezione che una sessione nuova apre, quindi era anche la prima cosa
+falsa che leggeva.***
 
-**IL PASSO ZERO È FINITO.** 0a, 0a-bis, 0b, 0c e 0d sono tutti chiusi: lo strumento
-misura, i quattro cicli non deterministici di `test_batch19` sono riscritti, gli errori
-ingoiati sono censiti, la suite è verde su 42 file con **933 asserzioni registrate**, e
-tutto è in `main`.
+### Il prossimo passo è il **14b** — una forma per famiglia
 
-**LA FASE 1 È FINITA.** I passi 1, 2, 3, 4, 4-bis, 5 e 6 sono tutti fatti e
-verificati — suite verde su 42 file, 933 asserzioni, il conteggio mai calato in
-nessuno dei sette giri — e tutti in `main`. I nomi che il codice usa oggi sono
-quelli decisi: `shuffle`, `flashcard`, `match*`, `speedMatch*`, `storyCards*`,
-`gate` / `aircraft-door` sotto `data/inglese/it/` e `docs/inglese/it/`.
+Pianificato sui numeri del 14a, **rimisurati l'11 settembre: 186 guardie, non
+180.** Il conto si rigenera con `node tests/tools/conta-attese.js`, non si
+ricorda.
 
-**LA FASE 1-BIS È FINITA** (2026-09-09): i passi 7, 8 e 9 sono fatti e verificati. La
-sequenza degli episodi ha la sua fonte nel repository, `EPISODES` nasce da lì invece di
-essere scritto a mano, e le etichette dei personaggi sono contenuto dei file episodio.
+### Cosa è chiuso
 
-**La fase 2 era stata fatta prima:** ventidue passi su profilo nuovo, su Pages, il 2026-09-09.
-Ne sono usciti cinque difetti, che stanno nella sezione «I cinque difetti del collaudo
-dell'episodio 2» qui sotto con le loro decisioni già prese.
+| | |
+|---|---|
+| **Passo zero** | 0a, 0a-bis, 0b, 0c, 0d — lo strumento misura, i quattro cicli non deterministici sono riscritti, gli errori ingoiati censiti |
+| **Fase 1 — le rinomine** | 1, 2, 3, 4, 4-bis, 5, 6. I nomi di oggi sono quelli decisi: `shuffle`, `flashcard`, `match*`, `speedMatch*`, `storyCards*`, `gate` / `aircraft-door` sotto `data/inglese/it/` e `docs/inglese/it/` |
+| **Fase 1-bis** | 7, 8, 9 (2026-09-09). La sequenza ha la sua fonte nel repository, `EPISODES` nasce da lì, le etichette dei personaggi sono contenuto dei file episodio |
+| **Fase 2 — il collaudo** | 10, 11, 12 (2026-09-09): ventidue passi su profilo nuovo, su Pages. Ne sono usciti i sei difetti C.1→C.6 |
+| **I difetti del collaudo** | C.1, C.2, C.3, C.4, C.5 fatti e verificati. **C.6 non è di questa catena**: è la N.1 della cronologia nuova |
+| **Fase 2-bis — la mastery** | ① ② ③ fatti e verificati il 2026-09-10. ④ chiude come voce con una nota, ⑤ è prodotto e slitta |
+| **Fase 3** | **14a** fatto e verificato il 2026-09-10 |
 
-**LA FASE 2 È FINITA.** C.3, C.5, C.4 e C.2 sono tutti fatti e verificati. C.6 non era di
-questa catena — è la N.1 della cronologia nuova.
+### Cosa resta
 
-**Il prossimo passo è la fase 1-bis**, la sequenza degli episodi. Non si comincia senza il
-via di chi guida il progetto.
+**14b**, poi 15, 16, 17, 18 della fase 3; la **fase delle stringhe**; la **fase 4**
+(19 → 26). Il **13** — le cinque righe della mastery — resta aperto come blocco a
+sé.
 
-Dal collaudo è uscito anche **C.6** — due opzioni identiche in Match Practice, che scrive
-un dato falso — ed è il più grave dei sei. **Non si corregge in questa catena**: la sua
-soluzione è un cambio di struttura del contenuto, quindi è diventato la **N.1** della
-«cronologia nuova» più sotto, che comincia solo a catena chiusa.
+### ⚠️ Il 10 settembre è stato quasi tutto FUORI catena, e va saputo
+
+Quindici commit, **uno solo** dei quali è un passo della catena (il 14a). Tutto il
+resto sono difetti trovati strada facendo e strumenti:
+
+- **la ③ e la ② della fase 2-bis** — il travaso dei colori al gesto, e Voice Check
+  che scrive (quelle sì, in catena);
+- **le cinque corse contro il fetch del sottotitolo** e **il popup dei tentativi
+  come pezzo solo** — due famiglie chiuse, non pianificate;
+- **la finestra di apertura dei moduli**, misurata e chiusa: 17 ms → 1 ms;
+- **`attendi.sh` che si arrende da sola**, e le regole 19, 32, 38, 40 e 42 di
+  `CLAUDE.md`.
+
+*Non è un rimprovero al metodo: quei difetti erano veri e trovarli è servito. Ma
+è il motivo per cui questo file era rimasto indietro — è costruito per una catena
+pianificata, e quella giornata non lo è stata.*
+
+⚠️ **Resta una domanda aperta, posta l'11 settembre e non ancora decisa:** dove si
+registrano i lavori **fuori catena** *mentre succedono*, invece che il giorno dopo
+con un giro di allineamento. Finché non è decisa, questo file si allinea a mano —
+e questa riga sta qui per dire che è un buco noto, non una dimenticanza.
 
 *Lo stato di un passo diventa ☑ solo quando la suite è verde e il conteggio è
 invariato: finché la verifica non è passata resta ◐. Al passo 1 era stato messo a ☑
@@ -199,9 +217,9 @@ cronologia nuova.**
 
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
-| **10** | Profilo nuovo, episodio 2 dall'inizio alla fine. Su nomi definitivi e progressi già azzerati dalla fase 1: **si collauda una volta sola**. | ☐ | **sì** |
-| **11** | Le nove voci accumulate da collaudare. | ☐ | **sì** |
-| **12** | Si corregge **quello che è piccolo e locale**; il resto va in questo file e prende una fase sua, decisa a collaudo finito. ⚠️ **I rilievi si scrivono qui MAN MANO, non alla fine**: un collaudo interrotto con i rilievi in testa non lascia traccia di essere avvenuto. | ☐ | **sì**, se i rilievi sono scritti |
+| **10** | Profilo nuovo, episodio 2 dall'inizio alla fine. Su nomi definitivi e progressi già azzerati dalla fase 1: **si collauda una volta sola**.<br><br>**FATTO il 2026-09-09**: ventidue passi su profilo nuovo, su Pages. | ☑ | **sì** |
+| **11** | Le nove voci accumulate da collaudare.<br><br>**FATTO il 2026-09-09**, nello stesso giro del passo 10. | ☑ | **sì** |
+| **12** | Si corregge **quello che è piccolo e locale**; il resto va in questo file e prende una fase sua, decisa a collaudo finito.<br><br>**FATTO il 2026-09-09**: i rilievi sono diventati i sei difetti C.1→C.6, scritti qui con le loro decisioni. C.6 è uscito dalla catena ed è la N.1. ⚠️ **I rilievi si scrivono qui MAN MANO, non alla fine**: un collaudo interrotto con i rilievi in testa non lascia traccia di essere avvenuto. | ☑ | **sì**, se i rilievi sono scritti |
 
 ### I cinque difetti del collaudo dell'episodio 2 (2026-09-09)
 
@@ -418,6 +436,12 @@ per nove di esse una forma verde nella suite **esiste già.***
 | un elenco di elementi che si ridisegna | 3 | `waitForFunction` sul conteggio — il modello di `test_match_practice_nonloso.js` |
 | la console (asserzione negativa) | 3 | **nessuna, e non serve**: le asserzioni negative sono già esentate per deroga dichiarata — verificare che *non* sia successo niente richiede di aspettare un tempo |
 
+⚠️ **Rimisurato l'11 settembre: le guardie sono 186, e le famiglie si sono
+mosse** — *una schermata che compare o sparisce* 28 → **30**, *altro* 18 → **21**,
+*un testo che si riempie* 16 → **17**. La tabella qui sopra resta com'era perché è
+la misura **del 14a**, datata; i numeri con cui si pianifica il 14b sono quelli
+rigenerati. Il perché sta poco sotto, in «E il dato che cambia il 14b».
+
 **Cosa vuol dire per il 14b.** Non sono 180 lavori: sono **nove forme**, di cui
 sei già scritte e verdi, più due gruppi piccoli da guardare a mano (*altro* e la
 geometria, 21 punti in tutto). La forma si scrive una volta in `tests/attese.js`
@@ -502,6 +526,7 @@ non è un anticipo: è un lavoro da rifare.
 | **N.9** | **I tasti si rinominano guardandoli TUTTI INSIEME, non uno per volta.** Prima di toccare un nome serve verificare se il funzionamento è coerente ovunque o se qualche modulo fa una cosa sua: la domanda «questo tasto fa dappertutto la stessa cosa?» ha una risposta sola, e un modulo per volta la fa rispondere N volte in N modi. *Stessa forma della lettura finale di `componenti-singoli.md` (passo 24): il controllo è **leggere l'elenco intero**, non cercare.* **Dopo l'episodio 5.** | collaudo del 2026-09-10 |
 | **N.10** | **La guardia sulla soglia di silenzio di `attendi.sh`** — un controllo che, a fine suite, verifichi che il file più lento sia ancora ben sotto i 600 s. È l'idea giusta della famiglia *«uno strumento invece di un'avvertenza»*, **e si è deciso di non costruirla adesso perché non sappiamo ancora se serve**: il commento accanto alla costante dice già da dove viene il 600, e se un giorno un file lo supera l'attesa lo dirà da sola *una volta*, in modo riconoscibile (la frase «nessuno sta più scrivendo» su un lavoro che invece è vivo). Una guardia che sorveglia una cosa mai successa è un pezzo in più da mantenere per un rischio ipotetico. | **Il giorno che un file della suite supera i 400 s**, cioè quando il margine misurato si dimezza. |
 | **N.11** | **Il battito durante un'attesa lunga.** `attendi.sh` adesso si arrende da sola, ma finché aspetta non dice niente — ed è la domanda che chi guida il progetto si è fatto tre volte in un giorno: *«devo aspettare o si è incantato?»*. Stampare una riga ogni due minuti **non basta**: su un processo in primo piano quell'output arriva solo alla fine. Per servire davvero dovrebbe **scrivere lo stato in un file** che io leggo per aggiornare la lista attività. *È la stessa famiglia della regola 40 — la lista attività che fa vedere a lui quello che vedo io — e va fatta lì, non dentro l'attesa.* | **Insieme al prossimo lavoro sulla lista attività**, non dentro `attendi.sh`. |
+| **N.12** | ⚠️ **`attendi.sh` non sa aspettare una risposta di rete.** Sa guardare un file di log, e basta: per sapere se una corsa della CI è finita **non ha una forma**, quindi l'11 settembre ho improvvisato un `until` a mano — senza tetto e senza rilevatore di silenzio, che ha girato a vuoto finché non me l'hanno fatto notare. *Non è stata distrazione: era l'unica strada, e la strada giusta non esiste ancora.*<br><br>**Finché non esiste, la regola 37 su questo caso è un'avvertenza e non uno strumento — e le avvertenze sono quelle che cedono.** È la stessa forma delle regole 19 e 41: una frase che descrive un comportamento si viola avendola letta; un comando o un numero no. *E vale il precedente: la regola l'avevo sistemata quella mattina, e l'ho riscritta a mano quel pomeriggio.*<br><br>La forma da decidere: una seconda modalità di `attendi.sh` che interroghi un indirizzo invece di leggere un file, con gli stessi due rilevatori (tetto e silenzio) — oppure uno strumento suo accanto. **Da valutare, non da eseguire.** | nata il 2026-09-11, dal difetto del 10 |
 
 
 ## La famiglia: la conoscenza che ogni file deve ricordarsi da solo
@@ -528,19 +553,46 @@ scritto male: gli mancava una conoscenza che nessuno gli aveva dato, e che gli
 altri dieci si tenevano ognuno per sé. *Il difetto non è nel file che non sa: è
 che sapere fosse un compito di memoria.*
 
-**E il dato che cambia il 14b.** Chiudendo il popup sono sparite **dieci attese
-a tempo**, senza averle cercate: la forma condivisa aspetta lo stato vero, e le
-copie che aspettavano 80/100/120/150 ms sono venute via da sole. Quindi:
+**E il dato che cambia il 14b — con la correzione dell'11 settembre, perché
+quello che era scritto qui era falso.**
 
-> ⚠️ **Le 180 guardie del 14a scendono mentre si chiudono le famiglie, e il
-> conto va rifatto DOPO ogni chiusura, non prima.** Pianificare il 14b sul
-> numero di stamattina significherebbe pianificarlo su un numero che il lavoro
-> stesso sta cambiando. Si rigenera con `node tests/tools/conta-attese.js`.
+*Il 10 settembre questa riga diceva: «chiudendo il popup sono sparite dieci attese
+a tempo senza averle cercate, quindi **le 180 guardie scendono mentre si chiudono
+le famiglie**». Sembrava ovvio e non è stato verificato. Rigenerando il conto
+l'11 settembre il numero **non è sceso: è salito a 186**.*
 
-*Ed è la stessa lezione del censimento morto, vista dall'altra parte: lì il
-numero era vecchio perché nessuno lo ricalcolava; qui sarebbe vecchio perché il
-lavoro lo consuma. In tutti e due i casi la difesa è la stessa — **il numero si
-genera, non si ricorda.***
+**Cosa dice la misura, per file:**
+
+| | 10 settembre | 11 settembre | Δ |
+|---|---|---|---|
+| **guardie** | 180 | **186** | **+6** |
+| navigazione | 300 | 293 | −7 |
+
+**Nessuna guardia è sparita.** Le dieci attese tolte dal popup e le cinque del
+sottotitolo stavano nella **navigazione**, che infatti è scesa di nove
+(`test_batch6, 7, 8, 10, 11, 12, 15, 16`). Le **+6** guardie vengono tutte da due
+file **nati quel giorno**: `test_conta_attese.js` (+3) e `test_modulo_pronto.js`
+(+3).
+
+> ⚠️ **Le due colonne non si travasano l'una nell'altra.** Una *guardia* è
+> un'attesa da cui dipende un'asserzione; una di *navigazione* è un'attesa che, se
+> è corta, fa rompere il test invece di farlo passare per sbaglio. Chiudere una
+> famiglia fa scendere le guardie **solo dove una guardia diventa un'attesa vera** —
+> non perché il lavoro «consuma» il numero.
+
+> ⚠️ **E c'è la parte controintuitiva, che è il motivo per cui va scritta:
+> CHIUDERE DIFETTI PRODUCE GUARDIE NUOVE.** Ogni difetto chiuso nasce con il suo
+> test, e un test nuovo porta le sue attese. Il conto del 14b non è un serbatoio
+> che si svuota: è un saldo fra quello che le forme condivise chiudono e quello
+> che i test nuovi aggiungono. **Il 14b va pianificato su 186**, e il numero si
+> rigenera con `node tests/tools/conta-attese.js` prima di usarlo — mai ripreso
+> da una riga scritta il giorno prima.
+
+*Resta vera la lezione del censimento morto, vista dall'altra parte: lì il numero
+era vecchio perché nessuno lo ricalcolava; qui sarebbe stato vecchio perché il
+lavoro lo cambia in **tutte e due** le direzioni. In entrambi i casi la difesa è
+la stessa — **il numero si genera, non si ricorda.** E la ragione per cui questa
+riga era falsa è che l'avevo ricordato invece di generarlo.*
 
 ## Le tre cose della sera del 2026-09-10, e in che ordine
 
@@ -577,7 +629,6 @@ in due posti, che è la causa — e il **14b**, il cui conto va **rigenerato** c
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
-| 2026-09-08 | **Un lavoro a più passi sta sempre nella lista attività**, un elemento per passo, con il progresso vero quando c'è — durante una corsa lunga il testo si aggiorna con il conteggio letto dal log, circa ogni due minuti. Il pallino che gira è un'animazione, non una misura: da solo non dice niente. | **È la prima cosa del progetto che chi guida può verificare senza chiedermela.** Fino a oggi l'unica era la CI, che prova `main` e non quello che sto facendo adesso. E serve proprio perché il mio strumento può mentire: il 2026-09-07 dicevo «la suite sta girando» su un'attesa rotta, mentre un task appeso da due ore era visibile a lui e non a me (regola 37). | **Va in `CLAUDE.md` come regola permanente, insieme alla prossima modifica che tocca quel file** — cioè il passo 6 della catena. Non serve un giro apposta; questa riga esiste perché nel frattempo non si perda. |
 
 | 2026-09-09 | **Una rinomina si verifica su TUTTE le forme del nome, e ogni forma ha il suo COMANDO.** ➜ **SPOSTATA IN `CLAUDE.md` COME REGOLA 41** il 2026-09-09, con i sei comandi in tabella. *Da quando porta i comandi non è più una nota su come abbiamo lavorato: è una procedura che una sessione nuova deve eseguire, e `CLAUDE.md` è il posto dove si guarda prima di cominciare.* | Tre cadute della stessa famiglia, e la terza è quella che ha cambiato la forma della regola: una forma **elencata e non cercata**. La storia per esteso è nella regola 41. | **Fatto.** Qui resta il rimando, perché la catena la cita in più punti. |
 
@@ -587,9 +638,15 @@ in due posti, che è la causa — e il **14b**, il cui conto va **rigenerato** c
 |---|---|---|---|
 | 2026-09-06 · nomi decisi il 2026-09-08 | **La rinomina unica: cinque nomi in un lavoro solo.** `se* → storyCards*`, `srShuffle → shuffle`, `quickMatch* → match*`, `speedRound* → speedMatch*`, `flashcardLevelA → flashcard`, più gli id degli episodi `gate → gate` e `aircraft-door → aircraft-door`. **I nomi e le loro ragioni stanno in `docs/inglese/it/struttura-corso.md`, sezione «I nomi in codice»** — qui c'è la decisione di eseguirla, non i nomi. Segue il `kind`/id del modulo e lo strato in kebab (`speak-easy-*`, `quick-match-*`); **NON seguono le sigle di due lettere** (`qm-`, `sr-`, `fc*`), e questa è una decisione scritta, non una dimenticanza. | I nomi vecchi sono prefissi ereditati dal primo modulo che li ha introdotti, o nomi che mentono: `flashcardLevelA` si porta dentro il grado A mentre lo stesso descrittore gira sul grado B, e `se*` viene da «Speak Easy», un modulo che non esiste più — scritto per esteso in **54 punti** come `speak-easy-*`. **E la premessa da correggere: non è solo l'id dell'episodio a toccare i progressi salvati.** `se*` nomina due namespace del `localStorage` (`seDeclarations:`, `seExplanationStats:`), e i `kind`/id dei moduli sono le chiavi di `modules:`, `moduleOutcome:`, `audioSecondsSent:`, `nextLineSkips:` e `introDismissed:`. Quattro rinomine su cinque lasciano dati orfani, non una. | **Prima di un collaudo su profilo nuovo**, finché siamo gli unici utenti e non c'è niente da migrare. **Una rinomina per volta, suite completa fra una e l'altra**, dal più piccolo al più grande: `shuffle` → `flashcard` → `match*` → `speedMatch*` → `storyCards*` → gli id degli episodi. Così il primo rosso ha sempre il sospettato più piccolo possibile. Non va più insieme a Supabase. |
 
-## Difetti silenziosi trovati e non ancora corretti
+## Misure fatte, e il difetto che hanno chiuso
 
-### ⚠️ IL MODULO SI APRE PRIMA DI AVERE QUELLO CHE GLI SERVE — misurato il 2026-09-10
+*Sta fuori da «Difetti silenziosi trovati e **non ancora** corretti» perché
+questo è corretto, e un titolo che promette una cosa e ne contiene un'altra è
+la stessa famiglia del commento falso. Resta qui e non solo in `correzioni.md`
+perché la parte che vale non è la correzione — sono i **numeri**, e le due
+ipotesi misurate e scartate.*
+
+### ⚠️ IL MODULO SI APRIVA PRIMA DI AVERE QUELLO CHE GLI SERVE — misurato e CORRETTO il 2026-09-10
 
 **Riprodotto, non ipotizzato.** Ritardando di due secondi il fetch di
 `messaggi-feedback.json` e premendo il microfono, esce lo stesso errore del log
@@ -688,6 +745,8 @@ su quei testi diventano più importanti, non meno**: chi le rimettesse a tempo l
 vedrebbe cadere prima.
 
 Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
+
+## Difetti silenziosi trovati e non ancora corretti
 
 ### ⚠️ Tre variabili di Voice Coach sopravvivono da un modulo all'altro
 
@@ -793,7 +852,6 @@ non la suite.***
 
 | Data | Cosa | Perché | Quando si esegue |
 |---|---|---|---|
-| 2026-09-07 | **`test_batch19.js` non ha un punto da correggere: ne ha diciannove.** Delle 28 attese fisse del file, **19 fanno da guardia a un'asserzione** — dopo l'attesa, e prima di qualunque altra azione, si legge uno stato e ci si asserisce sopra. **Due usano lo stesso identico schema**: `waitForTimeout(800)` con accanto il commento «feedbackPauseMs (600) then auto-advance», righe 104 (`[QM Task1]`) e 179 (`[SR Task1]`) — cioè 600 più un margine, sommati a mente. Restano vere anche le due cose registrate qui il 2026-09-07: il `.catch(() => {})` sul click di `#sr-ready-btn` che sopprime il fallimento dove nasce, e la `waitForTimeout(300)` ridondante subito dopo. | **La correzione di ieri era GIUSTA MA PARZIALE, e chi legge questa riga fra un mese deve sapere che il file è stato capito a metà.** Sistemava il punto che aveva fallito e lasciava in piedi diciotto punti della stessa identica forma, uno dei quali *identico carattere per carattere*. Il rosso in CI cadeva su una riga diversa a ogni corsa — 139 in una, 244 in un'altra — ed è il segno che si stava guardando un esemplare invece della specie. Una sonda locale su 8 giri non ha riprodotto il rosso: i due sospetti rimasti (la risposta giusta capitata sull'**ultima** domanda del passaggio, dove la «domanda successiva» non esiste; e un runner più lento del margine) **non sono dimostrati**. Quello che è dimostrato è la causa condivisa: **il test non controlla lo stato che misura.**<br><br>**2026-09-08 — RIPRODOTTO IN LOCALE, e non è raro: 2 giri rossi su 3**, sullo stesso codice, tutti su `[SR Task1]` (Speed Match). Il gemello `[QM Task1]` non cade più perché la sua asserzione è stata rifatta in `tests/test_match_practice_nonloso.js`, dove la situazione si **costruisce** invece di sperarci: lì non si risponde mai giusto sull'ultima domanda del passaggio. `[SR Task1]` ha il difetto identico e intatto: il ciclo tocca **sempre la prima opzione** fra quattro (una corretta e tre distrattori, `buildMultipleChoiceOptions`) e, se in tutto il giro non gliene capita una giusta, esce con `gotCorrect` falso — e l'asserzione dopo la `waitForTimeout(800)` legge uno stato che non è mai arrivato.<br><br>**E c'è la prova che serve al contatore delle asserzioni:** quando cade, il file ne esegue **39 invece di 40**. La quarantesima vive dentro il ramo `gotCorrect` e semplicemente non gira. Il verde/rosso lo dice perché due asserzioni falliscono; ma un ciclo che si esaurisce **senza** far fallire niente sparirebbe in silenzio, ed è esattamente il caso che il passo 0a esiste per vedere. | **Alla prossima apertura di quel file, e si riscrive tutto il gruppo, non il punto che ha fallito.** Il modello è già scritto e verde: `tests/test_match_practice_nonloso.js` porta la stessa asserzione di `[QM Task1]` aspettando *quello che il lavoro produce* (la domanda successiva a schermo) invece di 800 ms, e leggendo lo stato dentro la stessa chiamata che aspetta. |
 | 2026-09-07 | Quattro valori **ricopiati invece che letti dalla fonte**: `test_batch12.js:199` (i cinque colori d'accento come esadecimali), `test_new_features.js:148-149` e `test_batch3b.js:248` (le frequenze `1568`/`1976`, che stanno in `CONFIG` righe 160-161), `test_new_features.js:276` (il default `10` di `timeLimitSeconds`, `CONFIG` riga 248). In tutti la pagina è già caricata: leggerli dalla fonte costa **meno** righe che ricopiarli. | Un valore scritto in un secondo posto invecchia, e in un test rompe la CI senza che niente sia rotto. **I colori sono il caso peggiore**: non è solo un valore ricopiato, è la **regola 2 disattesa** — «nessun colore fisso, sempre le variabili del tema» — in un posto dove nessuno guardava. E in un componente un colore sbagliato si vede a schermo; in un test si vede solo come una CI rossa senza motivo. | **Dopo il collaudo, insieme a `test_batch19`**: sono la stessa famiglia. |
 
 > ⚠️ **Prima di prendere questo lavoro, la distinzione che lo rende sicuro:**
