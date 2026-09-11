@@ -4,6 +4,7 @@ node_modules/
 # Prodotti da un giro di test (tests/run_full_regression.sh)
 tests/*.result.txt
 tests/server.log
+tests/suite.log
 
 # Prodotti dagli script di tests/tools/ (screenshot)
 tests/output/
