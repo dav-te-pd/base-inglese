@@ -29,6 +29,52 @@ schermo. Prima si riscriveva lo stesso script usa-e-getta ogni volta.
 
 ---
 
+## `attendi-ci.sh`
+
+Il **parente** di `attendi.sh`, non il suo gemello: stessa idea — due
+rilevatori, e uscite che dicono *quale* guasto — meccanismo diverso. Uno legge
+un file che cresce, l'altro interroga un indirizzo che risponde. Restano
+separati per la stessa ragione delle due varianti dello Sblocco Sequenziale
+(regola 30), e **si citano a vicenda in testa**.
+
+```
+tests/tools/attendi-ci.sh <file-workflow> <commit> [secondi-max]
+tests/tools/attendi-ci.sh regressione.yml 728a314
+```
+
+**La corsa non si indovina: si identifica.** L'API filtra per *file del
+workflow* + *commit* (`/actions/workflows/<file>/runs?head_sha=<sha>`), e il
+risultato è **una** corsa — non «la più recente fra due». ⚠️ Filtrare per
+**nome** non funziona: misurato l'11 settembre, lo stesso workflow si chiama
+`pages-build-deployment` nell'elenco dei workflow e **`pages build and
+deployment`** nell'elenco delle corse.
+
+| Uscita | Significa |
+|---|---|
+| **0** | completata con `success` |
+| **1** | completata male — e dice **quale**: `ROSSA` (vai a leggere i job) oppure `ANNULLATA` (*cerca un pulsante premuto, non un difetto*) |
+| **2** | tetto scaduto, la corsa è **viva** e non finita |
+| **3** | **la corsa non esiste**: il push non ha fatto partire la CI, o il commit è sbagliato |
+| **4** | **non riesco a vedere**: l'API non risponde, o risponde una cosa che non so leggere |
+| **64** | argomenti sbagliati |
+
+Il **3** e il **4** sono separati apposta: *«il push non ha fatto partire la CI»*
+e *«io non vedo GitHub»* sono due ricerche diverse.
+
+**Variabili:** `ATTENDI_CI_REPO` (default dal remoto), `ATTENDI_CI_FETCH` (il
+comando che interroga — esiste perché il test non chiami la rete),
+`ATTENDI_CI_INTERVALLO` (30), `ATTENDI_CI_ASSENTE` (300), `ATTENDI_CI_CIECO` (5
+risposte illeggibili di seguito).
+
+⚠️ **Perché esiste solo dall'11 settembre, e va saputo:** il tetto e il
+rilevatore di silenzio erano già stati risolti in `attendi.sh` il 10. **Non sono
+stati riusati**, e l'attesa sulla CI è stata riscritta a mano tre volte con tre
+difetti diversi — l'ultimo dei quali era *esattamente* la forma già corretta.
+*Non era una forma nuova: era una forma risolta e non riusata, e costa di più,
+perché il lavoro era già fatto.*
+
+---
+
 ## `attendi.sh`
 
 Non è uno strumento di verifica visiva come gli altri di questa cartella: è

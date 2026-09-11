@@ -29,6 +29,21 @@
 # vivo — UNA volta, e lo dirà in modo riconoscibile (caso ②). I tempi per file
 # si rimisurano dagli mtime dei tests/*.result.txt dell'ultima corsa.
 #
+# ⚠️ HA UN PARENTE, E NON E' UN GEMELLO: `tests/tools/attendi-ci.sh` aspetta una
+# corsa della CI. Condividono l'IDEA — due rilevatori, e uscite che dicono QUALE
+# guasto — ma non il MECCANISMO: questo legge un file che cresce, quello
+# interroga un indirizzo che risponde. Restano separati per la stessa ragione
+# delle due varianti dello Sblocco Sequenziale (regola 30). **CHI TOCCA UNO
+# GUARDI L'ALTRO**, perche' le due uscite si somigliano e devono restare
+# coerenti.
+#
+# *E c'e' un fatto da sapere: il tetto e il rilevatore di silenzio sono nati
+# QUI il 10 settembre, e NON sono stati riusati subito. L'attesa sulla CI e'
+# stata riscritta a mano tre volte in due giorni, con tre difetti diversi, e il
+# quarto — l'API illeggibile scambiata per «non e' finita» — era esattamente
+# questa stessa forma. Una soluzione che c'e' e non viene portata costa piu' di
+# una che manca.*
+#
 # Uso:
 #   tests/tools/attendi.sh <file-di-log> <marcatore-ok> <marcatore-ko> [secondi-max]
 #

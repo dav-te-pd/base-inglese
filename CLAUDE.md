@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260911a**
+**Versione: 20260911b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -47,6 +47,7 @@ affidabile.
 | `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
 | `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |
 | `tests/tools/attendi.sh` | L'attesa scritta nella forma giusta una volta sola (regola 37). Si usa questo invece di riscriverla a mano: `tests/tools/attendi.sh <log> "ALL FILES GREEN" "SOME FILES FAILED"`. **Si arrende da sola e dice quale dei due guasti ha davanti**: uscita 2 «è vivo e non finisce», 3 «è morto o non è mai partito» — perché un'attesa col solo tetto, davanti a un lavoro morto, direbbe «ho aspettato troppo» invece di «ho aspettato un cadavere». |
+| `tests/tools/attendi-ci.sh` | L'attesa **sulla CI**: `tests/tools/attendi-ci.sh regressione.yml <commit>`. È il **parente** di `attendi.sh`, non il suo gemello — stessa idea, meccanismo diverso, e i due si citano a vicenda in testa (regola 30). Identifica la corsa per **file del workflow + commit**, non per nome: lo stesso workflow ha **due nomi diversi** nella stessa API. Uscite: 0 verde · 1 finita male, e dice se è **rossa** o **annullata** · 2 viva e non finita · 3 **la corsa non esiste** · 4 **non riesco a vedere l'API**. *Il 3 e il 4 sono separati perché «il push non ha fatto partire la CI» e «io non vedo GitHub» sono due ricerche diverse.* |
 | `tests/ATTESE-FISSE.md` | Le attese a tempo che fanno da guardia a un'asserzione. **Si guarda qui quando un test diventa rosso**, prima di cercare una regressione. |
 | `tests/ERRORI-INGOIATI.md` | I `.catch` vuoti dei test, distinti fra legittimi e sopprimenti. Si guarda qui quando un rosso arriva da un punto che non lo spiega. |
 | `tests/test-env.js` | Il punto unico da cui i test prendono Playwright, l'indirizzo dell'app e i percorsi (regola 24). |
