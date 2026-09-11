@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiClasse, attendiVisibile } = require('./attese');
+const { attendiCheParla, attendiClasse, attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -168,7 +168,7 @@ async function run() {
     const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1b] Audio is actually playing before touching "Ho finito"', speakingBefore === true);
     await page.click('#repeat-aloud-complete');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1b] "Ho finito" stops the word audio on touch (stop-on-touch, not a lock)', speakingAfter === false);
     log('[Job1b] No JS errors', errors.length === 0);
@@ -198,7 +198,7 @@ async function run() {
     log('[Job1c] "Ho finito" stays enabled during listen audio', stateDuring.complete === false);
     log('[Job1c] Spiegazione stays enabled during listen audio', stateDuring.watch === false);
     await page.click('#story-cards-complete');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1c] "Ho finito" stops the audio on touch', speakingAfter === false);
     log('[Job1c] No JS errors', errors.length === 0);
@@ -251,7 +251,7 @@ async function run() {
     const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1d-bis] Target audio is actually playing before pressing Record', speakingBefore === true);
     await page.click('#vc-record-btn');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1d-bis] Pressing Record stops the model audio (mic-bleed guard, stop not block)', speakingAfter === false);
     log('[Job1d-bis] No JS errors', errors.length === 0);
@@ -277,7 +277,7 @@ async function run() {
       const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
       const anyOption = await page.$('#qm-options .sr-option');
       if (anyOption) { await anyOption.click(); }
-      await page.waitForTimeout(50);
+      await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
       const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
       log('[Job1e] Prompt audio really was playing before answering', speakingBefore === true);
       log('[Job1e] Answering stops the prompt audio on touch', speakingAfter === false);
@@ -303,12 +303,12 @@ async function run() {
     const miniListenBtn = await page.$('#qm-options [data-qm-listen-index]');
     if (miniListenBtn) {
       await miniListenBtn.click();
-      await page.waitForTimeout(100);
+      await attendiCheParla(page);
       const speakingDuring = await page.evaluate(() => window.speechSynthesis.speaking);
       log('[Job1e-bis] Option mini-listen audio is actually playing', speakingDuring === true);
       const anyOption = await page.$('#qm-options .sr-option:not([disabled])');
       if (anyOption) { await anyOption.click(); }
-      await page.waitForTimeout(50);
+      await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
       const speakingAfterAnswer = await page.evaluate(() => window.speechSynthesis.speaking);
       log('[Job1e-bis] Answering stops the option\'s own mini-listen audio (bleed guard)', speakingAfterAnswer === false);
     } else {
@@ -345,7 +345,7 @@ async function run() {
     // to stop") instead of leaving it playing to test the flip against.
     const speakingBeforeFlip = await page.evaluate(() => window.speechSynthesis.speaking);
     await page.click('#fc-card');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfterFlip = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1f] Audio was actually playing before the flip', speakingBeforeFlip === true);
     log('[Job1f] Flipping the card stops its own audio (Regola Azione Critica, still correct)', speakingAfterFlip === false);
@@ -359,7 +359,7 @@ async function run() {
     await page.waitForTimeout(550);
     const listenBtn3 = await page.$('#fc-card [data-say]');
     if (listenBtn3) { await page.evaluate(() => document.querySelector('#fc-card [data-say]').click()); }
-    await page.waitForTimeout(100);
+    await attendiCheParla(page);
     const speakingAgain = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1f] Listen button works again right after a flip (no stuck "speaking" state)', speakingAgain === true);
     log('[Job1f] No JS errors', errors.length === 0);

@@ -202,7 +202,7 @@ async function run() {
     await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
     await page.waitForFunction(() => window.speechSynthesis.speaking === true, null, { timeout: 5000 });
     await page.click('#dg-list', { position: { x: 2, y: 2 } });
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(120); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — un tocco a vuoto NON deve interrompere l'audio (regola 16, l'eccezione dei profili con countdown)
     const dopoSfondo = await page.evaluate(id => ({
       parla: window.speechSynthesis.speaking,
       barra: !!document.querySelector('.dg-bubble[data-line-id="' + id + '"]').classList.contains('dg-bubble-timer')

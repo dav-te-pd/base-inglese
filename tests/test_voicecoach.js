@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiDisabilitato, attendiVisibile } = require('./attese');
+const { attendiDisabilitato, attendiTono, attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -159,7 +159,7 @@ async function run() {
   const watchHiddenOnSummary = await page.evaluate(() => document.getElementById('voice-coach-watch-btn').hidden);
   log('[Rule 10] Spiegazione hidden on the evaluative Schermata Finale', watchHiddenOnSummary);
 
-  await page.waitForTimeout(500); // let async Traguardo notes finish
+  await attendiTono(page, [1046, 1318, 1568], 3);
   const tones = await page.evaluate(() => window.__playedTones || []);
   const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
   log('[4d] Traguardo sound played on Voice Coach\'s Schermata Finale', traguardoTones.length >= 3);

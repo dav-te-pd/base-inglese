@@ -149,7 +149,76 @@ async function attendiDisabled(page, selettore, atteso, timeoutMs) {
   }
 }
 
+
+// ── UN SUONO O LA VOCE ───────────────────────────────────────────────────────
+//
+// Famiglia ③ del 14b: 29 punti censiti, **12 da convertire**. Il triage dell'11
+// settembre ha tolto 5 negative, 2 «gia' vero», 1 misclassificata — e NOVE di
+// una forma che le altre famiglie non avevano.
+//
+// ⚠️ LA QUINTA CATEGORIA, E VA LETTA PRIMA DI CONVERTIRE QUALUNQUE COSA QUI:
+//
+//   ASPETTARE RENDEREBBE L'ASSERZIONE BANALMENTE VERA.
+//
+// Nove punti verificano che toccare qualcos'altro INTERROMPA l'audio (regola
+// 16), leggendo `speechSynthesis.speaking === false` **cinquanta millisecondi
+// dopo il tocco**. Il finto sintetizzatore di `mockInit` si spegne **da solo
+// dopo 500 ms**. Quindi un'attesa «finche' non parla piu'» tornerebbe entro
+// 500 ms COMUNQUE, che il tocco abbia interrotto l'audio oppure no: «il tocco
+// l'ha fermato» diventerebbe «prima o poi ha smesso», **vera sempre**.
+//
+// E' la conversione piu' pericolosa di tutte, peggio del gruppo «gia' vero»:
+// quella si riconosce perche' lo stato non cambia mai, questa **somiglia a una
+// transizione legittima** — c'e' un true che diventa false, e il codice
+// convertito si legge benissimo. *Quello che si perde non e' il valore: e'
+// l'ISTANTE in cui viene letto, e l'istante non si vede nel diff.*
+// **I 50 ms non sono un margine: sono la distanza fra «l'ha fermato il tocco» e
+// «e' finito da solo».** Quei nove restano a tempo, marcati nel sito, e il
+// blocco [D] di `test_attese_condivise.js` rende il pericolo ESEGUIBILE.
+
+// `attendiCheParla` NON prende un selettore, ed e' voluto: `speechSynthesis` e'
+// UNO SOLO per pagina. **Un argomento che puo' avere un valore solo e' un invito
+// a passargli quello sbagliato.**
+async function attendiCheParla(page, timeoutMs) {
+  try {
+    await page.waitForFunction(function () {
+      return !!(window.speechSynthesis && window.speechSynthesis.speaking);
+    }, null, { timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Aspetta che in `window.__playedTones` compaiano almeno `quanti` toni con una
+// delle frequenze date.
+//
+// PRENDE UNA LISTA E UN MINIMO, e i due parametri vengono dai due usi VERI, non
+// da una scelta a priori: il **Traguardo** sono tre note (1046, 1318, 1568) e si
+// verifica `>= 3`; **Corretto** e **uscita** sono una nota sola. Con una funzione
+// «aspetta UN tono» il `>= 3` tornerebbe scritto a mano a ogni chiamata — cioe'
+// sarebbe nata la prossima famiglia della conoscenza sparsa.
+//
+// ⚠️ NON SVUOTA `__playedTones`, E NON VA FATTO SVUOTARE. L'array e' CUMULATIVO
+// dall'inizio della pagina, e altre asserzioni della stessa famiglia contano
+// sul fatto che lo sia: le cinque negative verificano `length === 0` per dire
+// «quel suono non e' MAI stato suonato». Azzerarlo qui per comodita' le
+// renderebbe vere a prescindere — e sarebbero verdi senza provare niente.
+async function attendiTono(page, frequenze, quanti, timeoutMs) {
+  try {
+    await page.waitForFunction(function (a) {
+      var toni = window.__playedTones || [];
+      var quanti = toni.filter(function (t) { return a.freq.indexOf(t.freq) !== -1; }).length;
+      return quanti >= a.min;
+    }, { freq: frequenze, min: quanti || 1 }, { timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 module.exports = {
   attendiSottotitoloEsito, attendiVisibile, attendiNascosto,
-  attendiAbilitato, attendiDisabilitato, attendiClasse
+  attendiAbilitato, attendiDisabilitato, attendiClasse,
+  attendiCheParla, attendiTono
 };

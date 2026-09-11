@@ -241,7 +241,7 @@ async function run() {
     log('[Job7a] Line 3 is locked (is-ahead-locked) before line 1 is even played', line3LockedAtStart);
     // Try clicking line 3 directly — should be a no-op (still locked, no audio queued).
     await page.click('.dg-bubble[data-line-id="' + bubbleIds[2] + '"]').catch(() => {});
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — cliccare una battuta bloccata NON deve far partire nessun audio
     const stillSpeaking = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job7a] Clicking the locked line 3 does nothing (no audio starts)', !stillSpeaking);
     // Play line 1 fully (audio + its countdown bar).

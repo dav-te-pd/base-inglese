@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiDisabilitato, attendiNascosto } = require('./attese');
+const { attendiCheParla, attendiDisabilitato, attendiNascosto } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -138,7 +138,7 @@ async function run() {
     const startBtnVisible = await page.isVisible('#dg-start-btn').catch(() => false);
     if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(80); }
     await page.click('.dg-bubble'); // Ripeti a Tempo is advance:'manual' — no auto-play, must tap
-    await page.waitForTimeout(200); // mid line-1 audio
+    await attendiCheParla(page);
     const speaking = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1b] Ripeti a Tempo is speaking line 1', speaking);
     await page.click('#dialogo-back-map');

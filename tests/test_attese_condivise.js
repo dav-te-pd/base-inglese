@@ -35,7 +35,7 @@
 const { launchBrowser } = require('./test-env');
 const {
   attendiAbilitato, attendiDisabilitato, attendiClasse,
-  attendiVisibile, attendiNascosto
+  attendiVisibile, attendiNascosto, attendiCheParla, attendiTono
 } = require('./attese');
 
 let passed = 0, failed = 0;
@@ -62,6 +62,34 @@ const PAGINA = `
     };
   </script>
 `;
+
+// Il finto sintetizzatore, ridotto all'osso e con LA STESSA PROPRIETA' che
+// conta: si spegne DA SOLO dopo un tempo, senza che nessuno lo fermi. E' la
+// copia fedele di `mockInit`, dove il timer e' 500ms.
+const PAGINA_VOCE = `
+  <button id="tocca">tocca</button>
+  <script>
+    window.__playedTones = [];
+    // defineProperty e non un assegnamento: su window.speechSynthesis esiste
+    // gia' una proprieta' nativa, e un assegnamento semplice NON la sostituisce
+    // — il finto resta ignorato e il test cade per il motivo sbagliato. E' la
+    // stessa ragione per cui mockInit fa cosi'.
+    Object.defineProperty(window, 'speechSynthesis', {
+      value: { speaking: false }, configurable: true
+    });
+    window.parlaPerMs = function (ms) {
+      window.speechSynthesis.speaking = true;
+      setTimeout(function () { window.speechSynthesis.speaking = false; }, ms);
+    };
+    window.suona = function (freq) { window.__playedTones.push({ freq: freq }); };
+  </script>
+`;
+
+async function nuovaPaginaVoce(browser) {
+  const page = await browser.newPage();
+  await page.setContent(PAGINA_VOCE);
+  return page;
+}
 
 async function nuovaPagina(browser) {
   const page = await browser.newPage();
@@ -152,6 +180,61 @@ async function run() {
     log('[C] attendiNascosto dice true anche su un elemento che NON ESISTE (limite dichiarato)', g4 === true);
 
     await page.close();
+  }
+
+  // ── [D] IL SUONO, e la prova contraria e' DIVERSA dalle altre ────────────
+  // Nelle altre famiglie il pericolo era «lo stato era gia' vero». Qui e'
+  // peggio: **aspettare renderebbe l'asserzione banalmente vera**, perche' la
+  // voce si spegne DA SOLA. Un'attesa «finche' non parla piu'» torna vero
+  // anche se nessuno ha toccato niente.
+  //
+  // ⚠️ QUESTO BLOCCO ESISTE PER UNA RAGIONE PRECISA, E VA LETTA PRIMA DI
+  // SEMPLIFICARLO: nove punti della famiglia ③ leggono `speaking === false`
+  // cinquanta millisecondi dopo un tocco, per verificare che sia stato IL TOCCO
+  // a fermare l'audio (regola 16). Sono rimasti a tempo apposta. Senza le righe
+  // qui sotto, fra sei mesi sembrano attese pigre da convertire, la conversione
+  // si legge benissimo, e le nove asserzioni diventano vere per sempre senza
+  // che nessun rosso lo dica. **Non e' un caso di prova senza motivo: e' il
+  // pericolo reso eseguibile invece che descritto.**
+  {
+    const page = await nuovaPaginaVoce(browser);
+
+    // attendiCheParla aspetta davvero, e sa fallire.
+    await page.evaluate(() => setTimeout(() => window.parlaPerMs(3000), 500));
+    const t0 = Date.now();
+    log('[D] attendiCheParla vede la voce partire', (await attendiCheParla(page, 5000)) === true);
+    log('[D] ...e ha aspettato', Date.now() - t0 >= 300, (Date.now() - t0) + 'ms');
+
+    const page2 = await nuovaPaginaVoce(browser);
+    log('[D] attendiCheParla torna false se nessuno parla',
+        (await attendiCheParla(page2, 700)) === false);
+
+    // ⚠️ LA PROVA CONTRARIA: la voce si spegne da sola, NESSUNO tocca niente,
+    // e un'attesa «finche' non parla piu'» tornerebbe VERA lo stesso.
+    await page2.evaluate(() => window.parlaPerMs(400));
+    const spentaDaSola = await page2.waitForFunction(
+      () => !window.speechSynthesis.speaking, null, { timeout: 3000 }
+    ).then(() => true).catch(() => false);
+    log('[D] ⚠️ «finche\' non parla piu\'» torna VERO anche senza nessun tocco', spentaDaSola === true);
+    log('[D] ...ecco perche\' i nove punti della regola 16 restano a tempo: 50ms e\' la distanza fra «l\'ha fermato il tocco» e «e\' finito da solo»', true);
+
+    // attendiTono: tre note contro una, e l'array che NON si svuota.
+    const page3 = await nuovaPaginaVoce(browser);
+    await page3.evaluate(() => setTimeout(() => { window.suona(880); }, 300));
+    log('[D] attendiTono vede una nota sola', (await attendiTono(page3, [880], 1, 4000)) === true);
+    log('[D] ...e NON si accontenta di una quando ne chiede tre',
+        (await attendiTono(page3, [880], 3, 700)) === false);
+    await page3.evaluate(() => { window.suona(1046); window.suona(1318); window.suona(1568); });
+    log('[D] attendiTono vede le tre note del Traguardo',
+        (await attendiTono(page3, [1046, 1318, 1568], 3, 4000)) === true);
+    // Se attendiTono svuotasse l'array per comodita', la nota di prima
+    // sarebbe sparita — e le cinque asserzioni negative della stessa famiglia
+    // (`length === 0`) diventerebbero vere a prescindere.
+    const toniRimasti = await page3.evaluate(() => window.__playedTones.length);
+    log('[D] attendiTono NON svuota __playedTones: l\'array e\' cumulativo e le negative ci contano',
+        toniRimasti === 4, toniRimasti + ' toni');
+
+    await page.close(); await page2.close(); await page3.close();
   }
 
   await browser.close();

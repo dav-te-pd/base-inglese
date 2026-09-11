@@ -1,7 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
-const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito } = require('./attese');
+const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito, attendiTono } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -133,7 +133,7 @@ async function run() {
       await page.click('.sr-option[data-qm-index="' + idx + '"]');
       await page.waitForTimeout(650);
     }
-    await page.waitForTimeout(300);
+    await attendiTono(page, [1046, 1318, 1568], 3);
     const tones = await page.evaluate(() => window.__playedTones);
     const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
     log('[Job1] Traguardo (3 ascending notes) played at least once', traguardoTones.length >= 3);

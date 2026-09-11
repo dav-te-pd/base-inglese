@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiClasse } = require('./attese');
+const { attendiCheParla, attendiClasse, attendiTono } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -160,7 +160,7 @@ async function run() {
       var btn = document.getElementById('dg-pause-btn');
       return btn && !btn.hidden;
     }, { timeout: 5000 }).catch(() => {});
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(400); // ATTESA-LEGITTIMA: NON e' una guardia di questa famiglia — l'asserzione legge un PULSANTE (dg-pause-btn disabilitato), non un suono: il censimento l'ha messa fra «un suono o la voce» perche' l'etichetta del log nomina l'audio. E il momento conta: si legge mentre la battuta parla, prima che parta il countdown
     const pauseDisabledDuringAudio = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
     log('[Job2] Pausa is disabled while a line\'s audio is actively speaking', pauseDisabledDuringAudio === true);
     // Try clicking it anyway (native click on disabled button = no-op) — dialogue must not freeze.
@@ -291,11 +291,11 @@ async function run() {
     // Start the front-of-card audio (en-it direction -> front is english, has a listen button).
     const listenBtn = await page.$('#fc-front-audio .listen-block-btn');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(100);
+    await attendiCheParla(page);
     const speakingBeforeFlip = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job5] Audio is actually speaking right before the flip', speakingBeforeFlip === true);
     await page.click('#fc-card');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfterFlip = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job5] Flipping the card while audio plays stops it immediately (Regola Azione Critica)', speakingAfterFlip === false);
     log('[Job5] No JS errors', errors.length === 0);
@@ -326,8 +326,8 @@ async function run() {
     await page.click('#repeat-aloud-complete');
     await page.waitForTimeout(150);
     await page.click('#repeat-aloud-complete-btn');
-    await page.waitForTimeout(150);
     const uscitaFreq = await page.evaluate(() => window.APP_CONFIG.sound.events.uscita.freq);
+    await attendiTono(page, [uscitaFreq], 1);
     const played = await page.evaluate(() => window.__playedTones || []);
     log('[Job6] Clicking "Ho finito, torna alla mappa" plays the "uscita" tone', played.some(t => t.freq === uscitaFreq));
     log('[Job6] No JS errors', errors.length === 0);

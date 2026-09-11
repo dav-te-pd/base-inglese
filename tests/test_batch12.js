@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -519,7 +520,7 @@ async function run() {
     await page.click('#fc-card');
     await page.waitForTimeout(150);
     await page.click('#fc-know-it-btn');
-    await page.waitForTimeout(200);
+    await attendiTono(page, [880], 1);
     const tones = await page.evaluate(() => window.__playedTones || []);
     const correttoTones = tones.filter(t => t.freq === 880);
     log('[Job1] Flash Card "Sì, la so" plays the Corretto tone (880Hz)', correttoTones.length >= 1);

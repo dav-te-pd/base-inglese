@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiClasse } = require('./attese');
+const { attendiCheParla, attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
@@ -157,11 +157,11 @@ async function run() {
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#repeat-aloud-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(80);
+    await attendiCheParla(page);
     const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1a] Audio is playing before touching Spiegazione', speakingBefore === true);
     await page.click('#repeat-aloud-watch-btn');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1a] Spiegazione now stops the audio too (single choke point closes this gap)', speakingAfter === false);
     log('[Job1a] No JS errors', errors.length === 0);
@@ -179,11 +179,11 @@ async function run() {
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#fc-card [data-say]');
     if (listenBtn) { await listenBtn.click({ force: true }); }
-    await page.waitForTimeout(80);
+    await attendiCheParla(page);
     const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1b] Card audio is playing before touching Help', speakingBefore === true);
     await page.click('#flashcard-help-btn');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
     const speakingAfter = await page.evaluate(() => window.speechSynthesis.speaking);
     log('[Job1b] Help stops the audio too', speakingAfter === false);
     log('[Job1b] No JS errors', errors.length === 0);
@@ -204,7 +204,7 @@ async function run() {
       await listenBtns[0].click();
       await page.waitForTimeout(80);
       await listenBtns[1].click();
-      await page.waitForTimeout(80);
+      await page.waitForTimeout(80); // ATTESA-LEGITTIMA: lo stato era GIA' vero prima dell'attesa — l'audio parlava gia': si prova che toccando un ALTRO pulsante di ascolto continui a parlare invece di fermarsi, e un'attesa «finche' parla» tornerebbe al primo istante
       const speaking = await page.evaluate(() => window.speechSynthesis.speaking);
       const secondHasSpeaking = await page.evaluate((el) => el.classList.contains('speaking'), listenBtns[1]);
       log('[Job1c] Tapping a different listen button REPLACES the audio (still speaking, not stopped)', speaking === true);
@@ -232,7 +232,7 @@ async function run() {
       await miniListenBtns[0].click();
       await page.waitForTimeout(80);
       await miniListenBtns[1].click();
-      await page.waitForTimeout(80);
+      await page.waitForTimeout(80); // ATTESA-LEGITTIMA: lo stato era GIA' vero prima dell'attesa — l'audio parlava gia': si prova che toccando un ALTRO pulsante di ascolto continui a parlare invece di fermarsi, e un'attesa «finche' parla» tornerebbe al primo istante
       const speaking = await page.evaluate(() => window.speechSynthesis.speaking);
       log('[Job1d] Switching between two mini-listen options replaces audio (still speaking)', speaking === true);
     } else {
