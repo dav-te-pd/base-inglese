@@ -980,6 +980,75 @@ convertire — era una corsa scoperta.
 **20/29 · 20/52 · 12/29 · 13/18 · 16/16.** Cinque famiglie, cinque categorie
 nuove, nessuna prevedibile dalla precedente.
 
+⚠️ **E la ⑤ è arrivata con la resa più alta di tutte — 16 su 16 — perché
+stavolta la MISURA è venuta PRIMA dell'ipotesi.** È la lezione di `[SR Task1]`
+letta al contrario: là due ipotesi costruite leggendo il codice sono cadute
+tutte e due, e il tempo speso a costruirle non ha prodotto niente; qui il
+campionamento ogni 5 ms ha detto **prima** cosa faceva ogni elemento, e nessuna
+ipotesi è servita.
+
+> **Un'ipotesi letta nel codice costa poco a scriverla e molto a smentirla. Una
+> misura costa poco tutte e due le volte.**
+
+## 14b — «altro» NON È UNA FAMIGLIA (triage dell'11 settembre)
+
+**Venti punti letti sul codice, uno per uno. Il sospetto era giusto: non
+somigliano a niente perché sono il RESIDUO del classificatore — quello che
+avanza quando le altre dieci etichette non attaccano.** Non c'è una forma da
+costruire: **il lavoro qui è classificare, non convertire.**
+
+Sono **cinque micro-gruppi**, e ognuno vuole una risposta diversa:
+
+| | n | cosa sono | cosa vogliono |
+|---|---|---|---|
+| **α** negative | **7** | «nessuna nuova battuta accodata», «l'avviso non compare», «nessun errore» | il marcatore `ATTESA-LEGITTIMA` — il tempo **è** la misura |
+| **β** già vere | **3** | una mutazione DOM sincrona (`el.open = true`) o una promise che `page.evaluate` ha già atteso | si tolgono o si marcano: non guardano niente |
+| **γ** riassunto di un ciclo | **4** | l'attesa è dentro un ciclo di navigazione, l'asserzione riassume il ciclo | restano navigazione — ⚠️ **una è VACUA**, vedi sotto |
+| **δ** convertibili | **4** | l'esito dopo un invio, l'apertura di un modulo | approdi **già esistenti**: `#vc-result`, `is-active` |
+| **ε** bloccate dalla regola 44 | **2** | `test_episodi_corti` legge `erroreVisibile`, che **è** l'approdo ovvio | non convertibili su quell'approdo: diventerebbero vere per costruzione |
+
+**La risposta alla soglia dei dieci letta al contrario: qui non si applica.** I
+quattro convertibili non chiedono nessuna forma nuova — usano `attendiVisibile`
+e `attendiClasse`, già nel magazzino. Non c'è nessuna funzione da creare, quindi
+non c'è nessuna soglia da superare.
+
+### ⚠️ TRE COSE TROVATE LEGGENDO, e valgono più delle quattro conversioni
+
+**① Una seconda asserzione VACUA.** `test_batch7.js`:
+
+```js
+log('[Job3/4] Flash Card reachable/answerable (sanity — popup o carte finite)', true);
+```
+
+**Passa sempre.** È la stessa forma del `|| true` trovato in `test_batch16`
+durante la famiglia ②: un'asserzione che sembra viva e non prova niente
+(regola 37). Due su due sono comparse dentro un *sanity check* di un ciclo —
+*è lì che questa forma nasce, ed è dove guardare la prossima volta.*
+
+**② Una motivazione scritta in prosa e non nel marcatore.** `test_batch5.js`
+porta già, nel codice, cinque righe che spiegano perché quell'attesa resta a
+tempo — *«l'asserzione che segue è negativa… per un evento che non deve accadere
+non esiste una condizione da aspettare»*. **Ma non porta `ATTESA-LEGITTIMA`,
+quindi il censimento la riconta come debito a ogni giro.** È esattamente il caso
+per cui il marcatore esiste: *una spiegazione che lo strumento non sa leggere è
+una spiegazione che va riscritta ogni volta.*
+
+**③ Un'asserzione vera su qualunque pagina.** `test_batch16` verifica che
+`#fc-level-label` «non esista più», dopo aver aperto Flash Card e aspettato
+200 ms. **Quell'id compare in `index.html` una volta sola, dentro un
+COMMENTO**: l'asserzione è vera sulla schermata iniziale, sulla mappa, ovunque —
+e l'apertura del modulo non c'entra niente. Non è inutile (se qualcuno
+rimettesse quell'id, cadrebbe), ma **non ha bisogno né dell'attesa né del
+modulo**, e scritta così fa credere di verificare qualcosa dentro Flash Card.
+
+### La condizione
+
+**Si esegue col prossimo «vai»**, e in quest'ordine: prima le tre cose trovate
+(la vacua si corregge scrivendo l'asserzione giusta **prima** di togliere il
+`true`, come per quella di `test_batch16`), poi le marcature, poi le quattro
+conversioni. **Le due bloccate dalla regola 44 restano a tempo con il motivo
+scritto**, a meno che non si trovi un approdo che l'asserzione non legga.
+
 ## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
 
 **Condizione: alla prossima CI rossa su quel blocco, si legge il motivo che ora
