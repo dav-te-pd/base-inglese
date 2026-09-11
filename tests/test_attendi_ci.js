@@ -67,10 +67,29 @@ const CORSA = (stato, esito) => JSON.stringify({
 const NESSUNA = JSON.stringify({ total_count: 0, workflow_runs: [] });
 const SPAZZATURA = '{"message":"Not Found","documentation_url":"..."}';
 
-function lancia(finto, max, extraEnv) {
+// ⚠️ UN COMMIT DI QUARANTA CARATTERI, E IL LANCIO FUORI DAL REPOSITORY.
+//
+// Fino all'11 settembre 2026 questi casi passavano `abc1234` — sette caratteri
+// — e andavano tutti verdi lo stesso, perche' **il curl finto risponde la
+// stessa cosa qualunque URL gli si dia**. Il vero `head_sha` dell'API di
+// GitHub no: confronta la stringa INTERA, e su un prefisso torna
+// `total_count: 0`, cioe' lo stesso corpo di una corsa che non esiste. Lo
+// script diceva «il push non ha fatto partire la CI» su una CI in_progress.
+// Il test guidava il caso comodo (CLAUDE.md regola 42): il finto rispondeva a
+// qualunque domanda, quindi la domanda sbagliata non si vedeva.
+//
+// E il lancio avviene con `cwd` FUORI dal repository apposta: lo script
+// estende il commit con `git rev-parse`, e dentro il repository un prefisso
+// finto potrebbe per caso risolversi in un commit vero, rendendo il caso [G]
+// dipendente da cosa c'e' nella storia. Fuori, git non conosce niente e il
+// comportamento e' lo stesso su qualunque macchina (regola 24).
+const SHA_FINTO = 'abc1234' + '0'.repeat(33); // 40 caratteri, come quelli veri
+
+function lancia(finto, max, extraEnv, sha) {
   return new Promise(function (resolve) {
     const t0 = Date.now();
-    execFile('bash', [SCRIPT, 'regressione.yml', 'abc1234', String(max)], {
+    execFile('bash', [SCRIPT, 'regressione.yml', sha || SHA_FINTO, String(max)], {
+      cwd: os.tmpdir(),
       env: Object.assign({}, process.env, {
         ATTENDI_CI_FETCH: finto,
         ATTENDI_CI_REPO: 'finto/repo',
@@ -78,15 +97,19 @@ function lancia(finto, max, extraEnv) {
         ATTENDI_CI_ASSENTE: '3',
         ATTENDI_CI_CIECO: '3'
       }, extraEnv || {})
-    }, function (err, stdout) {
-      resolve({ codice: err ? err.code : 0, testo: String(stdout).trim(), durataMs: Date.now() - t0 });
+    }, function (err, stdout, stderr) {
+      // stdout E stderr: gli errori d'uso (64) parlano su stderr, e un test che
+      // guarda solo stdout non puo' verificare che l'uscita SPIEGHI — che e'
+      // meta' del valore di un codice d'uscita distinto.
+      const testo = (String(stdout) + '\n' + String(stderr)).trim();
+      resolve({ codice: err ? err.code : 0, testo: testo, durataMs: Date.now() - t0 });
     });
   });
 }
 
-async function caso(nome, risposte, max, extraEnv) {
+async function caso(nome, risposte, max, extraEnv, sha) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'attendi-ci-'));
-  const r = await lancia(creaFinto(dir, risposte), max, extraEnv);
+  const r = await lancia(creaFinto(dir, risposte), max, extraEnv, sha);
   fs.rmSync(dir, { recursive: true, force: true });
   return r;
 }
@@ -147,6 +170,25 @@ async function run() {
     log('[F] ...NON la dichiara illeggibile (4)', r.codice !== 4);
     log('[F] ...e dice che la corsa e\' VIVA, non che l\'attesa e\' rotta',
         /ANCORA IN CORSO/.test(r.testo) && /VIVA/.test(r.testo));
+  }
+
+  // [G] IL COMMIT ABBREVIATO — il difetto dell'11 settembre 2026, reso
+  // eseguibile. E' il caso piu' importante di tutti e sei quelli sopra, perche'
+  // e' l'unico in cui lo strumento **diceva una cosa falsa e AZIONABILE**: non
+  // «non ho capito», ma «il push non ha fatto partire la CI», su una corsa che
+  // stava girando. Una risposta cosi' non invita a controllare: invita a
+  // rifare il push.
+  //
+  // La difesa non e' che lo script indovini: e' che si RIFIUTI di chiedere una
+  // domanda a cui l'API risponde in modo indistinguibile dal nulla.
+  {
+    const r = await caso('corto', [CORSA('completed', 'success')], 5, null, 'abc1234');
+    if (r.codice !== 64) console.log('  ' + r.testo);
+    log('[G] Un commit ABBREVIATO e\' un errore d\'uso (64), non una corsa assente (3)',
+        r.codice === 64);
+    log('[G] ...e NON risponde 0 anche se la corsa finta sarebbe verde', r.codice !== 0);
+    log('[G] ...e dice PERCHE\': l\'API confronta head_sha per intero',
+        /head_sha/.test(r.testo) || /40 caratteri/.test(r.testo));
   }
 
   console.log('');

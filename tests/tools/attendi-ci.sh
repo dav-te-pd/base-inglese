@@ -96,6 +96,33 @@ fi
 WORKFLOW="$1"
 SHA="$2"
 MAX="${3:-3600}"
+
+# ⚠️ IL COMMIT VA ESTESO A 40 CARATTERI, e non e' pignoleria: il parametro
+# `head_sha` dell'API di GitHub confronta la stringa INTERA e non fa match sui
+# prefissi. Passandogli `16dd7bd` la risposta e' `total_count: 0` — cioe' lo
+# stesso identico corpo che arriva quando la corsa non esiste davvero.
+#
+# Misurato l'11 settembre 2026, sullo stesso commit e nello stesso minuto:
+#   head_sha=16dd7bd                                   -> total_count=0
+#   head_sha=16dd7bda0fc2923bd464f797f9148ee80caac800  -> total_count=1
+#
+# Quello che ne usciva era **l'uscita 3 con un messaggio falso e AZIONABILE**:
+# «il push non ha fatto partire la CI», mentre la corsa era in_progress. E'
+# esattamente il difetto per cui questo script esiste (regola 37): non
+# somigliava a un errore, somigliava a un risultato — e il suo, per giunta, era
+# un risultato che invitava a rifare il push.
+#
+# Si estende con git, e se git non lo conosce (un commit di un altro
+# repository, passato a mano) si usa quello che e' stato dato: meglio provarci
+# che rifiutare un caso legittimo.
+SHA_ESTESO="$(git rev-parse "$SHA" 2>/dev/null || true)"
+if [ -n "$SHA_ESTESO" ]; then SHA="$SHA_ESTESO"; fi
+if [ "${#SHA}" -ne 40 ]; then
+  echo "Il commit \"$SHA\" non e' completo (40 caratteri) e git non sa estenderlo." >&2
+  echo "L'API di GitHub confronta head_sha per intero: un prefisso darebbe ZERO corse" >&2
+  echo "e questo script direbbe «la corsa non esiste» su una CI che sta girando." >&2
+  exit 64
+fi
 INTERVALLO="${ATTENDI_CI_INTERVALLO:-30}"
 ASSENTE_MAX="${ATTENDI_CI_ASSENTE:-300}"
 CIECO_MAX="${ATTENDI_CI_CIECO:-5}"
