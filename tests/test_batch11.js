@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -234,8 +235,7 @@ async function run() {
     await openModule(page, 'voiceCoach');
     await page.waitForTimeout(300);
     await vcCompleteModule(page, () => false, LINE_COUNT * 2 + 4);
-    await page.waitForTimeout(200);
-    const summaryVisible = await page.isVisible('#voice-coach-summary-screen').catch(() => false);
+    const summaryVisible = await attendiVisibile(page, '#voice-coach-summary-screen');
     log('[ModuleRules] Voice Coach (all correct) reaches the summary screen', summaryVisible);
     await page.click('#voice-coach-complete-btn');
     await page.waitForTimeout(200);

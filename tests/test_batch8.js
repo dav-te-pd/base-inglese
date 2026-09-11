@@ -127,7 +127,11 @@ async function run() {
 
     // Try clicking vc-next-btn anyway (should be no-op since disabled + guarded)
     await page.evaluate(() => document.getElementById('vc-next-btn').click()); // raw click bypasses disabled-click prevention in some engines
-    await page.waitForTimeout(150);
+    // ATTESA-LEGITTIMA: si verifica che il click forzato NON faccia avanzare il modulo.
+    // Aspettare "finche' la Schermata Finale compare" sarebbe il contrario di quello che
+    // serve: qui deve NON comparire, e l'unico modo e' dare il tempo perche' comparisse
+    // se la guardia non ci fosse.
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: prova che la Schermata Finale NON compare dopo un click forzato
     const summaryVisibleAfterForcedClick = await page.isVisible('#voice-coach-summary-screen').catch(() => false);
     log('[Job1] Forcing a click on the disabled "Avanti" does NOT advance/complete the module', !summaryVisibleAfterForcedClick);
 

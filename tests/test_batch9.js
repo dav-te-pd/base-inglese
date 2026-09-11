@@ -1,6 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
-const { attendiSottotitoloEsito } = require('./attese');
+const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -105,7 +105,7 @@ async function run() {
       }
       await page.waitForTimeout(150);
     }
-    const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
+    const summaryVisible = await attendiVisibile(page, '#qm-summary-screen');
     log('[Job2A] Match Practice reached Schermata Finale (learned-answer strategy)', summaryVisible);
     if (summaryVisible) {
       const subtitle = await page.$eval('#qm-summary-title-sub', el => el.textContent).catch(() => null);
@@ -244,8 +244,8 @@ async function run() {
     await openModule(page, 'dialogoAscoltaRipeti');
     await page.waitForTimeout(300);
     const startBtnVisible = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); }
-    const hintVisibleBefore = await page.isVisible('#dg-choice-hint').catch(() => false);
+    if (startBtnVisible) { await page.click('#dg-start-btn'); }
+    const hintVisibleBefore = await attendiVisibile(page, '#dg-choice-hint');
     const hintText = await page.$eval('#dg-choice-hint', el => el.textContent).catch(() => null);
     log('[Job3] Hint is visible before all lines are heard', hintVisibleBefore);
     log('[Job3] Hint text is non-empty and comes from istruzioni-moduli.json', !!hintText && hintText.length > 5);

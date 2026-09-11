@@ -81,6 +81,18 @@ const FINTO = [
   "  await page.waitForTimeout(120);",
   "  const testo = await page.$eval('#f', el => el.textContent);",
   "  log('[W] ' + nome + ': il testo si riempie', !!testo);",
+  "",
+  "  // (5) LEGITTIMA: marcata nel sito, con il motivo",
+  "  await page.click('#g');",
+  "  await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che l'avviso NON compare",
+  "  const avviso = await page.isVisible('#h');",
+  "  log('[V] l'+'\\''+'avviso non compare', !avviso);",
+  "",
+  "  // (6) LEGITTIMA marcata SENZA motivo: deve comparire lo stesso, segnalata",
+  "  await page.click('#i');",
+  "  await page.waitForTimeout(400); // ATTESA-LEGITTIMA",
+  "  const cosa = await page.isVisible('#l');",
+  "  log('[U] marcata senza motivo', cosa);",
   "}"
 ].join('\n');
 
@@ -97,8 +109,26 @@ function run() {
 
   esegui(percorsoFinto, function (err, stdout) {
     try {
-      const righe = stdout.split('\n').filter(function (r) { return r.indexOf('`' + nomeFinto + '`') !== -1; });
-      const guardie = righe.filter(function (r) { return r.split('|').length > 4; });
+      // ⚠️ Le sezioni si prendono per TITOLO, non per numero di colonne.
+      // Fino all'11 settembre questo test filtrava con `split('|').length > 4`, e
+      // funzionava solo perche' c'erano due sole tabelle. Il secchio delle attese
+      // legittime ha righe da quattro colonne: con il filtro vecchio sarebbero
+      // finite fra le guardie, e il conto delle guardie sarebbe salito invece di
+      // scendere — senza che niente lo dicesse.
+      function sezione(titolo, successivo) {
+        const a = stdout.indexOf(titolo);
+        if (a === -1) return '';
+        const b = successivo ? stdout.indexOf(successivo, a) : -1;
+        return stdout.slice(a, b === -1 ? undefined : b);
+      }
+      const secGuardie = sezione('### Le guardie, una per una', '### Le guardie legittime');
+      const secLegittime = sezione('### Le guardie legittime', '### Attese di navigazione');
+      const secNav = sezione('### Attese di navigazione');
+      const mie = function (sec) {
+        return sec.split('\n').filter(function (r) { return r.indexOf('`' + nomeFinto + '`') !== -1; });
+      };
+      const guardie = mie(secGuardie);
+      const legittime = mie(secLegittime);
 
       log('[A] Lo strumento gira senza errori', !err, err && String(err).slice(0, 120));
       log('[A] Trova esattamente le TRE guardie, non tutte e cinque le attese',
@@ -119,10 +149,25 @@ function run() {
         /\[W\].*il testo si riempie/.test(testo), testo.slice(0, 200));
       log('[C] ...e non si riduce alla sola sigla', !/\|\s*\[W\]\s*\|/.test(testo));
 
+      // ⚠️ IL SECCHIO DELLE LEGITTIME, e le due asserzioni che contano sono la
+      // seconda e la terza: una marcata deve USCIRE dalle guardie. Se restasse
+      // dentro, il marcatore sarebbe decorazione — e il numero su cui si misura
+      // il 14b conterebbe come debito una cosa che non lo e'.
+      const testoLeg = legittime.join('\n');
+      log('[E] Le due attese marcate finiscono fra le legittime', legittime.length === 2,
+        legittime.length + ' -> ' + testoLeg.slice(0, 160));
+      log('[E] ...e NON sono piu\' contate fra le guardie',
+        !/\|\s*500\s*\|/.test(guardie.join('\n')) && !/\|\s*400\s*\|/.test(guardie.join('\n')));
+      log('[E] Il MOTIVO scritto nel sito arriva nel documento',
+        /prova che l'avviso NON compare/.test(testoLeg), testoLeg.slice(0, 160));
+      // Un marcatore nudo sarebbe un permesso: chi legge non saprebbe se fidarsi.
+      log('[E] Una marcata SENZA motivo viene segnalata, non accettata in silenzio',
+        /marcata senza motivo/.test(testoLeg));
+      log('[E] Il totale dice i tre numeri separati, non uno solo',
+        /guardie da convertire/.test(stdout) && /NON sono debito/.test(stdout));
+
       // Il conto della navigazione: due, e vanno dette, non nascoste.
-      const navRiga = stdout.split('\n').filter(function (r) {
-        return r.indexOf('`' + nomeFinto + '`') !== -1 && r.split('|').length === 4;
-      })[0] || '';
+      const navRiga = mie(secNav)[0] || '';
       log('[D] Le due attese di navigazione sono contate a parte', /\|\s*2\s*\|/.test(navRiga), navRiga);
     } finally {
       fs.rmSync(tmp, { recursive: true, force: true });

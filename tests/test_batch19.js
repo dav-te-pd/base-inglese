@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -202,7 +203,9 @@ async function run() {
     await bootAsUser(page, 'QMHeaderTester', stepsBefore('matchItaEng'));
     await openModule(page, 'matchItaEng');
     await page.click('#qm-start-btn').catch(() => {});
-    await page.waitForTimeout(200);
+    // Una sola attesa per quattro asserzioni: si aspetta che la barra del quiz sia a
+    // schermo, poi si leggono i quattro stati in una chiamata sola (regola 19).
+    await attendiVisibile(page, '#match-watch-btn');
     const state = await page.evaluate(() => {
       var w = document.getElementById('match-watch-btn');
       var h = document.getElementById('match-help-btn');
@@ -214,8 +217,7 @@ async function run() {
     log('[QM Task3] Help stays enabled during the quiz (no timer in Match Practice)', state.helpDisabled === false);
     // Clicking Spiegazione during the quiz should actually open the overlay.
     await page.click('#match-watch-btn');
-    await page.waitForTimeout(100);
-    const overlayVisible = await page.isVisible('#howitworks-overlay').catch(() => false);
+    const overlayVisible = await attendiVisibile(page, '#howitworks-overlay');
     log('[QM Task2] Spiegazione click opens the overlay mid-quiz', overlayVisible);
     log('[QM Task2] No JS errors', errors.length === 0);
     await page.close();

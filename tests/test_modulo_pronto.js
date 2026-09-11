@@ -167,7 +167,10 @@ async function run() {
     await page.click('#go-episode');
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0, null, { timeout: 20000 });
     await page.click('[data-module="personalizzazione"]');
-    await page.waitForTimeout(600);
+    // ATTESA-LEGITTIMA: l'asserzione e' che la schermata d'ERRORE non compaia. Aspettare
+    // che Personalizza sia visibile non basterebbe: la regressione che questo blocco
+    // difende mostrava l'errore DOPO, quando il fetch(undefined) falliva. Serve il tempo.
+    await page.waitForTimeout(600); // ATTESA-LEGITTIMA: prova che la schermata d'errore NON compare su un modulo senza dataFile
     const stato = await page.evaluate(() => {
       const vis = id => { const e = document.getElementById(id); return !!e && e.getClientRects().length > 0; };
       return { errore: vis('view-error'), personalizza: vis('view-customize') };

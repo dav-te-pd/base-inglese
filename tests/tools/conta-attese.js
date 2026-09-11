@@ -67,8 +67,39 @@ const FINE = '<!-- FINE GENERATO -->';
 // Le attese VERE: aspettano uno stato, non un numero. Chi ne incontra una
 // prima di un log e' navigazione, perche' l'asserzione dipende da quella e
 // non dai millisecondi.
-const ATTESA_VERA = /waitForSelector|waitForFunction|waitForEvent|waitForLoadState|waitForURL|attendiSottotitoloEsito|playThroughQuiz|waitForQuizChange|rispondiECompleta|riprendiDopoERientra/;
+const ATTESA_VERA = /waitForSelector|waitForFunction|waitForEvent|waitForLoadState|waitForURL|attendiSottotitoloEsito|attendiVisibile|attendiNascosto|playThroughQuiz|waitForQuizChange|rispondiECompleta|riprendiDopoERientra/;
 const LOG = /(?<![\w.])log\(/;
+
+// ⚠️ IL MARCATORE DELLE ATTESE LEGITTIME, e non e' burocrazia: senza, il conto
+// mente nella direzione peggiore.
+//
+// Non tutte le attese a tempo sono un debito. Ce ne sono due specie che NON si
+// possono convertire, e che restano a tempo per sempre:
+//
+//   - quelle che verificano che una cosa NON accada (nessun avviso, nessun
+//     avanzamento, nessun errore in console): non si puo' aspettare un
+//     non-evento, quindi li' i millisecondi SONO la misura;
+//   - quelle su uno stato che era GIA' vero prima dell'attesa (un elemento
+//     nascosto fin dall'apertura): un'attesa "finche' e' nascosto" tornerebbe
+//     al primo istante senza aver verificato niente.
+//
+// Se restano nel totale delle guardie, chi legge il numero crede che siano
+// debito da chiudere. E chi le "chiude" convertendole non lascia un rosso:
+// lascia un VERDE CHE NON PROVA PIU' NIENTE — mentre il conto scende, cioe' il
+// numero con cui misuriamo il progresso migliora proprio quando il lavoro fa
+// danno. (Misurato l'11 settembre sulla famiglia «una schermata che compare o
+// sparisce»: 9 punti su 29 erano di queste due specie, 3 dei quali si sarebbero
+// silenziosamente svuotati convertendoli.)
+//
+// Quindi il marcatore sta NEL SITO, dove lo legge chi passa di li', e lo
+// strumento lo raccoglie da solo — invece di un elenco a parte che va riletto a
+// mano e che scade in silenzio come il vecchio censimento.
+//
+//   await page.waitForTimeout(500); // ATTESA-LEGITTIMA: il motivo, per esteso
+//
+// Il motivo e' obbligatorio: un marcatore nudo sarebbe un permesso, e chi arriva
+// dopo non saprebbe se fidarsi. Con il motivo scritto puo' dissentire.
+const LEGITTIMA = /ATTESA-LEGITTIMA\s*:?\s*(.*)$/;
 const FINESTRA = 16; // righe guardate in avanti
 
 function fileDaCensire() {
@@ -77,7 +108,16 @@ function fileDaCensire() {
   const sh = fs.readFileSync(path.join(CARTELLA_TEST, 'run_full_regression.sh'), 'utf8');
   const m = sh.match(/^FILES="([^"]+)"/m);
   if (!m) throw new Error('Non trovo la lista FILES in run_full_regression.sh');
-  return m[1].split(/\s+/).filter(Boolean);
+  // ⚠️ test_conta_attese.js e' escluso dal censimento AUTOMATICO, e non e' una
+  // scorciatoia: quel file contiene il codice FINTO con cui questo strumento
+  // viene misurato — attese scritte dentro una stringa, che non girano mai.
+  // Censirle significherebbe contare le proprie impalcature come debito della
+  // suite: fino all'11 settembre tre finte stavano dentro le 186. Passandolo
+  // ESPLICITAMENTE sulla riga di comando viene censito lo stesso, ed e' cosi'
+  // che il suo test lo esercita.
+  return m[1].split(/\s+/).filter(Boolean).filter(function (f) {
+    return path.basename(f) !== 'test_conta_attese.js';
+  });
 }
 
 // Un nome nudo si cerca in tests/; un percorso si prende com'e', cosi' un file
@@ -156,6 +196,7 @@ function millisecondi(riga) {
 
 function censisci() {
   const voci = [];
+  const legittime = [];
   const navigazione = {};
   fileDaCensire().forEach(function (f) {
     const p = risolvi(f);
@@ -174,6 +215,14 @@ function censisci() {
         if (LOG.test(s)) { protetta = etichetta(s); fine = j + 1; break; }
       }
       if (protetta === null) { navigazione[f]++; return; }
+      // Marcata nel sito come non convertibile: e' una guardia, ma NON e'
+      // debito. Va contata a parte, mai dentro il numero su cui si misura il 14b.
+      const mLeg = r.match(LEGITTIMA);
+      if (mLeg) {
+        legittime.push({ file: f, asserzione: protetta, ms: millisecondi(r),
+                         motivo: (mLeg[1] || '').replace(/\s+/g, ' ').trim(), riga: i + 1 });
+        return;
+      }
       voci.push({
         file: f,
         asserzione: protetta,
@@ -184,12 +233,13 @@ function censisci() {
       });
     });
   });
-  return { voci: voci, navigazione: navigazione };
+  return { voci: voci, legittime: legittime, navigazione: navigazione };
 }
 
 function blocco(censimento) {
   const oggi = new Date().toISOString().slice(0, 10);
   const voci = censimento.voci;
+  const legittime = censimento.legittime;
   const nav = censimento.navigazione;
   const perFile = {};
   voci.forEach(function (v) { (perFile[v.file] = perFile[v.file] || []).push(v); });
@@ -200,8 +250,23 @@ function blocco(censimento) {
   out.push('');
   out.push('## Elenco — generato il ' + oggi);
   out.push('');
-  out.push('**' + voci.length + ' guardie** (un\'attesa a tempo da cui dipende il verde di');
-  out.push('un\'asserzione) e **' + totNav + ' attese di navigazione**, ' + (voci.length + totNav) + ' in tutto.');
+  out.push('**' + voci.length + ' guardie DA CONVERTIRE** — un\'attesa a tempo da cui dipende');
+  out.push('il verde di un\'asserzione, e che si puo\' sostituire con un\'attesa sullo stato');
+  out.push('vero. **E\' questo il numero su cui si misura il 14b**, e l\'unico che deve');
+  out.push('scendere.');
+  out.push('');
+  out.push('| | quante |');
+  out.push('|---|---|');
+  out.push('| **guardie da convertire** — il debito | **' + voci.length + '** |');
+  out.push('| guardie **legittime** — marcate nel sito, NON sono debito | ' + legittime.length + ' |');
+  out.push('| attese di **navigazione** — se sono corte il test si rompe, non passa | ' + totNav + ' |');
+  out.push('| in tutto | ' + (voci.length + legittime.length + totNav) + ' |');
+  out.push('');
+  out.push('⚠️ **I tre numeri non si sommano in uno solo, ed e\' il punto.** Una guardia');
+  out.push('legittima verifica che una cosa NON accada, oppure uno stato che era gia\' vero:');
+  out.push('convertirla la farebbe tornare al primo istante senza verificare niente — un');
+  out.push('**verde che non prova piu\' niente**, mentre il conto scende. Tenerle nel totale');
+  out.push('farebbe migliorare il numero proprio quando il lavoro fa danno.');
   out.push('');
   out.push('Ogni voce e\' identificata dall\'**asserzione che protegge**, non dal numero di');
   out.push('riga: la riga si sposta a ogni commit, l\'etichetta di un\'asserzione no. Il');
@@ -229,6 +294,21 @@ function blocco(censimento) {
       out.push('| `' + f + '` | ' + v.ms + ' | ' + v.azione + ' | ' + v.aspetta + ' | ' +
         v.asserzione.replace(/\|/g, '\\|') + ' | ' + v.riga + ' |');
     });
+  });
+  out.push('');
+  out.push('### Le guardie legittime — marcate nel sito, e perche\'');
+  out.push('');
+  out.push('*Restano a tempo per sempre. Il motivo e\' scritto accanto all\'attesa con');
+  out.push('`// ATTESA-LEGITTIMA:`, quindi lo legge chi passa di li\' — e questo elenco lo');
+  out.push('raccoglie da solo invece di essere una lista da rileggere a mano.*');
+  out.push('');
+  out.push('| file | ms | asserzione protetta | perche\' resta |');
+  out.push('|---|---|---|---|');
+  legittime.slice().sort(function (a, b) {
+    return a.file === b.file ? a.riga - b.riga : (a.file < b.file ? -1 : 1);
+  }).forEach(function (v) {
+    out.push('| `' + v.file + '` | ' + v.ms + ' | ' + v.asserzione.replace(/\|/g, '\\|') +
+      ' | ' + (v.motivo || '⚠️ marcata senza motivo').replace(/\|/g, '\\|') + ' |');
   });
   out.push('');
   out.push('### Attese di navigazione, per file');

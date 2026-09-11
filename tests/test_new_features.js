@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { stepsBefore, allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -238,7 +239,7 @@ async function run() {
       const before = await page.evaluate(() => JSON.stringify(window.APP_CONFIG.speech.rateOptions));
       await arrayTextarea.fill('not valid json');
       await arrayTextarea.evaluate(el => el.dispatchEvent(new Event('change', { bubbles: true })));
-      await page.waitForTimeout(50);
+      await attendiVisibile(page, '.config-field-error');
       const errVisible = await arrayTextarea.evaluate(el => {
         var err = el.parentElement.querySelector('.config-field-error');
         return err && !err.hidden;

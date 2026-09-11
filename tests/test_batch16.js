@@ -183,9 +183,18 @@ async function run() {
     log('[Job2] "Riprendi" stays enabled (not stuck disabled) while genuinely paused', riprendiDisabled === false);
     // Resume -> dialogue must continue normally (not frozen) -> eventually more lines get heard or it reaches summary.
     await page.click('#dg-pause-btn');
-    await page.waitForTimeout(300);
+    // ATTESA-LEGITTIMA: "dopo Riprendi si e' ANCORA sulla schermata del dialogo" e' uno
+    // stato gia' vero prima del click: aspettarlo tornerebbe subito. Il tempo serve a dare
+    // al modulo l'occasione di piantarsi o di uscire dalla schermata, che e' il difetto
+    // che questa riga difende.
+    await page.waitForTimeout(300); // ATTESA-LEGITTIMA: prova che riprendendo NON si esce dalla schermata del dialogo
     const stillOnMain = await page.isVisible('#dg-main-screen').catch(() => false);
-    log('[Job2] After Riprendi, still on the dialogue screen (not stuck/crashed)', stillOnMain === true || true);
+    // ⚠️ Qui c'era `stillOnMain === true || true`, cioe' un'asserzione che non poteva
+    // fallire: `x || true` e' sempre vero (famiglia ⓪-bis di ERRORI-INGOIATI.md). Nominava
+    // un comportamento per non verificarlo — e quel comportamento, riprendere senza
+    // piantarsi, non era protetto da niente. Trovata l'11 settembre convertendo le attese
+    // della famiglia ②, non cercandola.
+    log('[Job2] After Riprendi, still on the dialogue screen (not stuck/crashed)', stillOnMain === true);
     log('[Job2] No JS errors', errors.length === 0);
     await page.close();
   }

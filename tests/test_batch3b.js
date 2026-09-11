@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { gradeOf, stepIds, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -109,8 +110,7 @@ async function run() {
     // l'avviso: i primi due passi dell'ordine.
     await bootAsUser(page, 'T5Danger', stepIds().slice(0, 2));
     await openModule(page, 'personalizzazione');
-    await page.waitForTimeout(200);
-    const hasDangerPanel = await page.isVisible('.danger-panel');
+    const hasDangerPanel = await attendiVisibile(page, '.danger-panel');
     log('[5] Warning uses the dedicated .danger-panel (not the plain .overlay-text)', hasDangerPanel);
     const hasIcon = await page.$eval('.danger-panel-icon svg', el => !!el).catch(() => false);
     log('[5] Danger panel shows a warning icon', hasIcon);
@@ -133,7 +133,12 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T6NoData', ALL_BEFORE_VC);
     await openModule(page, 'voiceCoach');
-    await page.waitForTimeout(200);
+    // ATTESA-LEGITTIMA: lo stato verificato qui era GIA' vero prima dell'attesa.
+    // Un'attesa "finche' e' nascosto" tornerebbe al PRIMO ISTANTE senza aver verificato
+    // niente: il test diventerebbe istantaneo e vuoto, e il conto delle guardie
+    // scenderebbe — cioe' il numero migliorerebbe proprio facendo danno. Il tempo qui
+    // serve a dare all'app l'occasione di mostrarlo per sbaglio.
+    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: "Mostra pronuncia" e' nascosto fin dall'apertura — si prova che RESTI nascosto
     const toggleHidden = await page.$eval('#vc-pronunciation-toggle', el => el.hidden);
     log('[6] "Mostra pronuncia" is hidden when the line has no pronunciationTip', toggleHidden);
     log('[6] No JS errors', errors.length === 0);
@@ -160,13 +165,14 @@ async function run() {
     });
     await bootAsUser(page, 'T6WithData', ALL_BEFORE_VC);
     await openModule(page, 'voiceCoach');
-    await page.waitForTimeout(200);
-    const toggleVisible = await page.$eval('#vc-pronunciation-toggle', el => !el.hidden);
+    const toggleVisible = await attendiVisibile(page, '#vc-pronunciation-toggle');
     log('[6] "Mostra pronuncia" appears when the line HAS a pronunciationTip', toggleVisible);
+    // ATTESA-LEGITTIMA (protetta dall'attesa qui sopra): "nascosto per default" e' uno
+    // stato gia' vero all'apertura. Aspettarlo tornerebbe subito e non proverebbe niente.
     const textHiddenByDefault = await page.$eval('#vc-pronunciation', el => el.hidden);
     log('[6] Pronunciation text is hidden by default', textHiddenByDefault);
     await page.click('#vc-pronunciation-toggle');
-    await page.waitForTimeout(80);
+    await attendiVisibile(page, '#vc-pronunciation');
     const revealed = await page.$eval('#vc-pronunciation', el => !el.hidden && el.textContent);
     log('[6] Clicking reveals the transcription text', revealed === 'hel-LOU EV-ri-uan');
     const btnLabel = await page.$eval('#vc-pronunciation-toggle', el => el.textContent);

@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { stepsBefore, stepIds } = require('./module-order');
 const BASE = APP_URL;
 
@@ -150,8 +151,7 @@ async function run() {
     const nowEnabled = await page.$eval('#customize-warning-confirm-btn', el => !el.disabled);
     log('[6b] Exact phrase (case-insensitive) enables the confirm button', nowEnabled);
     await page.click('#customize-warning-confirm-btn');
-    await page.waitForTimeout(100);
-    const mainNowVisible = await page.evaluate(() => !document.getElementById('customize-main-screen').hidden);
+    const mainNowVisible = await attendiVisibile(page, '#customize-main-screen');
     log('[6b] Confirming switches to the main edit screen', mainNowVisible);
     const progressAfter = await page.evaluate((u) => localStorage.getItem('baseinglese:modules:gate:' + u), 'T6Started');
     log('[6b] Confirming wipes moduleProgress from localStorage', progressAfter === null);

@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiNascosto, attendiVisibile } = require('./attese');
 const { declareAllSkills } = require('./story-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
@@ -107,14 +108,17 @@ async function run() {
     await openModule(page, 'voicePractice');
     await page.waitForTimeout(300);
     await page.evaluate(() => document.getElementById('vc-record-btn').click());
-    await page.waitForTimeout(500); // well past the 150ms silence timeout, still "speaking"
+    // ATTESA-LEGITTIMA: questa attesa E' la misura. Verifica che l'avviso di silenzio
+    // NON compaia mentre si parla, e un non-evento non si puo' aspettare: l'unico modo
+    // di provarlo e' dare al timeout (150ms) tutto il tempo di scattare e vedere che non
+    // e' scattato. Convertirla e' impossibile, non scomodo.
+    await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che un avviso NON compare — ben oltre il timeout di 150ms
     const warningVisible = await page.evaluate(() => !document.getElementById('vc-silence-warning').hidden);
     const stillRecording = await page.evaluate(() => document.getElementById('vc-record-btn').classList.contains('is-recording'));
     log('[Job1] Continuous speech: NO silence warning fires mid-speech', !warningVisible);
     log('[Job1] Continuous speech: still recording (not auto-stopped)', stillRecording);
     await page.evaluate(() => document.getElementById('vc-record-btn').click()); // stop
-    await page.waitForTimeout(150);
-    const confirmAreaVisible = await page.evaluate(() => !document.getElementById('vc-confirm-area').hidden);
+    const confirmAreaVisible = await attendiVisibile(page, '#vc-confirm-area');
     log('[Job1] Recording reaches the normal pending/confirm state when stopped', confirmAreaVisible);
     log('[Job1] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -146,9 +150,8 @@ async function run() {
     const btnLabel = await page.evaluate(() => document.getElementById('repeat-aloud-complete').textContent);
     log('[Job3] "Ho finito" button no longer claims "torna alla mappa" (it opens the summary now)', btnLabel === 'Ho finito');
     await page.click('#repeat-aloud-complete');
-    await page.waitForTimeout(150);
-    const summaryVisible = await page.evaluate(() => !document.getElementById('repeat-aloud-summary-screen').hidden);
-    const mainHidden = await page.evaluate(() => document.getElementById('repeat-aloud-main-screen').hidden);
+    const summaryVisible = await attendiVisibile(page, '#repeat-aloud-summary-screen');
+    const mainHidden = await attendiNascosto(page, '#repeat-aloud-main-screen');
     log('[Job3] Repeat Aloud: clicking "Ho finito" opens the Schermata Finale (not the map)', summaryVisible && mainHidden);
     const watchHidden = await page.evaluate(() => document.getElementById('repeat-aloud-watch-btn').hidden);
     log('[Job3] Repeat Aloud summary hides Spiegazione (rule 10)', watchHidden);
@@ -175,8 +178,7 @@ async function run() {
     // "Ho finito" e' bloccato finche' ogni skill non e' dichiarata.
     await declareAllSkills(page);
     await page.click('#story-cards-complete');
-    await page.waitForTimeout(150);
-    const summaryVisible = await page.evaluate(() => !document.getElementById('story-cards-summary-screen').hidden);
+    const summaryVisible = await attendiVisibile(page, '#story-cards-summary-screen');
     log('[Job3] Story Cards: clicking "Ho finito" opens the Schermata Finale', summaryVisible);
     await page.click('#story-cards-complete-btn');
     await page.waitForTimeout(150);
@@ -196,7 +198,12 @@ async function run() {
     await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
-    await page.waitForTimeout(150);
+    // ATTESA-LEGITTIMA: lo stato verificato qui era GIA' vero prima dell'attesa.
+    // Un'attesa "finche' e' nascosto" tornerebbe al PRIMO ISTANTE senza aver verificato
+    // niente: il test diventerebbe istantaneo e vuoto, e il conto delle guardie
+    // scenderebbe — cioe' il numero migliorerebbe proprio facendo danno. Il tempo qui
+    // serve a dare all'app l'occasione di mostrarlo per sbaglio.
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: il badge "Ripasso" e' gia' nascosto — si prova che NON compaia nel giro principale
     const badgeHiddenMainPass = await page.evaluate(() => document.getElementById('qm-ripasso-badge').hidden);
     log('[Job4] "Ripasso" badge hidden during the main pass', badgeHiddenMainPass);
     // Ogni risposta sbagliata, così tutto finisce nella coda di ripasso e il
@@ -262,8 +269,7 @@ async function run() {
     await openModule(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
-    await page.waitForTimeout(150);
-    const toolbarVisible = await page.evaluate(() => !document.getElementById('dg-toolbar').hidden);
+    const toolbarVisible = await attendiVisibile(page, '#dg-toolbar');
     const nextLineBtnText = await page.evaluate(() => { var b = document.getElementById('dg-next-line-btn'); return b ? b.textContent : null; });
     log('[Job7b] Ripeti a Tempo toolbar shows "Prossima frase"', toolbarVisible && nextLineBtnText === 'Prossima frase');
     const bubbleIds = await page.$$eval('.dg-bubble', els => els.map(e => e.getAttribute('data-line-id')));

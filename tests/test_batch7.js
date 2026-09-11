@@ -1,6 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
-const { attendiSottotitoloEsito } = require('./attese');
+const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -85,7 +85,7 @@ async function run() {
       await enabledOption.click();
       await page.waitForTimeout(150);
     }
-    const summaryVisible = await page.isVisible('#sr-summary-screen').catch(() => false);
+    const summaryVisible = await attendiVisibile(page, '#sr-summary-screen');
     log('[Job2] Speed Match reached Schermata Finale', summaryVisible);
     if (summaryVisible) {
       const title = await page.$eval('#sr-summary-title', el => el.textContent).catch(() => null);

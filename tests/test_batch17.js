@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -394,7 +395,7 @@ async function run() {
       if (knowBtn) { await knowBtn.click({ timeout: 1000 }).catch(() => {}); }
       await page.waitForTimeout(150);
     }
-    const onSummary = await page.isVisible('#fc-summary-screen').catch(() => false);
+    const onSummary = await attendiVisibile(page, '#fc-summary-screen');
     log('[Job2] Reached the Schermata Finale', onSummary);
     const spiegazioneHidden = await page.evaluate(() => document.getElementById('flashcard-watch-btn').hidden);
     log('[Job2] Spiegazione is hidden on the Schermata Finale (rule 10)', spiegazioneHidden === true);

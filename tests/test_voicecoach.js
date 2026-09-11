@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -151,9 +152,8 @@ async function run() {
   const starsOnRetry = await recordAndSend(page, retryTarget);
   log('[4c] Re-recording correctly on the retry pass scores well (>=2 stars)', starsOnRetry >= 2);
   await page.click('#vc-next-btn');
-  await page.waitForTimeout(150);
 
-  const summaryVisible = await page.evaluate(() => !document.getElementById('voice-coach-summary-screen').hidden);
+  const summaryVisible = await attendiVisibile(page, '#voice-coach-summary-screen');
   log('[4d] Schermata Finale appears once the retry pass is clean', summaryVisible);
   const completeBtnVisible = await page.isVisible('#voice-coach-complete-btn');
   log('[4d] Schermata Finale has the explicit "Ho finito, torna alla mappa" button', completeBtnVisible);

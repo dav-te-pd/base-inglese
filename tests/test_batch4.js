@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -75,8 +76,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await page.goto(BASE + '?config=1');
-    await page.waitForTimeout(200);
-    const configVisible = await page.isVisible('#config-panel-overlay').catch(() => false);
+    const configVisible = await attendiVisibile(page, '#config-panel-overlay');
     log('[T1] Config panel opens via ?config=1', configVisible);
 
     // configFieldDescriptions itself must not render as its own group

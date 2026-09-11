@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -142,9 +143,8 @@ async function run() {
     await openModule(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
-    await page.waitForTimeout(150);
-    const watchVisible = await page.isVisible('#dialogo-watch-btn');
-    const helpVisible = await page.isVisible('#dialogo-help-btn');
+    const watchVisible = await attendiVisibile(page, '#dialogo-watch-btn');
+    const helpVisible = await attendiVisibile(page, '#dialogo-help-btn');
     log('[Regression] Mod1 still shows full header (Mappa/Spiegazione/Help)', watchVisible && helpVisible);
     const toolbarVisible = await page.evaluate(() => !document.getElementById('dg-toolbar').hidden);
     const toggleExists = await page.evaluate(() => !!document.getElementById('dg-translations-toggle'));
@@ -161,7 +161,11 @@ async function run() {
     // — dgLockAll no longer locks OTHER bubbles for this profile (only
     // Ripeti a Tempo/Continuo still do). b1 still lifts (is-active).
     log('[Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile)', midAudio.b1Active && !midAudio.b2Locked);
-    await page.waitForTimeout(60);
+    // ATTESA-LEGITTIMA: meta' di quello che si verifica qui e' una cosa che NON deve
+    // esserci — la bolla non piu' attiva e senza barra del countdown (profilo
+    // countdown:false). L'assenza di due classi non si aspetta: si da' il tempo perche'
+    // comparissero e si guarda che non ci siano.
+    await page.waitForTimeout(60); // ATTESA-LEGITTIMA: prova che due classi NON ci sono piu' dopo l'audio
     const afterAudio = await page.evaluate((id1) => {
       var b1 = document.querySelector('.dg-bubble[data-line-id="' + id1 + '"]');
       var check = document.getElementById('dg-heard-' + id1);
@@ -170,7 +174,7 @@ async function run() {
     log('[Regression] Mod1 unlocks right after audio (no countdown bar, countdown:false)', !afterAudio.b1Active && !afterAudio.b1Timer);
     log('[Regression] Mod1 checkmark still appears', afterAudio.checkVisible);
     await page.click('#dg-translations-toggle');
-    await page.waitForTimeout(50);
+    await attendiVisibile(page, '.dg-translation:not([hidden])');
     // Quante sono le battute lo dice il grado che il modulo legge, non un
     // numero scritto qui: il dialogo e' passato da 7 a 12 battute.
     const quante = loadGrade(gradeOf('dialogoAscoltaRipeti')).length;

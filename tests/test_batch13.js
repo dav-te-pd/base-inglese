@@ -143,7 +143,10 @@ async function run() {
     await page.evaluate(() => document.getElementById('vc-record-btn').click());
     await page.waitForTimeout(60); // onresult fires at 5ms, well before the 300ms silence timeout
     await page.evaluate(() => document.getElementById('vc-record-btn').click()); // stop
-    await page.waitForTimeout(500); // past where the (now-moot) silence timeout would have fired
+    // ATTESA-LEGITTIMA: come sopra — si aspetta oltre il punto in cui il timeout di
+    // silenzio SAREBBE scattato, per verificare che non sia scattato. Un non-evento non
+    // si aspetta: il tempo e' la misura.
+    await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto
     const warningVisible = await page.evaluate(() => !document.getElementById('vc-silence-warning').hidden);
     log('[6b] Recognized speech before the timeout: no silence warning (false-discard guard)', !warningVisible);
     const confirmAreaVisible = await page.evaluate(() => !document.getElementById('vc-confirm-area').hidden);

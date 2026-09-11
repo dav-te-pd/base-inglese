@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiNascosto } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -212,8 +213,7 @@ async function run() {
       await page.waitForTimeout(500); // audio (400ms mock) + onEnd unlock
     }
     await page.click('#dg-know-it-btn');
-    await page.waitForTimeout(150);
-    const watchHiddenOnSummary = await page.isHidden('#dialogo-watch-btn').catch(() => null);
+    const watchHiddenOnSummary = await attendiNascosto(page, '#dialogo-watch-btn');
     const helpVisibleOnSummary = await page.isVisible('#dialogo-help-btn').catch(() => null);
     log('[Job5] dialogoAscoltaRipeti: Spiegazione hidden on Schermata Finale (rule 10)', watchHiddenOnSummary === true);
     log('[Job5] dialogoAscoltaRipeti: Help still visible on Schermata Finale', helpVisibleOnSummary === true);
