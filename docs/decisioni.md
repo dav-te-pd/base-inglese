@@ -660,6 +660,86 @@ va scorporato — perché una guardia legittima (negativa, o su uno stato già
 vero) non è un debito da chiudere, e tenerla nel totale fa sembrare il 14b più
 grande di quello che è.
 
+## 14b ① — il triage della famiglia più grande (11 settembre)
+
+**52 punti dichiarati, 26 da convertire. Esattamente la metà.** Sulla ② erano 20
+su 29; qui il triage toglie di più, e la previsione di chi guida il progetto era
+giusta: *«una classe che cambia stato» è più ambiguo di «una schermata che
+compare» — una classe può essere aggiunta o tolta, e può essere già presente
+prima.*
+
+| | n | |
+|---|---|---|
+| **da convertire** | **26** | una transizione vera: il pulsante si abilita, la classe compare, il testo cambia |
+| **già vero prima dell'attesa** | **11** | *«starts disabled»*, *«still disabled»*, *«keeps disabled»* |
+| **negative** | **12** | *«stays enabled»*, *«does NOT open»*, *«NON carries»* |
+| **misclassificate** | **3** | l'etichetta della famiglia è sbagliata, vedi sotto |
+
+### ⚠️ Il gruppo che qui è enorme: «STAYS ENABLED»
+
+**Sette delle dodici negative stanno in `test_batch17.js`**, e sono tutte la
+stessa cosa: *«Spiegazione **stays** enabled during a line's own audio»*, *«"Ho
+finito" **stays** enabled»*, *«Answer options **stay** enabled»*. Verificano che
+la Regola Azione Critica (regola 16) **non** spenga i pulsanti mentre l'audio
+parla — cioè che una cosa **non** accada. Il tempo è la misura.
+
+*È il gruppo che rende questa famiglia diversa dalla ②: lì le negative erano
+cinque su ventinove, qui dodici su cinquantadue, e sette vengono da un file
+solo che difende un'unica regola del progetto.*
+
+### La quarta categoria, nuova: MISCLASSIFICATE
+
+Tre punti non appartengono a questa famiglia, e la ragione è dello strumento,
+non del codice:
+
+- **due leggono un DATO, non una classe** — `bubbleIds.length >= 3` in
+  `test_batch14.js`, l'elenco dei `data-module` in `test_new_features.js`.
+  Finiscono qui perché nella finestra c'è un `getAttribute`, che la regola della
+  famiglia cattura;
+- **uno ha un AIUTANTE LOCALE fra l'attesa e l'asserzione** —
+  `test_batch19.js` chiama `openModule()` lì in mezzo, e `openModule` aspetta
+  per conto suo. Lo strumento non lo sa, quindi conta come guardia un'attesa che
+  non lo è.
+
+⚠️ **Il secondo caso è stato MISURATO prima di dichiararlo una distorsione: in
+tutta la suite sono QUATTRO** (`test_batch6`, `test_batch8`, `test_batch15`,
+`test_batch19`), non un difetto sistematico. *Quattro su 154 non giustificano di
+allargare la regola degli aiutanti: si marcano dove capitano.*
+
+### Cosa vuol dire per il 14b
+
+**Due giri di triage, due numeri: 20/29 e 26/52.** In media meno della metà di
+una famiglia è lavoro vero. **Il totale di 154 non è un piano**: è un punto di
+partenza da cui ogni famiglia toglie la sua parte, e la toglie **solo
+leggendola**.
+
+## ⚠️ PRIMA DELLA FASE 4 — l'app finirà dietro un login, e questo cambia COME si divide
+
+**Deciso da chi guida il progetto l'11 settembre. Non è lavoro per adesso: è un
+vincolo da sapere PRIMA di cominciare a pensare allo spacchettamento**, perché
+arriva dopo averlo disegnato costa il disegno.
+
+> **IL BROWSER HA SEMPRE IL MINIMO INDISPENSABILE.**
+> Prima del login: **solo il login**.
+> Dopo il login: **solo il pezzo che si sta usando**.
+
+**Quindi lo spacchettamento non deve solo dividere bene — deve produrre pezzi
+CONSEGNABILI SEPARATAMENTE.** Il rischio concreto, nelle parole di chi lo ha
+posto: *uno strato che contiene sia cose che servono al login sia cose che
+servono solo dopo non lo spezzi più, e il login si porta dietro roba che non gli
+serve.*
+
+⚠️ **E la domanda a cui va risposto prima di dividere, non dopo:** gli script
+separati (passi 20-23) funzionano perché **l'ordine di caricamento È la
+struttura**, e tutto si carica all'avvio. **Col caricamento a richiesta quella
+forma regge ancora, o serve altro?** *Se la risposta è «serve altro», va saputo
+PRIMA di dividere* — perché è la differenza fra un ordine di `<script>` e un
+sistema di moduli, e non è una cosa che si aggiunge dopo a una divisione già
+fatta.
+
+**Da valutare (regola 34), non da eseguire.** La valutazione si consegna a
+codice fermo, e prima del passo 20.
+
 ## Le tre cose della sera del 2026-09-10, e in che ordine
 
 *Decise insieme dopo il ①+B. Stanno qui e non nella fase 2-bis perché non sono
