@@ -62,6 +62,9 @@ solo gradi C e D.*
 
 ## Regole di lavoro (`CLAUDE.md`)
 
+| 2026-09-11 | **Regola 44 — l'effetto su cui aspetti non può essere quello che l'asserzione legge.** Nata da due famiglie dello stesso giorno: il suono (aspettare lo spegnimento avrebbe trasformato *«il tocco l'ha fermato»* in *«prima o poi ha smesso»*, vera sempre) e il `localStorage` (aspettare `outcome-verde` avrebbe reso vera per costruzione l'asserzione che quella classe la verifica). Il criterio stava già in testa a `tests/attese.js`, ma **là lo trova chi converte, non chi scrive un test nuovo** — e il difetto nasce lì con la stessa facilità. Porta con sé il rovescio operativo (l'approdo è l'ULTIMO effetto del gesto, e dev'essere uno che nessuna asserzione di quel test legge) e il caso in cui l'asserzione va **spezzata**. | titolo: `Regola 44, e la riga accanto al conto delle attese` |
+
+
 *Le regole nascono quasi sempre da un difetto vissuto, quindi sono correzioni
 come le altre — solo che quello che correggono è **come si lavora**, non il
 codice. Stanno qui perché `decisioni.md` deve svuotarsi.*

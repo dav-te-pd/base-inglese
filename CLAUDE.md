@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260911b**
+**Versione: 20260911c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -644,6 +644,46 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     **Questa regola è quello che resta quando la conversazione finisce.** Non
     serviva un posto nuovo: i due file c'erano già. Serviva un **momento**, ed è
     quello del commit.
+
+44. **L'EFFETTO SU CUI ASPETTI NON PUÒ ESSERE QUELLO CHE L'ASSERZIONE
+    LEGGE. ALTRIMENTI DIVENTA VERA PER COSTRUZIONE.**
+
+    **E il rovescio, che è la parte operativa: l'approdo giusto è l'ULTIMO
+    effetto del gesto, e dev'essere uno che nessuna asserzione di quel test
+    legge.**
+
+    *Sta qui e non solo in `tests/attese.js` per una ragione precisa: là lo
+    trova **chi converte** un'attesa a tempo. Non lo trova **chi scrive un test
+    nuovo** — e il difetto nasce lì con la stessa facilità.*
+
+    **I due casi, entrambi del 2026-09-11, perché senza la regola sembra
+    astratta.**
+
+    - **Il suono.** Nove punti verificavano *«toccare qualcos'altro interrompe
+      l'audio»* leggendo `speaking === false` cinquanta millisecondi dopo il
+      tocco. Il finto sintetizzatore si spegne **da solo dopo 500 ms**: un'attesa
+      «finché non parla più» sarebbe tornata vera **anche senza nessun tocco**.
+      L'asserzione *«il tocco l'ha fermato»* sarebbe diventata *«prima o poi ha
+      smesso»* — vera sempre. *Quello che si perde non è il valore: è l'ISTANTE
+      in cui viene letto, e l'istante non si vede nel diff.*
+
+    - **Il `localStorage`.** Tredici punti leggevano un esito scritto nel
+      magazzino **e** la classe della riga in mappa. Aspettare `outcome-verde`
+      avrebbe reso vera per costruzione l'asserzione che quella classe la
+      verifica; aspettare la scrittura avrebbe fermato al **primo** effetto,
+      lasciando scoperto tutto il resto (`completeModule` scrive per prima cosa
+      e ridisegna la mappa per ultima). L'approdo giusto era il terzo —
+      `#view-map.is-active` — l'ultimo effetto, e l'unico che nessuna di quelle
+      asserzioni legge.
+
+    **E quando l'asserzione legge TUTTI gli effetti del gesto, non resta niente
+    su cui aspettare: l'asserzione si SPEZZA**, e l'attesa diventa la prima
+    delle due, dichiarata per quello che è. È successo su due punti su tredici.
+
+    *Perché è una regola e non un appunto nel file dei test: il difetto non
+    lascia un rosso. Lascia un verde che non prova più niente — e il conto delle
+    attese a tempo **scende**, cioè il numero migliora proprio quando il lavoro
+    fa danno.*
 
 ## Riferimenti operativi
 

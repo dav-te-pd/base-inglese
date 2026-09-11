@@ -152,6 +152,19 @@ convertirla la farebbe tornare al primo istante senza verificare niente — un
 **verde che non prova piu' niente**, mentre il conto scende. Tenerle nel totale
 farebbe migliorare il numero proprio quando il lavoro fa danno.
 
+⚠️ **E LA RIGA CHE VA LETTA PRIMA DI FIDARSI DI QUESTO CONTO:**
+
+> **UN NUMERO CHE SI MUOVE NELLA DIREZIONE CHE TI ASPETTI E' QUELLO CHE
+> CONTROLLI DI MENO.**
+
+Il caso, 2026-09-11: questo strumento teneva l'elenco delle attese vere
+scritto a mano, fermo a tre helper su otto, e **promuoveva a guardia ogni
+attesa che stava prima di una conversione**. Per tre famiglie di seguito il
+numero e' sceso — 186, 154, 108, 90 — e nessuno l'ha controllato, perche'
+scendeva. Il vero era **56**, e le tre famiglie erano gia' chiuse. Il conto
+contava come debito nuovo l'effetto del lavoro che il debito lo stava
+togliendo.
+
 Ogni voce e' identificata dall'**asserzione che protegge**, non dal numero di
 riga: la riga si sposta a ogni commit, l'etichetta di un'asserzione no. Il
 numero di riga e' stampato accanto come comodita' del giorno in cui questo
