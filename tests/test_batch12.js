@@ -348,7 +348,7 @@ async function run() {
       await vcCompleteLineRight(page);
       const nextDisabled = await page.evaluate(() => document.getElementById('vc-next-btn').disabled);
       if (!nextDisabled) await page.click('#vc-next-btn');
-      await page.waitForTimeout(180);
+      await page.waitForTimeout(180); // ATTESA-LEGITTIMA: l'asserzione dopo il ciclo e' negativa: Voice Practice non deve MAI mostrare la Schermata Ripasso. Il ciclo percorre il modulo e verifica che quella schermata non compaia: non c'e' uno stato da aspettare, c'e' una finestra da lasciare vuota
     }
     log('[Job5] Voice Practice never shows the Schermata Ripasso (no final retry pass)', !sawRetryIntro);
     const summaryReached = await page.evaluate(() => !document.getElementById('voice-coach-summary-screen').hidden);

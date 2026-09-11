@@ -117,7 +117,9 @@ async function run() {
           window.__testPick = data.moduleCompleteMessages[Math.floor(Math.random() * data.moduleCompleteMessages.length)];
         });
       });
-      await page.waitForTimeout(50);
+      // Niente attesa: l'evaluate qui sopra RESTITUISCE la promise del fetch, e
+      // page.evaluate la aspetta da solo — quindi window.__testPick e' gia'
+      // scritto quando torna. I 50 ms non guardavano niente.
       const pick = await page.evaluate(() => window.__testPick);
       seen.add(pick);
       await page.close();
@@ -187,7 +189,7 @@ async function run() {
     for (const sel of ['#fc-intro-start-btn', '#fc-start-btn']) {
       if (await page.isVisible(sel).catch(() => false)) { await page.click(sel); await page.waitForTimeout(150); break; }
     }
-    let popupSeen = false, popupTitle = null;
+    let popupSeen = false, popupTitle = null, carteRisposte = 0;
     for (let i = 0; i < 20 && !popupSeen; i++) {
       const isOpen = await page.evaluate(() => document.getElementById('attempt-popup').classList.contains('is-open'));
       if (isOpen) {
@@ -200,13 +202,33 @@ async function run() {
         await page.click('#fc-card').catch(() => {}); // flip
         await page.waitForTimeout(100);
         const knowBtnVisible = await page.isVisible('#fc-know-it-btn').catch(() => false);
-        if (knowBtnVisible) { await page.click('#fc-know-it-btn'); await page.waitForTimeout(500); continue; }
+        if (knowBtnVisible) { await page.click('#fc-know-it-btn'); carteRisposte++; await page.waitForTimeout(500); continue; }
       }
       const retryContinueVisible = await page.isVisible('#fc-retry-continue-btn').catch(() => false);
       if (retryContinueVisible) { await page.click('#fc-retry-continue-btn'); await page.waitForTimeout(150); continue; }
       await page.waitForTimeout(150);
     }
-    log('[Job3/4] Flash Card reachable/answerable (sanity — popup or ran out of cards)', true);
+    // ⚠️ QUESTA RIGA ERA `log(..., true)`: PASSAVA SEMPRE (regola 37). E non
+    // era distrazione — era una resa: il ciclo qui sopra risponde «Si', la so»
+    // a ogni carta, quindi la valvola di sicurezza (che si apre dopo ripetuti
+    // sbagli) non puo' aprirsi MAI, `popupSeen` resta false, e l'asserzione che
+    // l'autore voleva scrivere sarebbe stata rossa. Invece di togliere il
+    // blocco o cambiare il ciclo, e' stato messo `true`.
+    //
+    // Le due righe qui sotto sono quello che questo blocco prova DAVVERO:
+    // che Flash Card si lascia percorrere (le carte si girano e si rispondono)
+    // e che il giro finisce in uno stato NOTO invece che fermo su una carta
+    // dopo venti giri. Se il modulo smettesse di disegnare carte, o il giro non
+    // arrivasse mai in fondo, questi due diventano rossi — `true` no.
+    const statoFinale = await page.evaluate(() => ({
+      riepilogo: !document.getElementById('fc-summary-screen').hidden,
+      ripasso: !document.getElementById('fc-retry-intro-screen').hidden,
+      popup: document.getElementById('attempt-popup').classList.contains('is-open')
+    }));
+    console.log('    -> carte risposte: ' + carteRisposte + ' | stato finale: ' + JSON.stringify(statoFinale));
+    log('[Job3/4] Flash Card: il giro e\' stato percorso davvero (almeno una carta risposta)', carteRisposte > 0);
+    log('[Job3/4] Flash Card: il giro arriva a uno stato NOTO (riepilogo, ripasso o valvola), non resta fermo su una carta',
+      statoFinale.riepilogo || statoFinale.ripasso || statoFinale.popup);
     log('[Job3/4] Flash Card: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

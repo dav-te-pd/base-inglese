@@ -211,10 +211,18 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T16Job3', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
-    await page.waitForTimeout(200);
+    // ⚠️ SPOSTATA QUI, PRIMA DELL'APERTURA DEL MODULO, e il posto e' la
+    // correzione. Stava dopo `openModule` + 200 ms, come se verificasse
+    // qualcosa DENTRO Flash Card: non e' cosi'. `fc-level-label` non esiste in
+    // nessun punto del documento — nell'app quel nome sopravvive solo dentro un
+    // COMMENTO — quindi l'asserzione e' vera sulla schermata iniziale, sulla
+    // mappa, ovunque. Non e' inutile (se qualcuno rimettesse quell'id,
+    // cadrebbe), ma scritta la' faceva credere di provare una cosa che non
+    // provava, e si portava dietro un'attesa che non guardava niente.
     const noLevelLabel = await page.evaluate(() => !document.getElementById('fc-level-label'));
-    log('[Job3] "fc-level-label" (module category text inside the module) no longer exists', noLevelLabel);
+    log('[Job3] Nessun elemento con id "fc-level-label" esiste nel documento (il testo di categoria dentro i moduli e\' stato tolto ovunque)', noLevelLabel);
+    await openModule(page, 'flashcardAEngIta');
+    await attendiClasse(page, '#view-flashcard', 'is-active');
     const badgeHiddenAtStart = await page.$eval('#fc-ripasso-badge', el => el.hidden).catch(() => null);
     log('[Job3] "Ripasso" badge exists and starts hidden (main pass)', badgeHiddenAtStart === true);
     // Force every card wrong to trigger a retry pass. Il limite viene dal

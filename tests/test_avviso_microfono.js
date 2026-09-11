@@ -29,6 +29,7 @@
 
 const { launchBrowser, APP_URL } = require('./test-env');
 const { stepsBefore } = require('./module-order');
+const { attendiVisibile } = require('./attese');
 
 const BASE = APP_URL;
 // Il telefono è il posto in cui il problema si presenta: schermo corto, e il
@@ -265,7 +266,10 @@ async function run() {
           return b && b.getClientRects().length > 0;
         }, null, { timeout: 10000 });
         await page.evaluate(() => document.getElementById('vc-send-btn').click());
-        await page.waitForTimeout(120);
+        // Approdo: il riquadro dell'esito, che setVcState('result') scopre —
+        // NON l'avviso microfono, che e' quello che l'asserzione legge e che
+        // aspettare renderebbe vero per costruzione (CLAUDE.md regola 44).
+        await attendiVisibile(page, '#vc-result');
         return leggiStato(page);
       };
 
@@ -346,7 +350,10 @@ async function run() {
           return b && b.getClientRects().length > 0;
         }, null, { timeout: 10000 });
         await page.evaluate(() => document.getElementById('vc-send-btn').click());
-        await page.waitForTimeout(120);
+        // Approdo: il riquadro dell'esito, che setVcState('result') scopre —
+        // NON l'avviso microfono, che e' quello che l'asserzione legge e che
+        // aspettare renderebbe vero per costruzione (CLAUDE.md regola 44).
+        await attendiVisibile(page, '#vc-result');
         confermato = await leggiStato(page);
       }
       log('[C] ' + modulo.nome + ': al livello confermato l\'avviso lo dice e blocca "Avanti"',

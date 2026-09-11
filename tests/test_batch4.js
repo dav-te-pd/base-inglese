@@ -85,7 +85,10 @@ async function run() {
 
     // Open all details so fields are queryable
     await page.$$eval('.config-group', els => els.forEach(el => el.open = true));
-    await page.waitForTimeout(50);
+    // Niente attesa, e non e' una dimenticanza: `el.open = true` e' una
+    // mutazione del DOM SINCRONA, e il contenuto di un <details> sta nel
+    // documento anche da chiuso — quindi i campi sono gia' interrogabili quando
+    // l'evaluate torna. Qui c'erano 50 ms che non guardavano niente.
 
     const descCount = await page.$$eval('.config-field-description', els => els.length);
     log('[T1] At least one .config-field-description rendered', descCount > 0);

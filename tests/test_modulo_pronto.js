@@ -131,14 +131,14 @@ async function run() {
 
     // E il gesto che il difetto rendeva pericoloso, fatto davvero.
     if (!appena.microfonoSpento) await page.click('#vc-record-btn', { timeout: 3000 }).catch(() => {});
-    await page.waitForTimeout(300);
+    await page.waitForTimeout(300); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — premere il microfono non deve sollevare NESSUN errore. Un errore che non arriva non ha una condizione da aspettare: si lascia una finestra e si guarda se e' rimasta vuota
     log('[B] Premere il microfono non solleva nessun errore', errori.length === 0, errori.join(' | '));
     log('[B] ...e in particolare nessun TypeError sulla battuta assente',
       !errori.some(e => /reading 'english'/.test(e)), errori.join(' | '));
 
     // Il file di testi arriva DOPO, e quando arriva il modulo funziona lo
     // stesso: toglierlo dall'apertura non lo ha tolto dall'app.
-    await page.waitForTimeout(2200);
+    await page.waitForTimeout(2200); // ATTESA-LEGITTIMA: qui il TEMPO E' LA COSA MISURATA, non una guardia: i 2200 ms sono la finestra in cui il file dei messaggi arriva davvero, e l'asserzione e' che nemmeno allora compaia un errore. Aspettare l'arrivo del file renderebbe l'asserzione vera per costruzione (regola 44): quello che si vuole provare e' che NIENTE succeda nell'intervallo
     log('[B] Nessun errore nemmeno dopo che il file dei messaggi è arrivato',
       errori.length === 0, errori.join(' | '));
     await page.close();

@@ -1041,13 +1041,51 @@ e l'apertura del modulo non c'entra niente. Non è inutile (se qualcuno
 rimettesse quell'id, cadrebbe), ma **non ha bisogno né dell'attesa né del
 modulo**, e scritta così fa credere di verificare qualcosa dentro Flash Card.
 
-### La condizione
+### ESEGUITO l'11 settembre, nell'ordine proposto
 
-**Si esegue col prossimo «vai»**, e in quest'ordine: prima le tre cose trovate
-(la vacua si corregge scrivendo l'asserzione giusta **prima** di togliere il
-`true`, come per quella di `test_batch16`), poi le marcature, poi le quattro
-conversioni. **Le due bloccate dalla regola 44 restano a tempo con il motivo
-scritto**, a meno che non si trovi un approdo che l'asserzione non legga.
+**Venti punti su venti.** `39 → 22` guardie, legittime `62 → 71`.
+
+| | |
+|---|---|
+| le tre trovate | la vacua riscritta in **due** asserzioni vere; `test_batch5` marcato; l'asserzione di `fc-level-label` **spostata** prima dell'apertura del modulo e rinominata |
+| marcature | 7 negative + `test_batch5` |
+| tolte | 3, perché non guardavano niente (due mutazioni DOM sincrone, una promise che `page.evaluate` attende già) |
+| convertite | 4, con approdi già esistenti |
+| **restano a tempo** | **2**, con il motivo per esteso nel sito |
+
+**La vacua, e perché era nata così:** il ciclo di `test_batch7` risponde
+*«Sì, la so»* a ogni carta, quindi la valvola di sicurezza — che si apre dopo
+ripetuti sbagli — **non poteva aprirsi mai**, e l'asserzione che l'autore
+voleva scrivere sarebbe stata rossa. **Non distrazione: una resa.** Le due che
+l'hanno sostituita muoiono su un guasto vero dell'app (mazzo di Flash Card
+vuoto), e col `true` al suo posto quel guasto sarebbe passato **11 su 11**.
+
+**L'indirizzo del difetto è in `tests/ERRORI-INGOIATI.md`, famiglia ⓪-ter:**
+*le asserzioni vacue nascono nei sanity check dei cicli.* Due casi su due, e si
+riconoscono dalla parola «sanity» nella riga.
+
+⚠️ **Le due che restano a tempo NON sono un rinvio.** In `test_episodi_corti`
+l'ultimo effetto del click è la schermata d'errore, ma `erroreVisibile` è
+**esattamente** ciò che l'asserzione legge: aspettarlo la renderebbe vera per
+costruzione (regola 44). Gli altri due effetti sono negativi. **Non resta niente
+su cui aspettare che non sia già letto, e l'attesa a tempo è l'unica forma
+onesta.** *Se un giorno quel blocco crescerà fino ad avere un effetto in più che
+nessuna asserzione legge, allora si converte.*
+
+### ⚠️ E una forma nuova, che vale oltre questo passo
+
+> **UNA SPIEGAZIONE CHE LO STRUMENTO NON SA LEGGERE È UNA SPIEGAZIONE CHE VA
+> RISCRITTA OGNI VOLTA.**
+
+`test_batch5.js` portava **cinque righe di prosa** che spiegavano perché
+quell'attesa doveva restare a tempo. Chi le ha scritte pensava di aver chiuso la
+questione. Ma il censimento legge il marcatore `ATTESA-LEGITTIMA`, non i
+commenti: quel punto tornava nel conto del debito a ogni giro, e qualcuno
+rileggeva le stesse cinque righe per arrivare alla stessa conclusione.
+
+**Condizione:** quando si incontra prosa che spiega una scelta in un punto dove
+uno strumento passa e non la vede, si marca. *Non si va a cercarle adesso: si
+marcano quando si incontrano.*
 
 ## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
 

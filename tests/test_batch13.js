@@ -83,7 +83,10 @@ async function run() {
     log('[6a] CONFIG.voiceCoach.maxRecordingMsPerWord exists', typeof cfg.perWord === 'number');
     log('[6a] CONFIG.voiceCoach.maxRecordingMarginMs exists', typeof cfg.margin === 'number');
     await page.$$eval('.config-group', els => els.forEach(el => el.open = true));
-    await page.waitForTimeout(50);
+    // Niente attesa, e non e' una dimenticanza: `el.open = true` e' una
+    // mutazione del DOM SINCRONA, e il contenuto di un <details> sta nel
+    // documento anche da chiuso — quindi i campi sono gia' interrogabili quando
+    // l'evaluate torna. Qui c'erano 50 ms che non guardavano niente.
     const silenceField = await page.$('[data-config-path="voiceCoach.silenceTimeoutSeconds"]');
     log('[6a] silenceTimeoutSeconds is editable in the config panel', !!silenceField);
     const perWordField = await page.$('[data-config-path="voiceCoach.maxRecordingMsPerWord"]');

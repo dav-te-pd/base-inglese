@@ -145,7 +145,7 @@ async function run() {
       const onRetryIntro = await page.evaluate(() => !document.getElementById('voice-coach-retry-intro-screen').hidden);
       if (onRetryIntro) {
         await page.click('#voice-coach-retry-continue-btn').catch(() => {});
-        await page.waitForTimeout(80);
+        await page.waitForTimeout(80); // ATTESA-LEGITTIMA: la guardia serve all'asserzione NEGATIVA di fine ciclo — al primo tentativo l'avviso microfono NON deve comparire (streak=1 < warningAt=2). Non c'e' nessuno stato da attendere: aspettarne uno significherebbe aspettare l'avviso che non deve arrivare
       }
     }
 
@@ -235,7 +235,7 @@ async function run() {
       if (popupOpen) { await page.click('#attempt-popup-next'); await page.waitForTimeout(80); }
       // Voice Check has no retry button (job 5) — advance via "Avanti" instead.
       await page.click('#vc-next-btn').catch(() => {});
-      await page.waitForTimeout(80);
+      await page.waitForTimeout(80); // ATTESA-LEGITTIMA: l'asserzione dopo il ciclo e' negativa: sei tentativi sbagliati ma RICONOSCIUTI non devono far comparire l'avviso microfono, che segnala un guasto del microfono e non una pronuncia sbagliata. Il tempo E' la misura
     }
     const noticeHidden = await page.isHidden('#vc-mic-notice').catch(() => null);
     log('[Job6] 6 wrong-but-recognized attempts never trigger the mic notice', noticeHidden === true);

@@ -87,7 +87,7 @@ async function run() {
     // che avrà un episodio corto a cui si chiede il grado A.
     await apriConOrdine(page, 'CortoGrado', [{ module: 'matchEngIta', grade: 'Z' }]);
     await page.click('[data-module="matchEngIta"]');
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(600); // ATTESA-LEGITTIMA: qui NON c'e' un approdo possibile, e il motivo e' la regola 44. L'ultimo effetto del click e' la schermata d'errore che diventa attiva — ma `erroreVisibile` e' ESATTAMENTE quello che l'asserzione legge: aspettarlo la renderebbe vera per costruzione. E gli altri due effetti sono negativi (non completato, nessun esito), quindi nemmeno loro si possono aspettare. Non resta niente su cui aspettare che non sia gia' letto: l'attesa a tempo e' l'unica forma onesta
     const s = await statoDopo(page, 'CortoGrado', 'matchEngIta');
     log('[A] Un passo su un grado assente NON si dichiara completato', s.completato === false);
     log('[A] ...e non registra nessun esito', s.esito === false);
@@ -109,7 +109,7 @@ async function run() {
     log('[B] Il passo sconosciuto compare comunque nella mappa', ceLaRiga === true);
     if (ceLaRiga) {
       await page.click('[data-module="moduloNonAncoraCostruito"]');
-      await page.waitForTimeout(600);
+      await page.waitForTimeout(600); // ATTESA-LEGITTIMA: qui NON c'e' un approdo possibile, e il motivo e' la regola 44. L'ultimo effetto del click e' la schermata d'errore che diventa attiva — ma `erroreVisibile` e' ESATTAMENTE quello che l'asserzione legge: aspettarlo la renderebbe vera per costruzione. E gli altri due effetti sono negativi (non completato, nessun esito), quindi nemmeno loro si possono aspettare. Non resta niente su cui aspettare che non sia gia' letto: l'attesa a tempo e' l'unica forma onesta
       const s = await statoDopo(page, 'CortoKind', 'moduloNonAncoraCostruito');
       log('[B] Cliccarlo non lascia lo studente su una vista muta: si vede l\'errore',
           s.erroreVisibile === true);

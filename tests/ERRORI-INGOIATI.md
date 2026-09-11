@@ -109,6 +109,46 @@ contatore delle asserzioni non cala — l'asserzione gira e passa — e la verif
 per sottrazione non c'entra. **L'unica cosa che la trova è il passaggio del
 guasto**, che è una cosa che si fa a mano e che quindi si salta.
 
+## ⓪-ter L'asserzione VACUA, e — questo è il punto — **dove nasce**
+
+**Un difetto con un indirizzo si cerca; uno senza si aspetta.** Questa famiglia
+l'indirizzo ce l'ha, ed è stato misurato: **due casi su due sono comparsi dentro
+il *sanity check* di un CICLO.**
+
+> ⚠️ **LE ASSERZIONI VACUE NASCONO NEI SANITY CHECK DEI CICLI. È LÌ CHE SI
+> GUARDA.**
+
+**I due casi, 2026-09-11.**
+
+| dove | com'era | perché era nata così |
+|---|---|---|
+| `test_batch16.js` (famiglia ② delle attese) | `log('…', stillOnMain === true \|\| true)` | il `\|\| true` neutralizzava un confronto che non tornava |
+| `test_batch7.js` (triage di «altro») | `log('[Job3/4] Flash Card reachable/answerable (sanity …)', true)` | **il ciclo rispondeva «Sì, la so» a ogni carta**, quindi la valvola di sicurezza — che si apre dopo ripetuti sbagli — non poteva aprirsi mai, e l'asserzione che l'autore voleva scrivere sarebbe stata rossa |
+
+**Perché proprio lì, e non altrove.** Un ciclo che guida un modulo finisce in
+uno stato che chi scrive non controlla del tutto: il mazzo può esaurirsi, la
+valvola può non aprirsi, il giro può chiudersi prima. L'asserzione onesta
+dovrebbe dire *«il ciclo ha fatto quello che doveva»* — ma è difficile da
+scrivere, e **`true` è lì a un carattere di distanza.** Non è distrazione: è una
+**resa**, e si riconosce dal fatto che la riga porta la parola *«sanity»*.
+
+**Come si corregge, ed è lo stesso giro dell'altra volta: si scrive
+l'asserzione giusta PRIMA di togliere il `true`.** Nel caso di `test_batch7` è
+diventata due righe — *«almeno una carta è stata risposta davvero»* e *«il giro
+arriva a uno stato noto invece di restare fermo su una carta»* — con il conto
+delle carte stampato accanto. **Controprova su un guasto vero dell'app** (mazzo
+di Flash Card vuoto): tutte e due rosse, e con il `true` al suo posto il modulo
+completamente rotto sarebbe passato **11 su 11**.
+
+⚠️ **E una forma vicina, incontrata lo stesso giorno:** un'asserzione che è
+**vera ovunque**, scritta in un punto che fa credere il contrario.
+`test_batch16` verificava che `#fc-level-label` «non esistesse più» dopo aver
+aperto Flash Card — ma quell'id non esiste in nessun punto del documento, quindi
+la riga era vera anche sulla schermata iniziale. Non era inutile; era **nel
+posto sbagliato**, e si portava dietro un'attesa che non guardava niente.
+*Spostata prima dell'apertura del modulo, col nome che dice cosa verifica
+davvero.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

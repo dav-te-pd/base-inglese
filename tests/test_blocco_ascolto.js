@@ -54,6 +54,7 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { stepsBefore, stepIds } = require('./module-order');
+const { attendiVisibile } = require('./attese');
 
 const BASE = APP_URL;
 const UTENTE = 'BloccoAscoltoTest';
@@ -100,7 +101,16 @@ async function apriPasso(page, passo) {
   await page.click('#go-episode');
   await page.waitForFunction(function () { return document.querySelectorAll('#module-list [data-module]').length > 0; });
   await page.click('[data-module="' + passo + '"]');
-  await page.waitForTimeout(700);
+  // ⚠️ L'asserzione a cui il censimento aveva attaccato questi 700 ms legge
+  // `index.html` DA DISCO e non tocca il browser: non c'entrava niente. Questa
+  // attesa serve ai blocchi che vengono DOPO, quelli che guardano la pagina.
+  //
+  // L'approdo e' generico perche' `passo` e' un parametro: non si puo' nominare
+  // la vista del modulo, ma si puo' aspettare che UNA vista diversa dalla mappa
+  // sia attiva — showView() ne tiene attiva esattamente una. Non e' quello che
+  // nessuna asserzione legge per caso: nessun blocco di questo file guarda
+  // `is-active` (CLAUDE.md regola 44).
+  await attendiVisibile(page, '[id^="view-"].is-active:not(#view-map)');
 }
 
 (async () => {

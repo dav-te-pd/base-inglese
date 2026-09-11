@@ -113,12 +113,20 @@ async function run() {
     log('[Job1] Dialogo Continuo is actively speaking a line', speakingBefore);
     log('[Job1] speechSynthesis is NOT speaking right after leaving the module', !stillSpeaking);
 
+    // ⚠️ LA MOTIVAZIONE C'ERA GIÀ, QUI SOTTO, IN CINQUE RIGHE DI PROSA — e non
+    // bastava. Il censimento delle attese (tests/tools/conta-attese.js) legge
+    // il marcatore `ATTESA-LEGITTIMA`, non i commenti: senza, questo punto
+    // tornava nel conto del debito a ogni giro, e qualcuno rileggeva le stesse
+    // cinque righe per arrivare alla stessa conclusione.
+    // **Una spiegazione che lo strumento non sa leggere è una spiegazione che
+    // va riscritta ogni volta.**
+    //
     // Questa resta un'attesa a tempo di proposito: l'asserzione che segue è
     // negativa (nessuna NUOVA battuta accodata), e per un evento che non deve
     // accadere non esiste una condizione da aspettare — si lascia una
     // finestra e si verifica che sia rimasta vuota. Se la macchina è lenta il
     // rischio è un verde generoso, non un rosso casuale.
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(600); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — nessuna NUOVA battuta accodata dopo l'uscita. Per un evento che non deve accadere non esiste una condizione da aspettare: si lascia una finestra e si verifica che sia rimasta vuota
     const logLenAfter = await page.evaluate(() => window.__speakLog.length);
     log('[Job1] No NEW utterance was queued after leaving (sequence did not continue)', logLenAfter === logLenBefore);
     log('[Job1] No JS errors', errors.length === 0);
@@ -146,7 +154,7 @@ async function run() {
     // open a totally different module (repeatAloud) and confirm no residual speak calls arrive
     const logLenAtSwitch = await page.evaluate(() => window.__speakLog.length);
     await openModule(page, 'repeatAloud');
-    await page.waitForTimeout(600);
+    await page.waitForTimeout(600); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — nessuna battuta accodata dopo essere passati a un ALTRO modulo. Un evento che non deve accadere non ha una condizione da aspettare: si lascia una finestra e si verifica che sia rimasta vuota
     const logLenAfterSwitch = await page.evaluate(() => window.__speakLog.length);
     log('[Job1b] No further utterance queued after switching to a different module', logLenAfterSwitch === logLenAtSwitch);
     log('[Job1b] No JS errors', errors.length === 0);
