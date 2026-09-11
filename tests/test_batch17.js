@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -99,8 +99,7 @@ async function run() {
     if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
     const firstBubble = await page.$('.dg-bubble');
     if (firstBubble) { await firstBubble.click(); }
-    await page.waitForTimeout(100); // mid-audio (500ms fake synth)
-    const isActiveDuringAudio = await page.evaluate(() => document.querySelector('.dg-bubble').classList.contains('is-active'));
+    const isActiveDuringAudio = await attendiClasse(page, '.dg-bubble', 'is-active');
     log('[Job1a] First bubble is is-active while its audio plays', isActiveDuringAudio);
     const watchLocked = await page.evaluate(() => document.getElementById('dialogo-watch-btn').disabled);
     log('[Job1a] Spiegazione still locks here (countdown profile, unchanged)', watchLocked === true);
@@ -125,7 +124,7 @@ async function run() {
     if (dgStart2) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
     const bubbleIds = await page.$$eval('.dg-bubble', els => els.map(e => e.getAttribute('data-line-id')));
     await page.click('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]');
-    await page.waitForTimeout(100); // mid-audio
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — Spiegazione NON deve spegnersi mentre l'audio parla (regola 16)
     const stateDuringAudio = await page.evaluate(() => ({
       watch: document.getElementById('dialogo-watch-btn').disabled,
       help: document.getElementById('dialogo-help-btn').disabled,
@@ -137,8 +136,7 @@ async function run() {
     // Free tapping promise: tap a DIFFERENT bubble while the first one is still "playing".
     if (bubbleIds.length > 1) {
       await page.click('.dg-bubble[data-line-id="' + bubbleIds[1] + '"]');
-      await page.waitForTimeout(50);
-      const secondIsActive = await page.evaluate((id) => document.querySelector('.dg-bubble[data-line-id="' + id + '"]').classList.contains('is-active'), bubbleIds[1]);
+      const secondIsActive = await attendiClasse(page, '.dg-bubble[data-line-id="' + bubbleIds[1] + '"]', 'is-active');
       log('[Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it)', secondIsActive === true);
     } else {
       log('[Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it)', true);
@@ -158,7 +156,7 @@ async function run() {
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#repeat-aloud-body .listen-block-btn, #repeat-aloud-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — "Ho finito" NON deve spegnersi durante l'audio di una parola (regola 16)
     const stateDuring = await page.evaluate(() => ({
       complete: document.getElementById('repeat-aloud-complete').disabled,
       watch: document.getElementById('repeat-aloud-watch-btn').disabled,
@@ -192,7 +190,7 @@ async function run() {
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#story-cards-body [data-say]');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — i pulsanti di Why We Say It NON devono spegnersi durante l'ascolto (regola 16)
     const stateDuring = await page.evaluate(() => ({
       complete: document.getElementById('story-cards-complete').disabled,
       watch: document.getElementById('story-cards-watch-btn').disabled
@@ -224,7 +222,7 @@ async function run() {
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#vc-audio-controls [data-say]');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — Avanti e Spiegazione NON devono spegnersi mentre parla il bersaglio (regola 16)
     const stateDuring = await page.evaluate(() => ({
       next: document.getElementById('vc-next-btn').disabled,
       watch: document.getElementById('voice-coach-watch-btn').disabled
@@ -247,7 +245,7 @@ async function run() {
     // Fresh line, idle state: listen to the target first.
     const listenBtn = await page.$('#vc-audio-controls [data-say]');
     if (listenBtn) { await listenBtn.click(); }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — il microfono NON deve spegnersi mentre parla il bersaglio (regola 16)
     const recordDisabled = await page.evaluate(() => document.getElementById('vc-record-btn').disabled);
     log('[Job1d-bis] Record stays enabled while target audio plays', recordDisabled === false);
     const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
@@ -273,7 +271,7 @@ async function run() {
     const promptListenBtn = await page.$('#qm-prompt-audio [data-say]');
     if (promptListenBtn) {
       await promptListenBtn.click();
-      await page.waitForTimeout(100);
+      await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — le opzioni di risposta NON devono spegnersi mentre la domanda parla (regola 16)
       const optionsEnabled = await page.evaluate(() => Array.from(document.querySelectorAll('#qm-options .sr-option')).every(b => !b.disabled));
       log('[Job1e] Answer options stay enabled while the prompt plays', optionsEnabled === true);
       const speakingBefore = await page.evaluate(() => window.speechSynthesis.speaking);
@@ -333,7 +331,7 @@ async function run() {
     // en-it: the listen button lives on the FRONT (English side).
     const listenBtn = await page.$('#fc-card [data-say]');
     if (listenBtn) { await listenBtn.click({ force: true }); }
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — i pulsanti di Flash Card NON devono spegnersi durante l'audio della carta (regola 16)
     const stateDuring = await page.evaluate(() => ({
       watch: document.getElementById('flashcard-watch-btn').disabled,
       choiceBtns: Array.from(document.querySelectorAll('#fc-choice-row button')).map(b => b.disabled)

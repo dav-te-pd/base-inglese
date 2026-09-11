@@ -150,7 +150,7 @@ async function run() {
     const toggleExists = await page.evaluate(() => !!document.getElementById('dg-translations-toggle'));
     log('[Regression] Mod1 still shows the translations toggle', toolbarVisible && toggleExists);
     await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
-    await page.waitForTimeout(10);
+    await page.waitForTimeout(10); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — nel profilo a tocco libero le ALTRE bolle NON devono bloccarsi
     const midAudio = await page.evaluate(([id1, id2]) => {
       var b1 = document.querySelector('.dg-bubble[data-line-id="' + id1 + '"]');
       var b2 = document.querySelector('.dg-bubble[data-line-id="' + id2 + '"]');

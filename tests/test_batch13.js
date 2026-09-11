@@ -107,7 +107,7 @@ async function run() {
     await page.waitForTimeout(300);
 
     await page.evaluate(() => document.getElementById('vc-record-btn').click());
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: si legge PRIMA che il timeout di silenzio scatti — registrare gia' partita, si prova che non si e' fermata
     const stillRecordingBeforeCutoff = await page.evaluate(() => document.getElementById('vc-record-btn').classList.contains('is-recording'));
     log('[6b] Still recording just before the (shrunk) silence timeout fires', stillRecordingBeforeCutoff);
 

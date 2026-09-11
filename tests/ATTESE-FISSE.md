@@ -134,17 +134,17 @@ Tenuti qui come riferimento di com'è fatta la conversione:
 
 ## Elenco — generato il 2026-09-11
 
-**154 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
+**108 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
 il verde di un'asserzione, e che si puo' sostituire con un'attesa sullo stato
 vero. **E' questo il numero su cui si misura il 14b**, e l'unico che deve
 scendere.
 
 | | quante |
 |---|---|
-| **guardie da convertire** — il debito | **154** |
-| guardie **legittime** — marcate nel sito, NON sono debito | 8 |
-| attese di **navigazione** — se sono corte il test si rompe, non passa | 294 |
-| in tutto | 456 |
+| **guardie da convertire** — il debito | **108** |
+| guardie **legittime** — marcate nel sito, NON sono debito | 40 |
+| attese di **navigazione** — se sono corte il test si rompe, non passa | 289 |
+| in tutto | 437 |
 
 ⚠️ **I tre numeri non si sommano in uno solo, ed e' il punto.** Una guardia
 legittima verifica che una cosa NON accada, oppure uno stato che era gia' vero:
@@ -164,16 +164,17 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 
 | cosa si aspetta | quante |
 |---|---|
-| un pulsante o una classe che cambia stato | 52 |
 | un suono o la voce | 29 |
-| altro | 20 |
+| altro | 22 |
 | una scrittura nel localStorage | 18 |
 | un testo che si riempie | 16 |
 | un valore di configurazione o di dati | 5 |
 | uno stile calcolato | 5 |
+| un pulsante o una classe che cambia stato | 3 |
 | la console (asserzione negativa) | 3 |
 | una misura di geometria | 3 |
 | un elenco di elementi che si ridisegna | 3 |
+| una schermata che compare o sparisce | 1 |
 
 ### Le guardie, una per una
 
@@ -208,131 +209,85 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 | `test_batch12.js` | 200 | click | un suono o la voce | [Job1] Flash Card "Sì, la so" plays the Corretto tone (880Hz) | 522 |
 | `test_batch13.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [6a] CONFIG.voiceCoach.silenceTimeoutSeconds exists (default 3) | 75 |
 | `test_batch13.js` | 50 | nessuna azione riconosciuta | altro | [6a] silenceTimeoutSeconds is editable in the config panel | 85 |
-| `test_batch13.js` | 200 | click | un pulsante o una classe che cambia stato | [6b] Still recording just before the (shrunk) silence timeout fires | 110 |
 | `test_batch13.js` | 150 | click | una scrittura nel localStorage | [6c] Sending a recording writes a per-module audio-seconds entry | 173 |
 | `test_batch13.js` | 150 | digitazione | un testo che si riempie | [6c] Config panel audio-usage section mentions Voice Practice | 182 |
 | `test_batch14.js` | 100 | click | la console (asserzione negativa) | [Job2] No JS errors after the warm-up tap | 136 |
 | `test_batch14.js` | 300 | apertura modulo | un testo che si riempie | [Job3] "Ho finito" button no longer claims "torna alla mappa" (it opens the summary now) | 149 |
 | `test_batch14.js` | 150 | click | una scrittura nel localStorage | [Job3] Repeat Aloud: summary's own button completes returns to the map | 163 |
 | `test_batch14.js` | 150 | click | una scrittura nel localStorage | [Job3] Story Cards: summary's own button completes the module | 184 |
-| `test_batch14.js` | 150 | click | un pulsante o una classe che cambia stato | [Job7a] Dialogue has at least 3 lines to test sequencing | 237 |
 | `test_batch14.js` | 100 | click | un suono o la voce | [Job7a] Clicking the locked line 3 does nothing (no audio starts) | 244 |
-| `test_batch14.js` | 500 | click | un pulsante o una classe che cambia stato | [Job7a] After line 1 finishes, line 2 unlocks | 249 |
-| `test_batch14.js` | 60 | click | un pulsante o una classe che cambia stato | [Job7b] Countdown bar is running before skipping | 277 |
-| `test_batch14.js` | 120 | click | un pulsante o una classe che cambia stato | [Job8] Choice box still disabled right after the LAST line's audio ends (bar still running) | 349 |
-| `test_batch14.js` | 2200 | click | un pulsante o una classe che cambia stato | [Job8] Choice box enables once the LAST line's timer actually finishes | 355 |
-| `test_batch14.js` | 150 | click | una misura di geometria | [Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden | 374 |
+| `test_batch14.js` | 150 | click | una misura di geometria | [Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden | 372 |
 | `test_batch15.js` | 300 | click | un suono o la voce | [Job1] Traguardo (3 ascending notes) played at least once | 136 |
-| `test_batch15.js` | 200 | click | un pulsante o una classe che cambia stato | [Job2b] Match Practice map row carries outcome-verde after all-correct run | 192 |
+| `test_batch15.js` | 300 | click | un pulsante o una classe che cambia stato | [Job2b] Match Practice map row carries outcome-verde after all-correct run | 190 |
 | `test_batch15.js` | 150 | click | un testo che si riempie | [Job3] After attempt 1, label reads "TENTATIVO 1 DI 3" | 213 |
 | `test_batch15.js` | 80 | click | un testo che si riempie | [Job3] Immediately after "Riprova" (before recording), label already reads "TENTATIVO 2 DI 3" | 218 |
 | `test_batch15.js` | 80 | click | un testo che si riempie | [Job3] Before the LAST (3rd) attempt, label already reads "TENTATIVO 3 DI 3" (not stuck at 2) | 227 |
 | `test_batch15.js` | 150 | click | uno stile calcolato | [Job5] .ripasso-badge font-size equals .sr-direction font-size | 299 |
 | `test_batch15.js` | 150 | click | un testo che si riempie | [Job6] Match Practice header shows type badge "Studio · <grado>" | 324 |
 | `test_batch15.js` | 150 | click | una misura di geometria | [Job7] "Help" width unchanged whether Spiegazione is visible or hidden | 342 |
-| `test_batch15.js` | 100 | click | un pulsante o una classe che cambia stato | [Job8] "Prossima frase" starts disabled (nothing playing yet) | 361 |
-| `test_batch15.js` | 400 | click | un pulsante o una classe che cambia stato | [Job8] "Prossima frase" enabled while a line's countdown bar is running | 366 |
-| `test_batch15.js` | 200 | apertura modulo | un elenco di elementi che si ridisegna | [Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno | 417 |
-| `test_batch15.js` | 150 | click | un pulsante o una classe che cambia stato | [Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato) | 428 |
-| `test_batch16.js` | 150 | click | un testo che si riempie | [Job1] Dialogue text does NOT contain the translated "Francis" | 116 |
-| `test_batch16.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [Job1b] CONFIG.people.papa.francesco really has a different EN value (regression bait present) | 130 |
-| `test_batch16.js` | 400 | nessuna azione riconosciuta | un suono o la voce | [Job2] Pausa is disabled while a line's audio is actively speaking | 162 |
-| `test_batch16.js` | 200 | click | un testo che si riempie | [Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi" | 167 |
-| `test_batch16.js` | 150 | click | un pulsante o una classe che cambia stato | [Job2] After pausing, button reads "Riprendi" | 179 |
-| `test_batch16.js` | 200 | apertura modulo | altro | [Job3] "fc-level-label" (module category text inside the module) no longer exists | 210 |
-| `test_batch16.js` | 150 | click | altro | [Job3] "Ripasso" badge becomes visible during the retry pass | 239 |
-| `test_batch16.js` | 80 | click | un pulsante o una classe che cambia stato | [Job4] Right after "Prossima frase", the NEXT line is already playing (is-active), not just suggested | 265 |
-| `test_batch16.js` | 100 | click | un suono o la voce | [Job5] Audio is actually speaking right before the flip | 292 |
-| `test_batch16.js` | 50 | click | un suono o la voce | [Job5] Flipping the card while audio plays stops it immediately (Regola Azione Critica) | 296 |
-| `test_batch16.js` | 150 | click | un suono o la voce | [Job6] Clicking "Ho finito, torna alla mappa" plays the "uscita" tone | 327 |
-| `test_batch16.js` | 200 | apertura modulo | una misura di geometria | [Job7] "← Mappa" sits at the row's left edge | 343 |
-| `test_batch16.js` | 150 | click | un pulsante o una classe che cambia stato | [Job7] Spiegazione popup opens (sanity check, not an alignment assertion) | 357 |
-| `test_batch16.js` | 200 | apertura modulo | uno stile calcolato | [Job8] Voice Coach counter and Flash Card counter share the same CSS class | 381 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1a] First bubble is is-active while its audio plays | 102 |
-| `test_batch17.js` | 700 | click | un elenco di elementi che si ridisegna | [Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle) | 109 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1a-bis] Spiegazione stays enabled during a line's own audio | 128 |
-| `test_batch17.js` | 50 | click | un pulsante o una classe che cambia stato | [Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it) | 140 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1b] "Ho finito" stays enabled during word audio | 161 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1b] "Ho finito" stops the word audio on touch (stop-on-touch, not a lock) | 173 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1c] "Ho finito" stays enabled during listen audio | 195 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1c] "Ho finito" stops the audio on touch | 203 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1d] Avanti stays enabled while target audio plays | 227 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1d-bis] Record stays enabled while target audio plays | 250 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1d-bis] Pressing Record stops the model audio (mic-bleed guard, stop not block) | 256 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1e] Answer options stay enabled while the prompt plays | 276 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1e] Prompt audio really was playing before answering | 282 |
-| `test_batch17.js` | 100 | click | un suono o la voce | [Job1e-bis] Option mini-listen audio is actually playing | 308 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1e-bis] Answering stops the option's own mini-listen audio (bleed guard) | 313 |
-| `test_batch17.js` | 100 | click | un pulsante o una classe che cambia stato | [Job1f] Spiegazione stays enabled while the card's own audio plays | 336 |
-| `test_batch17.js` | 50 | click | un suono o la voce | [Job1f] Audio was actually playing before the flip | 350 |
-| `test_batch17.js` | 100 | click | un suono o la voce | [Job1f] Listen button works again right after a flip (no stuck "speaking" state) | 364 |
-| `test_batch18.js` | 120 | click | un pulsante o una classe che cambia stato | [Job2] Old bubble is no longer is-active | 85 |
-| `test_batch18.js` | 150 | click | un pulsante o una classe che cambia stato | [Job2b] Only the LAST tapped line ends up active after a rapid chain of switches | 114 |
-| `test_batch18.js` | 700 | click | un pulsante o una classe che cambia stato | [Job2c] Countdown profile reaches its per-line timer normally (dgActiveBubble change is a no-op here) | 140 |
+| `test_batch15.js` | 200 | apertura modulo | un elenco di elementi che si ridisegna | [Job10] Meet the Story non mostra spiegazioni, anche se le battute ne hanno | 418 |
+| `test_batch16.js` | 150 | click | un testo che si riempie | [Job1] Dialogue text does NOT contain the translated "Francis" | 117 |
+| `test_batch16.js` | 200 | caricamento pagina | un valore di configurazione o di dati | [Job1b] CONFIG.people.papa.francesco really has a different EN value (regression bait present) | 131 |
+| `test_batch16.js` | 400 | nessuna azione riconosciuta | un suono o la voce | [Job2] Pausa is disabled while a line's audio is actively speaking | 163 |
+| `test_batch16.js` | 200 | click | un testo che si riempie | [Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi" | 168 |
+| `test_batch16.js` | 200 | apertura modulo | altro | [Job3] "fc-level-label" (module category text inside the module) no longer exists | 211 |
+| `test_batch16.js` | 150 | click | altro | [Job3] "Ripasso" badge becomes visible during the retry pass | 240 |
+| `test_batch16.js` | 100 | click | un suono o la voce | [Job5] Audio is actually speaking right before the flip | 294 |
+| `test_batch16.js` | 50 | click | un suono o la voce | [Job5] Flipping the card while audio plays stops it immediately (Regola Azione Critica) | 298 |
+| `test_batch16.js` | 150 | click | un suono o la voce | [Job6] Clicking "Ho finito, torna alla mappa" plays the "uscita" tone | 329 |
+| `test_batch16.js` | 200 | apertura modulo | una misura di geometria | [Job7] "← Mappa" sits at the row's left edge | 345 |
+| `test_batch16.js` | 200 | apertura modulo | uno stile calcolato | [Job8] Voice Coach counter and Flash Card counter share the same CSS class | 382 |
+| `test_batch17.js` | 100 | click | altro | [Job1a] First bubble is is-active while its audio plays | 99 |
+| `test_batch17.js` | 700 | click | un elenco di elementi che si ridisegna | [Job1a] At most ONE bubble ends up with an active countdown (no duplicate cycle) | 108 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1b] "Ho finito" stops the word audio on touch (stop-on-touch, not a lock) | 171 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1c] "Ho finito" stops the audio on touch | 201 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1d-bis] Pressing Record stops the model audio (mic-bleed guard, stop not block) | 254 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1e] Prompt audio really was playing before answering | 280 |
+| `test_batch17.js` | 100 | click | un suono o la voce | [Job1e-bis] Option mini-listen audio is actually playing | 306 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1e-bis] Answering stops the option's own mini-listen audio (bleed guard) | 311 |
+| `test_batch17.js` | 50 | click | un suono o la voce | [Job1f] Audio was actually playing before the flip | 348 |
+| `test_batch17.js` | 100 | click | un suono o la voce | [Job1f] Listen button works again right after a flip (no stuck "speaking" state) | 362 |
+| `test_batch18.js` | 100 | click | un pulsante o una classe che cambia stato | [Job2c] Countdown profile reaches its per-line timer normally (dgActiveBubble change is a no-op here) | 138 |
 | `test_batch18.js` | 80 | click | un suono o la voce | [Job1a] Audio is playing before touching Spiegazione | 160 |
 | `test_batch18.js` | 50 | click | un suono o la voce | [Job1a] Spiegazione now stops the audio too (single choke point closes this gap) | 164 |
 | `test_batch18.js` | 80 | click | un suono o la voce | [Job1b] Card audio is playing before touching Help | 182 |
 | `test_batch18.js` | 50 | click | un suono o la voce | [Job1b] Help stops the audio too | 186 |
 | `test_batch18.js` | 80 | click | un suono o la voce | [Job1c] Tapping a different listen button REPLACES the audio (still speaking, not stopped) | 207 |
 | `test_batch18.js` | 80 | click | un suono o la voce | [Job1d] Switching between two mini-listen options replaces audio (still speaking) | 235 |
-| `test_batch19.js` | 200 | click | un pulsante o una classe che cambia stato | [QM Task1] "Non lo so" starts enabled on a fresh question | 178 |
-| `test_batch19.js` | 300 | evaluate | un pulsante o una classe che cambia stato | [SR Task3-adj] Spiegazione still DISABLED mid-pause, before auto-advance (the exact flicker this fixes) | 370 |
-| `test_batch19.js` | 500 | evaluate | un pulsante o una classe che cambia stato | [SR Task3-adj] Spiegazione still DISABLED into the next question (its own timer just re-locked it) | 373 |
-| `test_batch19.js` | 30 | click | un pulsante o una classe che cambia stato | [SR Task3-adj] Spiegazione unlocks right after "Non lo so" (its own reveal is a case to read) | 402 |
-| `test_batch19.js` | 150 | click | un pulsante o una classe che cambia stato | [SR cleanup] Re-opening after leaving mid-timer: Spiegazione is NOT stuck disabled (stopAllModuleActivity cleanup) | 452 |
 | `test_batch2.js` | 150 | click | una scrittura nel localStorage | [6a] Completing Personalizzazione marks it via markModuleCompleted | 118 |
-| `test_batch2.js` | 30 | digitazione | un pulsante o una classe che cambia stato | [6b] Wrong phrase keeps the confirm button disabled | 146 |
-| `test_batch2.js` | 30 | digitazione | un pulsante o una classe che cambia stato | [6b] Exact phrase (case-insensitive) enables the confirm button | 150 |
-| `test_batch2.js` | 150 | click | un pulsante o una classe che cambia stato | [6b] Cancel on the warning screen returns to the map | 180 |
-| `test_batch20.js` | 50 | click | un pulsante o una classe che cambia stato | [Content] Flash Card it→en: card still flips on tap | 81 |
 | `test_batch20.js` | 200 | click | un testo che si riempie | [Content] Match Practice it→en: direction label reads "ITALIANO → INGLESE" | 98 |
 | `test_batch20.js` | 30 | click | un testo che si riempie | [Content] Match Practice it→en: the correct option is that same entry's ENGLISH translation | 107 |
 | `test_batch2b.js` | 100 | digitazione | un testo che si riempie | [1] Config panel shows one reorder row per module | 121 |
 | `test_batch2b.js` | 50 | click | un valore di configurazione o di dati | [1] Clicking "down" swaps the first two entries live in APP_CONFIG | 132 |
-| `test_batch3.js` | 200 | caricamento pagina | un pulsante o una classe che cambia stato | [1] ?config query param opens the config panel at boot | 105 |
-| `test_batch3.js` | 150 | caricamento pagina | un pulsante o una classe che cambia stato | [1] Without ?config, the panel stays closed at boot | 116 |
 | `test_batch3.js` | 250 | click | un testo che si riempie | [2] Popup title row 1 is the fixed "Spiegazione" kicker | 133 |
 | `test_batch3.js` | 200 | apertura modulo | un testo che si riempie | [4e] Match Practice retry-intro text drops "finché non..." | 217 |
-| `test_batch3b.js` | 150 | click | un pulsante o una classe che cambia stato | [7] "Sì, lo so" starts disabled before any line is heard (Ascolta e Ripeti) | 194 |
-| `test_batch3b.js` | 80 | click | un pulsante o una classe che cambia stato | [7] Still disabled after hearing only ONE of several lines | 199 |
-| `test_batch3b.js` | 100 | click | un pulsante o una classe che cambia stato | [7] Enabled once every line has been heard at least once | 208 |
-| `test_batch3b.js` | 150 | click | un pulsante o una classe che cambia stato | [7] Ripeti a Tempo: "Sai ripetere le frasi?" starts disabled too | 231 |
+| `test_batch3b.js` | 60 | click | altro | [7] Enabled once every line has been heard at least once | 206 |
 | `test_batch4.js` | 50 | nessuna azione riconosciuta | altro | [T1] At least one .config-field-description rendered | 88 |
 | `test_batch4b.js` | 300 | click | un testo che si riempie | [Spiegazione] moduleId intro name = " expected " (got " text ") | 56 |
 | `test_batch5.js` | 600 | nessuna azione riconosciuta | altro | [Job1] No NEW utterance was queued after leaving (sequence did not continue) | 121 |
 | `test_batch5.js` | 200 | click | un suono o la voce | [Job1b] Ripeti a Tempo is speaking line 1 | 141 |
 | `test_batch5.js` | 600 | apertura modulo | altro | [Job1b] No further utterance queued after switching to a different module | 149 |
-| `test_batch5.js` | 80 | click | un pulsante o una classe che cambia stato | [Job5] dialogoContinuo: Spiegazione disabled during the 3-2-1 ready countdown | 172 |
-| `test_batch5.js` | 100 | click | un pulsante o una classe che cambia stato | [Job5] modId : Spiegazione disabled while a line plays (Regola Azione Critica) | 182 |
+| `test_batch5.js` | 300 | apertura modulo | una schermata che compare o sparisce | [Job5] dialogoContinuo: Spiegazione disabled during the 3-2-1 ready countdown | 170 |
+| `test_batch5.js` | 2650 | nessuna azione riconosciuta | un pulsante o una classe che cambia stato | [Job5] modId : Spiegazione disabled while a line plays (Regola Azione Critica) | 180 |
 | `test_batch6.js` | 80 | click | altro | [Job6] Attempt 1 evaluated empty: still no notice (streak=1 < warningAt=2) | 148 |
 | `test_batch6.js` | 80 | click | altro | [Job6] 6 wrong-but-recognized attempts never trigger the mic notice | 238 |
 | `test_batch7.js` | 50 | evaluate | altro | [Job2] moduleCompleteMessages has multiple distinct entries reachable (variety sanity, saw seen.size distinct in 6 tries) | 120 |
 | `test_batch7.js` | 100 | click | altro | [Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item | 161 |
 | `test_batch7.js` | 150 | click | altro | [Job3/4] Flash Card reachable/answerable (sanity — popup or ran out of cards) | 207 |
-| `test_batch8.js` | 80 | click | un pulsante o una classe che cambia stato | [Job1] "Avanti" re-enables once a recording IS recognized (streak resets) | 99 |
-| `test_batch8.js` | 200 | click | un pulsante o una classe che cambia stato | [Job1b] Module row is NOT "completed" after leaving via the mic-notice map button | 175 |
-| `test_batch9.js` | 400 | click | un pulsante o una classe che cambia stato | [Job3] Hint hides once all lines have been heard | 259 |
 | `test_blocco_ascolto.js` | 700 | click | altro | [1] Il markup del pulsante esiste in UN punto solo (renderListenBlock) | 103 |
 | `test_blocco_ascolto.js` | 500 | click | un elenco di elementi che si ridisegna | [4] Ogni opzione it→en ha il suo Mini Blocco Ascolto | 206 |
 | `test_blocco_ascolto.js` | 600 | click | uno stile calcolato | [5] Anche la bolla bloccata del Dialogo porta .is-tap-locked | 230 |
-| `test_dialogo_extra.js` | 10 | click | un pulsante o una classe che cambia stato | [Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile) | 153 |
 | `test_dialogo_extra.js` | 120 | click | un suono o la voce | [Tocco] Un tocco a vuoto NON interrompe l'audio | 205 |
 | `test_episodi_corti.js` | 600 | click | altro | [A] Un passo su un grado assente NON si dichiara completato | 90 |
 | `test_episodi_corti.js` | 600 | click | altro | [B] Cliccarlo non lascia lo studente su una vista muta: si vede l'errore | 112 |
 | `test_modulo_pronto.js` | 300 | click | altro | [B] Premere il microfono non solleva nessun errore | 134 |
 | `test_modulo_pronto.js` | 2200 | nessuna azione riconosciuta | altro | [B] Nessun errore nemmeno dopo che il file dei messaggi è arrivato | 141 |
-| `test_new_features.js` | 150 | click | un pulsante o una classe che cambia stato | [A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior) | 110 |
-| `test_new_features.js` | 100 | digitazione | un pulsante o una classe che cambia stato | [B] Typing "config" INSIDE a text input does NOT open the panel | 195 |
-| `test_new_features.js` | 100 | digitazione | un pulsante o una classe che cambia stato | [B] Typing "config" outside an input opens the panel | 203 |
-| `test_new_features.js` | 50 | evaluate | un valore di configurazione o di dati | [B] Editing a scalar field updates window.APP_CONFIG live (7) | 224 |
-| `test_new_features.js` | 50 | digitazione | un pulsante o una classe che cambia stato | [B] Escape closes the config panel | 256 |
-| `test_new_features.js` | 150 | caricamento pagina | un valore di configurazione o di dati | [B] Change persists across reload via boot-time override merge (7) | 262 |
-| `test_new_features.js` | 300 | click | una scrittura nel localStorage | [B] Reset restores speedMatch.timeLimitSeconds to default (10) | 274 |
-| `test_voicecoach.js` | 250 | click | un pulsante o una classe che cambia stato | [4a] "Avanti" starts disabled on the first sentence | 103 |
+| `test_new_features.js` | 50 | evaluate | un valore di configurazione o di dati | [B] Editing a scalar field updates window.APP_CONFIG live (7) | 223 |
+| `test_new_features.js` | 150 | caricamento pagina | un valore di configurazione o di dati | [B] Change persists across reload via boot-time override merge (7) | 261 |
+| `test_new_features.js` | 300 | click | una scrittura nel localStorage | [B] Reset restores speedMatch.timeLimitSeconds to default (10) | 273 |
 | `test_voicecoach.js` | 100 | click | altro | [4c] Test actually forced at least one bad-star line | 132 |
-| `test_voicecoach.js` | 100 | click | un pulsante o una classe che cambia stato | [4a] "Avanti" is disabled again on the retried line (must re-record, not just reuse the old attempt) | 146 |
-| `test_voicecoach.js` | 500 | evaluate | un suono o la voce | [4d] Traguardo sound played on Voice Coach's Schermata Finale | 163 |
-| `test_voicecoach.js` | 150 | click | una scrittura nel localStorage | [4d] Clicking it marks voiceCoach completed and returns to the map | 171 |
+| `test_voicecoach.js` | 500 | evaluate | un suono o la voce | [4d] Traguardo sound played on Voice Coach's Schermata Finale | 162 |
+| `test_voicecoach.js` | 150 | click | una scrittura nel localStorage | [4d] Clicking it marks voiceCoach completed and returns to the map | 170 |
 
 ### Le guardie legittime — marcate nel sito, e perche'
 
@@ -342,14 +297,46 @@ raccoglie da solo invece di essere una lista da rileggere a mano.*
 
 | file | ms | asserzione protetta | perche' resta |
 |---|---|---|---|
+| `test_batch13.js` | 200 | [6b] Still recording just before the (shrunk) silence timeout fires | si legge PRIMA che il timeout di silenzio scatti — registrare gia' partita, si prova che non si e' fermata |
 | `test_batch13.js` | 500 | [6b] Recognized speech before the timeout: no silence warning (false-discard guard) | prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto |
 | `test_batch14.js` | 500 | [Job1] Continuous speech: NO silence warning fires mid-speech | prova che un avviso NON compare — ben oltre il timeout di 150ms |
 | `test_batch14.js` | 150 | [Job4] "Ripasso" badge hidden during the main pass | il badge "Ripasso" e' gia' nascosto — si prova che NON compaia nel giro principale |
+| `test_batch14.js` | 150 | [Job7a] Dialogue has at least 3 lines to test sequencing | NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si conta quante bolle ci sono |
+| `test_batch14.js` | 500 | [Job7a] After line 1 finishes, line 2 unlocks | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa |
+| `test_batch14.js` | 120 | [Job8] Choice box still disabled right after the LAST line's audio ends (bar still running) | il pulsante e' gia' disabilitato: si prova che NON si abiliti finche' la barra scorre |
+| `test_batch15.js` | 100 | [Job8] "Prossima frase" starts disabled (nothing playing yet) | "Prossima frase" nasce disabilitato: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
+| `test_batch15.js` | 150 | [Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato) | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — la riga della mappa NON deve prendere nessuna classe outcome-* |
+| `test_batch16.js` | 150 | [Job2] After pausing, button reads "Riprendi" | misto e nessuna delle due meta' e' convertibile: il TESTO del pulsante non ha una forma condivisa (e' la famiglia «un testo che si riempie»), e lo stato abilitato era gia' vero prima della pausa |
 | `test_batch16.js` | 300 | [Job2] After Riprendi, still on the dialogue screen (not stuck/crashed) | prova che riprendendo NON si esce dalla schermata del dialogo |
+| `test_batch17.js` | 100 | [Job1a-bis] Spiegazione stays enabled during a line's own audio | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — Spiegazione NON deve spegnersi mentre l'audio parla (regola 16) |
+| `test_batch17.js` | 100 | [Job1b] "Ho finito" stays enabled during word audio | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — "Ho finito" NON deve spegnersi durante l'audio di una parola (regola 16) |
+| `test_batch17.js` | 100 | [Job1c] "Ho finito" stays enabled during listen audio | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — i pulsanti di Why We Say It NON devono spegnersi durante l'ascolto (regola 16) |
+| `test_batch17.js` | 100 | [Job1d] Avanti stays enabled while target audio plays | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — Avanti e Spiegazione NON devono spegnersi mentre parla il bersaglio (regola 16) |
+| `test_batch17.js` | 100 | [Job1d-bis] Record stays enabled while target audio plays | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — il microfono NON deve spegnersi mentre parla il bersaglio (regola 16) |
+| `test_batch17.js` | 100 | [Job1e] Answer options stay enabled while the prompt plays | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — le opzioni di risposta NON devono spegnersi mentre la domanda parla (regola 16) |
+| `test_batch17.js` | 100 | [Job1f] Spiegazione stays enabled while the card's own audio plays | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — i pulsanti di Flash Card NON devono spegnersi durante l'audio della carta (regola 16) |
+| `test_batch18.js` | 120 | [Job2] Old bubble is no longer is-active | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — e in piu' il commento qui sopra lo dice: si aspetta APPOSTA oltre l'onerror ritardato, per dare al callback vecchio ogni occasione di sbagliare |
+| `test_batch18.js` | 150 | [Job2b] Only the LAST tapped line ends up active after a rapid chain of switches | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — si verifica che le bolle PRECEDENTI non siano piu' attive dopo una catena rapida |
+| `test_batch19.js` | 200 | [QM Task1] "Non lo so" starts enabled on a fresh question | "Non lo so" nasce abilitato su una domanda nuova: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
+| `test_batch19.js` | 300 | [SR Task3-adj] Spiegazione still DISABLED mid-pause, before auto-advance (the exact flicker this fixes) | si legge a META' della pausa di 600ms: e' proprio l'istante intermedio a dover essere verificato, e un'attesa lo salterebbe |
+| `test_batch19.js` | 500 | [SR Task3-adj] Spiegazione still DISABLED into the next question (its own timer just re-locked it) | si legge DOPO la pausa ma dentro il timer della domanda nuova: la finestra e' il dato, non un'attesa |
+| `test_batch19.js` | 150 | [SR cleanup] Re-opening after leaving mid-timer: Spiegazione is NOT stuck disabled (stopAllModuleActivity cleanup) | NON e' una guardia — fra questa attesa e l'asserzione c'e' la chiamata a un AIUTANTE LOCALE che aspetta per conto suo (openModule), e il censimento non lo conosce, quindi conta come guardia un'attesa che non lo e'. Misurato l'11 settembre: casi cosi' sono QUATTRO in tutta la suite, quindi si marcano dove capitano invece di allargare la regola dello strumento |
+| `test_batch2.js` | 30 | [6b] Wrong phrase keeps the confirm button disabled | il pulsante e' gia' disabilitato: si prova che una frase sbagliata NON lo abiliti |
+| `test_batch3.js` | 150 | [1] Without ?config, the panel stays closed at boot | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — senza ?config il pannello NON deve aprirsi |
 | `test_batch3b.js` | 200 | [6] "Mostra pronuncia" is hidden when the line has no pronunciationTip | "Mostra pronuncia" e' nascosto fin dall'apertura — si prova che RESTI nascosto |
+| `test_batch3b.js` | 150 | [7] "Sì, lo so" starts disabled before any line is heard (Ascolta e Ripeti) | "Si', lo so" nasce disabilitato: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
+| `test_batch3b.js` | 80 | [7] Still disabled after hearing only ONE of several lines | gia' disabilitato: si prova che UNA battuta sola NON basti ad abilitarlo |
+| `test_batch3b.js` | 150 | [7] Ripeti a Tempo: "Sai ripetere le frasi?" starts disabled too | stesso caso del gemello Ascolta e Ripeti: nasce disabilitato, lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
+| `test_batch8.js` | 80 | [Job1] "Avanti" re-enables once a recording IS recognized (streak resets) | NON e' una guardia: questa attesa sta dentro un ramo condizionale che serve a superare la Schermata Ripasso, e l'asserzione che il censimento le attribuisce sta molto piu' giu', dopo altro codice. La finestra di sedici righe dello strumento l'ha agganciata al log sbagliato |
 | `test_batch8.js` | 150 | [Job1] Forcing a click on the disabled "Avanti" does NOT advance/complete the module | prova che la Schermata Finale NON compare dopo un click forzato |
+| `test_batch8.js` | 200 | [Job1b] Module row is NOT "completed" after leaving via the mic-notice map button | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo dall'avviso microfono il modulo NON deve risultare completato |
+| `test_dialogo_extra.js` | 10 | [Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile) | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — nel profilo a tocco libero le ALTRE bolle NON devono bloccarsi |
 | `test_dialogo_extra.js` | 60 | [Regression] Mod1 unlocks right after audio (no countdown bar, countdown:false) | prova che due classi NON ci sono piu' dopo l'audio |
 | `test_modulo_pronto.js` | 600 | [C] Personalizza si apre: chi non legge un file episodio non lo aspetta | prova che la schermata d'errore NON compare su un modulo senza dataFile |
+| `test_new_features.js` | 150 | [A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior) | NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si legge l'ELENCO dei moduli in mappa |
+| `test_new_features.js` | 100 | [B] Typing "config" INSIDE a text input does NOT open the panel | verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — scrivere "config" DENTRO un campo di testo NON deve aprire il pannello |
+| `test_new_features.js` | 50 | [B] Escape closes the config panel | aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello |
+| `test_voicecoach.js` | 250 | [4a] "Avanti" starts disabled on the first sentence | "Avanti" nasce disabilitato sulla prima battuta: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante |
 
 ### Attese di navigazione, per file
 
@@ -363,23 +350,23 @@ fallisce, non passa per sbaglio. Contate per sapere quante sono.*
 | `test_batch12.js` | 14 |
 | `test_batch13.js` | 10 |
 | `test_batch14.js` | 10 |
-| `test_batch15.js` | 15 |
+| `test_batch15.js` | 14 |
 | `test_batch16.js` | 20 |
-| `test_batch17.js` | 21 |
-| `test_batch18.js` | 16 |
+| `test_batch17.js` | 20 |
+| `test_batch18.js` | 15 |
 | `test_batch19.js` | 10 |
 | `test_batch2.js` | 4 |
 | `test_batch20.js` | 6 |
 | `test_batch2b.js` | 6 |
 | `test_batch3.js` | 5 |
-| `test_batch3b.js` | 6 |
+| `test_batch3b.js` | 5 |
 | `test_batch4.js` | 4 |
 | `test_batch4b.js` | 3 |
-| `test_batch5.js` | 14 |
+| `test_batch5.js` | 12 |
 | `test_batch6.js` | 14 |
 | `test_batch7.js` | 22 |
 | `test_batch8.js` | 14 |
-| `test_batch9.js` | 19 |
+| `test_batch9.js` | 20 |
 | `test_dialogo_extra.js` | 7 |
 | `test_mastery_al_gesto.js` | 1 |
 | `test_new_features.js` | 8 |

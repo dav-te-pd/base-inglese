@@ -96,7 +96,7 @@ async function run() {
       const onRetryIntro = await page.evaluate(() => !document.getElementById('voice-coach-retry-intro-screen').hidden);
       if (onRetryIntro) {
         await page.click('#voice-coach-retry-continue-btn').catch(() => {});
-        await page.waitForTimeout(80);
+        await page.waitForTimeout(80); // ATTESA-LEGITTIMA: NON e' una guardia: questa attesa sta dentro un ramo condizionale che serve a superare la Schermata Ripasso, e l'asserzione che il censimento le attribuisce sta molto piu' giu', dopo altro codice. La finestra di sedici righe dello strumento l'ha agganciata al log sbagliato
       }
     }
 
@@ -172,7 +172,7 @@ async function run() {
       if (i < 5) { await page.click('#vc-next-btn').catch(() => {}); await page.waitForTimeout(80); }
     }
     await page.click('#vc-mic-notice-map');
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo dall'avviso microfono il modulo NON deve risultare completato
     const rowClass = await page.$eval('[data-module="voiceCoach"]', el => el.className);
     log('[Job1b] Module row is NOT "completed" after leaving via the mic-notice map button', rowClass.indexOf('completed') === -1);
     log('[Job1b] No JS errors', errors.length === 0);

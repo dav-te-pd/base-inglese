@@ -1,6 +1,6 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
-const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
+const { attendiNascosto, attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -258,7 +258,7 @@ async function run() {
       await page.locator('.dg-bubble').nth(i).click();
       await page.waitForTimeout(400);
     }
-    const hintHiddenAfter = await page.isHidden('#dg-choice-hint').catch(() => null);
+    const hintHiddenAfter = await attendiNascosto(page, '#dg-choice-hint');
     const boxEnabledAfter = await page.$eval('#dg-not-yet-btn', el => !el.disabled).catch(() => null);
     log('[Job3] Hint hides once all lines have been heard', hintHiddenAfter === true);
     log('[Job3] Choice box enables once all lines have been heard', boxEnabledAfter === true);

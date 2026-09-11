@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
@@ -102,8 +103,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await page.goto(BASE + '?config');
-    await page.waitForTimeout(200);
-    const opened = await page.evaluate(() => document.getElementById('config-panel-overlay').classList.contains('is-open'));
+    const opened = await attendiClasse(page, '#config-panel-overlay', 'is-open');
     log('[1] ?config query param opens the config panel at boot', opened);
     log('[1] No JS errors', errors.length === 0);
     await context.close();
@@ -113,7 +113,7 @@ async function run() {
     const page = await context.newPage();
     await page.addInitScript(mockInit);
     await page.goto(BASE);
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — senza ?config il pannello NON deve aprirsi
     const notOpened = await page.evaluate(() => !document.getElementById('config-panel-overlay').classList.contains('is-open'));
     log('[1] Without ?config, the panel stays closed at boot', notOpened);
     await context.close();

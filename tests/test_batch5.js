@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiNascosto } = require('./attese');
+const { attendiDisabilitato, attendiNascosto } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -169,9 +169,10 @@ async function run() {
 
     await page.waitForTimeout(300);
     const startBtnVisible = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (startBtnVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(80); }
+    if (startBtnVisible) { await page.click('#dg-start-btn'); }
     // For continuo: mid ready-countdown, both should be disabled (locked)
     if (modId === 'dialogoContinuo') {
+      await attendiDisabilitato(page, '#dialogo-watch-btn');
       const watchDisabledDuringCountdown = await page.$eval('#dialogo-watch-btn', el => el.disabled);
       const helpDisabledDuringCountdown = await page.$eval('#dialogo-help-btn', el => el.disabled);
       log('[Job5] dialogoContinuo: Spiegazione disabled during the 3-2-1 ready countdown', watchDisabledDuringCountdown);
@@ -179,8 +180,8 @@ async function run() {
       await page.waitForTimeout(2650); // past the 3-2-1, line 1 now auto-playing
     } else {
       await page.click('.dg-bubble'); // Ripeti a Tempo: advance:'manual', must tap to start
-      await page.waitForTimeout(100);
     }
+    await attendiDisabilitato(page, '#dialogo-watch-btn');
     const watchDisabledDuringAudio = await page.$eval('#dialogo-watch-btn', el => el.disabled).catch(() => null);
     const helpDisabledDuringAudio = await page.$eval('#dialogo-help-btn', el => el.disabled).catch(() => null);
     log('[Job5] ' + modId + ': Spiegazione disabled while a line plays (Regola Azione Critica)', watchDisabledDuringAudio === true);

@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiDisabilitato, attendiVisibile } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const BASE = APP_URL;
@@ -100,7 +100,7 @@ async function run() {
   await bootAsUser(page, 'VCTester', stepsBefore('voiceCoach'));
   await page.evaluate(toneCapture);
   await page.click('[data-module="voiceCoach"]');
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(250); // ATTESA-LEGITTIMA: "Avanti" nasce disabilitato sulla prima battuta: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
 
   log('[4a] "Avanti" starts disabled on the first sentence', await page.$eval('#vc-next-btn', el => el.disabled));
   const prevBtnExists = await page.$('#vc-prev-btn');
@@ -143,8 +143,7 @@ async function run() {
   log('[Regression] Spiegazione still visible during retryIntro (not a final screen)', !watchHiddenOnSummaryOnly);
 
   await page.click('#voice-coach-retry-continue-btn');
-  await page.waitForTimeout(100);
-  const nextDisabledOnRetryLine = await page.$eval('#vc-next-btn', el => el.disabled);
+  const nextDisabledOnRetryLine = await attendiDisabilitato(page, '#vc-next-btn');
   log('[4a] "Avanti" is disabled again on the retried line (must re-record, not just reuse the old attempt)', nextDisabledOnRetryLine);
 
   // Fix it this time with the correct transcript.

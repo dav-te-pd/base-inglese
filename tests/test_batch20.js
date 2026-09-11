@@ -5,6 +5,7 @@
 // states, scoring) but none reads the prompt/answer/front/back text
 // itself, so a swapped en-it/it-en ternary would go completely unnoticed.
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const BASE = APP_URL;
@@ -78,8 +79,7 @@ async function run() {
     // Confirm the flip interaction itself still works (is-flipped toggles) —
     // a light behavior check alongside the content one, not the main point.
     await page.click('#fc-card');
-    await page.waitForTimeout(50);
-    const isFlipped = await page.$eval('#fc-card', el => el.classList.contains('is-flipped'));
+    const isFlipped = await attendiClasse(page, '#fc-card', 'is-flipped');
     log('[Content] Flash Card it→en: card still flips on tap', isFlipped);
     log('[Content] Flash Card it→en: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

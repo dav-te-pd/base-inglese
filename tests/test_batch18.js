@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
@@ -82,7 +83,7 @@ async function run() {
     await page.click('.dg-bubble[data-line-id="' + bubbleIds[1] + '"]'); // switch mid-play
     // Wait PAST the async cancel's own delayed onerror (15ms) plus a
     // margin, to give the stale callback every chance to misfire.
-    await page.waitForTimeout(120);
+    await page.waitForTimeout(120); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — e in piu' il commento qui sopra lo dice: si aspetta APPOSTA oltre l'onerror ritardato, per dare al callback vecchio ogni occasione di sbagliare
     const state = await page.evaluate((ids) => {
       var b0 = document.querySelector('.dg-bubble[data-line-id="' + ids[0] + '"]');
       var b1 = document.querySelector('.dg-bubble[data-line-id="' + ids[1] + '"]');
@@ -111,7 +112,7 @@ async function run() {
       await page.click('.dg-bubble[data-line-id="' + bubbleIds2[1] + '"]');
       await page.waitForTimeout(30);
       await page.click('.dg-bubble[data-line-id="' + bubbleIds2[2] + '"]');
-      await page.waitForTimeout(150); // let every straggling async cancel resolve
+      await page.waitForTimeout(150); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — si verifica che le bolle PRECEDENTI non siano piu' attive dopo una catena rapida
       const finalState = await page.evaluate((ids) => {
         return ids.map(function (id) {
           return document.querySelector('.dg-bubble[data-line-id="' + id + '"]').classList.contains('is-active');
@@ -137,9 +138,8 @@ async function run() {
     if (dgStart3) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
     const firstBubble = await page.$('.dg-bubble');
     if (firstBubble) { await firstBubble.click(); }
-    await page.waitForTimeout(700); // audio (500ms) + async cancel margin, well into the countdown
+    const timerRunning = await attendiClasse(page, '.dg-bubble', 'dg-bubble-timer');
     const stillLocked = await page.evaluate(() => document.getElementById('dialogo-watch-btn').disabled);
-    const timerRunning = await page.evaluate(() => document.querySelector('.dg-bubble').classList.contains('dg-bubble-timer'));
     log('[Job2c] Countdown profile reaches its per-line timer normally (dgActiveBubble change is a no-op here)', timerRunning === true);
     log('[Job2c] Spiegazione still locked during the countdown (unaffected regression)', stillLocked === true);
     log('[Job2c] No JS errors', errors.length === 0);

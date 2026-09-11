@@ -1,7 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
-const { attendiSottotitoloEsito } = require('./attese');
+const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -189,7 +189,7 @@ async function run() {
     }
     await page.waitForTimeout(300);
     await page.click('#qm-complete-btn');
-    await page.waitForTimeout(200);
+    await attendiClasse(page, '[data-module="matchEngIta"]', 'outcome-verde');
     const rowClass = await page.evaluate(() => document.querySelector('[data-module="matchEngIta"]').className);
     log('[Job2b] Match Practice map row carries outcome-verde after all-correct run', rowClass.indexOf('outcome-verde') !== -1);
     log('[Job2b] No JS errors', errors.length === 0);
@@ -358,12 +358,13 @@ async function run() {
     await bootAsUser(page, 'T15Job8', ALL_BEFORE_DG_TEMPO);
     await openModule(page, 'dialogoRipetiATempo');
     var dgStart = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
+    if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); } // ATTESA-LEGITTIMA: "Prossima frase" nasce disabilitato: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
     const disabledBeforeAnyPlay = await page.$eval('#dg-next-line-btn', el => el.disabled).catch(() => null);
     log('[Job8] "Prossima frase" starts disabled (nothing playing yet)', disabledBeforeAnyPlay === true);
     // Play the first bubble -> its countdown starts -> button should enable.
     const firstBubble = await page.$('.dg-bubble');
-    if (firstBubble) { await firstBubble.click(); await page.waitForTimeout(400); }
+    if (firstBubble) { await firstBubble.click(); }
+    await attendiAbilitato(page, '#dg-next-line-btn');
     const disabledDuringCountdown = await page.$eval('#dg-next-line-btn', el => el.disabled).catch(() => null);
     log('[Job8] "Prossima frase" enabled while a line\'s countdown bar is running', disabledDuringCountdown === false);
     // Skip it -> job 4 (3rd collaudo): the NEXT line's audio starts playing
@@ -425,7 +426,7 @@ async function run() {
     const data10 = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
     await page.click('#story-cards-complete-btn');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — la riga della mappa NON deve prendere nessuna classe outcome-*
     const rowClass10 = await page.evaluate(() => document.querySelector('[data-module="whyWeSayIt"]').className);
     log('[Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato)', !/outcome-(verde|giallo|rosso)/.test(rowClass10));
     log('[Job10] No JS errors', errors.length === 0);

@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiClasse } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -176,7 +177,7 @@ async function run() {
     log('[Job2] Pausa becomes enabled once the per-line countdown is running', pauseEnabledDuringCountdown === false);
     // Now actually pause it -> Riprendi should stay enabled (not get stuck disabled).
     await page.click('#dg-pause-btn');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: misto e nessuna delle due meta' e' convertibile: il TESTO del pulsante non ha una forma condivisa (e' la famiglia «un testo che si riempie»), e lo stato abilitato era gia' vero prima della pausa
     const riprendiLabel = await page.evaluate(() => document.getElementById('dg-pause-btn').textContent.trim());
     const riprendiDisabled = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
     log('[Job2] After pausing, button reads "Riprendi"', riprendiLabel === 'Riprendi');
@@ -262,7 +263,8 @@ async function run() {
     }, { timeout: 5000 }).catch(() => {});
     await page.click('#dg-next-line-btn');
     // Immediately after clicking, line 2's audio should be playing (bubble locked/active), not idle waiting for a tap.
-    await page.waitForTimeout(80);
+    const idsJob4 = await page.$$eval('.dg-bubble', els => els.map(e => e.getAttribute('data-line-id')));
+    await attendiClasse(page, '.dg-bubble[data-line-id="' + idsJob4[1] + '"]', 'is-active');
     const secondBubbleIsActive = await page.evaluate(() => {
       var bubbles = Array.from(document.querySelectorAll('.dg-bubble'));
       return bubbles[1] && bubbles[1].classList.contains('is-active');
@@ -354,8 +356,7 @@ async function run() {
     log('[Job7] "Spiegazione" sits near the row\'s horizontal center', Math.abs(rects.spiegCenter - rects.rowCenter) < 20);
     // Also check the Spiegazione screen itself (rule: "comprese le schermate di Spiegazione").
     await page.click('#flashcard-watch-btn');
-    await page.waitForTimeout(150);
-    const overlayOpen = await page.evaluate(() => document.getElementById('howitworks-overlay').classList.contains('is-open'));
+    const overlayOpen = await attendiClasse(page, '#howitworks-overlay', 'is-open');
     log('[Job7] Spiegazione popup opens (sanity check, not an alignment assertion)', overlayOpen);
     log('[Job7] No JS errors', errors.length === 0);
     await page.close();

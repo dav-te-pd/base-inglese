@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiAbilitato, attendiVisibile } = require('./attese');
 const { gradeOf, stepIds, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -191,12 +191,12 @@ async function run() {
     await openModule(page, 'dialogoAscoltaRipeti');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: "Si', lo so" nasce disabilitato: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
     const disabledAtStart = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[7] "Sì, lo so" starts disabled before any line is heard (Ascolta e Ripeti)', disabledAtStart);
     // Play just the first line.
     await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
-    await page.waitForTimeout(80);
+    await page.waitForTimeout(80); // ATTESA-LEGITTIMA: gia' disabilitato: si prova che UNA battuta sola NON basti ad abilitarlo
     const stillDisabledAfterOne = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[7] Still disabled after hearing only ONE of several lines', stillDisabledAfterOne);
     // Play every remaining line.
@@ -205,8 +205,7 @@ async function run() {
       await page.click('.dg-bubble[data-line-id="' + id + '"]');
       await page.waitForTimeout(60);
     }
-    await page.waitForTimeout(100);
-    const enabledAtEnd = await page.$eval('#dg-know-it-btn', el => !el.disabled);
+    const enabledAtEnd = await attendiAbilitato(page, '#dg-know-it-btn');
     log('[7] Enabled once every line has been heard at least once', enabledAtEnd);
     log('[7] No JS errors', errors.length === 0);
     await page.close();
@@ -228,7 +227,7 @@ async function run() {
     await openModule(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: stesso caso del gemello Ascolta e Ripeti: nasce disabilitato, lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
     const disabledAtStart = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[7] Ripeti a Tempo: "Sai ripetere le frasi?" starts disabled too', disabledAtStart);
     log('[7] No JS errors on Ripeti a Tempo', errors.length === 0);

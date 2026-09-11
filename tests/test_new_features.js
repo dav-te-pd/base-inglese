@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore, allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -107,7 +107,7 @@ async function run() {
       localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
     }, 'ReorderTester');
     await page.click('#go-episode');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si legge l'ELENCO dei moduli in mappa
     // Note: order array was mutated pre-boot via addInitScript-style evaluate before go-episode;
     // but EPISODES.modules was computed once at script load. Re-check by reading it directly.
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
@@ -192,7 +192,7 @@ async function run() {
       tmp.focus();
     });
     for (const ch of 'config') await page.keyboard.press(ch);
-    await page.waitForTimeout(100);
+    await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — scrivere "config" DENTRO un campo di testo NON deve aprire il pannello
     const openedWhileTyping = await page.evaluate(() => document.getElementById('config-panel-overlay').classList.contains('is-open'));
     log('[B] Typing "config" INSIDE a text input does NOT open the panel', !openedWhileTyping);
     await page.evaluate(() => { document.getElementById('__tmp_input_test').remove(); document.activeElement.blur(); });
@@ -200,8 +200,7 @@ async function run() {
     // Typing "config" outside an input opens it.
     await page.click('body');
     for (const ch of 'config') await page.keyboard.press(ch);
-    await page.waitForTimeout(100);
-    const opened = await page.evaluate(() => document.getElementById('config-panel-overlay').classList.contains('is-open'));
+    const opened = await attendiClasse(page, '#config-panel-overlay', 'is-open');
     log('[B] Typing "config" outside an input opens the panel', opened);
 
     const groupCount = await page.$$eval('#config-panel-body .config-group', els => els.length);
@@ -253,7 +252,7 @@ async function run() {
 
     // Escape closes the panel.
     await page.keyboard.press('Escape');
-    await page.waitForTimeout(50);
+    await page.waitForTimeout(50); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa — Escape TOGLIE is-open dal pannello
     const closedByEscape = await page.evaluate(() => !document.getElementById('config-panel-overlay').classList.contains('is-open'));
     log('[B] Escape closes the config panel', closedByEscape);
 

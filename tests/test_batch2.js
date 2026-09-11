@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiAbilitato, attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore, stepIds } = require('./module-order');
 const BASE = APP_URL;
 
@@ -143,11 +143,11 @@ async function run() {
     const confirmBtnDisabled = await page.$eval('#customize-warning-confirm-btn', el => el.disabled);
     log('[6b] Confirm button starts disabled', confirmBtnDisabled);
     await page.fill('#customize-warning-confirm-input', 'non è la frase giusta');
-    await page.waitForTimeout(30);
+    await page.waitForTimeout(30); // ATTESA-LEGITTIMA: il pulsante e' gia' disabilitato: si prova che una frase sbagliata NON lo abiliti
     const stillDisabled = await page.$eval('#customize-warning-confirm-btn', el => el.disabled);
     log('[6b] Wrong phrase keeps the confirm button disabled', stillDisabled);
     await page.fill('#customize-warning-confirm-input', 'CANCELLA EPISODIO');
-    await page.waitForTimeout(30);
+    await attendiAbilitato(page, '#customize-warning-confirm-btn');
     const nowEnabled = await page.$eval('#customize-warning-confirm-btn', el => !el.disabled);
     log('[6b] Exact phrase (case-insensitive) enables the confirm button', nowEnabled);
     await page.click('#customize-warning-confirm-btn');
@@ -177,7 +177,7 @@ async function run() {
     await bootAsUser(page2, 'T6Cancel', stepIds().slice(0, 2));
     await openModule(page2, 'personalizzazione');
     await page2.click('#customize-warning-cancel-btn');
-    await page2.waitForTimeout(150);
+    await attendiClasse(page2, '#view-map', 'is-active');
     const onMap = await page2.evaluate(() => !document.getElementById('view-map').classList.contains('is-active') ? false : true);
     log('[6b] Cancel on the warning screen returns to the map', onMap);
     const progressStillThere = await page2.evaluate((u) => localStorage.getItem('baseinglese:modules:gate:' + u) !== null, 'T6Cancel');

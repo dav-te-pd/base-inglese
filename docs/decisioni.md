@@ -670,7 +670,7 @@ prima.*
 
 | | n | |
 |---|---|---|
-| **da convertire** | **26** | una transizione vera: il pulsante si abilita, la classe compare, il testo cambia |
+| **da convertire** | **26 → 20** ⚠️ | una transizione vera. **Il 26 veniva dalle ETICHETTE del censimento; leggendo i 52 siti sul codice sono diventati 20.** Sei sono scesi: quattro aspettano una classe che **sparisce** (forma che non esiste), uno legge il **testo** di un pulsante (altra famiglia), uno è una misclassificazione in più. *Anche il triage si misura leggendo: la tabella dice dove guardare, il codice dice cosa c'è.* |
 | **già vero prima dell'attesa** | **11** | *«starts disabled»*, *«still disabled»*, *«keeps disabled»* |
 | **negative** | **12** | *«stays enabled»*, *«does NOT open»*, *«NON carries»* |
 | **misclassificate** | **3** | l'etichetta della famiglia è sbagliata, vedi sotto |
@@ -705,6 +705,30 @@ non del codice:
 tutta la suite sono QUATTRO** (`test_batch6`, `test_batch8`, `test_batch15`,
 `test_batch19`), non un difetto sistematico. *Quattro su 154 non giustificano di
 allargare la regola degli aiutanti: si marcano dove capitano.*
+
+### FATTA l'11 settembre — 154 → 108
+
+**20 conversioni, 32 marcate legittime, e nessuna forzatura.** Le tre forme
+nuove — `attendiAbilitato`, `attendiDisabilitato`, `attendiClasse` — stanno in
+`tests/attese.js`. **`attendiClasseAssente` NON è stata scritta**, ed è una
+decisione con una soglia: quattro siti aspettano una classe che sparisce, e
+quattro non giustificano una funzione da difendere per sempre su cui sbagliare
+produce un test *vuoto*. **Si fa quando diventano dieci.**
+
+⚠️ **E i 32 marcatori NON hanno tutti lo stesso motivo, di proposito.** Quattro
+gruppi, quattro frasi diverse: *l'attesa è la misura* (negative), *lo stato era
+già vero* (12), *la classe sparisce e la forma non c'è* (4), e per le quattro
+**misclassificate** una frase che dice l'opposto — *«questa non è nemmeno una
+guardia di questa famiglia»*. **Marcarle col motivo delle altre sarebbe stata
+una bugia comoda:** chi legge un marcatore che dice «il tempo è la misura» su
+una riga che conta le bolle di un dialogo impara una cosa falsa su come
+funziona quel test.
+
+**E la ragione per cui il gruppo «già vero» è stato escluso ora vive nel
+codice**: `tests/test_attese_condivise.js`, blocco `[C]`, dimostra che su uno
+stato già vero una forma torna `true` in meno di 250 ms **senza aver verificato
+niente**. *Su undici siti, fidarsi della lettura è esattamente quello che ci è
+costato le tre asserzioni morte.*
 
 ### Cosa vuol dire per il 14b
 

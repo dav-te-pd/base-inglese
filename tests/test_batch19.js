@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiVisibile } = require('./attese');
+const { attendiAbilitato, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -175,7 +175,7 @@ async function run() {
     await bootAsUser(page, 'QMDontKnowTester', stepsBefore('matchEngIta'));
     await openModule(page, 'matchEngIta');
     await page.click('#qm-start-btn').catch(() => {});
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: "Non lo so" nasce abilitato su una domanda nuova: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
     const beforeDisabled = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
     log('[QM Task1] "Non lo so" starts enabled on a fresh question', beforeDisabled === false);
     // Il giro si GUIDA (vedi toccaFinoA): non si tocca la prima opzione venti
@@ -367,10 +367,10 @@ async function run() {
         // tests/ATTESE-FISSE.md.
         const rightAfterTap = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione stays DISABLED right after a CORRECT tap (nothing to read, no flicker)', rightAfterTap === true);
-        await page.waitForTimeout(300); // still mid-pause (feedbackPauseMs 600)
+        await page.waitForTimeout(300); // ATTESA-LEGITTIMA: si legge a META' della pausa di 600ms: e' proprio l'istante intermedio a dover essere verificato, e un'attesa lo salterebbe
         const midPause = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione still DISABLED mid-pause, before auto-advance (the exact flicker this fixes)', midPause === true);
-        await page.waitForTimeout(500); // past feedbackPauseMs, into the next question's timer
+        await page.waitForTimeout(500); // ATTESA-LEGITTIMA: si legge DOPO la pausa ma dentro il timer della domanda nuova: la finestra e' il dato, non un'attesa
         const nextQuestion = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
         log('[SR Task3-adj] Spiegazione still DISABLED into the next question (its own timer just re-locked it)', nextQuestion === true);
       }
@@ -399,7 +399,7 @@ async function run() {
     const lockedBefore = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR Task3-adj] Spiegazione is locked while the timer runs, right before "Non lo so"', lockedBefore === true);
     await page.click('#sr-dontknow-btn');
-    await page.waitForTimeout(30);
+    await attendiAbilitato(page, '#speed-match-watch-btn');
     const unlockedAfter = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR Task3-adj] Spiegazione unlocks right after "Non lo so" (its own reveal is a case to read)', unlockedAfter === false);
     log('[SR Task3-adj] No JS errors', errors.length === 0);
@@ -449,7 +449,7 @@ async function run() {
     log('[SR cleanup] Header is disabled mid-timer, as expected, right before leaving', midTimerDisabled === true);
     // Leave the module mid-timer via the Mappa button.
     await page.click('#speed-match-back-map');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: NON e' una guardia — fra questa attesa e l'asserzione c'e' la chiamata a un AIUTANTE LOCALE che aspetta per conto suo (openModule), e il censimento non lo conosce, quindi conta come guardia un'attesa che non lo e'. Misurato l'11 settembre: casi cosi' sono QUATTRO in tutta la suite, quindi si marcano dove capitano invece di allargare la regola dello strumento
     // Re-open Speed Match fresh: on the start screen the header must NOT be stuck disabled.
     await openModule(page, 'speedMatchEngIta');
     const freshState = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);

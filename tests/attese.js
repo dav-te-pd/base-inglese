@@ -88,4 +88,68 @@ async function attendiNascosto(page, selettore, timeoutMs) {
   }
 }
 
-module.exports = { attendiSottotitoloEsito, attendiVisibile, attendiNascosto };
+// ── UN PULSANTE O UNA CLASSE CHE CAMBIA STATO ────────────────────────────────
+//
+// Famiglia ① del 14b: 52 punti censiti, **26 da convertire** — il triage
+// dell'11 settembre ha tolto 11 «stato già vero prima dell'attesa», 12 negative
+// e 3 misclassificate. Il numero di una famiglia dice DOVE guardare, non quanto
+// lavoro c'è.
+//
+// TRE NOMI E NON UNO CON UN PARAMETRO, e la distinzione è questa:
+// `disabled` è una **variante del comportamento**, quindi ha due nomi —
+// `attendi(sel, true)` al sito di chiamata non direbbe niente. La **classe**
+// invece è il **dato**, quindi resta un argomento: le classi sono tante e
+// diverse (`is-active`, `is-ahead-locked`, `outcome-verde`, `dg-bubble-timer`)
+// e un nome per ognuna sarebbe un elenco che cresce a ogni classe nuova.
+//
+// ⚠️ NON ESISTE `attendiClasseAssente`, ED È UNA DECISIONE, NON UNA
+// DIMENTICANZA. Tre dei 26 punti aspettano che una classe **sparisca**. Su
+// quei tre la classe c'è davvero prima, quindi la conversione sarebbe sicura —
+// ma tre siti non giustificano una funzione da difendere per sempre, e il
+// rischio è **asimmetrico**: sbagliarla produce un test vuoto, cioè la cosa
+// che non si vede. Restano com'erano, marcati nel sito.
+// **La condizione che la farebbe nascere è scritta e ha un numero: quando i
+// siti che aspettano una classe che sparisce diventano DIECI.** Non è un no
+// per sempre: è un no adesso, con la soglia dichiarata.
+
+async function attendiAbilitato(page, selettore, timeoutMs) {
+  return attendiDisabled(page, selettore, false, timeoutMs);
+}
+
+async function attendiDisabilitato(page, selettore, timeoutMs) {
+  return attendiDisabled(page, selettore, true, timeoutMs);
+}
+
+// La classe è un argomento perché è il dato, non una variante: vedi sopra.
+async function attendiClasse(page, selettore, classe, timeoutMs) {
+  try {
+    await page.waitForFunction(function (a) {
+      var el = document.querySelector(a.sel);
+      return !!el && el.classList.contains(a.cls);
+    }, { sel: selettore, cls: classe }, { timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+// Il pezzo condiviso dalle due sopra: esiste perché differiscono per una
+// negazione, e due copie di questo blocco sarebbero due occasioni di scriverne
+// una diversa. **Non è esportato**: il booleano resta qui dentro, dove si legge
+// accanto alla sua spiegazione, e fuori ci sono solo i due nomi.
+async function attendiDisabled(page, selettore, atteso, timeoutMs) {
+  try {
+    await page.waitForFunction(function (a) {
+      var el = document.querySelector(a.sel);
+      return !!el && !!el.disabled === a.atteso;
+    }, { sel: selettore, atteso: atteso }, { timeout: timeoutMs || 15000 });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+module.exports = {
+  attendiSottotitoloEsito, attendiVisibile, attendiNascosto,
+  attendiAbilitato, attendiDisabilitato, attendiClasse
+};

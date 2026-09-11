@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
-const { attendiNascosto, attendiVisibile } = require('./attese');
+const { attendiAbilitato, attendiClasse, attendiNascosto, attendiVisibile } = require('./attese');
 const { declareAllSkills } = require('./story-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
@@ -234,7 +234,7 @@ async function run() {
     await openModule(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
-    await page.waitForTimeout(150);
+    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si conta quante bolle ci sono
     const bubbleIds = await page.$$eval('.dg-bubble', els => els.map(e => e.getAttribute('data-line-id')));
     log('[Job7a] Dialogue has at least 3 lines to test sequencing', bubbleIds.length >= 3);
     const line3LockedAtStart = await page.$eval('.dg-bubble[data-line-id="' + bubbleIds[2] + '"]', el => el.classList.contains('is-ahead-locked'));
@@ -246,7 +246,7 @@ async function run() {
     log('[Job7a] Clicking the locked line 3 does nothing (no audio starts)', !stillSpeaking);
     // Play line 1 fully (audio + its countdown bar).
     await page.click('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]');
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(500); // ATTESA-LEGITTIMA: aspetta che una CLASSE SPARISCA, e attendiClasseAssente non esiste. Qui la classe c'e' davvero prima, quindi la conversione sarebbe sicura — ma i siti come questo sono QUATTRO, e quattro non giustificano una funzione da difendere per sempre su cui sbagliare produce un test vuoto. SOGLIA DICHIARATA: quando diventano DIECI, la funzione si fa
     const line2UnlockedNow = await page.$eval('.dg-bubble[data-line-id="' + bubbleIds[1] + '"]', el => !el.classList.contains('is-ahead-locked'));
     log('[Job7a] After line 1 finishes, line 2 unlocks', line2UnlockedNow);
     const line1StillPlayable = await page.$eval('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]', el => !el.classList.contains('is-ahead-locked'));
@@ -274,8 +274,7 @@ async function run() {
     log('[Job7b] Ripeti a Tempo toolbar shows "Prossima frase"', toolbarVisible && nextLineBtnText === 'Prossima frase');
     const bubbleIds = await page.$$eval('.dg-bubble', els => els.map(e => e.getAttribute('data-line-id')));
     await page.click('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]');
-    await page.waitForTimeout(60); // audio ends fast (fake synth, 20ms), bar starts (long, 5s+)
-    const timerRunning = await page.$eval('.dg-bubble[data-line-id="' + bubbleIds[0] + '"]', el => el.classList.contains('dg-bubble-timer'));
+    const timerRunning = await attendiClasse(page, '.dg-bubble[data-line-id="' + bubbleIds[0] + '"]', 'dg-bubble-timer');
     log('[Job7b] Countdown bar is running before skipping', timerRunning);
     const skipsBefore = await page.evaluate((u) => { var raw = localStorage.getItem('baseinglese:nextLineSkips:gate:' + u); return raw ? JSON.parse(raw).byModule.dialogoRipetiATempo : undefined; }, 'T14NextLine');
     // The skip click, the "is it disabled right after" read, and the
@@ -346,14 +345,13 @@ async function run() {
       await page.waitForTimeout(60); // audio ends
       if (i === bubbleIds.length - 1) break; // let the LAST line's bar run out naturally below
       const stillReachable = await page.$eval('#dg-next-line-btn', el => el).catch(() => null);
-      if (stillReachable) { await page.click('#dg-next-line-btn').catch(() => {}); await page.waitForTimeout(120); }
+      if (stillReachable) { await page.click('#dg-next-line-btn').catch(() => {}); await page.waitForTimeout(120); } // ATTESA-LEGITTIMA: il pulsante e' gia' disabilitato: si prova che NON si abiliti finche' la barra scorre
     }
     // Audio for the last line just ended — bar should still be running, choice box must NOT be enabled yet.
     const disabledRightAfterAudio = await page.$eval('#dg-know-it-btn', el => el.disabled);
     log('[Job8] Choice box still disabled right after the LAST line\'s audio ends (bar still running)', disabledRightAfterAudio);
     // Now let the bar finish on its own.
-    await page.waitForTimeout(2200);
-    const enabledAfterTimer = await page.$eval('#dg-know-it-btn', el => !el.disabled);
+    const enabledAfterTimer = await attendiAbilitato(page, '#dg-know-it-btn');
     log('[Job8] Choice box enables once the LAST line\'s timer actually finishes', enabledAfterTimer);
     log('[Job8] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
