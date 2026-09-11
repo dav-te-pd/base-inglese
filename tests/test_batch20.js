@@ -5,7 +5,7 @@
 // states, scoring) but none reads the prompt/answer/front/back text
 // itself, so a swapped en-it/it-en ternary would go completely unnoticed.
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
-const { attendiClasse } = require('./attese');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const BASE = APP_URL;
@@ -95,7 +95,7 @@ async function run() {
     await bootAsUser(page, 'ContentQMItaEng', stepsBefore('matchItaEng'));
     await openModule(page, 'matchItaEng');
     await page.click('#qm-start-btn').catch(() => {});
-    await page.waitForTimeout(200);
+    await attendiVisibile(page, '#qm-quiz-screen'); // approdo misurato: la direzione e' gia' scritta quando il click torna, ma non puo' essere l'approdo di se stessa — si aspetta la schermata del quiz, che nessuna asserzione qui legge
     const directionLabel = await page.$eval('#qm-direction', el => el.textContent.trim());
     log('[Content] Match Practice it→en: direction label reads "ITALIANO → INGLESE"', directionLabel === 'ITALIANO → INGLESE');
     const promptText = await page.$eval('#qm-prompt', el => el.textContent.trim());
@@ -104,7 +104,11 @@ async function run() {
     // Tap any option — is-correct always lands on the objectively correct
     // one regardless of whether the tap itself was right or wrong.
     await page.click('#qm-options .sr-option >> nth=0');
-    await page.waitForTimeout(30);
+    // Approdo misurato: .is-correct NON esiste prima del tocco e compare con
+    // esso. Aspettare che ESISTA non banalizza l'asserzione, che legge il suo
+    // TESTO: l'esistenza e l'identita' sono due cose diverse. Senza, il $eval
+    // qui sotto sollevava invece di fallire.
+    await attendiVisibile(page, '#qm-options .sr-option.is-correct');
     const correctOptionText = await page.$eval('#qm-options .sr-option.is-correct', el => el.textContent.trim());
     log('[Content] Match Practice it→en: the correct option is that same entry\'s ENGLISH translation', !!item && correctOptionText === item.english);
     log('[Content] Match Practice it→en: No JS errors', errors.length === 0);

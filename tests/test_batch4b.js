@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
 
@@ -53,7 +54,17 @@ async function run() {
     const priorModules = ALL_MODULES.slice(0, idx);
     await bootAsUser(page, 'T4b_' + moduleId, priorModules);
     await page.click('[data-module="' + moduleId + '"]');
-    await page.waitForTimeout(300);
+    // ⚠️ E' IL CASO PIU' DIVERSO DELLA FAMIGLIA, e per questo la conversione si
+    // prova qui per prima: e' l'unico CICLO su una lista di moduli invece di un
+    // blocco su un modulo solo, e l'unico in cui il selettore da aspettare e'
+    // un PARAMETRO, non una costante scritta a mano. Un approdo sbagliato qui
+    // non si vedrebbe: tornerebbe false su ogni giro e il .catch trasformerebbe
+    // la lettura in 'ERROR:...', cioe' in un rosso che parla d'altro.
+    //
+    // L'approdo e' il contenitore dell'intro, non il nome che l'asserzione
+    // legge (CLAUDE.md regola 44): aspettare il nome lo renderebbe vero per
+    // costruzione.
+    await attendiVisibile(page, selector);
     const text = await page.$eval(selector + ' .spiegazione-title-name', el => el.textContent.trim()).catch(e => 'ERROR:' + e.message);
     log('[Spiegazione] ' + moduleId + ' intro name = "' + expected + '" (got "' + text + '")', text === expected);
     log('[Spiegazione] ' + moduleId + ' no JS errors', errors.length === 0);

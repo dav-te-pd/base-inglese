@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiClasse } = require('./attese');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const BASE = APP_URL;
@@ -118,7 +119,7 @@ async function run() {
     // mostra la sequenza dell'episodio corrente) e sposta giu' la prima riga.
     await page.click('body');
     for (const ch of 'config') await page.keyboard.press(ch);
-    await page.waitForTimeout(100);
+    await attendiClasse(page, '#config-panel-overlay', 'is-open'); // approdo: il pannello aperto, non le righe che l'asserzione conta
     await page.evaluate(() => {
       var groups = Array.from(document.querySelectorAll('#config-panel-body .config-group'));
       var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'sequences'; });

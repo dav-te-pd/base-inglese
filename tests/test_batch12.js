@@ -311,7 +311,15 @@ async function run() {
     const idx = ALL_MODULES.indexOf('voicePractice');
     await bootAsUser(page, 'T12Practice', ALL_MODULES.slice(0, idx));
     await openModule(page, 'voicePractice');
-    await page.waitForTimeout(300);
+    // ⚠️ APPRODO MISURATO, e la misura era necessaria: #voice-coach-badge NON
+    // nasce vuoto — porta "Voice Coach", il valore della schermata precedente,
+    // perche' Voice Practice e Voice Check condividono la stessa vista e lo
+    // stesso elemento. Un'attesa «finche' non e' vuoto» tornerebbe al primo
+    // istante SUL VALORE SBAGLIATO. Campionato ogni 5 ms: prima "Voice Coach",
+    // all'attivazione della vista "Voice Practice" — cambiano nello stesso
+    // render, quindi is-active garantisce il badge e nessuna asserzione di
+    // questo blocco lo legge (CLAUDE.md regola 44).
+    await attendiClasse(page, '#view-voice-coach', 'is-active');
 
     const badge = await page.evaluate(() => document.getElementById('voice-coach-badge').textContent);
     log('[Job5] Voice Practice badge/title show "Voice Practice"', badge === 'Voice Practice');
@@ -410,7 +418,7 @@ async function run() {
     const idx = ALL_MODULES.indexOf('voiceCoach');
     await bootAsUser(page, 'T12Check', ALL_MODULES.slice(0, idx));
     await openModule(page, 'voiceCoach');
-    await page.waitForTimeout(300);
+    await attendiClasse(page, '#view-voice-coach', 'is-active'); // approdo misurato: il badge porta "Voice Coach" anche prima — vedi il blocco di Voice Practice
 
     const badge = await page.evaluate(() => document.getElementById('voice-coach-badge').textContent);
     log('[Job5] Voice Check badge/title show "Voice Check"', badge === 'Voice Check');

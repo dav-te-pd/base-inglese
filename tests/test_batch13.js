@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL } = require('./test-env');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
@@ -170,14 +171,12 @@ async function run() {
     await page.evaluate(() => document.getElementById('vc-record-btn').click()); // stop
     await page.waitForTimeout(150);
     await page.click('#vc-send-btn');
-    // RIMANDATA alla famiglia «un testo che si riempie», e il motivo e' che
-    // l'approdo giusto e' suo. Qui non c'e' nessun cambio di schermata: il
-    // modulo resta aperto, addAudioSecondsSent e' la PRIMA riga sincrona del
-    // gestore e l'ULTIMO effetto e' vcEvaluate(), che riempie #vc-feedback.
-    // Costruire adesso una forma per questo unico sito significherebbe
-    // scrivere una funzione condivisa con un utente solo — e' la stessa soglia
-    // per cui attendiClasseAssente non esiste. Si chiude con quella famiglia.
-    await page.waitForTimeout(150);
+    // La rimandata della famiglia ④, chiusa qui con la ⑤ come previsto: non
+    // c'e' nessun cambio di schermata, addAudioSecondsSent e' la PRIMA riga
+    // sincrona del gestore e l'ULTIMO effetto e' vcEvaluate(), che scopre il
+    // riquadro dell'esito. L'approdo e' quello — non i secondi che
+    // l'asserzione legge (CLAUDE.md regola 44).
+    await attendiVisibile(page, '#vc-result');
     const usage = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:audioSecondsSent:gate:' + u) || '{}'), 'T13Usage');
     log('[6c] Sending a recording writes a per-module audio-seconds entry', usage.byModule && usage.byModule.voicePractice > 0);
     console.log('    -> voicePractice seconds recorded: ' + (usage.byModule && usage.byModule.voicePractice));
@@ -186,7 +185,7 @@ async function run() {
     await page.evaluate(() => { document.body.focus(); });
     await page.click('body');
     for (const ch of 'config') await page.keyboard.press(ch);
-    await page.waitForTimeout(150);
+    await attendiClasse(page, '#config-panel-overlay', 'is-open'); // approdo: il pannello aperto, non il testo che l'asserzione legge
     const panelText = await page.$eval('#config-audio-usage', el => el.textContent);
     log('[6c] Config panel audio-usage section mentions Voice Practice', panelText.indexOf('Voice Practice') !== -1);
     log('[6c] Config panel audio-usage section shows a seconds total', /\d+(\.\d+)?\s*s/.test(panelText));

@@ -146,7 +146,12 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T14RA', stepsBefore('repeatAloud'));
     await openModule(page, 'repeatAloud');
-    await page.waitForTimeout(300);
+    // Approdo misurato: #repeat-aloud-complete porta gia' "Ho finito" PRIMA
+    // dell'apertura (e' nel markup) — quindi oggi questa attesa non guarda
+    // niente. Si converte lo stesso, come assicurazione: openModuleFromMap e'
+    // asincrono, e il giorno in cui quel testo lo scrivera' il render la
+    // differenza sara' fra un verde e una corsa (vedi 0601b87 nel 14b ④).
+    await attendiClasse(page, '#view-repeat-aloud', 'is-active');
     const btnLabel = await page.evaluate(() => document.getElementById('repeat-aloud-complete').textContent);
     log('[Job3] "Ho finito" button no longer claims "torna alla mappa" (it opens the summary now)', btnLabel === 'Ho finito');
     await page.click('#repeat-aloud-complete');

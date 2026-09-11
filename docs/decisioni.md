@@ -74,17 +74,16 @@ Pianificato sui numeri del 14a, **rimisurati l'11 settembre: 186 guardie, non
 180.** Il conto si rigenera con `node tests/tools/conta-attese.js`, non si
 ricorda.
 
-**A che punto è, l'11 settembre sera: 186 → 56.** Chiuse le famiglie ①, ②, ③ e
-④. ⚠️ **I numeri intermedi scritti durante la giornata — 154, 108, 90 — erano
+**A che punto è, l'11 settembre sera: 186 → 39.** Chiuse le famiglie ①, ②, ③,
+④ e ⑤. ⚠️ **I numeri intermedi scritti durante la giornata — 154, 108, 90 — erano
 GONFIATI**: lo strumento non riconosceva cinque delle otto funzioni del
 magazzino e promuoveva a guardia le attese che stavano prima di una conversione.
 Corretto, e il perché sta in «14b ④». *Il 186 del 14a invece è giusto: nessuna
 di quelle funzioni esisteva ancora.*
 
-**Cosa resta, e sono poche forme:** «un testo che si riempie» (16), «altro»
-(20 — ⚠️ è il residuo della classificazione, probabilmente non è una famiglia),
-poi configurazione (5), stile (5), console negativa (3), geometria (3), elenchi
-(3), e la rimandata di `test_batch13` (1).
+**Cosa resta:** «altro» (20 — ⚠️ è il residuo della classificazione,
+probabilmente non è una famiglia: da guardare sapendo questo), configurazione
+(5), stile (5), console negativa (3), geometria (3), elenchi (3).
 
 ### Cosa è chiuso
 
@@ -908,6 +907,78 @@ sono mai stati il vero. Il conto vero, misurato con lo strumento corretto:
 **20/29 · 20/52 · 12/29 · 13/18.** E ogni famiglia ha aggiunto una categoria che
 le precedenti non avevano. *Il triage non è un filtro noto da applicare: è una
 lettura che ogni volta trova una forma nuova.*
+
+## 14b ⑤ — la famiglia «un testo che si riempie» (11 settembre)
+
+**16 punti, 16 chiusi: 14 convertiti e 2 marcati legittimi** — più la rimandata
+della ④ (`test_batch13`), chiusa qui come previsto. **La famiglia scende a
+ZERO.** Nessuna funzione nuova: `attendiClasse` e `attendiVisibile` bastavano.
+
+### ⚠️ LA SETTIMA CATEGORIA — e impone una MISURA PER OGNI SITO
+
+> **ASPETTARE «CHE IL TESTO CI SIA» NON BASTA QUANDO IL TESTO SBAGLIATO C'È
+> GIÀ.**
+
+La conversione naturale per una famiglia che si chiama *«un testo che si
+riempie»* è *«aspetta che l'elemento non sia vuoto»*. **Misurato campionando
+ogni 5 ms all'apertura di Voice Practice:**
+
+```
+40ms  vista attiva=false  badge="Voice Coach"
+69ms  vista attiva=false  badge="Voice Coach"
+78ms  vista attiva=true   badge="Voice Practice"
+```
+
+**Il badge non è vuoto prima: porta il testo SBAGLIATO** — il valore della
+schermata precedente, perché Voice Practice e Voice Check condividono la stessa
+vista e lo stesso elemento. Un'attesa «finché non è vuoto» tornerebbe **al primo
+istante, sul valore vecchio**. Non è pericolosa come la ⑤ — fa fallire, non
+passare — ma è **inutile**: lascia la corsa dov'era.
+
+**Il nome della famiglia descrive quello che il test vuole vedere, non quello
+che l'elemento fa. L'elemento non si riempie: CAMBIA.** E «aspetta che sia
+cambiato» non si scrive senza nominare il valore atteso, che è la regola 44.
+
+⚠️ **LA CONSEGUENZA OPERATIVA, ed è la prima volta che una categoria impone una
+misura per ogni sito: va MISURATO se l'elemento nasce vuoto o porta un valore
+vecchio, e non è deducibile dal codice del test.** Misurati, quattro
+comportamenti diversi:
+
+| elemento | prima del gesto | |
+|---|---|---|
+| `#voice-coach-badge` | `"Voice Coach"` | **vecchio, e cambia** |
+| `#repeat-aloud-complete`, `#qm-retry-intro-screen`, `#qm-direction`, `.spiegazione-title-name`, `#dg-list` | già il valore giusto | **vecchio e non cambia mai** — la guardia non guarda niente |
+| `#repeat-aloud-type-badge`, `#match-type-badge` | vuoto | **nasce vuoto** |
+| `.sr-option.is-correct` | non esiste | **assente** — lì aspettare che ESISTA è l'approdo giusto, perché l'asserzione legge il TESTO: esistenza e identità sono due cose diverse |
+
+### Perché questa famiglia è più rischiosa della ④
+
+**`openModuleFromMap` è ASINCRONO** (`Promise.all([...]).then(...)`): nella ④
+dodici guardie su tredici stavano davanti a gestori sincroni e non guardavano
+niente, qui le sette «dopo l'apertura di un modulo» sono **corse vere**.
+
+*Distinzione che serve a chi converte: `page.click(sel)` aspetta da solo che
+l'elemento sia raggiungibile, quindi un click dopo l'apertura non è una corsa;
+un `page.evaluate` o un `$eval` non aspettano niente, e lì la corsa c'è.*
+
+**La prova (regola 32), fatta sul caso più diverso** — `test_batch4b`, l'unico
+ciclo su una lista di moduli e l'unico in cui il selettore da aspettare è un
+**parametro**: iniettati 500 ms dentro `openModuleFromMap`, **la forma vecchia
+cade 5/10 e la nuova regge 10/10**. E il rosso della forma vecchia diceva
+`ERROR: page.$eval: Failed to find element…` — **un rosso che parla d'altro**,
+esattamente il modo in cui un approdo sbagliato lì non si sarebbe visto.
+
+### Difetto trovato leggendo, non prodotto dalla conversione
+
+**`test_batch15` leggeva `#repeat-aloud-type-badge` senza NESSUNA guardia** dopo
+un `openModuleFromMap` asincrono. Il badge **nasce vuoto** (misurato): su una
+macchina più lenta `indexOf('Studio') === 0` falliva. Non era una guardia da
+convertire — era una corsa scoperta.
+
+### Cosa dicono i cinque triage
+
+**20/29 · 20/52 · 12/29 · 13/18 · 16/16.** Cinque famiglie, cinque categorie
+nuove, nessuna prevedibile dalla precedente.
 
 ## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
 

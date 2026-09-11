@@ -112,9 +112,13 @@ async function run() {
     await page.click('#go-episode');
     await page.waitForTimeout(150);
     await openModule(page, 'dialogoAscoltaRipeti');
-    await page.waitForTimeout(200);
+    // L'approdo serve a `isVisible`, che NON aspetta niente: se la vista non e'
+    // ancora attiva torna false, il dialogo non parte e #dg-list resta vuoto —
+    // e l'asserzione «non contiene "Francis"» sarebbe vera su una schermata
+    // vuota, cioe' vera per il motivo sbagliato.
+    await attendiClasse(page, '#view-dialogo', 'is-active');
     const dgStartVisible = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (dgStartVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); }
+    if (dgStartVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); } // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che il dialogo NON contenga "Francis" — un non-evento non si aspetta, il tempo E' la misura. E allungarlo rafforza la prova invece di indebolirla: piu' battute passano, piu' e' vero che quel nome non compare
     const dialogueText = await page.evaluate(() => document.getElementById('dg-list').textContent);
     log('[Job1] Dialogue text does NOT contain the translated "Francis"', dialogueText.indexOf('Francis') === -1);
     log('[Job1] No JS errors', errors.length === 0);
@@ -165,7 +169,7 @@ async function run() {
     log('[Job2] Pausa is disabled while a line\'s audio is actively speaking', pauseDisabledDuringAudio === true);
     // Try clicking it anyway (native click on disabled button = no-op) — dialogue must not freeze.
     await page.evaluate(() => document.getElementById('dg-pause-btn').click());
-    await page.waitForTimeout(200);
+    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: verifica che un click su un pulsante DISABILITATO non produca niente — il testo deve restare "Pausa". Non c'e' nessuno stato da attendere: aspettarne uno significherebbe aspettare l'evento che non deve accadere
     const stillPaused = await page.evaluate(() => document.getElementById('dg-pause-btn').textContent.trim());
     log('[Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi"', stillPaused === 'Pausa');
     // Wait for the countdown to actually start (audio ends) -> Pausa should now be enabled.

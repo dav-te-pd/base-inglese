@@ -1,6 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
-const { attendiClasse } = require('./attese');
+const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const BASE = APP_URL;
 
@@ -130,7 +130,7 @@ async function run() {
     await page.waitForTimeout(200);
     // Intro screen may or may not show depending on isIntroDismissed; force it visible via howItWorks popup instead, guaranteed reachable.
     await page.click('#customize-watch-btn');
-    await page.waitForTimeout(250);
+    await attendiVisibile(page, '#howitworks-overlay'); // approdo misurato: il titolo e' gia' pieno quando il click torna (gestore sincrono); si aspetta la comparsa dell'overlay, che nessuna asserzione di questo blocco legge
     const kicker = await page.$eval('#howitworks-overlay-title .spiegazione-title-kicker', el => el.textContent).catch(() => null);
     const name = await page.$eval('#howitworks-overlay-title .spiegazione-title-name', el => el.textContent).catch(() => null);
     log('[2] Popup title row 1 is the fixed "Spiegazione" kicker', kicker === 'Spiegazione');
@@ -214,7 +214,11 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T4eRetry', ALL_BEFORE_SR);
     await openModule(page, 'matchEngIta');
-    await page.waitForTimeout(200);
+    // Approdo misurato: l'innerHTML della schermata di ripasso c'e' gia' prima
+    // dell'attivazione della vista e non cambia piu' — l'attesa oggi non
+    // guarda niente. Convertita come assicurazione: openModuleFromMap e'
+    // asincrono.
+    await attendiClasse(page, '#view-match', 'is-active');
     const retryHtml = await page.evaluate(() => document.getElementById('qm-retry-intro-screen').innerHTML);
     log('[4e] Match Practice retry-intro text drops "finché non..."', retryHtml.indexOf('finché non') === -1);
     await page.close();

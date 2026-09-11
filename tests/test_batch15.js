@@ -1,7 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
-const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito, attendiTono } = require('./attese');
+const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito, attendiTono, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const BASE = APP_URL;
 
@@ -210,12 +210,16 @@ async function run() {
     await page.evaluate(() => document.getElementById('vc-record-btn').click());
     await page.waitForTimeout(100);
     await page.evaluate(() => document.getElementById('vc-send-btn').click());
-    await page.waitForTimeout(150);
+    // Approdo misurato: l'etichetta e' gia' "TENTATIVO 1 DI 3" quando il click
+    // torna — setVcState e' sincrono. Si aspetta il riquadro dell'esito
+    // (#vc-result, che setVcState('result') scopre), che nessuna asserzione di
+    // questo blocco legge: l'etichetta non puo' fare da approdo a se stessa.
+    await attendiVisibile(page, '#vc-result');
     const labelAfterAttempt1 = await page.$eval('#vc-attempt-label', el => el.textContent);
     log('[Job3] After attempt 1, label reads "TENTATIVO 1 DI 3"', labelAfterAttempt1.indexOf('1') !== -1 && labelAfterAttempt1.indexOf('3') !== -1);
     // Click "Riprova" - label must show attempt 2 BEFORE recording again.
     await page.click('#voice-coach-retry-btn');
-    await page.waitForTimeout(80);
+    await attendiVisibile(page, '#vc-record-btn'); // approdo misurato: "Riprova" riporta a setVcState('idle'), che RIMOSTRA il pulsante di registrazione — l'etichetta e' gia' giusta, ma non puo' essere l'approdo di se stessa
     const labelAfterRetryClick = await page.$eval('#vc-attempt-label', el => el.textContent);
     log('[Job3] Immediately after "Riprova" (before recording), label already reads "TENTATIVO 2 DI 3"', labelAfterRetryClick.indexOf('2') !== -1 && labelAfterRetryClick.indexOf('3') !== -1);
     // Complete attempt 2, then click Riprova again -> must show 3 (the LAST one) before recording.
@@ -224,7 +228,7 @@ async function run() {
     await page.evaluate(() => document.getElementById('vc-send-btn').click());
     await page.waitForTimeout(150);
     await page.click('#voice-coach-retry-btn');
-    await page.waitForTimeout(80);
+    await attendiVisibile(page, '#vc-record-btn');
     const labelAfterSecondRetryClick = await page.$eval('#vc-attempt-label', el => el.textContent);
     log('[Job3] Before the LAST (3rd) attempt, label already reads "TENTATIVO 3 DI 3" (not stuck at 2)', labelAfterSecondRetryClick.indexOf('3 DI 3') !== -1 || (labelAfterSecondRetryClick.indexOf('3') !== -1 && labelAfterSecondRetryClick.split('3').length > 2));
     log('[Job3] No JS errors', errors.length === 0);
@@ -318,11 +322,18 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job6', ALL_BEFORE_QM);
     await openModule(page, 'repeatAloud');
+    // ⚠️ QUI NON C'ERA NESSUNA GUARDIA, ed e' un difetto trovato leggendo, non
+    // prodotto dalla conversione: openModuleFromMap e' ASINCRONO
+    // (Promise.all([...]).then(...)) e questo $eval partiva subito. Il badge
+    // nasce VUOTO (misurato) e si riempie all'attivazione della vista, quindi
+    // su una macchina piu' lenta la lettura trovava la stringa vuota e
+    // .indexOf('Studio') === 0 falliva.
+    await attendiClasse(page, '#view-repeat-aloud', 'is-active');
     const raType = await page.$eval('#repeat-aloud-type-badge', el => el.textContent).catch(() => null);
     log('[Job6] Repeat Aloud header shows type badge "Studio · <grado>"', raType.indexOf('Studio') === 0);
     await page.click('#repeat-aloud-back-map');
-    await page.waitForTimeout(150);
     await openModule(page, 'matchEngIta');
+    await attendiClasse(page, '#view-match', 'is-active'); // approdo misurato: #match-type-badge nasce VUOTO e si riempie con l'attivazione della vista
     const qmType = await page.$eval('#match-type-badge', el => el.textContent).catch(() => null);
     log('[Job6] Match Practice header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
     log('[Job6] No JS errors', errors.length === 0);
