@@ -667,6 +667,36 @@ irraggiungibili da Node.*
 | **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** `module-order.js` e `test_config_letta.js` lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero dei 79 punti di chiamata toccati**. Il primo pezzo estratto dev'essere `APP_CONFIG` proprio perché è il bersaglio che quei due devono leggere. *(Qui muore da sola la divergenza `off/seen` del passo 16.)* | ☐ | **sì** |
 | **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
 
+#### ⚠️ LA SUITE PARALLELA È VENUTA PRIMA DEL 19, ED È QUELLO CHE HA RESO PRATICABILE LA FASE 4
+
+**Fra un mese questa sembrerà una deviazione. Non lo era: era il conto.**
+
+La fase 4 sono ~20 estrazioni, e ognuna vuole una corsa completa.
+
+| | una corsa | venti corse |
+|---|---|---|
+| sequenziale (fino al 2026-09-15) | 17,2 min | **5,7 ore** |
+| parallela a 4 | 5,4 min | **1,8 ore** |
+
+*Quasi quattro ore di sola attesa, tolte prima di cominciare.* E non è comodità:
+un passo che costa mezz'ora di attesa si fa; uno che ne costa diciassette
+minuti si fa **e si rifa'** quando il primo tentativo non convince — che è
+esattamente quello che serve in venti estrazioni con fermate sicure in mezzo.
+
+⚠️ **E il guadagno secondario vale quanto il primo:** quattro browser insieme
+rallentano ogni test, cioè **avvicinano il container al runner della CI** — la
+famiglia di difetti della regola 19 che il container, da solo, nasconde.
+
+*Misurato prima di scegliere: 1033 s sequenziale, 532 a due, 326 a quattro, 279
+a sei. Tre corse, 147 esecuzioni di file, zero rossi.*
+
+**La corsa di collaudo, 2026-09-15:** 49 file, 4 in parallelo, **ALL FILES
+GREEN**, **1118 asserzioni** come il baseline. E la terza verifica, quella che
+l'ordine del log non si rompa: i 49 blocchi ristampati escono nella **stessa
+sequenza dichiarata in `FILES`**, confrontata riga per riga con `diff` — zero
+differenze. *Serviva perche' una suite piu' corta con un log illeggibile
+avrebbe rotto ogni strumento che ci sta sopra.*
+
 #### ⚠️ I TRE PASSI NUOVI, e perché stanno PRIMA degli strati
 
 Nascono dalla misura del 15 settembre e non esistevano nel piano vecchio.
