@@ -1,9 +1,15 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
+
+// I testi dell'interfaccia, letti dal file come li legge l'app.
+function istruzioni() {
+  return JSON.parse(fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
+}
 
 const mockInit = () => {
   window.__consoleWarnings = [];
@@ -348,7 +354,13 @@ async function run() {
     log('[Job5] Il badge di Voice Practice porta il nome dichiarato in CONFIG (' + nomeVoicePractice + ')', badge === nomeVoicePractice);
     const retryVisible = await page.evaluate(() => !document.getElementById('vc-retry-row').hidden);
     const retryLabel = await page.evaluate(() => document.getElementById('voice-coach-retry-btn').textContent);
-    log('[Job5] Retry row visible with label "Esercitati ancora"', retryVisible && retryLabel === 'Esercitati ancora');
+    // L'etichetta si legge dal JSON come fa l'app: qui la cosa verificata e'
+    // che la riga di ritentativo PORTI la sua etichetta, non quale sia — il
+    // testo e' contenuto, e un'edizione futura lo cambia. Stessa forma della
+    // riga sopra, che legge il nome del modulo da CONFIG.moduleLabels.
+    const testoRitentativo = istruzioni().voceShared.retryPractice;
+    log('[Job5] La riga di ritentativo porta l\'etichetta dichiarata nel JSON (' + testoRitentativo + ')',
+      retryVisible && retryLabel === testoRitentativo);
 
     // Answer the first line wrong 3 times in a row (cap) — button must disable after the 3rd, no popup.
     await vcCompleteLineWrong(page, 3);

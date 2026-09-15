@@ -315,6 +315,20 @@ async function run() {
     console.log('    passo 12  riga ritentativo nascosta: ' + v12.rigaRitentativo + '   pulsante: "' + v12.testoRitentativo + '"');
     console.log('    passo 16  riga ritentativo nascosta: ' + v16.rigaRitentativo + '   pulsante: "' + v16.testoRitentativo + '"');
 
+    // ⚠️ QUESTO TESTO RESTA SCRITTO QUI, e non si legge dal JSON come fa
+    // test_batch12 per la stessa etichetta. La differenza e' cosa prova
+    // l'asserzione: li' e' «la riga di ritentativo porta la sua etichetta»,
+    // qui l'etichetta IDENTIFICA LA VARIANTE — che il passo 12 si apra come
+    // Voice Practice e non come Voice Check.
+    //
+    // Non e' un requisito sul testo, e' un requisito sulla VARIANTE: se un
+    // giorno le due condividessero l'etichetta, l'asserzione diventerebbe
+    // vera per costruzione senza che nessun rosso lo dica (regola 44).
+    //
+    // COSTO DICHIARATO, perche' e' il tipo di cosa che qualcuno «sistema»
+    // trovandola scomoda: se quel testo cambia, questa riga va aggiornata a
+    // mano. E' il prezzo per cui l'asserzione continua a provare quello che
+    // dice di provare.
     log('[B] Il passo 12 si apre come Voice Practice (LastAttemptRule)',
       v12.rigaRitentativo === false && v12.testoRitentativo === 'Esercitati ancora');
     log('[B] Anche il passo 16 si apre come Voice Practice, identico al 12',

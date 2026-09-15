@@ -68,7 +68,7 @@ sola, e non nominava niente di quello che è successo il 9 e il 10 settembre.
 **È la prima sezione che una sessione nuova apre, quindi era anche la prima cosa
 falsa che leggeva.***
 
-### Il prossimo passo è il **18** — le stringhe, E LA FASE 3 FINISCE LÌ
+### Il prossimo passo è il **18 giro B** — il markup, E LA FASE 3 FINISCE LÌ
 
 ⚠️ **Il 17 è CHIUSO senza essere fatto** (15 settembre), e la decisione viene dai
 numeri del suo stesso triage: tre casi dichiarati e tutti e tre caduti, due
@@ -508,7 +508,7 @@ e sappiamo esattamente con che regola è stato ottenuto.*
 
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
-| **18** | Le stringhe italiane dal JS a `istruzioni-moduli.json`. **Prima CONTARLE**: il «~25» non è mai stato un censimento, un filtro grezzo ne trova 93 candidate. **Poi misurare quanti test verificano il testo a schermo**, perché questa fase li rompe e nessuna lista lo dichiara. 2–3 giorni. ⚠️ **Mai a metà.** | ☐ | **NO** durante; sì prima e dopo |
+| **18** | Le stringhe italiane dal codice a `istruzioni-moduli.json`. ⚠️ **RICONTATO, e il «93» era il numero di un'altra domanda.** Le fasce vere di `index.html`, che vanno scritte perché le ho sbagliate **tre volte**: `CFG [7,781]`, `CSS [785,3365]`, `MARKUP [3367,4337]`, `JS [4338,11114]`, `MORTA [10698,11114]`. Censimento: **37 messaggi nel JS vivo, 36 nel markup** (senza commenti HTML) — fuori `APP_CONFIG` (14), Pannello Admin (10), vista morta (8).<br><br>**Due giri, e l'asse non è dove sta il testo ma QUANDO viene scritto:** i testi **su richiesta** (cache già calda, rischio zero) e quelli **al boot** (markup + `renderChoiceBox`/`renderSummaryScreen`, che creano un modo nuovo di fallire). Non è «il passo a metà»: il divieto è sulle due sorgenti per la stessa cosa, e ogni giro chiude una categoria intera.<br><br>**GIRO A FATTO il 2026-09-15**: 34 testi, `uiText()`/`uiTextWith()`, `loadModuleInstructions()` aggiunto al `Promise.all` di `openModuleFromMap`, `tests/test_testi_interfaccia.js` (14 asserzioni, visto fallire 10/14 sul guasto vero). Una sola asserzione convertita e una lasciata scritta con la sua ragione.<br><br>**GIRO B da fare:** i 36 del markup + le 7 chiamate al boot. ⚠️ **Ha una decisione in più, e adesso ha un numero invece di un'ipotesi:** la finestra `DOMContentLoaded` → JSON pronto è **31 ms di mediana in locale** (17-43 su dieci giri), che **non è un microtask** — e quello è il pavimento, non la misura: su Pages è un round-trip, e dal container **non si può misurare** (il proxy blocca `github.io`). La risposta resta «non mostrare finché non c'è», ma va progettata, non data per trascurabile. | ◐ | **NO** durante; sì prima e dopo |
 
 ### Fase 4 — lo spacchettamento
 
@@ -720,6 +720,29 @@ di `test_blocco_ascolto.js`: **lo prende** — cioè il difetto che il 15 settem
 una guardia adesso** (vedi la riga in «Pulizie rimandate»): la sua classe è
 vuota, e non per caso — è quello che le rinomine dei passi 1-6 hanno già
 spazzato.
+
+## ⚠️ PRIMA DI CONTARE, VERIFICA CHE LA COSA CHE CONTI SIA QUELLA CHE TI COSTA (metodo, 15 settembre)
+
+> **È più generale di «riconta», ed è il difetto che in tre giorni si è
+> presentato TRE VOLTE con tre facce diverse.**
+
+| | ho contato | mi costava | scarto |
+|---|---|---|---|
+| passo 16 | quante **copie** di una funzione | quante **versioni diverse** | 77 → «una è meccanica, due sono 34 scelte» |
+| passo 17-18 | le righe dentro fasce sbagliate (CSS come markup, poi markup come JS) | le righe della fascia giusta | 157 → 37, con tre errori di fascia |
+| passo 18 | i **file che contengono** la stringa | le **asserzioni che si rompono** | 24 file → **2 asserzioni** |
+
+**Ventiquattro file erano veri. Due asserzioni erano il lavoro.**
+
+*Il numero non era sbagliato: era il numero di un'altra domanda.* Ed è la
+forma peggiore, perché un numero sbagliato si scopre ricontando, mentre un
+numero giusto della domanda sbagliata **regge a qualunque ricontrollo** — lo
+si ricava di nuovo, torna uguale, e conferma sé stesso.
+
+**La difesa operativa, e non è «stai attento»:** prima di contare, si scrive
+**la frase che il numero dovrà sostenere**. «Ventiquattro file» non sostiene
+nessuna frase; «ventiquattro file da riscrivere» sì, ed è falsa. Se la frase
+non si riesce a scrivere prima, il conto non serve a niente.
 
 ## ⚠️ COPIE E VARIANTI SONO DUE MISURE DIVERSE (metodo, 15 settembre)
 

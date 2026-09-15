@@ -4959,6 +4959,19 @@
     if (configRevealBuffer.toLowerCase() === 'config') openConfigPanel();
   });
 
+  // ⚠️ I TESTI ITALIANI DEI PANNELLI QUI SOTTO RESTANO NEL CODICE, DI
+  // PROPOSITO — non sono una dimenticanza del passo 18.
+  //
+  // La regola 8 parla dei testi che legge LO STUDENTE. Il Pannello Admin non
+  // lo vede: si apre digitando "config" fuori da un campo di testo, e serve a
+  // chi guida il progetto. Una seconda edizione (inglese per tedeschi) non lo
+  // traduce, quindi metterlo in data/{lingua}/ lo legherebbe a una lingua per
+  // cui non e' scritto.
+  //
+  // Sta scritto qui e non solo in decisioni.md perche' senza questa riga sono
+  // indistinguibili dalle altre: chi passa col passo 18 in mano le sposta, e
+  // avrebbe ragione a farlo.
+
   // Read-only usage rows (job 6c) — current user, current episode. Not
   // part of renderConfigPanel's generic APP_CONFIG walk (this isn't a
   // tunable, see addAudioSecondsSent's own comment); re-rendered every
@@ -5458,6 +5471,55 @@
       });
   }
 
+  // UN TESTO DELL'INTERFACCIA, letto dalla cache SENZA aspettare.
+  //
+  // I testi che lo studente legge stanno in istruzioni-moduli.json (regola 8),
+  // ma molti vengono scritti da funzioni SINCRONE — setVcState cambia la
+  // didascalia del microfono mentre registri, vcUpdateMicNotice alza l'avviso
+  // fra un tentativo e l'altro. Quelle non possono aspettare un fetch: se
+  // aspettassero, l'etichetta cambierebbe un frame dopo il gesto.
+  //
+  // ⚠️ FUNZIONA PERCHE' LA CACHE E' GIA' CALDA, e la garanzia sta in UNA
+  // RIGA SOLA: loadModuleInstructions() dentro il Promise.all di
+  // openModuleFromMap, il punto unico da cui passano tutti e sedici i moduli
+  // (protetto da test_modulo_pronto.js). Se quella riga sparisce, uiText()
+  // torna stringhe vuote e l'interfaccia si svuota.
+  //
+  // ⚠️ E IL MOTIVO PER CUI QUESTA FRASE E' SCRITTA COSI': la prima versione
+  // diceva «funziona perche' openModuleFromMap fa gia' Promise.all([
+  // loadEpisodeData, loadModuleInstructions])». **Non lo faceva** — aspettava
+  // ensureEpisodeSlotFields e loadEpisodeData, non i testi. Era una
+  // motivazione falsa scritta accanto a codice giusto, cioe' la cosa peggiore
+  // da lasciare in giro: chi la legge smette di controllare. Trovata
+  // GUIDANDO L'APP (il Blocco Ascolto e la didascalia del microfono uscivano
+  // vuoti), non rileggendo.
+  //
+  // Chiamare uiText() da un punto che NON sta dentro un modulo aperto e' il
+  // solo modo di romperla — e li' si usa loadModuleInstructions().then().
+  //
+  // Il secondo argomento e' la frase di ULTIMA ISTANZA: serve solo se la
+  // chiave manca da un file che si e' caricato (regola 35), e non e' una
+  // copia da tenere allineata — e' la prova che qualcosa nel file e' rotto.
+  // ⚠️ Un fallback che ripete il testo vero DIVERGE in silenzio: e' successo
+  // a requestBoxDuplicateWarning, dove la copia nel codice aveva perso mezza
+  // frase e nessuno poteva accorgersene.
+  function uiText(percorso, ultimaIstanza) {
+    var nodo = moduleInstructionsCache;
+    var pezzi = percorso.split('.');
+    for (var i = 0; i < pezzi.length && nodo; i++) nodo = nodo[pezzi[i]];
+    return (typeof nodo === 'string' && nodo) ? nodo : (ultimaIstanza || '');
+  }
+
+  // Lo stesso testo con i segnaposto {nome} sostituiti. Separata da uiText
+  // perche' la maggior parte dei testi non ne ha, e una sostituzione che gira
+  // sempre nasconde un segnaposto scritto male dentro un testo che non ne
+  // voleva.
+  function uiTextWith(percorso, valori, ultimaIstanza) {
+    return uiText(percorso, ultimaIstanza).replace(/\{(\w+)\}/g, function (tutto, chiave) {
+      return Object.prototype.hasOwnProperty.call(valori, chiave) ? valori[chiave] : tutto;
+    });
+  }
+
   // Renders a module-instructions field (today just "helpReminder", the
   // Help menu's "Rivedi come funziona l'esercizio" option) for a module's
   // kind into the shared help overlay. "howItWorks" itself is rendered by
@@ -5480,35 +5542,33 @@
 
   function renderHelpMenu() {
     return '<div class="help-menu">' +
-      '<button type="button" class="help-option" data-help-action="instructions">Rivedi come funziona l\'esercizio</button>' +
-      '<button type="button" class="help-option" data-help-action="clarify">Vorrei capire questo</button>' +
-      '<button type="button" class="help-option help-option-urgent" data-help-action="urgent">Sono veramente bloccato, Davide ho bisogno del tuo aiuto</button>' +
+      '<button type="button" class="help-option" data-help-action="instructions">' + uiText('aiuto.optionInstructions') + '</button>' +
+      '<button type="button" class="help-option" data-help-action="clarify">' + uiText('aiuto.optionClarify') + '</button>' +
+      '<button type="button" class="help-option help-option-urgent" data-help-action="urgent">' + uiText('aiuto.optionUrgent') + '</button>' +
       '</div>';
   }
 
   function openHelpMenu(module) {
-    document.getElementById('help-overlay-title').textContent = 'Hai bisogno di aiuto?';
+    document.getElementById('help-overlay-title').textContent = uiText('aiuto.menuTitle');
     document.getElementById('help-overlay-body').innerHTML = renderHelpMenu();
     openOverlay();
   }
 
   function renderHelpForm(type) {
-    var helper = type === 'urgent'
-      ? 'Scrivi cosa ti blocca: la tua richiesta verrà salvata come urgente.'
-      : 'Scrivi cosa non ti è chiaro.';
+    var helper = uiText(type === 'urgent' ? 'aiuto.formHintUrgent' : 'aiuto.formHintClarify');
     return '<form id="help-form" data-help-type="' + type + '">' +
       '<p class="overlay-text">' + helper + '</p>' +
-      '<textarea id="help-text" rows="4" placeholder="Scrivi qui..." required></textarea>' +
+      '<textarea id="help-text" rows="4" placeholder="' + uiText('aiuto.formPlaceholder') + '" required></textarea>' +
       '<div class="overlay-actions">' +
-      '<button type="button" class="btn btn-secondary" id="help-form-back">← Indietro</button>' +
-      '<button type="submit" class="btn btn-primary">Invia</button>' +
+      '<button type="button" class="btn btn-secondary" id="help-form-back">' + uiText('aiuto.formBack') + '</button>' +
+      '<button type="submit" class="btn btn-primary">' + uiText('aiuto.formSubmit') + '</button>' +
       '</div>' +
       '</form>';
   }
 
   function renderHelpConfirmation() {
-    return '<p class="overlay-text">✓ Richiesta salvata. Grazie!</p>' +
-      '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">← Torna al menu</button></div>';
+    return '<p class="overlay-text">' + uiText('aiuto.confirmationText') + '</p>' +
+      '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">' + uiText('aiuto.confirmationBack') + '</button></div>';
   }
 
   function openHelpFor(module) {
@@ -5521,10 +5581,10 @@
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-help-action');
       if (action === 'instructions') {
-        renderModuleInstructionField(activeHelpModule, 'helpReminder', 'Come funziona, in breve');
+        renderModuleInstructionField(activeHelpModule, 'helpReminder', uiText('aiuto.titleInstructions'));
       } else {
         document.getElementById('help-overlay-title').textContent =
-          action === 'urgent' ? 'Richiesta urgente' : 'Vorrei capire questo';
+          uiText(action === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
         document.getElementById('help-overlay-body').innerHTML = renderHelpForm(action);
       }
       return;
@@ -5548,7 +5608,7 @@
       createdAt: new Date().toISOString()
     });
     document.getElementById('help-overlay-title').textContent =
-      type === 'urgent' ? 'Richiesta urgente' : 'Vorrei capire questo';
+      uiText(type === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
     document.getElementById('help-overlay-body').innerHTML = renderHelpConfirmation();
   });
 
@@ -5881,6 +5941,16 @@
   // guasto peggiore di quello che segnala. Restituisce invece l'errore, che
   // openEpisodeMap trasforma nella schermata d'errore (regola 35): lo
   // studente vede qualcosa, e chi sviluppa lo trova anche in console.
+  //
+  // ⚠️ I MESSAGGI QUI DENTRO RESTANO NEL CODICE, DI PROPOSITO — non sono una
+  // dimenticanza del passo 18. Sono DIAGNOSTICA D'AUTORE: parlano a chi
+  // COMPONE un episodio, non a chi studia. Stessa scelta per
+  // episodeGradeRequired e buildTargetTokens.
+  //
+  // E oltre alla categoria c'e' un argomento pratico: chi sbaglia a comporre
+  // un episodio sta guardando il codice e i dati. Mandarlo a cercare il
+  // messaggio in un terzo file rende piu' difficile proprio la cosa che quel
+  // messaggio serve a risolvere.
   function resolveEpisodeOrder(episodeId) {
     var ep = (CONFIG.episodes && CONFIG.episodes[episodeId]) || {};
     var haOrdine = Array.isArray(ep.moduleOrder);
@@ -6477,7 +6547,14 @@
     loadModuleInstructions().then(function (data) {
       var entry = data.personalizzazione || {};
       if (isDuplicate) {
-        feedbackEl.textContent = entry.requestBoxDuplicateWarning || 'Questa parola è già tra le opzioni disponibili.';
+        // ⚠️ Niente copia del testo come fallback, ed e' una correzione: qui
+        // c'era 'Questa parola è già tra le opzioni disponibili.', cioe' la
+        // stessa frase del JSON MENO la sua seconda meta' («— prova a
+        // selezionarla direttamente dal campo sopra»). Le due erano gia'
+        // divergute, e nessuno poteva accorgersene: il fallback si vede solo
+        // se la chiave manca, cioe' quasi mai. Una copia che si vede quasi
+        // mai e' una copia che non viene mai corretta.
+        feedbackEl.textContent = entry.requestBoxDuplicateWarning || '';
         feedbackEl.className = 'request-field-feedback is-warning';
       } else {
         saveHelpRequest(getUserName(), {
@@ -6846,9 +6923,27 @@
     // modulo che funziona — misurato il 2026-09-10, cinque file di test rossi
     // alla prima corsa di questa riga. La condizione si legge dal descrittore,
     // non da un elenco a parte da tenere allineato a mano.
+    // ⚠️ E DAL PASSO 18 ANCHE I TESTI, per la stessa ragione dei dati.
+    // I testi dell'interfaccia stanno in istruzioni-moduli.json (regola 8) e
+    // molti li scrivono funzioni SINCRONE — setVcState cambia la didascalia
+    // del microfono mentre registri. Quelle leggono la cache con uiText(),
+    // che senza questa riga trova `null` e rende una stringa vuota: misurato
+    // il 15 settembre, il modulo si apriva con l'aria-label del Blocco
+    // Ascolto e la didascalia del microfono VUOTI.
+    //
+    // ⚠️ E il difetto era una MOTIVAZIONE FALSA, non una dimenticanza: il
+    // commento di uiText() diceva «funziona perche' openModuleFromMap fa gia'
+    // Promise.all([loadEpisodeData, loadModuleInstructions])». Non lo faceva.
+    // L'ho scoperto guidando l'app, non rileggendola.
+    //
+    // Se il file dei testi non arriva, il .then non gira e il modulo NON si
+    // apre: si va alla schermata d'errore. E' la scelta della regola 35 —
+    // un'interfaccia che si svuota non e' un caso da gestire, e' un caso da
+    // rendere impossibile.
     Promise.all([
       ensureEpisodeSlotFields(currentEpisode),
-      module.dataFile ? loadEpisodeData(module) : Promise.resolve(null)
+      module.dataFile ? loadEpisodeData(module) : Promise.resolve(null),
+      loadModuleInstructions()
     ]).then(function () {
       currentValues = loadCustomValues(currentEpisode, getUserName());
       openModuleByKind(module);
@@ -7000,7 +7095,7 @@
     return CONFIG.speech.rateOptions.map(function (rate) {
       var pct = Math.round(rate * 100) + '%';
       return '<button type="button" class="rate-btn" data-say="' + itemId + '" data-rate="' + rate +
-        '" aria-label="Ascolta a velocità ' + pct + '">' + pct + '</button>';
+        '" aria-label="' + uiTextWith('bloccoAscolto.rateButtonLabel', { pct: pct }) + '">' + pct + '</button>';
     }).join('');
   }
 
@@ -7046,10 +7141,10 @@
     var o = opts || {};
     var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
     var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
-      attr + '="' + o.say + '" aria-label="Ascolta">' + icon('volume-2') + '</button>';
+      attr + '="' + o.say + '" aria-label="' + uiText('bloccoAscolto.listenLabel') + '">' + icon('volume-2') + '</button>';
     if (o.mini) return bottone;
     var dentro = bottone +
-      '<div class="rate-group" role="group" aria-label="Velocità di riproduzione">' + renderRateButtons(o.say) + '</div>';
+      '<div class="rate-group" role="group" aria-label="' + uiText('bloccoAscolto.rateGroupLabel') + '">' + renderRateButtons(o.say) + '</div>';
     if (!o.blocco) return dentro;
     return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
   }
@@ -8019,8 +8114,8 @@
         vcEmptyRecognitionStreak += 1;
         vcUpdateMicNotice();
         var warn = document.getElementById('vc-silence-warning');
-        warn.textContent = 'Non ti abbiamo sentito: prova a parlare entro ' +
-          CONFIG.voiceCoach.silenceTimeoutSeconds + ' secondi dall\'avvio della registrazione.';
+        warn.textContent = uiTextWith('voceShared.silenceWarning',
+          { secondi: CONFIG.voiceCoach.silenceTimeoutSeconds });
         // Quando c'e' l'avviso a livelli, questa riga sparisce: dice la
         // stessa cosa con meno, e senza l'azione che l'avviso offre. Due
         // messaggi sovrapposti sullo stesso problema si annullano a vicenda.
@@ -8070,10 +8165,11 @@
     var recording = state === 'recording';
     btn.hidden = state === 'pending' || state === 'result';
     btn.classList.toggle('is-recording', recording);
-    btn.setAttribute('aria-label', recording ? 'Tocca per fermare' : 'Tocca per registrare');
+    var didascalia = uiText(recording ? 'voceShared.recordStop' : 'voceShared.recordStart');
+    btn.setAttribute('aria-label', didascalia);
     document.getElementById('vc-record-icon').innerHTML = icon(recording ? 'square' : 'mic', 'icon-lg');
     document.getElementById('vc-record-caption').hidden = btn.hidden;
-    document.getElementById('vc-record-caption').textContent = recording ? 'Tocca per fermare' : 'Tocca per registrare';
+    document.getElementById('vc-record-caption').textContent = didascalia;
     document.getElementById('vc-record-timer').hidden = !recording;
     document.getElementById('vc-confirm-area').hidden = state !== 'pending';
     document.getElementById('vc-result').hidden = state !== 'result';
@@ -8133,19 +8229,20 @@
     updateVcActionButtons();
     if (level === 0) { panel.hidden = true; return; }
     panel.hidden = false;
-    var title, body, actionsHtml;
-    if (level === 1) {
-      title = 'Non riusciamo a sentirti';
-      body = 'Le ultime registrazioni non hanno rilevato nessuna parola. Controlla che il microfono sia collegato e che il browser abbia il permesso di usarlo, poi riprova.';
-      actionsHtml = '';
-    } else if (level === 2) {
-      title = 'Ancora nessun audio';
-      body = 'Il microfono continua a non registrare nulla. Prova a ricominciare l\'esercizio: a volte basta riaprirlo perché il browser richieda di nuovo il permesso.';
-      actionsHtml = '<button type="button" class="btn btn-secondary" id="vc-mic-notice-restart">Ricomincia esercizio</button>';
-    } else {
-      title = 'Il microfono non sta funzionando';
-      body = 'Dopo diversi tentativi non abbiamo ancora sentito nulla: molto probabilmente è un problema del microfono o dei permessi, non della tua pronuncia. Puoi tornare alla mappa e riprovare più tardi.';
-      actionsHtml = '<button type="button" class="btn btn-primary" id="vc-mic-notice-map">Torna alla mappa</button>';
+    // I TRE LIVELLI stanno nel JSON, ma il BOTTONE di ciascuno resta qui: il
+    // suo id e la sua classe sono comportamento (chi lo ascolta, che aspetto
+    // ha), non testo. Dal file arriva solo l'etichetta — cosi' una traduzione
+    // non puo' rompere il listener, che e' esattamente il rischio di mettere
+    // markup intero dentro un file di contenuto.
+    var chiave = 'voceShared.micNotice.level' + (level === 1 ? 1 : level === 2 ? 2 : 3);
+    var title = uiText(chiave + '.title');
+    var body = uiText(chiave + '.body');
+    var etichettaAzione = uiText(chiave + '.actionLabel');
+    var actionsHtml = '';
+    if (level === 2) {
+      actionsHtml = '<button type="button" class="btn btn-secondary" id="vc-mic-notice-restart">' + etichettaAzione + '</button>';
+    } else if (level >= 3) {
+      actionsHtml = '<button type="button" class="btn btn-primary" id="vc-mic-notice-map">' + etichettaAzione + '</button>';
     }
     document.getElementById('vc-mic-notice-title').textContent = title;
     document.getElementById('vc-mic-notice-body').innerHTML = '<p>' + body + '</p>';
@@ -8396,7 +8493,8 @@
     document.getElementById('voice-coach-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('voice-coach-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('vc-retry-row').hidden = vcVariant !== 'practice';
-    document.getElementById('voice-coach-retry-btn').textContent = vcVariant === 'practice' ? 'Esercitati ancora' : 'Riprova';
+    document.getElementById('voice-coach-retry-btn').textContent =
+      uiText(vcVariant === 'practice' ? 'voceShared.retryPractice' : 'voceShared.retryCheck');
     showView('voiceCoach');
     if (isIntroDismissed(module.kind, getUserName())) {
       vcShowScreen('main');
@@ -8466,7 +8564,8 @@
     });
     document.getElementById('vc-feedback').innerHTML = spans.join(' ');
     document.getElementById('vc-transcript').innerHTML =
-      '<strong>Hai detto:</strong> ' + (vcLatestTranscript || '(nessun testo riconosciuto)');
+      '<strong>' + uiText('voceShared.transcriptPrefix') + '</strong> ' +
+      (vcLatestTranscript || uiText('voceShared.transcriptEmpty'));
 
     var attemptNum = (vcAttempts[line.id] || 0) + 1;
     vcAttempts[line.id] = attemptNum;
@@ -9238,14 +9337,14 @@
       // "Prossima frase" below — nothing to pause until a line's audio or
       // countdown has actually started (dgUpdateToolbarButtonState keeps
       // it in sync from there).
-      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn" disabled>Pausa</button>';
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-pause-btn" disabled>' + uiText('dialogoShared.pauseLabel') + '</button>';
     } else if (dgProfile.nextLineButton) {
       toolbar.hidden = false;
       // Job 8 (2nd collaudo): starts disabled — nothing to skip until a
       // line's countdown bar is actually running (dgUpdateToolbarButtonState
       // keeps it in sync from there, see dgStartLineTimer/dgLineTimerFire/
       // dgPauseLineTimer/dgResumeLineTimer).
-      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-next-line-btn" disabled>Prossima frase</button>';
+      toolbar.innerHTML = '<button type="button" class="btn btn-secondary btn-sm" id="dg-next-line-btn" disabled>' + uiText('dialogoShared.nextLineLabel') + '</button>';
     } else {
       toolbar.hidden = true;
       toolbar.innerHTML = '';
@@ -9695,7 +9794,9 @@
     dgRenderList();
     dgApplySequenceLock();
     dgSetupToolbar();
-    renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion, 'dg-not-yet-btn', 'Non ancora', 'dg-know-it-btn', 'Sì, lo so');
+    renderChoiceBox('dg-choice-row', 'fc-choice-question', dgProfile.finalBoxQuestion,
+      'dg-not-yet-btn', uiText('dialogoShared.choiceNotYet'),
+      'dg-know-it-btn', uiText('dialogoShared.choiceKnown'));
     loadModuleInstructions().then(function (data) {
       var hint = data.dialogoShared && data.dialogoShared.choiceBoxHint;
       document.getElementById('dg-choice-hint').textContent = hint || '';
