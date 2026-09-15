@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiAbilitato, attendiVisibile } = require('./attese');
 const { gradeOf, stepIds, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // Gli id delle battute vengono dai dati, non scritti a mano: erano fissati a
@@ -83,11 +84,6 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   }, { userName, completedModules, extraStorage });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');

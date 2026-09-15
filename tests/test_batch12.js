@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -85,11 +86,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules, kinds: ALL_KINDS });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 // ---- Voice Coach (Practice/Check) driving helpers ----

@@ -363,10 +363,18 @@
     },
     // ---- I gradi dell'episodio, nell'ordine in cui si presentano nel
     // pannello — le lettere delle sezioni di levels nei file
-    // data/{livello}-episodioN-{lingua}.json (CLAUDE.md regola 4). Il
-    // nome esteso di ciascun grado (levels.A.label) sta nel file
-    // episodio, non qui: questa è solo la lista da cui la vista di
-    // riordino fa scegliere, e da cui il pulsante del grado cicla. ----
+    // data/{lingua}/{studente}/{lingua}-{studente}-{id}.json (regola 4).
+    // Questa è solo la lista da cui la vista di riordino fa scegliere, e
+    // da cui il pulsante del grado cicla.
+    //
+    // ⚠️ Come si chiama ogni grado per lo studente lo dice gradeNames, due
+    // righe sotto — NON il file episodio. Fino al 15 settembre qui c'era
+    // scritto il contrario («il nome esteso di ciascun grado, levels.A.label,
+    // sta nel file episodio»), due righe sopra la chiave che lo smentisce.
+    // Il campo levels.X.label nei file dati esiste ancora (regola 4 lo
+    // richiede) ma non lo legge nessuno: episodeGrade() prende .items e
+    // basta. Un commento che manda a cercare un dato vivo nel posto
+    // sbagliato costa più di un commento che manca. ----
     grades: ['A', 'B', 'C', 'D'],
     // ---- Come si chiama ogni grado per lo studente (docs/inglese/it/struttura-corso.md).
     // La lettera è l'identificativo tecnico — codice, dati, Pannello Admin —

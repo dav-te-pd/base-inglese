@@ -3,6 +3,7 @@ const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const { attendiAbilitato, attendiClasse, attendiSottotitoloEsito, attendiTono, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
@@ -84,11 +85,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 // The safety-valve popup (attemptsReminderThreshold) can appear mid-quiz

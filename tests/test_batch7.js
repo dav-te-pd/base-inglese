@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { allSteps } = require('./module-order');
 const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -39,11 +40,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 const ALL_MODULES = allSteps();

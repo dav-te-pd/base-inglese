@@ -7,6 +7,7 @@
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
+const { openModule } = require('./map-driver');
 const fs = require('fs');
 const BASE = APP_URL;
 
@@ -39,11 +40,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 async function run() {

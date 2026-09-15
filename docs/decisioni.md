@@ -68,7 +68,18 @@ sola, e non nominava niente di quello che è successo il 9 e il 10 settembre.
 **È la prima sezione che una sessione nuova apre, quindi era anche la prima cosa
 falsa che leggeva.***
 
-### Il prossimo passo è il **14b** — una forma per famiglia
+### Il prossimo passo è il **17** — i commenti
+
+**Il passo 16 è fatto a metà, e la metà che manca non è un residuo: è uscita
+dal passo.** Punti 1-5 eseguiti il 15 settembre (² già morta, ⁵ il commento
+falso, ³⁴ le due cartelle — 2004 righe — e ⁶ solo `openModule`).
+⚠️ **`view-pronunciation` è diventata un passo suo dopo il 25**, perché non è
+codice morto isolato ma intrecciato con funzioni vive di Voice Coach;
+**`bootAsUser` e `mockInit` sono diventati una decisione loro**, perché 14 e 20
+varianti non sono pulizia. *Le righe stanno in fondo a questo file, con le loro
+condizioni.*
+
+### Il 14b — una forma per famiglia
 
 Pianificato sui numeri del 14a, **rimisurati l'11 settembre: 186 guardie, non
 180.** Il conto si rigenera con `node tests/tools/conta-attese.js`, non si
@@ -87,7 +98,10 @@ e **76 legittime marcate nel sito con il loro motivo** — il resto è navigazio
 che non è mai stata debito. *Il numero che contava non era «quante ne ho
 convertite»: era «quante ne restano senza una spiegazione», e adesso è zero.*
 
-**Il prossimo passo della fase 3 è il 15.**
+**Il 15 e il 16 sono chiusi. Il prossimo passo della fase 3 è il 17.**
+⚠️ **E il 18 va RICONTATO prima di pianificarlo, non durante**: le «93
+stringhe» dichiarate non sono mai state contate. Il 15 diceva «quattro
+valori» ed erano 39 righe; il 16 sbagliava cinque numeri su sei.
 
 ### Cosa è chiuso
 
@@ -99,13 +113,14 @@ convertite»: era «quante ne restano senza una spiegazione», e adesso è zero.
 | **Fase 2 — il collaudo** | 10, 11, 12 (2026-09-09): ventidue passi su profilo nuovo, su Pages. Ne sono usciti i sei difetti C.1→C.6 |
 | **I difetti del collaudo** | C.1, C.2, C.3, C.4, C.5 fatti e verificati. **C.6 non è di questa catena**: è la N.1 della cronologia nuova |
 | **Fase 2-bis — la mastery** | ① ② ③ fatti e verificati il 2026-09-10. ④ chiude come voce con una nota, ⑤ è prodotto e slitta |
-| **Fase 3** | **14a** fatto e verificato il 2026-09-10 |
+| **Fase 3** | **14a** (2026-09-10), **14b** (2026-09-11, 186 → 0), **15** e **16** (2026-09-15) |
 
 ### Cosa resta
 
-**14b**, poi 15, 16, 17, 18 della fase 3; la **fase delle stringhe**; la **fase 4**
-(19 → 26). Il **13** — le cinque righe della mastery — resta aperto come blocco a
-sé.
+**17 e 18** della fase 3; la **fase delle stringhe**; la **fase 4** (19 → 26).
+Il **13** — le cinque righe della mastery — resta aperto come blocco a sé.
+Fuori catena, nati dal passo 16: **`view-pronunciation` dopo il 25** e i due
+passi su **`bootAsUser` / `mockInit`**.
 
 ### ⚠️ Il 10 settembre è stato quasi tutto FUORI catena, e va saputo
 
@@ -399,7 +414,7 @@ non era stato scritto niente.
 | **14a** | **Misurare le famiglie prima di convertire, e generare il censimento.** **FATTO E VERIFICATO il 2026-09-10** — suite verde, 1018 asserzioni in 45 file. ⬇︎ i numeri veri sono qui sotto. | ☑ | **sì** |
 | **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima.<br><br>⚠️ **OGNI FAMIGLIA VUOLE UN GIRO DI LETTURA PRIMA DELLA CONVERSIONE, e il numero della famiglia è DOVE GUARDARE, non quanto lavoro c'è** (aggiunto l'11 settembre, dopo il primo giro). Il censimento classifica per **cosa si legge**, non per **come viene usato**: vede `.hidden` e scrive «una schermata che compare o sparisce», e ha ragione sul cosa — ma non può vedere se quella lettura serve a dire *«è comparsa»* o *«NON è comparsa»*, che sono l'opposto. Sulla famiglia ② erano **9 punti su 29**: cinque negative (l'attesa È la misura), una vacua, e tre che la conversione avrebbe **svuotato** — uno stato già vero prima dell'attesa, che convertito tornerebbe al primo istante.<br><br>⚠️ **Una conversione sbagliata non lascia un rosso: lascia un verde che non prova più niente — e il conto scende, cioè il numero migliora proprio quando il lavoro fa danno.** Da qui il terzo secchio del contatore e il marcatore `// ATTESA-LEGITTIMA: <motivo>` scritto nel sito, che lo strumento raccoglie da solo.<br><br>**② FATTA il 2026-09-11** — `attendiVisibile` / `attendiNascosto` in `tests/attese.js`, 21 chiamate in 13 file, 8 marcate legittime, e la vacua di `test_batch16` corretta.<br><br>**① ③ ④ FATTE lo stesso giorno.** ① `attendiAbilitato`/`attendiDisabilitato`/`attendiClasse`; ③ `attendiCheParla`/`attendiTono` e la quinta categoria; ④ nessuna funzione nuova — l'approdo era `#view-map.is-active`.<br><br>⚠️ **IL CRITERIO CHE NE ESCE, e vale per le famiglie che restano: l'effetto su cui aspetti non può essere quello che l'asserzione legge, o diventa vera per costruzione.** Sta in testa a `tests/attese.js`.<br><br>**186 → 56 guardie da convertire** (i numeri intermedi della giornata erano gonfiati da un difetto dello strumento: vedi «14b ④»). | ◐ | **sì**, una famiglia per volta |
 | **15** | I valori ricopiati nei test. ⚠️ **Il numero era SBAGLIATO: diceva «quattro valori, ~1 ora», sono risultate 39 righe in 10 file.** I quattro siti nominati esistevano tutti, ma erano *quattro casi notati*, mai un censimento — la stessa storia delle «19 attese di test_batch19» che erano 7 e delle 141 attese che erano 186.<br><br>⚠️ **E otto delle 39 erano state scritte quattro giorni prima, chiudendo la famiglia ③ del 14b** (`attendiTono(page, [1046, 1318, 1568], 3)`): **un passo della catena può CRESCERE mentre se ne chiude un altro.** È la seconda volta in una settimana — il 14b aveva prodotto sei guardie nuove da due file nati il giorno prima.<br><br>> **RICONTARE PRIMA DI PARTIRE non è prudenza: è l'unico modo di sapere cosa si sta per fare.**<br><br>**FATTO il 2026-09-15.** Censimento generato: 84 candidati su 52 righe → 9 falsi positivi, **4 requisiti che restano**, **39 righe di copie convertite**. Restano 8 righe: i 4 requisiti, 3 **fixture** e 1 falso positivo. | ☑ | **sì** |
-| **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file) e `tests/debug/` (6 file, aggiunto il 2026-09-09: quattro file che nessuno lancia sono quattro file che possono mentire senza che nessuno se ne accorga), `levels.X.label` (morto: unica occorrenza in un commento), i quattro test con funzioni quasi identiche. *(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ② li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
+| **16** | Le voci di pulizia. ⚠️ **RICONTATE PRIMA DI PARTIRE, e cinque numeri su sei erano sbagliati** (il triage del 15 settembre). L'elenco dichiarava: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file), `tests/debug/` (6 file), `levels.X.label`, «i quattro test con funzioni quasi identiche». Misurato: `legacy/` = **5 `.js` + README**, `debug/` = **9 `.js` + README**, il ramo `'check'` **era già morto** (la firma è `(wasCorrect, onRetry, onNext)`, e i `'check'` rimasti in `index.html` sono tutti vivi: il nome dell'icona e `voiceVariant`), e i «quattro test» erano **28**.<br><br>⚠️ **E la misura giusta non era quella: la domanda non è QUANTE COPIE, è QUANTE VERSIONI DIVERSE.** Sono due misure diverse, e **solo la seconda dice se c'è un difetto**. Contate per contenuto: `openModule` **23 copie / 1 variante**, `bootAsUser` **26 / 14**, `mockInit` **28 / 20**. Ventitré copie identiche sono un'unificazione meccanica; ventotto copie in venti versioni sono venti decisioni diverse che si sono separate da sole, e unificarle è **scegliere quale vince** — cioè il caso in cui «un helper condiviso indebolisce un'asserzione e lascia i file verdi che provano meno di prima» smette di essere un rischio e diventa il lavoro. *Una conta di copie avrebbe detto «77 duplicazioni» e avrebbe fatto partire tutte e tre insieme.*<br><br>**FATTI il 2026-09-15 (punti 1-5):** ² tolta dall'elenco perché già morta; ⁵ il commento falso su `levels.X.label` corretto; ³⁴ `legacy/` e `debug/` cancellate (2004 righe); ⁶ unificato **solo `openModule`** — `bootAsUser` e `mockInit` **escono dal passo** e diventano una decisione loro, perché 14 e 20 varianti non sono pulizia. ¹ `view-pronunciation` **fermata al triage**, registrata come passo suo dopo il 25 (sotto).<br><br>*(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ² li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ② li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* | ◐ | **sì**, voce per voce |
 | **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
 
 
@@ -608,6 +623,39 @@ era vecchio perché nessuno lo ricalcolava; qui sarebbe stato vecchio perché il
 lavoro lo cambia in **tutte e due** le direzioni. In entrambi i casi la difesa è
 la stessa — **il numero si genera, non si ricorda.** E la ragione per cui questa
 riga era falsa è che l'avevo ricordato invece di generarlo.*
+
+## ⚠️ COPIE E VARIANTI SONO DUE MISURE DIVERSE (metodo, 15 settembre)
+
+> **LA DOMANDA NON È QUANTE COPIE, È QUANTE VERSIONI DIVERSE.**
+> **Sono due misure diverse, e solo la seconda dice se c'è un difetto.**
+
+Una funzione ripetuta in venti file si conta con `grep -c` e viene fuori un
+numero: venti. Quel numero non dice **niente** su cosa fare, perché due
+situazioni opposte lo producono uguale:
+
+| | copie | varianti | cos'è |
+|---|---|---|---|
+| `openModule` | 23 | **1** | una duplicazione: si unifica, è meccanico |
+| `bootAsUser` | 26 | **14** | quattordici decisioni separate |
+| `mockInit` | 28 | **20** | venti decisioni separate |
+
+Il conto delle copie le mette tutte e tre nello stesso secchio — «77
+duplicazioni» — e da lì parte un lavoro solo. Il conto delle **varianti** le
+separa: la prima è un'ora di lavoro senza scelte, le altre due sono
+**trentaquattro scelte** su cosa vince, ognuna delle quali può lasciare dei
+file **verdi che provano meno di prima**.
+
+**Come si misura:** si estrae ogni definizione, la si normalizza, se ne fa
+l'hash, si contano gli hash distinti. Non si guarda a occhio: a occhio 23 copie
+identiche e 23 copie quasi identiche si somigliano, ed è esattamente la
+differenza che conta.
+
+*Perché sta qui come metodo e non solo nella riga del passo 16: la stessa
+domanda torna a ogni «ci sono N copie di X», e un numero che si legge male fa
+partire il lavoro sbagliato prima che qualcuno abbia deciso niente. È la stessa
+famiglia di «19 attese che erano 7», «141 attese che erano 186» e «quattro
+valori che erano 39»: il difetto non è che il numero fosse sbagliato, è che
+**era il numero di un'altra domanda**.*
 
 ## ⚠️ 14b — LA FAMIGLIA NON È UNA LISTA DI LAVORO (misurato l'11 settembre)
 
@@ -1677,4 +1725,8 @@ scadere, o si sa che niente la farà, e si scrive quale dei due.
 | 2026-09-05 | La divergenza **off/seen** in `tests/module-order.js`: il file riscrive a mano la regola di `moduleStepId()` e conta le apparizioni in modo diverso dall'app. | Correggerla adesso significa mantenere due copie della stessa regola. | **Non si corregge: sparisce da sola** quando l'identità del passo sarà `modulo + grado`, perché non ci sarà più niente da contare. |
 | 2026-09-06 | I testi dell'avviso microfono (`vcUpdateMicNotice`, titolo e corpo dei tre livelli) sono scritti nel codice invece che in `data/{lingua}/istruzioni-moduli.json`, insieme ad altre ~25 frasi già note nella stessa condizione. | Regola 8: se è testo che lo studente legge e non è contenuto dell'episodio, sta nel JSON. Sparsi nel codice non si possono correggere senza toccare `index.html`, e in una seconda edizione non si possono tradurre affatto. | **È un lavoro solo**, non venticinque: si fa quando ci arriveremo, tutto insieme. Spostarne una alla volta lascia il problema e raddoppia i posti dove cercare. |
 | 2026-09-09 | **La terza dipendenza da `index.html` letto come testo**, aggiunta di proposito da `test_blocco_ascolto.js`: conta le occorrenze del markup del pulsante per impedire all'ottava copia di nascere. | È una scelta, non una distrazione, ed è dichiarata anche in cima al test. Un test che aprisse i sei moduli e li confrontasse proverebbe **meno**: direbbe che i sei di oggi si assomigliano, non che domani non se ne aggiunge un settimo a mano. Il prezzo è che se il markup del pulsante cambia, quella riga va aggiornata — **ed è voluto: è esattamente il momento in cui qualcuno deve accorgersi che sta toccando un pezzo condiviso.** | **Si guarda tutta insieme** quando le tre dipendenze diventeranno un problema, non una per volta. |
-| 2026-09-09 | La vista **`view-pronunciation`** (`FEATURE: PRONUNCIATION EXERCISE`) è codice morto: `startPronunciationExercise()` non è chiamata da nessuna parte e il CSS la dichiara irraggiungibile. Contiene un **ottavo Blocco Ascolto** e uno **scrittore di mastery** (`submitAttempt`). | Trovata cercando gli scrittori della mastery: per un giro è stata scambiata per Voice Check. Non fa danno — nessuno può raggiungerla — ma falsa ogni conteggio di «quanti punti scrivono la mastery» e di «quanti Blocchi Ascolto esistono», che sono due domande che ci siamo già fatti. | **Nello spacchettamento**, dove un file che nessuno importa si vede da solo. Toglierla adesso è un lavoro a sé su codice che nessuno esegue. |
+| 2026-09-09 | La vista **`view-pronunciation`** (`FEATURE: PRONUNCIATION EXERCISE`) è codice morto: `startPronunciationExercise()` non è chiamata da nessuna parte e il CSS la dichiara irraggiungibile. Contiene un **ottavo Blocco Ascolto** e uno **scrittore di mastery** (`submitAttempt`).<br><br>⚠️ **MISURATA il 2026-09-15, al triage del passo 16, ed è uscita dal passo 16:** non è un blocco morto da asportare: è **INTRECCIATA** con codice vivo. `tokenize`, `classify`, `alignWords`, `pickVoice`, `toggleSpeak`, `lockModuleHeader` e `synth` sono **definiti dentro di lei e usati da Voice Coach**. Toglierla a colpo d'occhio non è una pulizia: è un taglio a mano libera attraverso funzioni che servono a un modulo vivo. | Trovata cercando gli scrittori della mastery: per un giro è stata scambiata per Voice Check. Non fa danno — nessuno può raggiungerla — ma falsa ogni conteggio di «quanti punti scrivono la mastery» e di «quanti Blocchi Ascolto esistono», che sono due domande che ci siamo già fatti. | **È un PASSO SUO, dopo il 25** — non una voce di pulizia e non «nello spacchettamento» genericamente. ⚠️ **E il dopo-25 non è un rinvio, è la condizione che rende il lavoro diverso:** finito lo spacchettamento, `tokenize` e `classify` staranno **in un file loro**, e a quel punto il taglio è **visibile** — si vede cosa importa chi, invece di doverlo ricostruire leggendo. Lo stesso lavoro, fatto oggi, è pericoloso; fatto dopo il 25, è meccanico. |
+| 2026-09-15 | ⚠️ **Una SECONDA implementazione del riconoscimento vocale, indipendente da quella viva.** Dentro `view-pronunciation` c'è un motore suo — l'oggetto `recognition` e il pulsante `#mic-btn` — che non ha niente a che vedere con `vcRecognition` di Voice Coach. Sono due macchine diverse che fanno la stessa cosa nello stesso file. | **Va scritta da sola e non come dettaglio della riga qui sopra**, perché è una domanda diversa: quella chiede *quando* si toglie una vista morta, questa dice che **il conto dei motori di riconoscimento vocale dell'app è due e non uno**. Chi cercherà «dove si parla al microfono» trovandone uno solo avrà la risposta sbagliata — ed è esattamente l'errore già commesso una volta, quando `submitAttempt` fu scambiato per Voice Check. | **Insieme a `view-pronunciation`, nel passo dopo il 25.** Non prima: finché la vista c'è, il motore è suo. |
+| 2026-09-15 | **`bootAsUser` e `mockInit` NON sono duplicazioni da unificare: sono 14 e 20 decisioni diverse.** Contati per contenuto al triage del passo 16: `bootAsUser` **26 copie / 14 varianti**, `mockInit` **28 / 20**. (`openModule`, 23 copie / **1** variante, è stato unificato lo stesso giorno: quello era meccanico.) | ⚠️ **È il caso in cui il rischio dichiarato del passo 16 smette di essere un rischio e diventa il lavoro:** unificare venti versioni vuol dire **scegliere quale vince**, e ogni scelta sbagliata lascia dei file **verdi che provano meno di prima** — il tipo di errore che non produce nessun rosso. Un `mockInit` che spegne il sintetizzatore in modo leggermente diverso non è una copia mal riuscita: può essere l'unica ragione per cui quel file misura quello che dice. | **Ognuno il suo passo, e si parte LEGGENDO le varianti, non unificandole.** Il primo giro è un censimento che dice *quante versioni sono davvero diverse e in cosa* — se venti varianti si riducono a tre più diciassette differenze accidentali, è un lavoro; se sono venti scelte, non si fa. |
+| 2026-09-15 | **Match Practice en→it: nessun test vivo verifica che mostri il Blocco Ascolto della consegna** (`#qm-prompt-audio`). Era cercato solo da `legacy/test_qm`, cancellato il 15 settembre perché fuori dalla suite da settimane. Gli altri tre moduli nominati dal limite dichiarato di `test_blocco_ascolto.js` sono coperti davvero (Flash Card, Repeat Aloud, Why We Say It). | Il buco **non nasce con la cancellazione, diventa visibile**: quel file non lo lanciava nessuno. Oggi il caso è parzialmente coperto dall'asserzione ① di `test_blocco_ascolto.js` (il markup ha **una sola sorgente**), che è più forte di un confronto a campione — ma non vede un modulo che smettesse di **chiamare** `renderListenBlock`. | **Alla prima apertura di `test_blocco_ascolto.js` o di un test di Match Practice**, dove una riga in più costa un minuto. Non con un giro apposta: è un'asserzione, non una correzione, e il limite adesso è scritto dove si legge. |
+| 2026-09-15 | **Lo script che conta le VARIANTI (non le copie) di una funzione ripetuta merita di diventare uno strumento in `tests/tools/`.** Oggi è stato scritto al volo per il triage del passo 16: estrae ogni definizione, la normalizza, e ne fa l'hash — così `23 copie` si legge `1 variante` e `28 copie` si legge `20 varianti`. | **È la differenza fra un lavoro meccanico e venti decisioni**, e non si vede contando le occorrenze con `grep -c`. Un conto di copie avrebbe detto «77 duplicazioni» e avrebbe fatto partire `bootAsUser` e `mockInit` insieme a `openModule`. ⚠️ **Limite noto, e va scritto se lo strumento nasce:** la normalizzazione decide cosa è «la stessa versione» — troppo aggressiva e venti varianti diventano una, troppo timida e due spazi fanno due varianti. Uno strumento di misura che sbaglia non lo dice (regola 37), quindi nasce con il suo test o non nasce. | **Quando servirà la seconda volta**, cioè al primo dei due passi su `bootAsUser`/`mockInit`. Scritto adesso per un uso solo sarebbe uno strumento senza un secondo lettore. |

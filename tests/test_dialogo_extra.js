@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiVisibile } = require('./attese');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // Gli id delle battute vengono dai dati, non scritti a mano: erano fissati a
@@ -292,11 +293,6 @@ async function run() {
   const failed = results.filter(r => !r.ok);
   console.log('\n=== SUMMARY: ' + (results.length - failed.length) + '/' + results.length + ' passed ===');
   if (failed.length) { console.log('FAILURES:'); failed.forEach(f => console.log(' - ' + f.msg)); process.exit(1); }
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 run().catch(e => { console.error(e); process.exit(1); });

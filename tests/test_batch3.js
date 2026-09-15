@@ -2,6 +2,7 @@ const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // I testi dei moduli si leggono dal file, non dalla pagina. Prima si leggeva
@@ -82,11 +83,6 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   }, { userName, completedModules, extraStorage });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 async function run() {

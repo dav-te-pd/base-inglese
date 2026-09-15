@@ -84,6 +84,7 @@ const BLOCCHI_MAGAZZINO = MAGAZZINO.map(function (nome, i) {
 });
 
 const FINTO = [
+  "const { apri } = require('./finto-driver');",
   "async function run() {",
   "  // (1) GUARDIA: fra l'attesa e il log non c'e' nient'altro",
   "  await page.click('#a');",
@@ -127,11 +128,36 @@ function esegui(percorsoFinto, callback) {
     function (err, stdout) { callback(err, stdout || ''); });
 }
 
+// ⚠️ IL MODULO CONDIVISO FINTO, e il caso che guida e' il piu' DIVERSO che
+// esista per questa riga (regola 42): un modulo richiesto da un file di test
+// che NON sta in tests/. I moduli condivisi veri stanno tutti li' accanto ai
+// file che li richiedono, quindi una risoluzione ancorata a tests/ passerebbe
+// su tutti loro — e il test non proverebbe niente che non fosse gia' vero.
+//
+// Cosa protegge: che un'attesa portata FUORI da un file di test, dentro un
+// modulo condiviso, resti nel censimento. Finche' i moduli condivisi non ne
+// contenevano nessuna il punto cieco era vuoto e non mentiva a nessuno; dal
+// primo openModule unificato in map-driver.js non lo e' piu', e i prossimi
+// (bootAsUser, 26 copie) ne porterebbero altre. Senza questa riga il totale
+// SCENDE a ogni unificazione mentre le attese continuano a girare — cioe' il
+// numero migliora proprio quando il lavoro smette di misurare.
+const nomeCondivisoFinto = 'finto-driver.js';
+const CONDIVISO_FINTO = [
+  "// un modulo condiviso finto: nessun log, quindi la sua attesa e' navigazione",
+  "async function apri(page, id) {",
+  "  await page.click('[data-x=\"' + id + '\"]');",
+  "  await page.waitForTimeout(250);",
+  "}",
+  "module.exports = { apri };",
+  ""
+].join('\n');
+
 function run() {
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'conta-attese-'));
   const nomeFinto = 'test_finto_attese.js';
   const percorsoFinto = path.join(tmp, nomeFinto);
   fs.writeFileSync(percorsoFinto, FINTO, 'utf8');
+  fs.writeFileSync(path.join(tmp, nomeCondivisoFinto), CONDIVISO_FINTO, 'utf8');
 
   esegui(percorsoFinto, function (err, stdout) {
     try {
@@ -201,6 +227,17 @@ function run() {
       const navRiga = mie(secNav)[0] || '';
       log('[D] Le attese di navigazione (' + navAttese + ') sono contate a parte',
         new RegExp('\\|\\s*' + navAttese + '\\s*\\|').test(navRiga), navRiga);
+
+      // ⚠️ [F] L'attesa che vive in un MODULO CONDIVISO, non in un file di
+      // test. La lista FILES nomina i file che la suite lancia; questa attesa
+      // gira a ogni corsa e non stava in nessun conto. Si guarda la riga del
+      // modulo condiviso, non il totale: un totale giusto puo' venire da due
+      // errori che si compensano, una riga col nome del file no.
+      const rigaCondivisa = secNav.split('\n').filter(function (r) {
+        return r.indexOf('`' + nomeCondivisoFinto + '`') !== -1;
+      })[0] || '';
+      log('[F] L\'attesa dentro un modulo CONDIVISO viene censita, non sparisce',
+        /\|\s*1\s*\|/.test(rigaCondivisa), rigaCondivisa || '(nessuna riga per ' + nomeCondivisoFinto + ')');
     } finally {
       fs.rmSync(tmp, { recursive: true, force: true });
     }

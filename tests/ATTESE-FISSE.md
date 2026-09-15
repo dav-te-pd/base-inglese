@@ -130,9 +130,40 @@ Tenuti qui come riferimento di com'è fatta la conversione:
   **Non è una questione di millisecondi, è una questione di chi ha scaldato la
   cache** — e nessuno può tenerlo a mente modulo per modulo.
 
+## ⚠️ 15 SETTEMBRE: 291 → 269, E NON È UN LAVORO SULLE ATTESE
+
+**Il calo di 22 navigazioni fra il 14 e il 15 settembre non corrisponde a
+nessuna conversione: è uno SPOSTAMENTO.**
+
+`openModule` era ricopiato in 23 file di test, identico in tutti e 23, e
+ognuna delle 23 copie portava dentro il suo `waitForTimeout(250)`. Il passo 16
+le ha unificate in `tests/map-driver.js`: **restano 1 attesa invece di 23**, e
+l'attesa è **la stessa di prima, riga per riga** — nessuno l'ha resa più
+solida, nessuno l'ha agganciata a uno stato.
+
+*Sta scritto qui e non solo nel resoconto del giorno per una ragione precisa:
+fra un mese qualcuno guarderà la serie dei numeri di questo documento e vedrà
+un calo di 22. Un calo di 22 in questo file ha sempre significato ventidue
+attese sistemate. Questa volta no, e il documento deve saperlo dire da solo
+— la conversazione in cui è successo non sopravvive al container.*
+
+⚠️ **E nello stesso giro il censimento ha smesso di avere un punto cieco.**
+Lo strumento ricava i file da censire dalla riga `FILES` di
+`run_full_regression.sh`, cioè dai file che la suite **lancia**: un'attesa che
+vive in un **modulo condiviso** girava a ogni corsa senza entrare in nessun
+conto. Misurato prima di toccarlo: nei moduli condivisi c'erano **zero**
+`waitForTimeout`, quindi il punto cieco non aveva mai mentito — *ma un punto
+cieco vuoto non è un punto cieco chiuso*. La prima attesa ad atterrarci è
+proprio quella di `openModule`: senza la correzione questo documento direbbe
+**268 con 269 attese vive**, cioè il numero sarebbe migliorato **di uno in
+più** proprio mentre lo strumento smetteva di guardare. Ora i moduli condivisi
+si ricavano dalle `require` dei file della suite (`map-driver.js` compare
+infatti nella tabella qui sotto, con la sua 1), e `test_conta_attese.js` ha il
+caso `[F]` che lo protegge.
+
 <!-- GENERATO DA tests/tools/conta-attese.js — non modificare a mano -->
 
-## Elenco — generato il 2026-09-11
+## Elenco — generato il 2026-09-15
 
 **0 guardie DA CONVERTIRE** — un'attesa a tempo da cui dipende
 il verde di un'asserzione, e che si puo' sostituire con un'attesa sullo stato
@@ -143,8 +174,8 @@ scendere.
 |---|---|
 | **guardie da convertire** — il debito | **0** |
 | guardie **legittime** — marcate nel sito, NON sono debito | 77 |
-| attese di **navigazione** — se sono corte il test si rompe, non passa | 291 |
-| in tutto | 368 |
+| attese di **navigazione** — se sono corte il test si rompe, non passa | 269 |
+| in tutto | 346 |
 
 ⚠️ **I tre numeri non si sommano in uno solo, ed e' il punto.** Una guardia
 legittima verifica che una cosa NON accada, oppure uno stato che era gia' vero:
@@ -180,7 +211,7 @@ quante FORME servono a chiuderlo. Le forme sono molte meno dei punti.*
 
 ### Le guardie, una per una
 
-| file | ms | dopo | aspetta | asserzione protetta | riga (al 2026-09-11) |
+| file | ms | dopo | aspetta | asserzione protetta | riga (al 2026-09-15) |
 |---|---|---|---|---|---|
 
 ### Le guardie legittime — marcate nel sito, e perche'
@@ -276,31 +307,32 @@ fallisce, non passa per sbaglio. Contate per sapere quante sono.*
 
 | file | navigazione |
 |---|---|
-| `test_batch10.js` | 15 |
-| `test_batch11.js` | 23 |
-| `test_batch12.js` | 14 |
-| `test_batch13.js` | 10 |
-| `test_batch14.js` | 9 |
-| `test_batch15.js` | 15 |
-| `test_batch16.js` | 17 |
-| `test_batch17.js` | 21 |
-| `test_batch18.js` | 16 |
-| `test_batch19.js` | 10 |
-| `test_batch2.js` | 4 |
-| `test_batch20.js` | 6 |
-| `test_batch2b.js` | 6 |
-| `test_batch3.js` | 5 |
-| `test_batch3b.js` | 6 |
-| `test_batch4.js` | 4 |
+| `map-driver.js` | 1 |
+| `test_batch10.js` | 14 |
+| `test_batch11.js` | 22 |
+| `test_batch12.js` | 13 |
+| `test_batch13.js` | 9 |
+| `test_batch14.js` | 8 |
+| `test_batch15.js` | 14 |
+| `test_batch16.js` | 16 |
+| `test_batch17.js` | 20 |
+| `test_batch18.js` | 15 |
+| `test_batch19.js` | 9 |
+| `test_batch2.js` | 3 |
+| `test_batch20.js` | 5 |
+| `test_batch2b.js` | 5 |
+| `test_batch3.js` | 4 |
+| `test_batch3b.js` | 5 |
+| `test_batch4.js` | 3 |
 | `test_batch4b.js` | 3 |
-| `test_batch5.js` | 14 |
-| `test_batch6.js` | 14 |
-| `test_batch7.js` | 23 |
-| `test_batch8.js` | 14 |
-| `test_batch9.js` | 20 |
-| `test_dialogo_extra.js` | 7 |
+| `test_batch5.js` | 13 |
+| `test_batch6.js` | 13 |
+| `test_batch7.js` | 22 |
+| `test_batch8.js` | 13 |
+| `test_batch9.js` | 19 |
+| `test_dialogo_extra.js` | 6 |
 | `test_mastery_al_gesto.js` | 1 |
-| `test_new_features.js` | 8 |
+| `test_new_features.js` | 7 |
 | `test_sequenze.js` | 1 |
 | `test_voicecoach.js` | 5 |
 

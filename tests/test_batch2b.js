@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiClasse } = require('./attese');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // Le risposte giuste vengono dai dati dell'episodio, non dalla posizione dei
@@ -83,11 +84,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 const BEFORE_VC = stepsBefore('flashcardAEngIta');

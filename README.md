@@ -88,7 +88,7 @@ Un solo file: `node tests/test_batch10.js` (con il server già attivo).
 Nessun percorso di macchina è scritto dentro i test: Playwright, l'indirizzo
 dell'app e le cartelle di output arrivano tutti da `tests/test-env.js`, che si
 può pilotare con `APP_PORT`, `APP_URL`, `PLAYWRIGHT_MODULE`, `CHROMIUM_PATH`,
-`TEST_OUTPUT_DIR`. Dettagli e sottocartelle (`tools/`, `debug/`, `legacy/`) in
+`TEST_OUTPUT_DIR`. Dettagli e sottocartelle (`tools/`) in
 [`tests/README.md`](tests/README.md).
 
 ## Dov'è pubblicata

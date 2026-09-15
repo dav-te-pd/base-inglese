@@ -48,8 +48,17 @@
 // quattro sono coperti dall'asserzione ①, che e' piu' forte del confronto a
 // campione — ma se un modulo smettesse di CHIAMARE renderListenBlock, e quindi
 // non mostrasse piu' il blocco affatto, qui non si vedrebbe. Quel caso lo
-// prendono i test dei singoli moduli (test_batch16, test_batch17,
-// test_story_modules, legacy/test_qm), che cercano il pulsante per selettore.
+// prendono i test dei singoli moduli, che cercano il pulsante per selettore:
+// test_batch16 (Flash Card, #fc-front-audio), test_batch17 (Repeat Aloud,
+// #repeat-aloud-body), test_story_modules (Why We Say It, .wws-bubble).
+//
+// ⚠️ E RESTA SCOPERTO Match Practice en→it — il blocco della consegna,
+// #qm-prompt-audio. Fino al 15 settembre questa riga ne nominava un quarto
+// coprente, legacy/test_qm, che era l'unico a cercarlo: ma stava in
+// tests/legacy/, fuori dalla suite, e non lo lanciava nessuno da settimane.
+// Cancellando quella cartella il buco non nasce, si VEDE. Un limite
+// dichiarato che si appoggia a un file morto e' peggio di un limite non
+// dichiarato: dice che qualcuno guarda, e non guarda nessuno.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');

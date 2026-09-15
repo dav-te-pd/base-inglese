@@ -127,7 +127,12 @@ const FINESTRA = 16; // righe guardate in avanti
 
 function fileDaCensire() {
   const espliciti = process.argv.slice(2).filter(function (a) { return /\.js$/.test(a); });
-  if (espliciti.length) return espliciti;
+  // ⚠️ Anche i file passati a mano tirano dentro i loro moduli condivisi.
+  // Fermarsi qui e' stato un difetto vero, trovato dal test [F] e non da una
+  // rilettura: la strada esplicita e' PROPRIO quella che il test dello
+  // strumento percorre, quindi un'aggiunta valida solo sulla strada
+  // automatica sarebbe rimasta non misurata per sempre.
+  if (espliciti.length) return espliciti.concat(moduliCondivisi(espliciti));
   const sh = fs.readFileSync(path.join(CARTELLA_TEST, 'run_full_regression.sh'), 'utf8');
   const m = sh.match(/^FILES="([^"]+)"/m);
   if (!m) throw new Error('Non trovo la lista FILES in run_full_regression.sh');
@@ -138,9 +143,57 @@ function fileDaCensire() {
   // suite: fino all'11 settembre tre finte stavano dentro le 186. Passandolo
   // ESPLICITAMENTE sulla riga di comando viene censito lo stesso, ed e' cosi'
   // che il suo test lo esercita.
-  return m[1].split(/\s+/).filter(Boolean).filter(function (f) {
+  const fileSuite = m[1].split(/\s+/).filter(Boolean).filter(function (f) {
     return path.basename(f) !== 'test_conta_attese.js';
   });
+  return fileSuite.concat(moduliCondivisi(fileSuite));
+}
+
+// ⚠️ I MODULI CONDIVISI, E QUESTO PEZZO E' UNA CORREZIONE, NON UN'AGGIUNTA.
+//
+// La lista FILES nomina i file che la suite LANCIA. Un'attesa che vive in un
+// modulo richiesto da quei file — attese.js, quiz-driver.js, map-driver.js —
+// gira a ogni corsa ma non compariva in nessun conto: il censimento avrebbe
+// detto 268 con 269 attese vive.
+//
+// Fino al 15 settembre il punto cieco c'era ed era VUOTO — zero waitForTimeout
+// in tutti i moduli condivisi — quindi non aveva ancora mentito a nessuno. La
+// prima attesa ad atterrarci e' quella di openModule, portata in map-driver.js
+// unificando 23 copie. **Un punto cieco vuoto non e' un punto cieco chiuso:**
+// e' lo stesso difetto che aspetta la prima occasione, e l'occasione e' stata
+// il primo passo che sposta codice fuori dai file di test. I prossimi
+// (bootAsUser, 26 copie) ne porterebbero altre.
+//
+// La lista NON si scrive a mano: si ricava dalle require dei file della suite,
+// cosi' un modulo condiviso nuovo entra nel censimento da solo. Una lista
+// scritta a mano e' esattamente il difetto che questo strumento aveva gia'
+// avuto una volta (ATTESA_VERA, tre nomi su otto).
+// ⚠️ La require si risolve accanto al file CHE LA SCRIVE, non dentro tests/.
+// Per i file veri della suite le due cose coincidono — stanno tutti li' — ma
+// coincidono solo finche' nessuno li sposta, e il file FINTO con cui questo
+// strumento viene misurato sta fuori dal repository apposta (regola 36). Una
+// risoluzione ancorata a tests/ funzionerebbe su tutti i casi veri e su
+// nessun caso diverso: e' il difetto della regola 42 scritto in una riga.
+function moduliCondivisi(fileSuite) {
+  const visti = Object.create(null);
+  const daVedere = fileSuite.map(risolvi);
+  const trovati = [];
+  while (daVedere.length) {
+    const f = daVedere.shift();
+    if (visti[f] || !fs.existsSync(f)) continue;
+    visti[f] = true;
+    const src = fs.readFileSync(f, 'utf8');
+    const re = /require\('(\.\/[^']+)'\)/g;
+    let r;
+    while ((r = re.exec(src))) {
+      const rel = r[1].endsWith('.js') ? r[1] : r[1] + '.js';
+      const p = path.resolve(path.dirname(f), rel);
+      if (visti[p] || !fs.existsSync(p)) continue;
+      trovati.push(p);
+      daVedere.push(p);
+    }
+  }
+  return trovati;
 }
 
 // Un nome nudo si cerca in tests/; un percorso si prende com'e', cosi' un file

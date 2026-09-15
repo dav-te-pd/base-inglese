@@ -1,6 +1,7 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiCheParla, attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 // This mock deliberately fires cancel()'s onerror ASYNCHRONOUSLY (via
@@ -52,11 +53,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 const ALL_BEFORE_QM = stepsBefore('matchEngIta');

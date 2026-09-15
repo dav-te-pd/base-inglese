@@ -2,6 +2,7 @@ const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiAbilitato, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
+const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
 const mockInit = () => {
@@ -32,11 +33,6 @@ async function bootAsUser(page, userName, completedModules) {
   }, { userName, completedModules });
   await page.click('#go-episode');
   await page.waitForTimeout(150);
-}
-
-async function openModule(page, moduleId) {
-  await page.click('[data-module="' + moduleId + '"]');
-  await page.waitForTimeout(250);
 }
 
 // Speed Match e Match Practice finiscono quando finiscono le domande: il grado
