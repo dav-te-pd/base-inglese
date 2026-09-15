@@ -1835,6 +1835,26 @@ asserzioni in `test_interruttore_episodio`. Li ha trovati la suite, non io — e
 che si appoggia a «tanto è già tutto in memoria» è scritta contro un'ipotesi
 che lo spacchettamento esiste per rimuovere.*
 
+#### DA APPLICARE A `CLAUDE.md`, REGOLA 33 — al prossimo giro che la tocca
+
+**Deciso il 2026-09-15.** La regola 33 dice che un file di contenuto sotto
+`docs/{lingua}/` non si modifica di iniziativa. Le va aggiunta l'eccezione che
+il passo 19 ha prodotto:
+
+> **Se un tuo commit rende FALSA una frase in un file di contenuto, quella
+> frase la correggi senza chiedere.** Il permesso serve per il **contenuto**,
+> non per i **fatti che hai appena cambiato tu**.
+
+*Il caso: il paragrafo d'apertura di `tabelle-personalizzazione.md` diceva
+«oggi le tabelle vivono in `APP_CONFIG`», ed è il commit del passo 19 ad averlo
+reso falso. Lasciare in piedi una frase falsa creata da sé è peggio che toccare
+una riga in più — e non è iniziativa sul contenuto, è manutenzione di un fatto.*
+
+**Condizione:** si scrive dentro `CLAUDE.md` **al primo giro che tocca quel
+file**, non prima e non con un commit apposta. Sta qui perché un passo dello
+spacchettamento potrebbe non toccarlo per giorni, e quello che resta solo nella
+conversazione è già perso (regola 43).
+
 ## Le invarianti, valide per tutta la catena
 
 - **Venti suite invece di un macello.** Nel dubbio fra una corsa e due, se ne fanno due:

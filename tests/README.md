@@ -111,6 +111,42 @@ Si può ancora lanciare da solo, con il server attivo:
 node tests/test_outcome_step_ids.js
 ```
 
+
+## ⚠️ LA FALSIFICAZIONE NON PROVA CHE IL TEST SA MORIRE. SMASCHERA IL TEST.
+
+La regola 32 chiede di vedere un test **fallire apposta** prima di fidarsene, e
+la ragione che si dà di solito è *«così sappiamo che sa morire»*. **È la ragione
+debole.** Quella forte l'ha misurata il passo 19, il 2026-09-15, in un giro solo:
+
+**Due misure che non misuravano, trovate tutte e due dalla falsificazione e
+nessuna delle due rileggendo.**
+
+- **Il `replace` senza `assert`.** La patch che doveva rompere il codice non
+  combaciava con il testo, quindi **non si applicava**. Il test restava verde, e
+  quel verde sembrava dire *«l'asserzione non dipende da quel codice»*. Diceva
+  solo che la patch non era entrata.
+- **Il selettore fuori dal pannello.** L'asserzione leggeva
+  `document.querySelector('.config-group')`, e il primo `.config-group` del
+  documento sta **fuori** dal corpo che viene ridisegnato — misurato, **27 nel
+  documento contro 23 dentro**. Era **vera per costruzione** (regola 44): `open`
+  restava `true` qualunque cosa facesse il codice.
+
+⚠️ **La seconda è stata scritta un'ora dopo aver citato la regola 44 in una
+dichiarazione.** Conoscere la regola non ha impedito di violarla; **falsificare
+sì**.
+
+> **A CADERE NON È STATA L'ASSERZIONE: È STATA LA FALSIFICAZIONE.**
+> Ed è il segnale più utile che esista, perché arriva **prima** che la riga
+> entri nella suite sembrando una difesa.
+
+**In pratica:** quando si scrive un'asserzione nuova, non si rompe il codice per
+vederla morire — **si rompe il codice per vedere se la rottura arriva fino a
+lei**. Se il verde resta, l'ipotesi da controllare per prima non è «il codice è
+robusto»: è **«la mia rottura non è entrata»** oppure **«la mia asserzione non
+guarda dove credo»**. Nel giro del passo 19 erano vere tutte e due, una per
+volta.
+
+
 ## Cosa protegge ogni file
 
 Non è un indice: è la domanda **"cosa si romperebbe se questo file

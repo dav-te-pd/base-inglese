@@ -248,6 +248,52 @@ riga è ancora giusto. Gli si scrive accanto **fin dove arriva** — «questo
 vale per `EPISODES`, e non valeva più per il magazzino» — così chi lo legge
 sa che il limite è stato misurato, non dimenticato.
 
+## ⓪-sexies LA GREP CHE TROVA IL PUNTO GIUSTO E LA LETTURA CHE SI FERMA ALLA RIGA
+
+> **GUARDARE LA RIGA TROVATA INVECE DELLA FUNZIONE CHE LA CONTIENE È IL MODO
+> IN CUI SI PERDE UN LETTORE AVENDOLO DAVANTI.**
+
+È la ⓪-quinquies vista **da dentro il metodo**: là il difetto sta nel mondo
+che cambia intorno a un commento, qui nel gesto con cui lo si cerca. E si
+somigliano al punto da confondersi, quindi stanno vicine.
+
+⚠️ **Non è il difetto della ricerca che non trova niente.** Quello si vede: si
+cerca, esce zero, si cerca meglio. **Questo è il difetto della ricerca
+RIUSCITA** — il punto giusto compare nell'elenco, lo si legge, e si conclude
+qualcosa che la riga dice e la funzione intorno smentisce. *Da lì in poi quel
+file risulta «guardato», che è peggio di «non cercato»: non lo si riapre.*
+
+**Il caso, 2026-09-15, passo 19.** Cercando chi leggeva il magazzino, la
+ricerca ha restituito `tests/module-order.js:115`:
+
+```js
+const isPerson = slot.table.indexOf('people.') === 0;
+```
+
+Letta da sola dice *«legge il campo `table` di uno slot»* — cioè un dato che
+sta nel file dell'episodio, **non** nel magazzino. Classificata: non è un
+lettore. **Tre righe più sotto**, la stessa funzione:
+
+```js
+const rows = readTable(html, section, name) || [];
+```
+
+— e `readTable` parsava le tabelle **dal testo di `index.html`**. Era un
+lettore, e di quelli peggiori: aveva il dato **per costruzione** perché stava
+nello stesso file.
+
+*Costo: due file rossi in suite (`test_batch15`, `test_interruttore_episodio`
+con cinque asserzioni in meno), trovati dalla suite e non dal triage che aveva
+dichiarato l'elenco completo.*
+
+**La forma operativa, e vale per ogni passo dello spacchettamento:** quando si
+chiede *«chi legge questo?»*, ogni riga che la ricerca restituisce si legge
+**dentro la sua funzione, dall'inizio alla fine** — mai da sola. Una riga
+risponde alla domanda *«questa riga tocca il dato?»*; la domanda vera è
+*«questa **funzione** tocca il dato?»*, e sono due domande diverse con la
+stessa risposta apparente. *È di nuovo la forma di tutto il resto: il numero
+era giusto, era il numero di un'altra domanda.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
