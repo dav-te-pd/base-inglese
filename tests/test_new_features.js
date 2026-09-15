@@ -144,10 +144,11 @@ async function run() {
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
     const tones = await page.evaluate(() => window.__playedTones);
-    const readyTones = tones.filter(t => t.freq === 1568 || t.freq === 1976);
+    const ready = await page.evaluate(() => window.APP_CONFIG.sound.events.ready);
+    const readyTones = tones.filter(t => t.freq === ready.freq || t.freq === ready.finalFreq);
     log('[D] Speed Match 3-2-1 plays exactly 3 tones', readyTones.length === 3);
-    log('[D] Speed Match: first two ticks use freq 1568', readyTones.length === 3 && readyTones[0].freq === 1568 && readyTones[1].freq === 1568);
-    log('[D] Speed Match: last tick uses finalFreq 1976', readyTones.length === 3 && readyTones[2].freq === 1976);
+    log('[D] Speed Match: i primi due tocchi usano ready.freq (' + ready.freq + ')', readyTones.length === 3 && readyTones[0].freq === ready.freq && readyTones[1].freq === ready.freq);
+    log('[D] Speed Match: l\'ultimo tocco usa ready.finalFreq (' + ready.finalFreq + ')', readyTones.length === 3 && readyTones[2].freq === ready.finalFreq);
     log('[D] No JS errors on Speed Match countdown', errors.length === 0);
     await page.close();
   }
@@ -166,10 +167,11 @@ async function run() {
     await page.click('#dg-start-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
     const tones = await page.evaluate(() => window.__playedTones);
-    const readyTones = tones.filter(t => t.freq === 1568 || t.freq === 1976);
+    const ready = await page.evaluate(() => window.APP_CONFIG.sound.events.ready);
+    const readyTones = tones.filter(t => t.freq === ready.freq || t.freq === ready.finalFreq);
     log('[D] Dialogo Continuo 3-2-1 plays exactly 3 tones', readyTones.length === 3);
-    log('[D] Dialogo Continuo: first two ticks use freq 1568', readyTones.length === 3 && readyTones[0].freq === 1568 && readyTones[1].freq === 1568);
-    log('[D] Dialogo Continuo: last tick uses finalFreq 1976', readyTones.length === 3 && readyTones[2].freq === 1976);
+    log('[D] Dialogo Continuo: i primi due tocchi usano ready.freq (' + ready.freq + ')', readyTones.length === 3 && readyTones[0].freq === ready.freq && readyTones[1].freq === ready.freq);
+    log('[D] Dialogo Continuo: l\'ultimo tocco usa ready.finalFreq (' + ready.finalFreq + ')', readyTones.length === 3 && readyTones[2].freq === ready.finalFreq);
     log('[D] No JS errors on Dialogo Continuo countdown', errors.length === 0);
     await page.close();
   }
@@ -196,6 +198,14 @@ async function run() {
     const openedWhileTyping = await page.evaluate(() => document.getElementById('config-panel-overlay').classList.contains('is-open'));
     log('[B] Typing "config" INSIDE a text input does NOT open the panel', !openedWhileTyping);
     await page.evaluate(() => { document.getElementById('__tmp_input_test').remove(); document.activeElement.blur(); });
+
+    // ⚠️ IL DEFAULT SI CATTURA QUI, PRIMA CHE ESISTA UN OVERRIDE — e non e'
+    // una precauzione, e' l'unica forma che funziona. Dopo il reset
+    // `APP_CONFIG` **e'** il default, quindi leggerlo la' darebbe
+    // `afterReset === afterReset`: una conversione che sembra fatta bene e
+    // produce un'asserzione vacua (CLAUDE.md regola 44 applicata ai valori).
+    // Non spostare questa riga piu' in basso.
+    const defaultTimeLimit = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
 
     // Typing "config" outside an input opens it.
     await page.click('body');
@@ -299,7 +309,7 @@ async function run() {
     log('[B] Reset ricarica la pagina: il documento e\' stato sostituito', ricaricata);
     const afterReset = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     const overridesCleared = await page.evaluate(() => localStorage.getItem('baseinglese:configOverrides'));
-    log('[B] Reset restores speedMatch.timeLimitSeconds to default (10)', afterReset === 10);
+    log('[B] Il reset riporta speedMatch.timeLimitSeconds al default catturato prima dell\'override (' + defaultTimeLimit + ')', afterReset === defaultTimeLimit);
     log('[B] Reset clears the localStorage overrides key', overridesCleared === null);
 
     log('[B] No JS errors during config panel test', errors.length === 0);

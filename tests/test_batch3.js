@@ -134,7 +134,8 @@ async function run() {
     const kicker = await page.$eval('#howitworks-overlay-title .spiegazione-title-kicker', el => el.textContent).catch(() => null);
     const name = await page.$eval('#howitworks-overlay-title .spiegazione-title-name', el => el.textContent).catch(() => null);
     log('[2] Popup title row 1 is the fixed "Spiegazione" kicker', kicker === 'Spiegazione');
-    log('[2] Popup title row 2 is the module name ("Your Story")', name === 'Your Story');
+    const nomePersonalizza = await page.evaluate(() => window.APP_CONFIG.moduleLabels.personalizzazione.name);
+    log('[2] La seconda riga del titolo e\' il nome del modulo dichiarato in CONFIG (' + nomePersonalizza + ')', name === nomePersonalizza);
     const fullText = await page.$eval('#howitworks-overlay-title', el => el.textContent);
     log('[2] No em dash left in the title', fullText.indexOf('—') === -1);
     log('[2] No JS errors', errors.length === 0);
@@ -152,9 +153,17 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types', []);
+    // Le etichette delle categorie si leggono dalla fonte. ⚠️ Queste due —
+    // "Inizio" e "Quiz" — erano sfuggite al censimento del passo 15 perche' il
+    // filtro cercava stringhe con uno SPAZIO dentro: le etichette di una
+    // parola sola non lo hanno. Trovate leggendo, non contando.
+    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
     const personalizzaLabel = await page.$eval('[data-module="personalizzazione"] .module-row-type', el => el.textContent);
-    log('[3] Personalizzazione mostra la propria categoria "Inizio", non "Studio"', personalizzaLabel === 'Inizio');
-    const moduleTypesCfg = await page.evaluate(() => window.APP_CONFIG.moduleTypes.dialogo.label);
+    log('[3] Personalizzazione mostra la propria categoria (' + categorie.inizio.label + '), non quella di Studio', personalizzaLabel === categorie.inizio.label);
+    // ⚠️ QUESTA RESTA UNA COPIA, ED E' UN REQUISITO: e' l'unica riga che
+    // asserisce COSA c'e' scritto in CONFIG. Leggerla dalla fonte la
+    // renderebbe `label === label` (CLAUDE.md regola 44 applicata ai valori).
+    const moduleTypesCfg = categorie.dialogo.label;
     log('[3] CONFIG.moduleTypes.dialogo esiste con etichetta "Studia il dialogo"', moduleTypesCfg === 'Studia il dialogo');
     log('[3] No JS errors', errors.length === 0);
     await page.close();
@@ -164,15 +173,16 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
+    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
     const srTypeLabel = await page.$eval('[data-module="speedMatchEngIta"] .module-row-type', el => el.textContent);
-    log('[3] Speed Match mostra la categoria "Quiz"', srTypeLabel.indexOf('Quiz') === 0);
+    log('[3] Speed Match mostra la categoria dichiarata in CONFIG (' + categorie.quiz.label + ')', srTypeLabel.indexOf(categorie.quiz.label) === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
     // system.
     const dgContinuoLabel = await page.$eval('[data-module="dialogoContinuo"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Continuo mostra "Studia il dialogo"', dgContinuoLabel.indexOf('Studia il dialogo') === 0);
+    log('[3] Dialogo Continuo mostra la categoria dichiarata in CONFIG (' + categorie.dialogo.label + ')', dgContinuoLabel.indexOf(categorie.dialogo.label) === 0);
     const dgAscoltaLabel = await page.$eval('[data-module="dialogoAscoltaRipeti"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Ascolta e Ripeti mostra anch\'esso "Studia il dialogo"', dgAscoltaLabel.indexOf('Studia il dialogo') === 0);
+    log('[3] Dialogo Ascolta e Ripeti mostra la stessa categoria', dgAscoltaLabel.indexOf(categorie.dialogo.label) === 0);
     await page.close();
   }
 

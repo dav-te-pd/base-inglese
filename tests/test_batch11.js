@@ -301,7 +301,8 @@ async function run() {
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
     }, 'T11Giallo');
-    log('[ModuleRules] Mixed first-pass score (' + state.pct + '%) saves level "giallo"', state.level === 'giallo' && state.pct >= 50 && state.pct < 80);
+    const soglie = await page.evaluate(() => window.APP_CONFIG.percentageThresholds);
+    log('[ModuleRules] Mixed first-pass score (' + state.pct + '%) saves level "giallo", dentro la banda dichiarata (' + soglie.medio + '-' + soglie.alto + ')', state.level === 'giallo' && state.pct >= soglie.medio && state.pct < soglie.alto);
     log('[ModuleRules] Map row carries outcome-giallo and the "Da rivedere" badge', state.rowClass && state.rowClass.indexOf('outcome-giallo') !== -1 && state.badge === 'Da rivedere');
     log('[ModuleRules] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

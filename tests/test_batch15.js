@@ -133,9 +133,10 @@ async function run() {
       await page.click('.sr-option[data-qm-index="' + idx + '"]');
       await page.waitForTimeout(650);
     }
-    await attendiTono(page, [1046, 1318, 1568], 3);
+    await attendiTono(page, await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes), 3);
     const tones = await page.evaluate(() => window.__playedTones);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job1] Traguardo (3 ascending notes) played at least once', traguardoTones.length >= 3);
     log('[Job1] Every Traguardo note fired with qm-summary-screen ALREADY visible', traguardoTones.every(t => t.qmSummaryHidden === false));
     log('[Job1] No JS errors', errors.length === 0);

@@ -159,9 +159,10 @@ async function run() {
   const watchHiddenOnSummary = await page.evaluate(() => document.getElementById('voice-coach-watch-btn').hidden);
   log('[Rule 10] Spiegazione hidden on the evaluative Schermata Finale', watchHiddenOnSummary);
 
-  await attendiTono(page, [1046, 1318, 1568], 3);
+  await attendiTono(page, await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes), 3);
   const tones = await page.evaluate(() => window.__playedTones || []);
-  const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+  const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+  const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
   log('[4d] Traguardo sound played on Voice Coach\'s Schermata Finale', traguardoTones.length >= 3);
 
   const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');

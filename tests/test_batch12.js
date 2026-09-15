@@ -194,20 +194,42 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
-    const expected = { viaggio: '#2b6ca3', notte: '#5b8def', mediterraneo: '#3372a8', moderno: '#1b6fa8', natura: '#7ec850' };
-    const results2 = await page.evaluate((expected) => {
+    // ⚠️ I CINQUE COLORI STAVANO IN TRE POSTI, E QUESTO TEST ERA IL TERZO.
+    // Le altre due sono nell'app: `--accent` nei blocchi :root/[data-theme] del
+    // CSS, e `APP_CONFIG.themes.options[].dot`. **Nessuno dei due legge
+    // l'altro**, quindi possono divergere senza che niente lo dica.
+    //
+    // Leggendo la fonte, questo blocco smette di essere la terza copia e
+    // diventa la GUARDIA CONTRO LE ALTRE DUE: non piu' «il CSS vale quello che
+    // ho scritto qui», ma «il CSS e APP_CONFIG concordano». E' un'asserzione
+    // diversa, ed e' quella che serve.
+    //
+    // ⚠️ IL CONFRONTO IGNORA MAIUSCOLE E MINUSCOLE, ED E' DELIBERATO — NON
+    // NORMALIZZARE LA FONTE PER FAR TORNARE IL CONFRONTO. getComputedStyle
+    // restituisce sempre minuscolo; in APP_CONFIG i cinque valori sono scritti
+    // a mano e quattro sono maiuscoli (#2B6CA3) mentre uno e' minuscolo
+    // (#7ec850). **Quell'incoerenza e' la firma della copia fatta a mano: se i
+    // due posti derivassero l'uno dall'altro non POTREBBERO differire.**
+    // Uniformarli cancellerebbe la prova senza togliere la duplicazione.
+    const temi = await page.evaluate(() => ({
+      opzioni: window.APP_CONFIG.themes.options.map(function (o) { return { value: o.value, dot: o.dot }; }),
+      predefinito: window.APP_CONFIG.themes.defaultTheme
+    }));
+    const results2 = await page.evaluate((temi) => {
       var out = {};
-      Object.keys(expected).forEach(function (theme) {
-        if (theme !== 'viaggio') document.documentElement.setAttribute('data-theme', theme);
+      temi.opzioni.forEach(function (t) {
+        // Il tema predefinito e' quello SENZA attributo: si legge da CONFIG,
+        // non si nomina qui.
+        if (t.value !== temi.predefinito) document.documentElement.setAttribute('data-theme', t.value);
         else document.documentElement.removeAttribute('data-theme');
-        var accent = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().toLowerCase();
-        out[theme] = accent;
+        out[t.value] = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim().toLowerCase();
       });
       document.documentElement.removeAttribute('data-theme');
       return out;
-    }, expected);
-    Object.keys(expected).forEach(function (theme) {
-      log('[Job3] ' + theme + ' --accent is ' + expected[theme] + ' (no longer colliding with a semantic color)', results2[theme] === expected[theme]);
+    }, temi);
+    temi.opzioni.forEach(function (t) {
+      log('[Job3] ' + t.value + ': --accent nel CSS e themes.options.dot in APP_CONFIG concordano (' + t.dot + ')',
+        results2[t.value] === String(t.dot).toLowerCase());
     });
     await page.close();
   }
@@ -263,6 +285,10 @@ async function run() {
       };
     }));
     const ids = rows.map(r => r.id);
+    // I nomi e le categorie si leggono dalla fonte: ricopiarli qui significa
+    // che rinominare un modulo in CONFIG rompe la CI senza che niente sia rotto.
+    const etichette = await page.evaluate(() => window.APP_CONFIG.moduleLabels);
+    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
     log('[Job7] L\'ordine in mappa e\' quello della sequenza dell\'episodio',
       JSON.stringify(ids) === JSON.stringify(ALL_MODULES));
     // I nomi e le categorie si cercano per id del passo, non per posizione:
@@ -271,14 +297,14 @@ async function run() {
     log('[Job7] Match Practice si chiama cosi\' in entrambe le direzioni',
       row('matchEngIta').title.indexOf('Match Practice') === 0 && row('matchItaEng').title.indexOf('Match Practice') === 0);
     log('[Job7] Voice Practice e Voice Check hanno i loro nomi',
-      row('voicePractice').title === 'Voice Practice' && row('voiceCoach').title === 'Voice Check');
-    log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === 'Dialogue: Real Dialogue');
+      row('voicePractice').title === etichette.voicePractice.name && row('voiceCoach').title === etichette.voiceCoach.name);
+    log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === etichette.dialogoContinuo.name);
     log('[Job7] Speed Match si chiama Speed Match in entrambe le direzioni',
       row('speedMatchEngIta').title.indexOf('Speed Match') === 0 && row('speedMatchItaEng').title.indexOf('Speed Match') === 0);
     // I due moduli nati dal componente della storia: nomi nuovi, stessa
     // categoria Studio.
     log('[Job7] Meet the Story e Why We Say It hanno i loro nomi',
-      row('meetTheStory').title === 'Meet the Story' && row('whyWeSayIt').title === 'Why We Say It');
+      row('meetTheStory').title === etichette.meetTheStory.name && row('whyWeSayIt').title === etichette.whyWeSayIt.name);
     log('[Job7] "Story Cards" non compare piu\' in mappa', rows.every(r => r.title !== 'Story Cards'));
     // Six-label job (later turn) replaced these four categories — all
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
@@ -288,7 +314,7 @@ async function run() {
     // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
     // Il grado atteso viene dall'ordine, non riscritto qui.
     log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',
-      ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].every(id => row(id).type.indexOf('Studia il dialogo') === 0));
+      ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].every(id => row(id).type.indexOf(categorie.dialogo.label) === 0));
     log('[Job7] Voice Practice è "Studio"', row('voicePractice').type.indexOf('Studio') === 0);
     log('[Job7] Voice Check è "Quiz"', row('voiceCoach').type.indexOf('Quiz') === 0);
     log('[Job7] Your Story è "Inizio", senza grado (non ne legge uno)', row('personalizzazione').type === 'Inizio');
@@ -322,7 +348,8 @@ async function run() {
     await attendiClasse(page, '#view-voice-coach', 'is-active');
 
     const badge = await page.evaluate(() => document.getElementById('voice-coach-badge').textContent);
-    log('[Job5] Voice Practice badge/title show "Voice Practice"', badge === 'Voice Practice');
+    const nomeVoicePractice = await page.evaluate(() => window.APP_CONFIG.moduleLabels.voicePractice.name);
+    log('[Job5] Il badge di Voice Practice porta il nome dichiarato in CONFIG (' + nomeVoicePractice + ')', badge === nomeVoicePractice);
     const retryVisible = await page.evaluate(() => !document.getElementById('vc-retry-row').hidden);
     const retryLabel = await page.evaluate(() => document.getElementById('voice-coach-retry-btn').textContent);
     log('[Job5] Retry row visible with label "Esercitati ancora"', retryVisible && retryLabel === 'Esercitati ancora');
@@ -421,7 +448,8 @@ async function run() {
     await attendiClasse(page, '#view-voice-coach', 'is-active'); // approdo misurato: il badge porta "Voice Coach" anche prima — vedi il blocco di Voice Practice
 
     const badge = await page.evaluate(() => document.getElementById('voice-coach-badge').textContent);
-    log('[Job5] Voice Check badge/title show "Voice Check"', badge === 'Voice Check');
+    const nomeVoiceCheck = await page.evaluate(() => window.APP_CONFIG.moduleLabels.voiceCoach.name);
+    log('[Job5] Il badge di Voice Check porta il nome dichiarato in CONFIG (' + nomeVoiceCheck + ')', badge === nomeVoiceCheck);
     const retryHidden = await page.evaluate(() => document.getElementById('vc-retry-row').hidden);
     log('[Job5] Voice Check has NO retry row at all (hidden entirely)', retryHidden);
 
@@ -528,9 +556,10 @@ async function run() {
     await page.click('#fc-card');
     await page.waitForTimeout(150);
     await page.click('#fc-know-it-btn');
-    await attendiTono(page, [880], 1);
+    await attendiTono(page, [await page.evaluate(() => window.APP_CONFIG.sound.events.corretto.freq)], 1);
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const correttoTones = tones.filter(t => t.freq === 880);
+    const correttoFreq = await page.evaluate(() => window.APP_CONFIG.sound.events.corretto.freq);
+    const correttoTones = tones.filter(t => t.freq === correttoFreq);
     log('[Job1] Flash Card "Sì, la so" plays the Corretto tone (880Hz)', correttoTones.length >= 1);
     log('[Job1] No JS errors', errors.length === 0);
     await page.close();

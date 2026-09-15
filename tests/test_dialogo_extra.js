@@ -125,9 +125,22 @@ async function run() {
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length > 0, { timeout: 3000 });
     const tones = await page.evaluate(() => window.__playedTones);
     console.log('    DEBUG tones:', JSON.stringify(tones));
-    const countdownTones = tones.filter(t => t.freq === 660);
+    const countdown = await page.evaluate(() => window.APP_CONFIG.sound.events.countdown);
+    const countdownTones = tones.filter(t => t.freq === countdown.freq);
     log('Countdown tone (660Hz) plays exactly once when the bar ends', countdownTones.length === 1);
-    log('Countdown tone volume (0.08) is lower than Corretto/Sbagliato default (0.15)', countdownTones.length === 1 && countdownTones[0].volume === 0.08);
+    // ⚠️ IL CONFRONTO NON PUO' LEGGERE LA FONTE, E IL MOTIVO E' UN DIFETTO
+    // DELL'APP, non del test: `sound.events.corretto` NON HA una chiave
+    // `volume`. Il suo volume viene dal default di `sfxPlayTone`
+    // (index.html: `volume === undefined ? 0.15 : volume`), cioe' da un numero
+    // SCRITTO FISSO NEL CODICE — che la regola 3 vieta. Finche' quel default
+    // non entra in APP_CONFIG, qui non c'e' niente da leggere.
+    //
+    // L'etichetta vecchia diceva «piu' basso di Corretto/Sbagliato default
+    // (0.15)» ed era falsa due volte: `sbagliato.volume` e' 0.22, non 0.15, e
+    // 0.15 non compare in CONFIG da nessuna parte.
+    const DEFAULT_SFX_PLAY_TONE = 0.15; // non e' una copia di CONFIG: e' il default scritto in sfxPlayTone, e non e' leggibile da fuori
+    log('Il volume del countdown (' + countdown.volume + ') e\' piu\' basso del default di sfxPlayTone (' + DEFAULT_SFX_PLAY_TONE + ')',
+      countdownTones.length === 1 && countdownTones[0].volume === countdown.volume && countdown.volume < DEFAULT_SFX_PLAY_TONE);
     log('No ticking during the bar itself (nothing played before it finished)', tonesBeforeBarEnds === 0);
     log('No JS errors', errors.length === 0);
     await page.close();

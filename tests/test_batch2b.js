@@ -128,7 +128,8 @@ async function run() {
     const rowCount = await page.$$eval('.config-module-order-row', els => els.length);
     log('[1] Config panel shows one reorder row per module', rowCount === globalOrder.length);
     const firstLabel = await page.$eval('.config-module-order-row:nth-child(1) .config-module-order-label', el => el.textContent);
-    log('[1] First row label is Personalizza\'s own label', firstLabel === 'Your Story');
+    const nomePersonalizza = await page.evaluate(() => window.APP_CONFIG.moduleLabels.personalizzazione.name);
+    log('[1] La prima riga porta l\'etichetta di Personalizza dichiarata in CONFIG (' + nomePersonalizza + ')', firstLabel === nomePersonalizza);
     await page.click('.config-module-order-row:nth-child(1) [data-order-move="down"]');
     // Niente attesa: il gestore del riordino riscrive APP_CONFIG e ridisegna le
     // righe in modo SINCRONO, quindi il valore e' gia' quello nuovo quando il
@@ -272,10 +273,11 @@ async function run() {
     // qui sotto, invece di far esplodere l'intero file, se non arrivano.
     await page.waitForFunction(() => {
       var t = window.__playedTones || [];
-      return t.filter(x => x.freq === 1046 || x.freq === 1318 || x.freq === 1568).length >= 3;
+      return t.filter(x => window.APP_CONFIG.sound.events.traguardo.notes.indexOf(x.freq) !== -1).length >= 3;
     }, null, { timeout: 20000 }).catch(() => {});
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[3] Match Practice completion now plays the Traguardo sound (3 ascending notes)', traguardoTones.length >= 3);
     const retryIntroHtmlHasClass = await page.evaluate(() => {
       // Even if never shown, verify the shared component actually generated .retry-intro markup.

@@ -398,7 +398,7 @@ non era stato scritto niente.
 |---|---|---|---|
 | **14a** | **Misurare le famiglie prima di convertire, e generare il censimento.** **FATTO E VERIFICATO il 2026-09-10** — suite verde, 1018 asserzioni in 45 file. ⬇︎ i numeri veri sono qui sotto. | ☑ | **sì** |
 | **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima.<br><br>⚠️ **OGNI FAMIGLIA VUOLE UN GIRO DI LETTURA PRIMA DELLA CONVERSIONE, e il numero della famiglia è DOVE GUARDARE, non quanto lavoro c'è** (aggiunto l'11 settembre, dopo il primo giro). Il censimento classifica per **cosa si legge**, non per **come viene usato**: vede `.hidden` e scrive «una schermata che compare o sparisce», e ha ragione sul cosa — ma non può vedere se quella lettura serve a dire *«è comparsa»* o *«NON è comparsa»*, che sono l'opposto. Sulla famiglia ② erano **9 punti su 29**: cinque negative (l'attesa È la misura), una vacua, e tre che la conversione avrebbe **svuotato** — uno stato già vero prima dell'attesa, che convertito tornerebbe al primo istante.<br><br>⚠️ **Una conversione sbagliata non lascia un rosso: lascia un verde che non prova più niente — e il conto scende, cioè il numero migliora proprio quando il lavoro fa danno.** Da qui il terzo secchio del contatore e il marcatore `// ATTESA-LEGITTIMA: <motivo>` scritto nel sito, che lo strumento raccoglie da solo.<br><br>**② FATTA il 2026-09-11** — `attendiVisibile` / `attendiNascosto` in `tests/attese.js`, 21 chiamate in 13 file, 8 marcate legittime, e la vacua di `test_batch16` corretta.<br><br>**① ③ ④ FATTE lo stesso giorno.** ① `attendiAbilitato`/`attendiDisabilitato`/`attendiClasse`; ③ `attendiCheParla`/`attendiTono` e la quinta categoria; ④ nessuna funzione nuova — l'approdo era `#view-map.is-active`.<br><br>⚠️ **IL CRITERIO CHE NE ESCE, e vale per le famiglie che restano: l'effetto su cui aspetti non può essere quello che l'asserzione legge, o diventa vera per costruzione.** Sta in testa a `tests/attese.js`.<br><br>**186 → 56 guardie da convertire** (i numeri intermedi della giornata erano gonfiati da un difetto dello strumento: vedi «14b ④»). | ◐ | **sì**, una famiglia per volta |
-| **15** | I quattro valori ricopiati nei test. ~1 ora. ⚠️ Non portare via anche i `length === 3`: quelli sono **requisiti**, non copie — il riquadro in fondo a questo file lo spiega. | ☐ | **sì** |
+| **15** | I valori ricopiati nei test. ⚠️ **Il numero era SBAGLIATO: diceva «quattro valori, ~1 ora», sono risultate 39 righe in 10 file.** I quattro siti nominati esistevano tutti, ma erano *quattro casi notati*, mai un censimento — la stessa storia delle «19 attese di test_batch19» che erano 7 e delle 141 attese che erano 186.<br><br>⚠️ **E otto delle 39 erano state scritte quattro giorni prima, chiudendo la famiglia ③ del 14b** (`attendiTono(page, [1046, 1318, 1568], 3)`): **un passo della catena può CRESCERE mentre se ne chiude un altro.** È la seconda volta in una settimana — il 14b aveva prodotto sei guardie nuove da due file nati il giorno prima.<br><br>> **RICONTARE PRIMA DI PARTIRE non è prudenza: è l'unico modo di sapere cosa si sta per fare.**<br><br>**FATTO il 2026-09-15.** Censimento generato: 84 candidati su 52 righe → 9 falsi positivi, **4 requisiti che restano**, **39 righe di copie convertite**. Restano 8 righe: i 4 requisiti, 3 **fixture** e 1 falso positivo. | ☑ | **sì** |
 | **16** | Le voci di pulizia: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file) e `tests/debug/` (6 file, aggiunto il 2026-09-09: quattro file che nessuno lancia sono quattro file che possono mentire senza che nessuno se ne accorga), `levels.X.label` (morto: unica occorrenza in un commento), i quattro test con funzioni quasi identiche. *(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ② li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* ⚠️ L'ultima voce è **l'unico punto della fase dove un errore è invisibile** — un helper condiviso che indebolisce un'asserzione lascia quattro file verdi che provano meno di prima. | ☐ | **sì**, voce per voce |
 | **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
 
@@ -1165,6 +1165,80 @@ che va riscritta ogni volta»*, registrata poche ore prima leggendo
 
 *Non l'ho applicata avendola scritta. Lo strumento sì — ed è tutto il motivo per
 cui il marcatore esiste.*
+
+## DA FARE — il volume di default esce da `sfxPlayTone` ed entra in `APP_CONFIG`
+
+**Condizione: alla prossima modifica dei suoni, o prima se qualcuno vuole
+regolare il volume di Corretto dal Pannello Admin.**
+
+`sfxPlayTone` porta `volume === undefined ? 0.15 : volume`: un valore
+modificabile **scritto fisso nel codice**, che la regola 3 vieta. Oggi
+`sound.events.corretto` non ha `volume` e prende quel default; `sbagliato` e
+`countdown` ce l'hanno espliciti. Conseguenza pratica: **il volume di Corretto
+non si può regolare dal pannello**, e un test che voglia confrontarlo non ha
+niente da leggere.
+
+*Trovato il 2026-09-15 convertendo il passo 15. Non corretto lì perché è un
+lavoro sull'app dentro un passo che tocca i test.*
+
+## PASSO 15 — I VALORI RICOPIATI: 39 righe, non quattro (15 settembre)
+
+### ⚠️ La distinzione che il passo prevedeva, misurata
+
+**Se il valore esiste altrove nel progetto, ricopiarlo è una copia; se il numero
+è il requisito, è un'asserzione.** Confermata, e i requisiti sono **quattro
+righe**: `test_batch10:105`, `test_batch12:188`, `test_batch12:189`,
+`test_batch3:167`. Tutte leggono `APP_CONFIG` e asseriscono **cosa contiene**:
+leggerle dalla fonte le renderebbe `label === label`.
+
+**E una TERZA categoria che il passo non prevedeva: le FIXTURE.** In
+`test_attese_condivise.js` i numeri `880 / 1046 / 1318 / 1568` servono a provare
+`attendiTono`, non l'app: `window.suona` è un finto. Se domani il Traguardo
+suonasse note diverse, quel test **deve restare verde**.
+
+> **La differenza fra una copia e una fixture è se il valore INVECCHIA: una
+> copia rompe la CI quando la fonte cambia, una fixture no.**
+
+### ⚠️ Il quinto caso: una conversione fatta bene che produce un'asserzione vacua
+
+`[B] Reset restores timeLimitSeconds to default (10)`. Dopo il reset
+`APP_CONFIG` **è** il default, quindi leggerlo lì dà `afterReset === afterReset`.
+**Il default si cattura prima che l'override esista**, e nel sito c'è scritto
+perché, con il divieto di spostare quella riga più in basso.
+
+### I colori erano in TRE posti, e la conversione cambia cosa prova il test
+
+Il test confrontava le variabili CSS `--accent` con cinque letterali propri.
+Le altre due copie sono **entrambe nell'app**: il CSS e
+`APP_CONFIG.themes.options[].dot`. **Nessuno dei due legge l'altro.**
+
+Convertito, il blocco smette di essere la terza copia e diventa **la guardia
+contro le altre due**: non più *«il CSS vale quello che ho scritto qui»* ma
+*«il CSS e `CONFIG` concordano»*. **Provato**: cambiando una cifra sola in
+`themes.options[1].dot` il test va rosso; con la forma vecchia sarebbe stato
+verde, perché non nominava `themes.options` da nessuna parte.
+
+⚠️ **Il confronto ignora maiuscole e minuscole, ed è deliberato.** In `CONFIG`
+quattro colori sono maiuscoli e uno minuscolo (`#7ec850`): **quell'incoerenza è
+la firma della copia fatta a mano** — se i due posti derivassero l'uno
+dall'altro non *potrebbero* differire. Uniformarli cancellerebbe la prova senza
+togliere la duplicazione.
+
+### Due difetti trovati convertendo
+
+**① `sound.events.corretto` non ha `volume`.** L'etichetta del test diceva
+*«più basso di Corretto/Sbagliato default (0.15)»* ed era falsa due volte:
+`sbagliato.volume` è **0.22**, e **0.15 non compare in `CONFIG` da nessuna
+parte** — è il default scritto dentro `sfxPlayTone`
+(`volume === undefined ? 0.15 : volume`). **È una violazione della regola 3**, e
+finché quel default non entra in `APP_CONFIG` il test non ha niente da leggere:
+il numero resta nel test, con scritto accanto che è il default del codice e non
+una copia di `CONFIG`.
+
+**② Il censimento aveva mancato le etichette di UNA PAROLA SOLA.** Il filtro
+cercava stringhe con uno spazio dentro, quindi `'Inizio'` e `'Quiz'` non
+comparivano. **Trovate leggendo il codice, non contandolo** — ed è il limite di
+qualunque censimento fatto con un'euristica sul testo.
 
 ## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
 

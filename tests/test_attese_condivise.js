@@ -219,6 +219,17 @@ async function run() {
     log('[D] ...ecco perche\' i nove punti della regola 16 restano a tempo: 50ms e\' la distanza fra «l\'ha fermato il tocco» e «e\' finito da solo»', true);
 
     // attendiTono: tre note contro una, e l'array che NON si svuota.
+    //
+    // ⚠️ I NUMERI QUI SOTTO NON SI LEGGONO DA APP_CONFIG, E NON E' UNA
+    // DIMENTICANZA DEL PASSO 15. Questo file prova `attendiTono`, non l'app:
+    // `window.suona` e' un finto, e 880 / 1046 / 1318 / 1568 sono **fixture**
+    // scelte perche' sono riconoscibili, non perche' vengano da CONFIG. Se
+    // domani il Traguardo suonasse tre note diverse, questo test dovrebbe
+    // restare verde: sta verificando che la funzione sappia aspettare una
+    // lista, non che l'app suoni quelle note.
+    //
+    // **La differenza fra una copia e una fixture e' se il valore INVECCHIA:
+    // una copia rompe la CI quando la fonte cambia, una fixture no.**
     const page3 = await nuovaPaginaVoce(browser);
     await page3.evaluate(() => setTimeout(() => { window.suona(880); }, 300));
     log('[D] attendiTono vede una nota sola', (await attendiTono(page3, [880], 1, 4000)) === true);

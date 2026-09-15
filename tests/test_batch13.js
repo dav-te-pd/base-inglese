@@ -195,7 +195,8 @@ async function run() {
     for (const ch of 'config') await page.keyboard.press(ch);
     await attendiClasse(page, '#config-panel-overlay', 'is-open'); // approdo: il pannello aperto, non il testo che l'asserzione legge
     const panelText = await page.$eval('#config-audio-usage', el => el.textContent);
-    log('[6c] Config panel audio-usage section mentions Voice Practice', panelText.indexOf('Voice Practice') !== -1);
+    const nomeVP = await page.evaluate(() => window.APP_CONFIG.moduleLabels.voicePractice.name);
+    log('[6c] Il pannello nomina Voice Practice col nome dichiarato in CONFIG (' + nomeVP + ')', panelText.indexOf(nomeVP) !== -1);
     log('[6c] Config panel audio-usage section shows a seconds total', /\d+(\.\d+)?\s*s/.test(panelText));
     log('[6c] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

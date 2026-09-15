@@ -246,9 +246,10 @@ async function run() {
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(300);
     await page.click('#repeat-aloud-complete');
-    await attendiTono(page, [1046, 1318, 1568], 3);
+    await attendiTono(page, await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes), 3);
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job4] Repeat Aloud plays the Traguardo sound on "Ho finito"', traguardoTones.length >= 3);
     log('[Job4] Repeat Aloud: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -269,9 +270,10 @@ async function run() {
     // attraversa la lezione, come farebbe l'utente.
     await declareAllSkills(page);
     await page.click('#story-cards-complete');
-    await attendiTono(page, [1046, 1318, 1568], 3);
+    await attendiTono(page, await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes), 3);
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job4] Story Cards plays the Traguardo sound on "Ho finito"', traguardoTones.length >= 3);
     log('[Job4] Story Cards: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -291,7 +293,8 @@ async function run() {
     await page.click('#repeat-aloud-back-map');
     await page.waitForTimeout(400); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — uscendo senza completare il Traguardo NON deve suonare
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job4] Repeat Aloud "← Mappa" (leaving without completing) does NOT play Traguardo', traguardoTones.length === 0);
     log('[Job4] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -325,7 +328,8 @@ async function run() {
     await page.click('#vc-mic-notice-map');
     await page.waitForTimeout(400); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — l'uscita dall'avviso microfono NON deve suonare il Traguardo
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job4] Voice Coach mic-confirmed exit does NOT play Traguardo', traguardoTones.length === 0);
     log('[Job4] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -352,7 +356,8 @@ async function run() {
     await page.click('#dg-not-yet-btn');
     await page.waitForTimeout(400); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — «Non ancora» NON deve suonare il Traguardo
     const tones = await page.evaluate(() => window.__playedTones || []);
-    const traguardoTones = tones.filter(t => t.freq === 1046 || t.freq === 1318 || t.freq === 1568);
+    const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
+    const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
     log('[Job4] Dialogo "Non ancora" still does NOT play Traguardo', traguardoTones.length === 0);
     log('[Job4] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

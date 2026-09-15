@@ -248,9 +248,10 @@ async function run() {
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
     const tones = await page.evaluate(() => window.__playedTones);
-    const readyTones = tones.filter(t => t.freq === 1568 || t.freq === 1976);
-    log('[9] 3-2-1 uses the new higher frequencies (1568/1976)', readyTones.length === 3);
-    log('[9] Last tick is the higher one (1976), first two are 1568', readyTones.length === 3 && readyTones[0].freq === 1568 && readyTones[1].freq === 1568 && readyTones[2].freq === 1976);
+    const ready = await page.evaluate(() => window.APP_CONFIG.sound.events.ready);
+    const readyTones = tones.filter(t => t.freq === ready.freq || t.freq === ready.finalFreq);
+    log('[9] 3-2-1 usa le frequenze dichiarate in CONFIG (' + ready.freq + '/' + ready.finalFreq + ')', readyTones.length === 3);
+    log('[9] L\'ultimo tocco e\' finalFreq (' + ready.finalFreq + '), i primi due sono freq (' + ready.freq + ')', readyTones.length === 3 && readyTones[0].freq === ready.freq && readyTones[1].freq === ready.freq && readyTones[2].freq === ready.finalFreq);
     const stillLow = tones.filter(t => t.freq === 440 || t.freq === 523);
     log('[9] Old low frequencies (440/523) no longer used', stillLow.length === 0);
     log('[9] No JS errors', errors.length === 0);
