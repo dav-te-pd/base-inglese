@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260915a**
+**Versione: 20260915b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -465,10 +465,27 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     Prima era un compromesso: la locale costava cinquanta minuti contro gli
     undici della CI, e su una modifica piccola si poteva ragionevolmente
-    spingere e aspettare. **Dal 2026-09-07 costa uguale** — undici minuti,
-    da quando i test non aspettano più il timeout dei Google Fonts
-    (`bloccaFontEsterni` in `tests/test-env.js`) — **e arriva prima**: la CI
-    verifica ciò che è già pubblicato, la locale ciò che sta per esserlo.
+    spingere e aspettare. **Dal 2026-09-07 costa uguale o meno** — da quando
+    i test non aspettano più il timeout dei Google Fonts (`bloccaFontEsterni`
+    in `tests/test-env.js`) e da quando la suite gira in parallelo
+    (`SUITE_PARALLELE`) — **e arriva prima**: la CI verifica ciò che è già
+    pubblicato, la locale ciò che sta per esserlo.
+
+    ⚠️ **I DUE TEMPI PORTANO LA DATA, E LA DATA È LA PARTE IMPORTANTE.**
+    Al **2026-09-15**, su 49 file e 1118 asserzioni: **5,4 min in locale**
+    (a quattro in parallelo), **9,2 min in CI** (a due). *Un tempo senza
+    data si ricopia credendolo attuale.*
+
+    ⚠️ **E UN TEMPO NON SI CITA: SI RIMISURA.** Questi due valgono per la
+    suite di quel giorno. La suite cresce — era 42 file e 933 asserzioni il
+    2026-09-07, quando qui c'era scritto «undici minuti» — e un numero
+    scritto in un documento **non cresce con lei**. Quell'undici è rimasto
+    esatto per la suite di settembre 7 e falso per quella di oggi, senza
+    cambiare una lettera. *Il 2026-09-15 l'ho letto da qui invece di leggere
+    GitHub, e ci ho costruito sopra una conclusione sbagliata sul runner
+    della CI. Il numero era giusto: era il numero di un'altra domanda.*
+    **Le durate vere stanno nell'elenco delle corse su GitHub** — quello si
+    aggiorna da solo.
 
     Restano tre cose che solo la locale può fare, e sono il motivo per cui
     non basta la CI: vedere un test **fallire apposta** prima di fidarsene

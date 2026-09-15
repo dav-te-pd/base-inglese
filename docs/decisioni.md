@@ -675,8 +675,12 @@ La fase 4 sono ~20 estrazioni, e ognuna vuole una corsa completa.
 
 | | una corsa | venti corse |
 |---|---|---|
-| sequenziale (fino al 2026-09-15) | 17,2 min | **5,7 ore** |
-| parallela a 4 | 5,4 min | **1,8 ore** |
+| **in locale**, sequenziale (fino al 2026-09-15) | 17,2 min | **5,7 ore** |
+| **in locale**, parallela a 4 | 5,4 min | **1,8 ore** |
+| **in CI**, sequenziale | 17,5 min | **5,8 ore** |
+| **in CI**, parallela a 2 | 9,2 min | **3,0 ore** |
+
+*I due conti si sommano: ogni estrazione vuole una corsa locale **e** una di CI.*
 
 *Quasi quattro ore di sola attesa, tolte prima di cominciare.* E non è comodità:
 un passo che costa mezz'ora di attesa si fa; uno che ne costa diciassette
@@ -689,6 +693,89 @@ famiglia di difetti della regola 19 che il container, da solo, nasconde.
 
 *Misurato prima di scegliere: 1033 s sequenziale, 532 a due, 326 a quattro, 279
 a sei. Tre corse, 147 esecuzioni di file, zero rossi.*
+
+#### ⚠️ E IL NUMERO CHE HO SBAGLIATO NEL RIPORTARE QUESTA MISURA
+
+**Non l'ho sbagliato misurando. L'ho sbagliato LEGGENDOLO da un documento.**
+
+Ho scritto che la CI «prima stava sugli ~11 minuti, ora 9,3», e ne ho tratto
+che *il runner ha meno core del container*. Le cinque corse vere:
+
+| corsa | commit | durata |
+|---|---|---|
+| #128 | `fee11e6` | 17m 24s |
+| #129 | `e60d7d5` | 17m 32s |
+| #130 | `738553b` | 17m 26s |
+| #131 | `c30dace` | 17m 27s |
+| **#132** | **`35876ed`** | **9m 11s** |
+
+**Il guadagno è 1,90×. In locale a N=2 avevo misurato 1,94×. Il runner scala
+come il container**, e la conclusione che avevo scritto era falsa.
+
+**Da dove veniva l'undici**, perché è la parte che serve: da `CLAUDE.md`,
+regola 38, dove stava scritto **«undici minuti»**. Non l'avevo inventato e non
+avevo letto il job invece della corsa: **l'avevo letto da un documento invece
+che da GitHub.** Ed era esatto — il 2026-09-07, quando la suite aveva **42 file
+e 933 asserzioni**. Oggi ne ha 49 e 1118.
+
+> **UN NUMERO SCRITTO IN UN DOCUMENTO NON CRESCE CON LA COSA CHE MISURA.**
+> Resta esatto per la domanda di allora e diventa falso per quella di adesso
+> **senza cambiare una lettera** — cioè senza dare a nessuno un'occasione di
+> accorgersene.
+
+È la stessa famiglia del 127 e del TTFB a zero: *il numero era giusto; era il
+numero di un'altra domanda.* Ma con un aggravante che le altre due non avevano
+— **quelle le ho misurate male, questa non l'ho misurata affatto.** Avevo
+davanti l'elenco delle corse, che si aggiorna da solo, e ho citato una riga di
+prosa, che no.
+
+*Corretto in tre punti il 2026-09-15: la regola 38 di `CLAUDE.md`, che adesso
+porta i due tempi **con la data** e dice di rimisurarli invece di citarli;
+l'invariante «venti suite invece di un macello» qui sotto; e il conto della
+fase 4 qui sopra.* **Il conto migliora: 5,8 ore di CI diventano 3,0.**
+
+#### ⚠️ E UNA COSA CHE QUESTI NUMERI NON DICONO, benché sembri di sì
+
+Le due corse sequenziali sono **quasi identiche**: 1033 s in locale, ~1047 s in
+CI. Verrebbe da concluderne che il container **non** è più veloce del runner, e
+quindi che la regola 19 è smentita.
+
+**Non lo è, e il perché è la parte utile.** Il tempo totale di una suite è fatto
+quasi tutto di **attese fisse** — caricamenti di pagina, timeout dichiarati,
+`attendiTono` — che durano uguale ovunque. La regola 19 non vive lì: vive nella
+**finestra di gara** fra un'asserzione e un effetto asincrono, che è di
+millisecondi e non sposta il totale di un secondo. Due macchine possono
+impiegare lo stesso tempo e perdere gare diverse.
+
+*Quindi il totale uguale non è una prova né a favore né contro: è una misura di
+un'altra cosa. La prova della regola 19 resta quella del 2026-09-10 — sei verdi
+in locale e due rosse su due in CI, stesso commit.* **Non toccare la 19 sulla
+base di questi due numeri.**
+
+#### ⚠️ E L'ORDINE SBAGLIATO, registrato perché il risultato è stato innocuo
+
+Il 2026-09-15 ho scritto in `decisioni.md` **mentre la suite girava** (regola 36),
+e ho verificato **dopo** che nessun test lo legge. Il precedente del `.gitignore`
+aveva già stabilito la forma: **misurare prima**.
+
+Il risultato è stato innocuo — solo citazioni dentro commenti, nessun test legge
+quel file. **E l'innocuità è esattamente il motivo per cui va scritto qui.**
+
+> **SE QUELLA CORSA FOSSE STATA CONTAMINATA, DA QUEL CONTROLLO NON LO SAPREI.**
+> Un controllo fatto dopo non dice «non è successo»: dice «non l'ho visto».
+
+*Un risultato innocuo non rende giusto il metodo — lo rende invisibile, che è
+peggio: la volta dopo la tentazione arriva già assolta.*
+
+#### N=4 in CI — da valutare, e NON adesso
+
+Se il runner scala come il container, **N=4 in CI diventa una domanda vera**, e
+si risponde con una misura come si è fatto in locale — non copiando il 4.
+
+⚠️ **Ma non nel giro del passo 19.** Il 19 è il primo passo dello
+spacchettamento, ed è il giro in cui un rosso deve avere **un sospettato solo**.
+Alzare la CI nello stesso momento ne darebbe due. *Si prova dopo il 19, in un
+giro suo, quando sappiamo che il meccanismo regge.*
 
 **La corsa di collaudo, 2026-09-15:** 49 file, 4 in parallelo, **ALL FILES
 GREEN**, **1118 asserzioni** come il baseline. E la terza verifica, quella che
@@ -1695,8 +1782,11 @@ in due posti, che è la causa — e il **14b**, il cui conto va **rigenerato** c
 ## Le invarianti, valide per tutta la catena
 
 - **Venti suite invece di un macello.** Nel dubbio fra una corsa e due, se ne fanno due:
-  undici minuti l'una, e ogni rosso ha un sospettato solo. **Non si accorpa per fare un
-  favore a nessuno.**
+  **5,4 minuti l'una in locale** (al 2026-09-15, a quattro in parallelo), e ogni rosso ha
+  un sospettato solo. **Non si accorpa per fare un favore a nessuno.**
+  ⚠️ *Qui c'era scritto «undici minuti», misurati il 2026-09-07 su una suite di 42 file.
+  Il tempo porta la data apposta: **l'argomento si è rafforzato**, non indebolito, e chi
+  legge un numero senza data lo crede attuale.*
 - **Lo stato di questa tabella si aggiorna nello stesso commit del passo**, non a fine
   giornata. È la stessa regola dei test (23) e dei rilievi di collaudo: quello che si
   rimanda a dopo lo si scrive guardando il risultato, non registrando la scelta.
