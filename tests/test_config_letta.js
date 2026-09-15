@@ -61,7 +61,7 @@ const ECCEZIONI = {};
 // tutto quello che gli viene dopo.
 function senzaBloccoDescrizioni(testo) {
   var i = testo.indexOf('configFieldDescriptions: {');
-  if (i === -1) throw new Error('configFieldDescriptions non trovato in index.html');
+  if (i === -1) throw new Error('configFieldDescriptions non trovato in app/config.js');
   var apertura = testo.indexOf('{', i);
   var livello = 0;
   for (var k = apertura; k < testo.length; k++) {
@@ -76,10 +76,25 @@ function senzaBloccoDescrizioni(testo) {
 
 // Il testo dove si cerca: il codice dell'app e i dati che legge. Non i test —
 // un nome citato in un test non vuol dire che l'app lo usi.
+// ⚠️ DUE FILE, NON PIU' UNO — dal 2026-09-15 (passo 20).
+//
+// APP_CONFIG e' uscito in app/config.js, e i due pezzi hanno ruoli OPPOSTI in
+// questo test: `config.js` e' dove le chiavi si DICHIARANO, `index.html` e'
+// (con i dati) dove si NOMINANO. Il blocco delle descrizioni si toglie quindi
+// da config.js, che e' l'unico posto in cui sta.
+//
+// ⚠️ E LA REGIONE DEVE CONTENERE ENTRAMBI. Lasciando solo index.html, ogni
+// chiave risulterebbe nominata una volta sola — la sua dichiarazione sarebbe
+// sparita dalla regione — e il test segnalerebbe 140 chiavi morte: un rosso
+// enorme e falso. Lasciando solo config.js sarebbe il contrario: nessuna
+// chiave nominata da nessuno, e il test cadrebbe su tutto. Il numero da
+// guardare dopo questo passo e' quello dichiarato piu' in basso: deve restare
+// 144 chiavi controllate e una sola asserzione sul totale.
 function regioneDiRicerca() {
+  var config = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
+  if (ESCLUDI_DESCRIZIONI) config = senzaBloccoDescrizioni(config);
   var html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  if (ESCLUDI_DESCRIZIONI) html = senzaBloccoDescrizioni(html);
-  return [html].concat(tuttiIJson(repoPath('data'))).join('\n');
+  return [config, html].concat(tuttiIJson(repoPath('data'))).join('\n');
 }
 
 // Tutti i .json sotto data/, a qualunque profondità: i dati stanno in una

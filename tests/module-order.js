@@ -23,10 +23,17 @@
 const fs = require('fs');
 const { repoPath } = require('./test-env');
 
+// ⚠️ LEGGE app/config.js, NON index.html — dal 2026-09-15 (passo 20).
+//
+// `CONFIG.sequences` e' uscito da index.html insieme a tutto APP_CONFIG. E'
+// la seconda volta in due passi che una funzione di questo file leggeva un
+// dato dal SORGENTE DELL'APP perche' era li' per costruzione (la prima era
+// readTable, al passo 19): entrambe sono la famiglia ⓪-sexies, e stavolta
+// il passo l'ha previsto invece di scoprirlo da un rosso.
 function readOrder() {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+  const html = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
   const block = html.match(/'narrativo-standard':\s*\[([\s\S]*?)\n\s*\]/);
-  if (!block) throw new Error("La sequenza 'narrativo-standard' non e' stata trovata in index.html");
+  if (!block) throw new Error("La sequenza 'narrativo-standard' non e' stata trovata in app/config.js");
   const pairs = [];
   const re = /\{\s*module:\s*'([^']+)'(?:\s*,\s*grade:\s*'([^']+)')?(?:\s*,\s*off:\s*(true|false))?\s*\}/g;
   let m;

@@ -83,7 +83,14 @@ async function run() {
   // ── [A] LA POSSIBILITÀ È TOLTA, non sconsigliata ─────────────────────
   {
     const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-    const conf = html.slice(html.indexOf('window.APP_CONFIG'), html.indexOf('applyConfigOverrides'));
+    // ⚠️ APP_CONFIG NON STA PIU' IN index.html — dal 2026-09-15 (passo 20) sta
+    // in app/config.js. Prima qui c'era uno slice fra 'window.APP_CONFIG' e
+    // 'applyConfigOverrides': due marcatori che quel passo ha portato via, e
+    // `indexOf` avrebbe risposto -1 senza fallire, consegnando uno slice a
+    // caso su cui le due righe qui sotto sarebbero passate per il motivo
+    // sbagliato. Adesso il file della configurazione si legge intero: e' tutto
+    // e solo APP_CONFIG, quindi non serve ritagliarlo.
+    const conf = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
     log('[A] APP_CONFIG non dichiara più people', !/^\s*people\s*:\s*\{/m.test(conf));
     log('[A] APP_CONFIG non dichiara più places', !/^\s*places\s*:\s*\{/m.test(conf));
     log('[A] Il percorso del magazzino sta in una costante, non dentro un fetch',

@@ -664,7 +664,7 @@ irraggiungibili da Node.*
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
 | **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono**, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35).<br><br>**FATTO il 2026-09-15, come ①+④ dei cinque punti di `docs/inglese/it/tabelle-personalizzazione.md`.** `PERSONALIZATION_TABLES_FILE`, `loadPersonalizationTables()`, `resolveSlotTable(ref, episodeData, tables)`, `ensureEpisodeSlotFields` con un `Promise.all` a due. **Contenuto invariato di proposito**: sei destinazioni, id vecchi, traducibilità dedotta — il contenuto vero è il passo dopo, perché cambiarlo qui darebbe due sospettati a ogni rosso.<br><br>⚠️ **DUE PREMESSE DI QUESTA RIGA ERANO SBAGLIATE, e si vedono solo misurando.**<br>• *«`slotOptions` e `resolveSlotValue` leggono in modo sincrono mentre disegnano»* — **no**: leggono `episode.slotFields`, già risolto. Il lettore dei valori è **uno solo**, `resolveSlotTable`, e girava **già dentro un `.then()`**. La conversione vera è stata molto più piccola del previsto.<br>• E il lettore che nessuno aveva previsto è **il Pannello Admin**, che li raggiunge con `Object.keys(window.APP_CONFIG)` — **sincrono e raggiungibile PRIMA del login** con `?config`. Misurato guidando l'app: `people`×1, `places`×1 sulla schermata di onboarding.<br><br>**④ non è stata una migrazione, ed è meglio così.** Il markdown la descrive come `marco → papa-marco`, ma senza il contenuto nuovo gli id non cambiano: quello che ① rompeva davvero erano gli **override salvati dal Pannello Admin**, che sarebbero diventati inerti in silenzio. Il loader li riapplica sopra il file — **zero perdita, zero codice di migrazione**.<br><br>✅ **VERIFICATO**: suite completa e conteggio (vedi la riga sotto). | ☑ | **sì** |
-| **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** `module-order.js` e `test_config_letta.js` lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero dei 79 punti di chiamata toccati**. Il primo pezzo estratto dev'essere `APP_CONFIG` proprio perché è il bersaglio che quei due devono leggere. *(Qui muore da sola la divergenza `off/seen` del passo 16.)* | ☐ | **sì** |
+| **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** i suoi lettori lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero punti di chiamata toccati**.<br><br>**FATTO il 2026-09-15.** `app/config.js`, 689 righe, caricato con un `<script src>` **bloccante** — niente `defer`, niente `async`, niente modulo: viene eseguito prima dello script in linea, quindi `APP_CONFIG` è in memoria come prima. **Non è una conversione ad asincrono come il 19.**<br><br>**La cartella `app/` nasce qui, ed è la convenzione per la fase 4**: i ~20 file estratti stanno lì, la radice resta `index.html` + `data/` + `docs/` + `tests/` + `tools/`.<br><br>⚠️ **I LETTORI ERANO TRE, NON DUE**, e il terzo l'ha creato il passo precedente: `test_tabelle_personalizzazione.js` (blocco `[A]`) ritagliava `index.html` fra `window.APP_CONFIG` e `applyConfigOverrides` — due marcatori che questo passo porta via, e `indexOf` avrebbe risposto `-1` **senza fallire**, consegnando uno slice a caso su cui le asserzioni sarebbero passate per il motivo sbagliato. *Un piano di un giorno, già incompleto, perché il file che deve seguire `APP_CONFIG` l'ha prodotto il passo prima.*<br><br>**E il «zero dei 79 punti di chiamata»:** oggi i punti sono **162 `CONFIG.` + 27 `APP_CONFIG`**. Il 79 non è un numero che si possa ricostruire ed è invecchiato come l'«undici minuti» — *ma la conclusione regge, e per un motivo che non dipende dal conteggio:* l'alias `var CONFIG = window.APP_CONFIG` non cambia, quindi i punti toccati sono **zero qualunque sia il loro numero**.<br><br>✅ **VERIFICATO**: suite completa e conteggio. | ☑ | **sì** |
 | **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
 
 #### ⚠️ LA SUITE PARALLELA È VENUTA PRIMA DEL 19, ED È QUELLO CHE HA RESO PRATICABILE LA FASE 4
@@ -1834,6 +1834,28 @@ asserzioni in `test_interruttore_episodio`. Li ha trovati la suite, non io — e
 `CONFIG.people` dava **zero occorrenze**, e c'erano due lettori. *Ogni difesa
 che si appoggia a «tanto è già tutto in memoria» è scritta contro un'ipotesi
 che lo spacchettamento esiste per rimuovere.*
+
+#### TROVATO E NON CORRETTO — `window.APP_CONFIG_DEFAULTS` è scritta e mai letta
+
+**Misurato il 2026-09-15, passo 20:** una sola occorrenza in tutto il
+repository, la sua assegnazione. È una **copia profonda di ~660 righe fatta a
+ogni caricamento di pagina**, e nessuno la legge.
+
+Il commento che aveva accanto diceva che serve al pulsante «Ripristina valori
+di partenza». Quel pulsante esiste (`config-panel-reset-btn`) e **fa un'altra
+cosa**: cancella la chiave degli override e ricarica. *Il ripristino funziona;
+non funziona così.* È ⓪-quater — motivazione falsa accanto a codice giusto — e
+si è trovata **leggendo la funzione che il commento indicava**, non la riga.
+
+**Il commento è già corretto**, la riga no: toglierla è una **rimozione** e non
+una correzione (regola 1), quindi non si fa di iniziativa.
+
+**Condizione:** si decide **quando si estrae lo strato che contiene il Pannello
+Admin** (passo 22). Lì si saprà se il ripristino «ai valori di partenza» debba
+davvero tornare ai valori del codice — e allora `DEFAULTS` serve e va *letta* —
+oppure se cancellare gli override sia il comportamento voluto, e allora la riga
+si toglie. *Deciderlo adesso significherebbe scegliere una delle due senza
+guardare il pannello.*
 
 #### DA APPLICARE A `CLAUDE.md`, REGOLA 33 — al prossimo giro che la tocca
 
