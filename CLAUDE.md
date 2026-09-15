@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260911c**
+**Versione: 20260915a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -406,6 +406,30 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
       E l'ultimo comando dell'attesa non deve essere un `grep` che cerca i
       fallimenti: quando è tutto verde non trova niente ed **esce con 1**,
       cioè si dichiara fallita proprio quando è andato tutto bene.
+
+    - **UN PROCESSO NON SI FERMA MAI PER NOME. Si ferma per PID o per
+      porta.** `pkill -f X` corrisponde anche alla **shell che lo contiene**,
+      e la uccide: il comando muore con SIGTERM (uscita 144) portandosi via
+      tutto quello che veniva dopo nella stessa riga.
+
+      ⚠️ **È la stessa radice del caso `pgrep` qui sopra, con la conseguenza
+      OPPOSTA — e per questo è peggiore: appendersi si vede, essere ammazzati
+      no.** Un'attesa che trova sé stessa resta lì e prima o poi qualcuno se
+      ne accorge. Un `pkill` che trova sé stesso non lascia niente: il lavoro
+      che doveva partire dopo semplicemente non parte, e il file che avrebbe
+      dovuto scrivere resta quello del giro precedente — cioè un risultato
+      vecchio che somiglia a un risultato nuovo (è successo il 2026-09-15:
+      `pkill -f "serve.js"` ha ucciso il lancio della suite, e il `suite.log`
+      trovato dopo era di due ore prima).
+
+      Misurato lo stesso giorno: `pgrep -af "serve.js"` trovava **due
+      processi, ed erano entrambi la shell stessa** — nessun `node serve.js`
+      vivo.
+
+      **L'esempio corretto sta già nel repository, e va guardato invece di
+      ricordarsi la regola:** `tests/run_full_regression.sh` salva
+      `SERVER_PID=$!` quando accende il server e lo spegne con
+      `trap cleanup EXIT`. Non nomina mai il processo.
 
     - **Per sapere se un lavoro è attivo si usa `TaskList`, non `pgrep`.** È
       la stessa lista che l'utente vede nel pannello «Attività in

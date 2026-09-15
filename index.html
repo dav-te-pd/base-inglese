@@ -3367,7 +3367,30 @@
 <body>
   <div class="app">
 
-    <!-- ============ VIEW: ONBOARDING ============ -->
+    <!-- ============ VIEW: ONBOARDING ============
+         ⚠️ I CINQUE TESTI QUI DENTRO RESTANO NEL MARKUP, DI PROPOSITO — non
+         sono cinque righe che il passo 18 ha dimenticato, e sembrano identiche
+         alle altre trentuno che invece se ne vanno.
+
+         Hanno la stessa forma di LOAD_ERROR_LAST_RESORT (regola 35):
+
+           UNA COSA CHE DEVE FUNZIONARE QUANDO NIENTE FUNZIONA NON PUO'
+           DIPENDERE DA UN FILE.
+
+         La prova, e non e' teorica: se questi testi venissero dal JSON e si
+         applicasse "non mostrare finche' non c'e'", uno studente NUOVO non
+         vedrebbe l'app — vedrebbe un errore, la primissima volta che apre
+         l'indirizzo. E se invece si mostrasse lo stesso, vedrebbe questa card
+         impaginata con dentro cinque campi VUOTI: badge, titolo, paragrafo,
+         campo, pulsante.
+
+         Misurato il 2026-09-15: a DOMContentLoaded questa schermata e' gia'
+         completa, e la finestra prima che il JSON arrivi e' di 31 ms di
+         mediana in locale (tests/tools/misura-finestra-boot.js) — che su
+         Pages e' un round-trip vero. *Una pagina bianca si legge come «sta
+         caricando»; una schermata impaginata senza parole si legge come
+         ROTTA.* E questa e' la prima cosa che uno studente vede.
+         ============================================================ -->
     <section id="view-onboarding" class="view">
       <div class="card">
         <div class="card-body">
