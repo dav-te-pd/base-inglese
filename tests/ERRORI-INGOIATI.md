@@ -190,6 +190,64 @@ in quel `Promise.all`, e se quella riga sparisce `uiText()` torna stringhe
 vuote» — più **come è stata trovata**, perché chi legge sappia che quella
 frase è stata verificata invece che scritta a intuito.
 
+## ⓪-quinquies IL COMMENTO CHE **NOI** RENDIAMO FALSO — senza toccarlo
+
+> **UN COMMENTO GIUSTO SMETTE DI ESSERE VERO QUANDO CAMBIA IL MONDO
+> INTORNO, NON IL CODICE CHE DESCRIVE.**
+
+Le quattro famiglie qui sopra hanno tutte la stessa origine: qualcuno ha
+toccato il codice e non il commento. **Questa no, ed è per questo che è
+separata.** Qui il commento resta esatto sulla sua riga, la riga non cambia,
+e la frase diventa falsa lo stesso — perché descriveva una **proprietà
+dell'ambiente** che qualcun altro ha cambiato altrove.
+
+⚠️ **Nessuno dei metodi delle altre quattro la trova.** Non c'è un nome
+morto (⓪), non c'è un'asserzione vacua (⓪-ter), e rileggere il commento lo
+conferma (⓪-quater) — ma qui c'è di peggio: **rileggere il commento *insieme
+al suo codice* lo conferma ancora**, perché insieme sono ancora coerenti. È
+il terzo file, quello che nessuno dei due nomina, ad averli smentiti.
+
+**Il caso, 2026-09-15, passo 19.** In `index.html`, accanto alla seconda
+strada per aprire il Pannello Admin:
+
+> *«Deferred to the next tick: renderConfigPanel reads EPISODES, which this
+> script assigns later — by the time a 0ms timeout fires, the whole script
+> has finished running and EPISODES exists.»*
+
+**Era vero, ed è ancora vero per `EPISODES`.** È diventato falso per il
+magazzino della personalizzazione nello stesso momento in cui `people` e
+`places` sono usciti da `APP_CONFIG` — cioè per una modifica in **un altro
+punto del file**, che quel commento non nomina e che non nomina quel
+commento.
+
+```
+setTimeout(…, 0) aspetta «più tardi nello STESSO SCRIPT».
+Non aspetta «più tardi SULLA RETE».
+```
+
+**La forma generale, che vale oltre questo caso:** ogni difesa che si
+appoggia a *«tanto è già tutto in memoria»* è scritta contro un'ipotesi che
+uno spacchettamento **esiste per rimuovere**. `setTimeout(…, 0)`, un
+`Object.keys(APP_CONFIG)`, un valore letto a tempo di parsing, un test che
+fa `page.goto` e legge subito: sono tutti corretti oggi e tutti candidati a
+smettere di esserlo senza che nessuno li tocchi.
+
+⚠️ **E la fase 4 è fatta di ~20 passi di questo tipo.** Quindi non è un caso
+isolato da registrare: è **la famiglia di difetti che quella fase produce di
+mestiere**, e va cercata a ogni estrazione.
+
+**Come si trova, e non è rileggendo:** si parte dal dato che si sta
+spostando e ci si chiede **chi lo aveva per costruzione**, non chi lo
+nomina. Al passo 19 la ricerca testuale su `CONFIG.people` dava **zero
+occorrenze** — e c'erano due lettori, il Pannello Admin e
+`applyConfigOverrides`, che lo raggiungevano senza nominarlo. *Il conteggio
+era esatto: era il conteggio di un'altra domanda.*
+
+**Come si corregge:** non si cancella il commento vecchio, perché sulla sua
+riga è ancora giusto. Gli si scrive accanto **fin dove arriva** — «questo
+vale per `EPISODES`, e non valeva più per il magazzino» — così chi lo legge
+sa che il limite è stato misurato, non dimenticato.
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

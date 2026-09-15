@@ -663,7 +663,7 @@ irraggiungibili da Node.*
 
 | | Passo | Stato | Fermata sicura dopo? |
 |---|---|---|---|
-| **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono** — `slotOptions` e `resolveSlotValue` oggi leggono in modo sincrono mentre disegnano, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35). Mezza giornata, con il suo test. | ☐ | **sì** |
+| **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono**, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35).<br><br>**FATTO il 2026-09-15, come ①+④ dei cinque punti di `docs/inglese/it/tabelle-personalizzazione.md`.** `PERSONALIZATION_TABLES_FILE`, `loadPersonalizationTables()`, `resolveSlotTable(ref, episodeData, tables)`, `ensureEpisodeSlotFields` con un `Promise.all` a due. **Contenuto invariato di proposito**: sei destinazioni, id vecchi, traducibilità dedotta — il contenuto vero è il passo dopo, perché cambiarlo qui darebbe due sospettati a ogni rosso.<br><br>⚠️ **DUE PREMESSE DI QUESTA RIGA ERANO SBAGLIATE, e si vedono solo misurando.**<br>• *«`slotOptions` e `resolveSlotValue` leggono in modo sincrono mentre disegnano»* — **no**: leggono `episode.slotFields`, già risolto. Il lettore dei valori è **uno solo**, `resolveSlotTable`, e girava **già dentro un `.then()`**. La conversione vera è stata molto più piccola del previsto.<br>• E il lettore che nessuno aveva previsto è **il Pannello Admin**, che li raggiunge con `Object.keys(window.APP_CONFIG)` — **sincrono e raggiungibile PRIMA del login** con `?config`. Misurato guidando l'app: `people`×1, `places`×1 sulla schermata di onboarding.<br><br>**④ non è stata una migrazione, ed è meglio così.** Il markdown la descrive come `marco → papa-marco`, ma senza il contenuto nuovo gli id non cambiano: quello che ① rompeva davvero erano gli **override salvati dal Pannello Admin**, che sarebbero diventati inerti in silenzio. Il loader li riapplica sopra il file — **zero perdita, zero codice di migrazione**.<br><br>✅ **VERIFICATO**: suite completa e conteggio (vedi la riga sotto). | ☑ | **sì** |
 | **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** `module-order.js` e `test_config_letta.js` lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero dei 79 punti di chiamata toccati**. Il primo pezzo estratto dev'essere `APP_CONFIG` proprio perché è il bersaglio che quei due devono leggere. *(Qui muore da sola la divergenza `off/seen` del passo 16.)* | ☐ | **sì** |
 | **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
 
@@ -1778,6 +1778,39 @@ mastery: sono la manutenzione degli strumenti con cui la catena si verifica.*
 **tre orfane di Voice Coach** — da guardare insieme alla divisione della pulizia
 in due posti, che è la causa — e il **14b**, il cui conto va **rigenerato** con
 `node tests/tools/conta-attese.js` e non ripreso dal numero di una mattina.
+
+#### ⚠️ LA FAMIGLIA CHE LA FASE 4 PRODUCE DI MESTIERE — trovata al passo 19
+
+> **UN COMMENTO GIUSTO SMETTE DI ESSERE VERO QUANDO CAMBIA IL MONDO INTORNO,
+> NON IL CODICE CHE DESCRIVE.**
+
+Scritta per esteso in `tests/ERRORI-INGOIATI.md` come **famiglia ⓪-quinquies**.
+Qui sta perché **riguarda ogni passo che resta**, non solo quello che l'ha
+trovata.
+
+Il caso: accanto alla seconda strada per aprire il Pannello Admin c'era
+
+> *«by the time a 0ms timeout fires, the whole script has finished running»*
+
+Vero, e ancora vero per `EPISODES`. **Falso per il magazzino dal momento in cui
+è uscito da `APP_CONFIG`** — per una modifica in un altro punto del file, che
+quel commento non nomina e che non nomina quel commento.
+
+```
+setTimeout(…, 0) aspetta «più tardi nello STESSO SCRIPT».
+Non aspetta «più tardi SULLA RETE».
+```
+
+⚠️ **Nessuna delle quattro famiglie precedenti lo trova**, ⓪-quater compresa:
+lì rileggere il commento lo conferma, qui rileggere il commento **insieme al
+suo codice** lo conferma — sono ancora coerenti fra loro. È un terzo file ad
+averli smentiti.
+
+**Cosa cercare a ogni estrazione:** non chi *nomina* il dato che si sposta, ma
+**chi lo aveva per costruzione**. Al passo 19 la ricerca testuale su
+`CONFIG.people` dava **zero occorrenze**, e c'erano due lettori. *Ogni difesa
+che si appoggia a «tanto è già tutto in memoria» è scritta contro un'ipotesi
+che lo spacchettamento esiste per rimuovere.*
 
 ## Le invarianti, valide per tutta la catena
 

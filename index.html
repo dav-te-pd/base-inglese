@@ -583,93 +583,23 @@
         { value: 'natura', label: 'Natura', dot: '#7ec850' }
       ]
     },
-    // ---- predefined character-name tables, one per family role. Each row
-    // is { value, it, en, fr, es, de }: "it" is shown to the user when
-    // picking, "en" is what's actually spoken in the (English) exercise
-    // text. fr/es/de are reserved columns for future languages — leave
-    // them '' until the app supports picking those. Add a row to make a
-    // new name selectable for that role; no other code needs to change. ----
-    // The first row of each table is the default. The rest are here so the
-    // picker has more than one option to test.
-    people: {
-      papa: [
-        { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
-        { value: 'giancarlo', it: 'Giancarlo', en: 'Giancarlo', fr: '', es: '', de: '' },
-        { value: 'francesco', it: 'Francesco', en: 'Francis', fr: '', es: '', de: '' },
-        { value: 'andrea', it: 'Andrea', en: 'Andrew', fr: '', es: '', de: '' },
-        { value: 'luca', it: 'Luca', en: 'Luke', fr: '', es: '', de: '' },
-        { value: 'paolo', it: 'Paolo', en: 'Paul', fr: '', es: '', de: '' },
-        { value: 'stefano', it: 'Stefano', en: 'Steven', fr: '', es: '', de: '' },
-        { value: 'davide', it: 'Davide', en: 'David', fr: '', es: '', de: '' }
-      ],
-      mamma: [
-        { value: 'giulia', it: 'Giulia', en: 'Julia', fr: '', es: '', de: '' },
-        { value: 'anna', it: 'Anna', en: 'Anna', fr: '', es: '', de: '' },
-        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' },
-        { value: 'nicoletta', it: 'Nicoletta', en: 'Nicole', fr: '', es: '', de: '' },
-        { value: 'laura', it: 'Laura', en: 'Laura', fr: '', es: '', de: '' },
-        { value: 'elena', it: 'Elena', en: 'Helen', fr: '', es: '', de: '' },
-        { value: 'silvia', it: 'Silvia', en: 'Sylvia', fr: '', es: '', de: '' },
-        { value: 'francesca', it: 'Francesca', en: 'Frances', fr: '', es: '', de: '' }
-      ],
-      figlia: [
-        { value: 'emma', it: 'Emma', en: 'Emma', fr: '', es: '', de: '' },
-        { value: 'sofia', it: 'Sofia', en: 'Sophia', fr: '', es: '', de: '' },
-        { value: 'alice', it: 'Alice', en: 'Alice', fr: '', es: '', de: '' },
-        { value: 'giorgia', it: 'Giorgia', en: 'Georgia', fr: '', es: '', de: '' },
-        { value: 'martina', it: 'Martina', en: 'Martina', fr: '', es: '', de: '' },
-        { value: 'sara', it: 'Sara', en: 'Sarah', fr: '', es: '', de: '' },
-        { value: 'chiara', it: 'Chiara', en: 'Clare', fr: '', es: '', de: '' },
-        { value: 'beatrice', it: 'Beatrice', en: 'Beatrice', fr: '', es: '', de: '' }
-      ],
-      figlio: [
-        { value: 'tommaso', it: 'Tommaso', en: 'Thomas', fr: '', es: '', de: '' },
-        { value: 'leo', it: 'Leo', en: 'Leo', fr: '', es: '', de: '' },
-        { value: 'marco', it: 'Marco', en: 'Mark', fr: '', es: '', de: '' },
-        { value: 'giorgio', it: 'Giorgio', en: 'George', fr: '', es: '', de: '' },
-        { value: 'matteo', it: 'Matteo', en: 'Matthew', fr: '', es: '', de: '' },
-        { value: 'lorenzo', it: 'Lorenzo', en: 'Lawrence', fr: '', es: '', de: '' },
-        { value: 'simone', it: 'Simone', en: 'Simon', fr: '', es: '', de: '' },
-        { value: 'filippo', it: 'Filippo', en: 'Philip', fr: '', es: '', de: '' }
-      ],
-      // Il cognome non ha una forma inglese: la colonna en e' identica per
-      // costruzione, non per svista (docs/inglese/it/inglese-it-gate.md). Sta qui e non nel
-      // file episodio perche' e' una tabella di personalizzazione, condivisa
-      // fra episodi e lingue (CLAUDE.md regola 4).
-      cognome: [
-        { value: 'rossi', it: 'Rossi', en: 'Rossi', fr: '', es: '', de: '' },
-        { value: 'bianchi', it: 'Bianchi', en: 'Bianchi', fr: '', es: '', de: '' },
-        { value: 'ferrari', it: 'Ferrari', en: 'Ferrari', fr: '', es: '', de: '' },
-        { value: 'russo', it: 'Russo', en: 'Russo', fr: '', es: '', de: '' },
-        { value: 'costa', it: 'Costa', en: 'Costa', fr: '', es: '', de: '' },
-        { value: 'marino', it: 'Marino', en: 'Marino', fr: '', es: '', de: '' },
-        { value: 'barberis', it: 'Barberis', en: 'Barberis', fr: '', es: '', de: '' },
-        { value: 'ambruosi', it: 'Ambruosi', en: 'Ambruosi', fr: '', es: '', de: '' }
-      ]
-    },
-    // ---- predefined place tables: same { value, it, en, fr, es, de }
-    // shape as people. Add a row here to make a new place selectable. ----
-    places: {
-      departures: [
-        { value: 'mondovi', it: 'Mondovì', en: 'Mondovì', fr: '', es: '', de: '' },
-        { value: 'torino', it: 'Torino', en: 'Turin', fr: '', es: '', de: '' },
-        { value: 'milano', it: 'Milano', en: 'Milan', fr: '', es: '', de: '' }
-      ],
-      // Criterio di ammissione delle destinazioni: solo paesi che in
-      // italiano vogliono la preposizione "in" (docs/inglese/it/inglese-it-gate.md, nota 9).
-      // "We are going to {{destinazione}}" si traduce "Andiamo in ...", e una
-      // riga della tabella non puo' portarsi dietro una preposizione propria
-      // senza complicare il testo: "negli Stati Uniti" non entra, e per
-      // questo gli Stati Uniti non ci sono.
-      destinations: [
-        { value: 'cina', it: 'Cina', en: 'China', fr: '', es: '', de: '' },
-        { value: 'giappone', it: 'Giappone', en: 'Japan', fr: '', es: '', de: '' },
-        { value: 'spagna', it: 'Spagna', en: 'Spain', fr: '', es: '', de: '' },
-        { value: 'francia', it: 'Francia', en: 'France', fr: '', es: '', de: '' },
-        { value: 'germania', it: 'Germania', en: 'Germany', fr: '', es: '', de: '' },
-        { value: 'irlanda', it: 'Irlanda', en: 'Ireland', fr: '', es: '', de: '' }
-      ]
-    },
+    // ---- I NOMI E I LUOGHI NON STANNO PIU' QUI ----
+    //
+    // Le tabelle di personalizzazione (people, places) sono uscite da
+    // APP_CONFIG il 2026-09-15 e vivono in
+    // data/inglese/it/tabelle-personalizzazione.json, raggiunto dalla
+    // costante PERSONALIZATION_TABLES_FILE. Sono CONTENUTO dell'edizione,
+    // non parametri: un'edizione tedesca vuole nomi tedeschi, e un nome
+    // proprio plausibile e' quello di chi studia (CLAUDE.md regola 4).
+    //
+    // Il commento resta al PASSATO ed e' voluto: dice dove sono andate, non
+    // finge che ci siano ancora. Chi cerca "people:" qui deve trovare questa
+    // riga, non il silenzio.
+    //
+    // ⚠️ CHI LE LEGGE DEVE ASPETTARLE. Erano in memoria per costruzione, ora
+    // arrivano da un fetch: resolveSlotTable vuole il magazzino come terzo
+    // argomento, e ensureEpisodeSlotFields lo aspetta insieme al file
+    // dell'episodio. Il Pannello Admin pure — vedi openConfigPanel.
 
     // Age choices (figlia/figlio) used to live here as a shared CONFIG.ages
     // table; they're episode-specific now (a story's plausible age range
@@ -5121,13 +5051,33 @@
       '<div class="config-audio-usage-row config-audio-usage-total"><span>ripensamenti in tutto</span><span>' + tot.cambi + '</span></div>';
   }
 
+  // ⚠️ IL PANNELLO SI APRE SUBITO E I DUE GRUPPI ARRIVANO DOPO, e non e' una
+  // scorciatoia: e' l'unica forma onesta.
+  //
+  // Tutto il resto di questo pannello e' in memoria, quindi farlo aspettare il
+  // magazzino vorrebbe dire non mostrare NIENTE finche' un fetch non torna —
+  // e questo pannello si apre anche dalla schermata di onboarding, cioe'
+  // davanti a una pagina ancora vuota. Quindi: si disegna subito quello che
+  // c'e', e appena il magazzino arriva si ridisegna con i due gruppi in piu'.
+  //
+  // Se il magazzino non arriva affatto, il pannello resta senza quei due
+  // gruppi invece di restare chiuso: e' uno strumento di servizio, non una
+  // schermata dello studente, e un guasto qui non deve impedire di leggere
+  // tutti gli altri parametri (per questo il .catch e' vuoto ED E' LEGITTIMO
+  // — registrato in tests/ERRORI-INGOIATI.md).
   function openConfigPanel() {
-    renderConfigPanel();
+    renderConfigPanel(null);
     renderAudioUsagePanel();
     renderNextLineSkipsPanel();
     renderStoryCardsExplanationStatsPanel();
     renderMasteryPanel();
     configPanelOverlayEl.classList.add('is-open');
+    loadPersonalizationTables().then(function (tables) {
+      // Solo se il pannello e' ancora aperto: un ridisegno su un pannello
+      // chiuso rimetterebbe in piedi lo stato aperto/chiuso dei <details>
+      // che l'utente aveva in mano.
+      if (configPanelOverlayEl.classList.contains('is-open')) renderConfigPanel(tables);
+    }).catch(function () {});
   }
   function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
 
@@ -5142,6 +5092,21 @@
   // -> renderConfigPanel reads EPISODES, which this script assigns later
   // (further down, top-to-bottom) — by the time a 0ms timeout fires, the
   // whole script has finished running and EPISODES exists.
+  //
+  // ⚠️ E QUESTO RAGIONAMENTO VALE PER EPISODES E NON VALEVA PIU' PER IL
+  // MAGAZZINO, che dal 2026-09-15 arriva da un fetch.
+  //
+  //   setTimeout(…, 0) aspetta "piu' tardi nello stesso script".
+  //   Non aspetta "piu' tardi sulla rete".
+  //
+  // Era un commento giusto reso falso non da una modifica al codice che
+  // descrive, ma dal MONDO INTORNO che e' cambiato: nessuno lo stava
+  // toccando quando ha smesso di essere vero. E' la famiglia ⓪-quinquies di
+  // tests/ERRORI-INGOIATI.md, e riguarda ogni difesa che si appoggia a
+  // "tanto e' gia' tutto in memoria".
+  //
+  // La riga qui sotto resta com'e' perche' EPISODES e' ancora sincrono; a
+  // reggere il magazzino e' openConfigPanel, che lo aspetta per conto suo.
   try {
     if (new URLSearchParams(window.location.search).has('config')) {
       setTimeout(openConfigPanel, 0);
@@ -5421,8 +5386,27 @@
     renderModuleOrderRows(list);
   });
 
-  function renderConfigPanel() {
+  // Il magazzino non sta piu' in APP_CONFIG, quindi l'enumerazione qui sotto
+  // non lo vede piu': va passato a parte. Senza questo, i due gruppi
+  // sparirebbero dal pannello e con loro la possibilita' di modificarli —
+  // una funzione tolta di straforo da uno spostamento di dati (regola 1).
+  function renderConfigPanel(tables) {
     configPanelBodyEl.innerHTML = '';
+    // Il pannello e' un editor SU window.APP_CONFIG: setConfigPath ci scrive
+    // dentro e persistConfigSection rilegge da li' per salvare. Invece di
+    // insegnare a tutte e due una seconda strada, il magazzino appena caricato
+    // viene ATTACCATO li' come copia di lavoro — cosi' la modifica e il
+    // salvataggio restano identici a prima, riga per riga.
+    //
+    // ⚠️ E QUELLA COPIA NON E' LA FONTE: chi legge i valori davvero
+    // (resolveSlotTable) prende quello che torna da loadPersonalizationTables,
+    // mai questo. Serve solo a dare al pannello qualcosa su cui scrivere.
+    // Il giro si chiude in localStorage: il pannello salva l'override, e il
+    // loader lo riapplica sopra il file al caricamento dopo.
+    if (tables) {
+      window.APP_CONFIG.people = tables.people;
+      window.APP_CONFIG.places = tables.places;
+    }
     Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
       // Meta-documentation about the panel's own fields, not itself a
       // tunable parameter — never shown as its own editable group.
@@ -5498,7 +5482,53 @@
   // uno spostamento di cartelle poteva rompere in silenzio: non compariva in
   // nessun elenco di percorsi, stava in mezzo a una funzione.
   var FEEDBACK_MESSAGES_FILE = 'data/inglese/it/messaggi-feedback.json';
+  // Le tabelle di personalizzazione condivise (nomi, citta', paesi). Uscite da
+  // APP_CONFIG il 2026-09-15: sono contenuto dell'edizione (CLAUDE.md regola 4),
+  // e un'edizione tedesca ne vuole di suoi.
+  //
+  // ⚠️ IL CONTENUTO E' QUELLO DI PRIMA, NON QUELLO DEL MAGAZZINO. Il file
+  // porta le stesse sei destinazioni e gli stessi id di quando stava qui: e'
+  // una conversione pura. Il contenuto vero di
+  // docs/inglese/it/tabelle-personalizzazione.md (undici destinazioni, id
+  // "dest-cina", traducibilita' dichiarata per riga) arriva col passo che
+  // porta anche il secondo campo per riga e le eta' in lettere. La differenza
+  // e' scritta dentro il JSON, sotto "_nota".
+  var PERSONALIZATION_TABLES_FILE = 'data/inglese/it/tabelle-personalizzazione.json';
   var moduleInstructionsCache = null;
+  var personalizationTablesPromise = null;
+
+  // Stesso schema dei tre loader vicini, con UNA cosa in piu': gli override
+  // salvati dal Pannello Admin si applicano SOPRA il file.
+  //
+  // Perche' non e' un dettaglio: finche' le tabelle stavano in APP_CONFIG,
+  // applyConfigOverrides (l'IIFE in cima, generico su tutte le chiavi) le
+  // sovrascriveva da solo. Portandole via, quell'override resterebbe scritto
+  // in localStorage e non lo leggerebbe piu' nessuno — chi ha personalizzato
+  // il magazzino perderebbe tutto SENZA UN MESSAGGIO E SENZA UN ROSSO. Non
+  // serviva migrare niente: bastava continuare a leggerlo, qui.
+  function loadPersonalizationTables() {
+    if (personalizationTablesPromise) return personalizationTablesPromise;
+    personalizationTablesPromise = fetch(PERSONALIZATION_TABLES_FILE)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        // Come gli altri loader: il rifiuto arriva a chi ha chiamato, che
+        // manda alla schermata d'errore. Un magazzino che non arriva non si
+        // rimpiazza con uno vuoto — gli slot uscirebbero senza opzioni e la
+        // personalizzazione sembrerebbe funzionare a vuoto.
+        personalizationTablesPromise = null;
+        throw new Error('no personalization tables available');
+      })
+      .then(function (data) {
+        var tabelle = { people: data.people || {}, places: data.places || {} };
+        var overrides = {};
+        try { overrides = JSON.parse(localStorage.getItem(CONFIG_OVERRIDES_KEY) || '{}'); } catch (e) {}
+        ['people', 'places'].forEach(function (k) {
+          if (overrides[k]) tabelle[k] = overrides[k];
+        });
+        return tabelle;
+      });
+    return personalizationTablesPromise;
+  }
 
   function loadModuleInstructions() {
     if (moduleInstructionsCache) return Promise.resolve(moduleInstructionsCache);
@@ -6296,9 +6326,14 @@
   // prefixed "episode.", a table declared inside this same episode's own
   // data file instead (values that only make sense for this one story,
   // like a plausible age range — never shared with other episodes).
-  function resolveSlotTable(tableRef, episodeData) {
+  function resolveSlotTable(tableRef, episodeData, tables) {
     var isEpisodeLocal = tableRef.indexOf('episode.') === 0;
-    var root = isEpisodeLocal ? episodeData : CONFIG;
+    // La radice condivisa non e' piu' CONFIG: e' il magazzino che arriva da
+    // PERSONALIZATION_TABLES_FILE, quindi questa funzione ha bisogno che
+    // qualcuno l'abbia gia' aspettato (ensureEpisodeSlotFields lo fa).
+    // Il ramo "episode." non cambia: quei valori stanno nel file dell'episodio
+    // e non hanno mai avuto niente a che fare con APP_CONFIG.
+    var root = isEpisodeLocal ? episodeData : tables;
     var path = (isEpisodeLocal ? tableRef.slice('episode.'.length) : tableRef).split('.');
     var val = root;
     for (var i = 0; i < path.length && val; i++) { val = val[path[i]]; }
@@ -6311,13 +6346,13 @@
   // (renderSlotGrid, the Request Box, fillTemplate's slot lookups, …) needs
   // to know this now comes from the episode's data file instead of being
   // hardcoded per episode here.
-  function buildSlotFields(episodeData) {
+  function buildSlotFields(episodeData, tables) {
     return (episodeData.personalizationTablesUsed || []).map(function (slot) {
       return {
         key: slot.key,
         label: slot.label,
         type: slot.type,
-        options: resolveSlotTable(slot.table, episodeData),
+        options: resolveSlotTable(slot.table, episodeData, tables),
         def: slot.default,
         group: slot.group,
         narrow: slot.narrow,
@@ -6340,8 +6375,15 @@
   function ensureEpisodeSlotFields(episode) {
     if (episode.slotFields) return Promise.resolve(episode.slotFields);
     if (!episodeSlotFieldsPromises[episode.id]) {
-      episodeSlotFieldsPromises[episode.id] = loadEpisodeData(episode).then(function (data) {
-        episode.slotFields = buildSlotFields(data);
+      // Due fetch, non uno, e in parallelo: il file dell'episodio dice QUALI
+      // slot servono, il magazzino dice COSA c'e' dentro ciascuno. Prima il
+      // secondo era in memoria per costruzione (stava in APP_CONFIG), quindi
+      // qui bastava aspettare il primo.
+      episodeSlotFieldsPromises[episode.id] = Promise.all([
+        loadEpisodeData(episode),
+        loadPersonalizationTables()
+      ]).then(function (r) {
+        episode.slotFields = buildSlotFields(r[0], r[1]);
         return episode.slotFields;
       }).catch(function (e) {
         // Qui si memorizza una PROMISE, non un dato: senza questa riga una

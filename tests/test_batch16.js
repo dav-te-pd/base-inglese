@@ -1,4 +1,5 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 const { attendiCheParla, attendiClasse, attendiTono } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
@@ -134,16 +135,23 @@ async function run() {
     // goto torna. Misurato campionando ogni 5 ms: fra «contesto non ancora
     // esistente» e «tutto pronto» non c'e' nessuno stato intermedio
     // osservabile. Qui c'erano 200 ms che non guardavano niente.
-    const check = await page.evaluate(() => {
-      var cfg = window.APP_CONFIG;
-      var papaOpt = cfg.people.papa.find(function (o) { return o.value === 'francesco'; });
-      var torinoOpt = cfg.places.partenza && cfg.places.partenza.find(function (o) { return o.en && o.it !== o.en; });
-      return {
-        papaHasDifferentEn: papaOpt && papaOpt.it !== papaOpt.en,
-        placesTableExists: !!cfg.places && !!cfg.places.partenza
-      };
-    });
-    log('[Job1b] CONFIG.people.papa.francesco really has a different EN value (regression bait present)', check.papaHasDifferentEn === true);
+    // ⚠️ IL MAGAZZINO NON STA PIU' IN APP_CONFIG (2026-09-15): arriva da
+    // PERSONALIZATION_TABLES_FILE, quindi l'esca si legge dal FILE e non
+    // dalla pagina. Leggerla da `window.APP_CONFIG.people` darebbe undefined
+    // — cioe' un rosso che parla del posto sbagliato.
+    const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/tabelle-personalizzazione.json'), 'utf8'));
+    const papaOpt = magazzino.people.papa.find(function (o) { return o.value === 'francesco'; });
+    // ⚠️ E QUI C'ERANO DUE RIGHE MORTE, tolte il 2026-09-15.
+    //
+    // Cercavano `cfg.places.partenza`. La tabella si chiama `departures`:
+    // `partenza` e' il nome dello SLOT che la usa (inglese-it-gate.json), non
+    // della tabella. Quindi `torinoOpt` era sempre undefined — CALCOLATO E MAI
+    // USATO — e `placesTableExists` sempre false, CALCOLATO E MAI ASSERITO.
+    // Nessuna asserzione cadeva, quindi nessuno se n'e' accorto: e' la
+    // famiglia della misura che non misura (CLAUDE.md regola 37) dentro un
+    // test. Se un giorno serve un'asserzione sui luoghi, il nome giusto e'
+    // `magazzino.places.departures`.
+    log('[Job1b] people.papa.francesco really has a different EN value (regression bait present)', papaOpt && papaOpt.it !== papaOpt.en);
     log('[Job1b] No JS errors', errors.length === 0);
     await page.close();
   }

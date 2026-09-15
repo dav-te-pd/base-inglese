@@ -2,12 +2,21 @@
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 >
-> ⚠️ **NON ANCORA TRASCRIVIBILE.** Questo file descrive il magazzino **come sarà**. Oggi le
-> tabelle vivono in `APP_CONFIG.people` e `APP_CONFIG.places`, e parte del disegno qui sotto
-> **non è rappresentabile nel codice attuale** — vedi *Cosa manca* in fondo, che è **un lavoro
-> solo e non si può spezzare**. Il file serve a decidere adesso e ad avere la fonte pronta;
-> **la trascrizione in `data/it/tabelle-personalizzazione.json` viene dopo quel lavoro**, che va
-> valutato prima (regola 1.10).
+> ⚠️ **NON ANCORA TRASCRIVIBILE.** Questo file descrive il magazzino **come sarà**, e parte del
+> disegno qui sotto **non è ancora rappresentabile nel codice** — vedi *Cosa manca* in fondo.
+> Il file serve a decidere adesso e ad avere la fonte pronta.
+>
+> **AGGIORNAMENTO 2026-09-15 — il punto ① di *Cosa manca* è fatto, gli altri no.** Le tabelle
+> **non vivono più in `APP_CONFIG`**: sono in `data/inglese/it/tabelle-personalizzazione.json`,
+> caricate da un fetch. *Ma ci sono andate **con il contenuto di prima**, non con questo* — sei
+> destinazioni invece di undici, id `marco` invece di `papa-marco`, traducibilità dedotta dalla
+> tabella invece che dichiarata per riga. Era una **conversione pura**: se fosse arrivato anche
+> il contenuto nuovo, un rosso avrebbe avuto due sospettati invece di uno.
+>
+> **Quindi questo file resta la fonte e resta davanti al codice.** Quello che manca sono ② ③ ⑤,
+> e la loro ragione di stare insieme **non è più** «servirebbe una colonna in `APP_CONFIG`» —
+> quel vincolo l'ha sciolto ① — ma che **③ cambia cosa Voice Practice si aspetta di sentire**, e
+> vuole un test suo.
 >
 > **Cos'è.** Il **magazzino** dei valori di personalizzazione. Contiene più di quello che si
 > usa: un episodio **elenca gli id che vuole**, uno per uno, e solo quelli compaiono
@@ -274,12 +283,21 @@ scriverlo qui evita che fra un mese qualcuno tenti la strada corta.*
 
 ### Cosa comprende
 
-**① Il magazzino esce da `APP_CONFIG` e va in `data/it/tabelle-personalizzazione.json`.**
+**① Il magazzino esce da `APP_CONFIG` e va in `data/inglese/it/tabelle-personalizzazione.json`.**
 
 **È più piccolo di quanto sembri: il magazzino è già dietro un punto unico** (1.240).
-`CONFIG.people` e `CONFIG.places` hanno **zero occorrenze** nel codice — nessuno li raggiunge
-per nome, passano tutti da `resolveSlotTable`. *Gli slot sono ovunque, le tabelle passano da
-una funzione sola.*
+`CONFIG.people` e `CONFIG.places` hanno **zero occorrenze TESTUALI** nel codice: nessuno li
+scrive per nome, i valori passano tutti da `resolveSlotTable`. *Gli slot sono ovunque, le
+tabelle passano da una funzione sola.*
+
+> ⚠️ **Zero occorrenze non vuol dire zero lettori, e la riga qui sopra diceva l'una per
+> l'altra.** Misurato il 2026-09-15 **guidando l'app**, non contando le stringhe: il **Pannello
+> Admin** li raggiunge con `Object.keys(window.APP_CONFIG)` e `applyConfigOverrides` (l'IIFE in
+> cima a `index.html`) li scrive per chiave. Nessuno dei due li nomina, tutti e due li toccano —
+> e il primo lo fa **in modo sincrono e prima del login**, con `?config`.
+>
+> *Il conteggio era esatto: era il conteggio di un'altra domanda. Chi si fidasse della frase
+> vecchia salterebbe l'unico lettore sincrono che esiste.*
 
 | Dove | Cosa cambia |
 |---|---|

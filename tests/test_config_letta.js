@@ -129,12 +129,29 @@ async function run() {
   await browser.close();
 
   const regione = regioneDiRicerca();
-  const tutti = percorsiFoglia(config);
+  // ⚠️ IL MAGAZZINO NON STA PIU' IN APP_CONFIG, e senza questa riga il test
+  // SMETTEREBBE DI GUARDARLO RESTANDO VERDE.
+  //
+  // E' il difetto peggiore che questo file possa avere: l'inventario nasce da
+  // `window.APP_CONFIG`, quindi il 2026-09-15, quando `people` e `places` sono
+  // usciti, le loro foglie (papa, mamma, departures, destinations) sono
+  // semplicemente sparite dall'elenco. Nessun rosso, nessun avviso: il test
+  // avrebbe continuato a dire «ogni chiave e' nominata da qualcuno» su un
+  // insieme piu' piccolo di prima. Un test che perde meta' di quello che
+  // controllava e resta verde e' peggio di un test che non c'e'.
+  //
+  // Il magazzino si aggiunge quindi all'inventario, letto dal file. `_nota`
+  // resta fuori: e' la spiegazione del file per chi lo apre, non un parametro
+  // — stesso ruolo che configFieldDescriptions ha dentro APP_CONFIG.
+  const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/tabelle-personalizzazione.json'), 'utf8'));
+  const tutti = percorsiFoglia(config).concat(
+    percorsiFoglia({ people: magazzino.people, places: magazzino.places })
+  );
   // configFieldDescriptions non è un parametro: è documentazione dei
   // parametri, e il pannello la salta già (renderConfigPanel).
   const daControllare = tutti.filter(function (p) { return p[0] !== 'configFieldDescriptions'; });
 
-  console.log('Chiavi foglia in APP_CONFIG: ' + tutti.length +
+  console.log('Chiavi foglia in APP_CONFIG + magazzino: ' + tutti.length +
     ' (' + daControllare.length + ' controllate, ' +
     (tutti.length - daControllare.length) + ' di configFieldDescriptions)');
   console.log('Regione di ricerca: index.html' +
@@ -159,6 +176,14 @@ async function run() {
 
   log('Ogni chiave di APP_CONFIG è nominata da qualcuno (o è un\'eccezione dichiarata)',
     nonPreviste.length === 0);
+
+  // La copertura del magazzino si dichiara, invece di darla per scontata:
+  // se un giorno il file cambia forma e le due radici non ci sono piu', qui
+  // si vede — mentre l'asserzione qui sopra resterebbe verde su un inventario
+  // dimagrito, che e' esattamente il difetto da cui nasce questa riga.
+  const foglieMagazzino = percorsiFoglia({ people: magazzino.people, places: magazzino.places }).length;
+  log('Il magazzino della personalizzazione è dentro l\'inventario (' + foglieMagazzino + ' tabelle)',
+    foglieMagazzino >= 7);
 
   // Un'eccezione che ha smesso di essere tale va tolta: altrimenti la lista
   // cresce e nessuno la ripulisce più.
