@@ -149,6 +149,87 @@ async function run() {
   log('[5] Nessun errore JS su Personalizza', errori2.length === 0, errori2.join(' | '));
   await pagina2.close();
 
+  // ---------------------------------------------------------------
+  // ⑦ GIRO B: l'intro condivisa. Le due frasi erano ricopiate DIECI volte
+  //   nel markup, e adesso sono due chiavi sole. Qui si verifica la cosa che
+  //   il giro B ha aggiunto e che il giro A non aveva: **l'attesa copre
+  //   TUTTO quello che la schermata mostra**, non solo il corpo — il
+  //   pulsante resta spento finche' non c'e', invece di restare muto.
+  //
+  //   ⚠️ E si guida la MAPPA di proposito, che e' il caso in cui il JSON
+  //   NON e' gia' caricato: ci si arriva dalla home, non da
+  //   openModuleFromMap. Sui moduli il giro A ha gia' reso la cache calda,
+  //   quindi li' questa riga proverebbe molto meno.
+  // ---------------------------------------------------------------
+  const pagina3 = await browser.newPage();
+  await bloccaFontEsterni(pagina3);
+  const errori3 = [];
+  pagina3.on('pageerror', e => errori3.push(String(e).slice(0, 200)));
+  await pagina3.addInitScript(mockInit);
+  await pagina3.goto(APP_URL);
+  await pagina3.fill('#name-input', UTENTE + '3');
+  await pagina3.click('#onboarding-form button[type=submit]');
+  await pagina3.waitForSelector('#view-home.is-active', { timeout: 10000 });
+
+  // La home NON e' del giro B: deve avere ancora le sue etichette nel markup.
+  const testoHome = await pagina3.evaluate(() => document.getElementById('view-home').innerText);
+  log('[7] La home tiene le sue etichette (e\' la prima cosa che vede chi torna)',
+    testoHome.indexOf('Inizia') !== -1 && testoHome.indexOf('Scegli il tema') !== -1,
+    JSON.stringify(testoHome.slice(0, 50)));
+
+  // ⚠️ LA RETE SI RALLENTA DI PROPOSITO, e questa riga e' la correzione.
+  //
+  // La prima versione di questo blocco apriva la mappa e guardava subito.
+  // MISURATO: il fetch del JSON parte all'apertura della mappa e ha gia'
+  // risolto al primo istante in cui Playwright riesce a leggere qualcosa —
+  // quindi le asserzioni erano VERE PER COSTRUZIONE (regola 44), e il test
+  // restava 19/19 anche togliendo il `disabled` dal codice. Se ne e'
+  // accorto solo il guasto iniettato (regola 32), non la rilettura.
+  //
+  // Una finestra che si chiude piu' in fretta di un round-trip non si
+  // osserva correndole contro: si RIPRODUCE. Quattrocento millisecondi sono
+  // la rete di uno studente vero, non un numero di comodo — e dentro quella
+  // finestra la garanzia del giro B o c'e' o non c'e'.
+  await pagina3.route('**/istruzioni-moduli.json', async function (route) {
+    await new Promise(function (r) { setTimeout(r, 400); });
+    await route.continue();
+  });
+  await pagina3.click('#go-episode');
+  await pagina3.waitForSelector('#view-map.is-active', { timeout: 10000 });
+
+  // DENTRO la finestra: il pulsante e' spento e muto, e il corpo lo dice.
+  const durante = await pagina3.evaluate(() => {
+    const b = document.getElementById('map-intro-start-btn');
+    return {
+      spento: b.disabled,
+      testo: b.textContent,
+      corpo: document.getElementById('map-intro-body').innerText
+    };
+  });
+  log('[7] DURANTE l\'attesa il pulsante e\' SPENTO, non muto',
+    durante.spento === true, JSON.stringify(durante));
+  log('[7] ...e il corpo dice che sta caricando',
+    durante.corpo.indexOf('Caricamento') !== -1, JSON.stringify(durante.corpo.slice(0, 40)));
+
+  // e quando arriva, tutto si riempie insieme
+  await pagina3.waitForFunction(() => {
+    const b = document.getElementById('map-intro-start-btn');
+    return b && !b.disabled;
+  }, null, { timeout: 15000 });
+  const intro = await pagina3.evaluate(() => ({
+    bottone: document.getElementById('map-intro-start-btn').textContent,
+    casella: document.getElementById('map-intro-dont-show-text').textContent,
+    corpo: document.getElementById('map-intro-body').innerText
+  }));
+  log('[7] Il pulsante dell\'intro prende l\'etichetta dal JSON',
+    intro.bottone === J.condivisi.introStart, JSON.stringify(intro.bottone));
+  log('[7] La casella «non mostrarmi piu\'» viene dal JSON',
+    intro.casella === J.condivisi.introDontShowAgain, JSON.stringify(intro.casella));
+  log('[7] E quando il pulsante si accende il corpo non e\' piu\' «Caricamento...»',
+    intro.corpo.indexOf('Caricamento') === -1, JSON.stringify(intro.corpo.slice(0, 40)));
+  log('[7] Nessun errore JS sulla mappa', errori3.length === 0, errori3.join(' | '));
+  await pagina3.close();
+
   log('[Z] Nessun errore JS', errori.length === 0, errori.join(' | '));
   await browser.close();
   console.log('\n=== TESTI INTERFACCIA SUMMARY: ' + ok + '/' + (ok + ko) + ' passed ===');

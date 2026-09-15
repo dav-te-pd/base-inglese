@@ -293,5 +293,11 @@
         "actionLabel": "Torna alla mappa"
       }
     }
+  },
+  "condivisi": {
+    "introDontShowAgain": "Non mostrarmi più questa schermata",
+    "introStart": "Ho capito, inizia",
+    "readyTitle": "Pronto?",
+    "readyStart": "Pronto? Via!"
   }
 }

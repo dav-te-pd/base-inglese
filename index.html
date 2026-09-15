@@ -3408,6 +3408,25 @@
     </section>
 
     <!-- ============ VIEW: HOME ============ -->
+    <!-- ============ VIEW: HOME ============
+         ⚠️ ANCHE I TESTI DI QUESTA SCHERMATA RESTANO NEL MARKUP, DI
+         PROPOSITO — stessa categoria dell'onboarding qui sotto, e per la
+         stessa frase:
+
+           UNA COSA CHE DEVE FUNZIONARE QUANDO NIENTE FUNZIONA NON PUO'
+           DIPENDERE DA UN FILE.
+
+         Perche' non si vede leggendo il codice, e va detto: `boot()` manda a
+         `goHome()` CHIUNQUE abbia gia' un nome salvato. Quindi questa non e'
+         "la seconda schermata" — e' **la prima cosa che vede uno studente
+         che torna**, a freddo, a OGNI avvio successivo al primo. Cioe' quasi
+         sempre. Misurato il 2026-09-15 avviando l'app due volte, non
+         leggendola.
+
+         E fra questi testi c'e' «Inizia», il pulsante da cui parte tutto:
+         **un pulsante senza etichetta non e' un testo mancante, e' un'app
+         che non si puo' usare.**
+         ============================================================ -->
     <section id="view-home" class="view">
       <div class="card">
         <div class="card-body">
@@ -3452,9 +3471,9 @@
             <div class="overlay-text panel" id="customize-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="customize-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="customize-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="customize-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="customize-intro-start-btn"></button>
           </div>
 
           <!-- WARNING SCREEN: shown instead of MAIN when the user has
@@ -3531,9 +3550,9 @@
             <div class="overlay-text panel" id="map-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="map-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="map-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="map-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="map-intro-start-btn"></button>
           </div>
 
           <!-- MAIN SCREEN -->
@@ -3576,9 +3595,9 @@
             <div class="overlay-text panel" id="repeat-aloud-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="repeat-aloud-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="repeat-aloud-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-intro-start-btn"></button>
           </div>
 
           <!-- MAIN SCREEN -->
@@ -3627,9 +3646,9 @@
             <div class="overlay-text panel" id="story-cards-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="story-cards-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="story-cards-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="story-cards-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="story-cards-intro-start-btn"></button>
           </div>
 
           <!-- MAIN SCREEN -->
@@ -3695,9 +3714,9 @@
             <div class="overlay-text panel" id="voice-coach-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="voice-coach-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="voice-coach-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="voice-coach-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="voice-coach-intro-start-btn"></button>
           </div>
 
           <!-- MAIN SCREEN -->
@@ -3849,9 +3868,9 @@
             <div class="overlay-text panel" id="qm-start-body">Caricamento...</div>
             <label class="ra-intro-checkbox" id="qm-start-checkbox-row">
               <input type="checkbox" id="qm-start-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="qm-start-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="qm-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="qm-start-btn"></button>
           </div>
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
@@ -3927,9 +3946,9 @@
             <div class="overlay-text panel" id="dg-start-body">Caricamento...</div>
             <label class="ra-intro-checkbox" id="dg-start-checkbox-row">
               <input type="checkbox" id="dg-start-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="dg-start-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="dg-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="dg-start-btn"></button>
           </div>
 
           <!-- READY SCREEN: Dialogo Continuo only (profile.readyCountdown)
@@ -4017,9 +4036,9 @@
             <div class="overlay-text panel" id="sr-start-body">Caricamento...</div>
             <label class="ra-intro-checkbox" id="sr-start-checkbox-row">
               <input type="checkbox" id="sr-start-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="sr-start-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="sr-ready-btn">Pronto? Via!</button>
+            <button type="button" class="btn btn-primary btn-block" id="sr-ready-btn"></button>
           </div>
 
           <!-- COUNTDOWN SCREEN -->
@@ -4095,9 +4114,9 @@
             <div class="overlay-text panel" id="fc-intro-body"></div>
             <label class="ra-intro-checkbox">
               <input type="checkbox" id="fc-intro-dont-show-again">
-              <span>Non mostrarmi più questa schermata</span>
+              <span id="fc-intro-dont-show-text"></span>
             </label>
-            <button type="button" class="btn btn-primary btn-block" id="fc-intro-start-btn">Ho capito, inizia</button>
+            <button type="button" class="btn btn-primary btn-block" id="fc-intro-start-btn"></button>
           </div>
 
           <header class="app-header" id="fc-meta-header">
@@ -4263,7 +4282,7 @@
              its one persistent preference, not a second flag. -->
         <label class="ra-intro-checkbox" id="howitworks-overlay-checkbox-row" hidden>
           <input type="checkbox" id="howitworks-overlay-dont-show-again">
-          <span>Non mostrarmi più questa schermata</span>
+          <span id="howitworks-overlay-dont-show-text"></span>
         </label>
         <div class="overlay-actions">
           <button type="button" class="btn btn-primary" id="howitworks-overlay-close-btn">Chiudi</button>
@@ -4923,6 +4942,11 @@
 
     var checkboxRow = document.getElementById('howitworks-overlay-checkbox-row');
     var checkbox = document.getElementById('howitworks-overlay-dont-show-again');
+    // La stessa etichetta condivisa delle nove schermate di intro: qui la
+    // cache e' gia' calda (l'overlay si apre da dentro un modulo), quindi si
+    // legge con uiText invece di aspettare il .then come fa il corpo.
+    document.getElementById('howitworks-overlay-dont-show-text').textContent =
+      uiText('condivisi.introDontShowAgain');
     if (options.dismissPref) {
       checkboxRow.hidden = false;
       checkbox.checked = options.dismissPref.get();
@@ -6771,7 +6795,7 @@
       customizeShowMainOrWarning();
     } else {
       document.getElementById('customize-intro-dont-show-again').checked = false;
-      renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body', personalizzazioneModule().label);
+      renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body', personalizzazioneModule().label, 'customize-intro-start-btn', 'customize-intro-dont-show-text');
       customizeShowScreen('intro');
     }
     ensureEpisodeSlotFields(currentEpisode).then(function () {
@@ -6869,7 +6893,7 @@
       mapShowScreen('main');
     } else {
       document.getElementById('map-intro-dont-show-again').checked = false;
-      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body', MAP_PSEUDO_MODULE.label);
+      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body', MAP_PSEUDO_MODULE.label, 'map-intro-start-btn', 'map-intro-dont-show-text');
       mapShowScreen('intro');
     }
   }
@@ -7310,18 +7334,46 @@
   // name (row 2, shown immediately — the JSON's own title, once loaded,
   // is preferred if it differs, but every caller's own label is already
   // correct so this only ever matters as the pre-load placeholder).
-  function renderIntroContent(kind, titleElId, bodyElId, moduleLabel) {
+  // ⚠️ L'ATTESA COPRE TUTTO QUELLO CHE LA SCHERMATA MOSTRA, non solo il corpo.
+  //
+  // Fino al passo 18 questa funzione scriveva "Caricamento..." nel corpo e
+  // basta: la casella "Non mostrarmi più questa schermata" e il pulsante
+  // "Ho capito, inizia" erano markup statico accanto, quindi si vedevano
+  // subito. Portandoli nel file (regola 8) sarebbero rimasti **vuoti accanto
+  // a un «Caricamento...» che parlava solo del corpo** — due etichette mute
+  // sotto un messaggio che non le riguardava. Peggio che non spostarle.
+  //
+  // Ora il messaggio di attesa vale per l'intera schermata: il pulsante
+  // resta **disabilitato** finché non c'è tutto, e prende la sua etichetta
+  // insieme al corpo. Un pulsante senza etichetta si può ancora premere; uno
+  // disabilitato dice da solo che non è il momento.
+  //
+  // ⚠️ GLI ID SI PASSANO, NON SI RICAVANO DAL NOME, e la ragione è misurata:
+  // otto blocchi su nove seguono `<prefisso>-intro-*`, ma i tre di Match /
+  // Dialogo / Speed Match usano `<prefisso>-start-*`, e il pulsante di Speed
+  // Match si chiama **`sr-ready-btn`**. Una derivazione dalla stringa
+  // funzionerebbe su otto casi su nove — cioè abbastanza da sembrare giusta
+  // e da rompersi su quello che non si guarda.
+  function renderIntroContent(kind, titleElId, bodyElId, moduleLabel, startBtnId, dontShowTextId) {
     var titleEl = document.getElementById(titleElId);
+    var startBtn = startBtnId ? document.getElementById(startBtnId) : null;
+    var dontShowEl = dontShowTextId ? document.getElementById(dontShowTextId) : null;
     renderSpiegazioneTitle(titleEl, moduleLabel);
     document.getElementById(bodyElId).innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    if (startBtn) { startBtn.disabled = true; startBtn.textContent = ''; }
+    if (dontShowEl) dontShowEl.textContent = '';
     loadModuleInstructions().then(function (data) {
       var entry = data[kind] && data[kind].howItWorks;
       renderSpiegazioneTitle(titleEl, (entry && entry.title) || moduleLabel);
       document.getElementById(bodyElId).innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
+      if (startBtn) { startBtn.textContent = uiText('condivisi.introStart'); startBtn.disabled = false; }
+      if (dontShowEl) dontShowEl.textContent = uiText('condivisi.introDontShowAgain');
     }).catch(function () {
       document.getElementById(bodyElId).innerHTML = loadErrorInlineHtml('');
+      // Il pulsante resta SPENTO: se la spiegazione non è arrivata, "Ho
+      // capito" non è una cosa che lo studente possa dire.
     });
   }
 
@@ -7353,7 +7405,7 @@
       raShowScreen('main');
     } else {
       document.getElementById('repeat-aloud-intro-dont-show-again').checked = false;
-      renderIntroContent('repeatAloud', 'repeat-aloud-intro-title', 'repeat-aloud-intro-body', currentRepeatAloudModule.label);
+      renderIntroContent('repeatAloud', 'repeat-aloud-intro-title', 'repeat-aloud-intro-body', currentRepeatAloudModule.label, 'repeat-aloud-intro-start-btn', 'repeat-aloud-intro-dont-show-text');
       raShowScreen('intro');
     }
     loadEpisodeData(module).then(function (data) {
@@ -7832,7 +7884,7 @@
       storyCardsShowScreen('main');
     } else {
       document.getElementById('story-cards-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'story-cards-intro-title', 'story-cards-intro-body', currentStoryCardsModule.label);
+      renderIntroContent(module.kind, 'story-cards-intro-title', 'story-cards-intro-body', currentStoryCardsModule.label, 'story-cards-intro-start-btn', 'story-cards-intro-dont-show-text');
       storyCardsShowScreen('intro');
     }
     // Le due fonti servono entrambe PRIMA di disegnare: i testi del
@@ -8523,7 +8575,7 @@
       vcShowScreen('main');
     } else {
       document.getElementById('voice-coach-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label);
+      renderIntroContent(module.kind, 'voice-coach-intro-title', 'voice-coach-intro-body', vcModule.label, 'voice-coach-intro-start-btn', 'voice-coach-intro-dont-show-text');
       vcShowScreen('intro');
     }
     // ⚠️ QUI C'ERA UN PRECARICAMENTO TRAVESTITO DA DIPENDENZA, e va saputo
@@ -9006,12 +9058,11 @@
     document.getElementById('qm-start-checkbox-row').hidden = dismissed;
     document.getElementById('qm-start-body').hidden = dismissed;
     if (dismissed) {
-      document.getElementById('qm-start-title').textContent = 'Pronto?';
-      document.getElementById('qm-start-btn').textContent = 'Pronto? Via!';
+      document.getElementById('qm-start-title').textContent = uiText('condivisi.readyTitle');
+      document.getElementById('qm-start-btn').textContent = uiText('condivisi.readyStart');
     } else {
       document.getElementById('qm-start-dont-show-again').checked = false;
-      document.getElementById('qm-start-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'qm-start-title', 'qm-start-body', module.label);
+      renderIntroContent(module.kind, 'qm-start-title', 'qm-start-body', module.label, 'qm-start-btn', 'qm-start-dont-show-text');
     }
   }
 
@@ -9339,12 +9390,11 @@
     document.getElementById('dg-start-checkbox-row').hidden = dismissed;
     document.getElementById('dg-start-body').hidden = dismissed;
     if (dismissed) {
-      document.getElementById('dg-start-title').textContent = 'Pronto?';
-      document.getElementById('dg-start-btn').textContent = 'Pronto? Via!';
+      document.getElementById('dg-start-title').textContent = uiText('condivisi.readyTitle');
+      document.getElementById('dg-start-btn').textContent = uiText('condivisi.readyStart');
     } else {
       document.getElementById('dg-start-dont-show-again').checked = false;
-      document.getElementById('dg-start-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'dg-start-title', 'dg-start-body', module.label);
+      renderIntroContent(module.kind, 'dg-start-title', 'dg-start-body', module.label, 'dg-start-btn', 'dg-start-dont-show-text');
     }
   }
 
@@ -10193,12 +10243,11 @@
     document.getElementById('sr-start-checkbox-row').hidden = dismissed;
     document.getElementById('sr-start-body').hidden = dismissed;
     if (dismissed) {
-      document.getElementById('sr-start-title').textContent = 'Pronto?';
-      document.getElementById('sr-ready-btn').textContent = 'Pronto? Via!';
+      document.getElementById('sr-start-title').textContent = uiText('condivisi.readyTitle');
+      document.getElementById('sr-ready-btn').textContent = uiText('condivisi.readyStart');
     } else {
       document.getElementById('sr-start-dont-show-again').checked = false;
-      document.getElementById('sr-ready-btn').textContent = 'Ho capito, inizia';
-      renderIntroContent(module.kind, 'sr-start-title', 'sr-start-body', module.label);
+      renderIntroContent(module.kind, 'sr-start-title', 'sr-start-body', module.label, 'sr-ready-btn', 'sr-start-dont-show-text');
     }
   }
 
@@ -10730,7 +10779,7 @@
     fcIntroPending = !isIntroDismissed(module.kind, getUserName());
     if (fcIntroPending) {
       document.getElementById('fc-intro-dont-show-again').checked = false;
-      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body', module.label);
+      renderIntroContent(module.kind, 'fc-intro-title', 'fc-intro-body', module.label, 'fc-intro-start-btn', 'fc-intro-dont-show-text');
       fcShowScreen('intro');
     } else {
       fcShowScreen('card');
