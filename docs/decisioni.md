@@ -1806,6 +1806,29 @@ lì rileggere il commento lo conferma, qui rileggere il commento **insieme al
 suo codice** lo conferma — sono ancora coerenti fra loro. È un terzo file ad
 averli smentiti.
 
+#### ⚠️ E LA SUITE HA TROVATO IL TERZO LETTORE — quello che avevo GUARDATO
+
+Il triage del passo 19 dichiarava **due** lettori oltre a `resolveSlotTable`: il
+Pannello Admin e `applyConfigOverrides`. **Ce n'era un terzo, e stava in un file
+che avevo già aperto.**
+
+`tests/module-order.js` → `slotValues()` → `readTable(html, …)` leggeva le
+tabelle **dal testo di `index.html`**, con un'espressione regolare sul sorgente.
+Non `CONFIG.people`, non un `fetch`: il file come **stringa**.
+
+⚠️ **E l'avevo in mano.** La ricerca aveva trovato `module-order.js:115`
+(`slot.table.indexOf('people.')`) e l'avevo classificata *«legge lo slot dal
+file dell'episodio, non gli serve il magazzino»*. **Vero per quella riga, falso
+per la funzione intorno**, che tre righe più sotto chiamava `readTable`.
+
+> **GUARDARE LA RIGA TROVATA INVECE DELLA FUNZIONE CHE LA CONTIENE È IL MODO IN
+> CUI SI PERDE UN LETTORE AVENDOLO DAVANTI.**
+
+*Il costo: due file rossi, `test_batch15` (il vocabolario atteso restava
+`"I am {{papa}}."` contro `"I am Marco."` a schermo) e il calo di cinque
+asserzioni in `test_interruttore_episodio`. Li ha trovati la suite, non io — ed
+è esattamente il lavoro per cui esiste.*
+
 **Cosa cercare a ogni estrazione:** non chi *nomina* il dato che si sposta, ma
 **chi lo aveva per costruzione**. Al passo 19 la ricerca testuale su
 `CONFIG.people` dava **zero occorrenze**, e c'erano due lettori. *Ogni difesa

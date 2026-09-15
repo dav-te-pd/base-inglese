@@ -5066,7 +5066,7 @@
   // tutti gli altri parametri (per questo il .catch e' vuoto ED E' LEGITTIMO
   // — registrato in tests/ERRORI-INGOIATI.md).
   function openConfigPanel() {
-    renderConfigPanel(null);
+    renderConfigPanel();
     renderAudioUsagePanel();
     renderNextLineSkipsPanel();
     renderStoryCardsExplanationStatsPanel();
@@ -5076,7 +5076,7 @@
       // Solo se il pannello e' ancora aperto: un ridisegno su un pannello
       // chiuso rimetterebbe in piedi lo stato aperto/chiuso dei <details>
       // che l'utente aveva in mano.
-      if (configPanelOverlayEl.classList.contains('is-open')) renderConfigPanel(tables);
+      if (configPanelOverlayEl.classList.contains('is-open')) aggiungiGruppiMagazzino(tables);
     }).catch(function () {});
   }
   function closeConfigPanel() { configPanelOverlayEl.classList.remove('is-open'); }
@@ -5390,48 +5390,65 @@
   // non lo vede piu': va passato a parte. Senza questo, i due gruppi
   // sparirebbero dal pannello e con loro la possibilita' di modificarli —
   // una funzione tolta di straforo da uno spostamento di dati (regola 1).
-  function renderConfigPanel(tables) {
-    configPanelBodyEl.innerHTML = '';
-    // Il pannello e' un editor SU window.APP_CONFIG: setConfigPath ci scrive
-    // dentro e persistConfigSection rilegge da li' per salvare. Invece di
-    // insegnare a tutte e due una seconda strada, il magazzino appena caricato
-    // viene ATTACCATO li' come copia di lavoro — cosi' la modifica e il
-    // salvataggio restano identici a prima, riga per riga.
-    //
-    // ⚠️ E QUELLA COPIA NON E' LA FONTE: chi legge i valori davvero
-    // (resolveSlotTable) prende quello che torna da loadPersonalizationTables,
-    // mai questo. Serve solo a dare al pannello qualcosa su cui scrivere.
-    // Il giro si chiude in localStorage: il pannello salva l'override, e il
-    // loader lo riapplica sopra il file al caricamento dopo.
-    if (tables) {
-      window.APP_CONFIG.people = tables.people;
-      window.APP_CONFIG.places = tables.places;
+  // Un gruppo del pannello. Estratta da renderConfigPanel perche' dal
+  // 2026-09-15 i gruppi non nascono piu' tutti nello stesso istante: due
+  // arrivano dopo, quando il magazzino e' stato caricato.
+  function renderConfigGroup(sectionKey, section) {
+    var details = document.createElement('details');
+    details.className = 'config-group';
+    var summary = document.createElement('summary');
+    summary.textContent = sectionKey;
+    details.appendChild(summary);
+    var body = document.createElement('div');
+    body.className = 'config-group-body';
+    if (sectionKey === 'episodioCorrente') {
+      body.appendChild(renderEpisodeSwitchField());
+    } else if (sectionKey === 'sequences') {
+      body.appendChild(renderModuleOrderField());
+    } else if (Array.isArray(section)) {
+      body.appendChild(renderConfigJsonField([sectionKey], section));
+    } else if (section !== null && typeof section === 'object') {
+      renderConfigFields(body, section, [sectionKey]);
+    } else {
+      body.appendChild(renderConfigScalarField([sectionKey], section));
     }
+    details.appendChild(body);
+    return details;
+  }
+
+  function renderConfigPanel() {
+    configPanelBodyEl.innerHTML = '';
     Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
       // Meta-documentation about the panel's own fields, not itself a
       // tunable parameter — never shown as its own editable group.
       if (sectionKey === 'configFieldDescriptions') return;
-      var section = window.APP_CONFIG[sectionKey];
-      var details = document.createElement('details');
-      details.className = 'config-group';
-      var summary = document.createElement('summary');
-      summary.textContent = sectionKey;
-      details.appendChild(summary);
-      var body = document.createElement('div');
-      body.className = 'config-group-body';
-      if (sectionKey === 'episodioCorrente') {
-        body.appendChild(renderEpisodeSwitchField());
-      } else if (sectionKey === 'sequences') {
-        body.appendChild(renderModuleOrderField());
-      } else if (Array.isArray(section)) {
-        body.appendChild(renderConfigJsonField([sectionKey], section));
-      } else if (section !== null && typeof section === 'object') {
-        renderConfigFields(body, section, [sectionKey]);
-      } else {
-        body.appendChild(renderConfigScalarField([sectionKey], section));
-      }
-      details.appendChild(body);
-      configPanelBodyEl.appendChild(details);
+      configPanelBodyEl.appendChild(renderConfigGroup(sectionKey, window.APP_CONFIG[sectionKey]));
+    });
+  }
+
+  // I due gruppi del magazzino, AGGIUNTI a pannello gia' aperto.
+  //
+  // ⚠️ SI AGGIUNGONO, NON SI RIDISEGNA TUTTO — e la prima versione faceva
+  // l'errore opposto. Un `renderConfigPanel()` completo azzera il <details>
+  // che l'utente aveva appena aperto: chi sta guardando un gruppo se lo vede
+  // richiudere sotto le dita duecento millisecondi dopo. L'ha trovato
+  // test_interruttore_episodio, che apre il gruppo e poi cerca il menu
+  // dentro — un file che col magazzino non c'entra niente.
+  //
+  // Il pannello e' un editor SU window.APP_CONFIG: setConfigPath ci scrive e
+  // persistConfigSection rilegge da li'. Il magazzino viene quindi ATTACCATO
+  // li' come COPIA DI LAVORO, cosi' modifica e salvataggio restano identici a
+  // prima, riga per riga. Non e' la fonte: chi legge i valori davvero
+  // (resolveSlotTable) prende quello che torna da loadPersonalizationTables.
+  // Il giro si chiude in localStorage — il pannello salva l'override, il
+  // loader lo riapplica sopra il file al caricamento dopo.
+  function aggiungiGruppiMagazzino(tables) {
+    ['people', 'places'].forEach(function (k) {
+      window.APP_CONFIG[k] = tables[k];
+      var gia = Array.prototype.some.call(
+        configPanelBodyEl.querySelectorAll('.config-group > summary'),
+        function (el) { return el.textContent === k; });
+      if (!gia) configPanelBodyEl.appendChild(renderConfigGroup(k, tables[k]));
     });
   }
 

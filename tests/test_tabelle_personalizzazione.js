@@ -169,13 +169,36 @@ async function run() {
     log('[D] Col magazzino lento il pannello si apre lo stesso', dentro.length > 0, String(dentro.length));
     log('[D] ...senza i due gruppi, perché non sono ancora arrivati',
       dentro.indexOf('people') === -1 && dentro.indexOf('places') === -1, dentro.join(','));
+    // ⚠️ IL GESTO CHE HA TROVATO IL DIFETTO, e non l'ho inventato io: la prima
+    // versione ridisegnava il pannello intero quando il magazzino arrivava, e
+    // il <details> che l'utente aveva appena aperto si richiudeva sotto le
+    // dita. L'ha visto `test_interruttore_episodio`, che apre un gruppo e poi
+    // cerca il menu dentro — un file che col magazzino non c'entra niente.
+    // Qui il gesto diventa esplicito, invece di restare protetto per caso da
+    // un test che parla d'altro.
+    // ⚠️ IL SELETTORE E' `#config-panel-body .config-group`, NON `.config-group`.
+    // Prima era quello nudo, e l'asserzione era VERA PER COSTRUZIONE (regola
+    // 44): il primo `.config-group` del documento sta FUORI dal corpo del
+    // pannello — misurato, 27 nel documento e 23 dentro — quindi il ridisegno
+    // non lo tocca mai e `open` restava true qualunque cosa facesse il codice.
+    // Vista fallire la falsificazione, non l'asserzione.
+    await page.evaluate(() => {
+      var d = document.querySelector('#config-panel-body .config-group');
+      if (d) d.open = true;
+    });
     await page.waitForFunction(() =>
       Array.from(document.querySelectorAll('.config-group > summary')).some(e => e.textContent === 'people'),
       { timeout: 15000 });
     const dopo = await page.evaluate(() =>
       Array.from(document.querySelectorAll('.config-group > summary')).map(e => e.textContent));
+    const restaAperto = await page.evaluate(() => {
+      var d = document.querySelector('#config-panel-body .config-group');
+      return !!(d && d.open);
+    });
     log('[D] Quando arriva, i due gruppi compaiono senza riaprire il pannello',
       dopo.indexOf('people') !== -1 && dopo.indexOf('places') !== -1, dopo.join(','));
+    log('[D] ...e i gruppi vengono AGGIUNTI, non ridisegnati da capo',
+      restaAperto === true, 'il <details> aperto si e\' richiuso quando il magazzino e\' arrivato');
     log('[D] Nessun errore JS nella finestra', errori.length === 0, errori[0]);
     await page.close();
   }

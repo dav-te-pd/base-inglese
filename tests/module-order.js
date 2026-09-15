@@ -93,22 +93,42 @@ function allSteps() {
 // Le regole sono le stesse di resolveSlotValue() in index.html: il nome di
 // una persona non si traduce mai (tabella people.*), un toponimo sì.
 
-function readTable(html, section, name) {
-  const block = html.match(new RegExp(section + ':\\s*\\{[\\s\\S]*?\\n    \\},'));
-  if (!block) return null;
-  const list = block[0].match(new RegExp('\\b' + name + ':\\s*\\[([\\s\\S]*?)\\]'));
-  if (!list) return null;
-  const rows = [];
-  const re = /\{\s*value:\s*'([^']*)'\s*,\s*it:\s*'([^']*)'\s*,\s*en:\s*'([^']*)'/g;
-  let m;
-  while ((m = re.exec(list[1])) !== null) rows.push({ value: m[1], it: m[2], en: m[3] });
-  return rows;
+// ⚠️ LEGGEVA LE TABELLE DAL TESTO DI index.html, e il 2026-09-15 ha smesso di
+// funzionare senza che nessuno l'avesse toccata.
+//
+// Il magazzino (people, places) e' uscito da APP_CONFIG e vive in
+// data/inglese/it/tabelle-personalizzazione.json: qui c'era un parsing a
+// espressioni regolari del sorgente dell'app, che da quel giorno non trova
+// piu' niente e torna `null` — cioe' i segnaposto restano non sostituiti e il
+// vocabolario atteso diventa "I am {{papa}}." contro "I am Marco." a schermo.
+//
+// E' la famiglia ⓪-quinquies vista da dentro i test: NON un lettore che
+// nomina il dato, ma uno che ce l'aveva PER COSTRUZIONE perche' stava nello
+// stesso file. La ricerca fatta prima del passo aveva trovato la riga qui
+// sotto (`slot.table.indexOf('people.')`) e l'aveva classificata come «legge
+// lo slot, non le tabelle»: vero per quella riga, falso per la funzione
+// intorno. Guardare la riga trovata invece della funzione che la contiene e'
+// il modo in cui si perde un lettore avendolo davanti.
+//
+// Adesso legge il file, che e' anche la forma giusta: un JSON si parsa, non si
+// cerca con una regex.
+let magazzinoCache = null;
+function magazzino() {
+  if (!magazzinoCache) {
+    magazzinoCache = JSON.parse(fs.readFileSync(
+      repoPath('data', 'inglese', 'it', 'tabelle-personalizzazione.json'), 'utf8'));
+  }
+  return magazzinoCache;
+}
+
+function readTable(section, name) {
+  const radice = magazzino()[section];
+  return (radice && radice[name]) || null;
 }
 
 // I valori predefiniti di ogni slot, nelle due lingue: quelli che vede un
 // utente di test, che non personalizza niente.
 function slotValues(episodePath) {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
   const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'inglese', 'it', 'inglese-it-gate.json'])), 'utf8'));
   const values = {};
   (episode.personalizationTablesUsed || []).forEach(slot => {
@@ -118,7 +138,7 @@ function slotValues(episodePath) {
       return;
     }
     const [section, name] = slot.table.split('.');
-    const rows = readTable(html, section, name) || [];
+    const rows = readTable(section, name) || [];
     const picked = rows.find(r => r.value === slot.default) || rows[0];
     if (!picked) return;
     values[slot.key] = { it: picked.it, en: isPerson ? picked.it : picked.en };
