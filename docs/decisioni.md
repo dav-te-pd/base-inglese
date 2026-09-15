@@ -1240,11 +1240,45 @@ cercava stringhe con uno spazio dentro, quindi `'Inizio'` e `'Quiz'` non
 comparivano. **Trovate leggendo il codice, non contandolo** — ed è il limite di
 qualunque censimento fatto con un'euristica sul testo.
 
-## ⚠️ APERTO — `[SR Task1]` di `test_batch19.js`, causa NON trovata (11 settembre)
+## ⚠️ APERTO — `test_batch19.js`, la causa si sta stringendo (11 → 15 settembre)
 
-**Condizione: alla prossima CI rossa su quel blocco, si legge il motivo che ora
-la funzione stampa — e si chiude con quello, invece di ricominciare a
-ipotizzare.**
+**La condizione era: alla prossima CI rossa si legge il motivo che la funzione
+stampa, invece di ricominciare a ipotizzare. ESEGUITA il 15 settembre, e ha
+funzionato.**
+
+**Quello che la CI ha detto:**
+
+```
+toccaFinoA(qm, giusta) si arrende: esaurite le mosse senza incontrare una
+risposta giusta | mosse 53/53 | totale letto alla partenza: 12
+```
+
+**Tre cose nuove, tutte da quella riga.**
+
+**① Non è il countdown, definitivamente.** Stavolta è caduto **`[QM Task1]` —
+Match Practice, quello SENZA timer.** L'ipotesi misurata e caduta l'11 settembre
+è morta anche dal lato opposto.
+
+**② Non è sfortuna.** 53 mosse fra quattro opzioni senza mai incontrare una
+risposta giusta ha probabilità **3 su 10 milioni**. È sistematico.
+
+**③ E quello che ancora mancava: DOVE sono finite le 53 mosse.** Il ciclo ha
+cinque diramazioni che consumano una mossa **senza mai toccare un'opzione**
+(popup, ripasso, riquadro aperto, ultima domanda). Se il giro gira a vuoto in
+una di quelle, `giusta` non viene mai valutato.
+
+**Fatto il 15 settembre:** la funzione ora stampa la **ripartizione** delle
+mosse, e **si ferma dopo dodici mosse di fila senza toccare un'opzione**
+nominando la diramazione. Misurato col riquadro che non si chiude: **13 mosse
+invece di 53**, e `{riquadro: 12, tocchi: 1}`.
+
+⚠️ **E il posto del controllo è stato la correzione, non un dettaglio:** la
+prima versione stava in mezzo al ciclo e **non è mai scattata**, perché ogni
+diramazione fa `continue` e la salta. *Misurato, non dedotto: 52 mosse su 53
+spese sul riquadro e il controllo mai raggiunto.* Ora è in cima al ciclo.
+
+**Condizione che resta: alla prossima rossa si legge la RIPARTIZIONE, e quella
+dice la diramazione. Da lì la causa è una sola ricerca, non cinque.**
 
 Il fatto: rosso in CI su `16dd7bd`, verde in locale, due asserzioni cadute più
 una **non partita** (39 su 40 — e a vederlo è stato il contatore delle

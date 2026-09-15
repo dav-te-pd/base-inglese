@@ -139,10 +139,21 @@ async function toccaFinoA(page, p, voluto) {
   const partenza = await statoQuiz(page, p);
   const maxPassaggi = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
   const limite = (partenza.totale || 1) * (maxPassaggi + 1) + 5;
+  // ⚠️ DOVE SONO FINITE LE MOSSE, e questo conto e' la seconda meta' della
+  // diagnosi. Il 2026-09-15 la CI ha detto «esaurite le mosse 53/53» su
+  // [QM Task1] — Match Practice, quello SENZA timer, quindi non e' il
+  // countdown. Ma «esaurite» non dice DOVE: il ciclo ha cinque diramazioni che
+  // consumano una mossa **senza mai toccare un'opzione** (popup, ripasso,
+  // riquadro aperto, ultima domanda). Se il giro gira a vuoto in una di
+  // quelle, `giusta` non viene mai valutato — e 53 tocchi senza mai indovinare
+  // fra quattro opzioni ha probabilita' 3 su 10 milioni, cioe' non e' successo.
+  const speseIn = { popup: 0, ripasso: 0, riquadro: 0, ultimaDomanda: 0, tocchi: 0 };
+  let senzaTocco = 0; // mosse CONSECUTIVE spese senza toccare un'opzione
   const arrenditi = (motivo, mosse, st) => {
     console.log('    -> toccaFinoA(' + p + ', ' + voluto + ') si arrende: ' + motivo +
       ' | mosse ' + mosse + '/' + limite +
       ' | totale letto alla partenza: ' + partenza.totale +
+      ' | mosse spese in: ' + JSON.stringify(speseIn) +
       (st ? ' | stato: ' + JSON.stringify(st) : ''));
     return null;
   };
@@ -151,23 +162,38 @@ async function toccaFinoA(page, p, voluto) {
       '"), il budget di mosse scende a ' + limite);
   }
   for (let mosse = 0; mosse < limite; mosse++) {
+    // ⚠️ IN CIMA AL CICLO, E IL POSTO E' LA CORREZIONE: ogni diramazione qui
+    // sotto fa `continue`, quindi un controllo messo in mezzo non viene MAI
+    // raggiunto mentre il giro gira a vuoto — misurato, non dedotto: la prima
+    // versione stava prima del tocco e non e' scattata nemmeno con 52 mosse su
+    // 53 spese sul riquadro.
+    //
+    // **Dodici mosse di fila senza toccare un'opzione non e' sfortuna: e' un
+    // ciclo.** Fermarsi qui e nominare la diramazione vale piu' che arrivare in
+    // fondo e dire «esaurite le mosse», che e' quello che la CI ha detto il
+    // 2026-09-15 senza far capire niente.
+    if (senzaTocco >= 12) {
+      return arrenditi('il giro GIRA A VUOTO: dodici mosse di fila senza toccare un\'opzione', mosse, null);
+    }
     // ⚠️ PRIMA DI TUTTO il popup della valvola di sicurezza: il suo sfondo
     // intercetta i click, quindi finche' e' aperto ogni click qui sotto va in
     // timeout dopo trenta secondi e il file muore senza dire perche'. E' morto
     // cosi' in CI il 2026-09-10 (995 asserzioni invece di 1008), perche'
     // questo file non nominava `attempt-popup` da nessuna parte.
-    if (await chiudiPopupTentativiSeAperto(page)) continue;
+    if (await chiudiPopupTentativiSeAperto(page)) { speseIn.popup++; senzaTocco++; continue; }
     const st = await statoQuiz(page, p);
     if (st.riepilogo) return arrenditi('il giro e\' finito (riepilogo) senza mai incontrare una risposta ' + voluto, mosse, st);
-    if (st.ripasso) { await page.click('#' + p + '-retry-continue-btn'); continue; }
-    if (st.revealAperto) { await page.click('#' + p + '-advance-btn'); continue; }
+    if (st.ripasso) { speseIn.ripasso++; senzaTocco++; await page.click('#' + p + '-retry-continue-btn'); continue; }
+    if (st.revealAperto) { speseIn.riquadro++; senzaTocco++; await page.click('#' + p + '-advance-btn'); continue; }
     if (!st.quiz) return arrenditi('la schermata del quiz non e\' quella attiva', mosse, st);
     if (!st.opzioni) return arrenditi('nessuna opzione a schermo', mosse, st);
     if (st.indice !== null && st.indice === st.totale) {
+      speseIn.ultimaDomanda++; senzaTocco++;
       await page.click('#' + p + '-dontknow-btn');
       continue;
     }
     const prima = st.contatore;
+    speseIn.tocchi++; senzaTocco = 0;
     await page.click('#' + p + '-options .sr-option >> nth=0');
     // Giusta o sbagliata si legge dallo stato, non dal tempo: la classe la
     // mette il gestore del click, sincrono con il click stesso.
