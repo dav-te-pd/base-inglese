@@ -511,6 +511,61 @@ e sappiamo esattamente con che regola è stato ottenuto.*
 | **18-B** | ⚠️ **LA MISURA CHE CAMBIA LA FORMA DEL GIRO B, fatta il 2026-09-15 prima di dichiararlo.** La domanda era: al primo avvio la pagina ha già titolo, sfondo e struttura (e allora aspettare è invisibile) oppure è bianca (e 31 ms di bianco si notano)? **Nessuna delle due.** A `DOMContentLoaded` l'onboarding è **già completo**: sfondo `rgb(242,244,238)`, titolo di pagina, 9 elementi, e tutto il testo — *«Base Inglese / Come ti chiami? / Niente password… / Il tuo nome / Inizia»*. **Ma tutti e cinque quei testi stanno nel markup (righe 3375-3381), cioè sono esattamente quelli che il giro B sposterebbe.**<br><br>Quindi la finestra non sarebbe bianca: sarebbe una **card impaginata con dentro cinque campi vuoti** — badge vuoto, titolo vuoto, paragrafo vuoto, campo vuoto, pulsante vuoto. ⚠️ **Ed è peggio del bianco, non meglio:** una pagina bianca si legge come «sta ancora caricando», una schermata impaginata senza parole si legge come **rotta**. E l'onboarding è la prima cosa che uno studente vede, quindi è il caso peggiore dei due possibili.<br><br>*Non è un argomento contro il giro B: è il pezzo in più che la decisione aveva, e adesso ha un numero e una fotografia invece di un'ipotesi.* | ☐ | **sì**, prima di partire |
 | **18** | Le stringhe italiane dal codice a `istruzioni-moduli.json`. ⚠️ **RICONTATO, e il «93» era il numero di un'altra domanda.** Le fasce vere di `index.html`, che vanno scritte perché le ho sbagliate **tre volte**: `CFG [7,781]`, `CSS [785,3365]`, `MARKUP [3367,4337]`, `JS [4338,11114]`, `MORTA [10698,11114]`. Censimento: **37 messaggi nel JS vivo, 36 nel markup** (senza commenti HTML) — fuori `APP_CONFIG` (14), Pannello Admin (10), vista morta (8).<br><br>**Due giri, e l'asse non è dove sta il testo ma QUANDO viene scritto:** i testi **su richiesta** (cache già calda, rischio zero) e quelli **al boot** (markup + `renderChoiceBox`/`renderSummaryScreen`, che creano un modo nuovo di fallire). Non è «il passo a metà»: il divieto è sulle due sorgenti per la stessa cosa, e ogni giro chiude una categoria intera.<br><br>**GIRO A FATTO il 2026-09-15**: 34 testi, `uiText()`/`uiTextWith()`, `loadModuleInstructions()` aggiunto al `Promise.all` di `openModuleFromMap`, `tests/test_testi_interfaccia.js` (14 asserzioni, visto fallire 10/14 sul guasto vero). Una sola asserzione convertita e una lasciata scritta con la sua ragione.<br><br>**GIRO B FATTO il 2026-09-15**, e il triage per vista l'ha rimpicciolito di tre volte: fuori l'**onboarding** (4) e la **home** (3), che sono la stessa categoria — `boot()` manda a `goHome()` chiunque abbia un nome, quindi la home è la prima cosa che vede chi torna, **a ogni avvio dopo il primo**; fuori la vista morta (9) e il Pannello Admin (3, che la mia attribuzione per vista aveva contato dentro `view-error`). Restava l'**intro condivisa**, e la misura giusta era di nuovo quella del passo 16: non trenta stringhe, **due frasi in dieci copie** — ora due chiavi. Più i tre siti JS che il giro A aveva mancato. ⚠️ **Ha una decisione in più, e adesso ha un numero invece di un'ipotesi:** la finestra `DOMContentLoaded` → JSON pronto è **31 ms di mediana in locale** (17-43 su dieci giri), che **non è un microtask** — e quello è il pavimento, non la misura: su Pages è un round-trip, e dal container **non si può misurare** (il proxy blocca `github.io`). La risposta resta «non mostrare finché non c'è», ma va progettata, non data per trascurabile. | ◐ | **NO** durante; sì prima e dopo |
 
+## ⚠️ NIENTE FRAMEWORK — decisione presa il 2026-09-15
+
+**Valutati e scartati: React, Vite, Tailwind e simili.** Non erano mai stati
+valutati — l'app è nata così e ci si è andati dietro — quindi la domanda è
+stata posta prima di spendere venti passi a dividere un file.
+
+**Cosa risolverebbero, onestamente: tutti e quattro i mali di oggi.** React
+attacca gli handler al montaggio (i 103 listener spariscono come categoria),
+non usa id globali (i `ref` sono locali), Vite dà code-splitting e consegna a
+pezzi **gratis** — cioè i passi 21-bis/ter/quater diventerebbero configurazione
+invece che lavoro. *Se la domanda fosse solo «qual è la forma tecnicamente
+migliore», la risposta sarebbe sì.*
+
+**LA DECISIONE È RESTARE, e i tre argomenti sono questi:**
+
+1. **Il sequenziamento: si riscriverebbe la difesa mentre si cambia la cosa che
+   difende.** I 49 file di test raggiungono il DOM **per id**, e React
+   cambierebbe struttura e id: le 1118 asserzioni sopravvivono come
+   *intenzione*, i selettori no. In quelle settimane la suite non
+   proteggerebbe niente — ed è l'unica difesa che questo progetto ha.
+2. **La tassa del build, che da solo e per sempre non assorbe nessuno.** Oggi
+   `git push` **è** il deploy: nessuna dipendenza, nessun `node_modules`,
+   nessun lockfile, nessuna versione maggiore che rompe. Con un bundler
+   arrivano un build che può fallire, dipendenze che invecchiano, e un React
+   che cambia maggiore ogni paio d'anni.
+3. **Gli store NON sono un argomento per migrare.** Capacitor incarta una
+   cartella web qualunque, **anche un singolo file HTML senza build**: la porta
+   degli store resta aperta in entrambi i casi. *Questo toglie l'argomento più
+   forte a favore, ed è il motivo per cui la decisione è netta invece che
+   sofferta.*
+
+**E la frase che chiude, perché è il rapporto vero fra le due strade:**
+
+> **Fare la fase 4 non è un'alternativa alla migrazione: è il prerequisito che
+> la renderebbe possibile.**
+
+*Oggi migrare vorrebbe dire riscrivere 11.000 righe indivise. Dopo la fase 4
+vorrebbe dire tradurre sedici pezzi già separati, uno per volta, con fermate
+sicure in mezzo — che è l'unico modo in cui una persona sola può farlo. Un
+modulo che si registra, con il suo `apri` / `pulisci` / `aggancia`, è già la
+forma di un componente.*
+
+**Il metodo sopravviverebbe comunque**, e va detto perché toglie un argomento
+che verrebbe usato in futuro: regole, catena, registri, il modo di lavorare —
+niente di tutto questo dipende dal framework. Non è una ragione per restare.
+
+**LA CONDIZIONE CHE RIAPRIREBBE LA DECISIONE, e ne basta una:**
+
+> **Se entrasse una seconda persona sul progetto.**
+
+*Le convenzioni di un framework sono soprattutto un modo di non doversi
+spiegare. Con una persona sola quel guadagno è zero e il costo del build è
+tutto suo; con due, il conto si ribalta.* Nessun'altra condizione riapre questa
+decisione — né la dimensione del file, né il numero di moduli, né gli store.
+
 ### ⚠️ LA FASE 4 È STATA RIFATTA IL 2026-09-15 — leggi questo prima della tabella
 
 **Il piano della fase 4 era stato scritto il 10 settembre. Il 15 è stato
