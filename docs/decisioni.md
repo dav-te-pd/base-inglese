@@ -511,6 +511,84 @@ e sappiamo esattamente con che regola è stato ottenuto.*
 | **18-B** | ⚠️ **LA MISURA CHE CAMBIA LA FORMA DEL GIRO B, fatta il 2026-09-15 prima di dichiararlo.** La domanda era: al primo avvio la pagina ha già titolo, sfondo e struttura (e allora aspettare è invisibile) oppure è bianca (e 31 ms di bianco si notano)? **Nessuna delle due.** A `DOMContentLoaded` l'onboarding è **già completo**: sfondo `rgb(242,244,238)`, titolo di pagina, 9 elementi, e tutto il testo — *«Base Inglese / Come ti chiami? / Niente password… / Il tuo nome / Inizia»*. **Ma tutti e cinque quei testi stanno nel markup (righe 3375-3381), cioè sono esattamente quelli che il giro B sposterebbe.**<br><br>Quindi la finestra non sarebbe bianca: sarebbe una **card impaginata con dentro cinque campi vuoti** — badge vuoto, titolo vuoto, paragrafo vuoto, campo vuoto, pulsante vuoto. ⚠️ **Ed è peggio del bianco, non meglio:** una pagina bianca si legge come «sta ancora caricando», una schermata impaginata senza parole si legge come **rotta**. E l'onboarding è la prima cosa che uno studente vede, quindi è il caso peggiore dei due possibili.<br><br>*Non è un argomento contro il giro B: è il pezzo in più che la decisione aveva, e adesso ha un numero e una fotografia invece di un'ipotesi.* | ☐ | **sì**, prima di partire |
 | **18** | Le stringhe italiane dal codice a `istruzioni-moduli.json`. ⚠️ **RICONTATO, e il «93» era il numero di un'altra domanda.** Le fasce vere di `index.html`, che vanno scritte perché le ho sbagliate **tre volte**: `CFG [7,781]`, `CSS [785,3365]`, `MARKUP [3367,4337]`, `JS [4338,11114]`, `MORTA [10698,11114]`. Censimento: **37 messaggi nel JS vivo, 36 nel markup** (senza commenti HTML) — fuori `APP_CONFIG` (14), Pannello Admin (10), vista morta (8).<br><br>**Due giri, e l'asse non è dove sta il testo ma QUANDO viene scritto:** i testi **su richiesta** (cache già calda, rischio zero) e quelli **al boot** (markup + `renderChoiceBox`/`renderSummaryScreen`, che creano un modo nuovo di fallire). Non è «il passo a metà»: il divieto è sulle due sorgenti per la stessa cosa, e ogni giro chiude una categoria intera.<br><br>**GIRO A FATTO il 2026-09-15**: 34 testi, `uiText()`/`uiTextWith()`, `loadModuleInstructions()` aggiunto al `Promise.all` di `openModuleFromMap`, `tests/test_testi_interfaccia.js` (14 asserzioni, visto fallire 10/14 sul guasto vero). Una sola asserzione convertita e una lasciata scritta con la sua ragione.<br><br>**GIRO B FATTO il 2026-09-15**, e il triage per vista l'ha rimpicciolito di tre volte: fuori l'**onboarding** (4) e la **home** (3), che sono la stessa categoria — `boot()` manda a `goHome()` chiunque abbia un nome, quindi la home è la prima cosa che vede chi torna, **a ogni avvio dopo il primo**; fuori la vista morta (9) e il Pannello Admin (3, che la mia attribuzione per vista aveva contato dentro `view-error`). Restava l'**intro condivisa**, e la misura giusta era di nuovo quella del passo 16: non trenta stringhe, **due frasi in dieci copie** — ora due chiavi. Più i tre siti JS che il giro A aveva mancato. ⚠️ **Ha una decisione in più, e adesso ha un numero invece di un'ipotesi:** la finestra `DOMContentLoaded` → JSON pronto è **31 ms di mediana in locale** (17-43 su dieci giri), che **non è un microtask** — e quello è il pavimento, non la misura: su Pages è un round-trip, e dal container **non si può misurare** (il proxy blocca `github.io`). La risposta resta «non mostrare finché non c'è», ma va progettata, non data per trascurabile. | ◐ | **NO** durante; sì prima e dopo |
 
+### ⚠️ LA FASE 4 È STATA RIFATTA IL 2026-09-15 — leggi questo prima della tabella
+
+**Il piano della fase 4 era stato scritto il 10 settembre. Il 15 è stato
+RIFATTO, non confermato**, e la ragione è il motivo per cui questa sezione
+esiste: fra le due date sono cambiate tre cose che quel piano non poteva
+conoscere — il **vincolo del login** (deciso l'11), il **caricamento a
+richiesta** che ne discende, e il **passo 18**, che ha spostato i testi fuori
+dal codice e cambiato *quando* un modulo diventa pronto.
+
+*Il rischio era preciso e va nominato perché si ripresenterà: aprire questo
+file, trovare un piano scritto, e confermarlo. **Un piano scritto si legge come
+una decisione presa, anche quando è solo una decisione VECCHIA.***
+
+#### Le misure che l'hanno rifatto (2026-09-15, a codice fermo)
+
+⚠️ **Il primo numero che ho prodotto era il numero di un'altra domanda, e
+va scritto perché è la trappola più frequente di questa catena.** La chiusura
+transitiva delle chiamate dal percorso pre-login dà **45 funzioni su 291, il
+10%**. Vero, e inutile: misura cosa viene **chiamato**. La domanda del login è
+cosa viene **caricato**, e la risposta è il 100%.
+
+| misura | valore |
+|---|---|
+| funzioni dichiarate nel JS | **291** (3247 righe dentro funzioni) |
+| righe a livello di modulo, che girano a tempo di parsing | **1291** |
+| `addEventListener` a livello di modulo | **103**, sugli elementi di **tutte e tredici le viste** |
+| funzioni che nominano **3+ famiglie** di moduli | **1 su 291** |
+| funzioni che ne nominano **2+** | **3 su 291** |
+| chiamanti di ogni `open<Modulo>` | **esattamente 2**: il dispatcher, e un punto dentro sé stesso |
+
+**Il codice è già separato per modulo.** Le uniche due strozzature sono:
+
+- **`stopAllModuleActivity`** (19 righe) nomina **sei famiglie** — e `showView`
+  la chiama, quindi `boot()` ci passa. *Per disegnare la schermata di login
+  bisogna aver caricato una funzione che nomina le interiora di cinque moduli.*
+  ⚠️ **Non è un difetto: è la regola 21 fatta bene.** Il punto unico di
+  pulizia funziona per riferimento diretto, e il riferimento diretto è
+  incompatibile con «questo pezzo non è ancora caricato».
+- **`openModuleByKind`** (20 righe), otto `else if` che risolvono ogni modulo
+  per **identificatore libero**.
+
+#### La risposta alla domanda tecnica — sì, ma non gratis
+
+*«Gli script separati funzionano perché l'ordine di caricamento È la struttura.
+Col caricamento a richiesta quella forma regge ancora?»*
+
+**Regge.** Un file che arriva tardi si attacca da sé allo spazio dei nomi, ed è
+la forma giusta — la scelta contro i moduli ES resta valida per la stessa
+ragione di prima.
+
+⚠️ **Ma il precedente che sembrava confermarlo carica DATI, non CODICE.**
+`loadModuleInstructions()` dentro `openModuleFromMap` prova la metà della
+**sequenza**: l'app sa aspettare qualcosa prima di aprire un modulo, e il giro
+B del passo 18 l'ha confermato fino a includere lo stato «spento finché non
+c'è». **Non prova la metà della RAGGIUNGIBILITÀ**: un `fetch` restituisce un
+valore dentro una Promise; uno script non caricato **non ha un identificatore**.
+
+#### Le tre decisioni prese da chi guida il progetto, il 2026-09-15
+
+| | Decisione |
+|---|---|
+| **i 103 listener** | **entrano dentro l'`open` del proprio modulo.** È il più grande dei tre lavori, e non era nominato da nessuna parte prima di questa misura. |
+| **il markup** | **resta dov'è** — non viaggia coi moduli. Ma `views`, che oggi raccoglie i tredici `getElementById` all'avvio, **deve tollerare l'arrivo tardivo**. |
+| **`getUserName()`** | **NON diventa asincrono.** È chiamato da 45 funzioni sincrone, e renderlo asincrono sarebbe la modifica più invasiva delle tre. Il login vero dovrà risolvere l'identità **prima** di consegnare il resto, non durante. |
+
+#### ⚠️ Il limite della misura, dichiarato
+
+**L'assegnazione delle funzioni alle famiglie è stata fatta per PREFISSO DEL
+NOME, e ne ha sbagliate parecchie**: `renderStoryCards`, `setVcState`,
+`renderVoiceCoachSentence` sono finite fra le «non assegnate». Quindi il
+numero che ne esce — *«1337 righe da strato»* — **è gonfiato**: dentro c'è
+sia codice condiviso vero sia codice di modulo non riconosciuto.
+
+*Quel numero NON va usato per pianificare.* I numeri su cui questo piano si
+regge sono gli altri, contati direttamente: **le due strozzature e i 103
+listener.** Se serve il peso vero degli strati, va rifatto con
+un'assegnazione che parte dai **chiamanti** invece che dal nome.
+
 ### Fase 4 — lo spacchettamento
 
 *Il meccanismo è deciso: **script separati in ordine, con uno spazio dei nomi condiviso.**
@@ -533,7 +611,23 @@ irraggiungibili da Node.*
 | **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono** — `slotOptions` e `resolveSlotValue` oggi leggono in modo sincrono mentre disegnano, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35). Mezza giornata, con il suo test. | ☐ | **sì** |
 | **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** `module-order.js` e `test_config_letta.js` lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero dei 79 punti di chiamata toccati**. Il primo pezzo estratto dev'essere `APP_CONFIG` proprio perché è il bersaglio che quei due devono leggere. *(Qui muore da sola la divergenza `off/seen` del passo 16.)* | ☐ | **sì** |
 | **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
-| **22** | Gli strati, dal basso: `core`, `dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine`. **Ogni estrazione fa due cose nello stesso commit:** attacca allo spazio dei nomi ciò che quel file espone, e sposta il file. **Dentro l'estrazione dello strato `dati` sta l'unificazione dei tre `fetch` in un punto solo** — `MODULE_INSTRUCTIONS_FILE`, `module.dataFile`, e `messaggi-feedback.json` che oggi scavalca il meccanismo. È voce esplicita, non implicita. | ☐ | **sì**, uno strato per volta |
+
+#### ⚠️ I TRE PASSI NUOVI, e perché stanno PRIMA degli strati
+
+Nascono dalla misura del 15 settembre e non esistevano nel piano vecchio.
+**Vanno prima del passo 22**, perché finché le due strozzature esistono
+**nessuno strato basso è consegnabile separatamente** — si estrarrebbe uno
+strato che, per essere caricato, tira dentro tutto.
+
+| | Passo | Quanto | Fermata sicura dopo? |
+|---|---|---|---|
+| **21-bis** | **`stopAllModuleActivity` si inverte in REGISTRAZIONE.** Ogni modulo, caricandosi, dichiara la propria pulizia; la funzione le chiama tutte senza nominarne nessuna. *Chi non è caricato non ha niente da pulire, e questo diventa vero per costruzione invece che per attenzione.* La regola 21 non cambia — resta il punto unico — cambia **come** ci arriva. 19 righe, 6 chiamate. | mezza giornata | **sì** |
+| **21-ter** | **`openModuleByKind` risolve dallo spazio dei nomi e diventa asincrono.** Otto rami, una funzione. È il punto in cui il caricamento a richiesta si aggancia, e l'unico posto dove un modulo viene nominato da fuori. | mezza giornata | **sì** |
+| **21-quater** | **I 103 listener entrano nell'`open` del proprio modulo** (decisione del 15 settembre). ⚠️ **È il lavoro più grande dei tre e il più rischioso**: un listener che si attacca due volte fa partire l'azione due volte, e un listener che non si attacca più non dà nessun errore — il pulsante semplicemente non fa niente. Vuole un test suo prima di cominciare, non dopo. | 1-2 giorni | **sì**, un modulo per volta |
+
+| | Passo | Stato | Fermata sicura dopo? |
+|---|---|---|---|
+| **22** | Gli strati — ⚠️ **NON PIÙ «dal basso», ma ORDINATI SUL CONFINE DEL LOGIN** (rifatto il 2026-09-15). Il confine non è `core`/resto: è **cosa serve per disegnare la schermata di login e nient'altro** — `showView`, `getUserName`/`setUserName`, `applyTheme`, `hydrateIcons`/`icon`, `showLoadError`. **Tutto il resto sta dopo il confine, `loadModuleInstructions` compreso.** Gli strati restano `core`, `dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine`, ma `core` si spezza in **due**: ciò che precede l'identità e ciò che la presuppone. *Uno strato che contiene tutte e due non lo spezzi più.* **Ogni estrazione fa due cose nello stesso commit:** attacca allo spazio dei nomi ciò che quel file espone, e sposta il file. **Dentro l'estrazione dello strato `dati` sta l'unificazione dei tre `fetch` in un punto solo** — `MODULE_INSTRUCTIONS_FILE`, `module.dataFile`, e `messaggi-feedback.json` che oggi scavalca il meccanismo. È voce esplicita, non implicita. | ☐ | **sì**, uno strato per volta |
 | **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** Un modulo sta fra 365 e 670 righe. | ☐ | **sì**, un modulo per volta |
 | **24** | **DUE file, non uno** (deciso il 2026-09-09): `componenti-condivisi.md` e `componenti-singoli.md`. Ogni pezzo estratto finisce in una delle due liste, e **non c'è un terzo posto dove metterlo**: niente resta fuori, niente si cancella, niente blocca chi estrae. Si riempiono **nello stesso commit** di ogni estrazione, e i file **nascono con la prima estrazione**, non prima — un file vuoto in attesa è un invito a riempirlo di intenzioni.<br><br>*Perché due e non uno, e il buco che ha chiuso: il criterio «un pezzo ci sta se e solo se è usato da più di un modulo» è verificabile, ma **sette copie identiche non sono "usate da più di un modulo": ognuna è usata da uno**. Con un file solo, lo spacchettamento avrebbe messo sette righe separate e il documento sarebbe nato dicendo «il Blocco Ascolto non è un componente condiviso» — vero secondo il criterio, falso secondo la realtà. Con due file, alla fine si LEGGE la seconda lista: sette voci con lo stesso nome saltano all'occhio. **Il controllo diventa leggere, non cercare.***<br><br>*I nomi sono stati scelti contro la prima proposta, ed è la ragione dello scarto che conta. La prima era `pezzi-di-un-modulo.md`, con l'argomento «un componente è condiviso per definizione, quindi il nome dice la regola d'ingresso»: **codifica il criterio di catalogazione, che si usa una volta per riga, e ignora l'uso, che è quotidiano.** Quel file è un magazzino da cui si preleva, e da un elenco di «pezzi» non si preleva — la parola dice scarti, ritagli, roba avanzata.*<br><br>*Tre ragioni per `componenti-singoli.md`: **«singolo» non nega «componente»**, dice che oggi lo usa uno solo, cioè cosa può diventare; i due nomi **differiscono per una parola sola**, quindi stanno vicini in qualunque elenco e cercando «componenti» escono tutti e due (per un file la cui ragione d'essere è «guarda qui prima di scrivere», essere difficile da trovare è il difetto centrale); e lo spostamento fra i due file diventa **un cambio di aggettivo invece che di categoria** — più piccolo, quindi più probabile che succeda davvero.*<br><br>*Cautela: «singolo» si può leggere come «componente semplice». Si chiude con la prima riga del file, non col nome.*<br><br>**Le tre fragilità, tutte e tre accolte:**<br>① **Tre campi corti e fissi per ogni riga, non un paragrafo.** **«Cosa fa»** — il comportamento nelle parole di chi ne ha bisogno, non del modulo che ce l'ha (*«pulsante ascolta + velocità» sette volte di fila si vede; «audio di Repeat Aloud» no*). **«Cosa gli passi, cosa restituisce»** — la firma in chiaro. E **«cosa dà per scontato»**: *«vuole un contenitore già flex», «il testo lo risolve chi chiama», «scrive nel localStorage dell'episodio corrente», «va chiamato dopo che i dati sono arrivati».*<br><br>*Il terzo campo esiste perché **la gente non riscrive un pezzo perché non l'ha trovato — riscrive perché l'ha trovato e non ha capito se le andava bene.** Una firma non lo dice; i presupposti sì. Per il Blocco Ascolto quel campo avrebbe detto «vuole `.listen-block` intorno», che era esattamente l'informazione che serviva.*<br>② **La regola del passaggio:** quando un secondo modulo comincia a usare un pezzo, la riga si sposta nei condivisi **nello stesso commit che lo deduplica**. Mai in due posti, mai «poi». *Il secondo file non è un cimitero, è una sala d'attesa.*<br>③ **Il costo dichiarato:** i pezzi duplicati si estraggono come duplicati e quel lavoro si fa due volte. Accettato, per la stessa ragione per cui C.3 si è fatto **prima** dello spacchettamento: fermarsi a deduplicare mentre si trasloca rende il trasloco impossibile da diagnosticare.<br><br>⚠️ **LA GREP CHIUSA, e sta scritta qui dentro apposta.** Prima di scrivere la riga di un pezzo, si prende **UNA stringa distintiva da dentro quel pezzo** — una classe CSS, un `aria-label`, un attributo `data-` — e la si cerca nel repository.<br><br>*È la differenza che conta: un censimento è una ricerca **aperta** («trova tutte le duplicazioni»), e fallisce in silenzio perché non ha un criterio di completezza — «non ho trovato altro» è indistinguibile da «non ho cercato bene». Questa è **chiusa**: una stringa che hai davanti, un comando, un numero. **O il numero è 1, o non lo è.** È esattamente come sono state trovate le sette copie del Blocco Ascolto: non un censimento dei componenti audio, ma la classe che si aveva sotto gli occhi, cercata.*<br><br>*Il limite, e per questo le due difese si completano: la grep chiusa trova le copie che condividono almeno una stringa, non sette copie riscritte ognuna con le sue classi. Quelle le prende la lettura finale della seconda lista. La grep prende il caso al momento dell'estrazione, quando costa poco; la lista prende il resto, tardi ma da qualche parte.*<br><br>*E sta dentro questa riga e non in un documento a parte per una ragione precisa: costa dieci secondi per pezzo, sette minuti su quaranta estrazioni. **Non è il tipo di controllo che si salta perché costa, è il tipo che si salta perché ci si dimentica che esiste.**<br><br>⚠️ **IL SECONDO FILE NON È SOLO UNA LISTA DA LEGGERE ALLA FINE: è il magazzino che si consulta PRIMA di scrivere un modulo nuovo**, in tre passi. ① Guardo nei condivisi. ② Guardo nei singoli — **e se trovo qualcosa che fa quello che mi serve LO PROMUOVO invece di riscriverlo**. ③ Solo come ultima spiaggia ne creo uno nuovo.<br><br>*Il passo ② è quello che oggi manca, ed è **il motivo per cui esistono sette Blocchi Ascolto**: nessuno aveva un posto dove guardare prima di scrivere. E risponde a una domanda diversa dalla grep chiusa, in un momento diverso — la grep è retrospettiva («questo pezzo che ho in mano è duplicato?»), la consultazione è preventiva («esiste già qualcosa che fa questo?»). La grep li avrebbe trovati allo spacchettamento, cioè anni dopo che erano nati; il passo ② avrebbe impedito al **secondo** di nascere. Servono tutte e due e non si sostituiscono.*<br><br>**Il controllo finale sono DUE cose, non una.** **Leggere la lista** dice *cosa c'è* e trova le duplicazioni fra righe. **La riconciliazione modulo per modulo** dice *se manca qualcosa*, e prende il caso che la lettura non può prendere per costruzione: **un pezzo mai scritto da nessuna parte è invisibile in un elenco di pezzi scritti** (stessa forma della famiglia ⓪).<br><br>⚠️ **E la riconciliazione ha una chiusura, altrimenti è una ricerca aperta** — cioè la cosa che la grep chiusa esiste per non essere. Non è «guardo ogni modulo e vedo se manca qualcosa», è: **per ogni file di modulo, ogni funzione che definisce e ogni classe CSS che introduce deve comparire in esattamente uno dei due elenchi.** Si contano le definizioni nel file, si contano le righe nei due elenchi, e i due numeri devono tornare. *L'esito è un numero, non un'impressione: o torna, o non torna — e se non torna, dice quali definizioni sono scoperte. Ed è verificabile a macchina, quindi prima o poi diventa un test.*<br><br>⚠️ Una riga rimandata è una riga scritta dopo guardando il risultato, cioè un censimento invece di una decisione registrata. | ☐ | **sì** |
 | **25** | `CLAUDE.md`: la regola 6, la riga «L'app vive in un file solo», **e la regola 8** — che oggi nomina un solo file di testi condivisi mentre ne esistono due (`istruzioni-moduli.json` e `messaggi-feedback.json`). | ☐ | **sì** |
