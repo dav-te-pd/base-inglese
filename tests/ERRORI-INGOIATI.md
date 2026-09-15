@@ -149,6 +149,47 @@ posto sbagliato**, e si portava dietro un'attesa che non guardava niente.
 *Spostata prima dell'apertura del modulo, col nome che dice cosa verifica
 davvero.*
 
+## ⓪-quater LA MOTIVAZIONE FALSA ACCANTO A CODICE GIUSTO
+
+> **UNA MOTIVAZIONE FALSA ACCANTO A CODICE GIUSTO FA SMETTERE DI CONTROLLARE
+> CHI LA LEGGE.**
+
+È la peggiore della famiglia dei commenti, e per una ragione precisa: **il
+codice intorno è sano**. Niente insospettisce. Un commento che descrive male
+un pezzo rotto si scopre quando il pezzo si rompe; uno che descrive una
+garanzia che non c'è, accanto a codice che oggi funziona per altri motivi,
+non si scopre mai — finché quel «per altri motivi» cambia.
+
+**Il caso, 2026-09-15, giro A del passo 18.** Il commento di `uiText()` diceva:
+
+> *«Funziona perché la cache è già calda: `openModuleFromMap` fa
+> `Promise.all([loadEpisodeData, loadModuleInstructions])` prima di aprire
+> qualunque modulo.»*
+
+**Non lo faceva.** Quel `Promise.all` aspettava `ensureEpisodeSlotFields` e
+`loadEpisodeData`, non i testi. Misurato: il modulo si apriva con gli
+`aria-label` del Blocco Ascolto e la didascalia del microfono **vuoti**.
+
+⚠️ **E SI TROVA IN UN MODO SOLO: GUIDANDO L'APP.** Non rileggendo — la frase
+descriveva *esattamente* il codice che serviva, solo che quel codice non
+c'era, quindi rileggerla conferma sé stessa. E non con un setaccio: al passo
+17 i due metodi di ricerca dei commenti falsi (il controllo sui **nomi** e
+l'ordinamento per **marcio**) sono caduti tutti e due sul loro caso di prova,
+e su questo non avrebbero nemmeno potuto funzionare in teoria — **ogni nome
+citato in quella frase esiste**: `openModuleFromMap` esiste, `Promise.all`
+esiste, `loadEpisodeData` e `loadModuleInstructions` esistono. Non c'era un
+nome morto da trovare: c'era una **composizione** che non esisteva.
+
+*È la stessa forma del ⑤ del passo 16 («il nome esteso del grado sta nel file
+episodio»): ogni nome esiste, la falsità è nella relazione fra i nomi. Quella
+classe non ha un setaccio, e questa riga serve a non cercarne più uno.*
+
+**Come si corregge:** non basta togliere la frase falsa. Al suo posto va la
+garanzia **vera** — qui: «la cache è calda perché c'è `loadModuleInstructions()`
+in quel `Promise.all`, e se quella riga sparisce `uiText()` torna stringhe
+vuote» — più **come è stata trovata**, perché chi legge sappia che quella
+frase è stata verificata invece che scritta a intuito.
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

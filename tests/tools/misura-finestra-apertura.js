@@ -1,5 +1,14 @@
 // Quanto un modulo fa aspettare prima di essere USABILE.
 //
+// ⚠️ HA UN PARENTE, NON UN GEMELLO: misura-finestra-boot.js, che guarda la
+// stessa cosa in un ALTRO momento — fra DOMContentLoaded e «i testi sono
+// arrivati», invece che fra «la schermata risponde» e «il modulo ha il suo
+// contenuto». Stessa idea, meccanismo diverso, e nessuno dei due risponde
+// alla domanda dell'altro: questo serve a chi aggiunge un fetch
+// all'APERTURA DI UN MODULO, quello a chi vuole far scrivere dal JSON un
+// testo che oggi sta nel markup statico. I due si citano a vicenda apposta,
+// come attendi.sh e attendi-ci.sh — chi ne tocca uno guardi l'altro.
+//
 // Non e' un test: e' uno strumento di misura, come screenshot_blocco_ascolto.
 // Misura la finestra fra "la schermata e' pronta e i pulsanti rispondono" e
 // "il modulo ha davvero il suo contenuto". In mezzo c'e' tutto quello che
