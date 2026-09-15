@@ -68,7 +68,22 @@ sola, e non nominava niente di quello che è successo il 9 e il 10 settembre.
 **È la prima sezione che una sessione nuova apre, quindi era anche la prima cosa
 falsa che leggeva.***
 
-### Il prossimo passo è il **17** — i commenti
+### Il prossimo passo è il **18** — le stringhe, E LA FASE 3 FINISCE LÌ
+
+⚠️ **Il 17 è CHIUSO senza essere fatto** (15 settembre), e la decisione viene dai
+numeri del suo stesso triage: tre casi dichiarati e tutti e tre caduti, due
+setacci costruiti e due prove negative sull'unico caso verificabile, 6569 righe
+di superficie contro l'ora stimata. La lettura dei commenti è diventata **una
+riga dello spacchettamento**. Gli esiti stanno in «I commenti: due setacci
+costruiti e due prove negative», e il terzo è quello che conta: *senza, la
+prossima sessione ricostruisce lo stesso rilevatore e ci si fida.*
+
+⚠️ **E il 18 va RICONTATO PRIMA, per la quinta volta di fila.** Il numero in
+cronologia è **93 stringhe**, ed è già più sospetto degli altri quattro per una
+ragione sua: **veniva da un filtro grezzo, non da un elenco.** Gli altri erano
+casi notati e contati male; questo è un `grep` che nessuno ha guardato.
+
+### Il 17 — i commenti (chiuso senza farlo)
 
 **Il passo 16 è fatto a metà, e la metà che manca non è un residuo: è uscita
 dal passo.** Punti 1-5 eseguiti il 15 settembre (² già morta, ⁵ il commento
@@ -98,7 +113,7 @@ e **76 legittime marcate nel sito con il loro motivo** — il resto è navigazio
 che non è mai stata debito. *Il numero che contava non era «quante ne ho
 convertite»: era «quante ne restano senza una spiegazione», e adesso è zero.*
 
-**Il 15 e il 16 sono chiusi. Il prossimo passo della fase 3 è il 17.**
+**Il 15 e il 16 sono chiusi, il 17 è chiuso senza essere fatto. Resta il 18.**
 ⚠️ **E il 18 va RICONTATO prima di pianificarlo, non durante**: le «93
 stringhe» dichiarate non sono mai state contate. Il 15 diceva «quattro
 valori» ed erano 39 righe; il 16 sbagliava cinque numeri su sei.
@@ -117,7 +132,7 @@ valori» ed erano 39 righe; il 16 sbagliava cinque numeri su sei.
 
 ### Cosa resta
 
-**17 e 18** della fase 3; la **fase delle stringhe**; la **fase 4** (19 → 26).
+**18** della fase 3 — e con quello la fase 3 finisce; la **fase delle stringhe**; la **fase 4** (19 → 26).
 Il **13** — le cinque righe della mastery — resta aperto come blocco a sé.
 Fuori catena, nati dal passo 16: **`view-pronunciation` dopo il 25** e i due
 passi su **`bootAsUser` / `mockInit`**.
@@ -415,7 +430,7 @@ non era stato scritto niente.
 | **14b** | **Una forma per famiglia**, e le chiamate che la usano. ⬇︎ pianificato sui numeri del 14a, non sulla stima.<br><br>⚠️ **OGNI FAMIGLIA VUOLE UN GIRO DI LETTURA PRIMA DELLA CONVERSIONE, e il numero della famiglia è DOVE GUARDARE, non quanto lavoro c'è** (aggiunto l'11 settembre, dopo il primo giro). Il censimento classifica per **cosa si legge**, non per **come viene usato**: vede `.hidden` e scrive «una schermata che compare o sparisce», e ha ragione sul cosa — ma non può vedere se quella lettura serve a dire *«è comparsa»* o *«NON è comparsa»*, che sono l'opposto. Sulla famiglia ② erano **9 punti su 29**: cinque negative (l'attesa È la misura), una vacua, e tre che la conversione avrebbe **svuotato** — uno stato già vero prima dell'attesa, che convertito tornerebbe al primo istante.<br><br>⚠️ **Una conversione sbagliata non lascia un rosso: lascia un verde che non prova più niente — e il conto scende, cioè il numero migliora proprio quando il lavoro fa danno.** Da qui il terzo secchio del contatore e il marcatore `// ATTESA-LEGITTIMA: <motivo>` scritto nel sito, che lo strumento raccoglie da solo.<br><br>**② FATTA il 2026-09-11** — `attendiVisibile` / `attendiNascosto` in `tests/attese.js`, 21 chiamate in 13 file, 8 marcate legittime, e la vacua di `test_batch16` corretta.<br><br>**① ③ ④ FATTE lo stesso giorno.** ① `attendiAbilitato`/`attendiDisabilitato`/`attendiClasse`; ③ `attendiCheParla`/`attendiTono` e la quinta categoria; ④ nessuna funzione nuova — l'approdo era `#view-map.is-active`.<br><br>⚠️ **IL CRITERIO CHE NE ESCE, e vale per le famiglie che restano: l'effetto su cui aspetti non può essere quello che l'asserzione legge, o diventa vera per costruzione.** Sta in testa a `tests/attese.js`.<br><br>**186 → 56 guardie da convertire** (i numeri intermedi della giornata erano gonfiati da un difetto dello strumento: vedi «14b ④»). | ◐ | **sì**, una famiglia per volta |
 | **15** | I valori ricopiati nei test. ⚠️ **Il numero era SBAGLIATO: diceva «quattro valori, ~1 ora», sono risultate 39 righe in 10 file.** I quattro siti nominati esistevano tutti, ma erano *quattro casi notati*, mai un censimento — la stessa storia delle «19 attese di test_batch19» che erano 7 e delle 141 attese che erano 186.<br><br>⚠️ **E otto delle 39 erano state scritte quattro giorni prima, chiudendo la famiglia ③ del 14b** (`attendiTono(page, [1046, 1318, 1568], 3)`): **un passo della catena può CRESCERE mentre se ne chiude un altro.** È la seconda volta in una settimana — il 14b aveva prodotto sei guardie nuove da due file nati il giorno prima.<br><br>> **RICONTARE PRIMA DI PARTIRE non è prudenza: è l'unico modo di sapere cosa si sta per fare.**<br><br>**FATTO il 2026-09-15.** Censimento generato: 84 candidati su 52 righe → 9 falsi positivi, **4 requisiti che restano**, **39 righe di copie convertite**. Restano 8 righe: i 4 requisiti, 3 **fixture** e 1 falso positivo. | ☑ | **sì** |
 | **16** | Le voci di pulizia. ⚠️ **RICONTATE PRIMA DI PARTIRE, e cinque numeri su sei erano sbagliati** (il triage del 15 settembre). L'elenco dichiarava: `view-pronunciation`, il ramo `'check'` di `openAttemptPopup`, `tests/legacy/` (6 file), `tests/debug/` (6 file), `levels.X.label`, «i quattro test con funzioni quasi identiche». Misurato: `legacy/` = **5 `.js` + README**, `debug/` = **9 `.js` + README**, il ramo `'check'` **era già morto** (la firma è `(wasCorrect, onRetry, onNext)`, e i `'check'` rimasti in `index.html` sono tutti vivi: il nome dell'icona e `voiceVariant`), e i «quattro test» erano **28**.<br><br>⚠️ **E la misura giusta non era quella: la domanda non è QUANTE COPIE, è QUANTE VERSIONI DIVERSE.** Sono due misure diverse, e **solo la seconda dice se c'è un difetto**. Contate per contenuto: `openModule` **23 copie / 1 variante**, `bootAsUser` **26 / 14**, `mockInit` **28 / 20**. Ventitré copie identiche sono un'unificazione meccanica; ventotto copie in venti versioni sono venti decisioni diverse che si sono separate da sole, e unificarle è **scegliere quale vince** — cioè il caso in cui «un helper condiviso indebolisce un'asserzione e lascia i file verdi che provano meno di prima» smette di essere un rischio e diventa il lavoro. *Una conta di copie avrebbe detto «77 duplicazioni» e avrebbe fatto partire tutte e tre insieme.*<br><br>**FATTI il 2026-09-15 (punti 1-5):** ² tolta dall'elenco perché già morta; ⁵ il commento falso su `levels.X.label` corretto; ³⁴ `legacy/` e `debug/` cancellate (2004 righe); ⁶ unificato **solo `openModule`** — `bootAsUser` e `mockInit` **escono dal passo** e diventano una decisione loro, perché 14 e 20 varianti non sono pulizia. ¹ `view-pronunciation` **fermata al triage**, registrata come passo suo dopo il 25 (sotto).<br><br>**VERIFICATO il 2026-09-15:** suite **verde su 48 file**, conteggio **1097 contro 1096 (+1)** — il caso `[F]` nuovo. ⚠️ **E il diff del baseline è la prova che lo spostamento era davvero meccanico: una riga sola, `test_conta_attese.js` 15→16.** Nessuno degli altri 47 file ha perso o guadagnato un'asserzione — se unificare `openModule` avesse cambiato cosa provano i 23 file, si vedrebbe lì.<br><br>*(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ² li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(**I due `if` in `vcEvaluate` sono usciti da questo elenco l'11 settembre**: non sono più una voce di pulizia — la ② li ha resi due regole diverse, e quello che resta lì non è una ridondanza ma un **dato falso**. Sono confluiti nella riga sullo 0% su registrazione muta, in «La mastery: dove va il dato».)* *(NON la divergenza `off/seen`: muore da sola nel passo 20. NON `test_speakeasy.result.txt`: verificato, non esiste.)* | ◐ | **sì**, voce per voce |
-| **17** | I commenti: i dodici di `attemptRule` (**lettura, non sostituzione** — `CONFIG.attemptRule` è stato tolto il 2026-09-05, non c'è nessun identificatore da rinominare), il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` (`index.html:6707`). ~1 ora. **Vanno prima del trasloco**: un commento falso spostato in un file nuovo diventa la documentazione di quel file, e nasce autorevole. | ☐ | **sì** |
+| **17** | ⚠️ **NON SI FA COME PASSO — chiuso il 2026-09-15, e la decisione viene dai numeri del suo stesso triage.** Dichiarava tre casi («i dodici di `attemptRule`», il testo falso in `renderMasteryPanel`, il commento morto su `CONFIG.flashcard` a `index.html:6707`) e ~1 ora. **Tutti e tre caduti al riconteggio**, e la superficie vera è **6569 righe di commento in 66 file, il 25% del codice**.<br><br>**La ragione originale era: «un commento falso spostato in un file nuovo nasce autorevole, quindi va corretto PRIMA». Non regge**, perché lo spacchettamento non copia i commenti alla cieca: estraendo un pezzo si legge quello che si sposta, con il contesto davanti e su un pezzo per volta. Leggere 6569 righe adesso vorrebbe dire **leggerle due volte**.<br><br>**La lettura dei commenti diventa quindi una RIGA DELLO SPACCHETTAMENTO** (fase 4): ogni pezzo estratto si legge, e i commenti che porta con sé si verificano allora. *Non è un rinvio: è spostarlo dove costa la metà e rende il doppio.*<br><br>⚠️ **E il solo caso noto di questa classe — il ⑤ del passo 16 — è stato trovato di PASSAGGIO, correggendo altro. È esattamente il modo in cui questa classe si trova**, ed è la stessa ragione per cui il passo non serve: *(gli esiti del triage stanno sotto, in «I commenti: due setacci costruiti e due prove negative» — valgono più delle correzioni che non faremo).* | ☒ | — |
 
 
 #### Il risultato del 14a — 2026-09-10
@@ -623,6 +638,88 @@ era vecchio perché nessuno lo ricalcolava; qui sarebbe stato vecchio perché il
 lavoro lo cambia in **tutte e due** le direzioni. In entrambi i casi la difesa è
 la stessa — **il numero si genera, non si ricorda.** E la ragione per cui questa
 riga era falsa è che l'avevo ricordato invece di generarlo.*
+
+## ⚠️ I COMMENTI: DUE SETACCI COSTRUITI E DUE PROVE NEGATIVE (15 settembre)
+
+*Il passo 17 è caduto qui. Questi esiti valgono più delle correzioni che non
+sono state fatte, e il terzo più dei primi due.*
+
+### I tre riconteggi — il passo dichiarava tre casi, sono caduti tutti e tre
+
+| dichiarato | misurato |
+|---|---|
+| «i dodici di `attemptRule`» | **0 in `index.html`.** 17 nel repository, di cui **11 in `docs/validazione.md`**, 3 in `test_outcome_step_ids.js` (legittimi: asseriscono che non esiste più), 1 in `correzioni.md`, 1 in `censimento-moduli.md`, 1 nella riga del passo. **Il lavoro, se c'è, è in un DOCUMENTO, non nei commenti del codice** — e chi leggeva il passo andava a cercare in `index.html`. |
+| «il commento morto su `CONFIG.flashcard` (`index.html:6707`)» | riga **6949**, e **il commento è corretto** (sotto) |
+| «il testo falso in `renderMasteryPanel`» | **il passo non dice QUALE frase**, quindi la voce non è verificabile come scritta: si può solo riderivare. Controllate tutte le sue affermazioni: i due prefissi `voicepractice:`/`voicecheck:` **esistono e per la ragione dichiarata**, «il numero di scritture non c'è» è **vero**, `a-hello` e `b-and-you` sono **id reali**. L'unica incompletezza sta altrove ed è stata corretta (vedi `correzioni.md`). |
+
+*È la quarta volta di fila che i numeri di un passo sono sbagliati — «19 attese»
+che erano 7, «141» che erano 186, «quattro valori» che erano 39, e qui cinque
+su sei al passo 16 e tre su tre al 17.*
+
+### ⚠️ LA DISTINZIONE PASSATO/PRESENTE — sono opposti e si somigliano
+
+> **Un commento che nomina una cosa morta AL PASSATO è corretto: la sta
+> dichiarando morta, ed è la spiegazione. Uno che la nomina AL PRESENTE è
+> falso.**
+
+Il caso: `index.html:6949` cita `data[CONFIG.flashcard.levels[…].vocabKey]`, una
+chiave che **non esiste**. Sembra il difetto perfetto. Ma il commento comincia
+con *«**Prima** ogni modulo aveva la sua strada»*: sta raccontando da dove si
+viene, e **cancellarlo distruggerebbe proprio il perché**.
+
+*Perché va scritto: un setaccio automatico li trova identici — nome morto,
+commento vivo — e un lettore di fretta anche. La differenza non sta nel nome,
+sta nel tempo del verbo. Ed è la ragione per cui questa classe non si delega a
+uno strumento: lo strumento segnala, non giudica.*
+
+### ⚠️ LE DUE PROVE NEGATIVE, E PERCHÉ HANNO FALLITO
+
+**Questa è la parte che serve di più, perché senza di essa la prossima sessione
+ricostruisce lo stesso rilevatore e ci si fida.** Tutti e due i metodi sono
+stati provati **contro il ⑤ del passo 16**, l'unico caso di questa classe che
+sappiamo essere vero.
+
+**① Il controllo sui NOMI.** L'idea nasce dal ⑤ stesso: era falso perché
+*nominava* cose (`levels.A.label`, `data/{livello}-episodioN-{lingua}.json`), e
+un nome si verifica. Costruito su cinque classi — id del DOM, chiavi `CONFIG`,
+percorsi di file, riferimenti a numero di riga, numeri di regola — e passato su
+tutti e 66 i file: **zero difetti veri, tre falsi positivi.**
+
+> **LA PROVA: output IDENTICO prima e dopo la correzione del ⑤.** Non lo vede.
+
+Spingendolo oltre ne recupera **metà**: aggiungendo i **segmenti letterali dei
+percorsi con segnaposto** (la forma ⑥ della regola 41 — il percorso assemblato
+a pezzi, che la prima versione saltava *proprio perché* aveva le graffe) il
+`data/{livello}-episodioN-{lingua}.json` viene preso. L'altra metà no, ed è
+strutturale: `levels.A.label` passa perché **`.label` esiste** nel codice — su
+temi, moduli, slot. Il controllo non sa su *quale oggetto*.
+
+> ⚠️ **E il cuore del ⑤ è irraggiungibile da QUALUNQUE controllo sui nomi:**
+> *«il nome esteso di ciascun grado sta nel file episodio»*. **Ogni nome in
+> quella frase esiste.** La falsità è su **quale dei due è la fonte**. Non c'è
+> un nome sbagliato da trovare: c'è un'attribuzione sbagliata.
+
+**② L'ordinamento per marcio.** Un commento diventa falso quando cambia la cosa
+che descrive, quindi il sospetto non è «il commento è vecchio» ma **«il
+commento è vecchio mentre il codice sotto è nuovo»**. Misurato con `git blame`
+su 406 blocchi da almeno tre righe: **156 hanno sotto codice più nuovo di loro**,
+con divari da 1 a 16 giorni su un repository di 22 — abbastanza per
+discriminare, e 14 blocchi sopra i 14 giorni. Sembrava buono.
+
+> **LA PROVA: il blocco del ⑤ era 68° su 157.** In mezzo al gruppo.
+
+*Il metodo ordina per **occasione** di essere diventato falso, non per **esserlo**.
+Sono due cose diverse, e solo la seconda serve.*
+
+### Cosa resta, ed è poco ma è vero
+
+Il controllo sui nomi **non serve a cercare, serve a non ricadere**: è una
+guardia, non un setaccio. Provato iniettando `legacy/test_qm.js` in un commento
+di `test_blocco_ascolto.js`: **lo prende** — cioè il difetto che il 15 settembre
+è stato trovato leggendo, domani lo prenderebbe un controllo. **Ma non diventa
+una guardia adesso** (vedi la riga in «Pulizie rimandate»): la sua classe è
+vuota, e non per caso — è quello che le rinomine dei passi 1-6 hanno già
+spazzato.
 
 ## ⚠️ COPIE E VARIANTI SONO DUE MISURE DIVERSE (metodo, 15 settembre)
 
@@ -1730,3 +1827,5 @@ scadere, o si sa che niente la farà, e si scrive quale dei due.
 | 2026-09-15 | **`bootAsUser` e `mockInit` NON sono duplicazioni da unificare: sono 14 e 20 decisioni diverse.** Contati per contenuto al triage del passo 16: `bootAsUser` **26 copie / 14 varianti**, `mockInit` **28 / 20**. (`openModule`, 23 copie / **1** variante, è stato unificato lo stesso giorno: quello era meccanico.) | ⚠️ **È il caso in cui il rischio dichiarato del passo 16 smette di essere un rischio e diventa il lavoro:** unificare venti versioni vuol dire **scegliere quale vince**, e ogni scelta sbagliata lascia dei file **verdi che provano meno di prima** — il tipo di errore che non produce nessun rosso. Un `mockInit` che spegne il sintetizzatore in modo leggermente diverso non è una copia mal riuscita: può essere l'unica ragione per cui quel file misura quello che dice. | **Ognuno il suo passo, e si parte LEGGENDO le varianti, non unificandole.** Il primo giro è un censimento che dice *quante versioni sono davvero diverse e in cosa* — se venti varianti si riducono a tre più diciassette differenze accidentali, è un lavoro; se sono venti scelte, non si fa. |
 | 2026-09-15 | **Match Practice en→it: nessun test vivo verifica che mostri il Blocco Ascolto della consegna** (`#qm-prompt-audio`). Era cercato solo da `legacy/test_qm`, cancellato il 15 settembre perché fuori dalla suite da settimane. Gli altri tre moduli nominati dal limite dichiarato di `test_blocco_ascolto.js` sono coperti davvero (Flash Card, Repeat Aloud, Why We Say It). | Il buco **non nasce con la cancellazione, diventa visibile**: quel file non lo lanciava nessuno. Oggi il caso è parzialmente coperto dall'asserzione ① di `test_blocco_ascolto.js` (il markup ha **una sola sorgente**), che è più forte di un confronto a campione — ma non vede un modulo che smettesse di **chiamare** `renderListenBlock`. | **Alla prima apertura di `test_blocco_ascolto.js` o di un test di Match Practice**, dove una riga in più costa un minuto. Non con un giro apposta: è un'asserzione, non una correzione, e il limite adesso è scritto dove si legge. |
 | 2026-09-15 | **Lo script che conta le VARIANTI (non le copie) di una funzione ripetuta merita di diventare uno strumento in `tests/tools/`.** Oggi è stato scritto al volo per il triage del passo 16: estrae ogni definizione, la normalizza, e ne fa l'hash — così `23 copie` si legge `1 variante` e `28 copie` si legge `20 varianti`. | **È la differenza fra un lavoro meccanico e venti decisioni**, e non si vede contando le occorrenze con `grep -c`. Un conto di copie avrebbe detto «77 duplicazioni» e avrebbe fatto partire `bootAsUser` e `mockInit` insieme a `openModule`. ⚠️ **Limite noto, e va scritto se lo strumento nasce:** la normalizzazione decide cosa è «la stessa versione» — troppo aggressiva e venti varianti diventano una, troppo timida e due spazi fanno due varianti. Uno strumento di misura che sbaglia non lo dice (regola 37), quindi nasce con il suo test o non nasce. | **Quando servirà la seconda volta**, cioè al primo dei due passi su `bootAsUser`/`mockInit`. Scritto adesso per un uso solo sarebbe uno strumento senza un secondo lettore. |
+| 2026-09-15 | **Il controllo sui NOMI nei commenti — id del DOM, chiavi `CONFIG`, file e percorsi citati, numeri di regola — NON diventa una guardia in CI.** Costruito e misurato al triage del passo 17 su 66 file e 6569 righe di commento: **zero difetti veri, tre falsi positivi.** Funziona (provato iniettando `legacy/test_qm.js` in un commento: lo prende), ma non ha niente da sorvegliare. | ⚠️ **Una guardia che sorveglia una classe vuota è uno strumento che parla senza avere niente da dire — e quelli si imparano a ignorare.** E la classe è vuota per una ragione precisa, non per fortuna: è esattamente quello che le rinomine dei passi 1-6 hanno già spazzato. Metterlo in CI adesso significa aggiungere un verde in più che non prova niente, sulla suite dove ogni verde deve valere qualcosa. | **Alla prossima rinomina grossa** — cioè il giorno in cui quella classe torna a riempirsi. È li' che un controllo sui nomi paga: una rinomina sposta gli identificatori nel codice e **lascia indietro quelli citati nei commenti**, che nessun `grep` di verifica per sottrazione (regola 41) guarda. Nasce con il suo test, o non nasce. |
+| 2026-09-15 | **La LETTURA DEI COMMENTI entra nello spacchettamento come riga di ogni pezzo estratto**, invece di essere un passo suo (il 17, chiuso lo stesso giorno). Ogni pezzo che esce da `index.html` si legge, e i commenti che porta con sé si verificano allora. | La ragione del passo 17 era *«un commento falso spostato in un file nuovo nasce autorevole, quindi va corretto PRIMA»*. Ma lo spacchettamento **non copia i commenti alla cieca**: estraendo un pezzo si legge quello che si sposta, con il contesto davanti e su un pezzo per volta. Farlo prima vorrebbe dire leggere 6569 righe **due volte**. *E il solo caso noto di questa classe è stato trovato di passaggio, correggendo altro: è così che si trova.* | **Dentro la fase 4, a ogni estrazione** — non come giro a parte, mai come lavoro suo. ⚠️ E la cosa da tenere davanti mentre si legge è la distinzione **passato/presente**: un commento che nomina una cosa morta può essere corretto, se la sta dichiarando morta. Sono opposti e si somigliano. |
