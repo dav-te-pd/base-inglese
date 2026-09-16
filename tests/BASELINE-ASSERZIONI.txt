@@ -9,6 +9,28 @@
 # Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
+# ##########################################################################
+# UN FATTO DA SAPERE, SCRITTO QUI UNA VOLTA SOLA PERCHE' VALE SEMPRE:
+#
+#   L'ULTIMO COMMIT DI OGNI GIRO CHE AGGIORNA QUESTO FILE E' COPERTO DALLA
+#   CI, NON DALLA SUITE LOCALE.
+#
+# E' strutturale, non una svista, e non si puo' correggere: questo file lo
+# produce la corsa, quindi l'ordine e' per forza
+#
+#     corsa -> aggiornamento di questo file -> push
+#
+# e l'albero su cui la suite ha girato non contiene ancora la riga nuova.
+# La differenza e' un file di soli dati, letto dal contatore e da nessun
+# test, quindi il rischio e' minimo — ma «ho lanciato la suite e ho spinto»
+# resta una frase vera e incompleta, ed e' la CI di quel commit a chiudere
+# il buco.
+#
+# *Scritto qui e non nei resoconti: un fatto ripetuto a ogni giro diventa
+# rumore e smette di essere letto. Qui lo trova chi aggiorna il file, che
+# e' l'unica persona a cui serve.*
+# ##########################################################################
+#
 # Ultimo aggiornamento: 2026-09-16
 # Totale: 1252
 test_attendi.js 17

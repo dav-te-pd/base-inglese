@@ -218,6 +218,27 @@ async function run() {
     // NON CHI SCRIVE IL TEST. Una famiglia nuova entra nel giro da sola il
     // giorno in cui viene aggiunta al censimento — e chi la aggiunge non deve
     // sapere che questo blocco esiste.
+    //
+    // ⚠️ E LA DISTINZIONE CHE RENDE LA LEZIONE USABILE INVECE CHE UN DIVIETO,
+    // trovata al ⑥-zero su `PASSO_DI` e valida ovunque:
+    //
+    //   NON È L'ELENCO A MANO. È LA PRETESA DI COMPLETEZZA.
+    //
+    // Un **rappresentante** scritto a mano è onesto: `PASSO_DI` nomina UN passo
+    // per famiglia, non dice quali siano tutti i passi, e la completezza la
+    // porta `FAMIGLIE` — che è la fonte. Toglierlo non renderebbe niente più
+    // sicuro: renderebbe solo più lungo il giro per scegliere un passo
+    // qualunque.
+    //
+    // Un elenco che dice **«questi sono tutti»** è un campione travestito, e
+    // `COPPIE` lo era: sei voci che pretendevano di essere tutte le famiglie a
+    // più kind, e una delle sei non conteneva quello che il nome diceva.
+    //
+    // *La domanda da farsi davanti a un elenco scritto a mano non è «è
+    // scritto a mano?» ma «se il mondo cambia, questo elenco diventa
+    // SBAGLIATO o solo VECCHIO?». Un rappresentante diventa vecchio e il test
+    // continua a dire il vero; un elenco che pretende completezza diventa
+    // falso e il test continua a dire verde.*
     const conRitorno = Object.keys(FAMIGLIE).filter(function (f) { return FAMIGLIE[f].tornaAllaMappa; });
     for (const fam of conRitorno) {
       const passo = PASSO_DI[fam];
