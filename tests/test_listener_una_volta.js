@@ -53,7 +53,7 @@ const { openModule } = require('./map-driver');
 const { stepsBefore } = require('./module-order');
 const fs = require('fs');
 const { repoPath } = require('./test-env');
-const { FAMIGLIE, listenerDichiarati } = require('./listener-census');
+const { FAMIGLIE, listenerDichiarati, descrittori, bloccheDiKind } = require('./listener-census');
 
 // ⚠️ LE ATTESE VENGONO DAL BASELINE, NON DAL SORGENTE — e questa riga è la
 // correzione di un buco trovato falsificando, prima che una conversione
@@ -281,33 +281,128 @@ async function run() {
 
   // ── [E] PIU' KIND SERVITI DALLA STESSA `open` ───────────────────────
   //
-  // ⚠️ E' IL CASO CHE IL BLOCCO [C] NON VEDE, e che vale per SEI famiglie su
-  // otto.
+  // ⚠️ E' IL CASO CHE IL BLOCCO [C] NON VEDE.
   //
-  // [C] apre e riapre lo STESSO passo: protegge dalla riapertura. Ma sei
-  // `open` servono PIU' di un `kind` — `openDialogo` tre, `openStoryCards`,
-  // `openVoiceCoach`, `openMatch`, `openSpeedMatch`, `openFlashcard` due — e
+  // [C] apre e riapre lo STESSO passo: protegge dalla riapertura. Ma CINQUE
+  // `open` su otto servono piu' di un `kind` — `openDialogo` tre,
+  // `openStoryCards`, `openVoiceCoach`, `openMatch`, `openSpeedMatch` due — e
   // con la guardia sbagliata aprirne uno diverso attaccherebbe un'altra copia
   // dello stesso blocco, senza che nessuna riapertura sia mai avvenuta.
   //
-  // **La chiave della guardia è il BLOCCO, cioè la funzione `open`, non il
-  // `kind`.** Questo blocco è ciò che lo protegge: senza, la regola sarebbe
+  // **La chiave della guardia e' il BLOCCO, cioe' la funzione `open`, non il
+  // `kind`.** Questo blocco e' cio' che lo protegge: senza, la regola sarebbe
   // scritta in un commento e verificata da nessuno.
+  //
+  // ⚠️ L'ELENCO SI DERIVA, E PRIMA ERA SCRITTO A MANO — corretto il 2026-09-16.
+  //
+  // La forma vecchia portava dentro il test un oggetto `COPPIE` con sei voci, e
+  // una delle sei non conteneva quello che il nome diceva:
+  //
+  //     flashcard: ['flashcardAEngIta', 'flashcardAItaEng']   // due PASSI, UN kind
+  //
+  // Il blocco apriva due descrittori dello stesso kind e stampava «aprire i
+  // suoi 2 kind non duplica il blocco». **Verificava cinque famiglie e ne
+  // dichiarava sei**, e il verde su flashcard non provava la chiave: con
+  // `'flashcard'` e con `module.kind` il valore e' lo stesso identico.
+  //
+  // *E' la lezione scritta accanto a `[C]` lo stesso giorno, che trova il suo
+  // secondo caso nello stesso file. Adesso la coppia passo↔kind viene da
+  // `descrittori()` e il raggruppamento per blocco da `BI.moduli` dell'app
+  // viva: la fonte decide, non chi scrive il test.*
   {
-    const COPPIE = {
-      speedMatch: ['speedMatchEngIta', 'speedMatchItaEng'],
-      dialogo: ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'],
-      storyCards: ['meetTheStory', 'whyWeSayIt'],
-      voice: ['voicePractice', 'voiceCoach'],
-      match: ['matchEngIta', 'matchItaEng'],
-      flashcard: ['flashcardAEngIta', 'flashcardAItaEng']
-    };
-    for (const fam of Object.keys(COPPIE)) {
-      const passi = COPPIE[fam];
-      // L'ultimo passo della lista è il più avanti nella sequenza: si sbloccano
+    const paginaBI = await nuovaPagina(browser, 'L4bi', []);
+    const blocchi = await bloccheDiKind(paginaBI);
+    await paginaBI.close();
+    const passoDelKind = descrittori();   // passo -> kind
+    // kind -> il primo passo che lo usa. Serve perche' si apre dalla MAPPA, e
+    // la mappa conosce i passi, non i kind.
+    const unPassoPer = {};
+    Object.keys(passoDelKind).forEach(function (passo) {
+      const k = passoDelKind[passo];
+      if (!unPassoPer[k]) unPassoPer[k] = passo;
+    });
+
+    // famiglia -> i suoi kind. Il ponte e' `PASSO_DI[fam]`, che resta scritto a
+    // mano ed e' legittimo: nomina UN rappresentante per famiglia, non pretende
+    // di essere completo — la completezza viene da `FAMIGLIE`, che e' la fonte.
+    const kindDi = {};
+    Object.keys(FAMIGLIE).forEach(function (fam) {
+      const kindRappr = passoDelKind[PASSO_DI[fam]];
+      const blocco = blocchi.find(function (b) { return b.indexOf(kindRappr) !== -1; });
+      kindDi[fam] = blocco || [];
+    });
+
+    const conPiuKind = Object.keys(kindDi).filter(function (f) { return kindDi[f].length > 1; }).sort();
+    const conUnKind = Object.keys(kindDi).filter(function (f) { return kindDi[f].length === 1; }).sort();
+
+    // ── [F] LA MAPPA SU CUI [E] GIRA, CONTROLLATA A SUA VOLTA ──────────
+    //
+    // ⚠️ SENZA QUESTO, [E] PUO' RESTARE VERDE SMETTENDO DI GUARDARE.
+    //
+    // [E] deriva il proprio elenco invece di ricopiarlo, e questo toglie il
+    // difetto del campione — ma ne apre uno nuovo: una derivazione che torna
+    // MENO di quello che dovrebbe fa saltare famiglie **in silenzio**, ed e' un
+    // verde piu' grande di prima. Se `descrittori()` tornasse vuoto perche'
+    // `MODULE_DESCRIPTORS` e' stato spostato, ogni famiglia risulterebbe a kind
+    // singolo e [E] non aprirebbe niente: zero asserzioni, zero rossi.
+    //
+    // Le tre righe qui sotto incrociano DUE fonti indipendenti — il testo dei
+    // descrittori in index.html e il registro vivo `BI.moduli` — e congelano il
+    // conto misurato. Non provano che l'app sia giusta: provano che [E] sta
+    // ancora guardando quello che dice di guardare.
+    const kindDaiDescrittori = Object.keys(passoDelKind).map(function (p) { return passoDelKind[p]; })
+      .filter(function (k, i, a) { return a.indexOf(k) === i; }).sort();
+    const kindRegistrati = blocchi.reduce(function (a, b) { return a.concat(b); }, []).sort();
+    log('[F] I kind dei descrittori e quelli registrati in BI.moduli sono gli stessi',
+      kindDaiDescrittori.join(',') === kindRegistrati.join(','),
+      'descrittori: ' + kindDaiDescrittori.join(',') + ' | registrati: ' + kindRegistrati.join(','));
+
+    // ⚠️ I NUMERI SONO MISURATI IL 2026-09-16, E DUE COMMENTI DICEVANO SEI.
+    // `app/spazio.js` e il commento di questo blocco dicevano «SEI `open` su
+    // otto servono piu' di un kind» e nominavano `openFlashcard` fra loro.
+    // Sono CINQUE. Il numero falso e' sopravvissuto quattro giri perche' non
+    // c'era nessuna asserzione sopra: adesso c'e'.
+    log('[F] Le famiglie servite da piu` di un kind sono 5, e sono queste',
+      conPiuKind.join(',') === 'dialogo,match,speedMatch,storyCards,voice',
+      conPiuKind.join(','));
+
+    // ⚠️ E QUESTA E' LA CATEGORIA, non un'eccezione di Flash Card.
+    //
+    //     Su una famiglia a kind singolo — o con un kind solo per piu'
+    //     descrittori — LA CHIAVE SBAGLIATA PASSA VERDE. Il verde non prova la
+    //     chiave: la prova la regola.
+    //
+    // Sono TRE: `openFlashcard` (un kind, due descrittori), `openRepeatAloud` e
+    // `openCustomize` (un kind ciascuna). Su di loro `BI.unaVoltaSola(nome)` con
+    // `nome = 'flashcard'` e con `nome = module.kind` valgono **la stessa
+    // stringa**, quindi nessuna corsa puo' distinguerle — ne' questo blocco, ne'
+    // [C], ne' una falsificazione.
+    //
+    // *Per questo la chiave giusta si scrive lo stesso: e' la forma in cui una
+    // regola sbagliata sopravvive, e sopravvive proprio dove nessuno la vede
+    // cadere. Se un giorno una di queste tre prende un secondo kind, questa
+    // riga diventa rossa — ed e' l'unico avviso che arrivera'.*
+    log('[F] Le famiglie a kind singolo, dove la chiave sbagliata passerebbe verde, sono 3',
+      conUnKind.join(',') === 'flashcard,personalizza,repeatAloud',
+      conUnKind.join(','));
+
+    for (const fam of conPiuKind) {
+      const passi = kindDi[fam].map(function (k) { return unPassoPer[k]; });
+      // ⚠️ Un kind registrato senza un descrittore che lo usi darebbe `undefined`
+      // qui, e `stepsBefore(undefined)` alza un'eccezione: il test MORIREBBE
+      // invece di FALLIRE (famiglia ⓪-septies in tests/ERRORI-INGOIATI.md).
+      // [F] lo prende gia' — gira prima apposta — ma la riga resta perche' una
+      // difesa che dipende dall'ordine di due blocchi e' una difesa fragile.
+      if (passi.some(function (x) { return !x; })) {
+        log('[E] ' + fam + ': ogni suo kind ha un passo nella sequenza', false,
+          kindDi[fam].join(',') + ' -> ' + passi.join(','));
+        continue;
+      }
+      // L'ultimo passo della lista e' il piu' avanti nella sequenza: si sbloccano
       // tutti i precedenti una volta sola.
+      passi.sort(function (a, b) { return stepsBefore(a).length - stepsBefore(b).length; });
       const page = await nuovaPagina(browser, 'L4' + fam, stepsBefore(passi[passi.length - 1]));
-      let base = null, cresciuti = [];
+      let base = null; const cresciuti = [];
       for (const passo of passi) {
         await openModule(page, passo);
         const reg = await page.evaluate(() => window.__reg);
@@ -326,7 +421,7 @@ async function run() {
           await page.waitForSelector('#view-map.is-active', { timeout: 10000 }).catch(function () {});
         }
       }
-      log('[E] ' + fam + ': aprire i suoi ' + passi.length + ' kind non duplica il blocco',
+      log('[E] ' + fam + ': aprire i suoi ' + kindDi[fam].length + ' kind (' + passi.join(', ') + ') non duplica il blocco',
         cresciuti.length === 0, cresciuti.join(' | '));
       await page.close();
     }

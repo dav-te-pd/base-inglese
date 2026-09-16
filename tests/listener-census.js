@@ -82,4 +82,73 @@ function listenerDi(famiglia) {
   });
 }
 
-module.exports = { FAMIGLIE, listenerDichiarati, listenerDi };
+// ---------------------------------------------------------------------------
+// I DESCRITTORI DEI MODULI: passo -> kind.
+//
+// ⚠️ PERCHE' ESISTE, e nasce da un difetto trovato il 2026-09-16.
+//
+// `[E]` di test_listener_una_volta.js verifica che aprire tutti i `kind` di una
+// famiglia non attacchi due volte il suo blocco di listener. L'elenco su cui
+// girava era **scritto a mano** dentro il test:
+//
+//     flashcard: ['flashcardAEngIta', 'flashcardAItaEng']
+//
+// e quei due NON sono due `kind`: sono due **PASSI** che condividono l'unico
+// kind `flashcard`. Il test apriva due descrittori dello stesso kind e scriveva
+// nel log «aprire i suoi 2 kind non duplica il blocco». **Verificava cinque
+// famiglie e ne dichiarava sei.**
+//
+// E' la lezione del campione — scritta accanto a `[C]` lo stesso giorno — che
+// trova il suo secondo caso nello stesso file: *un elenco scritto a mano dentro
+// un test e' un campione, e un campione sceglie chi non guardare.* Qui aveva
+// scelto di non guardare la differenza fra un passo e un kind.
+//
+// ⚠️ LA COINCIDENZA CHE L'HA RESO INVISIBILE, e che tornera' a tendere la
+// trappola: per TREDICI descrittori su quindici il nome del passo e il nome del
+// kind sono **la stessa stringa** (`matchEngIta` e' sia l'uno sia l'altro). Solo
+// i due Flash Card li separano. Un elenco scritto a mano sembra giusto tredici
+// volte su quindici — e la quattordicesima non somiglia a un errore.
+//
+// Da qui in avanti la mappa si LEGGE, non si ricopia.
+//
+// Sta in index.html e non in app/config.js: `MODULE_DESCRIPTORS` descrive il
+// CODICE di ogni modulo (quale componente, quale profilo), non la sua
+// configurazione. Se un giorno si sposta, questa funzione lo segue — e il
+// controllo incrociato qui sotto se ne accorge subito, perche' la mappa
+// tornerebbe vuota.
+function descrittori() {
+  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+  const blocco = html.match(/var MODULE_DESCRIPTORS = \{([\s\S]*?)\n  \};/);
+  if (!blocco) throw new Error('MODULE_DESCRIPTORS non trovato in index.html');
+  const out = {};
+  const re = /^\s*([A-Za-z][A-Za-z0-9]*):\s*\{[^}]*\bkind:\s*'([^']+)'/gm;
+  let m;
+  while ((m = re.exec(blocco[1])) !== null) out[m[1]] = m[2];
+  if (!Object.keys(out).length) throw new Error('MODULE_DESCRIPTORS trovato ma vuoto o in un formato non riconosciuto');
+  return out;
+}
+
+// I kind raggruppati per BLOCCO, letti dall'app VIVA.
+//
+// `BI.moduli` e' `{ kind: funzioneOpen }`: raggruppare per identita' della
+// funzione da' esattamente «quali kind condividono un blocco», che e' la
+// domanda a cui la chiave della guardia deve rispondere (vedi la regola
+// accanto a BI.unaVoltaSola in app/spazio.js). Non e' una lettura del
+// sorgente: e' il registro vero, quello su cui gira `openModuleByKind`.
+//
+// Torna [[kind, ...], ...] — un array per blocco.
+async function bloccheDiKind(page) {
+  return page.evaluate(function () {
+    const m = window.BI.moduli;
+    const gruppi = [];
+    Object.keys(m).forEach(function (k) {
+      let g = null;
+      for (let i = 0; i < gruppi.length; i++) if (gruppi[i].fn === m[k]) { g = gruppi[i]; break; }
+      if (!g) { g = { fn: m[k], kinds: [] }; gruppi.push(g); }
+      g.kinds.push(k);
+    });
+    return gruppi.map(function (g) { return g.kinds; });
+  });
+}
+
+module.exports = { FAMIGLIE, listenerDichiarati, listenerDi, descrittori, bloccheDiKind };

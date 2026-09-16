@@ -126,18 +126,42 @@ window.BI = window.BI || {};
   // Scritta qui una volta sola perche' vale per tutti e otto i moduli, e
   // perche' il `kind` sembrera' sempre la scelta piu' precisa a chi legge.
   //
-  // SEI `open` SU OTTO SERVONO PIU' DI UN `kind`: `openDialogo` ne serve tre
-  // (i tre profili), e `openStoryCards`, `openVoiceCoach`, `openMatch`,
-  // `openSpeedMatch`, `openFlashcard` due ciascuna. I listener stanno nel
-  // BLOCCO, e il blocco e' uno.
+  // CINQUE `open` SU OTTO SERVONO PIU' DI UN `kind`: `openDialogo` ne serve
+  // tre (i tre profili), e `openStoryCards`, `openVoiceCoach`, `openMatch`,
+  // `openSpeedMatch` due ciascuna. I listener stanno nel BLOCCO, e il blocco
+  // e' uno.
+  //
+  // ⚠️ QUI C'ERA SCRITTO **SEI**, e nominava `openFlashcard` fra loro. E' stato
+  // falso dal 2026-09-16 (il ②) al 2026-09-16 (il ⑥), ed e' sopravvissuto
+  // quattro giri perche' nessuna asserzione lo guardava. Adesso lo guarda il
+  // blocco [F] di tests/test_listener_una_volta.js, che conta i gruppi di
+  // `BI.moduli` e li confronta con questo numero: se qualcuno registra un
+  // secondo kind su una delle tre qui sotto, [F] diventa rossa e questo
+  // commento torna vero o viene corretto. *Un numero in un commento non
+  // invecchia: resta esatto per il giorno in cui e' stato scritto e falso per
+  // tutti gli altri, senza cambiare una lettera.*
   //
   // Misurato il 2026-09-16 mettendo la chiave sul kind: aprire i tre profili
   // del Dialogo porta ogni listener da **1 a 2 a 3** — il tocco su una bolla
   // partirebbe tre volte, senza nessun errore e senza niente in console.
   //
-  // *Su Flash Card sarebbe anche peggio da capire: due DESCRITTORI condividono
-  // un `kind` solo, quindi li' la chiave sul kind funzionerebbe PER CASO — ed
-  // e' la forma in cui una regola sbagliata sopravvive.*
+  // ⚠️ E LA CATEGORIA CHE COMPLETA LA REGOLA, perche' senza si legge come se
+  // la chiave fosse sempre verificabile:
+  //
+  //     SU UNA FAMIGLIA A KIND SINGOLO — o con un kind solo per piu'
+  //     descrittori — LA CHIAVE SBAGLIATA PASSA VERDE. Il verde non prova la
+  //     chiave: LA PROVA LA REGOLA.
+  //
+  // Sono TRE, non una: `openFlashcard` (un kind, due descrittori),
+  // `openRepeatAloud` e `openCustomize` (un kind ciascuna). Su di loro
+  // `BI.unaVoltaSola('flashcard', …)` e `BI.unaVoltaSola(module.kind, …)`
+  // passano **la stessa identica stringa**, quindi nessuna corsa puo'
+  // distinguerle: ne' [E], ne' [C], ne' una falsificazione fatta apposta.
+  //
+  // *E' la forma in cui una regola sbagliata sopravvive — e sopravvive proprio
+  // dove nessuno la vede cadere. Per questo la chiave giusta si scrive lo
+  // stesso su tutte e otto: su cinque la protegge un test, su tre solo questa
+  // riga.*
   //
   // Il nome da usare e' quello della FAMIGLIA, perche' e' cio' che resta
   // stabile quando al passo 22 ogni famiglia avra' il suo file: 'speedMatch',
