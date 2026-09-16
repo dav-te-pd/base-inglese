@@ -134,7 +134,32 @@ function statoQuiz(page, p) {
 async function toccaFinoA(page, p, voluto) {
   const partenza = await statoQuiz(page, p);
   const maxPassaggi = await page.evaluate(() => window.APP_CONFIG.retryQueue.maxAttempts);
+  // ⚠️ IL BUDGET CONTA I TOCCHI, NON LE MOSSE — corretto il 2026-09-16, e il
+  // motivo e' un rosso vero letto nella sua diagnosi.
+  //
+  // La forma di prima era `mosse < limite` con limite = domande × passaggi + 5.
+  // Ma il ciclo ha CINQUE diramazioni che consumano una mossa **senza toccare
+  // un'opzione** (popup, ripasso, riquadro aperto, ultima domanda), e quelle
+  // mangiano il budget destinato ai tocchi.
+  //
+  // Il caso misurato: `mosse 41/41 | spese in {popup:1, ripasso:2,
+  // riquadro:19, ultimaDomanda:2, tocchi:17}`. Ventiquattro mosse su
+  // quarantuno non hanno toccato niente, e ne sono rimaste **diciassette**.
+  // Sbagliare 17 volte di fila fra quattro opzioni ha probabilita' (3/4)^17 ≈
+  // **1 su 133**: raro, non impossibile — e su una suite che gira ogni giorno
+  // si presenta.
+  //
+  // Contando i TOCCHI il budget torna quello che il conto voleva dire: 41
+  // tocchi danno (3/4)^41 ≈ 7 su un milione, cioe' mai. Il tetto sulle mosse
+  // resta, largo, solo per non girare all'infinito se una diramazione si
+  // incastra — ed e' un guasto diverso, che ha gia' la sua guardia
+  // (`senzaTocco >= 12`).
+  //
+  // *Non e' stato chiamato flake: e' stato letto nella riga che la funzione
+  // stampa quando si arrende. La diagnosi c'era gia' — quello che mancava era
+  // guardarla.*
   const limite = (partenza.totale || 1) * (maxPassaggi + 1) + 5;
+  const tettoMosse = limite * 4;
   // ⚠️ DOVE SONO FINITE LE MOSSE, e questo conto e' la seconda meta' della
   // diagnosi. Il 2026-09-15 la CI ha detto «esaurite le mosse 53/53» su
   // [QM Task1] — Match Practice, quello SENZA timer, quindi non e' il
@@ -147,7 +172,7 @@ async function toccaFinoA(page, p, voluto) {
   let senzaTocco = 0; // mosse CONSECUTIVE spese senza toccare un'opzione
   const arrenditi = (motivo, mosse, st) => {
     console.log('    -> toccaFinoA(' + p + ', ' + voluto + ') si arrende: ' + motivo +
-      ' | mosse ' + mosse + '/' + limite +
+      ' | mosse ' + mosse + '/' + tettoMosse + ', tocchi ' + speseIn.tocchi + '/' + limite +
       ' | totale letto alla partenza: ' + partenza.totale +
       ' | mosse spese in: ' + JSON.stringify(speseIn) +
       (st ? ' | stato: ' + JSON.stringify(st) : ''));
@@ -157,7 +182,7 @@ async function toccaFinoA(page, p, voluto) {
     console.log('    -> ATTENZIONE: contatore illeggibile alla partenza ("' + partenza.contatore +
       '"), il budget di mosse scende a ' + limite);
   }
-  for (let mosse = 0; mosse < limite; mosse++) {
+  for (let mosse = 0; mosse < tettoMosse && speseIn.tocchi < limite; mosse++) {
     // ⚠️ IN CIMA AL CICLO, E IL POSTO E' LA CORREZIONE: ogni diramazione qui
     // sotto fa `continue`, quindi un controllo messo in mezzo non viene MAI
     // raggiunto mentre il giro gira a vuoto — misurato, non dedotto: la prima
