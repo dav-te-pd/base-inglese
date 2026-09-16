@@ -250,6 +250,59 @@ async function run() {
     await page.close();
   }
 
+  // ── [E] PIU' KIND SERVITI DALLA STESSA `open` ───────────────────────
+  //
+  // ⚠️ E' IL CASO CHE IL BLOCCO [C] NON VEDE, e che vale per SEI famiglie su
+  // otto.
+  //
+  // [C] apre e riapre lo STESSO passo: protegge dalla riapertura. Ma sei
+  // `open` servono PIU' di un `kind` — `openDialogo` tre, `openStoryCards`,
+  // `openVoiceCoach`, `openMatch`, `openSpeedMatch`, `openFlashcard` due — e
+  // con la guardia sbagliata aprirne uno diverso attaccherebbe un'altra copia
+  // dello stesso blocco, senza che nessuna riapertura sia mai avvenuta.
+  //
+  // **La chiave della guardia è il BLOCCO, cioè la funzione `open`, non il
+  // `kind`.** Questo blocco è ciò che lo protegge: senza, la regola sarebbe
+  // scritta in un commento e verificata da nessuno.
+  {
+    const COPPIE = {
+      speedMatch: ['speedMatchEngIta', 'speedMatchItaEng'],
+      dialogo: ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'],
+      storyCards: ['meetTheStory', 'whyWeSayIt'],
+      voice: ['voicePractice', 'voiceCoach'],
+      match: ['matchEngIta', 'matchItaEng'],
+      flashcard: ['flashcardAEngIta', 'flashcardAItaEng']
+    };
+    for (const fam of Object.keys(COPPIE)) {
+      const passi = COPPIE[fam];
+      // L'ultimo passo della lista è il più avanti nella sequenza: si sbloccano
+      // tutti i precedenti una volta sola.
+      const page = await nuovaPagina(browser, 'L4' + fam, stepsBefore(passi[passi.length - 1]));
+      let base = null, cresciuti = [];
+      for (const passo of passi) {
+        await openModule(page, passo);
+        const reg = await page.evaluate(() => window.__reg);
+        if (base === null) { base = reg; }
+        else {
+          listenerDi(fam).forEach(function (l) {
+            const k = l.id + '|' + l.tipo;
+            if ((reg[k] || 0) > (base[k] || 0)) {
+              cresciuti.push(passo + ': ' + l.id + '/' + l.tipo + ' ' + base[k] + ' → ' + reg[k]);
+            }
+          });
+        }
+        const indietro = FAMIGLIE[fam].tornaAllaMappa;
+        if (indietro) {
+          await page.click('#' + indietro).catch(function () {});
+          await page.waitForSelector('#view-map.is-active', { timeout: 10000 }).catch(function () {});
+        }
+      }
+      log('[E] ' + fam + ': aprire i suoi ' + passi.length + ' kind non duplica il blocco',
+        cresciuti.length === 0, cresciuti.join(' | '));
+      await page.close();
+    }
+  }
+
   await browser.close();
   console.log('\n=== LISTENER UNA VOLTA SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   if (failed > 0) process.exit(1);

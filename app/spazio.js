@@ -121,6 +121,32 @@ window.BI = window.BI || {};
   // Non serve un aggancio/sgancio: le sette `renderSummaryScreen` girano una
   // volta sola al caricamento, quindi gli elementi non cambiano MAI identita'
   // durante la sessione — misurato prima di scegliere questa forma.
+  // ⚠️ LA CHIAVE E' IL BLOCCO, CIOE' LA FUNZIONE `open`, NON IL `kind`.
+  //
+  // Scritta qui una volta sola perche' vale per tutti e otto i moduli, e
+  // perche' il `kind` sembrera' sempre la scelta piu' precisa a chi legge.
+  //
+  // SEI `open` SU OTTO SERVONO PIU' DI UN `kind`: `openDialogo` ne serve tre
+  // (i tre profili), e `openStoryCards`, `openVoiceCoach`, `openMatch`,
+  // `openSpeedMatch`, `openFlashcard` due ciascuna. I listener stanno nel
+  // BLOCCO, e il blocco e' uno.
+  //
+  // Misurato il 2026-09-16 mettendo la chiave sul kind: aprire i tre profili
+  // del Dialogo porta ogni listener da **1 a 2 a 3** — il tocco su una bolla
+  // partirebbe tre volte, senza nessun errore e senza niente in console.
+  //
+  // *Su Flash Card sarebbe anche peggio da capire: due DESCRITTORI condividono
+  // un `kind` solo, quindi li' la chiave sul kind funzionerebbe PER CASO — ed
+  // e' la forma in cui una regola sbagliata sopravvive.*
+  //
+  // Il nome da usare e' quello della FAMIGLIA, perche' e' cio' che resta
+  // stabile quando al passo 22 ogni famiglia avra' il suo file: 'speedMatch',
+  // 'dialogo', 'storyCards', 'voice', 'match', 'flashcard', 'repeatAloud',
+  // 'personalizza'.
+  //
+  // Lo protegge il blocco [E] di tests/test_listener_una_volta.js, che apre
+  // TUTTI i kind di ogni famiglia: senza quello, questa regola sarebbe un
+  // commento verificato da nessuno.
   BI.fatto = BI.fatto || {};
   BI.unaVoltaSola = function (nome, fn) {
     if (BI.fatto[nome]) return false;
