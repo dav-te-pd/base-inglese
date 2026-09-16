@@ -3658,6 +3658,20 @@
   // di essere nominate una per una da stopAllModuleActivity.
   var BI = window.BI;
 
+  // ⚠️ OGGI TUTTI I MODULI SI REGISTRANO AL BOOT, e questa riga lo DICHIARA
+  // invece di lasciarlo dedurre.
+  //
+  // Serve a una cosa sola: distinguere le due cause di «kind non nel registro»
+  // in openModuleByKind. Finche' e' `true`, un kind mancante puo' voler dire
+  // soltanto che l'episodio ne dichiara uno che non esiste. Dal passo 22, in
+  // cui i file dei moduli arriveranno a richiesta, diventera' `false` e la
+  // seconda causa — «il file non e' arrivato» — sara' possibile davvero.
+  //
+  // Sta qui e non in app/spazio.js perche' non e' una proprieta' dello spazio
+  // dei nomi: e' un fatto su COME quest'app carica i suoi moduli, e cambiera'
+  // insieme a quello.
+  BI.moduliCaricatiAlBoot = true;
+
   /* ============================================================
      AUDIO CONTEXT WARM-UP (bug fix)
      The first tone ever played through a freshly-created AudioContext
@@ -6252,6 +6266,13 @@
       showLoadError(openCustomize);
     });
   }
+  // Personalizza. ⚠️ openCustomize NON prende argomenti, e resta cosi': e'
+  // gia' registrata come listener di #edit-custom, quindi su quella strada
+  // riceverebbe un Event. Darle il parametro `module` renderebbe la firma
+  // uniforme e BUGIARDA — un modulo da una parte, un evento dall'altra.
+  // Misurato prima di decidere: cambiare la firma tocca altri chiamanti.
+  // Il registro la chiama con apri(module); l'argomento in piu' e' innocuo.
+  BI.registraModulo('personalizzazione', openCustomize);
 
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
 
@@ -6359,27 +6380,67 @@
     openHelpFor(MAP_PSEUDO_MODULE);
   });
 
+  // Apre un modulo risolvendolo DAL REGISTRO, non da una catena di else-if.
+  //
+  // ⚠️ CAMBIO DI COMPORTAMENTO VOLUTO, NON UNA CONSEGUENZA: IL `kind` DIVENTA
+  // LA CHIAVE UNICA.
+  //
+  // Prima, quattro rami su otto non guardavano il `kind` ma una PROPRIETA' del
+  // descrittore — `storyProfile`, `voiceVariant`, `dialogoProfile`,
+  // `flashcardDirection`. Quindi un modulo con `dialogoProfile` e un `kind`
+  // sconosciuto **si apriva lo stesso**. Adesso no: va alla schermata
+  // d'errore.
+  //
+  // E' il difetto degli episodi corti chiuso una seconda volta, da un'altra
+  // parte (un passo il cui `kind` non corrisponde a niente diventava una riga
+  // cliccabile e muta, che bloccava per sempre tutti i passi dopo). **Se un
+  // giorno un episodio smettesse di aprirsi, questa e' la prima riga da
+  // leggere.**
+  //
+  // Torna una PROMESSA perche' dal passo 22 risolvere un modulo potra'
+  // significare caricarne il file. Oggi il registro e' gia' pieno al boot,
+  // quindi la promessa e' sempre gia' risolta: non cambia niente per chi
+  // chiama, ed e' il punto in cui il caricamento a richiesta si agganchera'
+  // senza toccare nessun altro.
   function openModuleByKind(module) {
-    if (module.kind === 'personalizzazione') openCustomize();
-    else if (module.kind === 'repeatAloud') openRepeatAloud(module);
-    else if (module.storyProfile) openStoryCards(module);
-    else if (module.voiceVariant) openVoiceCoach(module);
-    else if (module.kind === 'matchEngIta' || module.kind === 'matchItaEng') openMatch(module);
-    else if (module.dialogoProfile) openDialogo(module);
-    else if (module.kind === 'speedMatchEngIta' || module.kind === 'speedMatchItaEng') openSpeedMatch(module);
-    else if (module.flashcardDirection) openFlashcard(module);
-    // Il ramo finale che mancava. Senza, un modulo il cui kind non
-    // corrisponde a niente diventava una riga cliccabile che NON FA NULLA:
-    // e lo stato di un passo e' derivato ("il primo non completato e'
-    // l'attuale"), quindi quel passo restava attuale per sempre e bloccava
-    // tutti quelli dopo, senza un errore in console. Un vicolo cieco muto.
+    var apri = BI.moduli[module.kind];
+    if (apri) {
+      apri(module);
+      return Promise.resolve();
+    }
+    // ---- IL RAMO CHE PROTEGGE GLI EPISODI CORTI, conservato e non riscritto.
+    //
+    // Senza, un modulo il cui kind non corrisponde a niente diventava una riga
+    // cliccabile che NON FA NULLA: lo stato di un passo e' derivato ("il primo
+    // non completato e' l'attuale"), quindi quel passo restava attuale per
+    // sempre e bloccava tutti quelli dopo, senza un errore in console. Un
+    // vicolo cieco muto.
     //
     // Si riusa la schermata d'errore invece di inventarne una: dice che
     // qualcosa non va e offre l'uscita verso la mappa (regola 35). Il
     // "Riprova" rifara' la stessa strada e fallira' di nuovo — ed e' giusto
     // cosi': e' rotto, e la via d'uscita e' l'altro pulsante.
-    else showLoadError(function () { openModuleFromMap(module); });
+    //
+    // ⚠️ DUE CAUSE, UN MESSAGGIO SOLO PER LO STUDENTE — e la distinzione sta
+    // in console, non a schermo.
+    //
+    // Lo studente non puo' fare niente di diverso: l'uscita e' la mappa in
+    // entrambi i casi. Chi indaga invece ha davanti due strade OPPOSTE —
+    // «l'episodio dichiara un kind che non esiste» contro «il file del modulo
+    // non e' arrivato» — e senza la distinzione le prova tutte e due.
+    //
+    // La seconda causa NON ESISTE ANCORA: oggi il registro si riempie tutto al
+    // boot, quindi un kind mancante e' sempre la prima. Nasce al passo 22, e
+    // la riga si scrive adesso perche' il giorno che nasce nessuno si
+    // ricorderebbe di aggiungerla.
+    console.error('[modulo] kind "' + module.kind + '" non e\' nel registro. ' +
+      (BI.moduliCaricatiAlBoot
+        ? 'Tutti i moduli sono caricati al boot, quindi l\'episodio dichiara un kind che non esiste.'
+        : 'Il file di questo modulo potrebbe non essere arrivato.'));
+    showLoadError(function () { openModuleFromMap(module); });
+    return Promise.resolve();
   }
+
 
   // Aprire un modulo dalla mappa e' una funzione con un nome, non il corpo
   // di un listener: "Riprova" della schermata d'errore deve poter rifare
@@ -6439,7 +6500,7 @@
       loadModuleInstructions()
     ]).then(function () {
       currentValues = loadCustomValues(currentEpisode, getUserName());
-      openModuleByKind(module);
+      return openModuleByKind(module);
     }).catch(function () {
       // Senza questo il tocco sulla riga non produceva NIENTE: nessuna
       // schermata, nessun messaggio, il modulo semplicemente non si apriva.
@@ -6862,6 +6923,8 @@
       showLoadError(function () { openRepeatAloud(module); });
     });
   }
+  // Repeat Aloud.
+  BI.registraModulo('repeatAloud', openRepeatAloud);
 
   document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-say]');
@@ -7352,6 +7415,9 @@
       showLoadError(function () { openStoryCards(module); });
     });
   }
+  // I due moduli della storia: stessa funzione, due kind.
+  BI.registraModulo('meetTheStory', openStoryCards);
+  BI.registraModulo('whyWeSayIt', openStoryCards);
 
   document.getElementById('story-cards-body').addEventListener('click', function (e) {
     // Sblocco Sequenziale, variante per dichiarazione: una card piu' avanti
@@ -8065,6 +8131,9 @@
       showLoadError(function () { openVoiceCoach(module); });
     });
   }
+  // Voice Practice e Voice Check.
+  BI.registraModulo('voicePractice', openVoiceCoach);
+  BI.registraModulo('voiceCoach', openVoiceCoach);
 
   function vcEvaluate() {
     var line = vcCurrentLine();
@@ -8674,6 +8743,9 @@
       showLoadError(function () { openMatch(module); });
     });
   }
+  // Match Practice, nelle due direzioni.
+  BI.registraModulo('matchEngIta', openMatch);
+  BI.registraModulo('matchItaEng', openMatch);
 
   document.getElementById('qm-start-btn').addEventListener('click', function () {
     if (!qmVocab.length) return;
@@ -9355,6 +9427,10 @@
       showLoadError(function () { openDialogo(module); });
     });
   }
+  // I tre profili di Dialogo: una funzione, tre kind.
+  BI.registraModulo('dialogoAscoltaRipeti', openDialogo);
+  BI.registraModulo('dialogoRipetiATempo', openDialogo);
+  BI.registraModulo('dialogoContinuo', openDialogo);
 
   document.getElementById('dg-start-btn').addEventListener('click', function () {
     if (!dgDialogue.length) return;
@@ -9896,6 +9972,9 @@
       showLoadError(function () { openSpeedMatch(module); });
     });
   }
+  // Speed Match, nelle due direzioni.
+  BI.registraModulo('speedMatchEngIta', openSpeedMatch);
+  BI.registraModulo('speedMatchItaEng', openSpeedMatch);
 
   document.getElementById('sr-ready-btn').addEventListener('click', function () {
     if (!srVocab.length) return;
@@ -10261,6 +10340,11 @@
       showLoadError(function () { openFlashcard(module); });
     });
   }
+  // ⚠️ Flash Card: UN SOLO kind per DUE descrittori (flashcardAEngIta e
+  // flashcardAItaEng lo condividono). Si registra una volta sola — e se
+  // qualcuno provasse a registrarlo per descrittore, BI.registraModulo
+  // alzerebbe un'eccezione al boot invece di lasciar vincere l'ultimo.
+  BI.registraModulo('flashcard', openFlashcard);
 
   document.getElementById('fc-card').addEventListener('click', function (e) {
     var sayBtn = e.target.closest('[data-say]');

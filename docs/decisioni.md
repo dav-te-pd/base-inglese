@@ -814,7 +814,7 @@ strato che, per essere caricato, tira dentro tutto.
 | | Passo | Quanto | Fermata sicura dopo? |
 |---|---|---|---|
 | **21-bis** | **`stopAllModuleActivity` si inverte in REGISTRAZIONE.** *Chi non è caricato non ha niente da pulire, e questo diventa vero per costruzione invece che per attenzione.* La regola 21 non cambia — resta il punto unico — cambia **come** ci arriva.<br><br>**FATTO il 2026-09-16.** `BI` prende i suoi primi cinque utenti.<br><br>⚠️ **NON ERANO «6 CHIAMATE»: ERANO DIECI ISTRUZIONI, SETTE DI UN MODULO E TRE NO.** Le sette coprono cinque famiglie (Dialogo, Voice, Speed Match ×3 in `srPulizia`, Flash Card, Why We Say It) e si registrano. **Le tre condivise restano nominate** — `synth.cancel()`, `closeAttemptPopup()`, `clearPendingMastery()` — perché non appartengono a nessun modulo e non potranno mai «non essere caricate»: registrarle vorrebbe dire inventare un registrante fittizio, cioè una cerimonia invece di un meccanismo. *Il motivo è scritto accanto, altrimenti sembra una conversione lasciata a metà e il prossimo la «finisce».*<br><br>**⚠️ L'ORDINE NON CONTA, E LA PROTEZIONE NON STA NEL CICLO.** Il sospetto era concreto e documentato — il countdown del Dialogo parte dentro l'`onend` dell'audio — ed è stato **smontato misurando**: l'`onend` arriva in modo asincrono, cioè dopo tutta la pulizia, in qualunque ordine. A neutralizzarlo è **`moduleEpoch++`**, che `showView` fa *prima*. *La cosa da non rompere non è l'ordine dentro la funzione: è che quella riga resti dov'è* — e sta scritto accanto al ciclo, perché un array di registrazioni fa credere che la difesa sia lì dentro.<br><br>**⚠️ E IL `try/catch` È STATO DECISO SU UNA MISURA, non su un'intuizione.** Prima, una pulizia che esplodeva non fermava le altre cinque: fermava la **navigazione**. L'eccezione risale a `showView`, punto unico di ogni spostamento — misurato: l'app diventa inutilizzabile **dalla prima navigazione**, lo studente non entra nemmeno nel modulo. Adesso girano tutte e si naviga sempre; il fallimento va in console **e fa diventare rossa un'asserzione**, che è la metà che rende accettabile il catch: senza, avremmo scambiato un guasto rumoroso con uno silenzioso.<br><br>✅ **VERIFICATO**: suite, conteggio, CI, Pages a mano, e la verifica per sottrazione con otto zeri scritti. | ☑ | **sì** |
-| **21-ter** | **`openModuleByKind` risolve dallo spazio dei nomi e diventa asincrono.** Otto rami, una funzione. È il punto in cui il caricamento a richiesta si aggancia, e l'unico posto dove un modulo viene nominato da fuori. | mezza giornata | **sì** |
+| **21-ter** | **`openModuleByKind` risolve dallo spazio dei nomi e diventa asincrono.** È il punto in cui il caricamento a richiesta si aggancia, e l'unico posto dove un modulo viene nominato da fuori.<br><br>**FATTO il 2026-09-16.** **14 `kind` distinti per 8 funzioni di apertura** — non «otto rami, otto registrazioni»: `openStoryCards` ne serve due, `openDialogo` tre, `openFlashcard` uno.<br><br>⚠️ **«DIVENTA ASINCRONO» COSTA QUASI NIENTE: L'ATTESA ESISTE GIÀ.** `openModuleByKind` ha **un solo chiamante**, dentro il `Promise.all` di `openModuleFromMap`, che ha già il suo `.catch` verso `showLoadError`. Torna una promessa e il `.then` la restituisce: nessuno di nuovo deve aspettare.<br><br>⚠️ **CAMBIO DI COMPORTAMENTO VOLUTO: il `kind` diventa la chiave unica.** Quattro rami su otto guardavano una PROPRIETÀ del descrittore (`storyProfile`, `voiceVariant`, `dialogoProfile`, `flashcardDirection`), quindi un modulo con `dialogoProfile` e un `kind` sconosciuto **si apriva lo stesso**. Adesso va alla schermata d'errore — il difetto degli episodi corti chiuso una seconda volta. *Se un giorno un episodio smette di aprirsi, è la prima riga da leggere.*<br><br>**Il caso più diverso: `flashcard`, un solo `kind` per DUE descrittori** — e **la guardia sui duplicati scritta al passo 21 ha fermato l'errore prima che una riga fosse scritta**, che è esattamente il suo mestiere.<br><br>**`showLoadError`: un messaggio per lo studente, due cause in console.** Lui non può fare niente di diverso; chi indaga ha due strade opposte. La seconda causa («il file non è arrivato») **non esiste ancora** — `BI.moduliCaricatiAlBoot` è `true` — e la riga è scritta adesso perché il giorno che nasce nessuno si ricorderebbe di aggiungerla.<br><br>**`openCustomize` resta senza parametro, e la misura dice perché:** è già registrata come listener di `#edit-custom`, quindi su quella strada riceverebbe un `Event`. Una firma uniforme sarebbe una firma **bugiarda**.<br><br>✅ **VERIFICATO**: suite, conteggio, CI, e la verifica per sottrazione con **dodici zeri scritti**. | ☑ | **sì** |
 | **21-quater** | **I 103 listener entrano nell'`open` del proprio modulo** (decisione del 15 settembre). ⚠️ **È il lavoro più grande dei tre e il più rischioso**: un listener che si attacca due volte fa partire l'azione due volte, e un listener che non si attacca più non dà nessun errore — il pulsante semplicemente non fa niente. Vuole un test suo prima di cominciare, non dopo. | 1-2 giorni | **sì**, un modulo per volta |
 
 | | Passo | Stato | Fermata sicura dopo? |
@@ -1876,6 +1876,34 @@ davvero tornare ai valori del codice — e allora `DEFAULTS` serve e va *letta* 
 oppure se cancellare gli override sia il comportamento voluto, e allora la riga
 si toglie. *Deciderlo adesso significherebbe scegliere una delle due senza
 guardare il pannello.*
+
+#### TROVATO E NON CORRETTO — lo studente non vede niente mentre il modulo carica, **e può toccare di nuovo**
+
+**Misurato il 2026-09-16**, rete rallentata a **1,5 s** sul file dell'episodio,
+400 ms dopo il tocco su una riga della mappa:
+
+| | |
+|---|---|
+| vista attiva | `view-map` — **resta sulla mappa** |
+| la riga si spegne? | **no** |
+| classi e testo della riga | **invariati**, nessun indicatore |
+
+Il principio del giro B del passo 18 è rispettato — *«non mostrare finché non
+c'è»*, e infatti non compare niente di rotto. **Manca l'altra metà: il segno
+che sta succedendo qualcosa.**
+
+⚠️ **E la parte peggiore non è che non veda: è che PUÒ TOCCARE DI NUOVO.** La
+riga non è disabilitata, quindi un secondo tocco mentre il primo è in corso
+avvia una seconda `openModuleFromMap`. Oggi le promesse sono in cache e il
+danno non si vede; è un gesto possibile che nessuno ha deciso di ammettere.
+
+**Perché non è stato fatto al 21-ter:** sarebbe stato un secondo sospettato su
+un rosso, in un passo che cambia già come si risolve un modulo.
+
+**Condizione: al passo 22**, quando al fetch dei dati si aggiungerà quello
+dello script del modulo e la finestra smetterà di essere teorica. *I numeri qui
+sopra sono scritti apposta: al 22 serviranno, e rimisurarli costerebbe più che
+averli scritti.*
 
 #### DA APPLICARE A `CLAUDE.md`, REGOLA 33 — al prossimo giro che la tocca
 
