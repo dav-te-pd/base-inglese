@@ -190,7 +190,19 @@ async function run() {
   // è innocuo perché i listener non stanno lì dentro; dopo il 21-quater è *il*
   // guasto, e senza una guardia ogni riapertura ne aggiunge una copia.
   {
-    for (const fam of ['speedMatch', 'flashcard', 'dialogo']) {
+    // ⚠️ TUTTE LE FAMIGLIE CON UN RITORNO ALLA MAPPA, non un campione di tre —
+    // corretto il 2026-09-16 falsificando il giro ④.
+    //
+    // Prima erano speedMatch, flashcard e dialogo. Ma per una famiglia a kind
+    // SINGOLO — Repeat Aloud, Personalizza — questo blocco è **l'unico** che
+    // vedrebbe una guardia mancante: [A] apre ogni famiglia una volta sola
+    // (quindi non duplica) e [E] guarda solo chi ha più kind. Togliendo la
+    // guardia, Repeat Aloud restava verde.
+    //
+    // *Un campione va bene quando i casi si somigliano. Qui il caso che il
+    // campione escludeva era proprio quello che nessun altro blocco copriva.*
+    const conRitorno = Object.keys(FAMIGLIE).filter(function (f) { return FAMIGLIE[f].tornaAllaMappa; });
+    for (const fam of conRitorno) {
       const passo = PASSO_DI[fam];
       const page = await nuovaPagina(browser, 'L2' + fam, stepsBefore(passo));
       const indietro = FAMIGLIE[fam].tornaAllaMappa;

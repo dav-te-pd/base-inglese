@@ -6903,6 +6903,65 @@
   }
 
   function openRepeatAloud(module) {
+    // I listener di questo modulo, una volta sola.
+    //
+    // ⚠️ LA CHIAVE E' 'repeatAloud' E QUI FUNZIONEREBBE ANCHE `module.kind`,
+    // PERCHE' QUESTA `open` SERVE UN KIND SOLO. E' esattamente il caso in cui
+    // la regola sbagliata passa verde — come su Flash Card — quindi la chiave
+    // giusta si scrive lo stesso: la regola e' «il BLOCCO», non «il kind
+    // quando capita di coincidere». La regola per esteso sta accanto a
+    // `BI.unaVoltaSola` in app/spazio.js.
+    //
+    // Sul PERCHE' stiano prima di `showView`: vale la stessa cosa scritta in
+    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
+    // passo 22. Dichiarata, non provata.
+    BI.unaVoltaSola('repeatAloud', function () {
+    document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-say]');
+      if (!btn) return;
+      var data = episodeDataCache[currentRepeatAloudModule.dataFile];
+      var item = data && episodeGrade(data, currentRepeatAloudModule.grade).find(function (it) { return it.id === btn.getAttribute('data-say'); });
+      if (!item) return;
+      // Correction (5th collaudo): job 1 (4th collaudo) locked every other
+      // control here, but this module has no countdown to desync — free
+      // browsing (tap any word, any order, any time) is the intended
+      // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
+      // handles switching between words safely on its own.
+      speakListenBlock(btn, itemText(item, 'en'));
+    });
+
+    document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
+
+    document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(currentRepeatAloudModule, { dismissPref: introDismissPref('repeatAloud') });
+    });
+
+    document.getElementById('repeat-aloud-intro-start-btn').addEventListener('click', function () {
+      setIntroDismissed('repeatAloud', getUserName(), document.getElementById('repeat-aloud-intro-dont-show-again').checked);
+      raShowScreen('main');
+    });
+
+    document.getElementById('repeat-aloud-help-btn').addEventListener('click', function () {
+      openHelpFor(currentRepeatAloudModule);
+    });
+
+    document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
+      // Job 4 (earlier turn): Traguardo plays on every positive/neutral
+      // completion — tied to THIS event (declaring the study done), same
+      // moment every other module's Traguardo fires (reaching its own
+      // Schermata Finale), never to "← Mappa" above (leaves without
+      // completing) nor to the summary's own exit button below.
+      sfxPlayTraguardoSound();
+      raShowScreen('summary');
+      applyOutcomeSubtitle('repeat-aloud-summary-title-sub', 'studioCompleteMessages', 'default');
+    });
+
+    document.getElementById('repeat-aloud-complete-btn').addEventListener('click', function () {
+      // Nessun esito: CONFIG.moduleOutcomeRules non nomina repeatAloud, quindi
+      // questo modulo non colora la mappa. Non e' una dimenticanza.
+      completeModule(currentRepeatAloudModule, null);
+    });
+    });
     currentRepeatAloudModule = module;
     document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('repeat-aloud-type-badge').textContent = moduleTypeLabel(module);
@@ -6926,51 +6985,29 @@
   // Repeat Aloud.
   BI.registraModulo('repeatAloud', openRepeatAloud);
 
-  document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-say]');
-    if (!btn) return;
-    var data = episodeDataCache[currentRepeatAloudModule.dataFile];
-    var item = data && episodeGrade(data, currentRepeatAloudModule.grade).find(function (it) { return it.id === btn.getAttribute('data-say'); });
-    if (!item) return;
-    // Correction (5th collaudo): job 1 (4th collaudo) locked every other
-    // control here, but this module has no countdown to desync — free
-    // browsing (tap any word, any order, any time) is the intended
-    // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
-    // handles switching between words safely on its own.
-    speakListenBlock(btn, itemText(item, 'en'));
-  });
-
-  document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
-
-  document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(currentRepeatAloudModule, { dismissPref: introDismissPref('repeatAloud') });
-  });
-
-  document.getElementById('repeat-aloud-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed('repeatAloud', getUserName(), document.getElementById('repeat-aloud-intro-dont-show-again').checked);
-    raShowScreen('main');
-  });
-
-  document.getElementById('repeat-aloud-help-btn').addEventListener('click', function () {
-    openHelpFor(currentRepeatAloudModule);
-  });
-
-  document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
-    // Job 4 (earlier turn): Traguardo plays on every positive/neutral
-    // completion — tied to THIS event (declaring the study done), same
-    // moment every other module's Traguardo fires (reaching its own
-    // Schermata Finale), never to "← Mappa" above (leaves without
-    // completing) nor to the summary's own exit button below.
-    sfxPlayTraguardoSound();
-    raShowScreen('summary');
-    applyOutcomeSubtitle('repeat-aloud-summary-title-sub', 'studioCompleteMessages', 'default');
-  });
-
-  document.getElementById('repeat-aloud-complete-btn').addEventListener('click', function () {
-    // Nessun esito: CONFIG.moduleOutcomeRules non nomina repeatAloud, quindi
-    // questo modulo non colora la mappa. Non e' una dimenticanza.
-    completeModule(currentRepeatAloudModule, null);
-  });
+  // ---- I LISTENER DI REPEAT ALOUD NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openRepeatAloud` il 2026-09-16 (passo 21-quater ④),
+  // dietro `BI.unaVoltaSola('repeatAloud', …)`. Il commento resta al PASSATO.
+  //
+  // ⚠️ SONO SETTE, E `speak-btn` NON E' FRA LORO — e non perche' sia stato
+  // dimenticato.
+  //
+  // `#speak-btn` («🔊 Ascolta») vive in `view-pronunciation`, non in
+  // `view-repeat-aloud`, e quella vista **non e' raggiungibile da nessun punto
+  // dell'app**: l'unica funzione che la apre, `startPronunciationExercise`,
+  // non ha nemmeno un chiamante (misurato: una sola occorrenza in tutto il
+  // file, la sua definizione).
+  //
+  // Vale per tutti e quattro i listener di quella schermata — `speak-btn`,
+  // `mic-btn`, `edit-custom`, `back-home` — che restano fra i condivisi per
+  // questa ragione e non per un'altra: **non sono di nessun modulo perche'
+  // vivono in una schermata che nessun modulo apre.**
+  //
+  // La schermata esce dopo il passo 25, quando le funzioni che oggi si
+  // intrecciano col motore vocale (tokenize, classify, alignWords, pickVoice,
+  // toggleSpeak, synth) staranno in un file loro e il taglio sara' visibile
+  // invece che pericoloso. E' registrato in docs/decisioni.md.
 
   /* ============================================================
      MODULE: SPEAK EASY

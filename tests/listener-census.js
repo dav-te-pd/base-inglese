@@ -20,12 +20,31 @@ const { repoPath } = require('./test-env');
 // ⚠️ UN LISTENER APPARTIENE AL MODULO NELLA CUI VISTA VIVE, NON A QUELLO CHE
 // APRE.
 //
-// È la regola che decide tutti e ottanta, e va letta qui perché il caso che la
-// rende necessaria sembra sempre il contrario: `#edit-custom` («Modifica i
-// nomi della storia») APRE Personalizza, ma VIVE dentro `view-pronunciation`.
-// È un pulsante VERSO Personalizza, come una riga della mappa — e resta fra i
-// condivisi. Spostarlo dentro `openCustomize` lo renderebbe muto per chi non
-// ha ancora aperto Personalizza in quella sessione.
+// È la regola che decide tutti e settantanove.
+//
+// ⚠️ E LA MOTIVAZIONE SCRITTA QUI PRIMA ERA FALSA, corretta il 2026-09-16.
+// Diceva che `#edit-custom` («Modifica i nomi della storia») resta fra i
+// condivisi perché è «un pulsante VERSO Personalizza, come una riga della
+// mappa», e che vive «dentro la vista di un altro modulo».
+//
+// **Quell'altro modulo non esiste.** `#edit-custom` vive in
+// `view-pronunciation`, che **nessun modulo apre**: l'unica funzione che la
+// mostra, `startPronunciationExercise`, non ha un solo chiamante in tutto
+// `index.html` (misurato — una sola occorrenza, la sua definizione).
+//
+// La motivazione vera è più semplice, e vale per TUTTI E QUATTRO i listener di
+// quella schermata — `speak-btn`, `mic-btn`, `edit-custom`, `back-home`:
+//
+//     non sono di nessun modulo perché vivono in una schermata che nessun
+//     modulo apre.
+//
+// *La conclusione reggeva, la motivazione no — ed è la ⓪-quater su una
+// decisione già approvata: una motivazione falsa accanto a codice giusto fa
+// smettere di controllare chi la legge. Il «pulsante verso Personalizza»
+// suggeriva una relazione che non esiste.*
+//
+// La schermata esce dopo il passo 25, quando il motore vocale con cui è
+// intrecciata avrà un file suo — vedi docs/decisioni.md.
 const FAMIGLIE = {
   voice:        { vista: 'view-voice-coach', tornaAllaMappa: 'voice-coach-back-map', pattern: /^(vc-|voice-coach-|voice-practice-)/ },
   personalizza: { vista: 'view-customize',   tornaAllaMappa: null,                   pattern: /^(customize-|slot-|request-|start-episode)/ },
