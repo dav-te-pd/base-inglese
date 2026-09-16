@@ -3653,6 +3653,10 @@
 <script>
 (function () {
   var CONFIG = window.APP_CONFIG;
+  // Lo spazio dei nomi (app/spazio.js, passo 21). Qui prende i suoi primi
+  // utenti: le pulizie dei moduli, che dal passo 21-bis si REGISTRANO invece
+  // di essere nominate una per una da stopAllModuleActivity.
+  var BI = window.BI;
 
   /* ============================================================
      AUDIO CONTEXT WARM-UP (bug fix)
@@ -3993,13 +3997,16 @@
   // Safe to call unconditionally: every one of these clear-functions is a
   // no-op when nothing is pending.
   function stopAllModuleActivity() {
+    // ---- LE TRE CONDIVISE, NOMINATE — e non è una conversione lasciata a
+    // metà. Non appartengono a nessun modulo: il sintetizzatore è uno per
+    // tutta l'app, il popup dei tentativi è un pezzo solo, il magazzino della
+    // mastery è condiviso fra i quiz. Non potranno MAI «non essere caricati»,
+    // quindi registrarle vorrebbe dire inventare un registrante fittizio per
+    // pulizie che ci sono sempre — una cerimonia, non un meccanismo.
+    //
+    // Delle dieci istruzioni di prima, sette erano di un modulo (cinque
+    // famiglie) e tre no. Queste sono quelle tre.
     if (synth && synth.speaking) synth.cancel();
-    dgClearAllTimers();
-    vcResetRecording();
-    srClearTimer();
-    lockModuleHeader('speed-match', false);
-    if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
-    fcClearNavTimeout();
     closeAttemptPopup();
     // Regola 21: anche i due magazzini in sospeso si azzerano QUI, non dentro
     // il "← Mappa" di un modulo. Lasciare un modulo senza premere "Ho finito"
@@ -4010,7 +4017,44 @@
     // openEpisodeMap(), che è ciò che porta qui. Chi salva ha già salvato
     // quando questa riga gira.
     clearPendingMastery();
-    storyCardsClearPendingStats();
+
+    // ---- LE REGISTRATE (passo 21-bis). Questa funzione non nomina più
+    // nessuna famiglia di moduli: chi si carica dichiara la propria pulizia
+    // con BI.registraPulizia, e chi non è caricato non ha niente da pulire —
+    // vero PER COSTRUZIONE invece che per attenzione di chi scrive.
+    //
+    // ⚠️ L'ORDINE DENTRO QUESTO CICLO NON CONTA, E LA PROTEZIONE NON STA QUI.
+    //
+    // Misurato il 2026-09-16 guidando Ripeti a Tempo con l'audio in corso:
+    // zero timer sopravvivono all'uscita. Il sospetto era concreto — il
+    // countdown del Dialogo parte dentro l'`onend` dell'audio, quindi
+    // `synth.cancel()` prima di dgClearAllTimers() sembrava creare lavoro che
+    // la riga dopo spegneva — ed era sbagliato: l'`onend` arriva in modo
+    // ASINCRONO, cioè dopo tutta la pulizia, in qualunque ordine.
+    //
+    // A neutralizzarlo è `moduleEpoch++`, che showView fa PRIMA di chiamare
+    // questa funzione: ogni callback tardivo confronta l'epoca con cui era
+    // partito e si ritira. **Quella riga è la protezione, e deve restare dove
+    // sta** — un array di registrazioni fa pensare che la difesa sia qui
+    // dentro, e non ci sta.
+    //
+    // ⚠️ E IL try/catch NON RENDE IL GUASTO SILENZIOSO, perché è coperto
+    // altrove. Prima, una pulizia che alzava un'eccezione non fermava le
+    // altre: fermava la NAVIGAZIONE — l'eccezione risaliva a showView, che è
+    // il punto unico di ogni spostamento, e lo studente restava chiuso dentro
+    // il modulo (misurato). Adesso girano tutte e si esce sempre; il
+    // fallimento va in console **e fa diventare rossa un'asserzione di
+    // tests/test_pulizie_registrate.js**, che è la metà che rende accettabile
+    // questo catch. Toglierla rimetterebbe in piedi proprio lo scambio che
+    // questo progetto passa il tempo a evitare: un guasto rumoroso cambiato
+    // con uno silenzioso.
+    BI.pulizie.forEach(function (pulizia) {
+      try {
+        pulizia();
+      } catch (e) {
+        console.error('[pulizia] ' + (pulizia.name || 'anonima') + ' ha fallito:', e);
+      }
+    });
   }
 
   function showView(name) {
@@ -6919,6 +6963,8 @@
   function storyCardsClearPendingStats() {
     storyCardsPendingStats = [];
   }
+  // Why We Say It.
+  BI.registraPulizia(storyCardsClearPendingStats);
 
   // Le dichiarazioni sopravvivono all'uscita SOLO se l'utente lo chiede:
   // "Esci e riprendi dopo" durante il primo giro, o il completamento. Uscire
@@ -7682,6 +7728,8 @@
     document.getElementById('vc-silence-warning').hidden = true;
     setVcState('idle');
   }
+  // Voice Practice e Voice Check.
+  BI.registraPulizia(vcResetRecording);
 
   // Job 6: progressive mic-trouble notice, driven purely by
   // vcEmptyRecognitionStreak (see vcEvaluate). Same .danger-panel-notice
@@ -9260,6 +9308,8 @@
     if (dgReadyTimeoutId) { clearTimeout(dgReadyTimeoutId); dgReadyTimeoutId = null; }
     dgPaused = false;
   }
+  // I tre Dialogue dichiarano la propria pulizia (passo 21-bis).
+  BI.registraPulizia(dgClearAllTimers);
 
   function dgStartExercise() {
     dgHeardIds = [];
@@ -9571,6 +9621,19 @@
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }
   }
+
+  // Speed Match: TRE cose, non una, e per questo ha una pulizia sua invece di
+  // registrare `srClearTimer` — che ha altri sei chiamanti e non va toccato.
+  //
+  // ⚠️ `lockModuleHeader('speed-match', false)` e' una funzione CONDIVISA con
+  // un argomento che non lo e': sta qui, con Speed Match, perche' e' l'unico
+  // modulo che blocca la propria intestazione.
+  function srPulizia() {
+    srClearTimer();
+    lockModuleHeader('speed-match', false);
+    if (srCountdownTimeoutId) { clearTimeout(srCountdownTimeoutId); srCountdownTimeoutId = null; }
+  }
+  BI.registraPulizia(srPulizia);
 
   // Shared, duration-as-parameter timer-bar mechanics (CLAUDE.md rule 13)
   // — Speed Match below passes its own fixed CONFIG.speedMatch.
@@ -10110,6 +10173,8 @@
     fcNavLocked = false;
     document.getElementById('fc-card').classList.remove('is-sliding-out', 'is-sliding-in');
   }
+  // Flash Card.
+  BI.registraPulizia(fcClearNavTimeout);
 
   function fcNavigateTo(renderFn) {
     if (fcNavLocked) return;

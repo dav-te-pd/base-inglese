@@ -294,6 +294,43 @@ risponde alla domanda *«questa riga tocca il dato?»*; la domanda vera è
 stessa risposta apparente. *È di nuovo la forma di tutto il resto: il numero
 era giusto, era il numero di un'altra domanda.*
 
+## ⓪-septies UN TEST CHE **MUORE** NON È UN TEST CHE **FALLISCE**
+
+> **IL PRIMO DICE CHE QUALCOSA È ESPLOSO. IL SECONDO DICE COSA.**
+
+Non è una famiglia di errori ingoiati: è una famiglia di errori **urlati male**,
+e sta qui perché il costo è lo stesso — si perde l'informazione nel momento in
+cui serve.
+
+Un `waitForSelector` che scade, un `TypeError` su una proprietà che non c'è, un
+`page.evaluate` che esplode: sono rossi, quindi la suite si ferma e nessuno si
+fida di un verde falso. **Ma il messaggio parla del test, non dell'app**, e chi
+lo legge parte dall'ipotesi sbagliata — «il test è rotto» invece di «ecco cosa
+fa l'app adesso».
+
+⚠️ **E SI PRESENTA PROPRIO DOVE IL GUASTO È PIÙ GRAVE.** Un'asserzione che
+verifica «si riesce ancora a navigare» *deve* leggere qualcosa che, quando il
+guasto c'è, **non arriva**. Scritta nel modo naturale — aspetta la mappa, poi
+asserisci — muore invece di fallire ogni volta che il guasto è reale.
+
+**I due casi, 2026-09-16, passo 21-bis.**
+
+- `[C]` aspettava `#view-map.is-active` dopo aver rotto una pulizia. Senza
+  `try/catch` nel codice, il test moriva con `TimeoutError: waiting for
+  #view-map.is-active` — vero, inutile. Catturando l'attesa dice: *«la mappa non
+  si è aperta: l'eccezione è risalita a `showView` e lo studente è chiuso nel
+  modulo»*.
+- E la stessa riga ha rivelato una cosa che nessuno aveva previsto: il test non
+  moriva all'**uscita** dal modulo, moriva all'**ingresso** — perché `showView`
+  chiama la pulizia a ogni cambio di vista. *Il guasto era più grave di come lo
+  si stava descrivendo, e il rosso muto lo nascondeva.*
+
+**La forma operativa:** quando un'asserzione verifica che qualcosa **continui a
+funzionare**, l'attesa su cui poggia va **catturata** e trasformata in un
+`false` con un messaggio, mai lasciata nuda. *Non è prudenza generica — si fa
+esattamente lì dove il guasto cercato impedisce all'attesa di risolversi, e in
+nessun altro punto, perché altrove nasconderebbe un errore vero.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`

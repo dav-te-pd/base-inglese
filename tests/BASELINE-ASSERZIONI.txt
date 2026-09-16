@@ -10,7 +10,7 @@
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
 # Ultimo aggiornamento: 2026-09-15
-# Totale: 1170
+# Totale: 1199
 test_attendi.js 17
 test_attendi_ci.js 21
 test_attese_condivise.js 25
@@ -53,6 +53,7 @@ test_match_practice_nonloso.js 6
 test_modulo_pronto.js 12
 test_new_features.js 30
 test_outcome_step_ids.js 21
+test_pulizie_registrate.js 29
 test_report_mastery.js 8
 test_sblocco_sequenziale.js 16
 test_scala_colori.js 24
