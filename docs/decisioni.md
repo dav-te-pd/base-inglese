@@ -180,8 +180,28 @@ Non si deducono dal codice, e ognuno è costato una discussione:
   chiamanti seguono convenzioni diverse.
 - **Il passo 18 (le stringhe italiane nel JS) non si fa a metà.** Spostarne una parte
   raddoppia i posti dove cercarle, invece di dimezzarli.
-- **Il passo 21 (lo spazio dei nomi) non è una fermata sicura.** O l'oggetto esiste e
-  tutto ci passa attraverso, o no.
+- ~~**Il passo 21 (lo spazio dei nomi) non è una fermata sicura.** O l'oggetto esiste e
+  tutto ci passa attraverso, o no.~~ **SCADUTA, corretta il 2026-09-16.** Quella frase
+  descrive un passo in cui *creare l'oggetto* e *farci passare tutto* sono la stessa cosa.
+  **Quel passo non esiste più dal 15 settembre**, quando la fase 4 è stata rifatta e il
+  «tutto ci passa attraverso» è stato staccato in **21-bis** (`stopAllModuleActivity`),
+  **21-ter** (`openModuleByKind`) e **21-quater** (i listener). Il 21 di oggi crea il
+  meccanismo e nessuno lo usa ancora: **è additivo al 100%, ed è una fermata sicura.**
+  *Il costo vero di fermarsi lì è un altro, e va detto: un meccanismo senza utenti per un
+  giro. Si accetta perché il primo rosso del 21-bis deve poter incolpare la conversione
+  della pulizia, non la nascita dello spazio dei nomi.*
+
+> ⚠️ **QUANDO SI RIFÀ UN PIANO, SI RILEGGONO LE INVARIANTI CHE QUEL PIANO CITA.**
+>
+> Sono la parte che nessuno guarda, **proprio perché si chiamano invarianti**: la riga qui
+> sopra è rimasta scritta al contrario per quattro giorni, e a lasciarcela non è stato chi
+> ha scritto il piano vecchio — è stato chi ha scritto quello nuovo, lo stesso giorno, senza
+> tornare indietro a guardare cosa quel piano dava per fermo.
+>
+> *È la famiglia ⓪-quinquies applicata al piano invece che al codice: una frase che resta
+> giusta sulla sua riga mentre il mondo intorno cambia. E non l'ha trovata una rilettura —
+> l'ha trovata una domanda esplicita («controlla se qualcosa è cambiato»), che è il motivo
+> per cui la regola dice **rileggere**, non **ricordarsi**.*
 - **Dopo ogni rinomina si verificano DUE cose, non una: la suite verde E il conteggio
   delle asserzioni.** 346 occorrenze dei nomi vecchi stanno dentro `tests/` (90
   `gate`, 102 `quickMatch`, 126 `speedRound`, 22 `flashcardLevelA`). Un selettore
@@ -665,7 +685,7 @@ irraggiungibili da Node.*
 |---|---|---|---|
 | **19** | `people` e `places` fuori da `APP_CONFIG` → `data/inglese/it/`, **prima** di estrarre `APP_CONFIG`, così quello che si estrae è già solo manopole. ⚠️ **Non è uno spostamento di file: è una conversione ad asincrono**, e se il file non arriva lo studente deve vedere la schermata d'errore (regola 35).<br><br>**FATTO il 2026-09-15, come ①+④ dei cinque punti di `docs/inglese/it/tabelle-personalizzazione.md`.** `PERSONALIZATION_TABLES_FILE`, `loadPersonalizationTables()`, `resolveSlotTable(ref, episodeData, tables)`, `ensureEpisodeSlotFields` con un `Promise.all` a due. **Contenuto invariato di proposito**: sei destinazioni, id vecchi, traducibilità dedotta — il contenuto vero è il passo dopo, perché cambiarlo qui darebbe due sospettati a ogni rosso.<br><br>⚠️ **DUE PREMESSE DI QUESTA RIGA ERANO SBAGLIATE, e si vedono solo misurando.**<br>• *«`slotOptions` e `resolveSlotValue` leggono in modo sincrono mentre disegnano»* — **no**: leggono `episode.slotFields`, già risolto. Il lettore dei valori è **uno solo**, `resolveSlotTable`, e girava **già dentro un `.then()`**. La conversione vera è stata molto più piccola del previsto.<br>• E il lettore che nessuno aveva previsto è **il Pannello Admin**, che li raggiunge con `Object.keys(window.APP_CONFIG)` — **sincrono e raggiungibile PRIMA del login** con `?config`. Misurato guidando l'app: `people`×1, `places`×1 sulla schermata di onboarding.<br><br>**④ non è stata una migrazione, ed è meglio così.** Il markdown la descrive come `marco → papa-marco`, ma senza il contenuto nuovo gli id non cambiano: quello che ① rompeva davvero erano gli **override salvati dal Pannello Admin**, che sarebbero diventati inerti in silenzio. Il loader li riapplica sopra il file — **zero perdita, zero codice di migrazione**.<br><br>✅ **VERIFICATO**: suite completa e conteggio (vedi la riga sotto). | ☑ | **sì** |
 | **20** | **Primo commit dello spacchettamento:** `APP_CONFIG` esce in un file suo **e nello stesso commit** i suoi lettori lo seguono. Continuano a leggere **staticamente**, solo un file diverso e molto più piccolo: firma invariata, **zero punti di chiamata toccati**.<br><br>**FATTO il 2026-09-15.** `app/config.js`, 689 righe, caricato con un `<script src>` **bloccante** — niente `defer`, niente `async`, niente modulo: viene eseguito prima dello script in linea, quindi `APP_CONFIG` è in memoria come prima. **Non è una conversione ad asincrono come il 19.**<br><br>**La cartella `app/` nasce qui, ed è la convenzione per la fase 4**: i ~20 file estratti stanno lì, la radice resta `index.html` + `data/` + `docs/` + `tests/` + `tools/`.<br><br>⚠️ **I LETTORI ERANO TRE, NON DUE**, e il terzo l'ha creato il passo precedente: `test_tabelle_personalizzazione.js` (blocco `[A]`) ritagliava `index.html` fra `window.APP_CONFIG` e `applyConfigOverrides` — due marcatori che questo passo porta via, e `indexOf` avrebbe risposto `-1` **senza fallire**, consegnando uno slice a caso su cui le asserzioni sarebbero passate per il motivo sbagliato. *Un piano di un giorno, già incompleto, perché il file che deve seguire `APP_CONFIG` l'ha prodotto il passo prima.*<br><br>**E il «zero dei 79 punti di chiamata»:** oggi i punti sono **162 `CONFIG.` + 27 `APP_CONFIG`**. Il 79 non è un numero che si possa ricostruire ed è invecchiato come l'«undici minuti» — *ma la conclusione regge, e per un motivo che non dipende dal conteggio:* l'alias `var CONFIG = window.APP_CONFIG` non cambia, quindi i punti toccati sono **zero qualunque sia il loro numero**.<br><br>✅ **VERIFICATO**: suite completa e conteggio. | ☑ | **sì** |
-| **21** | Lo spazio dei nomi: si crea **l'oggetto vuoto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**. ⚠️ **Non è una fermata sicura a metà.** | ☐ | **sì** solo a passo finito |
+| **21** | Lo spazio dei nomi: si crea **l'oggetto e la regola**. Non sposta codice, cambia **come il codice si raggiunge**.<br><br>**FATTO il 2026-09-16.** `app/spazio.js`: `window.BI = window.BI \|\| {}`, le due collezioni (`BI.pulizie`, `BI.moduli`) e le due funzioni di registrazione.<br><br>**⚠️ L'ATTACCO TARDIVO NON È UNA FUNZIONE IN PIÙ: È IL `\|\| {}`.** Un file che arriva prima lo crea, uno che arriva dopo lo trova — nessuno dei due deve sapere in che ordine sta nel documento. `window.BI = {}` lo romperebbe **in silenzio**, e il sintomo arriverebbe al 21-ter.<br><br>**E la cosa che rende questo un meccanismo invece di una convenzione:** le collezioni le crea questo file, e ci si entra **solo dalle due funzioni**. Se ogni file scrivesse `BI.pulizie = BI.pulizie \|\| []`, un refuso (`BI.pulizia`) creerebbe una seconda collezione in silenzio — modulo che non si pulisce, zero errori. *Una funzione scritta male esplode; una proprietà scritta male no.* È la regola 12 applicata qui.<br><br>**`BI` e non `APP`** perché `APP_CONFIG` accanto a `APP.config` sono due cose diverse che si leggono uguali — la famiglia `sr`/`srShuffle`, già pagata. **E `APP_CONFIG` resta fuori**, dichiarato nel file perché non sembri un'incoerenza da sistemare.<br><br>✅ **VERIFICATO**: suite completa, conteggio, e Pages a mano. | ☑ | **sì** — ed è una fermata sicura, vedi l'invariante corretta |
 
 #### ⚠️ LA SUITE PARALLELA È VENUTA PRIMA DEL 19, ED È QUELLO CHE HA RESO PRATICABILE LA FASE 4
 

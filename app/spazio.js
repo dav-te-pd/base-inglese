@@ -1,0 +1,117 @@
+// ============================================================
+// LO SPAZIO DEI NOMI — passo 21 dello spacchettamento.
+//
+// ⚠️ QUESTO OGGETTO NON HA ANCORA UTENTI, ED E' VOLUTO.
+//
+// Il primo arriva al passo 21-bis, quando `stopAllModuleActivity` smettera' di
+// nominare sei famiglie di moduli e chiamera' invece le pulizie registrate
+// qui. Il secondo al 21-ter, con `openModuleByKind`. Fino ad allora questo
+// file e' un meccanismo senza chiamanti — **non e' codice morto, e non va
+// tolto.**
+//
+// Sta da solo, invece che insieme al suo primo utente, per una ragione sola:
+// se nascesse insieme alla conversione della pulizia, il primo rosso avrebbe
+// due sospettati. Cosi' ne ha uno.
+//
+// ------------------------------------------------------------
+// COS'E', E PERCHE' SERVE
+//
+// Tutto il codice dell'app vive dentro UN IIFE (index.html, ~7000 righe) dove
+// niente e' raggiungibile da fuori. La fase 4 lo spezza in ~20 file caricati
+// in ordine come <script> separati — non moduli ES, per una ragione decisa e
+// scritta: con i moduli ES la prima estrazione sarebbe anche l'ultima fermata
+// possibile.
+//
+// Script separati significa che serve un posto dove i pezzi si trovano. E'
+// questo.
+//
+// ------------------------------------------------------------
+// ⚠️ L'ATTACCO TARDIVO NON E' UNA FUNZIONE IN PIU': E' LA RIGA QUI SOTTO
+//
+//     window.BI = window.BI || {};
+//
+// Quel `|| {}` e' il meccanismo. Un file che arriva PRIMA di questo lo spazio
+// dei nomi se lo crea; uno che arriva DOPO lo trova gia' fatto. Nessuno dei
+// due deve sapere in che ordine e' stato messo nel documento — ed e' il
+// requisito del caricamento a richiesta, dove un modulo puo' arrivare molti
+// secondi dopo l'avvio o non arrivare affatto.
+//
+// **Scriverlo `window.BI = {}` lo romperebbe in silenzio**: l'ultimo file
+// caricato azzererebbe tutto quello che i precedenti hanno registrato, senza
+// un errore. E' l'errore che qualcuno fara' "pulendo" questa riga, quindi
+// `tests/test_spazio_nomi.js` lo prova proprio cosi'.
+//
+// ------------------------------------------------------------
+// PERCHE' SI CHIAMA `BI` E NON `APP`
+//
+// Perche' `window.APP_CONFIG` esiste gia', e `APP_CONFIG` accanto a
+// `APP.config` sono due cose diverse che si leggono uguali. E' la stessa
+// famiglia di `sr` / `srShuffle`, gia' pagata una volta con una rinomina.
+//
+// ⚠️ E `APP_CONFIG` RESTA FUORI DA QUI, di proposito: e' nominato in 27 punti,
+// e' documentato nella regola 3 di CLAUDE.md, e portarlo dentro sarebbe una
+// rinomina con zero guadagno. Chi trova `window.APP_CONFIG` accanto a
+// `window.BI` non sta guardando un'incoerenza da sistemare: sta guardando una
+// decisione.
+// ============================================================
+
+window.BI = window.BI || {};
+
+(function (BI) {
+  'use strict';
+
+  // ⚠️ LE DUE COLLEZIONI LE CREA QUESTO FILE, E CI SI ENTRA SOLO DALLE DUE
+  // FUNZIONI QUI SOTTO. NON E' CERIMONIA: E' LA REGOLA 12 APPLICATA QUI.
+  //
+  // Se ogni file scrivesse da se' `BI.pulizie = BI.pulizie || []`, un refuso —
+  // `BI.pulizia`, singolare — creerebbe **una seconda collezione in silenzio**.
+  // Il modulo smetterebbe di pulirsi, e non ci sarebbe nessun errore da
+  // nessuna parte: la registrazione riuscirebbe, solo su un oggetto che nessuno
+  // legge.
+  //
+  // Una FUNZIONE scritta male esplode subito (`BI.registraPulizio is not a
+  // function`). Una PROPRIETA' scritta male no. E' tutta qui la differenza fra
+  // un meccanismo e una convenzione — la stessa della guardia `[hidden]`
+  // (regola 12): non si raccomanda di non sbagliare, si toglie l'occasione.
+  //
+  // **Chi volesse "semplificare" togliera' proprio queste due funzioni**,
+  // perche' sembrano un giro in piu' attorno a un `push` e a un'assegnazione.
+  // Sono la ragione per cui il file esiste.
+  BI.pulizie = BI.pulizie || [];
+  BI.moduli = BI.moduli || {};
+
+  // Registra la pulizia di un modulo: quello che va fermato quando si lascia
+  // il modulo, qualunque strada si sia presa per uscirne (CLAUDE.md regola 21,
+  // il punto unico e' `stopAllModuleActivity`).
+  //
+  // Chi non e' caricato non registra niente, e quindi non ha niente da pulire:
+  // dal 21-bis quella frase diventa vera **per costruzione** invece che per
+  // attenzione di chi scrive.
+  BI.registraPulizia = function (fn) {
+    if (typeof fn !== 'function') {
+      throw new TypeError('BI.registraPulizia vuole una funzione, ha ricevuto ' + typeof fn);
+    }
+    BI.pulizie.push(fn);
+    return fn;
+  };
+
+  // Registra come si apre un modulo, sotto il suo `kind`.
+  //
+  // ⚠️ Registrare due volte lo stesso kind e' un ERRORE, non l'ultimo che
+  // vince. Due file che dichiarano lo stesso modulo e' un conflitto vero — e
+  // sceglierne uno zitti darebbe a chi ha scritto il secondo il 50% di
+  // probabilita' di sbagliarsi per sempre. E' lo stesso ragionamento per cui
+  // un episodio che dichiara `sequence` E `moduleOrder` e' un errore invece di
+  // una precedenza (regola 4).
+  BI.registraModulo = function (kind, apri) {
+    if (!kind) throw new TypeError('BI.registraModulo vuole un kind');
+    if (typeof apri !== 'function') {
+      throw new TypeError('BI.registraModulo vuole una funzione per ' + kind);
+    }
+    if (BI.moduli[kind]) {
+      throw new Error('BI.registraModulo: il modulo ' + kind + ' e\' gia\' registrato');
+    }
+    BI.moduli[kind] = apri;
+    return apri;
+  };
+})(window.BI);
