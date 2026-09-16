@@ -383,6 +383,86 @@ legge X» — non si applica da sola. Questa riga è il promemoria che quella
 condizione esisteva, ed è la seconda volta che il progetto paga per averla
 scritta senza un momento in cui viene letta.*
 
+## ⓪-nonies UNA FALSIFICAZIONE SBAGLIATA È ROSSA ESATTAMENTE COME UNA GIUSTA
+
+> **IL ROSSO DI UNA FALSIFICAZIONE NON PROVA NIENTE DA SOLO. VA LETTO **QUALE**
+> ASSERZIONE CADE.**
+
+Questa famiglia pesa più delle altre perché tocca **lo strumento su cui poggia
+tutto il resto**. La falsificazione è la mossa che ha salvato questo progetto
+sei volte: è quella che distingue un test che protegge da un test che
+accompagna. E adesso sappiamo che **anche lei può mentire** — e mente nella
+stessa forma di tutto il resto di questo file: *non somiglia a un errore,
+somiglia a un risultato* (regola 37).
+
+**Il meccanismo, ed è banale, che è il punto.** Si rompe di proposito la cosa
+che il test dovrebbe proteggere, si rilancia, si vede rosso, si conclude «è
+protetta». Ma il rosso dice solo che il test **sa morire su QUALCHE guasto**.
+Non dice che sappia morire su **QUEL** guasto. Se la rottura ha prodotto un
+guasto diverso da quello che si voleva provare, il verde/rosso è identico e la
+conclusione è falsa.
+
+**Il caso, misurato — e la ragione per cui è una famiglia e non un aneddoto:
+è successo DUE VOLTE, identico.**
+
+Falsificare la guardia `BI.unaVoltaSola` significa toglierla lasciando che il
+blocco **giri lo stesso**, cioè provocare la duplicazione. La sostituzione
+fatta è stata questa:
+
+```js
+    BI.unaVoltaSola('speedMatch', function () {   // prima
+    (function () {                                 // dopo
+```
+
+lasciando la chiusura `});`. Ma `(function () { … });` è **una funzione mai
+chiamata**: manca il `()`. Il risultato non è «la guardia non c'è più», è **«il
+blocco non esiste più»** — il guasto OPPOSTO.
+
+| | Cosa si voleva provare | Cosa si è provato |
+|---|---|---|
+| **atteso** | `[C]`: `1 → 4`, i listener si duplicano a ogni riapertura | — |
+| **ottenuto** | — | `[A]`: «atteso 1, **osservato 0**» — nessun listener attaccato |
+
+E il test era **rosso** in tutti e due i casi.
+
+- **① Speed Match, 2026-09-16.** `replace(v, '    (function () {', 1)`. Esito
+  registrato dal test: `speedMatch:sr-ready-btn/click atteso 1, osservato 0`,
+  e così per tutti e nove. *Non è stata riconosciuta:* è stata rifatta e basta,
+  e il `1 → 4` che sta in `docs/decisioni.md` viene dalla seconda corsa, quella
+  giusta. La conclusione del ① è sana — **ma per fortuna, non per metodo.**
+- **⑤ Match, 2026-09-16.** La stessa identica sostituzione, con lo stesso
+  identico esito. Stavolta è stata **riconosciuta leggendo quale asserzione
+  cadeva**, e da lì questa riga.
+
+*Le due volte sono verificabili nel log della sessione: `grep "osservato 0"`
+le trova entrambe, e il `1 → 4` corretto compare solo dopo.*
+
+⚠️ **E la ragione per cui il difetto è invisibile dall'esterno: la
+falsificazione non lascia traccia nel repository.** Un test che protegge male
+si vede nel diff; una falsificazione fatta male non si vede da nessuna parte,
+perché il file viene ripristinato subito dopo. **Resta solo la frase che ci si
+scrive sopra** — «falsificata, è protetta» — e quella frase ha lo stesso
+aspetto vera e falsa.
+
+**La forma operativa, tre righe, e la terza è quella che manca sempre:**
+
+1. **prima** di falsificare, scrivere quale asserzione ci si aspetta che cada,
+   e con quale numero (`[C]`, `1 → 4`);
+2. dopo la corsa, leggere **quale** è caduta davvero — non quante, non il
+   `SUMMARY`, non l'exit code;
+3. se è caduta un'altra, **la falsificazione è fallita, non il codice**: si
+   rifà la rottura, non si tiene il rosso.
+
+⚠️ **E il tranello specifico di questo caso, perché si ripresenterà:
+trasformare una chiamata di funzione in un blocco che «gira comunque» NON è
+una sostituzione di testo.** `f(function(){…});` → `(function(){…});` toglie
+la chiamata insieme alla guardia. La forma che gira è `(function(){…})();` —
+due caratteri, e sono esattamente i due che distinguono le due prove.
+
+*Perché sta in questo file e non solo fra le regole: tutto ciò che è raccolto
+qui è un modo in cui una misura smette di misurare senza dirlo. Questa è la
+versione che colpisce **la misura con cui verifichiamo le altre misure**.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
