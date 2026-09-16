@@ -9,8 +9,8 @@
 # Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
-# Ultimo aggiornamento: 2026-09-15
-# Totale: 1250
+# Ultimo aggiornamento: 2026-09-16
+# Totale: 1252
 test_attendi.js 17
 test_attendi_ci.js 21
 test_attese_condivise.js 25
@@ -48,7 +48,7 @@ test_episodio2.js 9
 test_errore_caricamento.js 13
 test_hidden_guard.js 4
 test_interruttore_episodio.js 15
-test_listener_una_volta.js 24
+test_listener_una_volta.js 26
 test_mastery_al_gesto.js 25
 test_match_practice_nonloso.js 6
 test_moduli_registrati.js 27
