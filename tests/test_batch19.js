@@ -231,6 +231,18 @@ async function toccaFinoA(page, p, voluto) {
 // riquadro della risposta chiuso — con lo stato del pulsante letto DENTRO la
 // stessa chiamata che ha aspettato. Fra un'attesa e una lettura separate la
 // domanda puo' cambiare ancora.
+//
+// ⚠️ E QUANDO NON ARRIVA, DICE PERCHE' — aggiunto il 2026-09-16 dopo un rosso
+// che non si poteva diagnosticare.
+//
+// La forma precedente tornava `null` sia se la domanda successiva non era mai
+// arrivata (timeout di 15 s) sia in caso di errore, e l'asserzione che la legge
+// scriveva la stessa riga rossa nei due casi. Sono due ricerche diverse — «il
+// quiz non e' andato avanti» e «il pulsante e' rimasto spento» — e distinguerle
+// costa una riga.
+//
+// E' la famiglia ⓪-octies applicata PRIMA del prossimo rosso invece che dopo:
+// la diagnosi si scrive quando si capisce che manca, non quando serve.
 function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
   return page.waitForFunction((a) => {
     const b = document.getElementById(a.pre + '-dontknow-btn');
@@ -241,13 +253,38 @@ function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
     if (c.textContent.trim() === a.prima) return null;
     return { spento: b.disabled, nascosto: b.hidden, contatore: c.textContent.trim() };
   }, { pre: p, prima: contatorePrecedente }, { timeout: 15000 })
-    .then(h => h.jsonValue()).catch(() => null);
+    .then(h => h.jsonValue())
+    .catch(async function (e) {
+      // Lo stato al momento della resa: e' l'unica cosa che distingue «non e'
+      // mai avanzato» da «e' avanzato e il pulsante e' rimasto spento».
+      const st = await page.evaluate((pre) => {
+        const b = document.getElementById(pre + '-dontknow-btn');
+        const c = document.getElementById(pre + '-counter');
+        const rev = document.getElementById(pre + '-reveal');
+        return {
+          contatore: c ? c.textContent.trim() : '(manca)',
+          revealAperto: rev ? !rev.hidden : null,
+          spento: b ? b.disabled : null,
+          quizAttivo: !!document.querySelector('#view-' + (pre === 'sr' ? 'speed-match' : 'match') + '.is-active')
+        };
+      }, p).catch(function () { return null; });
+      return { arreso: true, motivo: e && e.name === 'TimeoutError' ? 'timeout 15s' : String(e && e.message),
+               contatorePrecedente: contatorePrecedente, stato: st };
+    });
 }
 
 async function run() {
   const browser = await launchBrowser();
   const results = [];
-  const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+  // Il terzo parametro e' il DETTAGLIO, e si stampa solo quando la riga e'
+  // rossa: un rosso che non dice quale dei suoi guasti sia costringe chi lo
+  // trova a riprodurre invece di leggere (famiglia ⓪-octies). Sulla riga verde
+  // non compare, cosi' il log resta quello di sempre — e il contatore delle
+  // asserzioni conta comunque il prefisso `FAIL`, che non cambia.
+  const log = (msg, ok, dettaglio) => {
+    results.push({ msg, ok });
+    console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg + (!ok && dettaglio ? '  -> ' + dettaglio : ''));
+  };
 
   // ============ Match Practice: "Non lo so" disables together with options after a CORRECT answer ============
   {
@@ -272,7 +309,10 @@ async function run() {
     // La domanda successiva si aspetta, non si cronometra.
     const dopoQM = contatorePrimaQM === null ? null : await attendiDomandaSuccessiva(page, 'qm', contatorePrimaQM);
     log('[QM Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
-      dopoQM !== null && dopoQM.spento === false);
+      dopoQM !== null && !dopoQM.arreso && dopoQM.spento === false,
+      dopoQM === null ? 'attesa fallita senza stato' :
+        dopoQM.arreso ? ('NON E\' AVANZATO: ' + dopoQM.motivo + ' | ' + JSON.stringify(dopoQM.stato)) :
+        ('e\' avanzato ma il pulsante e\' SPENTO: ' + JSON.stringify(dopoQM)));
     log('[QM Task1] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -357,7 +397,10 @@ async function run() {
     }
     const dopoSR = contatorePrimaSR === null ? null : await attendiDomandaSuccessiva(page, 'sr', contatorePrimaSR);
     log('[SR Task1] "Non lo so" resets to enabled on the next question (not stuck disabled)',
-      dopoSR !== null && dopoSR.spento === false);
+      dopoSR !== null && !dopoSR.arreso && dopoSR.spento === false,
+      dopoSR === null ? 'attesa fallita senza stato' :
+        dopoSR.arreso ? ('NON E\' AVANZATO: ' + dopoSR.motivo + ' | ' + JSON.stringify(dopoSR.stato)) :
+        ('e\' avanzato ma il pulsante e\' SPENTO: ' + JSON.stringify(dopoSR)));
     log('[SR Task1] No JS errors', errors.length === 0);
     await page.close();
   }
