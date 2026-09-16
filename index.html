@@ -9954,6 +9954,101 @@
   }
 
   function openSpeedMatch(module) {
+    // ⚠️ I LISTENER DI QUESTO MODULO STANNO QUI, E UNA VOLTA SOLA.
+    //
+    // `openSpeedMatch` viene chiamata a ogni apertura — misurato: tre volte
+    // col gesto piu' banale (apri, mappa, riapri) — quindi senza
+    // `BI.unaVoltaSola` ogni riapertura aggiungerebbe una copia di ognuno di
+    // questi nove listener. Il pulsante farebbe partire l'azione due volte,
+    // poi tre, **senza nessun errore e senza niente in console**.
+    //
+    // Stanno PRIMA di `showView`, che e' la riga che rende la schermata
+    // toccabile.
+    //
+    // ⚠️ MA OGGI QUESTA POSIZIONE NON E' VERIFICABILE, E VA DETTO INVECE DI
+    // LASCIARLO CREDERE. Fra la fine di questo blocco e `showView` non c'e'
+    // niente di asincrono — solo assegnazioni e scritture nel DOM — quindi
+    // tutto gira nello stesso tick e una finestra "pulsanti visibili e muti"
+    // non esiste: spostare il blocco dopo `showView` non cambierebbe niente di
+    // osservabile, e nessun test puo' cadere per quello.
+    //
+    // E' una precauzione per il PASSO 22, dove `open` potra' dover aspettare
+    // il file del modulo: li' la finestra diventa reale. *Una precauzione
+    // dichiarata come tale vale piu' di una regola che sembra protetta da un
+    // test e non lo e'.*
+    //
+    // ⚠️ E qui ci sono i listener del modulo, non quelli che PORTANO al
+    // modulo: un listener appartiene al modulo nella cui vista VIVE, non a
+    // quello che apre. La riga della mappa che apre Speed Match resta fra i
+    // condivisi, come `#edit-custom` per Personalizza.
+    BI.unaVoltaSola('speedMatch', function () {
+    document.getElementById('sr-ready-btn').addEventListener('click', function () {
+      if (!srVocab.length) return;
+      if (!document.getElementById('sr-start-checkbox-row').hidden) {
+        setIntroDismissed(srModule.kind, getUserName(), document.getElementById('sr-start-dont-show-again').checked);
+      }
+      srRunCountdown();
+    });
+
+    document.getElementById('speed-match-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(srModule, { dismissPref: introDismissPref(srModule.kind) });
+    });
+
+    document.getElementById('sr-options').addEventListener('click', function (e) {
+      var btn = e.target.closest('.sr-option');
+      if (!btn || btn.disabled) return;
+      srClearTimer();
+      srFreezeTimer();
+      srDisableOptions();
+      var opt = srCurrentOptions[parseInt(btn.getAttribute('data-sr-index'), 10)];
+      var attemptNum;
+      if (opt.correct) {
+        btn.classList.add('is-correct');
+        sfxPlayCorrectSound();
+        attemptNum = srRecordResult(true);
+        if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: true };
+        setTimeout(srGoNext, CONFIG.speedMatch.feedbackPauseMs);
+      } else {
+        btn.classList.add('is-wrong');
+        sfxPlayWrongSound();
+        attemptNum = srRecordResult(false);
+        if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
+        srShowReveal();
+      }
+    });
+
+    document.getElementById('sr-dontknow-btn').addEventListener('click', function () {
+      srClearTimer();
+      srFreezeTimer();
+      srDisableOptions();
+      sfxPlayWrongSound();
+      var attemptNum = srRecordResult(false, true); // declared non-attempt -> straight to rosso
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
+      srShowReveal();
+    });
+
+    document.getElementById('sr-advance-btn').addEventListener('click', function () {
+      srGoNext();
+    });
+
+    document.getElementById('sr-retry-continue-btn').addEventListener('click', function () {
+      srNextQuestion();
+    });
+
+    document.getElementById('sr-complete-btn').addEventListener('click', function () {
+      completeModule(srModule, CONFIG.moduleOutcomeRules[srModule.moduleId] === 'moduleRules'
+        ? { level: moduleRulesLevel(srLastAvgPct), pct: srLastAvgPct }
+        : null);
+    });
+
+    // Timers are stopped centrally by showView()'s own stopAllModuleActivity()
+    // (see near its definition) — not repeated here.
+    document.getElementById('speed-match-back-map').addEventListener('click', openEpisodeMap);
+
+    document.getElementById('speed-match-help-btn').addEventListener('click', function () {
+      openHelpFor(srModule);
+    });
+    });
     srModule = module;
     srDirection = SR_DIRECTION_BY_KIND[module.kind];
     srVocab = [];
@@ -9976,72 +10071,15 @@
   BI.registraModulo('speedMatchEngIta', openSpeedMatch);
   BI.registraModulo('speedMatchItaEng', openSpeedMatch);
 
-  document.getElementById('sr-ready-btn').addEventListener('click', function () {
-    if (!srVocab.length) return;
-    if (!document.getElementById('sr-start-checkbox-row').hidden) {
-      setIntroDismissed(srModule.kind, getUserName(), document.getElementById('sr-start-dont-show-again').checked);
-    }
-    srRunCountdown();
-  });
-
-  document.getElementById('speed-match-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(srModule, { dismissPref: introDismissPref(srModule.kind) });
-  });
-
-  document.getElementById('sr-options').addEventListener('click', function (e) {
-    var btn = e.target.closest('.sr-option');
-    if (!btn || btn.disabled) return;
-    srClearTimer();
-    srFreezeTimer();
-    srDisableOptions();
-    var opt = srCurrentOptions[parseInt(btn.getAttribute('data-sr-index'), 10)];
-    var attemptNum;
-    if (opt.correct) {
-      btn.classList.add('is-correct');
-      sfxPlayCorrectSound();
-      attemptNum = srRecordResult(true);
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: true };
-      setTimeout(srGoNext, CONFIG.speedMatch.feedbackPauseMs);
-    } else {
-      btn.classList.add('is-wrong');
-      sfxPlayWrongSound();
-      attemptNum = srRecordResult(false);
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
-      srShowReveal();
-    }
-  });
-
-  document.getElementById('sr-dontknow-btn').addEventListener('click', function () {
-    srClearTimer();
-    srFreezeTimer();
-    srDisableOptions();
-    sfxPlayWrongSound();
-    var attemptNum = srRecordResult(false, true); // declared non-attempt -> straight to rosso
-    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) srPendingNudge = { wasCorrect: false };
-    srShowReveal();
-  });
-
-  document.getElementById('sr-advance-btn').addEventListener('click', function () {
-    srGoNext();
-  });
-
-  document.getElementById('sr-retry-continue-btn').addEventListener('click', function () {
-    srNextQuestion();
-  });
-
-  document.getElementById('sr-complete-btn').addEventListener('click', function () {
-    completeModule(srModule, CONFIG.moduleOutcomeRules[srModule.moduleId] === 'moduleRules'
-      ? { level: moduleRulesLevel(srLastAvgPct), pct: srLastAvgPct }
-      : null);
-  });
-
-  // Timers are stopped centrally by showView()'s own stopAllModuleActivity()
-  // (see near its definition) — not repeated here.
-  document.getElementById('speed-match-back-map').addEventListener('click', openEpisodeMap);
-
-  document.getElementById('speed-match-help-btn').addEventListener('click', function () {
-    openHelpFor(srModule);
-  });
+  // ---- I LISTENER DI SPEED MATCH NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openSpeedMatch` il 2026-09-16 (passo 21-quater),
+  // dietro `BI.unaVoltaSola('speedMatch', …)`. Chi non apre Speed Match non
+  // attacca i suoi listener — e dal passo 22, chi non lo carica nemmeno.
+  //
+  // Il commento resta al PASSATO ed e' voluto: dice dove sono andati, non
+  // finge che ci siano ancora. Chi cerca 'sr-ready-btn' qui deve trovare
+  // questa riga, non il silenzio.
 
   /* ============================================================
      MODULES: FLASH CARD (Level A Eng-Ita / Level A Ita-Eng, more

@@ -103,6 +103,32 @@ window.BI = window.BI || {};
   // probabilita' di sbagliarsi per sempre. E' lo stesso ragionamento per cui
   // un episodio che dichiara `sequence` E `moduleOrder` e' un errore invece di
   // una precedenza (regola 4).
+  // Fa girare `fn` UNA VOLTA SOLA per quel nome, e ignora le volte dopo.
+  //
+  // ⚠️ SERVE PERCHE' `open` VIENE CHIAMATA PIU' VOLTE: misurato il 2026-09-16,
+  // il gesto piu' banale — apri un modulo, torna alla mappa, riaprilo — la
+  // chiama TRE volte. Dal passo 21-quater i listener di un modulo vivono
+  // dentro il suo `open`, quindi senza questa guardia ogni riapertura ne
+  // aggiungerebbe una copia: il pulsante farebbe partire l'azione due volte,
+  // poi tre, **senza nessun errore**.
+  //
+  // Sta qui e non come flag dentro ogni modulo perche' la conversione si
+  // ripete OTTO volte: otto flag sono otto occasioni di scriverne uno diverso,
+  // e la settima non fallisce, semplicemente non protegge. Stessa ragione per
+  // cui le collezioni le crea questo file (regola 12: si toglie l'occasione di
+  // sbagliare invece di raccomandare di non farlo).
+  //
+  // Non serve un aggancio/sgancio: le sette `renderSummaryScreen` girano una
+  // volta sola al caricamento, quindi gli elementi non cambiano MAI identita'
+  // durante la sessione — misurato prima di scegliere questa forma.
+  BI.fatto = BI.fatto || {};
+  BI.unaVoltaSola = function (nome, fn) {
+    if (BI.fatto[nome]) return false;
+    BI.fatto[nome] = true;
+    fn();
+    return true;
+  };
+
   BI.registraModulo = function (kind, apri) {
     if (!kind) throw new TypeError('BI.registraModulo vuole un kind');
     if (typeof apri !== 'function') {
