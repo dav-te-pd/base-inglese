@@ -1,0 +1,128 @@
+# I listener dell'app, uno per riga: <famiglia> <id>|<tipo>.
+#
+# NON E' UNA STATISTICA: e' la difesa contro un listener che SPARISCE.
+#
+# ⚠️ E nasce da un buco trovato falsificando, il 2026-09-16. La prima forma
+# del test derivava l'elenco atteso dal SORGENTE — cioe' dallo stesso file
+# che stava controllando. Togliendo la riga di un listener, quel listener
+# spariva anche dalle ATTESE, e il test restava verde: si misurava contro se
+# stesso. E' la stessa forma dell'asserzione vera per costruzione (regola 44),
+# spostata dall'asserzione all'ELENCO su cui gira.
+#
+# Il passo 21-quater SPOSTA i listener dentro l'open del proprio modulo, non
+# ne aggiunge e non ne toglie: **queste righe devono restare identiche per
+# tutte e otto le conversioni.** Un diff qui dentro durante il 21-quater e' un
+# errore, non un aggiornamento.
+#
+# Si riscrive solo quando qualcuno aggiunge o toglie un pulsante DI PROPOSITO:
+#   node tests/tools/scrivi-baseline-listener.js
+#
+# Ultimo aggiornamento: 2026-09-16
+# Totale: 107
+condiviso attempt-popup-next|click 1
+condiviso attempt-popup-retry|click 1
+condiviso back-home|click 1
+condiviso config-panel-backdrop|click 1
+condiviso config-panel-body|change 1
+condiviso config-panel-body|click 1
+condiviso config-panel-close-btn|click 1
+condiviso config-panel-reset-btn|click 1
+personalizza customize-back-home|click 1
+personalizza customize-help-btn|click 1
+personalizza customize-intro-start-btn|click 1
+personalizza customize-warning-cancel-btn|click 1
+personalizza customize-warning-confirm-btn|click 1
+personalizza customize-warning-confirm-input|input 1
+personalizza customize-watch-btn|click 1
+dialogo dg-choice-row|click 1
+dialogo dg-complete-btn|click 2
+dialogo dg-list|click 1
+dialogo dg-start-btn|click 1
+dialogo dg-toolbar|click 1
+dialogo dialogo-back-map|click 1
+dialogo dialogo-help-btn|click 1
+dialogo dialogo-watch-btn|click 1
+condiviso edit-custom|click 1
+flashcard fc-card|click 1
+flashcard fc-card|keydown 1
+flashcard fc-complete-btn|click 2
+flashcard fc-intro-start-btn|click 1
+flashcard fc-know-it-btn|click 1
+flashcard fc-not-yet-btn|click 1
+flashcard fc-retry-continue-btn|click 1
+flashcard flashcard-back-map|click 1
+flashcard flashcard-help-btn|click 1
+flashcard flashcard-watch-btn|click 1
+condiviso go-episode|click 1
+condiviso help-overlay-backdrop|click 1
+condiviso help-overlay-body|click 1
+condiviso help-overlay-body|submit 1
+condiviso help-overlay-close|click 1
+condiviso howitworks-overlay-backdrop|click 1
+condiviso howitworks-overlay-close-btn|click 1
+condiviso load-error-back|click 1
+condiviso load-error-retry|click 1
+condiviso map-back-home|click 1
+condiviso map-help-btn|click 1
+condiviso map-intro-start-btn|click 1
+condiviso map-watch-btn|click 1
+match match-back-map|click 1
+match match-help-btn|click 1
+match match-watch-btn|click 1
+condiviso mic-btn|click 1
+condiviso module-list|click 1
+condiviso onboarding-form|submit 1
+match qm-advance-btn|click 1
+match qm-complete-btn|click 2
+match qm-dontknow-btn|click 1
+match qm-options|click 1
+match qm-prompt-audio|click 1
+match qm-retry-continue-btn|click 1
+match qm-start-btn|click 1
+repeatAloud repeat-aloud-back-map|click 1
+repeatAloud repeat-aloud-body|click 1
+repeatAloud repeat-aloud-complete-btn|click 2
+repeatAloud repeat-aloud-complete|click 1
+repeatAloud repeat-aloud-help-btn|click 1
+repeatAloud repeat-aloud-intro-start-btn|click 1
+repeatAloud repeat-aloud-watch-btn|click 1
+personalizza request-fields|click 1
+personalizza request-fields|keydown 1
+personalizza slot-grid|change 1
+personalizza slot-grid|click 1
+personalizza slot-grid|input 1
+condiviso speak-btn|click 1
+speedMatch speed-match-back-map|click 1
+speedMatch speed-match-help-btn|click 1
+speedMatch speed-match-watch-btn|click 1
+speedMatch sr-advance-btn|click 1
+speedMatch sr-complete-btn|click 2
+speedMatch sr-dontknow-btn|click 1
+speedMatch sr-options|click 1
+speedMatch sr-ready-btn|click 1
+speedMatch sr-retry-continue-btn|click 1
+personalizza start-episode|click 1
+storyCards story-cards-back-map|click 1
+storyCards story-cards-body|click 1
+storyCards story-cards-complete-btn|click 2
+storyCards story-cards-complete|click 1
+storyCards story-cards-help-btn|click 1
+storyCards story-cards-intro-start-btn|click 1
+storyCards story-cards-resume-later|click 1
+storyCards story-cards-watch-btn|click 1
+condiviso switch-user|click 1
+condiviso theme-picker|click 1
+voice vc-audio-controls|click 1
+voice vc-cancel-btn|click 1
+voice vc-mic-notice-actions|click 1
+voice vc-next-btn|click 1
+voice vc-pronunciation-toggle|click 1
+voice vc-record-btn|click 1
+voice vc-send-btn|click 1
+voice voice-coach-back-map|click 1
+voice voice-coach-complete-btn|click 2
+voice voice-coach-help-btn|click 1
+voice voice-coach-intro-start-btn|click 1
+voice voice-coach-retry-btn|click 1
+voice voice-coach-retry-continue-btn|click 1
+voice voice-coach-watch-btn|click 1
