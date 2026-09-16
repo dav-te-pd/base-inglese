@@ -331,6 +331,58 @@ funzionare**, l'attesa su cui poggia va **catturata** e trasformata in un
 esattamente lì dove il guasto cercato impedisce all'attesa di risolversi, e in
 nessun altro punto, perché altrove nasconderebbe un errore vero.*
 
+## ⓪-octies UNA DIAGNOSI SCRITTA NON SI LEGGE DA SOLA
+
+> **LA PRIMA MOSSA DAVANTI A UN ROSSO È LEGGERE COSA IL TEST HA GIÀ DETTO —
+> prima di riprodurre, prima di sospettare, prima di tutto.**
+
+È l'altra faccia della ⓪-quater e della spiegazione che nessuno strumento sa
+leggere: **là la prosa c'era e il contatore non la vedeva; qui la diagnosi
+c'era e non l'ha vista nessuno.** In tutte e due il lavoro era già stato
+fatto, e il costo l'ha pagato chi è arrivato dopo — che eravamo noi.
+
+**Il caso, e pesa perché è a due tempi.**
+
+**2026-09-11.** `[SR Task1]` di `test_batch19` va rosso in CI e verde in
+locale. Si scopre che `toccaFinoA` torna `null` per **cinque ragioni diverse**
+e l'asserzione ne riporta sempre una sola. Invece di inventare una terza
+ipotesi — e inventarla sarebbe stato il difetto — si scrive `arrenditi()`, che
+stampa il motivo e la ripartizione delle mosse. Accanto ci va la condizione:
+*«alla prossima rossa si legge la ripartizione, e quella dice la diramazione».*
+
+**2026-09-16, cinque giorni dopo, la prossima rossa.** Stesso blocco. E sono
+partiti **sei giri di riproduzione** — tre a file solo, tre sotto carico
+parallelo — prima che qualcuno aprisse il `.result.txt` e leggesse la riga che
+il test aveva scritto da solo:
+
+```
+esaurite le mosse | mosse 41/41 | totale alla partenza: 9
+spese in: {popup:1, ripasso:2, riquadro:19, ultimaDomanda:2, tocchi:17}
+```
+
+Quella riga conteneva la diagnosi **intera**: ventiquattro mosse su quarantuno
+spese in diramazioni che non toccano niente, diciassette tocchi rimasti,
+(3/4)¹⁷ ≈ 1 su 133. *Sei giri per arrivare dove il primo secondo era già
+arrivato.*
+
+⚠️ **E il difetto non è la pigrizia: è l'ORDINE ISTINTIVO.** Davanti a un
+rosso la prima domanda che viene è *«è colpa di quello che ho appena
+toccato?»*, e la prima mossa che segue è **riprodurre**. Riprodurre sembra
+rigore — è misurare invece di supporre — ma è misurare **di nuovo** una cosa
+già misurata, e intanto la misura vera sta ferma in un file.
+
+**La forma operativa, e va fatta prima di qualunque ipotesi:**
+
+1. aprire il `.result.txt` del file rosso e leggerlo **tutto**, non solo le
+   righe `FAIL`: la diagnosi non è un fallimento, quindi non compare in un
+   `grep FAIL` — ed è precisamente così che è stata saltata;
+2. solo dopo, se non dice abbastanza, riprodurre.
+
+*Una condizione scritta accanto a uno strumento — «alla prossima rossa si
+legge X» — non si applica da sola. Questa riga è il promemoria che quella
+condizione esisteva, ed è la seconda volta che il progetto paga per averla
+scritta senza un momento in cui viene letta.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
