@@ -10459,6 +10459,106 @@
   }
 
   function openFlashcard(module) {
+    // I listener di questo modulo, una volta sola.
+    //
+    // ⚠️ LA CHIAVE E' 'flashcard', E QUI LA CHIAVE SBAGLIATA PASSEREBBE VERDE.
+    //
+    // `openFlashcard` serve UN kind solo (`flashcard`), condiviso da DUE
+    // descrittori (`flashcardAEngIta`, `flashcardAItaEng`): quindi
+    // `BI.unaVoltaSola('flashcard', …)` e `BI.unaVoltaSola(module.kind, …)`
+    // passano **la stessa identica stringa**, e nessuna corsa puo'
+    // distinguerle. Misurato il 2026-09-16 falsificando apposta: il test resta
+    // **26/26 verde** con la chiave sul kind.
+    //
+    // **Quel verde non prova che la chiave sia giusta: prova che qui le due
+    // chiavi coincidono.** Sono due affermazioni diverse, e la seconda non
+    // implica la prima.
+    //
+    // La chiave giusta si scrive lo stesso, e questa e' la riga che serve fra
+    // sei mesi a chi «semplificherebbe» vedendo che funziona: la regola e' il
+    // BLOCCO, e vale per tutti e otto i moduli. Qui non la protegge nessun
+    // test — la protegge questo commento. Le famiglie in questa condizione
+    // sono TRE (`openFlashcard`, `openRepeatAloud`, `openCustomize`), e il
+    // blocco [F] di tests/test_listener_una_volta.js e' l'unico avviso che
+    // arrivera' se una delle tre prendesse un secondo kind. La regola per
+    // esteso sta accanto a `BI.unaVoltaSola` in app/spazio.js.
+    //
+    // Sul PERCHE' stiano prima di `showView`: vale la stessa cosa scritta in
+    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
+    // passo 22. Dichiarata, non provata.
+    BI.unaVoltaSola('flashcard', function () {
+    document.getElementById('fc-card').addEventListener('click', function (e) {
+      var sayBtn = e.target.closest('[data-say]');
+      if (sayBtn) {
+        e.stopPropagation();
+        var isBack = !!e.target.closest('.fc-card-back');
+        // Correction (5th collaudo): no countdown here — Sì/Non ancora
+        // (their own click handlers below) stop the card's audio on touch
+        // instead of being locked out during it.
+        speakListenBlock(sayBtn, isBack ? fcBackText() : fcFrontText());
+        return;
+      }
+      fcFlip();
+    });
+
+    document.getElementById('fc-card').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fcFlip(); }
+    });
+
+    // Sì/Non ancora advance straight to the next card — no Avanti click, and
+    // no Indietro to go back: a card can only be answered once. fcAnswered=
+    // true still guards fcFlip during the brief slide-out (fcNavigateTo/
+    // fcNavLocked already guards against a double advance).
+    // "Non ancora" deliberately plays NO sound (job: sound catalog) — a
+    // still-learning card is expected here, not an error, so the generic
+    // sbagliato tone would misread as a small failure on every other card.
+    document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
+      var attemptNum = fcRecordResult('wrong');
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
+      fcAnswered = true;
+      fcGoNext();
+    });
+
+    // "Sì, la so" plays Corretto — one card of fifteen, not a completion
+    // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
+    // Finale, see sfxPlayTraguardoSound's comment).
+    document.getElementById('fc-know-it-btn').addEventListener('click', function () {
+      var attemptNum = fcRecordResult('correct');
+      sfxPlayCorrectSound();
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
+      fcAnswered = true;
+      fcGoNext();
+    });
+
+    document.getElementById('fc-retry-continue-btn').addEventListener('click', fcRenderCard);
+
+    document.getElementById('fc-complete-btn').addEventListener('click', function () {
+      // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
+      // number behind it is the student's own declared "Sì, la so" share.
+      completeModule(fcModule, CONFIG.moduleOutcomeRules[fcModule.moduleId] === 'selfScoreRules'
+        ? { level: moduleRulesLevel(fcLastAvgPct), pct: fcLastAvgPct }
+        : null);
+    });
+
+    // The slide-nav timeout is stopped centrally by showView()'s own
+    // stopAllModuleActivity() (see near its definition) — not repeated here.
+    document.getElementById('flashcard-back-map').addEventListener('click', openEpisodeMap);
+
+    document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
+    });
+
+    document.getElementById('fc-intro-start-btn').addEventListener('click', function () {
+      setIntroDismissed(fcModule.kind, getUserName(), document.getElementById('fc-intro-dont-show-again').checked);
+      fcIntroPending = false;
+      fcShowScreen('card');
+    });
+
+    document.getElementById('flashcard-help-btn').addEventListener('click', function () {
+      openHelpFor(fcModule);
+    });
+    });
+
     fcModule = module;
     fcClearNavTimeout();
     fcGrade = module.grade;
@@ -10493,76 +10593,17 @@
   // alzerebbe un'eccezione al boot invece di lasciar vincere l'ultimo.
   BI.registraModulo('flashcard', openFlashcard);
 
-  document.getElementById('fc-card').addEventListener('click', function (e) {
-    var sayBtn = e.target.closest('[data-say]');
-    if (sayBtn) {
-      e.stopPropagation();
-      var isBack = !!e.target.closest('.fc-card-back');
-      // Correction (5th collaudo): no countdown here — Sì/Non ancora
-      // (their own click handlers below) stop the card's audio on touch
-      // instead of being locked out during it.
-      speakListenBlock(sayBtn, isBack ? fcBackText() : fcFrontText());
-      return;
-    }
-    fcFlip();
-  });
-
-  document.getElementById('fc-card').addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fcFlip(); }
-  });
-
-  // Sì/Non ancora advance straight to the next card — no Avanti click, and
-  // no Indietro to go back: a card can only be answered once. fcAnswered=
-  // true still guards fcFlip during the brief slide-out (fcNavigateTo/
-  // fcNavLocked already guards against a double advance).
-  // "Non ancora" deliberately plays NO sound (job: sound catalog) — a
-  // still-learning card is expected here, not an error, so the generic
-  // sbagliato tone would misread as a small failure on every other card.
-  document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
-    var attemptNum = fcRecordResult('wrong');
-    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
-    fcAnswered = true;
-    fcGoNext();
-  });
-
-  // "Sì, la so" plays Corretto — one card of fifteen, not a completion
-  // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
-  // Finale, see sfxPlayTraguardoSound's comment).
-  document.getElementById('fc-know-it-btn').addEventListener('click', function () {
-    var attemptNum = fcRecordResult('correct');
-    sfxPlayCorrectSound();
-    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
-    fcAnswered = true;
-    fcGoNext();
-  });
-
-  document.getElementById('fc-retry-continue-btn').addEventListener('click', fcRenderCard);
-
-  document.getElementById('fc-complete-btn').addEventListener('click', function () {
-    // SelfScoreRules: same moduleRulesLevel() math as ModuleRules, but the
-    // number behind it is the student's own declared "Sì, la so" share.
-    completeModule(fcModule, CONFIG.moduleOutcomeRules[fcModule.moduleId] === 'selfScoreRules'
-      ? { level: moduleRulesLevel(fcLastAvgPct), pct: fcLastAvgPct }
-      : null);
-  });
-
-  // The slide-nav timeout is stopped centrally by showView()'s own
-  // stopAllModuleActivity() (see near its definition) — not repeated here.
-  document.getElementById('flashcard-back-map').addEventListener('click', openEpisodeMap);
-
-  document.getElementById('flashcard-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(fcModule, { dismissPref: introDismissPref(fcModule.kind) });
-  });
-
-  document.getElementById('fc-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed(fcModule.kind, getUserName(), document.getElementById('fc-intro-dont-show-again').checked);
-    fcIntroPending = false;
-    fcShowScreen('card');
-  });
-
-  document.getElementById('flashcard-help-btn').addEventListener('click', function () {
-    openHelpFor(fcModule);
-  });
+  // ---- I LISTENER DI FLASH CARD NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openFlashcard` il 2026-09-16 (passo 21-quater ⑥),
+  // dietro `BI.unaVoltaSola('flashcard', …)`. Il commento resta al PASSATO.
+  //
+  // Sono DIECI su NOVE elementi: `fc-card` ne porta due, `click` e `keydown`
+  // — ed e' l'UNICO elemento di modulo in tutto il censimento con due TIPI di
+  // evento (gli altri quattro casi sono condivisi). Non cambia niente per la
+  // conversione — la guardia e' sul blocco, non sul listener — ma chi conta
+  // «un listener per pulsante» qui trova nove pulsanti e dieci righe di
+  // baseline, e deve sapere che e' giusto cosi'.
 
   hydrateIcons(document);
   boot();
