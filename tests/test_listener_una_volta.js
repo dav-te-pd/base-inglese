@@ -201,6 +201,23 @@ async function run() {
     //
     // *Un campione va bene quando i casi si somigliano. Qui il caso che il
     // campione escludeva era proprio quello che nessun altro blocco copriva.*
+    //
+    // ⚠️ E LA REGOLA GENERALE, che vale per ogni blocco di questo file e per
+    // ogni test futuro, non solo per il giro ④:
+    //
+    //   UN ELENCO SCRITTO A MANO DENTRO UN TEST È UN CAMPIONE, E UN CAMPIONE
+    //   SCEGLIE CHI NON GUARDARE.
+    //
+    // Chi scrive l'elenco sceglie i casi che ha in mano — quelli montati,
+    // quelli con la pagina già aperta. È esattamente il criterio della regola
+    // 42: il caso comodo, non il caso diverso. E la scelta non si vede mai nel
+    // diff, perché un elenco di tre nomi ha la stessa forma di un elenco di
+    // sette.
+    //
+    // Derivarlo da `FAMIGLIE` è la stessa mossa del baseline: LA FONTE DECIDE,
+    // NON CHI SCRIVE IL TEST. Una famiglia nuova entra nel giro da sola il
+    // giorno in cui viene aggiunta al censimento — e chi la aggiunge non deve
+    // sapere che questo blocco esiste.
     const conRitorno = Object.keys(FAMIGLIE).filter(function (f) { return FAMIGLIE[f].tornaAllaMappa; });
     for (const fam of conRitorno) {
       const passo = PASSO_DI[fam];

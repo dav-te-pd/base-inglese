@@ -8779,6 +8779,103 @@
   }
 
   function openMatch(module) {
+    // I listener di questo modulo, una volta sola.
+    //
+    // ⚠️ LA CHIAVE E' 'match' — il BLOCCO, non il kind. Qui la differenza si
+    // VEDE: questa `open` serve DUE kind (`matchEngIta`, `matchItaEng`), quindi
+    // con `module.kind` per chiave il blocco girerebbe due volte, una per
+    // direzione, e ogni listener avrebbe due copie. E' lo stesso caso di
+    // Speed Match e di Dialogo. La regola per esteso sta accanto a
+    // `BI.unaVoltaSola` in app/spazio.js.
+    //
+    // Sul PERCHE' stiano prima di `showView`: vale la stessa cosa scritta in
+    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
+    // passo 22. Dichiarata, non provata.
+    BI.unaVoltaSola('match', function () {
+    document.getElementById('qm-start-btn').addEventListener('click', function () {
+      if (!qmVocab.length) return;
+      if (!document.getElementById('qm-start-checkbox-row').hidden) {
+        setIntroDismissed(qmModule.kind, getUserName(), document.getElementById('qm-start-dont-show-again').checked);
+      }
+      qmStartQuiz();
+    });
+
+    document.getElementById('match-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(qmModule, { dismissPref: introDismissPref(qmModule.kind) });
+    });
+
+    document.getElementById('qm-options').addEventListener('click', function (e) {
+      // Ita-Eng's mini listen button sits inside the same options container —
+      // check it first so tapping it plays audio instead of submitting an answer.
+      var listenBtn = e.target.closest('[data-qm-listen-index]');
+      if (listenBtn) {
+        var listenOpt = qmCurrentOptions[parseInt(listenBtn.getAttribute('data-qm-listen-index'), 10)];
+        if (listenOpt) speakListenBlock(listenBtn, listenOpt.text);
+        return;
+      }
+      var btn = e.target.closest('.sr-option');
+      if (!btn || btn.disabled) return;
+      qmDisableOptions();
+      var opt = qmCurrentOptions[parseInt(btn.getAttribute('data-qm-index'), 10)];
+      var attemptNum;
+      if (opt.correct) {
+        btn.classList.add('is-correct');
+        sfxPlayCorrectSound();
+        attemptNum = qmRecordResult(true);
+        if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: true };
+        setTimeout(qmGoNext, CONFIG.match.feedbackPauseMs);
+      } else {
+        btn.classList.add('is-wrong');
+        sfxPlayWrongSound();
+        attemptNum = qmRecordResult(false);
+        if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
+        qmShowReveal();
+      }
+    });
+
+    document.getElementById('qm-prompt-audio').addEventListener('click', function (e) {
+      var say = e.target.closest('[data-say]');
+      if (!say) return;
+      // Correction (5th collaudo): no countdown here — answering while the
+      // prompt reads isn't blocked, it stops the prompt (see the
+      // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
+      // which stays).
+      speakListenBlock(say, itemText(qmCurrentItem, 'en'));
+    });
+
+    document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
+      qmDisableOptions();
+      sfxPlayWrongSound();
+      var attemptNum = qmRecordResult(false, true); // declared non-attempt -> straight to rosso
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
+      qmShowReveal();
+    });
+
+    document.getElementById('qm-advance-btn').addEventListener('click', function () {
+      qmGoNext();
+    });
+
+    document.getElementById('qm-retry-continue-btn').addEventListener('click', function () {
+      qmNextQuestion();
+    });
+
+    document.getElementById('qm-complete-btn').addEventListener('click', function () {
+      // ModuleRules (CONFIG.moduleOutcomeRules), same reference wiring as
+      // Voice Coach's own complete-btn: verified answers, first-pass pct.
+      completeModule(qmModule, CONFIG.moduleOutcomeRules[qmModule.moduleId] === 'moduleRules'
+        ? { level: moduleRulesLevel(qmLastAvgPct), pct: qmLastAvgPct }
+        : null);
+    });
+
+    document.getElementById('match-back-map').addEventListener('click', function () {
+      openEpisodeMap();
+    });
+
+    document.getElementById('match-help-btn').addEventListener('click', function () {
+      openHelpFor(qmModule);
+    });
+    });
+
     qmModule = module;
     qmDirection = QM_DIRECTION_BY_KIND[module.kind];
     qmVocab = [];
@@ -8801,88 +8898,17 @@
   BI.registraModulo('matchEngIta', openMatch);
   BI.registraModulo('matchItaEng', openMatch);
 
-  document.getElementById('qm-start-btn').addEventListener('click', function () {
-    if (!qmVocab.length) return;
-    if (!document.getElementById('qm-start-checkbox-row').hidden) {
-      setIntroDismissed(qmModule.kind, getUserName(), document.getElementById('qm-start-dont-show-again').checked);
-    }
-    qmStartQuiz();
-  });
-
-  document.getElementById('match-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(qmModule, { dismissPref: introDismissPref(qmModule.kind) });
-  });
-
-  document.getElementById('qm-options').addEventListener('click', function (e) {
-    // Ita-Eng's mini listen button sits inside the same options container —
-    // check it first so tapping it plays audio instead of submitting an answer.
-    var listenBtn = e.target.closest('[data-qm-listen-index]');
-    if (listenBtn) {
-      var listenOpt = qmCurrentOptions[parseInt(listenBtn.getAttribute('data-qm-listen-index'), 10)];
-      if (listenOpt) speakListenBlock(listenBtn, listenOpt.text);
-      return;
-    }
-    var btn = e.target.closest('.sr-option');
-    if (!btn || btn.disabled) return;
-    qmDisableOptions();
-    var opt = qmCurrentOptions[parseInt(btn.getAttribute('data-qm-index'), 10)];
-    var attemptNum;
-    if (opt.correct) {
-      btn.classList.add('is-correct');
-      sfxPlayCorrectSound();
-      attemptNum = qmRecordResult(true);
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: true };
-      setTimeout(qmGoNext, CONFIG.match.feedbackPauseMs);
-    } else {
-      btn.classList.add('is-wrong');
-      sfxPlayWrongSound();
-      attemptNum = qmRecordResult(false);
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
-      qmShowReveal();
-    }
-  });
-
-  document.getElementById('qm-prompt-audio').addEventListener('click', function (e) {
-    var say = e.target.closest('[data-say]');
-    if (!say) return;
-    // Correction (5th collaudo): no countdown here — answering while the
-    // prompt reads isn't blocked, it stops the prompt (see the
-    // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
-    // which stays).
-    speakListenBlock(say, itemText(qmCurrentItem, 'en'));
-  });
-
-  document.getElementById('qm-dontknow-btn').addEventListener('click', function () {
-    qmDisableOptions();
-    sfxPlayWrongSound();
-    var attemptNum = qmRecordResult(false, true); // declared non-attempt -> straight to rosso
-    if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) qmPendingNudge = { wasCorrect: false };
-    qmShowReveal();
-  });
-
-  document.getElementById('qm-advance-btn').addEventListener('click', function () {
-    qmGoNext();
-  });
-
-  document.getElementById('qm-retry-continue-btn').addEventListener('click', function () {
-    qmNextQuestion();
-  });
-
-  document.getElementById('qm-complete-btn').addEventListener('click', function () {
-    // ModuleRules (CONFIG.moduleOutcomeRules), same reference wiring as
-    // Voice Coach's own complete-btn: verified answers, first-pass pct.
-    completeModule(qmModule, CONFIG.moduleOutcomeRules[qmModule.moduleId] === 'moduleRules'
-      ? { level: moduleRulesLevel(qmLastAvgPct), pct: qmLastAvgPct }
-      : null);
-  });
-
-  document.getElementById('match-back-map').addEventListener('click', function () {
-    openEpisodeMap();
-  });
-
-  document.getElementById('match-help-btn').addEventListener('click', function () {
-    openHelpFor(qmModule);
-  });
+  // ---- I LISTENER DI MATCH NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openMatch` il 2026-09-16 (passo 21-quater ⑤), dietro
+  // `BI.unaVoltaSola('match', …)`. Il commento resta al PASSATO: chi cerca
+  // `qm-start-btn` qui non deve concludere che sia sparito.
+  //
+  // Sono DIECI, e sono tutti quelli della famiglia `match` del censimento
+  // (`tests/listener-census.js`): nessuna eccezione, nessun listener di questo
+  // modulo vive altrove. Il conto e' verificato da `tests/BASELINE-LISTENER.txt`,
+  // che il 21-quater non tocca — se una riga di quel file cambia durante questo
+  // passo, e' un errore, non un aggiornamento.
 
   /* ============================================================
      MODULES: DIALOGO (Ascolta e Ripeti / Ripeti a Tempo / Dialogo
