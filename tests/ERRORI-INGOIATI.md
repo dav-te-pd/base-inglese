@@ -476,6 +476,37 @@ almeno fa guardare. Il verde no.* L'unica cosa che l'ha presa è stato leggere
 il **traceback** invece del `SUMMARY` — cioè, di nuovo, leggere tutto l'output
 e non la riga che si stava cercando (⓪-octies).
 
+⚠️ **E IL TERZO GRADINO, trovato il 2026-09-17 e peggiore dei due — perché
+qui la falsificazione è GIUSTA.**
+
+I due casi sopra sono una rottura **sbagliata** (rosso ingannevole) e una
+rottura **non applicata** (verde ingannevole). Il terzo è una rottura
+**giusta**, che produce i rossi **giusti**, e da cui si sarebbe tratta
+comunque una conclusione falsa — perché l'**attesa** era sbagliata.
+
+*Il caso.* Scrivendo `test_avvio_invariato.js` avevo messo in un commento che
+`[A]` e `[B]` confrontano insiemi, quindi *«uno scambio fra due moduli le
+lascia verdi»*, e che `[C]` serviva per quello. Falsificando — scambiando due
+registrazioni — sono cadute **tutte e tre**: le righe portano il numero
+d'ordine, quindi uno scambio cambia il testo di due righe e `[A]`/`[B]` lo
+vedono come una sparita e una comparsa.
+
+**Avevo scritto l'attesa prima («solo `[C]`»), e per questo ho visto lo
+scarto.** Senza, avrei letto tre rossi su una rottura vera e detto *«il test
+funziona»* — che è pure vero, e che non era la cosa da verificare. *La
+falsificazione ha smentito la previsione invece di confermarla, ed è
+esattamente il suo mestiere; ma lo fa solo se la previsione esiste.*
+
+| Gradino | La rottura | L'esito | Perché inganna |
+|---|---|---|---|
+| ① | **sbagliata** | rosso | il rosso sembra la prova |
+| ② | **non applicata** | verde | il verde sembra un risultato |
+| ③ | **giusta** | rosso | la conclusione non è quella che l'esito sostiene |
+
+**Tutti e tre si difendono con la stessa riga, ed è la ① della forma
+operativa: scrivere COSA deve cadere, prima.** Non è un ornamento del metodo:
+è l'unica cosa che distingue un esito letto da un esito interpretato.
+
 ⚠️ **E il tranello specifico di questo caso, perché si ripresenterà:
 trasformare una chiamata di funzione in un blocco che «gira comunque» NON è
 una sostituzione di testo.** `f(function(){…});` → `(function(){…});` toglie

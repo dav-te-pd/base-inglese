@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260915b**
+**Versione: 20260917a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -211,7 +211,38 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 20. **Quando si blocca un'azione, il blocco vive nella funzione che la esegue, non solo nel pulsante o listener che la richiama** — i punti da cui si può richiamare una funzione si moltiplicano nel tempo, la funzione resta una sola.
 
-21. **`stopAllModuleActivity()` è il punto unico di pulizia quando si lascia un modulo.** Timer, registrazioni, sequenze in corso di qualunque modulo — presente o futuro — si azzerano lì (chiamata da `showView()`), mai dentro il singolo pulsante "← Mappa" di un modulo.
+21. **`stopAllModuleActivity()` è il punto unico di pulizia quando si lascia un modulo.** Timer, registrazioni, sequenze in corso di qualunque modulo — presente o futuro — si azzerano lì, mai dentro il singolo pulsante "← Mappa" di un modulo.
+
+    **Il punto unico resta unico. Chi lo chiama, no.**
+
+    ⚠️ **La versione precedente diceva «(chiamata da `showView()`)», e quella
+    parentesi non era la regola: era l'implementazione che ci era finita
+    dentro.** Riscritta il 2026-09-17, e la misura la decide da sola invece di
+    renderla ragionevole:
+
+    > **`showView` ha QUATTORDICI punti di chiamata. Dodici lasciano o possono
+    > lasciare un modulo, e la pulizia gli serve. DUE no — i due
+    > `showView('onboarding')`, in `boot` e nel pulsante «cambia utente» — e
+    > lì la pulizia è un no-op *garantito*, perché in quel momento nessun
+    > modulo è mai stato aperto.**
+
+    *`'onboarding'` è l'unica vista che non può mai seguire un modulo. Il
+    confine fra «prima dell'identità» e «dopo» non è una descrizione: si vede
+    contando i punti di chiamata.*
+
+    Quelle due chiamate oggi trascinano la pulizia — e con lei il
+    sintetizzatore, il popup dei tentativi, il magazzino della mastery e
+    `BI.pulizie` — solo perché sta dentro una funzione che ha **un altro
+    mestiere**: cambiare la vista attiva. È la stessa forma della ⓪-decies
+    (`tests/ERRORI-INGOIATI.md`): **una cosa che risponde a due domande dà la
+    risposta giusta a una e sbagliata all'altra, e nessuno se ne accorge
+    finché le due non divergono.** Qui divergono su due chiamate su quattordici.
+
+    **Quindi: `showView` cambia la vista. Chi lascia un modulo chiama la
+    pulizia.** La regola non si indebolisce — il punto unico è ancora uno solo,
+    ed è ancora vietato azzerare un timer dentro un pulsante — cambia solo che
+    la chiamata è dichiarata da chi lascia, invece di essere ereditata da chi
+    disegna.
 
 22. **Niente di utile vive solo nel container.** Qualunque cosa prodotta durante il lavoro e che serva anche dopo — test, script, strumenti, documenti, dati — va committata nel repository **nello stesso turno in cui viene creata**: non a fine lavoro, non "quando sarà stabile", non "alla prossima occasione". Il container è temporaneo per definizione: quello che resta solo lì è già perso, semplicemente non lo sappiamo ancora. Unica eccezione, i file davvero usa-e-getta. Nel dubbio si committa — un file inutile in più costa nulla, un file utile perso costa giorni.
 
@@ -310,6 +341,21 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     **È diversa dalla 31**: quella riguarda il codice — dichiarare cosa si
     costruirà prima di costruirlo — questa il contenuto.
+
+    ⚠️ **UNA SOLA ECCEZIONE, e non è un permesso di iniziativa: SE UN TUO
+    COMMIT RENDE FALSA UNA FRASE IN UN FILE DI CONTENUTO, QUELLA FRASE LA
+    CORREGGI SENZA CHIEDERE.**
+
+    Non stai cambiando una decisione: stai impedendo che una decisione già
+    presa **smetta di essere vera** perché il codice le è cambiato sotto. La
+    correzione si limita alla frase che il tuo commit ha reso falsa, va nello
+    **stesso commit** che l'ha resa tale, e si dichiara nel riepilogo.
+
+    *Perché esiste: è la famiglia ⓪-quinquies — un commento giusto smette di
+    essere vero quando cambia il mondo intorno, non il codice che descrive.
+    Chiedere il permesso di correggere una frase che **io** ho appena reso
+    falsa significa lasciarla falsa nel frattempo, e il frattempo è dove
+    quella frase viene letta.*
 
 34. **Prima di una modifica strutturale il giro è: proposta → valutazione →
     decisione → esecuzione.** In quest'ordine, e sono quattro momenti distinti:
