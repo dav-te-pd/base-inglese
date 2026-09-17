@@ -17,6 +17,28 @@ const { fotografiaAvvio, aRighe } = require('../avvio-census');
   await page.waitForSelector('.view.is-active', { timeout: 15000 });
   const righe = aRighe(await fotografiaAvvio(page));
   await browser.close();
+// ⚠️ LA STORIA DEI DIFF STA QUI, NON NEL FILE — e il perche' e' una misura,
+// non un'opinione: il 2026-09-17 l'avevo scritta a mano DENTRO
+// tests/BASELINE-AVVIO.txt, e la prima rigenerazione l'ha CANCELLATA senza
+// dirlo, perche' questo script riscrive l'intestazione per intero.
+//
+// **Una difesa che sparisce quando lo strumento gira e' una difesa che non
+// c'e'** — ed e' la famiglia della regola 37: non somigliava a un guasto,
+// somigliava a un file aggiornato. Adesso la storia e' un dato di QUESTO
+// file, quindi ogni rigenerazione la riporta.
+//
+// Una riga per DECISIONE STRUTTURALE, mai per uno spostamento.
+const STORIA = [
+  "2026-09-17  script 3 (inline) -> app/avvio.js. Estrazione dello strato 0.",
+  "            Il conto resta 4.",
+  "2026-09-17  script 4 (inline) -> app/progressi.js, piu' la riga nuova",
+  "            script 5 (inline). Estrazione dello strato `progressi`:",
+  "            il conto passa da 4 a 5.",
+  "2026-09-17  app/identita.js entra in TERZA posizione, e le tre righe dopo",
+  "            scalano: avvio, progressi, (inline). Il conto passa da 5 a 6.",
+  "            Sta prima di avvio.js perche' avvio legge BI.THEME_KEY."
+];
+
   const intestazione = [
     '# La fotografia dell\'avvio: cosa l\'app fa fra il primo byte e la',
     '# schermata di login, in ordine.',
@@ -39,10 +61,18 @@ const { fotografiaAvvio, aRighe } = require('../avvio-census');
     '# *La differenza fra le due cose e\' tutto il valore del file: se si',
     '# riscrive quando fa comodo, torna a essere un rapporto.*',
     '#',
+    '# ⚠️ I CAMBIAMENTI CHE QUESTO FILE HA AVUTO, con la decisione che li',
+    '# giustifica. Sono gli unici ammessi, e un diff senza una riga in piu\'',
+    '# qui sotto e\' un errore. L\'elenco vive dentro',
+    '# tests/tools/scrivi-baseline-avvio.js, non qui: scritto qui verrebbe',
+    '# cancellato dalla prima rigenerazione — e\' successo il 2026-09-17.',
+    '#'
+  ].concat(STORIA.map(function (r) { return '#   ' + r; })).concat([
+    '#',
     '# Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l\'app.',
     '# Ultimo aggiornamento: ' + new Date().toISOString().slice(0, 10),
     ''
-  ].join('\n');
+  ]).join('\n');
   fs.writeFileSync(repoPath('tests', 'BASELINE-AVVIO.txt'), intestazione + righe.join('\n') + '\n');
   console.log('Baseline avvio scritto: ' + righe.length + ' righe');
 })();

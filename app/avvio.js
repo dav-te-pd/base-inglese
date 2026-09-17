@@ -77,7 +77,12 @@
   // Applied before first paint so a returning user's saved theme never flashes to the default.
   (function () {
     try {
-      var saved = localStorage.getItem('baseinglese:theme');
+      // La chiave viene da app/identita.js, che e' caricato PRIMA di questo
+      // file apposta. Fino al 2026-09-17 qui c'era il letterale
+      // 'baseinglese:theme' e index.html conosceva la stessa chiave come
+      // THEME_KEY: due punti che sapevano la stessa cosa, in due file da
+      // quando lo strato 0 e' uscito. Adesso e' uno solo.
+      var saved = localStorage.getItem(window.BI.THEME_KEY);
       if (saved && saved !== window.APP_CONFIG.themes.defaultTheme) {
         document.documentElement.setAttribute('data-theme', saved);
       }
