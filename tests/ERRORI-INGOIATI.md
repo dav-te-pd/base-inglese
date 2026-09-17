@@ -568,6 +568,54 @@ dove il lavoro fa danno — la stessa firma della regola 44.*
 Personalizza, perché è vero che quel modulo non ha un «← Mappa». Il campo nuovo
 dice un'altra cosa, e la dice dove la cosa esiste.*
 
+## ⓪-undecies UN'ASSERZIONE ROSSA PER UNA DECISIONE NON È UN'ASSERZIONE DA AGGIORNARE
+
+> **LA DOMANDA È: L'INVARIANTE È CAMBIATO, O SOLO DOVE VIVE? E le due risposte
+> portano a cose OPPOSTE.**
+
+È il caso che **ogni rifattorizzazione produce** e che quasi nessuno tratta
+bene, perché i due casi hanno lo stesso aspetto: una riga rossa su un passo
+che si è appena dichiarato giusto. Da lì la conclusione istintiva è *«il test è
+vecchio, va aggiornato»* — e **«aggiornare» quasi sempre finisce per
+significare «togliere»**, o per riscrivere l'asserzione intorno al codice
+nuovo, che è lo stesso danno con un'altra faccia.
+
+| Cosa è successo | Cosa si fa |
+|---|---|
+| **l'invariante è cambiato** — la decisione ha deciso che quella cosa non deve più valere | l'asserzione si **toglie**, e la riga che la toglie porta la decisione che l'ha resa obsoleta |
+| **è cambiato solo DOVE VIVE** | l'asserzione si **SEGUE**: stesso invariante, punto d'osservazione nuovo |
+
+*Sono opposte, e distinguerle non si fa guardando il rosso: si fa chiedendosi
+cosa l'asserzione proteggeva, che è la riga che la regola 32 obbliga a scrivere
+in testa a ogni file.*
+
+**Il caso, 2026-09-17 (passo 22, prima estrazione).**
+`test_pulizie_registrate.js` verificava che `moduleEpoch++` stesse **prima** di
+`stopAllModuleActivity` **dentro `showView`**. La separazione di `showView` ha
+spostato l'incremento in `leaveModule`, e la riga è diventata rossa.
+
+**L'invariante non era cambiato di una virgola:** l'incremento dell'epoca deve
+precedere la pulizia, o un callback che arriva *mentre le pulizie girano*
+troverebbe l'epoca vecchia e si crederebbe ancora valido. Era cambiato **dove
+vive**. *Seguirla è stato il lavoro; cancellarla sarebbe stato perderla — e il
+verde della suite avrebbe avuto esattamente lo stesso aspetto.*
+
+⚠️ **E LA METÀ CHE SI PERDE SEMPRE, anche quando si segue bene: dopo uno
+spostamento serve anche l'asserzione che dice che la cosa NON È PIÙ DOVE
+STAVA.**
+
+Seguire l'asserzione in `leaveModule` lasciava scoperto il ritorno: rimettere
+`stopAllModuleActivity()` dentro `showView` sarebbe passato **verde**, e il
+passo si sarebbe disfatto in silenzio. La riga aggiunta — *«e `showView` non ne
+contiene più nessuno dei due»* — è ciò che rende lo spostamento **una
+decisione**, invece di una posizione che capita di avere oggi.
+
+*Da qui la forma operativa, e sono due righe, non una:*
+
+1. **l'asserzione vecchia si SEGUE** dove l'invariante è andato a stare;
+2. **e se ne aggiunge una che vieta il ritorno**, perché l'assenza non la
+   protegge nessuno.
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
