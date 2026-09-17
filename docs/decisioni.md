@@ -832,7 +832,7 @@ strato che, per essere caricato, tira dentro tutto.
 | **0** | `avvio` | il blocco `<script>` piccolo che **esiste già** (46 righe): tema salvato, override della config | gira prima di `app/config.js` — visibile in `BASELINE-AVVIO.txt` |
 | **1** | `identita` | `getUserName` · `setUserName` · `clearUserName` · `getTheme` · `setTheme` · `renderThemePicker` · `hydrateIcons` · `icon` — **otto funzioni, ~41 righe** | **non nomina `showView`** ✅ misurato |
 | **1-bis** | **`ingresso`** *(nome proposto, non ancora deciso)* | **`boot` e `goHome`** — vedi sotto | nomina `showView`/`leaveModule`, quindi sta DOPO lo strato `vista` |
-| **2** | `vista` | `showView`, `views`, `moduleEpoch`, `showLoadError` | dopo la regola 21 riscritta, non tira più dentro `audio`/`quiz-engine`/`progressi` |
+| **2** | `vista` | `showView`, **`leaveModule`**, `views`, `moduleEpoch`, `showLoadError` (+ `LOAD_ERROR_LAST_RESORT`, `loadErrorRetry`, `loadErrorInlineHtml`, `renderLoadErrorTexts`, i due listener della schermata d'errore) | ⚠️ **RICONTATO il 2026-09-17: NON si estrae in questa posizione.** Nomina tre cose di strati che vengono dopo — `stopAllModuleActivity`, `loadModuleInstructions`/`moduleInstructionsCache`, `openEpisodeMap`. *La riga precedente diceva «non tira più dentro `audio`/`quiz-engine`/`progressi`»: falsa, misurata.* Vedi la riconta qui sotto |
 | **3+** | `dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine` | invariati rispetto al piano vecchio | — |
 
 ⚠️ **IL CRITERIO «non nomina `showView`» HA BOCCIATO QUALCOSA ALLA SUA PRIMA APPLICAZIONE, il 2026-09-17 — ed è la prova che guarda.** *Un criterio che dice sì a tutto non si sa se stia guardando.*
@@ -879,6 +879,59 @@ strato che, per essere caricato, tira dentro tutto.
 **Condizione:** si correggono **nello strato che li riunisce** — cioè quando `identita` (che contiene `setTheme`) esce, e i due punti tornano a essere due file dichiarati invece di uno dichiarato e uno letterale. Non prima: correggerli dentro un altro passo è il modo di allargarlo.
 
 ⚠️ **E IL LIMITE DELLO STRUMENTO, scritto in `tests/avvio-census.js` perché non riguarda questo passo ma TUTTI:** la fotografia dell'avvio prende le **dipendenze di codice**, non gli **spazi condivisi**. Due file possono non nominarsi mai e dipendere lo stesso l'uno dall'altro attraverso `localStorage`, un attributo del DOM, una chiave di sessione. **È il primo legame fra due file che nessuno strumento di questo progetto vede.** *Non è un buco da tappare: un baseline dell'avvio che seguisse anche il `localStorage` misurerebbe un'altra cosa, e peggio. È un limite da sapere, e da guardare a mano quando un'estrazione separa due punti che si parlano attraverso una chiave.*
+
+⚠️ **LA RICONTA DELLO STRATO 2 (`vista`), fatta il 2026-09-17 PRIMA di estrarre — E DICE DI FERMARSI.**
+
+**La misura, funzione per funzione:**
+
+| funzione / valore | righe | cosa nomina di non suo | dove sta quel nome |
+|---|---|---|---|
+| `views` | 15 | solo `document.getElementById` × 13 | il DOM |
+| `moduleEpoch` | 1 | niente | — |
+| `showView` | 5 | `views` | dentro `vista` |
+| `leaveModule` | 5 | `moduleEpoch`, `showView`, **`stopAllModuleActivity`** | **strato `audio`/`pulizie`, DOPO** |
+| `LOAD_ERROR_LAST_RESORT`, `loadErrorRetry` | 10 | niente | — |
+| `loadErrorInlineHtml`, `renderLoadErrorTexts` | 3, 8 | `LOAD_ERROR_LAST_RESORT` | dentro `vista` |
+| `showLoadError` | 18 | `renderLoadErrorTexts`, `leaveModule`, `views`, **`moduleInstructionsCache`**, **`loadModuleInstructions`** | **strato `dati`, DOPO** |
+| listener `load-error-back` | 3 | **`openEpisodeMap`** | **strato `mappa`, DOPO** |
+
+**TRE dipendenze verso strati che vengono dopo, non zero.** La riga del piano diceva *«dopo la regola 21 riscritta, non tira più dentro `audio`/`quiz-engine`/`progressi`»*: **misurata, è falsa.** La separazione del 2026-09-17 ha tolto `stopAllModuleActivity` da `showView`, **non da `vista`** — l'ha spostata in `leaveModule`, che è dentro lo stesso strato. *La riga del piano è rimasta vera sulla funzione che nominava e falsa sullo strato, senza cambiare una lettera: stessa forma dei due commenti corretti in questo commit.*
+
+⚠️ **E la riga del piano non nomina nemmeno `leaveModule`** — elenca `showView`, `views`, `moduleEpoch`, `showLoadError`. Ma `moduleEpoch++` vive in `leaveModule`: mettere il contatore in uno strato e chi lo alza in un altro è la separazione sbagliata di nuovo.
+
+> ⚠️ **LA COSA CHE LA RICONTA HA TROVATO E CHE VALE PIÙ DELLO STRATO: L'ORDINE DI CARICAMENTO NON È L'ORDINE DI ESTRAZIONE.**
+>
+> Il piano elenca gli strati **«in ordine di quando girano»**. Ma un file fuori da `index.html` **non vede i locali dell'IIFE — mai, in nessun ordine di caricamento**: non è una questione di prima o dopo, è lo scope lessicale. Quindi **uno strato si può estrarre solo quando tutto ciò che nomina è GIÀ fuori dall'IIFE**, cioè si estrae **dalle foglie verso l'interno** — l'ordine opposto.
+>
+> `avvio` e `identita` non lo mostravano perché nominano solo `window.APP_CONFIG` / `CONFIG`, che era già globale. **`vista` è il primo strato in cui i due ordini divergono**, ed è il secondo da estrarre.
+
+**Le due strade, e nessuna è «vai»:** o si estrae dalle foglie (`dati`, `audio`, `mappa` prima di `vista`), riscrivendo l'ordine del piano; o ogni callee si attacca a `BI` **prima** che il suo chiamante esca, il che è un passo suo per ognuno. *Si decide, non si sceglie strada facendo.*
+
+⚠️ **E LA DOMANDA STRUTTURALE RESTA APERTA, riformulata dalla misura: NON È JAVASCRIPT A COSTRINGERE ALLA RISCRITTURA, È LA REGOLA DEL PASSO 21.** Un `function getUserName()` dichiarato in `app/identita.js` a livello globale sarebbe raggiunto dai 56 punti di chiamata dentro l'IIFE **senza toccarne nessuno** — la catena di scope funziona. Gli ottantatré punti da riscrivere nascono dal fatto che quello che esce **si attacca a `BI`**. *Quindi la scelta A/B/C non è fra tre modi di far funzionare il codice: è se `BI` valga ottantatré riscritture, e la risposta è di chi guida il progetto.*
+
+⚠️ **IL LIMITE DI `righeDiCodiceDi()`, MISURATO IL 2026-09-17 — LO STRUMENTO NATO CONTRO IL DIFETTO DEI COMMENTI NE LASCIA PASSARE UNO STILE INTERO.**
+
+Il filtro scarta le righe che **cominciano** con `//`, `*` o `/*`. Ma i banner `/* ===== ... */` di `index.html` hanno le righe di continuazione **senza `*`**: sono prosa che comincia con una lettera. **Misurato: 932 righe stanno dentro un blocco `/* */`, e 758 passano il filtro come se fossero codice.**
+
+**Nessuna asserzione di oggi ne è ingannata — verificato pattern per pattern**, e il conto è **zero** per `showView('…')`, `leaveModule('…')`, `window.APP_CONFIG_DEFAULTS`, `applyConfigOverrides`. *Passava **una** riga con `stopAllModuleActivity`, ed era proprio il commento diventato falso che questo commit corregge; nessun test grep quel nome.* **È un buco latente, non un numero sbagliato — e la differenza va scritta, perché «zero oggi» è il motivo per cui non si corregge adesso.**
+
+**Condizione:** si corregge **quando un conto nuovo cerca un identificatore che vive anche nella prosa dei banner** — cioè alla prima grep che non sia già ancorata a una parentesi con apice (`nome('`). *Anticiparla significherebbe riscrivere il filtro senza un caso che lo provi, e un filtro senza caso non si sa se guarda.*
+
+⚠️ **LA MASTERY: L'AFFERMAZIONE MISURATA, E NON È QUELLA CHE SEMBRAVA.** *«`loadMastery()` esiste e c'è una lettura che la scavalca» — **nel codice dell'app è falsa**: l'unico `localStorage.getItem` della chiave sta dentro `loadMastery`. Quattro funzioni toccano la chiave — `masteryStorageKey` (la costruisce), `loadMastery`, `saveMastery`, `wipeEpisodeProgress` (la cancella) — e **tutte e quattro passano dal costruttore**.*
+
+**Il punto unico aggirato c'è, ed è nei TEST: 13 occorrenze in 5 file scrivono `'baseinglese:mastery:gate:' + u` a mano.** `test_scala_colori` (5), `test_batch12` (4), `test_report_mastery` (2), `test_avviso_microfono` (1), `test_mastery_al_gesto` (1). **E non possono fare altrimenti: `masteryStorageKey` vive dentro l'IIFE, irraggiungibile da un `page.evaluate`.** *Il punto unico esiste e non è raggiungibile da chi ne ha più bisogno.*
+
+⚠️ **E la conseguenza è della famiglia della regola 44, con i nomi dei punti:** se la forma della chiave cambiasse, `getItem` tornerebbe `null`, e **quattro asserzioni NEGATIVE — quelle che dicono «non è stato scritto niente» — diventerebbero verdi per costruzione**: `test_avviso_microfono.js:300`, `test_batch12.js:542` e `:547`, `test_mastery_al_gesto.js:122`. Sono esattamente le righe che proteggono la regola 7. Le positive invece cadrebbero rumorosamente (`test_scala_colori.js:197`, `test_report_mastery.js:54`). **Una suite mezza rossa e mezza falsamente verde, con la parte falsamente verde a guardia della regola 7.**
+
+**Condizione:** si chiude **nello strato che contiene la mastery**, esponendo `masteryStorageKey` su `BI` e facendo leggere ai cinque file quella — non prima, perché oggi quel nome non esiste fuori dall'IIFE.
+
+⚠️ **LA LISTA «L'ESTRAZIONE NON LA CREA, LA RENDE MENO VISIBILE» — si apre qui e si RILEGGE dopo tutti e sei gli strati, non prima.**
+
+1. **2026-09-17 · la chiave del tema e quella degli override** — due letterali nudi in `app/avvio.js` contro due costanti in `index.html`. *Duplicazione dentro un file: si trova leggendo. Fra due file: solo cercandola.*
+2. **2026-09-17 · la chiave della mastery nei test** — il punto unico esiste e l'IIFE lo nasconde ai cinque file che ne hanno bisogno. *L'estrazione della mastery lo renderà raggiungibile: è l'unico caso della lista che l'estrazione MIGLIORA, e va scritto perché non si legga la lista come «l'estrazione peggiora tutto».*
+3. **2026-09-17 · i 758 righe di prosa che `righeDiCodiceDi()` lascia passare** — non è creata dall'estrazione, ma ogni strato che esce aggiunge un file su cui quel filtro girerà.
+
+*Si rilegge alla fine perché una lista di tre voci non dice se sono una famiglia; una di dieci sì.*
 
 **FERMATE: una per strato, come prima.** | ☐ | **sì**, uno strato per volta |
 | **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** Un modulo sta fra 365 e 670 righe. | ☐ | **sì**, un modulo per volta |

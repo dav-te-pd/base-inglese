@@ -3940,9 +3940,19 @@
     error: document.getElementById('view-error')
   };
 
-  // Bumped on every showView() call (i.e. every navigation, including
-  // opening a different module or going back to the map) and captured by
-  // toggleSpeak() when an utterance starts. A late onend/onerror — e.g.
+  // Bumped by leaveModule() — cioe' DODICI delle quattordici navigazioni:
+  // aprire un modulo diverso, tornare in mappa, andare a casa. Le due
+  // showView('onboarding') NON lo alzano, ed e' giusto cosi': in quel momento
+  // nessun modulo e' mai stato aperto, quindi non c'e' nessuna chiamata
+  // tardiva da neutralizzare.
+  //
+  // ⚠️ Fino al 2026-09-17 questa riga diceva «bumped on every showView()
+  // call», ed era vera finche' la pulizia stava dentro showView. La
+  // separazione di quel giorno (regola 21) l'ha resa falsa senza toccarla:
+  // e' la famiglia ⓪-quinquies — un commento giusto smette di essere vero
+  // perche' cambia il mondo intorno, non il codice che descrive.
+  //
+  // Il valore e' captured by toggleSpeak() when an utterance starts. A late onend/onerror — e.g.
   // synth.cancel() interrupting an utterance mid-playback, which some
   // engines resolve asynchronously — compares its captured value against
   // the live one and, if the module has since been left, skips the
@@ -4096,8 +4106,14 @@
      aiuti opzionali e buttare fuori dal modulo chi non li ha nemmeno
      aperti sarebbe peggio del problema.
 
-     showView() chiama gia' stopAllModuleActivity() (regola 21), quindi
-     arrivare qui ferma da se' l'audio del modulo che stava fallendo.
+     showLoadError() esce passando da leaveModule(), che chiama
+     stopAllModuleActivity() (regola 21), quindi arrivare qui ferma da se'
+     l'audio del modulo che stava fallendo.
+
+     ⚠️ Fino al 2026-09-17 questa riga diceva «showView() chiama gia'
+     stopAllModuleActivity()». Era vera, e la separazione di quel giorno
+     l'ha resa falsa senza toccarla — stessa famiglia della riga su
+     moduleEpoch qui sopra.
      ============================================================ */
   var loadErrorRetry = null;
 
