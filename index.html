@@ -7,6 +7,7 @@
 <script src="app/config.js"></script>
 <script src="app/spazio.js"></script>
 <script src="app/avvio.js"></script>
+<script src="app/progressi.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3613,6 +3614,64 @@
   // di essere nominate una per una da stopAllModuleActivity.
   var BI = window.BI;
 
+  // ── I NOMI DELLO STRATO `progressi` (app/progressi.js, passo 22) ──
+  //
+  // ⚠️ QUESTO BLOCCO E' UN PONTE, NON UNO STILE DA IMITARE, e la sua
+  // condizione e' scritta qui perche' chi lo trova non lo prenda per il modo
+  // in cui si fanno le cose.
+  //
+  // Le trentotto funzioni sono uscite da questo IIFE e vivono su `BI`. I loro
+  // punti di chiamata qui dentro sono CINQUANTAQUATTRO. Riscriverli tutti in
+  // `BI.nome(...)` e' una decisione che vale per TUTTI gli strati, non per
+  // questo — e prenderla dentro un commit che SPOSTA codice significherebbe
+  // farla senza che nessuno l'abbia guardata. Questo blocco la rimanda: il
+  // trasloco si vede da solo nel diff, la riscrittura avra' il suo passo.
+  //
+  // **Condizione:** sparisce nel passo che decide come si raggiunge quello che
+  // e' stato estratto — o riscrivendo i punti di chiamata, o dichiarando che
+  // gli alias sono la forma voluta. Finche' e' qui, e' un debito dichiarato.
+  //
+  // *E' greppabile apposta: `BI.` in colonna, trentotto righe di fila.*
+  var leggiMagazzino = BI.leggiMagazzino;
+  var scriviMagazzino = BI.scriviMagazzino;
+  var cancellaMagazzino = BI.cancellaMagazzino;
+  var helpRequestsKey = BI.helpRequestsKey;
+  var loadHelpRequests = BI.loadHelpRequests;
+  var saveHelpRequest = BI.saveHelpRequest;
+  var masteryStorageKey = BI.masteryStorageKey;
+  var loadMastery = BI.loadMastery;
+  var saveMastery = BI.saveMastery;
+  var moduleProgressKey = BI.moduleProgressKey;
+  var loadModuleProgress = BI.loadModuleProgress;
+  var markModuleCompleted = BI.markModuleCompleted;
+  var moduleOutcomeKey = BI.moduleOutcomeKey;
+  var loadModuleOutcomes = BI.loadModuleOutcomes;
+  var saveModuleOutcome = BI.saveModuleOutcome;
+  var audioUsageKey = BI.audioUsageKey;
+  var loadAudioUsage = BI.loadAudioUsage;
+  var addAudioSecondsSent = BI.addAudioSecondsSent;
+  var nextLineSkipsKey = BI.nextLineSkipsKey;
+  var loadNextLineSkips = BI.loadNextLineSkips;
+  var addNextLineSkip = BI.addNextLineSkip;
+  var storyCardsExplanationStatsKey = BI.storyCardsExplanationStatsKey;
+  var vuotoStoryCardsExplanationStats = BI.vuotoStoryCardsExplanationStats;
+  var loadStoryCardsExplanationStats = BI.loadStoryCardsExplanationStats;
+  var storyCardsRecordExplanationAnswer = BI.storyCardsRecordExplanationAnswer;
+  var customValuesKey = BI.customValuesKey;
+  var loadCustomValues = BI.loadCustomValues;
+  var saveCustomValues = BI.saveCustomValues;
+  var customizeSeenKey = BI.customizeSeenKey;
+  var isCustomizeSeen = BI.isCustomizeSeen;
+  var wipeEpisodeProgress = BI.wipeEpisodeProgress;
+  var introDismissedKey = BI.introDismissedKey;
+  var legacyRaIntroDismissedKey = BI.legacyRaIntroDismissedKey;
+  var isIntroDismissed = BI.isIntroDismissed;
+  var setIntroDismissed = BI.setIntroDismissed;
+  var storyCardsDeclarationsKey = BI.storyCardsDeclarationsKey;
+  var loadStoryCardsDeclarations = BI.loadStoryCardsDeclarations;
+  var saveStoryCardsDeclarations = BI.saveStoryCardsDeclarations;
+  var STORY_CARDS_STATS_VERSIONE = BI.STORY_CARDS_STATS_VERSIONE;
+
   // ⚠️ OGGI TUTTI I MODULI SI REGISTRANO AL BOOT, e questa riga lo DICHIARA
   // invece di lasciarlo dedurre.
   //
@@ -4255,72 +4314,11 @@
      B/C) are saved with the same per-user localStorage mechanism as
      mastery/customization.
      ============================================================ */
-  // ── IL MAGAZZINO: UN PUNTO CHE LEGGE, UNO CHE SCRIVE, UNO CHE CANCELLA ──
-  //
-  // ⚠️ Prima di queste tre righe c'erano NOVE lettori e DIECI scrittori con lo
-  // stesso identico corpo. Due coppie erano uguali CARATTERE PER CARATTERE a
-  // meno della chiave: loadMastery/loadModuleOutcomes e
-  // loadAudioUsage/loadNextLineSkips. Non erano accessi indipendenti allo
-  // stesso spazio: erano la stessa funzione scritta due volte.
-  //
-  // E la ragione per cui si e' chiuso PRIMA di estrarre lo strato, invece di
-  // scriverci accanto una nota: fra due mesi chi cambia uno dei lettori non ha
-  // nessun modo di sapere che gli altri otto esistono — e dopo l'estrazione
-  // staranno in un altro file, dove non li si incontra leggendo.
-  // **Chiudere il caso costa meno che scrivere la nota che lo descrive, e
-  // protegge di piu': la nota va trovata, il punto unico no.**
-  //
-  // ⚠️ `vuoto` E' UNA FUNZIONE, NON UN VALORE, e non e' uno scrupolo: passando
-  // `{}` ogni chiamante riceverebbe LO STESSO oggetto, e il primo che lo
-  // modifica lo modifica per tutti. Un difetto che non alza eccezioni e si
-  // vede giorni dopo come un progresso comparso da solo.
-  //
-  // ⚠️ E UNA DIFFERENZA DI COMPORTAMENTO, dichiarata invece che nascosta: se
-  // nel magazzino ci fosse un JSON "falso" (`null`, `0`, `false`, `""`) la
-  // forma vecchia di loadMastery/loadModuleOutcomes lo restituiva, questa
-  // ritorna il vuoto. Nessuno dei dieci scrittori puo' produrlo — scrivono
-  // tutti oggetti o array — quindi nell'app la differenza non e'
-  // osservabile, ed e' nella direzione sicura: `loadMastery(...)[id]` su
-  // `null` sarebbe un'eccezione.
-  //
-  // Chi resta FUORI, e perche': isCustomizeSeen, isIntroDismissed e
-  // setIntroDismissed non scrivono JSON — tengono la stringa '1'/'0'. Farli
-  // passare di qui vorrebbe dire o cambiare il formato salvato (rompendo i
-  // profili che ce l'hanno gia') o dare a queste funzioni una seconda
-  // modalita': una cosa che risponde a due domande da' la risposta giusta a
-  // una e sbagliata all'altra (famiglia ⓪-decies).
-  function leggiMagazzino(chiave, vuoto, valida) {
-    try {
-      var raw = localStorage.getItem(chiave);
-      var letto = raw ? JSON.parse(raw) : null;
-      if (letto && (!valida || valida(letto))) return letto;
-      return vuoto();
-    } catch (e) { return vuoto(); }
-  }
 
-  function scriviMagazzino(chiave, valore) {
-    try { localStorage.setItem(chiave, JSON.stringify(valore)); } catch (e) {}
-  }
 
-  function cancellaMagazzino(chiave) {
-    try { localStorage.removeItem(chiave); } catch (e) {}
-  }
 
-  function helpRequestsKey(userName) {
-    return 'baseinglese:helpRequests:' + userName;
-  }
 
-  function loadHelpRequests(userName) {
-    return leggiMagazzino(helpRequestsKey(userName),
-      function () { return []; },
-      function (p) { return Array.isArray(p); });
-  }
 
-  function saveHelpRequest(userName, entry) {
-    var list = loadHelpRequests(userName);
-    list.push(entry);
-    scriviMagazzino(helpRequestsKey(userName), list);
-  }
 
   var activeHelpModule = null;
   var helpOverlayEl = document.getElementById('help-overlay');
@@ -5208,17 +5206,8 @@
     return idx > 0 ? LEVELS[idx - 1] : LEVELS[0];
   }
 
-  function masteryStorageKey(episodeId, userName) {
-    return 'baseinglese:mastery:' + episodeId + ':' + userName;
-  }
 
-  function loadMastery(episodeId, userName) {
-    return leggiMagazzino(masteryStorageKey(episodeId, userName), function () { return {}; });
-  }
 
-  function saveMastery(episodeId, userName, mastery) {
-    scriviMagazzino(masteryStorageKey(episodeId, userName), mastery);
-  }
 
   // result: 'correct' | 'similar' | 'wrong'
   function applyMasteryResult(entry, result) {
@@ -5582,22 +5571,8 @@
      one not yet completed, 'locked' otherwise. This is what keeps the
      map from ever letting a user skip ahead.
      ============================================================ */
-  function moduleProgressKey(episodeId, userName) {
-    return 'baseinglese:modules:' + episodeId + ':' + userName;
-  }
 
-  function loadModuleProgress(episodeId, userName) {
-    return leggiMagazzino(moduleProgressKey(episodeId, userName),
-      function () { return { completed: [] }; },
-      function (p) { return Array.isArray(p.completed); });
-  }
 
-  function markModuleCompleted(episode, userName, moduleId) {
-    var progress = loadModuleProgress(episode.id, userName);
-    if (progress.completed.indexOf(moduleId) === -1) progress.completed.push(moduleId);
-    scriviMagazzino(moduleProgressKey(episode.id, userName), progress);
-    return progress;
-  }
 
   function moduleStatus(episode, progress, moduleId) {
     if (progress.completed.indexOf(moduleId) !== -1) return 'completed';
@@ -5616,22 +5591,8 @@
      shows the plain "Completato" badge as before (CLAUDE.md rule 1 — no
      other module's map row changes).
      ============================================================ */
-  function moduleOutcomeKey(episodeId, userName) {
-    return 'baseinglese:moduleOutcome:' + episodeId + ':' + userName;
-  }
 
-  function loadModuleOutcomes(episodeId, userName) {
-    return leggiMagazzino(moduleOutcomeKey(episodeId, userName), function () { return {}; });
-  }
 
-  // outcome: { level: 'verde' | 'giallo', ...any module-specific stats —
-  // e.g. Dialogo Ascolta e Ripeti also stores linesListened/linesTotal.
-  // renderModuleList only ever reads outcome.level.
-  function saveModuleOutcome(episode, userName, moduleId, outcome) {
-    var outcomes = loadModuleOutcomes(episode.id, userName);
-    outcomes[moduleId] = outcome;
-    scriviMagazzino(moduleOutcomeKey(episode.id, userName), outcomes);
-  }
 
   // La coda condivisa dei SETTE pulsanti "Ho finito, torna alla mappa":
   // esito (solo per i moduli che ne hanno uno), travaso dei colori,
@@ -5688,44 +5649,11 @@
      speech-only time. A recording the silence timeout auto-discards
      (job 6b) is never sent, so it's never added here.
      ============================================================ */
-  function audioUsageKey(episodeId, userName) {
-    return 'baseinglese:audioSecondsSent:' + episodeId + ':' + userName;
-  }
 
-  function loadAudioUsage(episodeId, userName) {
-    return leggiMagazzino(audioUsageKey(episodeId, userName),
-      function () { return { byModule: {} }; },
-      function (p) { return !!p.byModule; });
-  }
 
-  function addAudioSecondsSent(episodeId, userName, moduleId, seconds) {
-    var usage = loadAudioUsage(episodeId, userName);
-    usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + seconds;
-    scriviMagazzino(audioUsageKey(episodeId, userName), usage);
-    return usage;
-  }
 
-  // Job: "Prossima frase" usage count (Dialogue: Repeat in Time) — same
-  // per-episode/per-user/per-module shape as audioUsageKey/loadAudioUsage
-  // above (CLAUDE.md rule 13), read-only tuning data (not a graded
-  // outcome): a module used often means dialogo.pausaBase/pausaPerParola
-  // are running too long for real speech.
-  function nextLineSkipsKey(episodeId, userName) {
-    return 'baseinglese:nextLineSkips:' + episodeId + ':' + userName;
-  }
 
-  function loadNextLineSkips(episodeId, userName) {
-    return leggiMagazzino(nextLineSkipsKey(episodeId, userName),
-      function () { return { byModule: {} }; },
-      function (p) { return !!p.byModule; });
-  }
 
-  function addNextLineSkip(episodeId, userName, moduleId) {
-    var usage = loadNextLineSkips(episodeId, userName);
-    usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + 1;
-    scriviMagazzino(nextLineSkipsKey(episodeId, userName), usage);
-    return usage;
-  }
 
   /* ============================================================
      LE RISPOSTE ALL'AUTOVALUTAZIONE DI "COSA IMPARO QUI"
@@ -5758,48 +5686,10 @@
      saranno piu' di uno. Il numero che dice qualcosa adesso e' `cambi`.
      ============================================================ */
 
-  // La forma del magazzino ha un numero, e serve a una cosa sola: i dati
-  // scritti con la forma vecchia non si possono leggere con questa (i
-  // contatori significavano un'altra cosa) e vanno buttati, non migrati.
-  // Migrarli vorrebbe dire indovinare quale fosse la risposta corrente
-  // guardando quale contatore e' piu' alto, che e' falso appena qualcuno ha
-  // cambiato idea due volte — cioe' proprio nei casi che ci interessano.
-  var STORY_CARDS_STATS_VERSIONE = 2;
 
-  function storyCardsExplanationStatsKey(episodeId, userName) {
-    return 'baseinglese:storyCardsExplanationStats:' + episodeId + ':' + userName;
-  }
 
-  function vuotoStoryCardsExplanationStats() {
-    return { versione: STORY_CARDS_STATS_VERSIONE, byLine: {} };
-  }
 
-  function loadStoryCardsExplanationStats(episodeId, userName) {
-    return leggiMagazzino(storyCardsExplanationStatsKey(episodeId, userName),
-      vuotoStoryCardsExplanationStats,
-      function (p) { return p.versione === STORY_CARDS_STATS_VERSIONE && !!p.byLine; });
-  }
 
-  // Registra la risposta CORRENTE di una battuta. Non e' piu' un "add", e il
-  // nome lo dice: legge quella di prima, la toglie da dove stava, mette la
-  // nuova, e alza `cambi` solo se la risposta e' davvero diversa. Rispondere
-  // due volte la stessa cosa non muove niente — prima era vero per caso
-  // (il pulsante gia' scelto non produceva un secondo evento), adesso e' una
-  // regola scritta, che e' la differenza fra un comportamento e una fortuna.
-  function storyCardsRecordExplanationAnswer(episodeId, userName, lineId, answer) {
-    var stats = loadStoryCardsExplanationStats(episodeId, userName);
-    var voce = stats.byLine[lineId];
-    if (!voce) voce = stats.byLine[lineId] = { corrente: null, cambi: 0, chiara: 0, nonAncora: 0, nonChiara: 0 };
-    if (voce.corrente === answer) return stats;
-    if (voce.corrente) {
-      voce[voce.corrente] = Math.max(0, (voce[voce.corrente] || 0) - 1);
-      voce.cambi = (voce.cambi || 0) + 1;
-    }
-    voce[answer] = (voce[answer] || 0) + 1;
-    voce.corrente = answer;
-    scriviMagazzino(storyCardsExplanationStatsKey(episodeId, userName), stats);
-    return stats;
-  }
 
   // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
   // plain value (e.g. an age number) becomes all columns the same; people
@@ -5951,22 +5841,8 @@
     });
   }
 
-  function customValuesKey(episodeId, userName) {
-    return 'baseinglese:' + episodeId + ':custom:' + userName;
-  }
 
-  function loadCustomValues(episode, userName) {
-    var stored = leggiMagazzino(customValuesKey(episode.id, userName), function () { return {}; });
-    var values = {};
-    episode.slotFields.forEach(function (f) {
-      values[f.key] = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
-    });
-    return values;
-  }
 
-  function saveCustomValues(episode, userName, values) {
-    scriviMagazzino(customValuesKey(episode.id, userName), values);
-  }
 
   // Groups slotFields for card layout: fields sharing a "group" render in
   // one card (e.g. child's name + age), others get their own card.
@@ -6187,19 +6063,7 @@
     return currentEpisode.modules.find(function (m) { return m.id === 'personalizzazione'; });
   }
 
-  // Read-only survivor of the old "Customize seen" flag (Personalizza
-  // wasn't a real map module before) — kept only for
-  // migrateCustomizeSeenToModuleProgress below, so returning users who
-  // already personalized under the old flow don't suddenly find
-  // Personalizza relocking every module in front of progress they
-  // already made. Nothing writes this key anymore.
-  function customizeSeenKey(episodeId, userName) {
-    return 'baseinglese:' + episodeId + ':customizeSeen:' + userName;
-  }
 
-  function isCustomizeSeen(episodeId, userName) {
-    try { return localStorage.getItem(customizeSeenKey(episodeId, userName)) === '1'; } catch (e) { return false; }
-  }
 
   function migrateCustomizeSeenToModuleProgress(episode, userName) {
     if (!isCustomizeSeen(episode.id, userName)) return;
@@ -6244,16 +6108,6 @@
     return false;
   }
 
-  // The consequence of confirming the mid-episode warning: every piece of
-  // progress that depends on the (about to change) personalization is
-  // cleared, so the map re-locks everything after Personalizza and the
-  // user redoes the episode. customValues (the personalization itself)
-  // is deliberately left untouched — that's what they're about to edit.
-  function wipeEpisodeProgress(episode, userName) {
-    cancellaMagazzino(moduleProgressKey(episode.id, userName));
-    cancellaMagazzino(moduleOutcomeKey(episode.id, userName));
-    cancellaMagazzino(masteryStorageKey(episode.id, userName));
-  }
 
   var customizeWarningConfirmPhrase = '';
 
@@ -6876,39 +6730,9 @@
       ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
   }
 
-  // ---- Shared full-screen module intro (Story Cards, Voice Coach, Speed
-  // Round, Flash Card, and — since the backlog fix below — Repeat Aloud's
-  // own dismissal too, though its screen markup/render functions (ra-*)
-  // stay standalone; see CLAUDE.md rule 11, flagged for a future
-  // consolidation pass rather than touched here). One dismiss flag per
-  // module kind (not per episode — it's about knowing the module type).
-  // howItWorks always comes from istruzioni-moduli.json (CLAUDE.md rule
-  // 8); this only decides WHERE it's shown (full screen first time,
-  // popup afterward). ----
-  function introDismissedKey(kind, userName) {
-    return 'baseinglese:introDismissed:' + kind + ':' + userName;
-  }
 
-  // Repeat Aloud's own pre-generalization key, kept ONLY so a preference
-  // already saved there before this migration isn't silently reset — see
-  // isIntroDismissed's one-time fallback read below. Nothing writes here
-  // anymore; setIntroDismissed always uses introDismissedKey.
-  function legacyRaIntroDismissedKey(userName) {
-    return 'baseinglese:repeatAloudIntroDismissed:' + userName;
-  }
 
-  function isIntroDismissed(kind, userName) {
-    try {
-      var stored = localStorage.getItem(introDismissedKey(kind, userName));
-      if (stored !== null) return stored === '1';
-      if (kind === 'repeatAloud') return localStorage.getItem(legacyRaIntroDismissedKey(userName)) === '1';
-      return false;
-    } catch (e) { return false; }
-  }
 
-  function setIntroDismissed(kind, userName, dismissed) {
-    try { localStorage.setItem(introDismissedKey(kind, userName), dismissed ? '1' : '0'); } catch (e) {}
-  }
 
   // options.dismissPref for openHowItWorksOverlay, built from a module kind.
   function introDismissPref(kind) {
@@ -7244,19 +7068,8 @@
     return scelta;
   }
 
-  function storyCardsDeclarationsKey(episodeId, userName) {
-    return 'baseinglese:storyCardsDeclarations:' + episodeId + ':' + userName;
-  }
 
-  function loadStoryCardsDeclarations(episodeId, userName) {
-    return leggiMagazzino(storyCardsDeclarationsKey(episodeId, userName),
-      function () { return {}; },
-      function (p) { return typeof p === 'object'; });
-  }
 
-  function saveStoryCardsDeclarations(episodeId, userName, answers) {
-    scriviMagazzino(storyCardsDeclarationsKey(episodeId, userName), answers);
-  }
 
   // Quante delle spiegazioni presenti nell'episodio sono state dichiarate
   // in questo giro — la base sia del blocco del completamento sia del

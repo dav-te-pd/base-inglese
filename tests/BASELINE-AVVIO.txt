@@ -21,10 +21,26 @@
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-17
+#
+# ⚠️ I DUE CAMBIAMENTI CHE QUESTO FILE HA AVUTO, con la decisione che li
+# giustifica — sono gli unici ammessi, e stanno scritti qui perche' un
+# baseline senza la storia dei suoi diff torna a essere un rapporto.
+#
+#   2026-09-17  `script 3 (inline)` -> `script 3 app/avvio.js`
+#               Estrazione dello strato 0. Il conto resta 4.
+#   2026-09-17  `script 4 (inline)` -> `script 4 app/progressi.js`
+#               + riga nuova `script 5 (inline)`. Estrazione dello strato
+#               `progressi`: il conto passa da 4 a 5. Previsione scritta
+#               PRIMA di rigenerare, e verificata col diff: una riga
+#               cambiata, una aggiunta, zero altrove.
+#
+# *Nessuno dei due e' un aggiornamento: sono due decisioni strutturali, e
+# un terzo diff senza una riga qui sopra e' un errore.*
 script 1 app/config.js
 script 2 app/spazio.js
 script 3 app/avvio.js
-script 4 (inline)
+script 4 app/progressi.js
+script 5 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory
