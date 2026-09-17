@@ -45,15 +45,46 @@ const { repoPath } = require('./test-env');
 //
 // La schermata esce dopo il passo 25, quando il motore vocale con cui è
 // intrecciata avrà un file suo — vedi docs/decisioni.md.
+//
+// ⚠️ DUE CAMPI PER TORNARE ALLA MAPPA, E NON E' UNA RIDONDANZA — aggiunto il
+// 2026-09-17 (passo 21-quater ⑦).
+//
+//   `tornaAllaMappa`   = il pulsante «← Mappa» dell'intestazione condivisa.
+//   `uscitaVersoMappa` = QUALUNQUE pulsante riporti alla mappa.
+//
+// Per sei famiglie sono la stessa cosa. Per **Personalizza** la prima e' `null`
+// ed e' giusto che lo sia — categoria Inizio, regola 17: chiude con la propria
+// azione e un «← Mappa» non ce l'ha — mentre la seconda esiste ed e'
+// `start-episode`.
+//
+// ⚠️ IL DIFETTO CHE QUESTO SEPARA, e vale oltre questo file:
+//
+//     UN CAMPO CHE RISPONDE A DUE DOMANDE DA' LA RISPOSTA GIUSTA A UNA E
+//     SBAGLIATA ALL'ALTRA, E NESSUNO SE NE ACCORGE FINCHE' LE DUE NON
+//     DIVERGONO.
+//
+// `tornaAllaMappa` rispondeva a entrambe, e per sei famiglie su otto le due
+// risposte coincidevano. Sulla settima divergono — e il `null`, giusto per la
+// prima domanda, ha fatto **escludere Personalizza dal blocco [C]** per tutto
+// il tempo in cui nessuno ha guardato. *Il campo non era sbagliato: era uno
+// solo.*
+//
+// ⚠️ E IL COSTO DI `uscitaVersoMappa` SU PERSONALIZZA, scritto qui perche' chi
+// legge il campo lo sappia senza scoprirlo: `start-episode` non e' un «torna
+// indietro». **Completa il modulo** (`markModuleCompleted`) e chiama
+// `ensureEpisodeSlotFields`, che e' **asincrona** e ha un `.catch` che apre la
+// schermata d'errore. E' l'unica delle otto in cui tornare alla mappa ha un
+// effetto collaterale. Misurato il 2026-09-17: quattro aperture di fila
+// funzionano e i tredici conti restano a 1.
 const FAMIGLIE = {
-  voice:        { vista: 'view-voice-coach', tornaAllaMappa: 'voice-coach-back-map', pattern: /^(vc-|voice-coach-|voice-practice-)/ },
-  personalizza: { vista: 'view-customize',   tornaAllaMappa: null,                   pattern: /^(customize-|slot-|request-|start-episode)/ },
-  match:        { vista: 'view-match',       tornaAllaMappa: 'match-back-map',       pattern: /^(qm-|match-)/ },
-  speedMatch:   { vista: 'view-speed-match', tornaAllaMappa: 'speed-match-back-map', pattern: /^(sr-|speed-match-)/ },
-  dialogo:      { vista: 'view-dialogo',     tornaAllaMappa: 'dialogo-back-map',     pattern: /^(dg-|dialogo-)/ },
-  storyCards:   { vista: 'view-story-cards', tornaAllaMappa: 'story-cards-back-map', pattern: /^(story-cards-)/ },
-  flashcard:    { vista: 'view-flashcard',   tornaAllaMappa: 'flashcard-back-map',   pattern: /^(fc-|flashcard-)/ },
-  repeatAloud:  { vista: 'view-repeat-aloud', tornaAllaMappa: 'repeat-aloud-back-map', pattern: /^(repeat-aloud-|ra-)/ }
+  voice:        { vista: 'view-voice-coach', tornaAllaMappa: 'voice-coach-back-map', uscitaVersoMappa: 'voice-coach-back-map', pattern: /^(vc-|voice-coach-|voice-practice-)/ },
+  personalizza: { vista: 'view-customize',   tornaAllaMappa: null,                   uscitaVersoMappa: 'start-episode',        pattern: /^(customize-|slot-|request-|start-episode)/ },
+  match:        { vista: 'view-match',       tornaAllaMappa: 'match-back-map',       uscitaVersoMappa: 'match-back-map',       pattern: /^(qm-|match-)/ },
+  speedMatch:   { vista: 'view-speed-match', tornaAllaMappa: 'speed-match-back-map', uscitaVersoMappa: 'speed-match-back-map', pattern: /^(sr-|speed-match-)/ },
+  dialogo:      { vista: 'view-dialogo',     tornaAllaMappa: 'dialogo-back-map',     uscitaVersoMappa: 'dialogo-back-map',     pattern: /^(dg-|dialogo-)/ },
+  storyCards:   { vista: 'view-story-cards', tornaAllaMappa: 'story-cards-back-map', uscitaVersoMappa: 'story-cards-back-map', pattern: /^(story-cards-)/ },
+  flashcard:    { vista: 'view-flashcard',   tornaAllaMappa: 'flashcard-back-map',   uscitaVersoMappa: 'flashcard-back-map',   pattern: /^(fc-|flashcard-)/ },
+  repeatAloud:  { vista: 'view-repeat-aloud', tornaAllaMappa: 'repeat-aloud-back-map', uscitaVersoMappa: 'repeat-aloud-back-map', pattern: /^(repeat-aloud-|ra-)/ }
 };
 
 // I listener dichiarati nel sorgente: [{ id, tipo }]

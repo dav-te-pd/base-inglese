@@ -134,6 +134,11 @@ async function nuovaPagina(browser, utente, completati) {
   await page.evaluate(function (d) {
     localStorage.setItem('baseinglese:gate:customizeSeen:' + d.u, '1');
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + d.u, '1');
+    // ⚠️ E quella di Personalizza, dal 2026-09-17: senza, alla prima apertura
+    // si vede la schermata di intro e `#start-episode` **non e' visibile**,
+    // quindi [C] non potrebbe uscire. Misurato che non cambia i conti: con
+    // l'intro congedata i tredici listener restano a 1, uguali al baseline.
+    localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + d.u, '1');
     localStorage.setItem('baseinglese:modules:gate:' + d.u, JSON.stringify({ completed: d.f || [] }));
   }, { u: utente, f: completati });
   await page.click('#go-episode');
@@ -239,11 +244,26 @@ async function run() {
     // SBAGLIATO o solo VECCHIO?». Un rappresentante diventa vecchio e il test
     // continua a dire il vero; un elenco che pretende completezza diventa
     // falso e il test continua a dire verde.*
-    const conRitorno = Object.keys(FAMIGLIE).filter(function (f) { return FAMIGLIE[f].tornaAllaMappa; });
+    // ⚠️ SI DERIVA DA `uscitaVersoMappa`, NON DA `tornaAllaMappa` — dal
+    // 2026-09-17, e cambia chi viene guardato.
+    //
+    // `tornaAllaMappa` e' `null` per Personalizza perche' quel modulo non ha un
+    // «← Mappa» (categoria Inizio, regola 17) — risposta giusta a QUELLA
+    // domanda, e risposta sbagliata a quella che serve qui, che e' «come torno
+    // alla mappa per riaprire». Il campo rispondeva a tutte e due, e per sei
+    // famiglie su otto le due risposte coincidevano: sulla settima divergono, e
+    // il `null` escludeva Personalizza da questo ciclo senza che si vedesse.
+    // La distinzione per esteso sta accanto a `FAMIGLIE` in listener-census.js.
+    //
+    // Adesso il filtro non esclude nessuno: OTTO famiglie, e Personalizza e'
+    // l'unica il cui blocco di listener, dopo il ⑦, non sarebbe protetto da
+    // nient'altro — non da [A], che apre una volta sola, e non da [E], che
+    // guarda solo chi ha piu' di un kind.
+    const conRitorno = Object.keys(FAMIGLIE).filter(function (f) { return FAMIGLIE[f].uscitaVersoMappa; });
     for (const fam of conRitorno) {
       const passo = PASSO_DI[fam];
       const page = await nuovaPagina(browser, 'L2' + fam, stepsBefore(passo));
-      const indietro = FAMIGLIE[fam].tornaAllaMappa;
+      const indietro = FAMIGLIE[fam].uscitaVersoMappa;
       // Il riferimento si prende DOPO la prima apertura, non prima: alcuni
       // listener nascono solo quando il modulo si apre la prima volta.
       await openModule(page, passo);
@@ -436,7 +456,8 @@ async function run() {
             }
           });
         }
-        const indietro = FAMIGLIE[fam].tornaAllaMappa;
+        // Stessa domanda di [C] — «come torno alla mappa» — quindi stesso campo.
+        const indietro = FAMIGLIE[fam].uscitaVersoMappa;
         if (indietro) {
           await page.click('#' + indietro).catch(function () {});
           await page.waitForSelector('#view-map.is-active', { timeout: 10000 }).catch(function () {});

@@ -152,11 +152,28 @@ window.BI = window.BI || {};
   //     descrittori — LA CHIAVE SBAGLIATA PASSA VERDE. Il verde non prova la
   //     chiave: LA PROVA LA REGOLA.
   //
-  // Sono TRE, non una: `openFlashcard` (un kind, due descrittori),
-  // `openRepeatAloud` e `openCustomize` (un kind ciascuna). Su di loro
-  // `BI.unaVoltaSola('flashcard', …)` e `BI.unaVoltaSola(module.kind, …)`
-  // passano **la stessa identica stringa**, quindi nessuna corsa puo'
-  // distinguerle: ne' [E], ne' [C], ne' una falsificazione fatta apposta.
+  // Sono TRE: `openFlashcard` (un kind, due descrittori), `openRepeatAloud` e
+  // `openCustomize` (un kind ciascuna).
+  //
+  // ⚠️ MA NON PER LA STESSA RAGIONE, e la riga che stava qui diceva che si',
+  // corretta il 2026-09-17. Chi legge deve sapere QUALE dei due casi ha
+  // davanti, perche' si comportano uguale e non sono uguali:
+  //
+  //   Flash Card e Repeat Aloud → il nome della famiglia e il `kind` sono **la
+  //     stessa stringa** ('flashcard', 'repeatAloud'). Le due chiavi non sono
+  //     solo equivalenti: sono identiche, e nessuna corsa puo' distinguerle
+  //     nemmeno in linea di principio.
+  //
+  //   Personalizza → la famiglia si chiama 'personalizza' e il kind
+  //     'personalizzazione': **stringhe DIVERSE.** La chiave sul kind
+  //     funzionerebbe lo stesso, ma per un'altra ragione — un kind solo, quindi
+  //     una chiave sola, quindi una sola esecuzione. Non coincidenza: sufficienza.
+  //
+  // In tutti e tre il verde non prova la chiave. *La differenza conta il giorno
+  // in cui una delle tre prende un secondo kind: sulle prime due il difetto
+  // resterebbe invisibile fino a quel momento; sulla terza c'e' gia' ADESSO una
+  // chiave che non e' quella che si legge nel descrittore, e chi la
+  // «semplificasse» al kind starebbe cambiando valore, non solo forma.*
   //
   // *E' la forma in cui una regola sbagliata sopravvive — e sopravvive proprio
   // dove nessuno la vede cadere. Per questo la chiave giusta si scrive lo

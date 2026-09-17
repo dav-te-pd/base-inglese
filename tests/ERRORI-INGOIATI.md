@@ -463,6 +463,57 @@ due caratteri, e sono esattamente i due che distinguono le due prove.
 qui è un modo in cui una misura smette di misurare senza dirlo. Questa è la
 versione che colpisce **la misura con cui verifichiamo le altre misure**.*
 
+## ⓪-decies UN CAMPO CHE RISPONDE A DUE DOMANDE
+
+> **DA' LA RISPOSTA GIUSTA A UNA E SBAGLIATA ALL'ALTRA, E NESSUNO SE NE ACCORGE
+> FINCHE' LE DUE NON DIVERGONO.**
+
+È la forma più silenziosa di tutte, perché **finché le due risposte coincidono
+il campo è corretto per entrambe**. Non c'è un momento in cui diventa
+sbagliato: c'è un caso, di solito uno solo, in cui lo era da sempre.
+
+**I due casi, misurati entrambi, a un giorno di distanza.**
+
+**⑥-zero, 2026-09-16 — `COPPIE` e la coppia passo/kind.** L'elenco di `[E]`
+nominava `flashcardAEngIta` e `flashcardAItaEng` come «i due kind» di Flash
+Card. Sono due **passi** che condividono **un** kind. Il difetto era invisibile
+perché **per tredici descrittori su quindici il nome del passo e il nome del
+kind sono la stessa stringa**: due nomi diversi per la stessa cosa tredici
+volte, e per cose diverse due volte.
+
+**⑦, 2026-09-17 — `tornaAllaMappa`.** Il campo rispondeva a due domande:
+
+| | Domanda | Risposta per Personalizza |
+|---|---|---|
+| ① | qual è il pulsante «← Mappa» dell'intestazione? | **nessuno**, ed è giusto (categoria Inizio, regola 17) |
+| ② | come torno alla mappa per riaprire il modulo? | **`start-episode`** |
+
+Il campo valeva `null`, che è la risposta **giusta alla ①** e **sbagliata alla
+②**. E il lettore che gli serviva era la ②: il blocco `[C]` filtrava su quel
+campo, quindi **escludeva Personalizza dal ciclo delle riaperture** — l'unica
+famiglia il cui blocco di listener, dopo il ⑦, non sarebbe stato protetto da
+nient'altro.
+
+⚠️ **E la cosa che rende la famiglia diversa dalle altre di questo file: qui il
+test non sbaglia. Semplicemente non guarda.** Un'asserzione vacua (⓪-ter) c'è e
+non prova niente; un campione (la lezione accanto a `[C]`) guarda i casi
+sbagliati; qui la famiglia **sparisce dal ciclo**, e il conto delle asserzioni
+scende di due senza che nessuna riga diventi rossa. *Il numero migliora proprio
+dove il lavoro fa danno — la stessa firma della regola 44.*
+
+**La forma operativa, e si applica a un campo, non a un test:**
+
+1. davanti a un campo usato da più di un lettore, chiedersi **a quale domanda
+   risponde** — non «cosa contiene»;
+2. se i lettori fanno domande diverse, verificare che le risposte coincidano
+   **per ogni** voce, non per quelle che si hanno in mano;
+3. dove divergono, **separare il campo**. Non riusare quello che c'è «perché
+   quasi sempre va bene»: è precisamente il «quasi» a non lasciare traccia.
+
+*Separare non significa inventare: `tornaAllaMappa` resta `null` per
+Personalizza, perché è vero che quel modulo non ha un «← Mappa». Il campo nuovo
+dice un'altra cosa, e la dice dove la cosa esiste.*
+
 ## ① Attese soppresse — 6 punti
 
 **La famiglia peggiore, e la più piccola.** Un `waitForFunction(...).catch(() => {})`
