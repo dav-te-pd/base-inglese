@@ -6,52 +6,7 @@
 <title>Base Inglese</title>
 <script src="app/config.js"></script>
 <script src="app/spazio.js"></script>
-<script>
-
-  // Copia intatta della configurazione, presa PRIMA che gli override salvati
-  // qui sotto la modifichino.
-  //
-  // ⚠️ SCRITTA E MAI LETTA — misurato il 2026-09-15: una sola occorrenza in
-  // tutto il repository, questa. Il commento di prima diceva che serve al
-  // pulsante «Ripristina valori di partenza»: quel pulsante esiste, ma
-  // (config-panel-reset-btn, piu' avanti in questo file) cancella la chiave
-  // degli override e ricarica la pagina — `APP_CONFIG_DEFAULTS` non lo tocca.
-  // Il ripristino funziona; non funziona cosi'.
-  //
-  // Resta in piedi perche' toglierla e' una rimozione e non una correzione
-  // (CLAUDE.md regola 1): registrata in docs/decisioni.md con la sua
-  // condizione. Costa una copia profonda di ~660 righe a ogni caricamento.
-  //
-  // *Trovata leggendo la FUNZIONE che il commento indicava, non la riga —
-  // tests/ERRORI-INGOIATI.md, famiglia ⓪-sexies.*
-  window.APP_CONFIG_DEFAULTS = JSON.parse(JSON.stringify(window.APP_CONFIG));
-
-  // Applies any parameter overrides saved locally by the hidden config
-  // panel (embryo of the future Admin panel — reveal: type "config"
-  // outside a text field). One whole top-level CONFIG section at a time
-  // — a saved section replaces that section entirely, anything never
-  // touched in the panel stays at its coded default above.
-  (function applyConfigOverrides() {
-    try {
-      var raw = localStorage.getItem('baseinglese:configOverrides');
-      if (!raw) return;
-      var overrides = JSON.parse(raw);
-      Object.keys(overrides).forEach(function (key) {
-        window.APP_CONFIG[key] = overrides[key];
-      });
-    } catch (e) {}
-  })();
-
-  // Applied before first paint so a returning user's saved theme never flashes to the default.
-  (function () {
-    try {
-      var saved = localStorage.getItem('baseinglese:theme');
-      if (saved && saved !== window.APP_CONFIG.themes.defaultTheme) {
-        document.documentElement.setAttribute('data-theme', saved);
-      }
-    } catch (e) {}
-  })();
-</script>
+<script src="app/avvio.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -4980,8 +4935,8 @@
   // salvati dal Pannello Admin si applicano SOPRA il file.
   //
   // Perche' non e' un dettaglio: finche' le tabelle stavano in APP_CONFIG,
-  // applyConfigOverrides (l'IIFE in cima, generico su tutte le chiavi) le
-  // sovrascriveva da solo. Portandole via, quell'override resterebbe scritto
+  // applyConfigOverrides (l'IIFE in app/avvio.js, generico su tutte le
+  // chiavi) le sovrascriveva da solo. Portandole via, quell'override resterebbe
   // in localStorage e non lo leggerebbe piu' nessuno — chi ha personalizzato
   // il magazzino perderebbe tutto SENZA UN MESSAGGIO E SENZA UN ROSSO. Non
   // serviva migrare niente: bastava continuare a leggerlo, qui.

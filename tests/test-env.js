@@ -106,4 +106,33 @@ function outputPath(name) {
   return path.join(dir, name);
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath };
+// Le righe di un file del repository che sono CODICE — i commenti fuori.
+//
+// ⚠️ STA QUI, CONDIVISO, PERCHE' LO STESSO DIFETTO SI E' PRESENTATO QUATTRO
+// VOLTE IN DUE GIORNI: un conto che cerca un nome nel sorgente e trova anche i
+// commenti che lo nominano — commenti spesso scritti nello stesso commit che
+// aggiunge il conto. Il numero e' giusto; la domanda no.
+//
+// I quattro: la verifica del passo ⑧ del 21-quater (`unaVoltaSola('voice'`, 2
+// invece di 1), la falsificazione della chiave sul kind, il conto di
+// `leaveModule` (14 invece di 12), e il divieto di ritorno del passo 22
+// (`applyConfigOverrides`, che sopravvive in un commento).
+//
+// La correzione era gia' scritta nella forma operativa della famiglia
+// ⓪-nonies — «la grep deve colpire il CODICE» — e continuava a non applicarsi
+// da sola dove serviva. **Una difesa scritta in un posto non si applica da
+// sola nell'altro, e una scritta in ogni posto si disallinea.** Da qui: una
+// sola, dove i test prendono gia' i percorsi.
+//
+// LIMITE DICHIARATO: riconosce i commenti per come cominciano la riga (`//`,
+// `*`, `/*`). Un commento in coda a una riga di codice non viene tolto — e va
+// bene, perche' li' il codice c'e' davvero.
+function righeDiCodiceDi(...pezzi) {
+  return require('fs').readFileSync(repoPath.apply(null, pezzi), 'utf8').split('\n')
+    .filter(function (r) {
+      const t = r.trim();
+      return t.indexOf('//') !== 0 && t.indexOf('*') !== 0 && t.indexOf('/*') !== 0;
+    });
+}
+
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi };

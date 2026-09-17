@@ -23,7 +23,7 @@
 # Ultimo aggiornamento: 2026-09-17
 script 1 app/config.js
 script 2 app/spazio.js
-script 3 (inline)
+script 3 app/avvio.js
 script 4 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud

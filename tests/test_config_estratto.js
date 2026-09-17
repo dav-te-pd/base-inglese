@@ -33,7 +33,7 @@
 // Qui si guarda solo dove sta e quando arriva.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -57,14 +57,53 @@ async function run() {
     log('[A] ...BLOCCANTE: niente defer, async o type=module',
       !!tag && !/\b(defer|async|type\s*=)/.test(tag[0]), tag ? tag[0] : 'n/d');
 
-    // L'ordine nel file: il tag deve precedere lo script in linea che legge
-    // APP_CONFIG a tempo di parsing. Confrontare le posizioni è più solido
-    // che guardare la riga, che cambia a ogni modifica sopra.
+    // L'ordine nel file: il tag deve precedere il primo lettore di APP_CONFIG a
+    // tempo di parsing. Confrontare le posizioni è più solido che guardare la
+    // riga, che cambia a ogni modifica sopra.
+    //
+    // ⚠️ IL PRIMO LETTORE ORA È UN FILE, NON UN BLOCCO IN LINEA — dal
+    // 2026-09-17 (passo 22, primo strato). Prima questa riga confrontava il tag
+    // con `window.APP_CONFIG_DEFAULTS`, che stava nello script in linea; quel
+    // blocco è uscito in `app/avvio.js` e la riga è diventata rossa dicendo
+    // `lettore=-1`.
+    //
+    // **Rossa per una DECISIONE, non per una regressione** (famiglia
+    // ⓪-undecies in tests/ERRORI-INGOIATI.md): l'invariante non è cambiato di
+    // una virgola — «la configurazione c'è prima che qualcuno la legga» — è
+    // cambiato DOVE VIVE. Seguirla è il lavoro; toglierla sarebbe stato
+    // perderla.
+    //
+    // ⚠️ E QUESTA ESTRAZIONE HA TOLTO UNA GARANZIA STRUTTURALE, non spostato
+    // soltanto del codice. Finché il lettore era **in linea**, il suo venire
+    // dopo `config.js` non era una scelta: era la forma del file — una cosa in
+    // linea sta necessariamente dopo i tag scritti sopra di lei. **Adesso sono
+    // due righe che si possono scambiare.** *È la prima volta nella fase 4 che
+    // un'estrazione toglie una garanzia invece di spostare codice, e
+    // ricapiterà a ogni pezzo che esce da index.html.*
     const posTag = html.indexOf('src="app/config.js"');
-    const posLettore = html.indexOf('window.APP_CONFIG_DEFAULTS');
+    const posLettore = html.indexOf('src="app/avvio.js"');
     log('[A] Il tag viene PRIMA del primo lettore a tempo di parsing',
       posTag !== -1 && posLettore !== -1 && posTag < posLettore,
       'tag=' + posTag + ' lettore=' + posLettore);
+
+    // ⚠️ E LA META' CHE SI PERDE SEMPRE: l'asserzione che vieta il RITORNO.
+    //
+    // Seguire la riga sopra lascia scoperto il caso opposto — rimettere il
+    // blocco d'avvio in linea in index.html. Passerebbe **verde**: il tag di
+    // `config.js` ci sarebbe ancora, quello di `avvio.js` pure, e l'ordine
+    // sarebbe giusto. *Senza questa riga lo spostamento non è una decisione: è
+    // una posizione che capita di avere oggi.*
+    //
+    // ⚠️ SI GUARDA IL CODICE, NON IL TESTO — `righeDiCodiceDi` da test-env.js.
+    // Alla prima scrittura questa riga era rossa su codice giusto, perche'
+    // `applyConfigOverrides` sopravvive in un COMMENTO piu' in basso in
+    // index.html. E' la quarta volta in due giorni: il filtro sta ora in un
+    // posto solo, e il perche' e' scritto li'.
+    const codice = righeDiCodiceDi('index.html').join('\n');
+    const rimasti = ['window.APP_CONFIG_DEFAULTS', 'applyConfigOverrides']
+      .filter(function (m) { return codice.indexOf(m) !== -1; });
+    log('[A] E il blocco d\'avvio non è più in linea in index.html',
+      rimasti.length === 0, 'ancora in linea: ' + rimasti.join(', '));
   }
 
   const browser = await launchBrowser();
