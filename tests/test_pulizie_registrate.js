@@ -131,10 +131,51 @@ async function run() {
     });
 
     // La protezione contro i callback tardivi NON sta nel ciclo.
-    const sv = html.slice(html.indexOf('function showView'), html.indexOf('function showView') + 400);
-    log('[A] moduleEpoch++ resta PRIMA di stopAllModuleActivity, in showView',
-      sv.indexOf('moduleEpoch++') !== -1 &&
-      sv.indexOf('moduleEpoch++') < sv.indexOf('stopAllModuleActivity()'));
+    //
+    // ⚠️ SI GUARDA IN `leaveModule`, NON IN `showView` — spostata il 2026-09-17
+    // (passo 22, prima estrazione). **Questa riga e' diventata rossa per una
+    // DECISIONE, non per una regressione**, e la correzione non e' toglierla:
+    // e' seguirla dove la cosa che protegge e' andata a stare.
+    //
+    // `showView` faceva tre lavori; adesso disegna e basta, e `leaveModule` fa
+    // «lasciare» — `moduleEpoch++` incluso, perche' neutralizzare le chiamate
+    // asincrone tardive e' meta' del lasciare (CLAUDE.md regola 21).
+    //
+    // *L'invariante non e' cambiato di una virgola: l'incremento dell'epoca
+    // deve precedere la pulizia, o un callback che arriva mentre le pulizie
+    // girano troverebbe l'epoca vecchia e si crederebbe ancora valido.*
+    // ⚠️ IL CORPO SI TAGLIA ALLA FINE DELLA FUNZIONE, NON A UN NUMERO FISSO.
+    //
+    // La forma precedente prendeva 400 caratteri dall'inizio di `showView`, e
+    // funzionava finche' `showView` era sola. Dopo la separazione, 400
+    // caratteri dall'inizio di `showView` **sconfinano dentro `leaveModule`**
+    // — che `moduleEpoch++` e `stopAllModuleActivity()` li contiene per
+    // definizione — e l'asserzione «showView non ne contiene nessuno dei due»
+    // nasceva rossa su codice giusto.
+    //
+    // *Un numero fisso era esatto per il codice di ieri e falso per quello di
+    // oggi senza cambiare una cifra: la stessa forma dei tempi citati invece
+    // che rimisurati (regola 38). Il confine di una funzione si chiede al
+    // codice, non si stima.*
+    function corpoDi(nome) {
+      const i = html.indexOf('function ' + nome);
+      if (i === -1) return '';
+      const fine = html.indexOf('\n  }', i);
+      return fine === -1 ? html.slice(i) : html.slice(i, fine);
+    }
+    const lm = corpoDi('leaveModule');
+    log('[A] moduleEpoch++ resta PRIMA di stopAllModuleActivity, in leaveModule',
+      lm.indexOf('moduleEpoch++') !== -1 &&
+      lm.indexOf('moduleEpoch++') < lm.indexOf('stopAllModuleActivity()'));
+
+    // ⚠️ E L'ALTRA META' DELLA DECISIONE, che prima non c'era niente a
+    // proteggere: `showView` NON deve piu' contenere ne' l'incremento
+    // dell'epoca ne' la pulizia. Senza questa riga, rimettercene uno dentro
+    // sarebbe passato verde — e le due chiamate pre-login avrebbero ripreso a
+    // trascinarsi dietro tre strati.
+    const sv = corpoDi('showView');
+    log('[A] ...e showView non ne contiene piu\' nessuno dei due: disegna e basta',
+      sv.indexOf('moduleEpoch++') === -1 && sv.indexOf('stopAllModuleActivity()') === -1);
   }
 
   const browser = await launchBrowser();
