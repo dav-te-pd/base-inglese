@@ -24,6 +24,11 @@
 //   [D] nessuna corsa ............... 3, non 2 e non 4
 //   [E] API illeggibile ............. 4, E NON ASPETTA PER SEMPRE — e' il
 //       quarto difetto, quello che nessuna delle tre versioni a mano vedeva
+//   [H] ⚠️ OGNI esito nomina il COMMIT, e accanto la riga che dice cosa
+//       farsene. Protegge un difetto che NON e' dello script ma di chi lo usa:
+//       leggere onestamente il campo giusto di **un'altra corsa**. Il giro e'
+//       su tutti e cinque gli esiti, e il caso diverso e' l'uscita 4 — l'unica
+//       che il commit non lo nominava (misurato il 2026-09-17).
 //   [F] ⚠️ LA PROVA CONTRARIA: una corsa VIVA che non finisce mai deve uscire
 //       con 2 — non 3, non 4. Senza questo caso il rilevatore potrebbe
 //       dichiarare guasto qualunque lavoro lento e il test resterebbe verde.
@@ -189,6 +194,37 @@ async function run() {
     log('[G] ...e NON risponde 0 anche se la corsa finta sarebbe verde', r.codice !== 0);
     log('[G] ...e dice PERCHE\': l\'API confronta head_sha per intero',
         /head_sha/.test(r.testo) || /40 caratteri/.test(r.testo));
+  }
+
+  // [H] ⚠️ OGNI ESITO NOMINA IL COMMIT — E IL GIRO SI FA SU TUTTI E CINQUE,
+  // non su quello comodo (CLAUDE.md regola 42).
+  //
+  // Il difetto che chiude non e' nello script: e' in chi lo usa. La regola 38
+  // dice che la CI si LEGGE, e si puo' leggere onestamente **il campo giusto di
+  // un'altra corsa** — un elenco risponde il vero su ognuna, e quella che
+  // interessa e' una sola. La difesa non e' ricordarsi di usare lo script: e'
+  // che la sua risposta porti il commit, cosi' chi legge il resoconto possa
+  // confrontarlo **senza fidarsi di chi gliel'ha passato**.
+  //
+  // ⚠️ E IL CASO PIU' DIVERSO E' L'USCITA 4, PERCHE' E' DIVERSA PER ASSENZA:
+  // era l'unico dei cinque esiti che il commit NON lo nominava — misurato il
+  // 2026-09-17, prima di toccare lo script. Gli altri quattro lo stampavano
+  // gia' nella prima riga; il giro serve a non far tornare indietro nessuno.
+  {
+    const casi = [
+      ['0 verde',      [CORSA('completed', 'success')],   30],
+      ['1 rossa',      [CORSA('completed', 'failure')],   30],
+      ['2 viva',       [CORSA('in_progress', null)],       5],
+      ['3 assente',    [NESSUNA],                         60],
+      ['4 illeggibile',[SPAZZATURA],                      60]
+    ];
+    for (const [nome, risposte, max] of casi) {
+      const r = await caso(nome, risposte, max);
+      log('[H] ' + nome + ': l\'esito NOMINA il commit per intero',
+          r.testo.indexOf(SHA_FINTO) !== -1, r.testo.slice(0, 100));
+      log('[H] ' + nome + ': ...e dice cosa farsene — «hai letto un\'altra corsa»',
+          /hai letto un'altra corsa/.test(r.testo), r.testo.slice(0, 100));
+    }
   }
 
   console.log('');

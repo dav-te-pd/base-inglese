@@ -138,6 +138,26 @@ fi
 
 URL="https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW/runs?head_sha=$SHA"
 
+# ⚠️ OGNI ESITO PORTA IL COMMIT, E ACCANTO LA RIGA CHE DICE COSA FARSENE.
+#
+# La regola 38 dice che la CI si LEGGE. Ma «leggerla» ha un difetto che nessuno
+# dei cinque qui sopra copre: si puo' leggere onestamente **il campo giusto di
+# un'altra corsa**. Un elenco di corse risponde il vero su ognuna, e quella che
+# interessa e' una sola.
+#
+# La difesa NON e' ricordarsi di usare questo script: e' che la sua risposta lo
+# dica da se'. Chi incolla questa uscita in un resoconto incolla anche il
+# commit, e chi la legge puo' confrontarlo con quello che e' stato spinto
+# **senza fidarsi di chi gliel'ha passata**.
+#
+# *E' la stessa forma dell'uscita 3 separata dalla 4: non una raccomandazione
+# su come guardare, ma una risposta che non si puo' fraintendere.*
+esito_commit() {
+  echo "commit: $SHA"
+  echo "⚠️ Se non e' quello che hai appena spinto, hai letto un'altra corsa."
+  echo "$URL"
+}
+
 # Legge la risposta e la riduce a UNA riga. Le tre uscite possibili sono
 # distinte, e la terza e' il difetto ④ reso visibile invece che ingoiato.
 leggi() {
@@ -168,6 +188,7 @@ while :; do
   case "$riga" in
     "STATO completed success")
       echo "VERDE — $WORKFLOW su $SHA: completata con success (${trascorsi}s)"
+      esito_commit
       exit 0
       ;;
     "STATO completed "*)
@@ -179,7 +200,7 @@ while :; do
         echo "ROSSA — $WORKFLOW su $SHA: conclusione \"$esito\"."
         echo "Vai a leggere i job: questo non e' un verde."
       fi
-      echo "$URL"
+      esito_commit
       exit 1
       ;;
     "STATO "*)
@@ -191,7 +212,7 @@ while :; do
       if [ "$mai_vista" -eq 1 ] && [ "$trascorsi" -ge "$ASSENTE_MAX" ]; then
         echo "NESSUNA CORSA — dopo ${trascorsi}s non esiste nessuna corsa di \"$WORKFLOW\" per il commit $SHA."
         echo "Il push non ha fatto partire la CI, oppure il commit e' sbagliato. Non c'e' niente da aspettare."
-        echo "$URL"
+        esito_commit
         exit 3
       fi
       ;;
@@ -200,7 +221,9 @@ while :; do
       if [ "$ciechi" -ge "$CIECO_MAX" ]; then
         echo "NON RIESCO A VEDERE — $ciechi risposte illeggibili di seguito dall'API."
         echo "Non e' «la corsa non e' finita»: e' «non so in che stato sia». Controlla rete, credenziali o limiti."
-        echo "$URL"
+        # ⚠️ Questo era l'UNICO dei cinque esiti che non nominava il commit:
+        # misurato il 2026-09-17. Adesso lo nomina come gli altri quattro.
+        esito_commit
         exit 4
       fi
       ;;
@@ -209,7 +232,7 @@ while :; do
   if [ "$trascorsi" -ge "$MAX" ]; then
     echo "ANCORA IN CORSO, HO ASPETTATO TROPPO — ${trascorsi}s e $WORKFLOW su $SHA non e' ancora finita."
     echo "L'ultima risposta dell'API diceva: $riga — la corsa e' VIVA, non e' un guasto dell'attesa."
-    echo "$URL"
+    esito_commit
     exit 2
   fi
 
