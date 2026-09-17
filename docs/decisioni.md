@@ -919,7 +919,15 @@ Il filtro scarta le righe che **cominciano** con `//`, `*` o `/*`. Ma i banner `
 
 ⚠️ **LA MASTERY: L'AFFERMAZIONE MISURATA, E NON È QUELLA CHE SEMBRAVA.** *«`loadMastery()` esiste e c'è una lettura che la scavalca» — **nel codice dell'app è falsa**: l'unico `localStorage.getItem` della chiave sta dentro `loadMastery`. Quattro funzioni toccano la chiave — `masteryStorageKey` (la costruisce), `loadMastery`, `saveMastery`, `wipeEpisodeProgress` (la cancella) — e **tutte e quattro passano dal costruttore**.*
 
-**Il punto unico aggirato c'è, ed è nei TEST: 13 occorrenze in 5 file scrivono `'baseinglese:mastery:gate:' + u` a mano.** `test_scala_colori` (5), `test_batch12` (4), `test_report_mastery` (2), `test_avviso_microfono` (1), `test_mastery_al_gesto` (1). **E non possono fare altrimenti: `masteryStorageKey` vive dentro l'IIFE, irraggiungibile da un `page.evaluate`.** *Il punto unico esiste e non è raggiungibile da chi ne ha più bisogno.*
+⚠️ **LA CATEGORIA ERA SBAGLIATA, E IL FATTO NO — corretta il 2026-09-17, nel commit che l'ha misurata meglio.**
+
+Qui c'era scritto *«il punto unico aggirato»*. **Non lo è.** Scavalcare un punto unico vuol dire avere la funzione a portata di mano e non chiamarla; qui la funzione **non è raggiungibile** — `masteryStorageKey` vive dentro l'IIFE, e un `page.evaluate` non la vede. Chi scrive il test non sta aggirando niente: **sta accedendo allo stesso spazio condiviso per l'unica strada che ha.**
+
+> **La categoria giusta è: DUE LETTORI INDIPENDENTI DELLO STESSO SPAZIO — la stessa della chiave del tema, non quella del punto unico scavalcato.**
+
+*E la distinzione non è di parole: un punto unico aggirato si corregge dicendo a qualcuno di chiamare la funzione; due lettori indipendenti si correggono solo dando loro una fonte comune — cioè esponendola. Sono due lavori diversi, e la categoria sbagliata indicava quello che non funziona.*
+
+**Il fatto misurato resta, ed è: 13 occorrenze in 5 file scrivono `'baseinglese:mastery:gate:' + u` a mano.** `test_scala_colori` (5), `test_batch12` (4), `test_report_mastery` (2), `test_avviso_microfono` (1), `test_mastery_al_gesto` (1). **E non possono fare altrimenti: `masteryStorageKey` vive dentro l'IIFE, irraggiungibile da un `page.evaluate`.** *Il punto unico esiste e non è raggiungibile da chi ne ha più bisogno.*
 
 ⚠️ **E la conseguenza è della famiglia della regola 44, con i nomi dei punti:** se la forma della chiave cambiasse, `getItem` tornerebbe `null`, e **quattro asserzioni NEGATIVE — quelle che dicono «non è stato scritto niente» — diventerebbero verdi per costruzione**: `test_avviso_microfono.js:300`, `test_batch12.js:542` e `:547`, `test_mastery_al_gesto.js:122`. Sono esattamente le righe che proteggono la regola 7. Le positive invece cadrebbero rumorosamente (`test_scala_colori.js:197`, `test_report_mastery.js:54`). **Una suite mezza rossa e mezza falsamente verde, con la parte falsamente verde a guardia della regola 7.**
 
@@ -945,7 +953,15 @@ Il filtro scarta le righe che **cominciano** con `//`, `*` o `/*`. Ma i banner `
 | il `submit` dell'onboarding | `setUserName` + `goHome` |
 | il pulsante «cambia utente» | `clearUserName` + `showView('onboarding')` — **una delle due sole chiamate dirette a `showView`** |
 
+⚠️ **PERCHÉ SONO DUE E NON UNO SOLO, che è la parte che rende il gruppo un gruppo:**
+
+> **`boot` DECIDE se chiamare `goHome`. È quella decisione a essere lo strato, non le due funzioni.**
+
+*Prese una per una sembrano due cose slegate — una guarda un nome salvato, l'altra scrive un saluto e un'etichetta. Il legame non è in nessuna delle due: è nel `if` che sta in mezzo. Per questo estrarne una sola lascerebbe fuori proprio la cosa che si stava estraendo — lo stesso scarto di `moduleEpoch++` lasciato in `showView`.*
+
 ⚠️ **E UNA COSA CHE NON C'È, detta perché il silenzio si legge come conferma: `tornaAllaHome` NON ESISTE nel repository.** Cercato in tutto l'albero: **0 occorrenze**. Il «tornare a casa» non è una terza funzione — è `goHome` stessa, cablata sui tre pulsanti qui sopra. *Il gruppo è di due funzioni più cinque punti di cablaggio, non di tre funzioni.*
+
+⚠️ **E il motivo per cui questa riga vale la pena di essere scritta invece che semplicemente non-scritta: se restasse scritto che sono tre, al loro turno qualcuno ne cercherebbe tre e ne troverebbe due — e passerebbe il pomeriggio a cercare la terza.** *Il tempo peggio speso è quello su un errore che ci siamo scritti da soli: non c'è niente da trovare, e niente che dica quando smettere di cercare.* Vale anche per la forma più precisa dell'errore («non è del gruppo perché chiama `goHome` invece di esserlo»): anche quella presuppone una funzione che non c'è.
 
 ⚠️ **RICONTA DELLO STRATO `progressi`, 2026-09-17 — E LA PRIMA COSA DA DIRE È CHE IL PIANO NON L'HA MAI DEFINITO.**
 
@@ -976,6 +992,42 @@ La riga `3+` dice *«`dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine`
 **La `mastery` che entra è SOLO il magazzino.** `LEVELS`, `nextLevel`, `prevLevel`, `applyMasteryResult`, `recordPendingMastery` restano fuori: non toccano la chiave, sono la **regola** (regola 39), non il deposito. *Il confine passa fra «dove si scrive» e «cosa si decide di scrivere», ed è la stessa separazione di `showView`/`leaveModule`.*
 
 ⚠️ **UNA COSA MISURATA E NON CORRETTA: `customizeSeenKey` NON VIENE MAI SCRITTA DALL'APP.** Un solo `getItem`, nessun `setItem`, nessun `removeItem` — e `wipeEpisodeProgress` non la tocca. **Non è un difetto**: il commento accanto lo dice già (*«Nothing writes this key anymore»*), è il superstite in sola lettura del vecchio flag «Customize seen», tenuto per i profili che avevano personalizzato prima che Personalizza diventasse un modulo di mappa. **Su un profilo nuovo `isCustomizeSeen` è falsa per sempre e `migrateCustomizeSeenToModuleProgress` esce subito.** *Va scritto qui perché chi lo troverà dentro `app/progressi.js` non avrà il flusso vecchio in testa, e «una funzione che legge una chiave che nessuno scrive» somiglia troppo a un difetto.* **Condizione:** la migrazione si toglie quando si decide che nessun profilo pre-mappa vada più servito — decisione che non è di questo passo, e che oggi non ha una data.
+
+⚠️ **IL SETACCIO SULLE DODICI CHIAVI, fatto PRIMA dell'estrazione — stessa forma di quello del tema, rifatto qui perché questo strato tocca i dati dello studente.**
+
+*La domanda è quella giusta e va fatta adesso: chi legge o scrive quelle chiavi FUORI dalle funzioni che le costruiscono? Dopo l'estrazione quel qualcuno starà in un altro file, e una duplicazione fra due file si trova solo cercandola.*
+
+**METÀ DELLA RISPOSTA È PULITA, e va detta per prima: NELL'APP, ZERO.** Ognuno dei dodici letterali compare **una volta sola**, dentro il proprio costruttore. Nessun `getItem`, nessun `setItem`, nessun `removeItem` raggiunge una di quelle chiavi da fuori. *Il confine dello strato regge: l'app parla col magazzino solo attraverso le 35 funzioni.*
+
+**L'ALTRA METÀ NO, ED È GRANDE: 197 OCCORRENZE DEI LETTERALI NEI FILE SOTTO `tests/`.**
+
+| chiave | app | test |
+|---|---|---|
+| `introDismissedKey` | 1 | **75** |
+| `moduleProgressKey` | 1 | **65** |
+| `customizeSeenKey` | 1 | 15 |
+| `moduleOutcomeKey` | 1 | 15 |
+| `masteryStorageKey` | 1 | 13 |
+| `audioUsageKey`, `nextLineSkipsKey`, `legacyRaIntroDismissedKey` | 1 | 3 ciascuna |
+| `storyCardsExplanationStatsKey`, `customValuesKey` | 1 | 2 ciascuna |
+| `storyCardsDeclarationsKey` | 1 | 1 |
+| `helpRequestsKey` | 1 | **0** |
+
+⚠️ **E il caso della mastery, registrato qui sopra come se fosse suo, NON ERA SUO: era il campione più piccolo di una famiglia da 197.** *Tredici su 197. L'avevo misurato perché me l'avevano nominato, e misurare quello che viene nominato dà sempre un caso isolato: è la ricerca aperta della regola 24, con la stessa firma — «non ho trovato altro» indistinguibile da «non ho cercato».*
+
+**DIVISE PER COSA FANNO, perché il rischio non è lo stesso:**
+
+| | quante | cosa succede se la forma della chiave cambia |
+|---|---|---|
+| `setItem` — preparano lo stato | **148** | l'app non trova niente e il test cade **rumorosamente** |
+| `getItem` — leggono lo stato | **37** | dipende dall'asserzione |
+| altro (`removeItem`, chiavi in commenti) | 12 | — |
+
+⚠️ **E DELLE 37 LETTURE, 24 HANNO LA FORMA DELLA REGOLA 44: trattano l'assenza come «vuoto»** (`|| '{}'`, `=== null`, `.length === 0`). `test_batch11` (8), `test_batch12` (4), `test_batch2` (3), `test_batch14` (2), `test_episodi_corti` (2), `test_voicecoach` (2), `test_batch13`, `test_outcome_step_ids`, `test_scala_colori` (1 ciascuno).
+
+**Il limite di questa misura, dichiarato invece che lasciato scoprire: 24 è il conto della FORMA, non della polarità.** Una lettura tollerante all'assenza diventa verde per costruzione solo se alimenta un'asserzione **negativa**; se ne alimenta una positiva, cade rumorosamente. **Le 4 della mastery sono state guardate una per una e sono negative** (`test_avviso_microfono:300`, `test_batch12:542` e `:547`, `test_mastery_al_gesto:122`); **le altre 20 no.** *Scrivere «24 asserzioni diventerebbero verdi per costruzione» sarebbe più forte e non misurato.*
+
+**Condizione:** si chiude **esponendo i dodici costruttori** quando lo strato esce, e facendo leggere ai test quelli. **Non è una pulizia di contorno: è metà del valore dell'estrazione**, perché oggi il punto unico esiste e non è raggiungibile da chi ne ha più bisogno. *Che i 148 `setItem` cadano rumorosamente non li rende innocui: 148 file da correggere a mano il giorno in cui una chiave cambia forma è esattamente il costo che «LAVORO DA SOLO» non regge.*
 
 **FERMATE: una per strato, come prima.** | ☐ | **sì**, uno strato per volta |
 | **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** Un modulo sta fra 365 e 670 righe. | ☐ | **sì**, un modulo per volta |
