@@ -449,7 +449,14 @@ aspetto vera e falsa.
 1. **prima** di falsificare, scrivere quale asserzione ci si aspetta che cada,
    e con quale numero (`[C]`, `1 → 4`);
 2. **verificare che la rottura SIA STATA APPLICATA** — un `grep` sul testo
-   nuovo — prima di guardare l'esito;
+   nuovo — prima di guardare l'esito. ⚠️ **E la grep deve colpire il CODICE,
+   non una stringa che vive anche nei commenti:** si ancora la riga intera col
+   suo rientro (`^    BI.unaVoltaSola('voice'`), non il solo nome. *Il
+   2026-09-17, all'⑧, questo controllo ha stampato «2 invece di 1» due volte,
+   perché contava i due commenti che nominano la guardia — commenti scritti da
+   me nello stesso giro. **Il conto era giusto; la domanda no.** Una difesa
+   nata ieri che sbaglia oggi è la cosa che fa smettere di usarla, quindi la
+   forma corretta sta qui e non nella memoria di chi l'ha scritta.*;
 3. dopo la corsa, leggere **quale** è caduta davvero — non quante, non il
    `SUMMARY`, non l'exit code;
 4. se è caduta un'altra, **la falsificazione è fallita, non il codice**: si
