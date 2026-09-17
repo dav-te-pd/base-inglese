@@ -9,30 +9,34 @@
 # Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.
 #
+# ⚠️ QUESTA INTESTAZIONE E' RIGENERATA DA ZERO A OGNI --scrivi: una riga
+# aggiunta qui a mano sparisce al prossimo aggiornamento, senza errore.
+# Se deve durare, va scritta in tests/tools/conta-asserzioni.js.
+#
 # ##########################################################################
-# UN FATTO DA SAPERE, SCRITTO QUI UNA VOLTA SOLA PERCHE' VALE SEMPRE:
+# UN FATTO DA SAPERE, E VALE SEMPRE:
 #
-#   L'ULTIMO COMMIT DI OGNI GIRO CHE AGGIORNA QUESTO FILE E' COPERTO DALLA
-#   CI, NON DALLA SUITE LOCALE.
+#   L'ULTIMO COMMIT DI OGNI GIRO CHE AGGIORNA QUESTO FILE E' COPERTO
+#   DALLA CI, NON DALLA SUITE LOCALE.
 #
-# E' strutturale, non una svista, e non si puo' correggere: questo file lo
-# produce la corsa, quindi l'ordine e' per forza
+# E' strutturale, non una svista, e non si puo' correggere: questo file
+# lo produce la corsa, quindi l'ordine e' per forza
 #
 #     corsa -> aggiornamento di questo file -> push
 #
 # e l'albero su cui la suite ha girato non contiene ancora la riga nuova.
 # La differenza e' un file di soli dati, letto dal contatore e da nessun
-# test, quindi il rischio e' minimo — ma «ho lanciato la suite e ho spinto»
-# resta una frase vera e incompleta, ed e' la CI di quel commit a chiudere
-# il buco.
+# test, quindi il rischio e' minimo — ma «ho lanciato la suite e ho
+# spinto» resta una frase vera e incompleta, ed e' la CI di quel commit
+# a chiudere il buco.
 #
 # *Scritto qui e non nei resoconti: un fatto ripetuto a ogni giro diventa
 # rumore e smette di essere letto. Qui lo trova chi aggiorna il file, che
 # e' l'unica persona a cui serve.*
 # ##########################################################################
 #
-# Ultimo aggiornamento: 2026-09-16
-# Totale: 1252
+# Ultimo aggiornamento: 2026-09-17
+# Totale: 1254
 test_attendi.js 17
 test_attendi_ci.js 21
 test_attese_condivise.js 25
@@ -70,7 +74,7 @@ test_episodio2.js 9
 test_errore_caricamento.js 13
 test_hidden_guard.js 4
 test_interruttore_episodio.js 15
-test_listener_una_volta.js 26
+test_listener_una_volta.js 28
 test_mastery_al_gesto.js 25
 test_match_practice_nonloso.js 6
 test_moduli_registrati.js 27

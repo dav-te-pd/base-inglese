@@ -68,6 +68,21 @@ function leggiBaseline() {
   return Object.keys(atteso).length ? atteso : null;
 }
 
+// ⚠️ QUELLO CHE SCRIVI QUI DENTRO SOPRAVVIVE; QUELLO CHE SCRIVI NEL BASELINE NO.
+//
+// Questa funzione RIGENERA l'intestazione di BASELINE-ASSERZIONI.txt da zero a
+// ogni `--scrivi`. Una riga aggiunta a mano in quel file sparisce al primo
+// aggiornamento del baseline, **senza un errore e senza un diff che qualcuno
+// guardi** — il diff di un baseline si legge per i numeri, non per i commenti.
+//
+// E' successo il 2026-09-17, al primo `--scrivi` dopo: il fatto qui sotto era
+// stato scritto il giorno prima direttamente nel baseline, «una volta sola, nel
+// file di cui parla». Quel file e' prodotto da una macchina: il posto giusto
+// per una cosa che deve durare e' il MODELLO, non il prodotto.
+//
+// *E' la ⓪-quinquies nella forma piu' pulita — una frase resa falsa non da chi
+// la tocca ma dal mondo intorno — con l'aggravante che il mondo che l'ha
+// cancellata e' esattamente il meccanismo di cui la frase parlava.*
 function scriviBaseline(conteggi, totale) {
   const oggi = new Date().toISOString().slice(0, 10);
   const intestazione = [
@@ -81,6 +96,32 @@ function scriviBaseline(conteggi, totale) {
     '#',
     '# Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt',
     '# dell\'ultima corsa, quindi va rigenerato solo dopo una corsa completa.',
+    '#',
+    '# ⚠️ QUESTA INTESTAZIONE E\' RIGENERATA DA ZERO A OGNI --scrivi: una riga',
+    '# aggiunta qui a mano sparisce al prossimo aggiornamento, senza errore.',
+    '# Se deve durare, va scritta in tests/tools/conta-asserzioni.js.',
+    '#',
+    '# ##########################################################################',
+    '# UN FATTO DA SAPERE, E VALE SEMPRE:',
+    '#',
+    '#   L\'ULTIMO COMMIT DI OGNI GIRO CHE AGGIORNA QUESTO FILE E\' COPERTO',
+    '#   DALLA CI, NON DALLA SUITE LOCALE.',
+    '#',
+    '# E\' strutturale, non una svista, e non si puo\' correggere: questo file',
+    '# lo produce la corsa, quindi l\'ordine e\' per forza',
+    '#',
+    '#     corsa -> aggiornamento di questo file -> push',
+    '#',
+    '# e l\'albero su cui la suite ha girato non contiene ancora la riga nuova.',
+    '# La differenza e\' un file di soli dati, letto dal contatore e da nessun',
+    '# test, quindi il rischio e\' minimo — ma «ho lanciato la suite e ho',
+    '# spinto» resta una frase vera e incompleta, ed e\' la CI di quel commit',
+    '# a chiudere il buco.',
+    '#',
+    '# *Scritto qui e non nei resoconti: un fatto ripetuto a ogni giro diventa',
+    '# rumore e smette di essere letto. Qui lo trova chi aggiorna il file, che',
+    '# e\' l\'unica persona a cui serve.*',
+    '# ##########################################################################',
     '#',
     '# Ultimo aggiornamento: ' + oggi,
     '# Totale: ' + totale,
