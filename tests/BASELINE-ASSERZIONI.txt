@@ -76,7 +76,7 @@ test_errore_caricamento.js 13
 test_hidden_guard.js 4
 test_interruttore_episodio.js 15
 test_listener_una_volta.js 28
-test_mastery_al_gesto.js 25
+test_mastery_al_gesto.js 26
 test_match_practice_nonloso.js 6
 test_moduli_registrati.js 27
 test_modulo_pronto.js 12

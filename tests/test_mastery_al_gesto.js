@@ -162,6 +162,25 @@ async function run() {
       scritture.length === 1 && dentroA(scritture[0].n) === 'commitPendingMastery',
       scritture.length === 1 ? 'sta dentro ' + dentroA(scritture[0].n) : 'n/d');
 
+    // ⚠️ L'INVARIANTE SEGUITO DOVE E' ANDATO A STARE (famiglia ⓪-undecies).
+    //
+    // Le due righe qui sopra contano le chiamate a `saveMastery(`, e dicono
+    // «una sola». Restano vere e non bastano piu' da sole: dal 2026-09-17 la
+    // scrittura vera non e' dentro `saveMastery`, e' dentro `scriviMagazzino`,
+    // che e' condiviso da nove scrittori. L'invariante non e' cambiato — UN
+    // SOLO PUNTO SCRIVE IL MAGAZZINO DELLA MASTERY — e' cambiato DOVE vive.
+    //
+    // Senza questa riga, un decimo scrittore che facesse
+    // `scriviMagazzino(masteryStorageKey(...), ...)` da un modulo qualunque
+    // NON toccherebbe `saveMastery`, e le due asserzioni sopra resterebbero
+    // verdi mentre l'invariante e' rotto.
+    const viaMagazzino = righe.filter(r =>
+      /scriviMagazzino\(\s*masteryStorageKey\(/.test(r.testo) &&
+      dentroA(r.n) !== 'saveMastery');
+    log('[A] ...e nessun altro scrive la chiave della mastery passando da scriviMagazzino',
+      viaMagazzino.length === 0,
+      viaMagazzino.map(r => r.n + ' (in ' + dentroA(r.n) + ')').join(' | '));
+
     const scale = chiamate('applyMasteryResult');
     log('[A] Anche la scala dei colori si applica in un punto solo',
       scale.length === 1, scale.map(r => r.n + ': ' + r.testo.trim()).join(' | '));

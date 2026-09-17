@@ -4255,22 +4255,71 @@
      B/C) are saved with the same per-user localStorage mechanism as
      mastery/customization.
      ============================================================ */
+  // ── IL MAGAZZINO: UN PUNTO CHE LEGGE, UNO CHE SCRIVE, UNO CHE CANCELLA ──
+  //
+  // ⚠️ Prima di queste tre righe c'erano NOVE lettori e DIECI scrittori con lo
+  // stesso identico corpo. Due coppie erano uguali CARATTERE PER CARATTERE a
+  // meno della chiave: loadMastery/loadModuleOutcomes e
+  // loadAudioUsage/loadNextLineSkips. Non erano accessi indipendenti allo
+  // stesso spazio: erano la stessa funzione scritta due volte.
+  //
+  // E la ragione per cui si e' chiuso PRIMA di estrarre lo strato, invece di
+  // scriverci accanto una nota: fra due mesi chi cambia uno dei lettori non ha
+  // nessun modo di sapere che gli altri otto esistono — e dopo l'estrazione
+  // staranno in un altro file, dove non li si incontra leggendo.
+  // **Chiudere il caso costa meno che scrivere la nota che lo descrive, e
+  // protegge di piu': la nota va trovata, il punto unico no.**
+  //
+  // ⚠️ `vuoto` E' UNA FUNZIONE, NON UN VALORE, e non e' uno scrupolo: passando
+  // `{}` ogni chiamante riceverebbe LO STESSO oggetto, e il primo che lo
+  // modifica lo modifica per tutti. Un difetto che non alza eccezioni e si
+  // vede giorni dopo come un progresso comparso da solo.
+  //
+  // ⚠️ E UNA DIFFERENZA DI COMPORTAMENTO, dichiarata invece che nascosta: se
+  // nel magazzino ci fosse un JSON "falso" (`null`, `0`, `false`, `""`) la
+  // forma vecchia di loadMastery/loadModuleOutcomes lo restituiva, questa
+  // ritorna il vuoto. Nessuno dei dieci scrittori puo' produrlo — scrivono
+  // tutti oggetti o array — quindi nell'app la differenza non e'
+  // osservabile, ed e' nella direzione sicura: `loadMastery(...)[id]` su
+  // `null` sarebbe un'eccezione.
+  //
+  // Chi resta FUORI, e perche': isCustomizeSeen, isIntroDismissed e
+  // setIntroDismissed non scrivono JSON — tengono la stringa '1'/'0'. Farli
+  // passare di qui vorrebbe dire o cambiare il formato salvato (rompendo i
+  // profili che ce l'hanno gia') o dare a queste funzioni una seconda
+  // modalita': una cosa che risponde a due domande da' la risposta giusta a
+  // una e sbagliata all'altra (famiglia ⓪-decies).
+  function leggiMagazzino(chiave, vuoto, valida) {
+    try {
+      var raw = localStorage.getItem(chiave);
+      var letto = raw ? JSON.parse(raw) : null;
+      if (letto && (!valida || valida(letto))) return letto;
+      return vuoto();
+    } catch (e) { return vuoto(); }
+  }
+
+  function scriviMagazzino(chiave, valore) {
+    try { localStorage.setItem(chiave, JSON.stringify(valore)); } catch (e) {}
+  }
+
+  function cancellaMagazzino(chiave) {
+    try { localStorage.removeItem(chiave); } catch (e) {}
+  }
+
   function helpRequestsKey(userName) {
     return 'baseinglese:helpRequests:' + userName;
   }
 
   function loadHelpRequests(userName) {
-    try {
-      var raw = localStorage.getItem(helpRequestsKey(userName));
-      var parsed = raw ? JSON.parse(raw) : [];
-      return Array.isArray(parsed) ? parsed : [];
-    } catch (e) { return []; }
+    return leggiMagazzino(helpRequestsKey(userName),
+      function () { return []; },
+      function (p) { return Array.isArray(p); });
   }
 
   function saveHelpRequest(userName, entry) {
     var list = loadHelpRequests(userName);
     list.push(entry);
-    try { localStorage.setItem(helpRequestsKey(userName), JSON.stringify(list)); } catch (e) {}
+    scriviMagazzino(helpRequestsKey(userName), list);
   }
 
   var activeHelpModule = null;
@@ -5164,14 +5213,11 @@
   }
 
   function loadMastery(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(masteryStorageKey(episodeId, userName));
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+    return leggiMagazzino(masteryStorageKey(episodeId, userName), function () { return {}; });
   }
 
   function saveMastery(episodeId, userName, mastery) {
-    try { localStorage.setItem(masteryStorageKey(episodeId, userName), JSON.stringify(mastery)); } catch (e) {}
+    scriviMagazzino(masteryStorageKey(episodeId, userName), mastery);
   }
 
   // result: 'correct' | 'similar' | 'wrong'
@@ -5541,17 +5587,15 @@
   }
 
   function loadModuleProgress(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(moduleProgressKey(episodeId, userName));
-      var parsed = raw ? JSON.parse(raw) : null;
-      return (parsed && Array.isArray(parsed.completed)) ? parsed : { completed: [] };
-    } catch (e) { return { completed: [] }; }
+    return leggiMagazzino(moduleProgressKey(episodeId, userName),
+      function () { return { completed: [] }; },
+      function (p) { return Array.isArray(p.completed); });
   }
 
   function markModuleCompleted(episode, userName, moduleId) {
     var progress = loadModuleProgress(episode.id, userName);
     if (progress.completed.indexOf(moduleId) === -1) progress.completed.push(moduleId);
-    try { localStorage.setItem(moduleProgressKey(episode.id, userName), JSON.stringify(progress)); } catch (e) {}
+    scriviMagazzino(moduleProgressKey(episode.id, userName), progress);
     return progress;
   }
 
@@ -5577,10 +5621,7 @@
   }
 
   function loadModuleOutcomes(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(moduleOutcomeKey(episodeId, userName));
-      return raw ? JSON.parse(raw) : {};
-    } catch (e) { return {}; }
+    return leggiMagazzino(moduleOutcomeKey(episodeId, userName), function () { return {}; });
   }
 
   // outcome: { level: 'verde' | 'giallo', ...any module-specific stats —
@@ -5589,7 +5630,7 @@
   function saveModuleOutcome(episode, userName, moduleId, outcome) {
     var outcomes = loadModuleOutcomes(episode.id, userName);
     outcomes[moduleId] = outcome;
-    try { localStorage.setItem(moduleOutcomeKey(episode.id, userName), JSON.stringify(outcomes)); } catch (e) {}
+    scriviMagazzino(moduleOutcomeKey(episode.id, userName), outcomes);
   }
 
   // La coda condivisa dei SETTE pulsanti "Ho finito, torna alla mappa":
@@ -5652,17 +5693,15 @@
   }
 
   function loadAudioUsage(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(audioUsageKey(episodeId, userName));
-      var parsed = raw ? JSON.parse(raw) : null;
-      return (parsed && parsed.byModule) ? parsed : { byModule: {} };
-    } catch (e) { return { byModule: {} }; }
+    return leggiMagazzino(audioUsageKey(episodeId, userName),
+      function () { return { byModule: {} }; },
+      function (p) { return !!p.byModule; });
   }
 
   function addAudioSecondsSent(episodeId, userName, moduleId, seconds) {
     var usage = loadAudioUsage(episodeId, userName);
     usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + seconds;
-    try { localStorage.setItem(audioUsageKey(episodeId, userName), JSON.stringify(usage)); } catch (e) {}
+    scriviMagazzino(audioUsageKey(episodeId, userName), usage);
     return usage;
   }
 
@@ -5676,17 +5715,15 @@
   }
 
   function loadNextLineSkips(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(nextLineSkipsKey(episodeId, userName));
-      var parsed = raw ? JSON.parse(raw) : null;
-      return (parsed && parsed.byModule) ? parsed : { byModule: {} };
-    } catch (e) { return { byModule: {} }; }
+    return leggiMagazzino(nextLineSkipsKey(episodeId, userName),
+      function () { return { byModule: {} }; },
+      function (p) { return !!p.byModule; });
   }
 
   function addNextLineSkip(episodeId, userName, moduleId) {
     var usage = loadNextLineSkips(episodeId, userName);
     usage.byModule[moduleId] = (usage.byModule[moduleId] || 0) + 1;
-    try { localStorage.setItem(nextLineSkipsKey(episodeId, userName), JSON.stringify(usage)); } catch (e) {}
+    scriviMagazzino(nextLineSkipsKey(episodeId, userName), usage);
     return usage;
   }
 
@@ -5738,12 +5775,9 @@
   }
 
   function loadStoryCardsExplanationStats(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(storyCardsExplanationStatsKey(episodeId, userName));
-      var parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && parsed.versione === STORY_CARDS_STATS_VERSIONE && parsed.byLine) return parsed;
-      return vuotoStoryCardsExplanationStats();
-    } catch (e) { return vuotoStoryCardsExplanationStats(); }
+    return leggiMagazzino(storyCardsExplanationStatsKey(episodeId, userName),
+      vuotoStoryCardsExplanationStats,
+      function (p) { return p.versione === STORY_CARDS_STATS_VERSIONE && !!p.byLine; });
   }
 
   // Registra la risposta CORRENTE di una battuta. Non e' piu' un "add", e il
@@ -5763,7 +5797,7 @@
     }
     voce[answer] = (voce[answer] || 0) + 1;
     voce.corrente = answer;
-    try { localStorage.setItem(storyCardsExplanationStatsKey(episodeId, userName), JSON.stringify(stats)); } catch (e) {}
+    scriviMagazzino(storyCardsExplanationStatsKey(episodeId, userName), stats);
     return stats;
   }
 
@@ -5922,11 +5956,7 @@
   }
 
   function loadCustomValues(episode, userName) {
-    var stored = {};
-    try {
-      var raw = localStorage.getItem(customValuesKey(episode.id, userName));
-      stored = raw ? JSON.parse(raw) : {};
-    } catch (e) {}
+    var stored = leggiMagazzino(customValuesKey(episode.id, userName), function () { return {}; });
     var values = {};
     episode.slotFields.forEach(function (f) {
       values[f.key] = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
@@ -5935,7 +5965,7 @@
   }
 
   function saveCustomValues(episode, userName, values) {
-    try { localStorage.setItem(customValuesKey(episode.id, userName), JSON.stringify(values)); } catch (e) {}
+    scriviMagazzino(customValuesKey(episode.id, userName), values);
   }
 
   // Groups slotFields for card layout: fields sharing a "group" render in
@@ -6220,9 +6250,9 @@
   // user redoes the episode. customValues (the personalization itself)
   // is deliberately left untouched — that's what they're about to edit.
   function wipeEpisodeProgress(episode, userName) {
-    try { localStorage.removeItem(moduleProgressKey(episode.id, userName)); } catch (e) {}
-    try { localStorage.removeItem(moduleOutcomeKey(episode.id, userName)); } catch (e) {}
-    try { localStorage.removeItem(masteryStorageKey(episode.id, userName)); } catch (e) {}
+    cancellaMagazzino(moduleProgressKey(episode.id, userName));
+    cancellaMagazzino(moduleOutcomeKey(episode.id, userName));
+    cancellaMagazzino(masteryStorageKey(episode.id, userName));
   }
 
   var customizeWarningConfirmPhrase = '';
@@ -7219,15 +7249,13 @@
   }
 
   function loadStoryCardsDeclarations(episodeId, userName) {
-    try {
-      var raw = localStorage.getItem(storyCardsDeclarationsKey(episodeId, userName));
-      var parsed = raw ? JSON.parse(raw) : null;
-      return (parsed && typeof parsed === 'object') ? parsed : {};
-    } catch (e) { return {}; }
+    return leggiMagazzino(storyCardsDeclarationsKey(episodeId, userName),
+      function () { return {}; },
+      function (p) { return typeof p === 'object'; });
   }
 
   function saveStoryCardsDeclarations(episodeId, userName, answers) {
-    try { localStorage.setItem(storyCardsDeclarationsKey(episodeId, userName), JSON.stringify(answers)); } catch (e) {}
+    scriviMagazzino(storyCardsDeclarationsKey(episodeId, userName), answers);
   }
 
   // Quante delle spiegazioni presenti nell'episodio sono state dichiarate
