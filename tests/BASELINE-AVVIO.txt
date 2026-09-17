@@ -1,0 +1,50 @@
+# La fotografia dell'avvio: cosa l'app fa fra il primo byte e la
+# schermata di login, in ordine.
+#
+# ⚠️ IL PASSO 22 NON DEVE CAMBIARE QUESTO FILE.
+#
+# Il 22 SPOSTA codice in file separati. Un'estrazione fatta bene lascia
+# l'avvio identico: stessi moduli registrati nello stesso ordine, stesse
+# pulizie, stessa vista alla fine. **Un diff qui durante un'estrazione e'
+# un ERRORE, non un aggiornamento** — esattamente come
+# tests/BASELINE-LISTENER.txt per il 21-quater, che in otto giri non e'
+# cambiato di una riga.
+#
+# ⚠️ E IL LIMITE, perche' qui e' diverso dal baseline dei listener: quello
+# non doveva cambiare MAI. Questo puo' cambiare, ma **solo per una
+# decisione strutturale dichiarata** — spezzare una funzione, aggiungere un
+# file di strato — e allora si riscrive nel commit di QUELLA decisione, con
+# il motivo. Mai come effetto collaterale di uno spostamento.
+#
+# *La differenza fra le due cose e' tutto il valore del file: se si
+# riscrive quando fa comodo, torna a essere un rapporto.*
+#
+# Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
+# Ultimo aggiornamento: 2026-09-17
+script 1 app/config.js
+script 2 app/spazio.js
+script 3 (inline)
+script 4 (inline)
+modulo 1 personalizzazione
+modulo 2 repeatAloud
+modulo 3 meetTheStory
+modulo 4 whyWeSayIt
+modulo 5 voicePractice
+modulo 6 voiceCoach
+modulo 7 matchEngIta
+modulo 8 matchItaEng
+modulo 9 dialogoAscoltaRipeti
+modulo 10 dialogoRipetiATempo
+modulo 11 dialogoContinuo
+modulo 12 speedMatchEngIta
+modulo 13 speedMatchItaEng
+modulo 14 flashcard
+pulizia 1 storyCardsClearPendingStats
+pulizia 2 vcResetRecording
+pulizia 3 dgClearAllTimers
+pulizia 4 srPulizia
+pulizia 5 fcClearNavTimeout
+moduliCaricatiAlBoot true
+vistaDopoIlBoot view-onboarding
+APP_CONFIG object
+APP_CONFIG_DEFAULTS object
