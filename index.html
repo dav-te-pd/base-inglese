@@ -7988,13 +7988,17 @@
     document.getElementById('vc-mic-notice-actions').innerHTML = actionsHtml;
   }
 
-  document.getElementById('vc-mic-notice-actions').addEventListener('click', function (e) {
-    if (e.target.id === 'vc-mic-notice-restart') {
-      openVoiceCoach(vcModule);
-    } else if (e.target.id === 'vc-mic-notice-map') {
-      openEpisodeMap();
-    }
-  });
+  // ---- `vc-mic-notice-actions` NON STA PIU' QUI ----
+  //
+  // E' entrato dentro `openVoiceCoach` il 2026-09-17 (passo 21-quater ⑧, l'ultimo),
+  // dietro `BI.unaVoltaSola('voice', …)`, con gli altri tredici. Il commento resta
+  // al PASSATO.
+  //
+  // Stava separato dagli altri perche' e' attaccato al contenitore che la
+  // funzione qui sopra riempie, ed e' A DELEGA per quello: i suoi pulsanti
+  // (`vc-mic-notice-restart`, `vc-mic-notice-map`) nascono e muoiono con
+  // l'`innerHTML`. Per questo regge lo spostamento — il listener sta sul
+  // contenitore, che non cambia mai identita'.
 
   // ---- star rating + feedback/attempt messages (FEEDBACK_MESSAGES_FILE) ----
   var vcFeedbackDataCache = null;
@@ -8203,6 +8207,154 @@
   }
 
   function openVoiceCoach(module) {
+    // I listener di questo modulo, una volta sola. L'ULTIMO degli otto giri.
+    //
+    // ⚠️ LA CHIAVE E' 'voice', E QUI LA DIFFERENZA SI VEDE: questa `open` serve
+    // DUE kind (`voicePractice`, `voiceCoach`), quindi con `module.kind` per
+    // chiave il blocco girerebbe due volte, una per variante, e ogni listener
+    // avrebbe due copie. E' lo stesso caso di Match, Dialogo, storyCards e
+    // Speed Match — falsificabile, a differenza delle tre famiglie a kind
+    // singolo. La regola per esteso sta accanto a `BI.unaVoltaSola` in
+    // app/spazio.js.
+    //
+    // ⚠️ E L'APPARATO NON E' QUI DENTRO, di proposito: `vcRecognition` nasce a
+    // tempo di parsing e i suoi `onresult`/`onend`/`onerror` restano li'. Il
+    // perche', e cosa romperebbe chi volesse spostarli, sta nel segnaposto piu'
+    // in alto, dove stavano questi tredici.
+    //
+    // Sul PERCHE' stiano prima del resto: vale la stessa cosa scritta in
+    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
+    // passo 22. Dichiarata, non provata.
+    BI.unaVoltaSola('voice', function () {
+    document.getElementById('vc-mic-notice-actions').addEventListener('click', function (e) {
+      if (e.target.id === 'vc-mic-notice-restart') {
+        openVoiceCoach(vcModule);
+      } else if (e.target.id === 'vc-mic-notice-map') {
+        openEpisodeMap();
+      }
+    });
+
+    document.getElementById('vc-audio-controls').addEventListener('click', function (e) {
+      var btn = e.target.closest('[data-say]');
+      if (!btn) return;
+      // Correction (5th collaudo): no countdown here — Spiegazione, Help,
+      // Avanti, Riprova and Record all stay clickable while the model
+      // audio plays (job 1, 4th collaudo, over-applied the lock here).
+      // Record keeps its own guard below (mic bleed), just as a
+      // stop-on-touch instead of a block.
+      speakListenBlock(btn, vcTargetText());
+    });
+
+    document.getElementById('vc-record-btn').addEventListener('click', function () {
+      if (!vcRecognition) return;
+      // Seconda guardia oltre al disabled del pulsante, come vcNextLine: i
+      // punti da cui si puo' chiedere di registrare si moltiplicano nel tempo,
+      // questo controllo resta uno (CLAUDE.md regola 20).
+      if (vcMicConfirmedProblem) return;
+      if (vcState === 'recording') {
+        if (vcListening) vcRecognition.stop();
+        return;
+      }
+      if (vcState !== 'idle') return;
+      // Correction (5th collaudo): Record used to be disabled while the
+      // model audio played (mic-bleed protection); the click-stops-audio
+      // rule (see the document-level click listener near toggleSpeak)
+      // already covers this — Record isn't a listen trigger, so pressing
+      // it stops the model audio before this handler even runs.
+      vcLatestTranscript = '';
+      vcHeardAnySpeech = false;
+      document.getElementById('vc-silence-warning').hidden = true;
+      var wordCount = tokenize(vcTargetText()).length;
+      var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
+      try {
+        vcRecognition.start();
+      } catch (e) { return; }
+      // Enter "recording" (state, icon, timer, the Regola Azione Critica
+      // lock via setVcState) the instant the user asks to record, instead
+      // of waiting for SpeechRecognition's own async "started" event.
+      vcListening = true;
+      setVcState('recording');
+      startVcTimer();
+      clearVcTimeout();
+      vcTimeoutId = setTimeout(function () {
+        if (vcListening) vcRecognition.stop();
+      }, maxMs);
+      // Job 6b: a SHORTER, separate timeout — if nothing at all has been
+      // recognized yet by then, this is silence, not just a long sentence;
+      // stop and discard rather than waiting for the full maxMs cap above.
+      vcSilenceTimeoutId = setTimeout(function () {
+        if (vcListening && !vcHeardAnySpeech) {
+          vcSilenceCutoff = true;
+          vcRecognition.stop();
+        }
+      }, CONFIG.voiceCoach.silenceTimeoutSeconds * 1000);
+    });
+
+    document.getElementById('vc-cancel-btn').addEventListener('click', function () {
+      vcLatestTranscript = '';
+      setVcState('idle');
+    });
+
+    document.getElementById('vc-send-btn').addEventListener('click', function () {
+      // Job 6c: this click is the actual "sent for recognition" event — the
+      // whole recording length, silence included, counts (see
+      // addAudioSecondsSent's own comment); a discarded/cancelled recording
+      // never reaches here, so it's never counted.
+      addAudioSecondsSent(currentEpisode.id, getUserName(), vcModule.id, vcLastRecordingMs / 1000);
+      vcEvaluate();
+    });
+
+    document.getElementById('voice-coach-retry-btn').addEventListener('click', function () {
+      var nextAttempt = (vcAttempts[vcCurrentLine().id] || 0) + 1;
+      vcSetAttemptLabel(nextAttempt);
+      setVcState('idle');
+    });
+
+    document.getElementById('vc-pronunciation-toggle').addEventListener('click', function () {
+      var pronEl = document.getElementById('vc-pronunciation');
+      var reveal = pronEl.hidden;
+      pronEl.hidden = !reveal;
+      this.textContent = reveal ? 'Nascondi pronuncia' : 'Mostra pronuncia';
+    });
+
+    document.getElementById('vc-next-btn').addEventListener('click', vcNextLine);
+
+    document.getElementById('voice-coach-retry-continue-btn').addEventListener('click', function () {
+      vcShowScreen('main');
+      vcNextLine();
+    });
+
+    document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
+      // Both variants now color the map (CONFIG.moduleOutcomeRules —
+      // 'moduleRules' for voiceCoach AND voicePractice): the badge shows
+      // vcLastAvgPct, verdict included even when it's rosso —
+      // saveModuleOutcome always overwrites, so a redo genuinely replaces
+      // the previous color in either direction, same as every other module
+      // already using this store (see MODULE OUTCOME above). Which pct
+      // that is (first-pass vs. latest-attempt) is vcVariant's own call
+      // (see vcEvaluate), already baked into vcLastAvgPct by
+      // vcFinishModule.
+      completeModule(vcModule, CONFIG.moduleOutcomeRules[vcModule.moduleId] === 'moduleRules'
+        ? { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct }
+        : null);
+    });
+
+    document.getElementById('voice-coach-back-map').addEventListener('click', openEpisodeMap);
+
+    document.getElementById('voice-coach-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref(vcModule.kind) });
+    });
+
+    document.getElementById('voice-coach-intro-start-btn').addEventListener('click', function () {
+      setIntroDismissed(vcModule.kind, getUserName(), document.getElementById('voice-coach-intro-dont-show-again').checked);
+      vcShowScreen('main');
+    });
+
+    document.getElementById('voice-coach-help-btn').addEventListener('click', function () {
+      openHelpFor(vcModule);
+    });
+    });
+
     vcModule = module;
     vcVariant = module.voiceVariant === 'practice' ? 'practice' : 'check';
     vcAttempts = {};
@@ -8462,110 +8614,52 @@
     }
   }
 
-  document.getElementById('vc-audio-controls').addEventListener('click', function (e) {
-    var btn = e.target.closest('[data-say]');
-    if (!btn) return;
-    // Correction (5th collaudo): no countdown here — Spiegazione, Help,
-    // Avanti, Riprova and Record all stay clickable while the model
-    // audio plays (job 1, 4th collaudo, over-applied the lock here).
-    // Record keeps its own guard below (mic bleed), just as a
-    // stop-on-touch instead of a block.
-    speakListenBlock(btn, vcTargetText());
-  });
+  // ---- I TREDICI LISTENER DEL CORPO DI VOICE NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openVoiceCoach` il 2026-09-17 (passo 21-quater ⑧),
+  // dietro `BI.unaVoltaSola('voice', …)`. Il commento resta al PASSATO.
+  //
+  // ⚠️ E QUELLO CHE **NON** E' ENTRATO, perche' e' la cosa che questa famiglia
+  // ha e le altre sette no: `vcRecognition` — l'oggetto del riconoscimento
+  // vocale — nasce a TEMPO DI PARSING, nel blocco `if (VCSpeechRecognition)`
+  // qui sopra (righe ~7794-7873), e li' gli vengono assegnati `onresult`,
+  // `onend` e `onerror`. **Sono assegnazioni di proprieta', non
+  // `addEventListener`**, quindi il censimento non li ha mai visti e il
+  // 21-quater non li tocca.
+  //
+  // Ne segue che dopo l'⑧ questo modulo ha **due tempi**: i quattordici
+  // listener del DOM si attaccano alla prima apertura, i tre del riconoscimento
+  // restano al parsing. Funziona perche' `vcRecognition` e' un singleton creato
+  // una volta sola.
+  //
+  // ⚠️ CHI UN GIORNO VOLESSE «FINIRE IL LAVORO» spostando anche quel blocco
+  // dentro `openVoiceCoach` deve sapere che **senza guardia ricreerebbe
+  // l'oggetto a ogni apertura**, e la guardia che serve e' la stessa
+  // (`BI.unaVoltaSola`). Non e' stato fatto qui perche' il 21-quater sposta
+  // LISTENER, non apparati — e allargarlo di nascosto sarebbe stato il modo di
+  // rompere l'unico modulo che usa il microfono.
+  //
+  // ⚠️ E LA VERIFICA FATTA PRIMA DI SPOSTARE, come al ⑦ e per la stessa
+  // ragione — questa famiglia ha un apparato che le altre non hanno:
+  //
+  //   1. nessuno dei quattordici tocca `vcRecognition` o il sintetizzatore **a
+  //      tempo di attacco**: lo toccano dentro il corpo del gestore, cioe' al
+  //      click (misurato: zero assegnazioni `.onresult/.onend/.onerror` dentro
+  //      le righe spostate);
+  //   2. `openVoiceCoach` e' l'UNICO posto che fa `showView('voiceCoach')`,
+  //      quindi non esiste una strada che apra la schermata senza attaccarli;
+  //   3. l'avviso microfono non puo' comparire prima: `vcUpdateMicNotice` e'
+  //      chiamata solo da `vcRecognition.onend` e da `vcEvaluate`, e il
+  //      riconoscimento parte solo da `vc-record-btn`, che e' uno dei
+  //      quattordici.
 
-  document.getElementById('vc-record-btn').addEventListener('click', function () {
-    if (!vcRecognition) return;
-    // Seconda guardia oltre al disabled del pulsante, come vcNextLine: i
-    // punti da cui si puo' chiedere di registrare si moltiplicano nel tempo,
-    // questo controllo resta uno (CLAUDE.md regola 20).
-    if (vcMicConfirmedProblem) return;
-    if (vcState === 'recording') {
-      if (vcListening) vcRecognition.stop();
-      return;
-    }
-    if (vcState !== 'idle') return;
-    // Correction (5th collaudo): Record used to be disabled while the
-    // model audio played (mic-bleed protection); the click-stops-audio
-    // rule (see the document-level click listener near toggleSpeak)
-    // already covers this — Record isn't a listen trigger, so pressing
-    // it stops the model audio before this handler even runs.
-    vcLatestTranscript = '';
-    vcHeardAnySpeech = false;
-    document.getElementById('vc-silence-warning').hidden = true;
-    var wordCount = tokenize(vcTargetText()).length;
-    var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;
-    try {
-      vcRecognition.start();
-    } catch (e) { return; }
-    // Enter "recording" (state, icon, timer, the Regola Azione Critica
-    // lock via setVcState) the instant the user asks to record, instead
-    // of waiting for SpeechRecognition's own async "started" event.
-    vcListening = true;
-    setVcState('recording');
-    startVcTimer();
-    clearVcTimeout();
-    vcTimeoutId = setTimeout(function () {
-      if (vcListening) vcRecognition.stop();
-    }, maxMs);
-    // Job 6b: a SHORTER, separate timeout — if nothing at all has been
-    // recognized yet by then, this is silence, not just a long sentence;
-    // stop and discard rather than waiting for the full maxMs cap above.
-    vcSilenceTimeoutId = setTimeout(function () {
-      if (vcListening && !vcHeardAnySpeech) {
-        vcSilenceCutoff = true;
-        vcRecognition.stop();
-      }
-    }, CONFIG.voiceCoach.silenceTimeoutSeconds * 1000);
-  });
 
-  document.getElementById('vc-cancel-btn').addEventListener('click', function () {
-    vcLatestTranscript = '';
-    setVcState('idle');
-  });
 
-  document.getElementById('vc-send-btn').addEventListener('click', function () {
-    // Job 6c: this click is the actual "sent for recognition" event — the
-    // whole recording length, silence included, counts (see
-    // addAudioSecondsSent's own comment); a discarded/cancelled recording
-    // never reaches here, so it's never counted.
-    addAudioSecondsSent(currentEpisode.id, getUserName(), vcModule.id, vcLastRecordingMs / 1000);
-    vcEvaluate();
-  });
 
-  document.getElementById('voice-coach-retry-btn').addEventListener('click', function () {
-    var nextAttempt = (vcAttempts[vcCurrentLine().id] || 0) + 1;
-    vcSetAttemptLabel(nextAttempt);
-    setVcState('idle');
-  });
 
-  document.getElementById('vc-pronunciation-toggle').addEventListener('click', function () {
-    var pronEl = document.getElementById('vc-pronunciation');
-    var reveal = pronEl.hidden;
-    pronEl.hidden = !reveal;
-    this.textContent = reveal ? 'Nascondi pronuncia' : 'Mostra pronuncia';
-  });
 
-  document.getElementById('vc-next-btn').addEventListener('click', vcNextLine);
 
-  document.getElementById('voice-coach-retry-continue-btn').addEventListener('click', function () {
-    vcShowScreen('main');
-    vcNextLine();
-  });
 
-  document.getElementById('voice-coach-complete-btn').addEventListener('click', function () {
-    // Both variants now color the map (CONFIG.moduleOutcomeRules —
-    // 'moduleRules' for voiceCoach AND voicePractice): the badge shows
-    // vcLastAvgPct, verdict included even when it's rosso —
-    // saveModuleOutcome always overwrites, so a redo genuinely replaces
-    // the previous color in either direction, same as every other module
-    // already using this store (see MODULE OUTCOME above). Which pct
-    // that is (first-pass vs. latest-attempt) is vcVariant's own call
-    // (see vcEvaluate), already baked into vcLastAvgPct by
-    // vcFinishModule.
-    completeModule(vcModule, CONFIG.moduleOutcomeRules[vcModule.moduleId] === 'moduleRules'
-      ? { level: moduleRulesLevel(vcLastAvgPct), pct: vcLastAvgPct }
-      : null);
-  });
 
   document.getElementById('attempt-popup-retry').addEventListener('click', function () {
     closeAttemptPopup();
@@ -8579,20 +8673,9 @@
 
   // Recording/timers/popup are stopped centrally by showView()'s own
   // stopAllModuleActivity() (see near its definition) — not repeated here.
-  document.getElementById('voice-coach-back-map').addEventListener('click', openEpisodeMap);
 
-  document.getElementById('voice-coach-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(vcModule, { dismissPref: introDismissPref(vcModule.kind) });
-  });
 
-  document.getElementById('voice-coach-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed(vcModule.kind, getUserName(), document.getElementById('voice-coach-intro-dont-show-again').checked);
-    vcShowScreen('main');
-  });
 
-  document.getElementById('voice-coach-help-btn').addEventListener('click', function () {
-    openHelpFor(vcModule);
-  });
 
   /* ============================================================
      SHARED: multiple-choice quiz logic (Speed Match + Match Practice)
