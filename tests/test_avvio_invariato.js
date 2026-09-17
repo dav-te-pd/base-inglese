@@ -115,12 +115,24 @@ async function run() {
   // tocchera' di proposito.
   log('[D] I moduli registrati al boot sono 14', foto.moduli.length === 14, String(foto.moduli.length));
   log('[D] Le pulizie registrate sono 5', foto.pulizie.length === 5, String(foto.pulizie.length));
-  // ⚠️ IL CONTO E' RESTATO 4, LA COMPOSIZIONE NO — corretta il 2026-09-17
-  // (passo 22, primo strato): il blocco d'avvio in linea e' uscito in
-  // `app/avvio.js`, quindi 3 esterni + 1 inline invece di 2 + 2. *Il numero
-  // non e' cambiato e la descrizione si': se la riga dicesse ancora «2 + 2»,
-  // sarebbe verde e falsa — e nessuna corsa potrebbe accorgersene.*
-  log('[D] I file di script sono 4 (3 esterni + 1 inline)', foto.script.length === 4, foto.script.join(', '));
+  // ⚠️ LA DESCRIZIONE LA SCRIVE LA FOTOGRAFIA, NON CHI SCRIVE IL TEST — dal
+  // 2026-09-17, e serve ai SEI STRATI CHE VENGONO DOPO.
+  //
+  // Prima diceva «4 (2 esterni + 2 inline)», poi «4 (3 esterni + 1 inline)».
+  // **Ogni estrazione sposta un pezzo da inline a esterno, quindi ogni
+  // descrizione che conta i due gruppi diventa falsa SENZA CHE IL NUMERO
+  // CAMBI** — cioe' resta verde e falsa, e nessuna corsa puo' accorgersene.
+  // *E' la stessa forma dei tempi citati invece che rimisurati (regola 38) e
+  // della finestra fissa di 400 caratteri: un valore esatto per il codice di
+  // ieri e falso per quello di oggi, senza cambiare una cifra.*
+  //
+  // Il conto atteso resta scritto a mano — quello DEVE essere una decisione,
+  // ed e' la riga che cambia quando uno strato esce. La composizione no: si
+  // legge da cio' che si e' appena misurato.
+  const esterni = foto.script.filter(function (s) { return s !== '(inline)'; }).length;
+  const inline = foto.script.length - esterni;
+  log('[D] I file di script sono 4 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 4, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

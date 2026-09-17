@@ -90,11 +90,46 @@ function senzaBloccoDescrizioni(testo) {
 // chiave nominata da nessuno, e il test cadrebbe su tutto. Il numero da
 // guardare dopo questo passo e' quello dichiarato piu' in basso: deve restare
 // 144 chiavi controllate e una sola asserzione sul totale.
+//
+// ⚠️ E LA REGIONE SI DERIVA DA `app/`, NON SI ELENCA A MANO — dal 2026-09-17
+// (passo 22). E' la correzione che serve ai SEI STRATI CHE VENGONO DOPO, non a
+// quello in corso.
+//
+// Fino a qui la regione nominava due file: `app/config.js` e `index.html`. Il
+// passo 22 spezza `index.html` in strati, **e ogni strato porta fuori dei
+// lettori di CONFIG**. Misurato il 2026-09-17, appena estratto il primo:
+// `app/avvio.js` legge `APP_CONFIG.themes.defaultTheme` ed era gia' FUORI
+// dalla regione. Il test era verde per un pelo — quella chiave e' nominata
+// altre tre volte in index.html, quindi superava la soglia lo stesso.
+//
+// **Alla prima chiave nominata SOLO dentro un file estratto, questo test
+// direbbe «chiave morta» su una chiave viva.** Non e' un verde che mente — una
+// regione piu' piccola segnala PIU' chiavi, quindi cade rumorosamente — ma e'
+// un rosso falso per strato, e la diagnosi si pagherebbe sei volte.
+//
+// Adesso la regione cresce da sola: **chi estrae uno strato non deve sapere
+// che questo test esiste.** E' la stessa mossa del blocco [C] derivato da
+// `FAMIGLIE` e del blocco [E] derivato da `MODULE_DESCRIPTORS` — la fonte
+// decide, non chi scrive il test. Terza applicazione.
+//
+// LIMITE DICHIARATO: prende i `.js` direttamente sotto `app/`, non le
+// sottocartelle. Oggi non ce ne sono; il giorno che ce ne fossero, questa
+// lettura andrebbe resa ricorsiva come `tuttiIJson`.
+function tuttiIFileApp() {
+  return fs.readdirSync(repoPath('app'))
+    .filter(function (n) { return /\.js$/.test(n); })
+    .sort()
+    .map(function (n) {
+      var testo = fs.readFileSync(repoPath('app', n), 'utf8');
+      // Il blocco delle descrizioni si toglie DOVE STA, cioe' in config.js —
+      // non da tutti i file, che non ce l'hanno.
+      return (ESCLUDI_DESCRIZIONI && n === 'config.js') ? senzaBloccoDescrizioni(testo) : testo;
+    });
+}
+
 function regioneDiRicerca() {
-  var config = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
-  if (ESCLUDI_DESCRIZIONI) config = senzaBloccoDescrizioni(config);
   var html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  return [config, html].concat(tuttiIJson(repoPath('data'))).join('\n');
+  return tuttiIFileApp().concat([html]).concat(tuttiIJson(repoPath('data'))).join('\n');
 }
 
 // Tutti i .json sotto data/, a qualunque profondità: i dati stanno in una
@@ -169,8 +204,8 @@ async function run() {
   console.log('Chiavi foglia in APP_CONFIG + magazzino: ' + tutti.length +
     ' (' + daControllare.length + ' controllate, ' +
     (tutti.length - daControllare.length) + ' di configFieldDescriptions)');
-  console.log('Regione di ricerca: index.html' +
-    (ESCLUDI_DESCRIZIONI ? ' (senza il blocco configFieldDescriptions)' : '') + ' + tutti i .json sotto data/');
+  console.log('Regione di ricerca: ' + fs.readdirSync(repoPath('app')).filter(function (n) { return /\.js$/.test(n); }).sort().map(function (n) { return 'app/' + n; }).join(' + ') +
+    (ESCLUDI_DESCRIZIONI ? ' (config.js senza il blocco configFieldDescriptions)' : '') + ' + index.html + tutti i .json sotto data/');
   console.log('');
 
   const mute = daControllare.filter(function (p) {
