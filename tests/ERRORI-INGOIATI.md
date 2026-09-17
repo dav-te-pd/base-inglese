@@ -444,14 +444,30 @@ perché il file viene ripristinato subito dopo. **Resta solo la frase che ci si
 scrive sopra** — «falsificata, è protetta» — e quella frase ha lo stesso
 aspetto vera e falsa.
 
-**La forma operativa, tre righe, e la terza è quella che manca sempre:**
+**La forma operativa, e la quarta riga è arrivata dopo, dal caso opposto:**
 
 1. **prima** di falsificare, scrivere quale asserzione ci si aspetta che cada,
    e con quale numero (`[C]`, `1 → 4`);
-2. dopo la corsa, leggere **quale** è caduta davvero — non quante, non il
+2. **verificare che la rottura SIA STATA APPLICATA** — un `grep` sul testo
+   nuovo — prima di guardare l'esito;
+3. dopo la corsa, leggere **quale** è caduta davvero — non quante, non il
    `SUMMARY`, non l'exit code;
-3. se è caduta un'altra, **la falsificazione è fallita, non il codice**: si
+4. se è caduta un'altra, **la falsificazione è fallita, non il codice**: si
    rifà la rottura, non si tiene il rosso.
+
+⚠️ **La ② è nata il 2026-09-17, al ⑦, e dallo stadio PRECEDENTE del difetto.**
+Due volte di seguito l'`assert` dello script di falsificazione ha fermato la
+scrittura — ancora sbagliata, indentazione cambiata dallo spostamento — e il
+test ha poi stampato **28/28 su un file non modificato**. Letto come esito
+sarebbe stato *«la falsificazione non morde»*: **una conclusione falsa da un
+verde vero.**
+
+*Là una falsificazione sbagliata dava un rosso che sembrava buono; qui una
+falsificazione **non applicata** dà un verde che sembra un risultato. È la
+stessa famiglia vista dal lato opposto, ed è peggiore in un punto: il rosso
+almeno fa guardare. Il verde no.* L'unica cosa che l'ha presa è stato leggere
+il **traceback** invece del `SUMMARY` — cioè, di nuovo, leggere tutto l'output
+e non la riga che si stava cercando (⓪-octies).
 
 ⚠️ **E il tranello specifico di questo caso, perché si ripresenterà:
 trasformare una chiamata di funzione in un blocco che «gira comunque» NON è

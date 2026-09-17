@@ -4212,7 +4212,20 @@
   });
 
   document.getElementById('back-home').addEventListener('click', goHome);
-  document.getElementById('customize-back-home').addEventListener('click', goHome);
+  // ---- `customize-back-home` NON STA PIU' QUI ----
+  //
+  // E' entrato dentro `openCustomize` il 2026-09-17 (passo 21-quater ⑦), dietro
+  // `BI.unaVoltaSola('personalizza', …)`, con gli altri dodici della sua
+  // famiglia. Il commento resta al PASSATO.
+  //
+  // Stava qui perche' e' un «vai a casa» come i due qui sopra — raggruppati per
+  // FUNZIONE, non per modulo. Il raggruppamento NON aveva una ragione scritta
+  // (verificato prima di spezzarlo: nessun commento attaccato), quindi il ⑦ non
+  // ha reso falsa nessuna frase.
+  //
+  // `back-home` resta dov'e': e' uno dei quattro di `view-pronunciation`, la
+  // schermata che nessun modulo apre (vedi tests/listener-census.js), e uscira'
+  // con lei dopo il passo 25.
 
   /* ============================================================
      SHARED: MODULE HELP OVERLAY (reusable by every module)
@@ -5999,22 +6012,31 @@
     saveCustomValues(currentEpisode, getUserName(), currentValues);
   }
 
-  document.getElementById('slot-grid').addEventListener('input', onSlotChange);
-  document.getElementById('slot-grid').addEventListener('change', onSlotChange);
+  // ---- I DIECI LISTENER DEL CORPO DI PERSONALIZZA NON STANNO PIU' QUI ----
+  //
+  // Sono entrati dentro `openCustomize` il 2026-09-17 (passo 21-quater ⑦),
+  // dietro `BI.unaVoltaSola('personalizza', …)`. Il commento resta al PASSATO.
+  //
+  // ⚠️ ERANO SPARSI IN TRE POSTI, e questa e' l'unica famiglia delle otto a
+  // esserlo: dieci qui, uno a ~4215 (`customize-back-home`) e uno a ~6540
+  // (`start-episode`). Fra questi dieci stavano **undici definizioni di
+  // funzione**: non erano un blocco, erano righe in mezzo ad altro codice.
+  // Ognuno dei tre posti ha il suo segnaposto.
+  //
+  // ⚠️ E LA VERIFICA FATTA PRIMA DI SPOSTARLI, perche' era il primo caso della
+  // serie in cui «spostare» poteva NON essere neutro. Tre controlli, tutti e
+  // tre passati:
+  //
+  //   1. nessuno dei tredici fa altro che attaccarsi — nessuna lettura, nessun
+  //      effetto a tempo di parsing;
+  //   2. `openCustomize` e' l'UNICO posto che fa `showView('customize')`,
+  //      quindi non esiste una strada che apra la schermata senza attaccarli;
+  //   3. nessun elemento viene RICOSTRUITO: `renderIntroContent` cambia solo
+  //      `textContent` e `disabled`, e `renderSlotGrid`/`renderRequestBox`
+  //      riscrivono l'`innerHTML` dei CONTENITORI mentre i listener stanno sui
+  //      contenitori. *E' il motivo per cui erano a delega, e adesso e' anche
+  //      il motivo per cui reggono lo spostamento.*
 
-  document.getElementById('slot-grid').addEventListener('click', function (e) {
-    var groupKey = e.target.getAttribute('data-reset-group');
-    if (!groupKey) return;
-    currentEpisode.slotFields.forEach(function (f) {
-      var owner = f.group || f.key;
-      if (owner === groupKey) {
-        currentValues[f.key] = f.def;
-        var control = document.querySelector('[data-slot="' + f.key + '"]');
-        if (control) control.value = f.def;
-      }
-    });
-    saveCustomValues(currentEpisode, getUserName(), currentValues);
-  });
 
   // ---- Request Box: one small free-text field per personalization group
   // already shown above (papà, mamma, figlia, figlio, partenza,
@@ -6087,19 +6109,7 @@
     });
   }
 
-  document.getElementById('request-fields').addEventListener('click', function (e) {
-    var groupKey = e.target.getAttribute('data-request-submit');
-    if (!groupKey) return;
-    submitCustomizationRequest(groupKey);
-  });
 
-  document.getElementById('request-fields').addEventListener('keydown', function (e) {
-    if (e.key !== 'Enter') return;
-    var groupKey = e.target.getAttribute('data-request-group');
-    if (!groupKey) return;
-    e.preventDefault();
-    submitCustomizationRequest(groupKey);
-  });
 
   function renderCustomizePageText() {
     document.getElementById('customize-page-description').textContent = '';
@@ -6211,21 +6221,8 @@
     }).catch(function () {});
   }
 
-  document.getElementById('customize-warning-confirm-input').addEventListener('input', function (e) {
-    var typed = e.target.value.trim().toLowerCase();
-    document.getElementById('customize-warning-confirm-btn').disabled =
-      !customizeWarningConfirmPhrase || typed !== customizeWarningConfirmPhrase;
-  });
 
-  document.getElementById('customize-warning-confirm-btn').addEventListener('click', function (e) {
-    if (e.target.disabled) return;
-    wipeEpisodeProgress(currentEpisode, getUserName());
-    customizeShowScreen('main');
-  });
 
-  document.getElementById('customize-warning-cancel-btn').addEventListener('click', function () {
-    openEpisodeMap();
-  });
 
   function customizeShowScreen(name) {
     document.getElementById('customize-intro-screen').hidden = name !== 'intro';
@@ -6246,6 +6243,101 @@
   }
 
   function openCustomize() {
+    // I listener di questo modulo, una volta sola.
+    //
+    // ⚠️ SONO TREDICI E VENIVANO DA TRE POSTI DIVERSI — l'unica famiglia delle
+    // otto che non era un blocco. I tre segnaposti, piu' in basso e a ~4215,
+    // dicono da dove e portano la verifica fatta prima di spostarli.
+    //
+    // ⚠️ LA CHIAVE E' 'personalizza', E QUI LA CHIAVE SBAGLIATA PASSEREBBE
+    // VERDE — ma per una ragione DIVERSA da Flash Card e Repeat Aloud.
+    //
+    // La' famiglia e `kind` sono la stessa stringa, quindi le due chiavi sono
+    // identiche e nessuna corsa puo' distinguerle. Qui NO: la famiglia si
+    // chiama 'personalizza' e il kind 'personalizzazione' — **stringhe
+    // diverse**. La chiave sul kind funzionerebbe lo stesso, ma per
+    // **sufficienza** (un kind solo → una chiave sola → una sola esecuzione),
+    // non per **coincidenza**. *Chi la «semplificasse» al kind cambierebbe
+    // VALORE, non solo forma.* La regola per esteso, con la distinzione fra i
+    // due casi, sta accanto a `BI.unaVoltaSola` in app/spazio.js.
+    //
+    // ⚠️ E A DIFFERENZA DELLE ALTRE DUE, QUI LA GUARDIA E' PROTETTA: il blocco
+    // [C] di tests/test_listener_una_volta.js copre Personalizza dal
+    // 2026-09-17 (⑦-zero), da quando `uscitaVersoMappa` ha separato «qual e' il
+    // pulsante ← Mappa» — per Personalizza nessuno, ed e' giusto — da «come
+    // torno alla mappa per riaprire», che e' `start-episode`. Falsificato:
+    // togliendo la guardia i tredici vanno da 1 a 4.
+    //
+    // Sul PERCHE' stiano prima del resto: vale la stessa cosa scritta in
+    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
+    // passo 22. Dichiarata, non provata.
+    BI.unaVoltaSola('personalizza', function () {
+    document.getElementById('customize-back-home').addEventListener('click', goHome);
+
+    document.getElementById('slot-grid').addEventListener('input', onSlotChange);
+
+    document.getElementById('slot-grid').addEventListener('change', onSlotChange);
+
+    document.getElementById('slot-grid').addEventListener('click', function (e) {
+      var groupKey = e.target.getAttribute('data-reset-group');
+      if (!groupKey) return;
+      currentEpisode.slotFields.forEach(function (f) {
+        var owner = f.group || f.key;
+        if (owner === groupKey) {
+          currentValues[f.key] = f.def;
+          var control = document.querySelector('[data-slot="' + f.key + '"]');
+          if (control) control.value = f.def;
+        }
+      });
+      saveCustomValues(currentEpisode, getUserName(), currentValues);
+    });
+
+    document.getElementById('request-fields').addEventListener('click', function (e) {
+      var groupKey = e.target.getAttribute('data-request-submit');
+      if (!groupKey) return;
+      submitCustomizationRequest(groupKey);
+    });
+
+    document.getElementById('request-fields').addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter') return;
+      var groupKey = e.target.getAttribute('data-request-group');
+      if (!groupKey) return;
+      e.preventDefault();
+      submitCustomizationRequest(groupKey);
+    });
+
+    document.getElementById('customize-warning-confirm-input').addEventListener('input', function (e) {
+      var typed = e.target.value.trim().toLowerCase();
+      document.getElementById('customize-warning-confirm-btn').disabled =
+        !customizeWarningConfirmPhrase || typed !== customizeWarningConfirmPhrase;
+    });
+
+    document.getElementById('customize-warning-confirm-btn').addEventListener('click', function (e) {
+      if (e.target.disabled) return;
+      wipeEpisodeProgress(currentEpisode, getUserName());
+      customizeShowScreen('main');
+    });
+
+    document.getElementById('customize-warning-cancel-btn').addEventListener('click', function () {
+      openEpisodeMap();
+    });
+
+    document.getElementById('customize-watch-btn').addEventListener('click', function () {
+      openHowItWorksOverlay(personalizzazioneModule(), { dismissPref: introDismissPref('personalizzazione') });
+    });
+
+    document.getElementById('customize-intro-start-btn').addEventListener('click', function () {
+      setIntroDismissed('personalizzazione', getUserName(), document.getElementById('customize-intro-dont-show-again').checked);
+      customizeShowMainOrWarning();
+    });
+
+    document.getElementById('customize-help-btn').addEventListener('click', function () {
+      openHelpFor(personalizzazioneModule());
+    });
+
+    document.getElementById('start-episode').addEventListener('click', startEpisodeFromCustomize);
+    });
+
     document.getElementById('customize-episode-badge').textContent = currentEpisode.badge;
     document.getElementById('slot-grid').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     document.getElementById('request-fields').innerHTML = '';
@@ -6276,18 +6368,8 @@
 
   document.getElementById('edit-custom').addEventListener('click', openCustomize);
 
-  document.getElementById('customize-watch-btn').addEventListener('click', function () {
-    openHowItWorksOverlay(personalizzazioneModule(), { dismissPref: introDismissPref('personalizzazione') });
-  });
 
-  document.getElementById('customize-intro-start-btn').addEventListener('click', function () {
-    setIntroDismissed('personalizzazione', getUserName(), document.getElementById('customize-intro-dont-show-again').checked);
-    customizeShowMainOrWarning();
-  });
 
-  document.getElementById('customize-help-btn').addEventListener('click', function () {
-    openHelpFor(personalizzazioneModule());
-  });
 
   /* ============================================================
      EPISODE MAP
@@ -6537,7 +6619,19 @@
     });
   }
 
-  document.getElementById('start-episode').addEventListener('click', startEpisodeFromCustomize);
+  // ---- `start-episode` NON STA PIU' QUI ----
+  //
+  // E' entrato dentro `openCustomize` il 2026-09-17 (passo 21-quater ⑦), con
+  // gli altri dodici. Il commento resta al PASSATO.
+  //
+  // ⚠️ E NON E' UN PULSANTE QUALUNQUE: e' l'uscita di Personalizza verso la
+  // mappa, cioe' l'`uscitaVersoMappa` dichiarata in tests/listener-census.js —
+  // il campo che ha fatto entrare questa famiglia nel blocco [C]. Completa il
+  // modulo e chiama una funzione asincrona; il costo sta scritto accanto a quel
+  // campo.
+  //
+  // `map-back-home`, che gli stava accanto, resta: e' della mappa, non di
+  // Personalizza.
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
 
