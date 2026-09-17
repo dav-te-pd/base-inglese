@@ -131,8 +131,19 @@ async function run() {
   // legge da cio' che si e' appena misurato.
   const esterni = foto.script.filter(function (s) { return s !== '(inline)'; }).length;
   const inline = foto.script.length - esterni;
-  log('[D] I file di script sono 4 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 4, foto.script.join(', '));
+  //
+  // ⚠️ LA STORIA DEL NUMERO, perche' e' la riga che ogni estrazione tocca:
+  //   4  fino al 2026-09-17 (2 esterni + 2 inline, poi 3 + 1: stesso numero)
+  //   5  dal 2026-09-17, estrazione dello strato `progressi`
+  //
+  // ⚠️ E QUESTO ROSSO E' IL MECCANISMO CHE FUNZIONA, NON UN GUASTO: e' l'unica
+  // riga del file che un'estrazione DEVE far cadere. *Non era nella previsione
+  // scritta prima dell'estrazione di `progressi` — la previsione nominava
+  // `BASELINE-AVVIO.txt` e si fermava li', mentre il numero vive in DUE posti.
+  // Il rosso e' arrivato dalla suite invece che dalla previsione, ed e' uno
+  // scarto fra i due da ricordare al prossimo strato.*
+  log('[D] I file di script sono 5 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 5, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'
