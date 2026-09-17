@@ -1,0 +1,30 @@
+# I chiamanti DIRETTI di `showView` in index.html.
+#
+# Dal passo 22 (2026-09-17) `showView` disegna soltanto, e chi lascia un
+# modulo passa da `leaveModule`. Questo file congela QUANTI e QUALI punti
+# possono chiamare `showView` direttamente.
+#
+# ⚠️ IL PASSO 22 NON DEVE CAMBIARE QUESTO FILE. Un tredicesimo punto che
+# nasce chiamando `showView` invece di `leaveModule` non produce nessun
+# errore: il modulo semplicemente non si pulisce, e i suoi timer continuano
+# a girare su una schermata che non c'e' piu'. **E' un guasto silenzioso, ed
+# e' l'unica cosa che questo file esiste per prendere.**
+#
+# ⚠️ E IL LIMITE, scritto qui perche' fra sei mesi qualcuno lo scoprira'
+# credendo di aver trovato un buco: **vede solo le chiamate LETTERALI nel
+# sorgente** — la forma `showView('nome')` su una riga che non e' un
+# commento. Una chiamata indiretta le sfugge:
+#
+#     var f = showView; f('map');          // non vista
+#     window.BI.qualcosa = showView;        // non vista
+#     ['map'].forEach(showView);            // non vista
+#
+# Nessuna di queste tre esiste oggi (misurato il 2026-09-17: `showView` non
+# compare mai senza parentesi aperta subito dopo). Se un giorno servissero,
+# questo controllo va rifatto guardando l'app viva invece del testo — come
+# fa tests/avvio-census.js.
+#
+# Lo scrive a mano chi cambia la decisione, e il commit che lo cambia porta
+# il motivo.
+boot onboarding
+switch-user onboarding

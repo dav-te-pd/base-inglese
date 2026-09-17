@@ -4071,12 +4071,60 @@
     });
   }
 
+  // ⚠️ DUE FUNZIONI, NON UNA — separate il 2026-09-17 (passo 22, prima
+  // estrazione), e la regola 21 di CLAUDE.md porta la misura che lo decide.
+  //
+  // Prima `showView` faceva TRE lavori: incrementare `moduleEpoch`, chiamare
+  // `stopAllModuleActivity()` e cambiare la vista attiva. I primi due
+  // appartengono a **lasciare un modulo**; il terzo a **disegnare**.
+  //
+  //     `showView`   ha QUATTORDICI punti di chiamata.
+  //     DODICI lasciano o possono lasciare un modulo: a loro serve la pulizia.
+  //     DUE no — i due `showView('onboarding')`, in `boot` e nel pulsante
+  //     «cambia utente» — e li' la pulizia e' un no-op GARANTITO, perche' in
+  //     quel momento nessun modulo e' mai stato aperto.
+  //
+  // *`'onboarding'` e' l'unica vista che non puo' mai seguire un modulo. Il
+  // confine fra «prima dell'identita'» e «dopo» non e' una descrizione: si
+  // vede contando i punti di chiamata.*
+  //
+  // ⚠️ NON SONO DODICI OCCASIONI DI DIMENTICARSENE: e' una scelta fra DUE
+  // NOMI. Mettere `stopAllModuleActivity(); showView(...)` in ciascuno dei
+  // dodici avrebbe creato dodici punti da ricordare, e il tredicesimo sarebbe
+  // nato senza — e' precisamente il difetto che la regola 12 chiude: si toglie
+  // l'occasione di sbagliare invece di raccomandare di non farlo.
+  //
+  // Lo proteggono DUE asserzioni di tests/test_uscita_dal_modulo.js, e nessuna
+  // copre l'altra: una conta i chiamanti DIRETTI di `showView` (devono restare
+  // i due dichiarati), l'altra verifica che uscendo da un modulo la pulizia
+  // AVVENGA davvero.
+  //
+  // ⚠️ E IL PERCHE' DEL PASSO 22: finche' `showView` puliva, lo strato
+  // `vista` avrebbe trascinato con se' il sintetizzatore, il popup dei
+  // tentativi, il magazzino della mastery e `BI.pulizie` — cioe' `audio`,
+  // `quiz-engine` e `progressi`, tre strati che stanno DOPO.
+
+  // Disegna e basta. Chi la chiama senza passare da `leaveModule` sta dicendo
+  // «qui non c'e' nessun modulo da lasciare», ed e' vero in due punti soli.
   function showView(name) {
-    moduleEpoch++;
-    stopAllModuleActivity();
     Object.keys(views).forEach(function (key) {
       views[key].classList.toggle('is-active', key === name);
     });
+  }
+
+  // Lascia il modulo attivo (se ce n'e' uno) e mostra un'altra vista.
+  //
+  // `moduleEpoch++` sta qui e non in `showView` perche' e' meta' del
+  // «lasciare»: neutralizza le chiamate asincrone tardive del modulo che si
+  // abbandona — un `onend` del sintetizzatore che arriva dopo l'uscita trova
+  // l'epoca cambiata e non scrive piu' su una schermata che non c'e'
+  // (`toggleSpeak` lo legge come `epochAtStart`). Lasciarlo in `showView`
+  // avrebbe voluto dire separare le due funzioni **tenendo dentro un pezzo di
+  // quello che si stava separando**.
+  function leaveModule(name) {
+    moduleEpoch++;
+    stopAllModuleActivity();
+    showView(name);
   }
 
   /* ============================================================
@@ -4151,7 +4199,7 @@
     // che e' il difetto che questa schermata esiste per chiudere.
     var inMemoria = moduleInstructionsCache && moduleInstructionsCache.erroreCaricamento;
     renderLoadErrorTexts(inMemoria);
-    showView('error');
+    leaveModule('error');
     if (inMemoria) return;
     loadModuleInstructions().then(function (data) {
       if (!views.error.classList.contains('is-active')) return;
@@ -4182,7 +4230,7 @@
     // episodio e' vero al massimo per uno, mentre "Inizia" e' vero sempre —
     // anche nel caso in cui questa riga non girasse.
     document.getElementById('go-episode').textContent = 'Inizia ' + currentEpisode.badge;
-    showView('home');
+    leaveModule('home');
   }
 
   function boot() {
@@ -6029,7 +6077,9 @@
   //
   //   1. nessuno dei tredici fa altro che attaccarsi — nessuna lettura, nessun
   //      effetto a tempo di parsing;
-  //   2. `openCustomize` e' l'UNICO posto che fa `showView('customize')`,
+  //   2. `openCustomize` e' l'UNICO posto che mostra `view-customize`
+  //      (dal 2026-09-17 con `leaveModule('customize')`, vedi la separazione
+  //      accanto a `showView`),
   //      quindi non esiste una strada che apra la schermata senza attaccarli;
   //   3. nessun elemento viene RICOSTRUITO: `renderIntroContent` cambia solo
   //      `textContent` e `disabled`, e `renderSlotGrid`/`renderRequestBox`
@@ -6342,7 +6392,7 @@
     document.getElementById('slot-grid').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     document.getElementById('request-fields').innerHTML = '';
     renderCustomizePageText();
-    showView('customize');
+    leaveModule('customize');
     if (isIntroDismissed('personalizzazione', getUserName())) {
       customizeShowMainOrWarning();
     } else {
@@ -6437,7 +6487,7 @@
     migrateCustomizeSeenToModuleProgress(currentEpisode, getUserName());
     document.getElementById('map-episode-badge').textContent = currentEpisode.badge;
     renderModuleList();
-    showView('map');
+    leaveModule('map');
     if (isIntroDismissed('mappaEpisodio', getUserName())) {
       mapShowScreen('main');
     } else {
@@ -7060,7 +7110,7 @@
     document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
     document.getElementById('repeat-aloud-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    showView('repeatAloud');
+    leaveModule('repeatAloud');
     if (isIntroDismissed('repeatAloud', getUserName())) {
       raShowScreen('main');
     } else {
@@ -7655,7 +7705,7 @@
     // sono il punto di partenza, non una lavagna pulita.
     storyCardsSessionAnswers = loadStoryCardsDeclarations(currentEpisode.id, getUserName());
     storyCardsFollowupUsed = {};
-    showView('storyCards');
+    leaveModule('storyCards');
     if (isIntroDismissed(module.kind, getUserName())) {
       storyCardsShowScreen('main');
     } else {
@@ -8386,7 +8436,7 @@
     document.getElementById('vc-retry-row').hidden = vcVariant !== 'practice';
     document.getElementById('voice-coach-retry-btn').textContent =
       uiText(vcVariant === 'practice' ? 'voceShared.retryPractice' : 'voceShared.retryCheck');
-    showView('voiceCoach');
+    leaveModule('voiceCoach');
     if (isIntroDismissed(module.kind, getUserName())) {
       vcShowScreen('main');
     } else {
@@ -8646,7 +8696,9 @@
   //      tempo di attacco**: lo toccano dentro il corpo del gestore, cioe' al
   //      click (misurato: zero assegnazioni `.onresult/.onend/.onerror` dentro
   //      le righe spostate);
-  //   2. `openVoiceCoach` e' l'UNICO posto che fa `showView('voiceCoach')`,
+  //   2. `openVoiceCoach` e' l'UNICO posto che mostra `view-voice-coach`
+  //      (dal 2026-09-17 con `leaveModule('voiceCoach')`, vedi la separazione
+  //      accanto a `showView`),
   //      quindi non esiste una strada che apra la schermata senza attaccarli;
   //   3. l'avviso microfono non puo' comparire prima: `vcUpdateMicNotice` e'
   //      chiamata solo da `vcRecognition.onend` e da `vcEvaluate`, e il
@@ -9062,7 +9114,7 @@
     document.getElementById('qm-options').innerHTML = '';
     qmRenderStartScreen(module);
     qmShowScreen('start');
-    showView('match');
+    leaveModule('match');
     loadEpisodeData(module).then(function (data) {
       if (qmModule !== module) return;
       qmVocab = episodeGradeRequired(data, module.grade, module);
@@ -9800,7 +9852,7 @@
     document.getElementById('dg-list').innerHTML = '';
     dgRenderStartScreen(module);
     dgShowScreen('start');
-    showView('dialogo');
+    leaveModule('dialogo');
     loadEpisodeData(module).then(function (data) {
       if (dgModule !== module) return;
       dgDialogue = episodeGradeRequired(data, module.grade, module);
@@ -10344,7 +10396,7 @@
     document.getElementById('sr-options').innerHTML = '';
     srRenderStartScreen(module);
     srShowScreen('start');
-    showView('speedMatch');
+    leaveModule('speedMatch');
     loadEpisodeData(module).then(function (data) {
       if (srModule !== module) return;
       srVocab = episodeGradeRequired(data, module.grade, module);
@@ -10754,7 +10806,7 @@
     } else {
       fcShowScreen('card');
     }
-    showView('flashcard');
+    leaveModule('flashcard');
     loadEpisodeData(module).then(function (data) {
       if (fcModule !== module) return;
       fcVocab = episodeGradeRequired(data, module.grade, module);
@@ -10832,7 +10884,20 @@
     statusEl.textContent = 'Premi il microfono per iniziare';
     transcriptEl.innerHTML = '';
     renderPhrase();
-    showView('pronunciation');
+    // ⚠️ QUESTA E' UNA DELLE DODICI CHIAMATE A `leaveModule`, ED E' MORTA.
+    //
+    // `startPronunciationExercise` **non ha un solo chiamante** in tutto il
+    // file (misurato: una sola occorrenza, la sua definizione), quindi
+    // `view-pronunciation` non e' raggiungibile da nessun punto dell'app.
+    // Ha ricevuto `leaveModule` insieme alle altre undici al passo 22 perche'
+    // e' codice che esiste, non perche' serva a qualcuno.
+    //
+    // **Chi toglie questa schermata dopo il passo 25 non deve chiedersi se
+    // questa riga stia proteggendo qualcosa: non lo sta facendo.** Se ne va
+    // con lei, insieme ai suoi quattro listener (`speak-btn`, `mic-btn`,
+    // `edit-custom`, `back-home`) e alle tre voci di
+    // tests/BASELINE-LISTENER.txt — vedi docs/decisioni.md.
+    leaveModule('pronunciation');
   }
 
   function levenshtein(a, b) {
