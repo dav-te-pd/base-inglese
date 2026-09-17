@@ -830,9 +830,30 @@ strato che, per essere caricato, tira dentro tutto.
 | | Strato | Contiene | Come si verifica il confine |
 |---|---|---|---|
 | **0** | `avvio` | il blocco `<script>` piccolo che **esiste già** (46 righe): tema salvato, override della config | gira prima di `app/config.js` — visibile in `BASELINE-AVVIO.txt` |
-| **1** | `identita` | `getUserName`/`setUserName`, `getTheme`/`setTheme`/`renderThemePicker`, `hydrateIcons`, `boot` | **non nomina `showView`** |
+| **1** | `identita` | `getUserName` · `setUserName` · `clearUserName` · `getTheme` · `setTheme` · `renderThemePicker` · `hydrateIcons` · `icon` — **otto funzioni, ~41 righe** | **non nomina `showView`** ✅ misurato |
+| **1-bis** | **`ingresso`** *(nome proposto, non ancora deciso)* | **`boot` e `goHome`** — vedi sotto | nomina `showView`/`leaveModule`, quindi sta DOPO lo strato `vista` |
 | **2** | `vista` | `showView`, `views`, `moduleEpoch`, `showLoadError` | dopo la regola 21 riscritta, non tira più dentro `audio`/`quiz-engine`/`progressi` |
 | **3+** | `dati`, `progressi`, `audio`, `ui-condivisa`, `quiz-engine` | invariati rispetto al piano vecchio | — |
+
+⚠️ **IL CRITERIO «non nomina `showView`» HA BOCCIATO QUALCOSA ALLA SUA PRIMA APPLICAZIONE, il 2026-09-17 — ed è la prova che guarda.** *Un criterio che dice sì a tutto non si sa se stia guardando.*
+
+**Misurato, funzione per funzione, prima di estrarre:**
+
+| funzione | righe | cosa nomina di non suo |
+|---|---|---|
+| `getUserName`, `setUserName`, `clearUserName` | 3 ciascuna | **niente** |
+| `hydrateIcons`, `icon` | 7, 5 | **niente** |
+| `getTheme`, `setTheme`, `renderThemePicker` | 3, 10, 7 | `CONFIG` (strato 0, già estratto) |
+| **`boot`** | 8 | **`showView`** ← bocciata |
+| **`goHome`** | 15 | **`leaveModule`** ← bocciata |
+
+**Il criterio non era sbagliato: era incompleto.** Il piano metteva `boot` in `identita`, e `boot` non è identità.
+
+⚠️ **E `boot` E `goHome` NON SONO ORFANI — hanno uno strato loro, che prima non avevamo nominato.** *Se restasse scritto solo «non sono di `identita`», al prossimo strato qualcuno li rimetterebbe dentro per esclusione.*
+
+> **Sono il PRIMO GESTO DOPO L'IDENTITÀ: decidono DOVE SI VA sapendo CHI SEI.**
+
+`boot` sceglie fra login e casa guardando `getUserName()`; `goHome` è il ritorno a casa lasciando un modulo. Tutti e due hanno bisogno dello strato `vista`, quindi stanno **dopo** di esso — mai in `identita`, che viene prima. **Il nome `ingresso` è una proposta, non una decisione presa**: va confermato prima di usarlo.
 
 **PRIMA DI OGNI ESTRAZIONE, LA SEPARAZIONE DI `showView`** (regola 21 riscritta il 2026-09-17, `CLAUDE.md` 20260917a). Non è «spezziamo `showView`»: è che **dodici chiamate su quattordici hanno bisogno della pulizia e due no**, e oggi la chiedono tutte perché sta dentro la funzione sbagliata. *Il numero è quello che rende la decisione verificabile invece che ragionevole.* Senza questa separazione, lo strato `vista` trascinerebbe il sintetizzatore, il popup dei tentativi, il magazzino della mastery e `BI.pulizie` — cioè tre strati che stanno dopo.
 
