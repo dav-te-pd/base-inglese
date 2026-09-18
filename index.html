@@ -3988,7 +3988,7 @@
     //
     // Delle dieci istruzioni di prima, sette erano di un modulo (cinque
     // famiglie) e tre no. Queste sono quelle tre.
-    if (synth && synth.speaking) synth.cancel();
+    fermaLaVoce();
     closeAttemptPopup();
     // Regola 21: anche i due magazzini in sospeso si azzerano QUI, non dentro
     // il "← Mappa" di un modulo. Lasciare un modulo senza premere "Ho finito"
@@ -9396,10 +9396,10 @@
     var btn = document.getElementById('dg-pause-btn');
     if (btn) btn.textContent = dgPaused ? 'Riprendi' : 'Pausa';
     if (dgPaused) {
-      if (synth && synth.speaking && !synth.paused) synth.pause();
+      pausaLaVoce();
       dgPauseLineTimer();
     } else {
-      if (synth && synth.paused) synth.resume();
+      riprendiLaVoce();
       dgResumeLineTimer();
     }
   }
@@ -9558,7 +9558,7 @@
       // (rifarebbe partire la stessa battuta desincronizzando il timer): si
       // ferma l'audio, e il countdown parte dalla sua fine come sempre.
       if (dgProfile.countdown && bubble.classList.contains('is-active')) {
-        if (synth && synth.speaking) synth.cancel();
+        fermaLaVoce();
         return;
       }
       // La guardia sull'avanzamento sta DOPO il salto dell'audio, non prima.
@@ -10334,8 +10334,8 @@
   // real <button>), never fires a native click event at all.
   function fcFlip() {
     if (fcNavLocked || fcAnswered) return;
-    if (synth && synth.speaking) {
-      synth.cancel();
+    if (staParlando()) {
+      fermaLaVoce();
       // Belt and braces (correction, 5th collaudo): cancel() calling the
       // utterance's own onend/onerror to clear its button's "speaking"
       // class isn't guaranteed across engines — if it doesn't, the next
@@ -10780,14 +10780,16 @@
     voices = synth ? synth.getVoices() : [];
   }
 
-  if (!synth) {
-    speakBtn.disabled = true;
-  } else {
+  if (synth) {
     loadVoices();
     if ('onvoiceschanged' in synth) {
       synth.onvoiceschanged = loadVoices;
     }
   }
+
+  // Il pulsante appartiene alla vista `pronunciation` (morta, passo 25), non
+  // al nucleo audio: sta qui sotto e chiede, invece di guardare `synth`.
+  speakBtn.disabled = !vocePossibile();
 
   // Heuristic-only: the Web Speech API exposes no real gender field, so a
   // voice not in CONFIG.speech.preferredVoiceNames is guessed from its own
@@ -10797,6 +10799,44 @@
     var name = voice.name.toLowerCase();
     if (name.indexOf('female') !== -1) return false;
     return CONFIG.speech.maleVoiceNameHints.some(function (hint) { return name.indexOf(hint) !== -1; });
+  }
+
+  // ── LA VOCE, VISTA DA FUORI: quattro domande, nessun `synth` ──
+  //
+  // ⚠️ MISURATO IL 2026-09-18, PRIMA DI SCRIVERLE: `synth` era nominato da
+  // SETTE funzioni destinate a QUATTRO file diversi — il nucleo audio
+  // (loadVoices, pickVoice, toggleSpeak), la pulizia generale
+  // (stopAllModuleActivity), Dialogo (dgTogglePause, openDialogo) e Flash Card
+  // (fcFlip), piu' il listener globale del Blocco Ascolto.
+  //
+  // **Non e' una duplicazione: e' una RISORSA CONDIVISA.** E una risorsa
+  // condivisa non si divide per QUANDO una cosa gira, che e' l'unico criterio
+  // che lo spacchettamento ha — quindi su di lei il criterio non ha una
+  // risposta. Queste quattro funzioni gliene danno una: **`synth` appartiene
+  // al nucleo audio, e gli altri gli fanno domande.**
+  //
+  // Non aggiungono nessun comportamento: ognuna e' la riga che stava scritta
+  // sei volte, con lo stesso `synth &&` davanti. Quel controllo c'era in tutte
+  // e sei — il sintetizzatore puo' non esistere — e bastava che UNA se lo
+  // dimenticasse: adesso e' scritto una volta.
+  function vocePossibile() {
+    return !!synth;
+  }
+
+  function staParlando() {
+    return !!(synth && synth.speaking);
+  }
+
+  function fermaLaVoce() {
+    if (staParlando()) synth.cancel();
+  }
+
+  function pausaLaVoce() {
+    if (staParlando() && !synth.paused) synth.pause();
+  }
+
+  function riprendiLaVoce() {
+    if (synth && synth.paused) synth.resume();
   }
 
   function pickVoice() {
@@ -10859,7 +10899,7 @@
   function toggleSpeak(text, btn, rate, callbacks) {
     if (!synth) return;
     var wasSpeaking = btn.classList.contains('speaking');
-    if (synth.speaking) synth.cancel();
+    fermaLaVoce();
     if (wasSpeaking) return;
     // Captured at start, compared in onend/onerror below — see moduleEpoch's
     // own comment near showView(). Guards specifically against a module's
@@ -10918,13 +10958,13 @@
   // applicava. Chi vuole saltare l'audio tocca la battuta, che è il
   // gesto con un significato.
   document.addEventListener('click', function (e) {
-    if (!synth || !synth.speaking) return;
+    if (!staParlando()) return;
     if (e.target.closest('[data-say], [data-qm-listen-index], .dg-bubble')) return;
     if (dgAudioProtected()) return;
-    synth.cancel();
+    fermaLaVoce();
   }, true);
 
-  if (synth) {
+  if (vocePossibile()) {
     speakBtn.addEventListener('click', function () {
       toggleSpeak(currentPhraseText(), speakBtn);
     });
@@ -11011,7 +11051,7 @@
         recognition.stop();
         return;
       }
-      if (synth && synth.speaking) synth.cancel();
+      fermaLaVoce();
       transcriptEl.innerHTML = '';
       try {
         recognition.start();
