@@ -140,6 +140,7 @@ async function run() {
   //   8  dal 2026-09-18, estrazione dei `suoni` — ⚠️ e la riga sopra diceva
   //      «l'ultimo del 22»: falsa dopo un giorno, il 22 era chiuso per gli
   //      strati e non per i moduli
+  //   9  dal 2026-09-18, estrazione di `quiz-engine`
   //
   // ⚠️ E QUESTO ROSSO E' IL MECCANISMO CHE FUNZIONA, NON UN GUASTO: e' l'unica
   // riga del file che un'estrazione DEVE far cadere. *Non era nella previsione
@@ -147,8 +148,8 @@ async function run() {
   // `BASELINE-AVVIO.txt` e si fermava li', mentre il numero vive in DUE posti.
   // Il rosso e' arrivato dalla suite invece che dalla previsione, ed e' uno
   // scarto fra i due da ricordare al prossimo strato.*
-  log('[D] I file di script sono 8 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 8, foto.script.join(', '));
+  log('[D] I file di script sono 9 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 9, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

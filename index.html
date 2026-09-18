@@ -11,6 +11,7 @@
 <script src="app/progressi.js"></script>
 <script src="app/audio.js"></script>
 <script src="app/suoni.js"></script>
+<script src="app/quiz-engine.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3616,6 +3617,15 @@
   // utenti: le pulizie dei moduli, che dal passo 21-bis si REGISTRANO invece
   // di essere nominate una per una da stopAllModuleActivity.
   var BI = window.BI;
+  var percentageBucket = BI.percentageBucket;
+  var starsForPercent = BI.starsForPercent;
+  var shuffle = BI.shuffle;
+  var stripForCompare = BI.stripForCompare;
+  var tokenize = BI.tokenize;
+  var levenshtein = BI.levenshtein;
+  var similarity = BI.similarity;
+  var alignWords = BI.alignWords;
+  var classify = BI.classify;
   var warmAudioContextOnce = BI.warmAudioContextOnce;
   var sfxGetAudioCtx = BI.sfxGetAudioCtx;
   var sfxPlayTone = BI.sfxPlayTone;
@@ -3858,16 +3868,6 @@
     }).catch(function () {});
   }
 
-  // The ONE percentage scale reused everywhere a whole-session score needs
-  // an alto/medio/basso bucket — Speed Match, Match Practice, Flash Card and
-  // Voice Coach all read this SAME top-level CONFIG.percentageThresholds,
-  // not a per-module copy.
-  function percentageBucket(pct) {
-    var t = CONFIG.percentageThresholds;
-    if (pct >= t.alto) return 'alto';
-    if (pct >= t.medio) return 'medio';
-    return 'basso';
-  }
 
   // ModuleRules (see CONFIG.moduleOutcomeRules) — the shared verde/
   // giallo/rosso map-badge color for an evaluated module's FIRST-PASS
@@ -7856,13 +7856,6 @@
     return list[Math.floor(Math.random() * list.length)];
   }
 
-  function starsForPercent(pct) {
-    var t = CONFIG.voiceCoach.starThresholds;
-    if (pct >= t.threeStars) return 3;
-    if (pct >= t.twoStars) return 2;
-    if (pct >= t.oneStar) return 1;
-    return 0;
-  }
 
   function renderStars(count) {
     var html = '';
@@ -9698,22 +9691,6 @@
   var srTimeoutId = null;
   var srCountdownTimeoutId = null;
 
-  // Mescola, e basta: nessun modulo puo' reclamarla. Il nome era `shuffle`
-  // fino al 2026-09-08 — un prefisso ereditato dal primo modulo che l'ha
-  // introdotta, mentre la usano tutti: Speed Match, Match Practice, Flash
-  // Card, Voice Check e buildMultipleChoiceOptions. Regola 18: un nome
-  // condiviso non porta il prefisso di chi e' arrivato prima.
-  // Sta ancora in mezzo al blocco di Speed Match, come sfxAudioCtx qui sopra:
-  // e' lo spacchettamento che dara' a queste cose il loro strato, non questa
-  // rinomina.
-  function shuffle(list) {
-    var a = list.slice();
-    for (var i = a.length - 1; i > 0; i--) {
-      var j = Math.floor(Math.random() * (i + 1));
-      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
-    }
-    return a;
-  }
 
 
 
@@ -10544,16 +10521,7 @@
   var currentTargetTokens = [];
   var currentMastery = {};
 
-  function stripForCompare(word) {
-    return word
-      .toLowerCase()
-      .normalize('NFD').replace(/[̀-ͯ]/g, '')
-      .replace(/[^a-z']/g, '');
-  }
 
-  function tokenize(text) {
-    return text.trim().split(/\s+/).filter(Boolean);
-  }
 
   function currentPhraseText() {
     return currentTargetTokens.map(function (t) { return t.word; }).join(' ');
@@ -10590,91 +10558,9 @@
     leaveModule('pronunciation');
   }
 
-  function levenshtein(a, b) {
-    var m = a.length, n = b.length;
-    if (m === 0) return n;
-    if (n === 0) return m;
-    var dp = new Array(n + 1);
-    for (var j = 0; j <= n; j++) dp[j] = j;
-    for (var i = 1; i <= m; i++) {
-      var prev = dp[0];
-      dp[0] = i;
-      for (j = 1; j <= n; j++) {
-        var tmp = dp[j];
-        dp[j] = Math.min(
-          dp[j] + 1,
-          dp[j - 1] + 1,
-          prev + (a[i - 1] === b[j - 1] ? 0 : 1)
-        );
-        prev = tmp;
-      }
-    }
-    return dp[n];
-  }
 
-  function similarity(a, b) {
-    if (!a.length && !b.length) return 1;
-    var dist = levenshtein(a, b);
-    var maxLen = Math.max(a.length, b.length);
-    return maxLen === 0 ? 1 : 1 - dist / maxLen;
-  }
 
-  // Global alignment (Needleman-Wunsch) scored by word similarity, so extra,
-  // missing, or reordered words don't derail the rest of the comparison.
-  function alignWords(target, recognized) {
-    var n = target.length, m = recognized.length;
-    var GAP = CONFIG.matching.alignmentGapPenalty;
-    var score = [];
-    var traceback = [];
-    for (var i = 0; i <= n; i++) {
-      score.push(new Array(m + 1).fill(0));
-      traceback.push(new Array(m + 1).fill(null));
-    }
-    for (i = 1; i <= n; i++) { score[i][0] = score[i - 1][0] + GAP; traceback[i][0] = 'up'; }
-    for (var j = 1; j <= m; j++) { score[0][j] = score[0][j - 1] + GAP; traceback[0][j] = 'left'; }
 
-    var tNorm = target.map(stripForCompare);
-    var rNorm = recognized.map(stripForCompare);
-
-    for (i = 1; i <= n; i++) {
-      for (j = 1; j <= m; j++) {
-        var matchScore = score[i - 1][j - 1] + similarity(tNorm[i - 1], rNorm[j - 1]);
-        var upScore = score[i - 1][j] + GAP;
-        var leftScore = score[i][j - 1] + GAP;
-        var best = Math.max(matchScore, upScore, leftScore);
-        score[i][j] = best;
-        if (best === matchScore) traceback[i][j] = 'diag';
-        else if (best === upScore) traceback[i][j] = 'up';
-        else traceback[i][j] = 'left';
-      }
-    }
-
-    var pairs = [];
-    i = n; j = m;
-    while (i > 0 || j > 0) {
-      var dir = traceback[i][j];
-      if (dir === 'diag') {
-        pairs.unshift({ targetIndex: i - 1, recognizedIndex: j - 1 });
-        i--; j--;
-      } else if (dir === 'up') {
-        pairs.unshift({ targetIndex: i - 1, recognizedIndex: null });
-        i--;
-      } else {
-        j--;
-      }
-    }
-    return pairs;
-  }
-
-  function classify(targetWord, recognizedWord) {
-    if (recognizedWord === null || recognizedWord === undefined) return 'wrong';
-    var t = stripForCompare(targetWord);
-    var r = stripForCompare(recognizedWord);
-    if (t === r) return 'correct';
-    var sim = similarity(t, r);
-    if (sim >= CONFIG.matching.similarThreshold) return 'similar';
-    return 'wrong';
-  }
 
   var RESULT_RANK = { correct: 0, similar: 1, wrong: 2 };
 

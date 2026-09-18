@@ -42,6 +42,9 @@
 #               chiuso per gli STRATI e non per i moduli — il modulo piu'
 #               piccolo ha venti dipendenze irraggiungibili, e i suoni sono
 #               una di quelle. Escono per servire chi verra' dopo.
+#   2026-09-18  app/quiz-engine.js entra come OTTAVO script, dopo suoni. Il
+#               conto passa da 8 a 9. Seconda delle cinque cose che servono al
+#               primo modulo.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -52,7 +55,8 @@ script 4 app/avvio.js
 script 5 app/progressi.js
 script 6 app/audio.js
 script 7 app/suoni.js
-script 8 (inline)
+script 8 app/quiz-engine.js
+script 9 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory

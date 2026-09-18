@@ -45,7 +45,10 @@ const STORIA = [
   "            non cambia piu' fino al 23»: FALSA dopo un giorno. Il 22 era",
   "            chiuso per gli STRATI e non per i moduli — il modulo piu'",
   "            piccolo ha venti dipendenze irraggiungibili, e i suoni sono",
-  "            una di quelle. Escono per servire chi verra' dopo."
+  "            una di quelle. Escono per servire chi verra' dopo.",
+  "2026-09-18  app/quiz-engine.js entra come OTTAVO script, dopo suoni. Il",
+  "            conto passa da 8 a 9. Seconda delle cinque cose che servono al",
+  "            primo modulo."
 ];
 
   const intestazione = [
