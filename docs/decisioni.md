@@ -1229,7 +1229,40 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 > **Sono due garanzie diverse dietro la stessa riga.** Chi la leggerà dopo il 23 vedrà una guardia contro «più aperture» — un caso che a quel punto l'`open` gestisce da sé — e la toglierà, **perdendo quella che serve davvero**. *È la ⓪-quinquies al contrario: non un commento che diventa falso, ma una difesa che resta vera per un motivo che nessuno ha scritto.*
 
 **FERMATE: una per strato, come prima.** | ☐ | **sì**, uno strato per volta |
-| **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** ~~Un modulo sta fra 365 e 670 righe.~~<br><br>⚠️ **RICONTATO il 2026-09-18, e la forbice è FALSA su quattro gruppi su nove:**<br><br>| gruppo | funzioni | righe |<br>|---|---|---|<br>| voice | 17 | **621** |<br>| dialogo | 29 | 510 |<br>| storyCards | 16 | 453 |<br>| personalizza | 22 | 392 |<br>| flashcard | 15 | 317 |<br>| speedMatch | 20 | **313** |<br>| mappa+admin | 24 | **286** |<br>| match | 11 | **263** |<br>| repeatAloud | 3 | **106** |<br><br>**La forbice vera è 106–621**, e il minimo dichiarato (365) è sbagliato su quattro. *`repeatAloud` è il caso che spiega gli altri: 106 righe in tre funzioni, perché il Blocco Ascolto è diventato un componente condiviso (C.3) e i suoi listener sono entrati dentro `openRepeatAloud` (21-quater ④). **Non è un modulo piccolo: è un modulo a cui abbiamo tolto le parti condivise, una alla volta, e nessuno ha ricontato dopo.***<br><br>⚠️ **CHE COSA HA CAMBIATO IL 21-QUATER DI QUELLO CHE QUESTO PIANO DÀ PER FERMO — tre cose, e la terza è una decisione, non un numero.**<br><br>⚠️ **E PRIMA DELLE TRE, UNA COSA MISURATA SUL PIANO STESSO: la riga del 23 NON DICE NIENTE sui listener.** Cercato: nessuna frase del tipo «i listener del modulo restano fuori». **Quindi il rischio non è una riga vecchia da correggere — è il SILENZIO**, che si legge come «su questo non è cambiato niente». *Una riga sbagliata la si trova rileggendo; un silenzio no, perché non c'è niente da rileggere.* Il piano è del 15 settembre, il 21-quater ha spostato ~80 listener dentro le `open` fra il 16 e il 17, e **la riga del 23 è identica a prima e a dopo.**
+| **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** ~~Un modulo sta fra 365 e 670 righe.~~<br><br>⚠️ **RICONTATO il 2026-09-18, e la forbice è FALSA su quattro gruppi su nove:**<br><br>| gruppo | funzioni | righe |<br>|---|---|---|<br>| voice | 17 | **621** |<br>| dialogo | 29 | 510 |<br>| storyCards | 16 | 453 |<br>| personalizza | 22 | 392 |<br>| flashcard | 15 | 317 |<br>| speedMatch | 20 | **313** |<br>| mappa+admin | 24 | **286** |<br>| match | 11 | **263** |<br>| repeatAloud | 3 | **106** |<br><br>**La forbice vera è 106–621**, e il minimo dichiarato (365) è sbagliato su quattro. *`repeatAloud` è il caso che spiega gli altri: 106 righe in tre funzioni, perché il Blocco Ascolto è diventato un componente condiviso (C.3) e i suoi listener sono entrati dentro `openRepeatAloud` (21-quater ④). **Non è un modulo piccolo: è un modulo a cui abbiamo tolto le parti condivise, una alla volta, e nessuno ha ricontato dopo.***<br><br>⚠️ **CHE COSA HA CAMBIATO IL 21-QUATER DI QUELLO CHE QUESTO PIANO DÀ PER FERMO — tre cose, e la terza è una decisione, non un numero.**<br><br>⚠️ ⚠️ **IL 23 NON PUÒ COMINCIARE, E IL MOTIVO È MISURATO — 2026-09-18, provando a estrarre Repeat Aloud.**
+
+Ho preso il primo modulo scelto col criterio nuovo e ho misurato le sue dipendenze prima di muovere una riga. **Repeat Aloud, 3 pezzi e 106 righe, nomina 23 cose che non sono sue. Di queste, TRE sono raggiungibili da un file separato (`getUserName`, `isIntroDismissed`, `setIntroDismissed`, già su `BI`); VENTI no.**
+
+**E non è una sua particolarità — misurati tutti e sei:**
+
+| modulo | pezzi | righe | dipendenze | già su `BI` | **irraggiungibili** |
+|---|---|---|---|---|---|
+| repeatAloud | 3 | 106 | 23 | 3 | **20** |
+| match | 11 | 263 | 49 | 3 | **46** |
+| speedMatch | 20 | 313 | 51 | 3 | **48** |
+| flashcard | 15 | 317 | 52 | 5 | **47** |
+| dialogo | 29 | 510 | 51 | 9 | **42** |
+| voice | 17 | 621 | 74 | 5 | **69** |
+
+> **Il modulo più piccolo dell'app ha bisogno di venti nomi che fuori da `index.html` non esistono. Se il più piccolo ne ha venti, gli altri ne hanno di più — e infatti ne hanno fino a sessantanove.**
+
+⚠️ **E LA COSA CHE HO SBAGLIATO A DIRE, corretta qui: «il 22 è chiuso» era vero per gli STRATI e falso per il 23.** Il censimento del 2026-09-18 lo diceva già — `dati`, `vista`, `ui-condivisa`, `quiz-engine`, i suoni, la regola della mastery e il Pannello Admin sono **ancora dentro** — ma l'ho registrato come «tre gruppi senza casa», cioè come una questione di catalogazione. **Non lo era: è la condizione di possibilità del 23.** *Un modulo non è una foglia. Un modulo è la cosa che usa tutto il resto — ed è il primo pezzo del progetto per cui «estrarre» significa «avere già estratto tutto quello che tocca».*
+
+**I venti di Repeat Aloud, per strato — ed è la lista di cosa deve uscire prima:**
+
+| strato | cosa gli serve |
+|---|---|
+| **`dati`** | `loadEpisodeData`, `episodeDataCache`, `episodeGrade`, `episodeGradeRequired`, `itemText` |
+| **`ui-condivisa`** | `renderListenBlock`, `speakListenBlock`, `openHowItWorksOverlay`, `openHelpFor`, `renderIntroContent`, `moduleNameHtml`, `moduleTypeLabel`, `applyOutcomeSubtitle`, `introDismissPref` |
+| **`vista`** | `leaveModule`, `showLoadError` |
+| **`mappa`** | `openEpisodeMap`, `completeModule` |
+| **i suoni** | `sfxPlayTraguardoSound` |
+
+**L'ordine che ne discende, dalle foglie verso l'interno:** ① **i suoni** e **`quiz-engine`** (foglie, nessuno dei due dipende dagli altri) · ② **`dati`** · ③ **`ui-condivisa`** · ④ **`vista`** (ha bisogno di `dati` per `showLoadError`) · ⑤ **`mappa`+admin** · **e solo allora il primo modulo.**
+
+⚠️ **E una cosa trovata misurando, piccola e da non perdere: `currentRepeatAloudModule` è una `var` che appartiene a Repeat Aloud** e che il mio elenco di pezzi non aveva (contavo tre funzioni). *Quando quel modulo uscirà, deve uscire anche lei — ed è la stessa forma di `ICONS` allo strato `identita`: un dato che non è una funzione e che una misura per funzioni non vede.*
+
+⚠️ **E PRIMA DELLE TRE, UNA COSA MISURATA SUL PIANO STESSO: la riga del 23 NON DICE NIENTE sui listener.** Cercato: nessuna frase del tipo «i listener del modulo restano fuori». **Quindi il rischio non è una riga vecchia da correggere — è il SILENZIO**, che si legge come «su questo non è cambiato niente». *Una riga sbagliata la si trova rileggendo; un silenzio no, perché non c'è niente da rileggere.* Il piano è del 15 settembre, il 21-quater ha spostato ~80 listener dentro le `open` fra il 16 e il 17, e **la riga del 23 è identica a prima e a dopo.**
 
 ⚠️ **IL SUBSTRATO C'È GIÀ, E NON C'È NESSUNO `switch` DA SOSTITUIRE — misurato il 2026-09-18, prima di proporre di costruirlo.**
 
