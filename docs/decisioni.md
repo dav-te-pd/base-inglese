@@ -1250,6 +1250,32 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
+**FATTO il 2026-09-18 — `app/ui-condivisa.js`, e i moduli adesso possono cominciare.**
+
+29 pezzi, 430 righe, seconda fila. È l'interfaccia che un modulo **indossa** e che non sa quale modulo sia: i due overlay, i testi letti dal file delle istruzioni, il sottotitolo d'esito, le stelle, i pulsanti di velocità, i risolutori di segnaposto.
+
+**Il criterio non l'ho scelto, l'ha scelto la misura:** partendo da dieci pezzi e chiudendo per iterazione, l'insieme si ferma a 29 con **zero** dipendenze che non siano già fuori. È esattamente la linea dove chiude.
+
+⚠️ **TRE CONFINI RESPINTI, E DUE CORREGGONO UNA MIA ASSEGNAZIONE DI DUE GIORNI PRIMA.**
+
+**①** `itemText` **non entra**, benché ce l'avessi mandata io stesso. È una riga sola, ma quella riga **lega i due globali di sessione**: aggiungendola l'insieme smette di chiudere (30 pezzi, 2 bloccanti, otto giri). `fillTemplate` invece entra pulita, perché episodio e valori **li prende come parametri**. *La differenza è tutta lì: una li riceve, l'altra li va a prendere.*
+
+**②** `slotOptions`, `slotField`, `slotDefault`, `resolveSlotValue` entrano **qui** e non in Personalizza, dove li avevo messi il giorno prima: `fillTemplate` li chiama, e serve a quattro moduli.
+
+**③** `buildMultipleChoiceOptions` e `recordMultipleChoiceResult` restano fuori benché condivisi: chiamano `itemText` e `recordPendingMastery`. Escono con lo stato di sessione.
+
+> **Decimo e undicesimo confine bocciati dal criterio, e sono il secondo e il terzo contro una decisione MIA invece che del piano.** Finora il criterio correggeva il piano; adesso corregge anche chi lo applica.
+
+⚠️ **E LA DICHIARAZIONE CHE HO SCRITTO ERA FALSA.** `// DIPENDE DA: nessuno`, e il file chiama `istruzioniInMemoria()`, `loadModuleInstructions()`, `loadFeedbackMessages()`, `percentageBucket()` — quattro nomi di altri due strati. **Nessuna verifica strutturale l'ha vista: le ha passate tutte.** L'ha trovata la riga che **guida l'app**, con `uiText is not defined`. *Una dichiarazione si può sbagliare come qualunque altra riga: è il confronto col codice che la tiene vera, non il fatto di averla scritta.*
+
+**E quei quattro alias sono la PRIMA dipendenza a tempo di parsing del progetto** — le tre precedenti erano tutte a tempo di chiamata. Da oggi **l'ordine dei tag è un vincolo vero**, non solo dichiarato.
+
+⚠️ **Il listener di Escape NON è in questo file, ed è voluto:** chiude **tre** overlay, e il terzo è del Pannello Admin. Non appartiene a nessuno dei due posti da solo, quindi resta in `index.html` e chiama `BI.closeOverlay()` / `BI.closeHowItWorksOverlay()`. *Portarlo qui sarebbe scambiare «sta vicino» con «è suo», che è l'errore che questa serie corregge da undici confini.*
+
+**Cosa sblocca, che è il motivo per cui è stato fatto adesso:** Personalizza scende da **16 a 9** dipendenze all'insù, storyCards altrettanto. I moduli possono cominciare.
+
+---
+
 **FATTO il 2026-09-18 — `app/orchestrazione.js`, e nasce una SECONDA FILA di caricamento.**
 
 Due pezzi soli — `views` e `showView` — ma il passo non è piccolo: è il primo file che **tocca il markup mentre viene letto**. I nove strati precedenti stanno in `<head>` e non toccano un solo elemento (l'unico DOM a tempo di parsing in tutto `app/` sono i due `document.addEventListener` di `suoni.js`, cioè sul documento, che esiste sempre). `views` prende **tredici nodi** con `getElementById`: in `<head>` sarebbero tredici `null`.

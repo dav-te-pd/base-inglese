@@ -3616,6 +3616,7 @@
      markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
      cosa gira, e questo gira dopo il DOM. -->
 <script src="app/orchestrazione.js"></script>
+<script src="app/ui-condivisa.js"></script>
 
 <script>
 (function () {
@@ -3638,6 +3639,32 @@
   var istruzioniInMemoria = BI.istruzioniInMemoria;
   var views = BI.views;
   var showView = BI.showView;
+  var uiText = BI.uiText;
+  var uiTextWith = BI.uiTextWith;
+  var openOverlay = BI.openOverlay;
+  var closeOverlay = BI.closeOverlay;
+  var openHowItWorksOverlay = BI.openHowItWorksOverlay;
+  var closeHowItWorksOverlay = BI.closeHowItWorksOverlay;
+  var openHelpMenu = BI.openHelpMenu;
+  var openHelpFor = BI.openHelpFor;
+  var renderHelpMenu = BI.renderHelpMenu;
+  var applyOutcomeSubtitle = BI.applyOutcomeSubtitle;
+  var applyRetryIntroContent = BI.applyRetryIntroContent;
+  var moduleRulesLevel = BI.moduleRulesLevel;
+  var renderStars = BI.renderStars;
+  var renderRateButtons = BI.renderRateButtons;
+  var lockModuleHeader = BI.lockModuleHeader;
+  var moduleNameHtml = BI.moduleNameHtml;
+  var renderSpiegazioneTitle = BI.renderSpiegazioneTitle;
+  var loadErrorInlineHtml = BI.loadErrorInlineHtml;
+  var pickRandom = BI.pickRandom;
+  var fillTemplate = BI.fillTemplate;
+  var slotOptions = BI.slotOptions;
+  var slotField = BI.slotField;
+  var slotDefault = BI.slotDefault;
+  var resolveSlotValue = BI.resolveSlotValue;
+  var LOAD_ERROR_LAST_RESORT = BI.LOAD_ERROR_LAST_RESORT;
+  var MODULE_RULES_LEVEL = BI.MODULE_RULES_LEVEL;
   var percentageBucket = BI.percentageBucket;
   var starsForPercent = BI.starsForPercent;
   var shuffle = BI.shuffle;
@@ -3839,22 +3866,6 @@
       '<button type="button" class="btn btn-primary btn-block" id="' + continueBtnId + '">' + (continueLabel || 'Continua →') + '</button>';
   }
 
-  // Job 4 (second collaudo): the FIRST retry pass and the LAST one (the
-  // one right before the module actually finishes — CONFIG.retryQueue.
-  // maxAttempts forces a stubborn item through after that, so there's
-  // never a third) read from two DIFFERENT pools, each with its own 5
-  // title variants and 5 text variants — so back-to-back passes never
-  // look like the exact same screen stuck in a loop. isLastPass is the
-  // caller's own call (see each module's retry-pass counter, e.g.
-  // srRetryPassCount) — this function only ever picks and displays.
-  function applyRetryIntroContent(screenId, isLastPass) {
-    loadFeedbackMessages().then(function (data) {
-      var pool = data.retryIntroMessages && data.retryIntroMessages[isLastPass ? 'last' : 'first'];
-      if (!pool) return;
-      document.getElementById(screenId + '-title').textContent = pickRandom(pool.titles);
-      document.getElementById(screenId + '-text').textContent = pickRandom(pool.bodies);
-    }).catch(function () {});
-  }
 
   // Job 2: rotating second sentence for a recurring message — the FIRST
   // sentence stays the module's own fixed/informative text (titleText
@@ -3875,34 +3886,8 @@
     }).catch(function () {});
   }
 
-  // Same as applyRotatingSubtitle above, but the pool is keyed by outcome
-  // (bucketKey — e.g. 'alto'/'medio'/'basso' or 'siLoSo'/'nonAncora')
-  // instead of being one flat list — the Schermata Finale message (job 2)
-  // says something different depending on how the exercise actually went.
-  function applyOutcomeSubtitle(elId, listKey, bucketKey) {
-    var el = document.getElementById(elId);
-    if (!el) return;
-    el.textContent = '';
-    loadFeedbackMessages().then(function (data) {
-      var group = data[listKey] && data[listKey][bucketKey];
-      if (group && group.length) el.textContent = pickRandom(group);
-    }).catch(function () {});
-  }
 
 
-  // ModuleRules (see CONFIG.moduleOutcomeRules) — the shared verde/
-  // giallo/rosso map-badge color for an evaluated module's FIRST-PASS
-  // score. Reuses percentageBucket()'s own alto/medio/basso split
-  // instead of a second copy of the same threshold comparison; only the
-  // bucket-name-to-color mapping is new. A module wires itself into
-  // this by declaring itself in CONFIG.moduleOutcomeRules and calling
-  // this + saveModuleOutcome() at its own completion (see Voice Coach's
-  // voice-coach-complete-btn handler for the reference wiring) — the
-  // color math itself never needs to move.
-  var MODULE_RULES_LEVEL = { alto: 'verde', medio: 'giallo', basso: 'rosso' };
-  function moduleRulesLevel(pct) {
-    return MODULE_RULES_LEVEL[percentageBucket(pct)];
-  }
 
   renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
   renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
@@ -4126,33 +4111,7 @@
      ============================================================ */
   var loadErrorRetry = null;
 
-  // LA FRASE DI ULTIMA ISTANZA — l'UNICA eccezione ammessa alla regola 8
-  // (i testi dello studente stanno in data/{lingua}/istruzioni-moduli.json),
-  // e sta qui col motivo accanto come chiede la regola 35: un messaggio che
-  // segnala il fallimento di un meccanismo non puo' dipendere da quel
-  // meccanismo. Se il file che non si carica e' proprio istruzioni-moduli
-  // .json, un testo preso da li' non arriverebbe mai, e la schermata
-  // d'errore resterebbe muta esattamente nel caso che la giustifica.
-  // Non e' un valore da regolare (regola 3): e' l'ultima rete, non una
-  // manopola.
-  var LOAD_ERROR_LAST_RESORT = {
-    title: 'Non riusciamo a caricare il contenuto',
-    body: '<p>Qualcosa non ha funzionato nel recupero dei dati. Controlla la connessione e riprova.</p>',
-    retryLabel: 'Riprova',
-    backLabel: 'Torna alla mappa',
-    // Per i punti NON bloccanti (Spiegazione, Help, l'intro di un modulo):
-    // l'esercizio si puo' fare lo stesso, e il messaggio deve dirlo.
-    inlineText: 'Non riusciamo a caricare questo testo. Puoi continuare lo stesso.'
-  };
 
-  // Il messaggio dei punti NON bloccanti. Usa sempre la frase di ultima
-  // istanza, e non e' una scorciatoia: questi tre punti falliscono SOLO
-  // quando a non caricarsi e' istruzioni-moduli.json, cioe' proprio il file
-  // da cui verrebbe il testo. E' la regola 35 applicata due volte.
-  function loadErrorInlineHtml(extraClass) {
-    return '<p class="' + (extraClass ? extraClass + ' ' : '') + 'is-notice">' +
-      LOAD_ERROR_LAST_RESORT.inlineText + '</p>';
-  }
 
   function renderLoadErrorTexts(texts) {
     var t = texts || {};
@@ -4271,67 +4230,12 @@
 
 
 
-  var activeHelpModule = null;
-  var helpOverlayEl = document.getElementById('help-overlay');
 
-  function openOverlay() { helpOverlayEl.classList.add('is-open'); }
-  function closeOverlay() { helpOverlayEl.classList.remove('is-open'); }
 
-  document.getElementById('help-overlay-close').addEventListener('click', closeOverlay);
-  document.getElementById('help-overlay-backdrop').addEventListener('click', closeOverlay);
 
-  // Simple "Spiegazione" popup (see markup comment) — generic by
-  // module.kind, only Repeat Aloud's watch button calls it today.
-  // Optional options.dismissPref = { get(), set(bool) } wires up the
-  // "don't show again" checkbox against whatever persistent preference
-  // the caller owns (Repeat Aloud passes its existing one — same flag
-  // the full-screen auto-show reads, not a second one); omitted entirely
-  // for modules that don't have that concept yet, hiding the checkbox.
-  var howItWorksOverlayEl = document.getElementById('howitworks-overlay');
 
-  function openHowItWorksOverlay(module, options) {
-    options = options || {};
-    // placeholderTitle covers the brief moment before loadModuleInstructions
-    // resolves, and the fallback if this module has no entry at all —
-    // every caller already knows its own module.label, so this is only
-    // ever an explicit override for the rare case that differs.
-    var placeholderTitle = options.placeholderTitle || module.label || '';
-    var titleEl = document.getElementById('howitworks-overlay-title');
-    renderSpiegazioneTitle(titleEl, placeholderTitle);
-    document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    howItWorksOverlayEl.classList.add('is-open');
 
-    var checkboxRow = document.getElementById('howitworks-overlay-checkbox-row');
-    var checkbox = document.getElementById('howitworks-overlay-dont-show-again');
-    // La stessa etichetta condivisa delle nove schermate di intro: qui la
-    // cache e' gia' calda (l'overlay si apre da dentro un modulo), quindi si
-    // legge con uiText invece di aspettare il .then come fa il corpo.
-    document.getElementById('howitworks-overlay-dont-show-text').textContent =
-      uiText('condivisi.introDontShowAgain');
-    if (options.dismissPref) {
-      checkboxRow.hidden = false;
-      checkbox.checked = options.dismissPref.get();
-      checkbox.onchange = function () { options.dismissPref.set(checkbox.checked); };
-    } else {
-      checkboxRow.hidden = true;
-      checkbox.onchange = null;
-    }
 
-    loadModuleInstructions().then(function (data) {
-      var entry = data[module.kind] && data[module.kind].howItWorks;
-      renderSpiegazioneTitle(titleEl, (entry && entry.title) || placeholderTitle);
-      document.getElementById('howitworks-overlay-body').innerHTML = entry
-        ? entry.body
-        : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
-    }).catch(function () {
-      document.getElementById('howitworks-overlay-body').innerHTML = loadErrorInlineHtml('');
-    });
-  }
-
-  function closeHowItWorksOverlay() { howItWorksOverlayEl.classList.remove('is-open'); }
-
-  document.getElementById('howitworks-overlay-close-btn').addEventListener('click', closeHowItWorksOverlay);
-  document.getElementById('howitworks-overlay-backdrop').addEventListener('click', closeHowItWorksOverlay);
 
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
@@ -4926,54 +4830,7 @@
 
 
 
-  // UN TESTO DELL'INTERFACCIA, letto dalla cache SENZA aspettare.
-  //
-  // I testi che lo studente legge stanno in istruzioni-moduli.json (regola 8),
-  // ma molti vengono scritti da funzioni SINCRONE — setVcState cambia la
-  // didascalia del microfono mentre registri, vcUpdateMicNotice alza l'avviso
-  // fra un tentativo e l'altro. Quelle non possono aspettare un fetch: se
-  // aspettassero, l'etichetta cambierebbe un frame dopo il gesto.
-  //
-  // ⚠️ FUNZIONA PERCHE' LA CACHE E' GIA' CALDA, e la garanzia sta in UNA
-  // RIGA SOLA: loadModuleInstructions() dentro il Promise.all di
-  // openModuleFromMap, il punto unico da cui passano tutti e sedici i moduli
-  // (protetto da test_modulo_pronto.js). Se quella riga sparisce, uiText()
-  // torna stringhe vuote e l'interfaccia si svuota.
-  //
-  // ⚠️ E IL MOTIVO PER CUI QUESTA FRASE E' SCRITTA COSI': la prima versione
-  // diceva «funziona perche' openModuleFromMap fa gia' Promise.all([
-  // loadEpisodeData, loadModuleInstructions])». **Non lo faceva** — aspettava
-  // ensureEpisodeSlotFields e loadEpisodeData, non i testi. Era una
-  // motivazione falsa scritta accanto a codice giusto, cioe' la cosa peggiore
-  // da lasciare in giro: chi la legge smette di controllare. Trovata
-  // GUIDANDO L'APP (il Blocco Ascolto e la didascalia del microfono uscivano
-  // vuoti), non rileggendo.
-  //
-  // Chiamare uiText() da un punto che NON sta dentro un modulo aperto e' il
-  // solo modo di romperla — e li' si usa loadModuleInstructions().then().
-  //
-  // Il secondo argomento e' la frase di ULTIMA ISTANZA: serve solo se la
-  // chiave manca da un file che si e' caricato (regola 35), e non e' una
-  // copia da tenere allineata — e' la prova che qualcosa nel file e' rotto.
-  // ⚠️ Un fallback che ripete il testo vero DIVERGE in silenzio: e' successo
-  // a requestBoxDuplicateWarning, dove la copia nel codice aveva perso mezza
-  // frase e nessuno poteva accorgersene.
-  function uiText(percorso, ultimaIstanza) {
-    var nodo = istruzioniInMemoria();
-    var pezzi = percorso.split('.');
-    for (var i = 0; i < pezzi.length && nodo; i++) nodo = nodo[pezzi[i]];
-    return (typeof nodo === 'string' && nodo) ? nodo : (ultimaIstanza || '');
-  }
 
-  // Lo stesso testo con i segnaposto {nome} sostituiti. Separata da uiText
-  // perche' la maggior parte dei testi non ne ha, e una sostituzione che gira
-  // sempre nasconde un segnaposto scritto male dentro un testo che non ne
-  // voleva.
-  function uiTextWith(percorso, valori, ultimaIstanza) {
-    return uiText(percorso, ultimaIstanza).replace(/\{(\w+)\}/g, function (tutto, chiave) {
-      return Object.prototype.hasOwnProperty.call(valori, chiave) ? valori[chiave] : tutto;
-    });
-  }
 
   // Renders a module-instructions field (today just "helpReminder", the
   // Help menu's "Rivedi come funziona l'esercizio" option) for a module's
@@ -4995,19 +4852,7 @@
     });
   }
 
-  function renderHelpMenu() {
-    return '<div class="help-menu">' +
-      '<button type="button" class="help-option" data-help-action="instructions">' + uiText('aiuto.optionInstructions') + '</button>' +
-      '<button type="button" class="help-option" data-help-action="clarify">' + uiText('aiuto.optionClarify') + '</button>' +
-      '<button type="button" class="help-option help-option-urgent" data-help-action="urgent">' + uiText('aiuto.optionUrgent') + '</button>' +
-      '</div>';
-  }
 
-  function openHelpMenu(module) {
-    document.getElementById('help-overlay-title').textContent = uiText('aiuto.menuTitle');
-    document.getElementById('help-overlay-body').innerHTML = renderHelpMenu();
-    openOverlay();
-  }
 
   function renderHelpForm(type) {
     var helper = uiText(type === 'urgent' ? 'aiuto.formHintUrgent' : 'aiuto.formHintClarify');
@@ -5026,10 +4871,6 @@
       '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">' + uiText('aiuto.confirmationBack') + '</button></div>';
   }
 
-  function openHelpFor(module) {
-    activeHelpModule = module;
-    openHelpMenu(module);
-  }
 
   document.getElementById('help-overlay-body').addEventListener('click', function (e) {
     var actionBtn = e.target.closest('[data-help-action]');
@@ -5670,73 +5511,10 @@
     return episodeSlotFieldsPromises[episode.id];
   }
 
-  function slotOptions(field) {
-    return (field.options || []).map(function (item) {
-      if (item && typeof item === 'object') return item;
-      var s = String(item);
-      return { value: s, it: s, en: s, fr: '', es: '', de: '' };
-    });
-  }
 
-  function slotField(episode, key) {
-    return episode.slotFields.find(function (f) { return f.key === key; });
-  }
 
-  function slotDefault(episode, key) {
-    var field = slotField(episode, key);
-    return field ? field.def : '';
-  }
 
-  // What a slot's current (stored) value displays as in a given language:
-  // the option's "it"/"en"/... column for select slots, or the raw text
-  // as typed for any free-text slot. Used both for the exercise phrase
-  // (English) and for dialogue lines (either language) and speaker tags
-  // (Italian) in Story Cards.
-  function resolveSlotValue(episode, key, rawValue, lang) {
-    var field = slotField(episode, key);
-    if (field && field.type === 'select') {
-      var opts = slotOptions(field);
-      var match = opts.find(function (o) { return o.value === rawValue; });
-      var picked = match || opts[0];
-      if (!picked) return rawValue;
-      // Job 1 (3rd collaudo): a person's own name is never translated,
-      // whichever language the dialogue line is being rendered in — an
-      // Italian traveler abroad still introduces themselves as
-      // "Francesco", not "Francis" (also: personalization exists so the
-      // student recognizes themselves in the story). Only used to show
-      // BOTH forms in the Customize screen, never to substitute one for
-      // the other in the dialogue. Toponyms (places) keep translating
-      // normally — 'it'/'en' picked by lang as before.
-      return field.isPersonName ? picked.it : picked[lang];
-    }
-    return rawValue;
-  }
 
-  // Fills {{placeholders}} in a dialogue line using the episode's
-  // placeholderMap (placeholder name -> slotFields key, dichiarato nel FILE
-  // dell'episodio dal 2026-09-09 — regola 4, è contenuto) and the
-  // user's current customization values, in the given language. Unknown
-  // placeholders are left untouched rather than breaking the line — but
-  // logged, since a silently-unfilled {{token}} left on screen used to be
-  // the only sign something was missing.
-  // Un segnaposto può chiedere una lingua sua, con {{chiave:en}} o
-  // {{chiave:it}}, invece di seguire quella della chiamata. Serve dove un
-  // testo mescola le due lingue: una skill è scritta in italiano ma cita la
-  // frase inglese del dialogo, quindi "I am from {{partenza:en}}" vuol dire
-  // "vengo da {{partenza}}" deve dare "Turin" nella citazione e "Torino"
-  // nella spiegazione. Senza suffisso vale la lingua della chiamata,
-  // come prima: nessun testo esistente cambia comportamento.
-  function fillTemplate(text, episode, values, lang) {
-    return text.replace(/\{\{(\w+)(?::(\w+))?\}\}/g, function (match, varName, forcedLang) {
-      var slotKey = episode.placeholderMap && episode.placeholderMap[varName];
-      if (!slotKey) {
-        console.warn('fillTemplate: placeholder "' + varName + '" has no placeholderMap entry in episode "' + episode.id + '"');
-        return match;
-      }
-      var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
-      return resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang);
-    });
-  }
 
 
 
@@ -6487,13 +6265,6 @@
     return fillTemplate(lang === 'en' ? item.english : item.italian, currentEpisode, currentValues, lang);
   }
 
-  function renderRateButtons(itemId) {
-    return CONFIG.speech.rateOptions.map(function (rate) {
-      var pct = Math.round(rate * 100) + '%';
-      return '<button type="button" class="rate-btn" data-say="' + itemId + '" data-rate="' + rate +
-        '" aria-label="' + uiTextWith('bloccoAscolto.rateButtonLabel', { pct: pct }) + '">' + pct + '</button>';
-    }).join('');
-  }
 
   /* ============================================================
      IL BLOCCO ASCOLTO — un pezzo solo (CLAUDE.md regole 11, 13, 18)
@@ -6585,13 +6356,6 @@
     };
   }
 
-  // Styles a trailing "en→it"/"it→en" direction suffix smaller and more
-  // discreet than the rest of a module's name (CLAUDE.md: part of the
-  // name, not a second label) — used everywhere a module name is shown
-  // (map row, Spiegazione title, module headers/badges).
-  function moduleNameHtml(name) {
-    return String(name).replace(/ (en→it|it→en)$/, ' <span class="module-name-direction">$1</span>');
-  }
 
   // Job 6 (2nd collaudo): the module's own category (Studio/Quiz/ecc.) —
   // same CONFIG.moduleTypes/typeLabel lookup renderModuleList already
@@ -6632,20 +6396,6 @@
     return withGradeName(category, module.grade);
   }
 
-  // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
-  // "Spiegazione" kicker (never varies — see .spiegazione-title-kicker),
-  // row 2 is the module's own name in evidence. Used by every module's
-  // full-screen intro (renderIntroContent below) and by the
-  // "Spiegazione" popup overlay (openHowItWorksOverlay) — the only two
-  // places this title appears.
-  // Previously a single "Spiegazione — X" string from istruzioni-moduli.
-  // json; the em dash wrapped awkwardly on narrow screens, so the JSON's
-  // own title is now just the module name and this always adds the
-  // fixed row on top.
-  function renderSpiegazioneTitle(el, moduleName) {
-    el.innerHTML = '<span class="spiegazione-title-kicker">Spiegazione</span>' +
-      (moduleName ? '<span class="spiegazione-title-name">' + moduleNameHtml(moduleName) + '</span>' : '');
-  }
 
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry
   // for the given kind — one shared loader for every module's intro
@@ -7708,18 +7458,8 @@
   var STAR_MESSAGE_KEYS = { 1: 'basso', 2: 'medio', 3: 'alto' };
 
 
-  function pickRandom(list) {
-    return list[Math.floor(Math.random() * list.length)];
-  }
 
 
-  function renderStars(count) {
-    var html = '';
-    for (var i = 1; i <= 3; i++) {
-      html += '<span class="vc-star' + (i <= count ? ' is-filled' : '') + '">' + (i <= count ? '★' : '☆') + '</span>';
-    }
-    return html;
-  }
 
   // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
   // Round/Match Practice/Flash Card reuse this same function+markup, never a
@@ -10466,31 +10206,6 @@
 
 
 
-  // Regola Azione Critica, generic form. Correction (5th collaudo): a
-  // prior round locked every OTHER control while any module's audio
-  // played, everywhere — too broad. That rule only actually applies to
-  // profiles with a countdown behind the audio (Dialogo Ripeti a Tempo/
-  // Continuo, both still fully locked via dgLockAll — see near
-  // dgPlayLine). Everywhere else, nothing is disabled: interrupting is
-  // harmless without a countdown to desync, and several modules (Ascolta
-  // e Ripeti's own instructions, for one) explicitly promise free
-  // tapping. What stays universal instead is stop-on-touch — a critical
-  // action (flipping a card, answering, advancing, pressing Record)
-  // cancels any audio already playing rather than being blocked by it
-  // (see each module's own click handlers — Flash Card's fcFlip, Quick
-  // Match's .sr-option/qm-dontknow-btn, Voice Coach's vc-record-btn/
-  // vcNextLine/voice-coach-retry-btn, Repeat Aloud/Story Cards's own
-  // complete buttons).
-  // lockModuleHeader(prefix, locked) is the one piece that's still a
-  // real lock, kept for Voice Coach's RECORDING direction only (setVcState
-  // below) — a genuinely different concern (the mic picking up the
-  // model's own voice), not this audio-playback rule.
-  function lockModuleHeader(prefix, locked) {
-    var watchBtn = document.getElementById(prefix + '-watch-btn');
-    if (watchBtn) watchBtn.disabled = locked;
-    var helpBtn = document.getElementById(prefix + '-help-btn');
-    if (helpBtn) helpBtn.disabled = locked;
-  }
 
 
   // Regola Azione Critica, single choke point (correction, 6th collaudo):

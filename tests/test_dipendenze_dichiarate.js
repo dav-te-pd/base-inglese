@@ -58,8 +58,12 @@ nodi.forEach(function (n) {
 // che dicono se la forma del progetto e' ancora quella.
 {
   const conDipendenze = nodi.filter(function (n) { return Object.keys(n.dipende).length; });
-  log('[B] Solo due file di app/ dipendono da qualcosa',
-    conDipendenze.length === 2, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ DA 2 A 3 IL 2026-09-18, seguita e non tolta (⓪-undecies): l'invariante
+  // non e' «due», e' «il grafo e' quello che credo». `app/ui-condivisa.js`
+  // dipende da `dati.js` e `quiz-engine.js`, ed e' voluto — uno strato di
+  // interfaccia che legge i testi DEVE chiedere a chi li carica.
+  log('[B] Tre file di app/ dipendono da qualcosa',
+    conDipendenze.length === 3, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -76,8 +80,21 @@ nodi.forEach(function (n) {
   // Nessuna dipendenza a tempo di parsing = l'ordine dei tag oggi NON e' un
   // vincolo stretto. Il giorno che ne nasce una, questa riga cade e chi la
   // legge sa di doverci pensare.
-  log('[B] Nessuna dipendenza a tempo di PARSING fra i file di app/',
-    aParsing.length === 0, aParsing.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ E QUESTA E' LA RIGA CHE E' CAMBIATA DI PIU', perche' prima non poteva
+  // cadere: la misura contava le graffe dal primo carattere del file, e ogni
+  // file di `app/` e' avvolto in un'IIFE — quindi TUTTO risultava «a tempo di
+  // chiamata» e «parsing» era una risposta che non usciva mai. **L'asserzione
+  // era vera per costruzione** (regola 37: non somigliava a un errore,
+  // somigliava a un risultato). Corretta il 2026-09-18, e il primo caso vero e'
+  // uscito subito.
+  //
+  // Da oggi dice il NUMERO e il NOME, non l'assenza: una dipendenza a tempo di
+  // parsing e' legittima — `ui-condivisa` prende quattro alias in cima
+  // all'IIFE — ma **obbliga l'ordine dei tag**, e chi ne aggiunge una deve
+  // sapere che [C] diventa la riga che lo tiene fermo.
+  log('[B] Una sola dipendenza a tempo di PARSING, ed e\' ui-condivisa',
+    aParsing.length === 1 && aParsing[0].file === 'ui-condivisa.js',
+    aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
 // ── [C] L'ORDINE DEI TAG RISPETTA IL GRAFO ──────────────────────────

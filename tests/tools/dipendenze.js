@@ -83,7 +83,23 @@ function grafo(radice) {
 
   return ordine.map(function (f) {
     const dipende = {};
-    let profondita = 0;
+    // ⚠️ LA PROFONDITA' SI CONTA DENTRO L'IIFE, NON DAL PRIMO CARATTERE — ed e'
+    // la quinta correzione di questa misura, la piu' grave perche' non lasciava
+    // un buco ne' un'accusa: rendeva una risposta IMPOSSIBILE.
+    //
+    // Ogni file di `app/` e' avvolto in `(function (BI) { ... })(window.BI);`.
+    // Contando le graffe dall'inizio, la riga successiva alla prima e' gia' a
+    // profondita' 1, quindi TUTTO risultava «a tempo di chiamata» e la risposta
+    // «parsing» non poteva uscire mai — per nessun file, nemmeno sbagliando.
+    // L'asserzione «nessuna dipendenza a tempo di parsing» di
+    // test_dipendenze_dichiarate.js era **vera per costruzione**, che e'
+    // esattamente il difetto della regola 37: non somigliava a un errore,
+    // somigliava a un risultato.
+    //
+    // Trovata perche' `app/ui-condivisa.js` ha la PRIMA dipendenza vera a tempo
+    // di parsing del progetto — quattro alias in cima all'IIFE — e la misura
+    // continuava a chiamarla «chiamata».
+    let profondita = -1;
     testo[f].split('\n').forEach(function (r) {
       const s = r.trim();
       const codice = s && !s.startsWith('//') && !s.startsWith('*') && !s.startsWith('/*');
@@ -95,12 +111,12 @@ function grafo(radice) {
           if (/^(?:window\.)?BI\.\w+\s*=\s*\w+;?\s*$/.test(s)) return;
           const dove = proprietario[n] || 'index.html';
           if (dove === f) return;
-          const quando = profondita > 0 ? 'chiamata' : 'parsing';
+          const quando = profondita > 0 ? 'chiamata' : 'parsing';  // 0 = corpo dell'IIFE
           dipende[dove] = dipende[dove] || { parsing: [], chiamata: [] };
           if (dipende[dove][quando].indexOf(n) === -1) dipende[dove][quando].push(n);
         });
         profondita += (r.match(/\{/g) || []).length - (r.match(/\}/g) || []).length;
-        if (profondita < 0) profondita = 0;
+        if (profondita < -1) profondita = -1;
       }
     });
     return { file: f, posizione: ordine.indexOf(f), espone: espone[f], dipende: dipende };
