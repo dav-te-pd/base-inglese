@@ -208,6 +208,28 @@ window.BI = window.BI || {};
       });
   }
 
+  // ⚠️ LA CACHE SI CHIEDE, NON SI ALIASA — e questa funzione esiste per un
+  // rosso, non per eleganza.
+  //
+  // `moduleInstructionsCache` e' una variabile che CAMBIA: nasce null e
+  // diventa l'oggetto dei testi al primo caricamento. Il ponte degli alias
+  // (`var moduleInstructionsCache = BI.moduleInstructionsCache;` in cima
+  // all'IIFE) copia il VALORE del momento — cioe' null — e non lo aggiorna
+  // mai piu'. `uiText()` legge la cache SENZA aspettare, quindi da fuori
+  // vedeva null per sempre e ogni testo dell'interfaccia usciva stringa
+  // vuota: sette file rossi, e l'app che cammina senza parole.
+  //
+  // E' la stessa forma gia' incontrata con `moduleEpoch`, chiusa allo stesso
+  // modo: **una funzione invece di un nome.** Un alias congela un valore;
+  // una chiamata va a leggerlo adesso.
+  //
+  // Le altre due variabili riassegnate di questo file — `vcFeedbackDataCache`
+  // e `personalizationTablesPromise` — NON escono affatto: nessuno le legge
+  // da fuori, e esporle sarebbe lasciare due null che sembrano un dato.
+  function istruzioniInMemoria() {
+    return moduleInstructionsCache;
+  }
+
   BI.loadEpisodeData = loadEpisodeData;
   BI.episodeGrade = episodeGrade;
   BI.episodeGradeRequired = episodeGradeRequired;
@@ -219,7 +241,5 @@ window.BI = window.BI || {};
   BI.MODULE_INSTRUCTIONS_FILE = MODULE_INSTRUCTIONS_FILE;
   BI.FEEDBACK_MESSAGES_FILE = FEEDBACK_MESSAGES_FILE;
   BI.PERSONALIZATION_TABLES_FILE = PERSONALIZATION_TABLES_FILE;
-  BI.moduleInstructionsCache = moduleInstructionsCache;
-  BI.vcFeedbackDataCache = vcFeedbackDataCache;
-  BI.personalizationTablesPromise = personalizationTablesPromise;
+  BI.istruzioniInMemoria = istruzioniInMemoria;
 })(window.BI);

@@ -1250,7 +1250,19 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
-**FATTO il 2026-09-18 — `app/dati.js`, terza delle cinque cose che servono al primo modulo.** 14 pezzi, 157 righe.
+**FATTO il 2026-09-18 — `app/dati.js`, terza delle cinque cose che servono al primo modulo.** 14 pezzi, 157 righe — **poi 12 esposti e uno in più, dopo il rosso qui sotto.**
+
+⚠️ **E IL GIRO NON È FINITO COM'ERA COMINCIATO: LA SUITE È ANDATA ROSSA SU SETTE FILE, E LA CAUSA ERA UNA SOLA.**
+
+Tre delle quattordici cose esposte erano **variabili riassegnate** — `moduleInstructionsCache` e due sorelle. Il ponte degli alias copia il **valore del momento**, cioè `null`, e non lo aggiorna mai più; `uiText()` legge la cache **senza aspettare**. Da fuori la cache è rimasta `null` per sempre, e **ogni testo dell'interfaccia è uscito stringa vuota**: l'app cammina, apre la mappa, apre i moduli, e non ha parole.
+
+È la **stessa forma già incontrata e già chiusa** con `moduleEpoch` (diventato `nuovaEpoca()`/`epocaCorrente()`): *un alias congela un valore, una chiamata va a leggerlo adesso.* Chiusa allo stesso modo — **`istruzioniInMemoria()`** — e le altre due **non escono affatto**, perché nessuno le legge da fuori.
+
+> **MA LA COSA DA PORTARSI DIETRO È L'ALTRA METÀ, e vale più del guasto.** `verificaStruttura` — l'aiutante condiviso dai sei test di strato — chiedeva *«ogni nome esposto ha il suo alias»*. Quella domanda è **falsa per una classe intera di nomi**: per una variabile che cambia, l'alias è esattamente la cosa da non fare. **La riga che doveva difendere il confine chiedeva di romperlo.** Nove strati ci sono passati perché nessuno aveva ancora esposto una variabile che cambia.
+
+Da oggi c'è `nomiRiassegnati()` e l'asserzione che **vieta** l'alias su un nome che lo strato riassegna (+1 × 6 file): il guasto cade sulla riga che lo nomina, invece che su sette file lontani che parlano d'altro.
+
+*Terza volta in tre giorni che un confine sbagliato non produce nessun rosso — `renderStars`, `applyEpisodeDialogue`, e adesso questo. Le prime due le ha respinte la misura prima di entrare; **questa è entrata**, ed è costata una suite intera. La differenza fra le due è che le prime due le stavo guardando.*
 
 ⚠️ **DUE CONFINI RESPINTI DALLA MISURA, e sono la parte che conta più delle righe spostate.**
 

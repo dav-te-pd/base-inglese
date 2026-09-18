@@ -3629,9 +3629,7 @@
   var MODULE_INSTRUCTIONS_FILE = BI.MODULE_INSTRUCTIONS_FILE;
   var FEEDBACK_MESSAGES_FILE = BI.FEEDBACK_MESSAGES_FILE;
   var PERSONALIZATION_TABLES_FILE = BI.PERSONALIZATION_TABLES_FILE;
-  var moduleInstructionsCache = BI.moduleInstructionsCache;
-  var vcFeedbackDataCache = BI.vcFeedbackDataCache;
-  var personalizationTablesPromise = BI.personalizationTablesPromise;
+  var istruzioniInMemoria = BI.istruzioniInMemoria;
   var percentageBucket = BI.percentageBucket;
   var starsForPercent = BI.starsForPercent;
   var shuffle = BI.shuffle;
@@ -4191,7 +4189,8 @@
     // adesso, con quella frase, e si aggiorna se i testi arrivano: farla
     // aspettare un fetch significherebbe rischiare che non arrivi mai —
     // che e' il difetto che questa schermata esiste per chiudere.
-    var inMemoria = moduleInstructionsCache && moduleInstructionsCache.erroreCaricamento;
+    var testi = istruzioniInMemoria();
+    var inMemoria = testi && testi.erroreCaricamento;
     renderLoadErrorTexts(inMemoria);
     leaveModule('error');
     if (inMemoria) return;
@@ -4972,7 +4971,7 @@
   // a requestBoxDuplicateWarning, dove la copia nel codice aveva perso mezza
   // frase e nessuno poteva accorgersene.
   function uiText(percorso, ultimaIstanza) {
-    var nodo = moduleInstructionsCache;
+    var nodo = istruzioniInMemoria();
     var pezzi = percorso.split('.');
     for (var i = 0; i < pezzi.length && nodo; i++) nodo = nodo[pezzi[i]];
     return (typeof nodo === 'string' && nodo) ? nodo : (ultimaIstanza || '');
