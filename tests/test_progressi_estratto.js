@@ -35,7 +35,8 @@
 // test_mastery_al_gesto) e non si duplica qui.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { verificaStruttura } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -43,61 +44,20 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-// I nomi NON sono un elenco a mano: si leggono da app/progressi.js, cioe'
-// dalla fonte. Una funzione aggiunta la' entra nel giro il giorno stesso —
-// un elenco scritto qui direbbe «questi sono tutti» ed e' un campione
-// travestito da inventario.
-function nomiEsposti(sorgente) {
-  const out = [];
-  sorgente.split('\n').forEach(function (r) {
-    const m = r.match(/^\s*BI\.(\w+)\s*=\s*\1;\s*$/);
-    if (m) out.push(m[1]);
-  });
-  return out;
-}
-
 async function run() {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const progressi = fs.readFileSync(repoPath('app', 'progressi.js'), 'utf8');
-  const nomi = nomiEsposti(progressi);
+  // Le quattro domande che ogni strato estratto si fa, in tests/strati.js:
+  // tag presente, bloccante, nell'ordine giusto, e niente tornato indietro.
+  // ⚠️ Nate condivise al TERZO caso, non al secondo: con due file la forma
+  // comune era immaginata, con tre e' misurata.
+  const nomi = verificaStruttura(log, 'progressi', ['app', 'progressi.js'], { prima: ['app/spazio.js'] });
 
-  // ── [A] DOVE STA E QUANDO ARRIVA ────────────────────────────────────
+  // Le due che restano QUI perche' sono di questo strato e non della forma.
   {
+    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
     log('[A] app/progressi.js espone piu' + "' di trenta nomi", nomi.length > 30, String(nomi.length));
-
-    const tag = html.match(/<script[^>]*src="app\/progressi\.js"[^>]*>/);
-    log('[A] index.html lo carica con un tag suo', !!tag, 'tag non trovato');
-    log('[A] ...BLOCCANTE: niente defer, async o type=module',
-      !!tag && !/\b(defer|async|type\s*=)/.test(tag[0]), tag ? tag[0] : 'n/d');
-
-    const posSpazio = html.indexOf('src="app/spazio.js"');
-    const posQui = html.indexOf('src="app/progressi.js"');
     const posInline = html.indexOf('<script>\n(function () {');
-    log('[A] Arriva DOPO app/spazio.js, che crea lo spazio dei nomi',
-      posSpazio !== -1 && posQui > posSpazio, 'spazio=' + posSpazio + ' progressi=' + posQui);
-    log('[A] ...e PRIMA dello script principale, che lo legge in cima al suo IIFE',
-      posInline !== -1 && posQui < posInline, 'progressi=' + posQui + ' inline=' + posInline);
-  }
-
-  // ── [B] IL DIVIETO DI RITORNO ───────────────────────────────────────
-  //
-  // Senza questa riga, rimettere una delle trentotto dentro index.html
-  // passerebbe verde: il tag ci sarebbe ancora, l'ordine pure, e due
-  // definizioni dello stesso nome non danno nessun errore — vince quella
-  // dell'IIFE, e il file estratto diventa un doppione che nessuno chiama.
-  {
-    const righe = righeDiCodiceDi('index.html');
-    const tornate = nomi.filter(function (n) {
-      return righe.some(function (r) { return new RegExp('^\\s*function ' + n + '\\s*\\(').test(r); });
-    });
-    log('[B] Nessuna delle funzioni estratte e' + "' tornata dentro index.html",
-      tornate.length === 0, tornate.join(', '));
-
-    const alias = nomi.filter(function (n) {
-      return righe.some(function (r) { return new RegExp('^\\s*var ' + n + ' = BI\\.' + n + ';\\s*$').test(r); });
-    });
-    log('[B] ...e ognuna ha il suo alias nello script principale',
-      alias.length === nomi.length, alias.length + ' su ' + nomi.length);
+    log('[A] ...e arriva prima dello script principale, che lo legge in cima al suo IIFE',
+      posInline !== -1 && html.indexOf('src="app/progressi.js"') < posInline);
   }
 
   // ── [C] GUIDANDO L'APP ──────────────────────────────────────────────

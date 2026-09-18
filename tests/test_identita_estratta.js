@@ -38,6 +38,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { verificaStruttura } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -45,60 +46,16 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-// I nomi si leggono dalla fonte, non da un elenco a mano: una cosa aggiunta
-// allo strato entra nel giro il giorno stesso.
-function nomiEsposti(sorgente) {
-  const out = [];
-  sorgente.split('\n').forEach(function (r) {
-    const m = r.match(/^\s*BI\.(\w+)\s*=\s*\1;\s*$/);
-    if (m) out.push(m[1]);
-  });
-  return out;
-}
-
 async function run() {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
   const identita = fs.readFileSync(repoPath('app', 'identita.js'), 'utf8');
   const avvio = fs.readFileSync(repoPath('app', 'avvio.js'), 'utf8');
-  const nomi = nomiEsposti(identita);
 
-  // ── [A] DOVE STA E QUANDO ARRIVA ────────────────────────────────────
-  {
-    log('[A] app/identita.js espone i suoi nomi su BI', nomi.length >= 10, String(nomi.length));
-
-    const tag = html.match(/<script[^>]*src="app\/identita\.js"[^>]*>/);
-    log('[A] index.html lo carica con un tag suo', !!tag, 'tag non trovato');
-    log('[A] ...BLOCCANTE: niente defer, async o type=module',
-      !!tag && !/\b(defer|async|type\s*=)/.test(tag[0]), tag ? tag[0] : 'n/d');
-
-    const pSpazio = html.indexOf('src="app/spazio.js"');
-    const pQui = html.indexOf('src="app/identita.js"');
-    const pAvvio = html.indexOf('src="app/avvio.js"');
-    log('[A] Arriva DOPO app/spazio.js', pSpazio !== -1 && pQui > pSpazio, 'spazio=' + pSpazio + ' identita=' + pQui);
-    // ⚠️ Questa non e' simmetrica alle altre: e' l'unico ordine fra due file
-    // estratti che serve per una ragione di CONTENUTO — avvio.js legge
-    // BI.THEME_KEY, che nasce qui.
-    log('[A] ...e PRIMA di app/avvio.js, che legge BI.THEME_KEY',
-      pAvvio !== -1 && pQui < pAvvio, 'identita=' + pQui + ' avvio=' + pAvvio);
-  }
-
-  // ── [B] IL DIVIETO DI RITORNO ───────────────────────────────────────
-  {
-    const righe = righeDiCodiceDi('index.html');
-    const tornate = nomi.filter(function (n) {
-      return righe.some(function (r) {
-        return new RegExp('^\\s*(function|var) ' + n + '\\s*[({=]').test(r) &&
-          !new RegExp('^\\s*var ' + n + ' = BI\\.').test(r);
-      });
-    });
-    log('[B] Niente di estratto e' + "' tornato dentro index.html", tornate.length === 0, tornate.join(', '));
-
-    const alias = nomi.filter(function (n) {
-      return righe.some(function (r) { return new RegExp('^\\s*var ' + n + ' = BI\\.' + n + ';\\s*$').test(r); });
-    });
-    log('[B] ...e ognuno ha il suo alias nello script principale',
-      alias.length === nomi.length, alias.length + ' su ' + nomi.length);
-  }
+  // Le quattro domande comuni a ogni strato estratto (tests/strati.js).
+  // ⚠️ `dopo: app/avvio.js` non e' simmetrico alle altre: e' l'unico ordine
+  // fra due file estratti che serve per una ragione di CONTENUTO — avvio.js
+  // legge BI.THEME_KEY, che nasce qui.
+  const nomi = verificaStruttura(log, 'identita', ['app', 'identita.js'],
+    { prima: ['app/spazio.js'], dopo: ['app/avvio.js'] });
 
   // ── [C] LA CHIAVE DEL TEMA: UN PUNTO SOLO ───────────────────────────
   {

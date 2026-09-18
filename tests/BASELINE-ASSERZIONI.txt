@@ -95,4 +95,4 @@ test_testi_interfaccia.js 21
 test_uscita_dal_modulo.js 11
 test_voicecoach.js 26
 test_progressi_estratto.js 10
-test_identita_estratta.js 15
+test_identita_estratta.js 13
