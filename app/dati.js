@@ -1,3 +1,9 @@
+// DIPENDE DA: avvio.js [chiamata], index.html [chiamata]
+// ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
+// tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
+// una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
+// a chi riordina i tag.
+//
 // LO STRATO `dati` — chi va a prendere i file e li tiene in cache.
 //
 // Estratto da index.html il 2026-09-18. Quattordici pezzi, 157 righe.

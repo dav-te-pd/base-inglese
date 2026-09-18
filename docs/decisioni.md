@@ -1250,6 +1250,20 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
+**FATTO il 2026-09-18 — la dichiarazione delle dipendenze, e NON era nel piano.**
+
+Nasce da una domanda: *«quante funzioni di modulo sono nominate da uno strato? Se sono poche è un caso, se sono molte l'ordine dei file diventa un vincolo vero.»* La risposta misurata è **24 su 134**, e si divide in due gruppi diversi: **sette** condivise per mestiere che stanno in mezzo a un modulo solo per posizione, e **diciassette** davvero interne a un modulo e chiamate da codice generico — `closeAttemptPopup` da riga 4010, `dgAudioProtected` da 10540, `vcUpdateMicNotice` da 3022.
+
+> **Quindi la risposta giusta non era «diventerà un vincolo»: lo È GIÀ, e lo era prima di questo passo.** Da oggi si dichiara invece di scoprirlo.
+
+Ogni file di `app/` porta in testa `// DIPENDE DA:`, e `tests/test_dipendenze_dichiarate.js` la confronta col grafo **misurato dal codice**. L'elenco non sta dentro il test di proposito: un elenco scritto a mano invecchia al primo strato nuovo, in silenzio, e continua a leggersi bene — la stessa forma che in `CLAUDE.md` aveva lasciato quattro file di contenuto senza protezione.
+
+**Il grafo vero è piccolo, ed è una buona notizia:** tre dipendenze, tutte a tempo di **chiamata**, quindi **oggi l'ordine dei tag non è ancora un vincolo stretto**. Una sola va **all'insù** (`dati.js` → `index.html`), ed è per scelta dichiarata.
+
+⚠️ **Tre cose NON fatte in questo giro, e il motivo è lo stesso: nel repository non c'erano.** `stopAllAudio` non esiste in nessuna delle forme della regola 41 — l'unico `stopAll*` è `stopAllModuleActivity`, 31 occorrenze. Non ci sono nomi definiti in due file (solo `CONFIG`, cinque alias allo stesso globale). E delle sette condivise **tre** cominciano per `render`, non sei, e stanno in tre regioni diverse — lo `switch` che le avrebbe chiamate insieme non esiste dal passo 21, sostituito da `BI.moduli[kind]`.
+
+---
+
 **FATTO il 2026-09-18 — `app/dati.js`, terza delle cinque cose che servono al primo modulo.** 14 pezzi, 157 righe — **poi 12 esposti e uno in più, dopo il rosso qui sotto.**
 
 ⚠️ **E IL GIRO NON È FINITO COM'ERA COMINCIATO: LA SUITE È ANDATA ROSSA SU SETTE FILE, E LA CAUSA ERA UNA SOLA.**

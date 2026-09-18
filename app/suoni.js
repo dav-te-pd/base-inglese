@@ -1,3 +1,7 @@
+// DIPENDE DA: nessuno
+// Nessun altro file di `app/` e nessun nome di `index.html`: questo file si
+// regge da solo, e l'ordine del suo tag non e' un vincolo.
+//
 // LO STRATO `suoni` — i toni dell'app, che NON sono la voce.
 //
 // Estratto da index.html il 2026-09-18. Undici pezzi, 111 righe, **zero

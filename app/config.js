@@ -1,3 +1,7 @@
+// DIPENDE DA: nessuno
+// Nessun altro file di `app/` e nessun nome di `index.html`: questo file si
+// regge da solo, e l'ordine del suo tag non e' un vincolo.
+//
 // ============================================================
 // CONFIGURAZIONE CENTRALE — il primo pezzo uscito da index.html.
 //

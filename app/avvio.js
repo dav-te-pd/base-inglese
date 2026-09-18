@@ -1,3 +1,9 @@
+// DIPENDE DA: identita.js [chiamata]
+// ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
+// tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
+// una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
+// a chi riordina i tag.
+//
 // LO STRATO `avvio` — quello che gira PRIMA che si sappia chi e' lo studente.
 //
 // Estratto da index.html il 2026-09-17 (passo 22, primo strato). Non e' stato
