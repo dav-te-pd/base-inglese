@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260917a**
+**Versione: 20260918a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -170,14 +170,44 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 13. **Prima di creare una nuova funzione o calcolo, verificare se ne esiste già uno riusabile nel codice, ed estenderlo invece di duplicarlo.** Quando riusi o crei una funzione degna di nota, comunicane il nome esatto nel riepilogo di risposta.
 
-14. **Chiudere ogni risposta con una sezione fissa "⚠️ DA REGISTRARE"** contenente:
+14. **Ogni risposta ha CINQUE blocchi fissi, sempre gli stessi e sempre in
+    quest'ordine.** Se uno è vuoto non si toglie: si scrive che è vuoto.
+
+    | Blocco | Cosa ci va | Quando è vuoto |
+    |---|---|---|
+    | **COSA È SUCCESSO** | i fatti del turno, **a punti numerati** — mai in prosa continua | «niente: turno di sola misura» |
+    | **VERIFICHE** | suite locale, conteggio asserzioni, CI, con gli esiti | «non lanciate» **e perché** |
+    | **DA VERIFICARE SU PAGES** | cosa deve guardare chi guida il progetto, e **quale delle cose elencate è quella che conta** | «niente da guardare» **e perché** |
+    | **⚠️ DA REGISTRARE** | l'elenco qui sotto | «nulla da registrare» |
+    | **DOMANDA** | le scelte da fare, numerate, con le opzioni — **e le problematiche** | «nessuna, procedo» |
+
+    **In "⚠️ DA REGISTRARE" ci va:**
     - funzioni e componenti nuovi o generalizzati, con il nome esatto;
     - parametri aggiunti ad `APP_CONFIG`, con nome e valore;
     - duplicazioni notate e non corrette;
     - quali file di test sono stati lanciati e perché — se la suite completa, quale codice condiviso l'ha resa necessaria; se un sottoinsieme, perché la modifica era contenuta a quel modulo;
     - **file creati in questo turno e non committati**, con il motivo esplicito per cui sono rimasti fuori dal repository. Se sono stati committati tutti, dirlo. Il silenzio su questo punto non va letto come "è tutto salvato" (regola 22).
 
-    Se non c'è nulla, scrivere "nulla da registrare". Mai diluire queste informazioni nella prosa del riepilogo.
+    **Le problematiche vanno in DOMANDA, non sparse.** Compreso il caso più
+    importante: **un fatto del messaggio ricevuto che non corrisponde al
+    repository** — un file che non c'è, un numero che non torna, un lavoro dato
+    per fatto. Sta lì perché è lì che viene letto, e perché deve stare in un
+    posto solo.
+
+    **Un blocco nuovo non si inventa:** se serve dire altro, è un punto dentro
+    COSA È SUCCESSO. Cinque blocchi, sempre cinque.
+
+    *Perché la struttura è fissa, e la fissa chi legge e non chi scrive: chi
+    guida il progetto legge queste risposte **senza il repository davanti**. Una
+    risposta che cambia forma a ogni turno lo costringe a cercare dove sta la
+    cosa che gli serve, e quando non la trova risponde ad altro — che è
+    successo, ed è costato otto giri. **Una sezione che c'è sempre si trova
+    senza cercarla, anche quando è vuota.***
+
+    ⚠️ **E il blocco vuoto NON si salta.** «Non lanciate» è
+    un'informazione; l'assenza del blocco è un silenzio, e un silenzio si legge
+    come «è andato tutto bene». *È la stessa forma della regola 37: una misura
+    che non misura non somiglia a un errore, somiglia a un risultato.*
 
 15. **Dopo aver scritto una modifica, guardare cosa si è effettivamente toccato — non cosa era stato chiesto — per decidere quali test lanciare.** Se la modifica resta dentro codice specifico di un modulo, bastano i test di quel modulo. Se tocca anche una sola riga di codice condiviso — un componente, una funzione, un parametro usato altrove — va lanciata la suite di regressione completa. Nel dubbio, la suite completa. Il criterio è il diff reale una volta fatta la modifica, non l'intenzione dichiarata nella richiesta: una richiesta piccola può finire per toccare qualcosa di condiviso, e lo si scopre solo dopo aver scritto il codice.
 
