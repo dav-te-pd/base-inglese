@@ -10,6 +10,7 @@
 <script src="app/avvio.js"></script>
 <script src="app/progressi.js"></script>
 <script src="app/audio.js"></script>
+<script src="app/suoni.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3615,6 +3616,15 @@
   // utenti: le pulizie dei moduli, che dal passo 21-bis si REGISTRANO invece
   // di essere nominate una per una da stopAllModuleActivity.
   var BI = window.BI;
+  var warmAudioContextOnce = BI.warmAudioContextOnce;
+  var sfxGetAudioCtx = BI.sfxGetAudioCtx;
+  var sfxPlayTone = BI.sfxPlayTone;
+  var sfxPlayCorrectSound = BI.sfxPlayCorrectSound;
+  var sfxPlayWrongSound = BI.sfxPlayWrongSound;
+  var sfxPlayTraguardoSound = BI.sfxPlayTraguardoSound;
+  var sfxPlayCountdownSound = BI.sfxPlayCountdownSound;
+  var sfxPlayReadyCountdownSound = BI.sfxPlayReadyCountdownSound;
+  var sfxPlayExitSound = BI.sfxPlayExitSound;
   var loadVoices = BI.loadVoices;
   var looksLikeMaleVoice = BI.looksLikeMaleVoice;
   var pickVoice = BI.pickVoice;
@@ -3724,22 +3734,6 @@
      this same closure (hoisted) but that's fine — this only ever runs
      from a later user-triggered event.
      ============================================================ */
-  function warmAudioContextOnce() {
-    var ctx = sfxGetAudioCtx();
-    if (!ctx) return;
-    if (ctx.state === 'suspended') { try { ctx.resume(); } catch (e) {} }
-    try {
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      gain.gain.setValueAtTime(0, ctx.currentTime);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.01);
-    } catch (e) {}
-  }
-  document.addEventListener('pointerdown', warmAudioContextOnce, { once: true });
-  document.addEventListener('keydown', warmAudioContextOnce, { once: true });
 
   /* ============================================================
      ICONS — inline Lucide SVG markup (MIT/ISC, self-contained, no
@@ -9703,12 +9697,6 @@
   var srCurrentOptions = [];
   var srTimeoutId = null;
   var srCountdownTimeoutId = null;
-  // sfxAudioCtx is NOT Speed Match's own state despite sitting in this
-  // block — it's the one shared AudioContext behind every sfxPlay*
-  // function below, used by every module (censimento audit, job 1: the
-  // old "sr" prefix on the whole sound library read as Speed-Match-only
-  // and invited exactly this kind of misplacement).
-  var sfxAudioCtx = null;
 
   // Mescola, e basta: nessun modulo puo' reclamarla. Il nome era `shuffle`
   // fino al 2026-09-08 — un prefisso ereditato dal primo modulo che l'ha
@@ -9727,101 +9715,12 @@
     return a;
   }
 
-  function sfxGetAudioCtx() {
-    if (!sfxAudioCtx) {
-      var AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return null;
-      sfxAudioCtx = new AC();
-    }
-    // The browser can auto-suspend an idle AudioContext (power saving,
-    // backgrounding); a suspended context drops start()'d oscillators
-    // silently, no error — which is exactly how Traguardo could "not be
-    // heard" even though this function was called correctly. Every sound
-    // call goes through here, so resuming here covers all of them, not
-    // just the boot-time warm-up (warmAudioContextOnce).
-    if (sfxAudioCtx.state === 'suspended') { try { sfxAudioCtx.resume(); } catch (e) {} }
-    return sfxAudioCtx;
-  }
 
-  // volume defaults to 0.15 (Corretto/Traguardo's own level) when omitted —
-  // Sbagliato/Countdown pass their own CONFIG.sound.events.*.volume.
-  function sfxPlayTone(freq, durationMs, volume) {
-    var ctx = sfxGetAudioCtx();
-    if (!ctx) return;
-    try {
-      var osc = ctx.createOscillator();
-      var gain = ctx.createGain();
-      osc.type = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(volume === undefined ? 0.15 : volume, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + durationMs / 1000);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + durationMs / 1000);
-    } catch (e) {}
-  }
 
-  // ---- Event-sound catalog readers (see CONFIG.sound.events' own
-  // comment) — every caller below names the EVENT it just had, never a
-  // button; each function reads ONLY its own CONFIG.sound.events entry,
-  // so retuning a pitch/volume/duration in config is the only way to
-  // change what plays, anywhere. "sfx" (not "sr"): this whole family is
-  // called from every module — Dialogo, Voice Coach, Match Practice, Flash
-  // Card, Speed Match alike — never Speed Match's own, so it needed a
-  // prefix that says "global" the moment it stopped being one module's
-  // (censimento audit, job 1). ----
-  function sfxPlayCorrectSound() {
-    var cfg = CONFIG.sound.events.corretto;
-    sfxPlayTone(cfg.freq, cfg.durationMs);
-  }
-  function sfxPlayWrongSound() {
-    var cfg = CONFIG.sound.events.sbagliato;
-    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
-  }
 
-  // Traguardo: three ascending notes via sfxPlayTone in sequence (CLAUDE.md
-  // rule 13 — no new synthesis technique), CONFIG.sound.events.traguardo's
-  // own frequencies/durations/gap. Plays whenever a module closes with a
-  // positive or neutral outcome — Speed Match, Match Practice and Flash
-  // Card's own Finale (unconditionally: those have no verde/giallo
-  // distinction), Dialogo's Finale only on "Sì, lo so" (never on "Non
-  // ancora" — see dgFinishModule), Voice Practice/Voice Check's own Finale
-  // below, Repeat Aloud/Story Cards's own completion button (their own
-  // click IS the completion event — see CONFIG.sound's own comment).
-  function sfxPlayTraguardoSound() {
-    var cfg = CONFIG.sound.events.traguardo;
-    cfg.notes.forEach(function (freq, i) {
-      setTimeout(function () { sfxPlayTone(freq, cfg.noteDurationMs); }, i * (cfg.noteDurationMs + cfg.noteGapMs));
-    });
-  }
 
-  // Countdown: plays once when a Dialogo per-line timer bar finishes (see
-  // dgLineTimerFinished) — never a tick during the bar itself, that time
-  // is reserved for the user to speak out loud.
-  function sfxPlayCountdownSound() {
-    var cfg = CONFIG.sound.events.countdown;
-    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
-  }
 
-  // One note per digit of a 3-2-1 "get ready" countdown — shared by Speed
-  // Round's srRunCountdown and Dialogo Continuo's dgRunReadyCountdown
-  // (CLAUDE.md rule 13). isFinal (the last digit, "1") gets the slightly
-  // higher CONFIG.sound.events.ready.finalFreq; every other digit gets the
-  // same freq.
-  function sfxPlayReadyCountdownSound(isFinal) {
-    var cfg = CONFIG.sound.events.ready;
-    sfxPlayTone(isFinal ? cfg.finalFreq : cfg.freq, cfg.durationMs);
-  }
 
-  // Uscita: the "Ho finito, torna alla mappa" button on every Schermata
-  // Finale (job 6, 3rd collaudo) — wired once in renderSummaryScreen, not
-  // per module. See CONFIG.sound.events.uscita's own comment for why it's
-  // pitched below Traguardo instead of reusing it.
-  function sfxPlayExitSound() {
-    var cfg = CONFIG.sound.events.uscita;
-    sfxPlayTone(cfg.freq, cfg.durationMs, cfg.volume);
-  }
 
   function srClearTimer() {
     if (srTimeoutId) { clearTimeout(srTimeoutId); srTimeoutId = null; }

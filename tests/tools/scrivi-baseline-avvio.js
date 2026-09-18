@@ -39,7 +39,13 @@ const STORIA = [
   "            Sta prima di avvio.js perche' avvio legge BI.THEME_KEY.",
   "2026-09-18  app/audio.js entra come SESTO script, dopo progressi. Il conto",
   "            passa da 6 a 7. E' l'ultimo strato del passo 22: da qui il",
-  "            conto non cambia piu' fino al 23."
+  "            conto non cambia piu' fino al 23.",
+  "2026-09-18  app/suoni.js entra come SETTIMO script, dopo audio. Il conto",
+  "            passa da 7 a 8. ⚠️ E la riga qui sopra diceva «da qui il conto",
+  "            non cambia piu' fino al 23»: FALSA dopo un giorno. Il 22 era",
+  "            chiuso per gli STRATI e non per i moduli — il modulo piu'",
+  "            piccolo ha venti dipendenze irraggiungibili, e i suoni sono",
+  "            una di quelle. Escono per servire chi verra' dopo."
 ];
 
   const intestazione = [
