@@ -93,8 +93,21 @@ async function run() {
     const conf = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
     log('[A] APP_CONFIG non dichiara più people', !/^\s*people\s*:\s*\{/m.test(conf));
     log('[A] APP_CONFIG non dichiara più places', !/^\s*places\s*:\s*\{/m.test(conf));
+    // ⚠️ LA COSTANTE NON E' SPARITA: SI E' SPOSTATA. Dal 2026-09-18 vive in
+    // `app/dati.js` insieme agli altri tre percorsi e ai quattro fetch
+    // dell'app. L'asserzione e' diventata rossa per una DECISIONE, non per
+    // una regressione — quinta comparsa della famiglia ⓪-undecies — quindi
+    // si SEGUE, non si toglie: l'invariante e' sempre quello, *il percorso
+    // sta in una costante e non dentro una riga di fetch*, e cambia solo
+    // dove lo si va a leggere.
+    //
+    // Il divieto del fetch nudo resta su ENTRAMBI i file: toglierlo da
+    // index.html perche' «tanto li' non ci sono piu' fetch» renderebbe la
+    // riga vera per costruzione il giorno in cui uno tornasse.
+    const datiJs = fs.readFileSync(repoPath('app', 'dati.js'), 'utf8');
     log('[A] Il percorso del magazzino sta in una costante, non dentro un fetch',
-      /var PERSONALIZATION_TABLES_FILE = '/.test(html) &&
+      /var PERSONALIZATION_TABLES_FILE = '/.test(datiJs) &&
+      !/fetch\('data\/inglese\/it\/tabelle/.test(datiJs) &&
       !/fetch\('data\/inglese\/it\/tabelle/.test(html));
     log('[A] resolveSlotTable riceve il magazzino invece di prenderselo da CONFIG',
       /function resolveSlotTable\(tableRef, episodeData, tables\)/.test(html));
