@@ -1260,7 +1260,7 @@ Tre delle quattordici cose esposte erano **variabili riassegnate** — `moduleIn
 
 > **MA LA COSA DA PORTARSI DIETRO È L'ALTRA METÀ, e vale più del guasto.** `verificaStruttura` — l'aiutante condiviso dai sei test di strato — chiedeva *«ogni nome esposto ha il suo alias»*. Quella domanda è **falsa per una classe intera di nomi**: per una variabile che cambia, l'alias è esattamente la cosa da non fare. **La riga che doveva difendere il confine chiedeva di romperlo.** Nove strati ci sono passati perché nessuno aveva ancora esposto una variabile che cambia.
 
-Da oggi c'è `nomiRiassegnati()` e l'asserzione che **vieta** l'alias su un nome che lo strato riassegna (+1 × 6 file): il guasto cade sulla riga che lo nomina, invece che su sette file lontani che parlano d'altro.
+Da oggi c'è `nomiRiassegnati()` e l'asserzione che **vieta** l'alias su un nome che lo strato riassegna (+1 × 6 file, baseline **1368 → 1374**): il guasto cade sulla riga che lo nomina, invece che su sette file lontani che parlano d'altro. *Dei sette rossi, **sei** venivano dall'alias e **uno** era un'altra cosa — `test_tabelle_personalizzazione.js` cercava `PERSONALIZATION_TABLES_FILE` in `index.html` dopo che la costante era andata in `app/dati.js` (⓪-undecies, quinta volta). Due difetti diversi nello stesso commit, e il secondo si vedeva solo dopo aver tolto il primo.*
 
 *Terza volta in tre giorni che un confine sbagliato non produce nessun rosso — `renderStars`, `applyEpisodeDialogue`, e adesso questo. Le prime due le ha respinte la misura prima di entrare; **questa è entrata**, ed è costata una suite intera. La differenza fra le due è che le prime due le stavo guardando.*
 
