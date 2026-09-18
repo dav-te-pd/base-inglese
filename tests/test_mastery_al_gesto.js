@@ -135,7 +135,19 @@ async function run() {
   // [A] Il punto unico di scrittura. Strutturale: non apre il browser.
   // ---------------------------------------------------------------
   {
-    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+    // ⚠️ DAL 2026-09-18 LEGGE ANCHE `app/`, e non e' un allargamento: e' la
+    // stessa domanda su un mondo che ha tredici file invece di uno. Col passo
+    // che ha estratto `app/mappa.js` il codice cercato qui e' uscito da
+    // index.html, e il test diceva «non trovato» — **rosso per una DECISIONE,
+    // non per una regressione.** L'invariante non e' cambiato: vale su tutta
+    // l'app, non su un file.
+    //
+    // *Letto cosi', resta giusto anche quando usciranno gli altri sette
+    // moduli, invece di dover essere corretto sette volte.*
+    const html = [repoPath('index.html')].concat(
+      fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+        .map(function (f) { return repoPath('app', f); })
+    ).map(function (f) { return fs.readFileSync(f, 'utf8'); }).join('\n');
     const righe = html.split('\n').map((r, i) => ({ n: i + 1, testo: r.replace(/\/\/.*$/, '') }));
 
     const chiamate = (nome) => righe.filter(r =>

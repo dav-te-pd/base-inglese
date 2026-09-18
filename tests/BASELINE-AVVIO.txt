@@ -70,6 +70,10 @@
 #               una scelta: prende i suoi alias a tempo di parsing, quindi in
 #               <head> moriva con «slotOptions is not a function». E' la prima
 #               volta che l'ordine dei tag rompe qualcosa davvero.
+#   2026-09-18  app/mappa.js entra come TREDICESIMO script, seconda fila. Il
+#               conto passa da 13 a 14. E' l'ultimo pezzo del 22 che non e' un
+#               modulo: mappa, Pannello Admin, boot, goHome, la Schermata
+#               Finale e la schermata d'errore.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -84,8 +88,9 @@ script 8 app/quiz-engine.js
 script 9 app/dati.js
 script 10 app/orchestrazione.js
 script 11 app/ui-condivisa.js
-script 12 app/personalizza.js
-script 13 (inline)
+script 12 app/mappa.js
+script 13 app/personalizza.js
+script 14 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory

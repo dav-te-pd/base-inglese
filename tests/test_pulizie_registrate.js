@@ -107,7 +107,19 @@ async function apriDialogo(page, utente) {
 async function run() {
   // ── [A] I NOMI SONO SPARITI DAL PUNTO UNICO ──────────────────────────
   {
-    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+    // ⚠️ DAL 2026-09-18 LEGGE ANCHE `app/`, e non e' un allargamento: e' la
+    // stessa domanda su un mondo che ha tredici file invece di uno. Col passo
+    // che ha estratto `app/mappa.js` il codice cercato qui e' uscito da
+    // index.html, e il test diceva «non trovato» — **rosso per una DECISIONE,
+    // non per una regressione.** L'invariante non e' cambiato: vale su tutta
+    // l'app, non su un file.
+    //
+    // *Letto cosi', resta giusto anche quando usciranno gli altri sette
+    // moduli, invece di dover essere corretto sette volte.*
+    const html = [repoPath('index.html')].concat(
+      fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+        .map(function (f) { return repoPath('app', f); })
+    ).map(function (f) { return fs.readFileSync(f, 'utf8'); }).join('\n');
     const i = html.indexOf('function stopAllModuleActivity');
     const corpo = html.slice(i, html.indexOf('\n  }', i));
     // ⚠️ I COMMENTI SI TOLGONO PRIMA DI CERCARE. Il corpo spiega la misura

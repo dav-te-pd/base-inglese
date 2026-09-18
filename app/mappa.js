@@ -933,6 +933,22 @@
     return grades[(i + 1) % grades.length];
   }
 
+  // ⚠️ I DUE PULSANTI DELLA SCHERMATA D'ERRORE SONO VENUTI COL FILE, e non per
+  // simmetria: «Riprova» legge `loadErrorRetry`, che e' qui dentro. Lasciandoli
+  // in index.html il pulsante non faceva niente — **senza un errore in
+  // console**, perche' il guasto era dentro un listener e non al caricamento.
+  // Il rosso l'ha trovato test_errore_caricamento guidando l'app, non una
+  // verifica strutturale.
+  document.getElementById('load-error-retry').addEventListener('click', function () {
+    var riprova = loadErrorRetry;
+    loadErrorRetry = null;
+    if (riprova) riprova();
+  });
+
+  document.getElementById('load-error-back').addEventListener('click', function () {
+    openEpisodeMap();
+  });
+
   BI.openEpisodeMap = openEpisodeMap;
   BI.completeModule = completeModule;
   BI.openConfigPanel = openConfigPanel;

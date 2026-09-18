@@ -73,7 +73,11 @@ const STORIA = [
   "            ⚠️ E' IL PRIMO MODULO, non uno strato — e il suo posto non e'",
   "            una scelta: prende i suoi alias a tempo di parsing, quindi in",
   "            <head> moriva con «slotOptions is not a function». E' la prima",
-  "            volta che l'ordine dei tag rompe qualcosa davvero."
+  "            volta che l'ordine dei tag rompe qualcosa davvero.",
+  "2026-09-18  app/mappa.js entra come TREDICESIMO script, seconda fila. Il",
+  "            conto passa da 13 a 14. E' l'ultimo pezzo del 22 che non e' un",
+  "            modulo: mappa, Pannello Admin, boot, goHome, la Schermata",
+  "            Finale e la schermata d'errore."
 ];
 
   const intestazione = [
