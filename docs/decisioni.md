@@ -1250,6 +1250,16 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
+**FATTO il 2026-09-18 — `app/personalizza.js`, IL PRIMO MODULO.**
+
+Il caso **più diverso** degli otto, scelto apposta: l'unico senza `dataFile`, l'unico di categoria Inizio. *Il caso più diverso non va tenuto per ultimo: va messo per primo, quando la forma è ancora modificabile* — è il ribaltamento della regola 42, e ha funzionato: ha trovato **tre confini sbagliati** prima che diventassero la forma di tutti e otto.
+
+**Undici nomi all'insù verso `index.html`, e la ragione è scritta nel file:** un modulo non può non nominare l'episodio su cui lavora. Sei spariranno coi resti di `ui-condivisa` e con `mappa`, tre col catalogo, **due** solo quando lo stato di sessione avrà una casa. *Se al terzo modulo è ancora undici, il progetto si è fermato e quel file è il posto dove si vede.*
+
+**Il tag sta nella SECONDA fila, dopo `ui-condivisa`** — e non per stile: gli alias si prendono il valore a tempo di parsing. È la prima volta che l'ordine dei tag rompe qualcosa davvero.
+
+---
+
 **FATTO il 2026-09-18 — `app/ui-condivisa.js`, e i moduli adesso possono cominciare.**
 
 29 pezzi, 430 righe, seconda fila. È l'interfaccia che un modulo **indossa** e che non sa quale modulo sia: i due overlay, i testi letti dal file delle istruzioni, il sottotitolo d'esito, le stelle, i pulsanti di velocità, i risolutori di segnaposto.
