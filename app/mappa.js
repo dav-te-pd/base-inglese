@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], index.html [chiamata], orchestrazione.js [parsing], progressi.js [parsing], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: audio.js [parsing], avvio.js [parsing], dati.js [parsing], identita.js [parsing], index.html [chiamata], orchestrazione.js [parsing], progressi.js [parsing], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ LO STRATO DELLA MAPPA E DEL PANNELLO ADMIN — l'ultimo pezzo del 22 che non
 // e' un modulo.
 //
@@ -31,6 +31,8 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
+  var CONFIG_OVERRIDES_KEY = BI.CONFIG_OVERRIDES_KEY;
+  var loadStoryCardsExplanationStats = BI.loadStoryCardsExplanationStats;
   var LOAD_ERROR_LAST_RESORT = BI.LOAD_ERROR_LAST_RESORT;
   var fermaLaVoce = BI.fermaLaVoce;
   var getUserName = BI.getUserName;
@@ -876,6 +878,61 @@
   }
 
   BI.chiudiPannelloSeAperto = chiudiPannelloSeAperto;
+  function renderStoryCardsExplanationStatsPanel() {
+    var el = document.getElementById('config-story-cards-explanation-stats');
+    if (!el) return;
+    var stats = loadStoryCardsExplanationStats(BI.episodioCorrente().id, getUserName());
+    var lineIds = Object.keys(stats.byLine);
+    var rowsHtml = lineIds.map(function (id) {
+      var s = stats.byLine[id];
+      var corrente = s.corrente ? STORY_CARDS_ANSWER_LABEL[s.corrente] : '—';
+      var cambi = s.cambi ? ' · cambiata ' + s.cambi + (s.cambi === 1 ? ' volta' : ' volte') : '';
+      return '<div class="config-audio-usage-row"><span>' + id + '</span><span>' + corrente + cambi + '</span></div>';
+    }).join('');
+    // I due segnali sono diversi e si leggono diversamente, quindi si dicono
+    // diversamente: la riga dice DOVE sta ognuno adesso, il totale quanti ci
+    // stanno. E i due numeri non si sommano fra loro — uno conta persone,
+    // l'altro ripensamenti.
+    var tot = { chiara: 0, nonAncora: 0, nonChiara: 0, cambi: 0 };
+    lineIds.forEach(function (id) {
+      var s = stats.byLine[id];
+      ['chiara', 'nonAncora', 'nonChiara'].forEach(function (k) { tot[k] += (s[k] || 0); });
+      tot.cambi += (s.cambi || 0);
+    });
+    el.innerHTML =
+      '<p class="config-field-hint">Utente corrente (' + getUserName() + '), episodio ' + BI.episodioCorrente().id +
+      '. Ogni battuta tiene la risposta <strong>corrente</strong>: cambiare idea sposta il voto, non ne aggiunge uno. ' +
+      'Una battuta ferma su "non chiara" segnala una spiegazione da riscrivere; una <strong>cambiata pi\u00f9 volte</strong> ' +
+      'segnala una spiegazione <strong>ambigua</strong>, che \u00e8 un difetto diverso. ' +
+      'Oggi i profili sono uno, quindi i totali per risposta valgono quante battute ci stanno sopra.</p>' +
+      (rowsHtml || '<p class="config-field-hint">Nessuna risposta finora.</p>') +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>chiara · non ancora · non chiara</span><span>' +
+      tot.chiara + ' · ' + tot.nonAncora + ' · ' + tot.nonChiara + '</span></div>' +
+      '<div class="config-audio-usage-row config-audio-usage-total"><span>ripensamenti in tutto</span><span>' + tot.cambi + '</span></div>';
+  }
+
+  function setConfigPath(path, value) {
+    var obj = window.APP_CONFIG;
+    for (var i = 0; i < path.length - 1; i++) obj = obj[path[i]];
+    obj[path[path.length - 1]] = value;
+  }
+
+  function persistConfigSection(sectionKey) {
+    var overrides = {};
+    try { overrides = JSON.parse(localStorage.getItem(CONFIG_OVERRIDES_KEY) || '{}'); } catch (e) { overrides = {}; }
+    overrides[sectionKey] = window.APP_CONFIG[sectionKey];
+    try { localStorage.setItem(CONFIG_OVERRIDES_KEY, JSON.stringify(overrides)); } catch (e) {}
+  }
+
+  // Il grado successivo nel giro CONFIG.grades (A → B → C → D → A). Un
+  // solo tocco cambia grado: niente menu a tendina né finestre, così la
+  // vista resta veloce da usare quando si prova un ordine diverso.
+  function nextGrade(grade) {
+    var grades = CONFIG.grades;
+    var i = grades.indexOf(grade);
+    return grades[(i + 1) % grades.length];
+  }
+
   BI.openEpisodeMap = openEpisodeMap;
   BI.completeModule = completeModule;
   BI.openConfigPanel = openConfigPanel;
