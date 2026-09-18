@@ -3643,6 +3643,13 @@
   var views = BI.views;
   var showView = BI.showView;
   var chiudiOverlayAperti = BI.chiudiOverlayAperti;
+  var renderListenBlock = BI.renderListenBlock;
+  var speakListenBlock = BI.speakListenBlock;
+  var introDismissPref = BI.introDismissPref;
+  var dialogueLineAlign = BI.dialogueLineAlign;
+  var speakerLabel = BI.speakerLabel;
+  var openAttemptPopup = BI.openAttemptPopup;
+  var closeAttemptPopup = BI.closeAttemptPopup;
   var openEpisodeMap = BI.openEpisodeMap;
   var completeModule = BI.completeModule;
   var openConfigPanel = BI.openConfigPanel;
@@ -4273,7 +4280,7 @@
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-help-action');
       if (action === 'instructions') {
-        renderModuleInstructionField(activeHelpModule, 'helpReminder', uiText('aiuto.titleInstructions'));
+        renderModuleInstructionField(BI.moduloDiAiutoAttivo(), 'helpReminder', uiText('aiuto.titleInstructions'));
       } else {
         document.getElementById('help-overlay-title').textContent =
           uiText(action === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
@@ -4282,7 +4289,7 @@
       return;
     }
     if (e.target.id === 'help-form-back') {
-      openHelpMenu(activeHelpModule);
+      openHelpMenu(BI.moduloDiAiutoAttivo());
     }
   });
 
@@ -4294,7 +4301,7 @@
     if (!text) return;
     saveHelpRequest(getUserName(), {
       episodeId: currentEpisode.id,
-      moduleId: activeHelpModule.id,
+      moduleId: BI.moduloDiAiutoAttivo().id,
       type: type,
       text: text,
       createdAt: new Date().toISOString()
@@ -5230,32 +5237,7 @@
      costruisce le proprie righe a runtime chiede blocco: true.
      ============================================================ */
 
-  // opts: { say, mini, blocco, extraClass }
-  //   say        — l'identificatore che finisce nell'attributo del tocco
-  //   mini       — solo il pulsante, senza le velocita'
-  //   blocco     — avvolge in <div class="listen-block">, per chi non ce l'ha
-  //   extraClass — classi in piu' sul contenitore
-  function renderListenBlock(opts) {
-    var o = opts || {};
-    var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
-    var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
-      attr + '="' + o.say + '" aria-label="' + uiText('bloccoAscolto.listenLabel') + '">' + icon('volume-2') + '</button>';
-    if (o.mini) return bottone;
-    var dentro = bottone +
-      '<div class="rate-group" role="group" aria-label="' + uiText('bloccoAscolto.rateGroupLabel') + '">' + renderRateButtons(o.say) + '</div>';
-    if (!o.blocco) return dentro;
-    return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
-  }
 
-  // Il tocco su un Blocco Ascolto. Il testo NON lo decide questa funzione: e'
-  // l'unica cosa che varia davvero fra i sei moduli — una ricerca nel file
-  // episodio, vcTargetText(), fcBackText(), l'opzione corrente — quindi lo
-  // risolve chi chiama e lo passa. Qui sta il resto, che era identico in
-  // cinque punti: leggere la velocita' dal pulsante e parlare.
-  function speakListenBlock(btn, testo) {
-    var rateAttr = btn.getAttribute('data-rate');
-    toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
-  }
 
   function renderRepeatAloud(data) {
     var ruleHtml = data.generalRule
@@ -5279,13 +5261,6 @@
 
 
 
-  // options.dismissPref for openHowItWorksOverlay, built from a module kind.
-  function introDismissPref(kind) {
-    return {
-      get: function () { return isIntroDismissed(kind, getUserName()); },
-      set: function (val) { setIntroDismissed(kind, getUserName(), val); }
-    };
-  }
 
 
 
@@ -5447,15 +5422,6 @@
 
 
 
-  // Shared by Story Cards and every Dialogo module (CLAUDE.md rule 13) —
-  // which side of the chat a line renders on. Driven by the line's own
-  // "ruolo" ('esterno' | 'famiglia') in the episode data, never derived
-  // from the speaker's name/id: names are personalizable per user, so a
-  // name-based rule (e.g. "guide" hardcoded) would silently break on a
-  // future episode with a different cast (a waiter, a police officer...).
-  function dialogueLineAlign(line) {
-    return line.ruolo === 'famiglia' ? 'right' : 'left';
-  }
 
   /* L'etichetta sopra la bolla. UNA sola strada: quella dichiarata nel file
      episodio, perché è contenuto (regola 4).
@@ -5473,9 +5439,6 @@
 
      Il ritorno su `speaker` quando l'etichetta manca è voluto: mostra l'id
      tecnico, che è brutto e si nota — meglio di una bolla senza nome. */
-  function speakerLabel(episode, speaker) {
-    return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
-  }
 
 
 
@@ -5820,27 +5783,7 @@
   var attemptPopupOnRetry = null;
   var attemptPopupOnNext = null;
 
-  function openAttemptPopup(wasCorrect, onRetry, onNext) {
-    attemptPopupOnRetry = onRetry || null;
-    attemptPopupOnNext = onNext || null;
-    document.getElementById('attempt-popup-retry').hidden = !attemptPopupOnRetry;
-    var fallback = wasCorrect
-      ? { title: 'Ce l\'hai fatta!', body: 'Continua pure, o vai avanti quando vuoi.' }
-      : { title: 'Tranquillo, capita!', body: 'Continua pure, o passa avanti quando vuoi.' };
-    document.getElementById('attempt-popup-title').textContent = fallback.title;
-    document.getElementById('attempt-popup-body').textContent = fallback.body;
-    document.getElementById('attempt-popup').classList.add('is-open');
-    loadFeedbackMessages().then(function (data) {
-      var group = data.valvolaSicurezzaMessages && data.valvolaSicurezzaMessages[wasCorrect ? 'riuscita' : 'nonRiuscita'];
-      if (!group) return;
-      document.getElementById('attempt-popup-title').textContent = group.title;
-      document.getElementById('attempt-popup-body').textContent = pickRandom(group.bodies);
-    }).catch(function () {});
-  }
 
-  function closeAttemptPopup() {
-    document.getElementById('attempt-popup').classList.remove('is-open');
-  }
 
   // Voice Practice's "TENTATIVO N DI M" always names the attempt the
   // student is ABOUT to make, not the one they just finished — set at
