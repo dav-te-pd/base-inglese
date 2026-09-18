@@ -28,7 +28,8 @@
 // (regola 38).
 //
 // IL CASO PIÙ DIVERSO (regola 42): **le tre pulizie che non appartengono a
-// nessun modulo** — `synth.cancel()`, `closeAttemptPopup()`,
+// nessun modulo** — `fermaLaVoce()` (era `synth.cancel()` fino al
+// 2026-09-18), `closeAttemptPopup()`,
 // `clearPendingMastery()`. Non sono il caso complicato: sono quelle a cui
 // manca un modulo che possa registrarle, e per questo restano nominate. Il
 // test le guarda apposta, perché un domani qualcuno potrebbe "finire la
@@ -126,7 +127,15 @@ async function run() {
 
     // Le tre condivise restano, ed è una decisione: non hanno un modulo che
     // possa registrarle. Se sparissero da qui, nessuno le chiamerebbe più.
-    ['synth.cancel', 'closeAttemptPopup', 'clearPendingMastery'].forEach(function (nome) {
+    //
+    // ⚠️ `fermaLaVoce` si chiamava `synth.cancel` fino al 2026-09-18, e questa
+    // riga è diventata rossa per una DECISIONE, non per una regressione
+    // (famiglia ⓪-undecies): `synth` era una risorsa condivisa da quattro
+    // strati futuri e adesso ha cinque domande davanti, così il nucleo audio
+    // può uscire in un file suo. **L'invariante non è cambiato — «la pulizia
+    // che ferma la voce resta nominata qui» — è cambiato il NOME con cui la si
+    // nomina.** La correzione non è togliere la riga: è seguirla.
+    ['fermaLaVoce', 'closeAttemptPopup', 'clearPendingMastery'].forEach(function (nome) {
       log('[A] La pulizia condivisa ' + nome + ' resta nominata', codice.indexOf(nome) !== -1);
     });
 
