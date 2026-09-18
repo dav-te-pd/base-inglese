@@ -67,7 +67,13 @@ const STORIA = [
   "            quattro alias in cima all'IIFE verso dati.js e quiz-engine.js.",
   "            Da qui l'ordine dei tag non e' piu' solo dichiarato, e' un",
   "            vincolo — e test_dipendenze_dichiarate [C] e' la riga che lo",
-  "            tiene fermo."
+  "            tiene fermo.",
+  "2026-09-18  app/personalizza.js entra come DODICESIMO script, seconda fila,",
+  "            DOPO ui-condivisa. Il conto passa da 12 a 13.",
+  "            ⚠️ E' IL PRIMO MODULO, non uno strato — e il suo posto non e'",
+  "            una scelta: prende i suoi alias a tempo di parsing, quindi in",
+  "            <head> moriva con «slotOptions is not a function». E' la prima",
+  "            volta che l'ordine dei tag rompe qualcosa davvero."
 ];
 
   const intestazione = [

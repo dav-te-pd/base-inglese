@@ -62,16 +62,24 @@ nodi.forEach(function (n) {
   // non e' «due», e' «il grafo e' quello che credo». `app/ui-condivisa.js`
   // dipende da `dati.js` e `quiz-engine.js`, ed e' voluto — uno strato di
   // interfaccia che legge i testi DEVE chiedere a chi li carica.
-  log('[B] Tre file di app/ dipendono da qualcosa',
-    conDipendenze.length === 3, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 3 -> 4 col primo modulo. I moduli dipendono per NATURA: usano
+  // l'interfaccia condivisa e i progressi. Il numero sale con loro ed e'
+  // previsto; quello che deve scendere e' l'ALTRO, quello verso index.html.
+  log('[B] Quattro file di app/ dipendono da qualcosa',
+    conDipendenze.length === 4, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
   // un file estratto che chiede qualcosa a chi non lo e' ancora: e' il verso
   // che la serie esiste per eliminare. Oggi e' uno solo — `app/dati.js`, che
   // chiede `BI.applyEpisodeDialogue` al catalogo, per scelta dichiarata.
-  log('[B] Una sola dipendenza ALL\'INSU\' verso index.html',
-    allInsu.length === 1 && allInsu[0].file === 'dati.js',
+  // ⚠️ DA 1 A 2 CON IL PRIMO MODULO, e questa e' la riga che conta davvero.
+  // Un numero che sale con una ragione scritta e' un progetto; senza, e' un
+  // difetto. La ragione: un modulo non puo' non nominare l'episodio su cui
+  // lavora, e il catalogo e' ancora in index.html. **Se al terzo modulo questo
+  // numero e' salito di tre invece che restare due, il progetto si e' fermato.**
+  log('[B] Due dipendenze ALL\'INSU\': dati.js e il primo modulo',
+    allInsu.length === 2,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -92,8 +100,11 @@ nodi.forEach(function (n) {
   // parsing e' legittima — `ui-condivisa` prende quattro alias in cima
   // all'IIFE — ma **obbliga l'ordine dei tag**, e chi ne aggiunge una deve
   // sapere che [C] diventa la riga che lo tiene fermo.
-  log('[B] Una sola dipendenza a tempo di PARSING, ed e\' ui-condivisa',
-    aParsing.length === 1 && aParsing[0].file === 'ui-condivisa.js',
+  // ⚠️ 1 -> 2: personalizza.js prende i suoi alias a tempo di parsing, ed e'
+  // il motivo per cui il suo tag sta nella seconda fila DOPO ui-condivisa. La
+  // riga [C] e' quella che tiene fermo l'ordine.
+  log('[B] Due dipendenze a tempo di PARSING: ui-condivisa e il primo modulo',
+    aParsing.length === 2,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 

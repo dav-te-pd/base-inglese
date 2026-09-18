@@ -57,12 +57,26 @@ function log(nome, ok, extra) {
 // da cui passano tutti i conti di questo file: un filtro sui commenti scritto
 // due volte si disallinea, e il modo in cui si disallinea e' che uno dei due
 // conta anche la prosa.
+// ⚠️ DAL 2026-09-18 LEGGE ANCHE `app/`, e non e' un allargamento: e' la stessa
+// domanda su un mondo che ha due file invece di uno. Col primo modulo estratto
+// (`app/personalizza.js`) uno dei dodici punti d'uscita e' uscito da
+// index.html, e il conto scendeva a 11 — **non perche' un punto fosse sparito,
+// ma perche' il test guardava meta' del posto.** L'invariante non e' cambiato:
+// «ogni punto che lascia un modulo passa da leaveModule» vale su tutta l'app.
+//
+// *Letto cosi', il conto resta 12 adesso e resta giusto quando usciranno gli
+// altri sette moduli — invece di dover essere corretto a mano otto volte.*
 function righeDiCodice() {
-  return fs.readFileSync(repoPath('index.html'), 'utf8').split('\n')
-    .filter(function (r) {
+  const files = [repoPath('index.html')].concat(
+    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return repoPath('app', f); })
+  );
+  return files.reduce(function (acc, f) {
+    return acc.concat(fs.readFileSync(f, 'utf8').split('\n').filter(function (r) {
       const t = r.trim();
       return t.indexOf('//') !== 0 && t.indexOf('*') !== 0 && t.indexOf('/*') !== 0;
-    });
+    }));
+  }, []);
 }
 
 function chiamantiDiretti() {

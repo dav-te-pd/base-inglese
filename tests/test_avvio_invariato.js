@@ -156,8 +156,8 @@ async function run() {
   // forma della regola 42: un limite dichiarato dice dove non guardi, non ti
   // impedisce di fidarti. **La difesa che ha funzionato tutte le volte e'
   // un'altra: scrivere il NUMERO atteso prima, e guardare lo scarto.**
-  log('[D] I file di script sono 12 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 12, foto.script.join(', '));
+  log('[D] I file di script sono 13 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 13, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

@@ -64,6 +64,12 @@
 #               Da qui l'ordine dei tag non e' piu' solo dichiarato, e' un
 #               vincolo — e test_dipendenze_dichiarate [C] e' la riga che lo
 #               tiene fermo.
+#   2026-09-18  app/personalizza.js entra come DODICESIMO script, seconda fila,
+#               DOPO ui-condivisa. Il conto passa da 12 a 13.
+#               ⚠️ E' IL PRIMO MODULO, non uno strato — e il suo posto non e'
+#               una scelta: prende i suoi alias a tempo di parsing, quindi in
+#               <head> moriva con «slotOptions is not a function». E' la prima
+#               volta che l'ordine dei tag rompe qualcosa davvero.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -78,7 +84,8 @@ script 8 app/quiz-engine.js
 script 9 app/dati.js
 script 10 app/orchestrazione.js
 script 11 app/ui-condivisa.js
-script 12 (inline)
+script 12 app/personalizza.js
+script 13 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory

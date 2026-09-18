@@ -267,12 +267,31 @@ async function run() {
   // (provvisorio — vedi la nota in testa al file, e cosa succede se resta)
   {
     const codice = righeDiCodiceDi('index.html');
+    // ⚠️ IL CAMBIO DI FORMA ANNUNCIATO, avvenuto il 2026-09-18 col primo modulo.
+    // La condizione di questo blocco diceva: «quando il primo modulo sara'
+    // fuori, "dentro" e "fuori" diventano due file». E' successo:
+    // `hasStartedEpisodeModules` e' in app/personalizza.js, e cercandola solo in
+    // index.html il test diceva «funzione non trovata» — cioe' rosso per una
+    // DECISIONE, non per una regressione.
+    //
+    // ⚠️ E il blocco NON e' piu' provvisorio, ma non perche' sia stato
+    // «sistemato»: perche' la sua condizione e' scaduta bene. Cercando su tutti
+    // i file, l'asserzione resta vera quando usciranno gli altri sette — invece
+    // di dover essere riscritta a ogni modulo.
+    const sorgenti = [codice].concat(
+      fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+        .map(function (f) { return righeDiCodiceDi('app', f); })
+    );
     const corpoDi = function (nome) {
-      const i = codice.findIndex(function (r) { return new RegExp('^  function ' + nome + '\\s*\\(').test(r); });
-      if (i === -1) return null;
-      let j = i + 1;
-      while (j < codice.length && !/^  \}/.test(codice[j])) j++;
-      return codice.slice(i, j + 1).join('\n');
+      for (let k = 0; k < sorgenti.length; k++) {
+        const src = sorgenti[k];
+        const i = src.findIndex(function (r) { return new RegExp('^  function ' + nome + '\\s*\\(').test(r); });
+        if (i === -1) continue;
+        let j = i + 1;
+        while (j < src.length && !/^  \}/.test(src[j])) j++;
+        return src.slice(i, j + 1).join('\n');
+      }
+      return null;
     };
 
     // Le due funzioni che NON appartengono a Personalizza e che hanno bisogno
