@@ -19,10 +19,17 @@
 // parametri. *Se un giorno qualcuno ci portasse dentro `itemText` "perche' e'
 // di interfaccia", questa riga cade prima che il danno si veda.*
 //
-// LIMITE DICHIARATO: non verifica che i due overlay si CHIUDANO con Escape.
-// Quel listener non e' di questo file — chiude tre overlay, e il terzo e' del
-// Pannello Admin — quindi e' rimasto in index.html; la sua riga la scrive chi
-// estrarra' l'Admin.
+// ⚠️ IL LIMITE CHE AVEVO DICHIARATO QUI ERA UN BUCO, E LA SUITE L'HA PRESO.
+// La prima versione di questo file diceva: «non verifica che i due overlay si
+// chiudano con Escape — quel listener non e' di questo file». Vero, e
+// irrilevante: il listener resta in index.html ma LEGGEVA `helpOverlayEl`, che
+// con l'estrazione e' finito qui dentro. Ogni Escape dava
+// `helpOverlayEl is not defined`, e nessuna delle diciannove righe lo vedeva.
+//
+// **Un limite dichiarato dice dove non guardi; non rende innocuo il fatto che
+// non guardi** (regola 42). Qui il confine passava esattamente dove il test
+// aveva smesso di guardare — che e' il posto dove i confini si rompono.
+// Adesso [E] guida Escape sull'app vera.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
@@ -130,6 +137,23 @@ async function run() {
     log('[D] renderStars torna markup e moduleRulesLevel un livello',
       !!testo && /</.test(testo.stelle) && ['verde', 'giallo', 'rosso'].indexOf(testo.livello) !== -1,
       JSON.stringify(testo));
+
+    // ── [E] ESCAPE: il confine visto da FUORI ─────────────────────────
+    // ⚠️ Chi chiude non e' questo file — e' il listener rimasto in index.html,
+    // che chiama `BI.chiudiOverlayAperti()`. La riga verifica proprio quello:
+    // che lo strato sappia chiudere i PROPRI overlay su richiesta di chi non
+    // sa quanti siano.
+    const escape = viva ? await page.evaluate(function () {
+      return new Promise(function (risolvi) {
+        window.BI.openHelpMenu({ kind: 'repeatAloud', label: 'x' });
+        var prima = document.getElementById('help-overlay').classList.contains('is-open');
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        risolvi({ prima: prima, dopo: document.getElementById('help-overlay').classList.contains('is-open') });
+      });
+    }) : null;
+    log('[E] L\'overlay Help si apre...', !!escape && escape.prima === true, JSON.stringify(escape));
+    log('[E] ...e Escape lo chiude passando da BI.chiudiOverlayAperti',
+      !!escape && escape.dopo === false, JSON.stringify(escape));
 
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();

@@ -3639,6 +3639,7 @@
   var istruzioniInMemoria = BI.istruzioniInMemoria;
   var views = BI.views;
   var showView = BI.showView;
+  var chiudiOverlayAperti = BI.chiudiOverlayAperti;
   var uiText = BI.uiText;
   var uiTextWith = BI.uiTextWith;
   var openOverlay = BI.openOverlay;
@@ -4239,8 +4240,10 @@
 
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
-    if (helpOverlayEl.classList.contains('is-open')) closeOverlay();
-    if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
+    // ⚠️ I due di `ui-condivisa` si chiedono a lei; il terzo e' del Pannello
+    // Admin, che sta ancora qui. E' il motivo per cui questo listener non e'
+    // uscito con lo strato: chiude overlay di DUE proprietari diversi.
+    BI.chiudiOverlayAperti();
     if (configPanelOverlayEl.classList.contains('is-open')) closeConfigPanel();
   });
 

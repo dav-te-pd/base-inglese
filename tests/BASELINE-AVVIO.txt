@@ -57,6 +57,13 @@
 #               esistere. Chi legge questo elenco cercando «dove va il tag
 #               nuovo» da qui in poi ha due risposte, e la domanda che le
 #               distingue e': questo file tocca il markup mentre viene letto?
+#   2026-09-18  app/ui-condivisa.js entra come UNDICESIMO script, nella seconda
+#               fila accanto a orchestrazione. Il conto passa da 11 a 12.
+#               ⚠️ Ed e' il primo file con una dipendenza a tempo di PARSING:
+#               quattro alias in cima all'IIFE verso dati.js e quiz-engine.js.
+#               Da qui l'ordine dei tag non e' piu' solo dichiarato, e' un
+#               vincolo — e test_dipendenze_dichiarate [C] e' la riga che lo
+#               tiene fermo.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -70,7 +77,8 @@ script 7 app/suoni.js
 script 8 app/quiz-engine.js
 script 9 app/dati.js
 script 10 app/orchestrazione.js
-script 11 (inline)
+script 11 app/ui-condivisa.js
+script 12 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory

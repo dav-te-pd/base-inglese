@@ -426,6 +426,23 @@
     var helpBtn = document.getElementById(prefix + '-help-btn');
     if (helpBtn) helpBtn.disabled = locked;
   }
+  // ⚠️ CHI POSSIEDE I DUE OVERLAY SA QUALI SONO APERTI. Nasce da un rosso:
+  // il listener di Escape e' rimasto in index.html (chiude anche il Pannello
+  // Admin, che non e' di questo strato) e leggeva `helpOverlayEl` e
+  // `howItWorksOverlayEl` — due nomi che con l'estrazione sono finiti qui
+  // dentro. Risultato: `helpOverlayEl is not defined` a ogni Escape.
+  //
+  // La strada comoda era esporre i due ELEMENTI e lasciare che chi sta fuori
+  // guardasse le loro classi. Scelta l'altra: **si chiede allo strato di
+  // chiudere i propri, non gli si guardano i nodi.** Chi sta fuori non deve
+  // sapere quanti overlay ha questo file ne' come si chiamano — il giorno che
+  // ne nasce un terzo, questa funzione lo copre e il chiamante non cambia.
+  function chiudiOverlayAperti() {
+    if (helpOverlayEl.classList.contains('is-open')) closeOverlay();
+    if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
+  }
+
+  BI.chiudiOverlayAperti = chiudiOverlayAperti;
   BI.uiText = uiText;
   BI.uiTextWith = uiTextWith;
   BI.openOverlay = openOverlay;

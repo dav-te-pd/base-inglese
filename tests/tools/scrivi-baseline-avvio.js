@@ -60,7 +60,14 @@ const STORIA = [
   "            getElementById a tempo di parsing, quindi il markup deve gia'",
   "            esistere. Chi legge questo elenco cercando «dove va il tag",
   "            nuovo» da qui in poi ha due risposte, e la domanda che le",
-  "            distingue e': questo file tocca il markup mentre viene letto?"
+  "            distingue e': questo file tocca il markup mentre viene letto?",
+  "2026-09-18  app/ui-condivisa.js entra come UNDICESIMO script, nella seconda",
+  "            fila accanto a orchestrazione. Il conto passa da 11 a 12.",
+  "            ⚠️ Ed e' il primo file con una dipendenza a tempo di PARSING:",
+  "            quattro alias in cima all'IIFE verso dati.js e quiz-engine.js.",
+  "            Da qui l'ordine dei tag non e' piu' solo dichiarato, e' un",
+  "            vincolo — e test_dipendenze_dichiarate [C] e' la riga che lo",
+  "            tiene fermo."
 ];
 
   const intestazione = [
