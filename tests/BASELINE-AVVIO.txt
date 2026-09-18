@@ -74,6 +74,10 @@
 #               conto passa da 13 a 14. E' l'ultimo pezzo del 22 che non e' un
 #               modulo: mappa, Pannello Admin, boot, goHome, la Schermata
 #               Finale e la schermata d'errore.
+#   2026-09-18  app/storycards.js entra come QUATTORDICESIMO script, seconda
+#               fila. Il conto passa da 14 a 15. E' il secondo modulo, e porta
+#               DUE passi della mappa in un file solo: Meet the Story e Why We
+#               Say It. Zero delle sue diciassette funzioni guarda il profilo.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -89,12 +93,13 @@ script 9 app/dati.js
 script 10 app/orchestrazione.js
 script 11 app/ui-condivisa.js
 script 12 app/mappa.js
-script 13 app/personalizza.js
-script 14 (inline)
-modulo 1 personalizzazione
-modulo 2 repeatAloud
-modulo 3 meetTheStory
-modulo 4 whyWeSayIt
+script 13 app/storycards.js
+script 14 app/personalizza.js
+script 15 (inline)
+modulo 1 meetTheStory
+modulo 2 whyWeSayIt
+modulo 3 personalizzazione
+modulo 4 repeatAloud
 modulo 5 voicePractice
 modulo 6 voiceCoach
 modulo 7 matchEngIta

@@ -77,7 +77,11 @@ const STORIA = [
   "2026-09-18  app/mappa.js entra come TREDICESIMO script, seconda fila. Il",
   "            conto passa da 13 a 14. E' l'ultimo pezzo del 22 che non e' un",
   "            modulo: mappa, Pannello Admin, boot, goHome, la Schermata",
-  "            Finale e la schermata d'errore."
+  "            Finale e la schermata d'errore.",
+  "2026-09-18  app/storycards.js entra come QUATTORDICESIMO script, seconda",
+  "            fila. Il conto passa da 14 a 15. E' il secondo modulo, e porta",
+  "            DUE passi della mappa in un file solo: Meet the Story e Why We",
+  "            Say It. Zero delle sue diciassette funzioni guarda il profilo."
 ];
 
   const intestazione = [

@@ -66,8 +66,8 @@ nodi.forEach(function (n) {
   // l'interfaccia condivisa e i progressi. Il numero sale con loro ed e'
   // previsto; quello che deve scendere e' l'ALTRO, quello verso index.html.
   // ⚠️ 4 -> 5 con app/mappa.js. Sale coi file, ed e' previsto.
-  log('[B] Cinque file di app/ dipendono da qualcosa',
-    conDipendenze.length === 5, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  log('[B] Sei file di app/ dipendono da qualcosa',
+    conDipendenze.length === 6, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -87,8 +87,10 @@ nodi.forEach(function (n) {
   //
   // *Un numero che sale con una ragione scritta e' un progetto; senza, e' un
   // difetto. Se al terzo modulo e' salito ancora, la ragione non c'era.*
-  log('[B] Tre dipendenze ALL\'INSU\': dati, mappa e il primo modulo',
-    allInsu.length === 3,
+  // ⚠️ 3 -> 4 col secondo modulo, e la ragione e' la stessa di sempre: un
+  // modulo nomina l'episodio su cui lavora. **Tutte e quattro spariscono
+  // insieme, quando esce il catalogo.**
+  log('[B] Quattro dipendenze ALL\'INSU\'', allInsu.length === 4,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -112,8 +114,8 @@ nodi.forEach(function (n) {
   // ⚠️ 1 -> 2: personalizza.js prende i suoi alias a tempo di parsing, ed e'
   // il motivo per cui il suo tag sta nella seconda fila DOPO ui-condivisa. La
   // riga [C] e' quella che tiene fermo l'ordine.
-  log('[B] Tre dipendenze a tempo di PARSING',
-    aParsing.length === 3,
+  log('[B] Quattro dipendenze a tempo di PARSING',
+    aParsing.length === 4,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
