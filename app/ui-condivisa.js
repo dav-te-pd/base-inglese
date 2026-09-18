@@ -550,6 +550,26 @@
   function moduloDiAiutoAttivo() { return activeHelpModule; }
   function impostaModuloDiAiutoAttivo(m) { activeHelpModule = m; }
 
+  // ⚠️ LO STATO DEL POPUP E I SUOI DUE PULSANTI VENGONO COL PEZZO, e la
+  // prima volta li avevo lasciati indietro: `attemptPopupOnRetry is not
+  // defined`, DICIOTTO occorrenze su nove file. Un pezzo non e' solo le sue
+  // funzioni — sono le funzioni, lo stato che tengono e i listener che le
+  // chiamano. *La misura dei buchi non l'aveva visto perche' i due `var`
+  // erano nominati solo DENTRO i listener, che erano rimasti anche loro:
+  // da index.html il conto tornava.*
+  var attemptPopupOnRetry = null;
+  var attemptPopupOnNext = null;
+
+  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
+    closeAttemptPopup();
+    if (attemptPopupOnRetry) attemptPopupOnRetry();
+  });
+
+  document.getElementById('attempt-popup-next').addEventListener('click', function () {
+    closeAttemptPopup();
+    if (attemptPopupOnNext) attemptPopupOnNext();
+  });
+
   BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
   BI.impostaModuloDiAiutoAttivo = impostaModuloDiAiutoAttivo;
   BI.chiudiOverlayAperti = chiudiOverlayAperti;

@@ -5780,8 +5780,6 @@
   // meaningful "try again right now" step (Speed Match/Match Practice/Flash
   // Card, where an answer is already locked in once submitted) passes
   // onRetry as null/undefined and only "Vai avanti" shows.
-  var attemptPopupOnRetry = null;
-  var attemptPopupOnNext = null;
 
 
 
@@ -6376,15 +6374,7 @@
 
 
 
-  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnRetry) attemptPopupOnRetry();
-  });
 
-  document.getElementById('attempt-popup-next').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnNext) attemptPopupOnNext();
-  });
 
   // Recording/timers/popup are stopped centrally by showView()'s own
   // stopAllModuleActivity() (see near its definition) — not repeated here.
