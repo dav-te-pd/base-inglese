@@ -94,7 +94,11 @@ async function run() {
     // chiuderebbero. E' il guasto MUTO di questa estrazione, quindi e' la
     // riga che serve di piu'.
     const listener = righe.filter(function (r) { return /addEventListener\('click'/.test(r); });
-    log('[C] I quattro listener di chiusura sono nel file', listener.length === 4, String(listener.length));
+    // ⚠️ 4 -> 6 il 2026-09-18: i due pulsanti del popup dei tentativi sono
+    // arrivati col loro pezzo. L'invariante non e' «quattro»: e' **che i
+    // listener stiano col codice che chiamano** — lasciarli in index.html ha
+    // prodotto «attemptPopupOnRetry is not defined» su nove file.
+    log('[C] I sei listener di click sono nel file', listener.length === 6, String(listener.length));
     log('[C] E il listener di Escape NON c\'e\' (chiude anche l\'Admin)',
       !righe.some(function (r) { return /'keydown'/.test(r); }) &&
       righeDiCodiceDi('index.html').some(function (r) { return /'keydown'/.test(r); }));

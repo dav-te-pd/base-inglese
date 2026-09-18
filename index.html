@@ -3643,6 +3643,8 @@
   var views = BI.views;
   var showView = BI.showView;
   var chiudiOverlayAperti = BI.chiudiOverlayAperti;
+  var moduloDiAiutoAttivo = BI.moduloDiAiutoAttivo;
+  var impostaModuloDiAiutoAttivo = BI.impostaModuloDiAiutoAttivo;
   var renderListenBlock = BI.renderListenBlock;
   var speakListenBlock = BI.speakListenBlock;
   var introDismissPref = BI.introDismissPref;
@@ -4280,7 +4282,7 @@
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-help-action');
       if (action === 'instructions') {
-        renderModuleInstructionField(BI.moduloDiAiutoAttivo(), 'helpReminder', uiText('aiuto.titleInstructions'));
+        renderModuleInstructionField(moduloDiAiutoAttivo(), 'helpReminder', uiText('aiuto.titleInstructions'));
       } else {
         document.getElementById('help-overlay-title').textContent =
           uiText(action === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
@@ -4289,7 +4291,7 @@
       return;
     }
     if (e.target.id === 'help-form-back') {
-      openHelpMenu(BI.moduloDiAiutoAttivo());
+      openHelpMenu(moduloDiAiutoAttivo());
     }
   });
 
@@ -4301,7 +4303,7 @@
     if (!text) return;
     saveHelpRequest(getUserName(), {
       episodeId: currentEpisode.id,
-      moduleId: BI.moduloDiAiutoAttivo().id,
+      moduleId: moduloDiAiutoAttivo().id,
       type: type,
       text: text,
       createdAt: new Date().toISOString()

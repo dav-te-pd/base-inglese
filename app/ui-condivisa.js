@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], quiz-engine.js [parsing]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre

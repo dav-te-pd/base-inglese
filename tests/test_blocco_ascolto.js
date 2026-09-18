@@ -126,7 +126,17 @@ async function apriPasso(page, passo) {
   // ---------------------------------------------------------------
   // ① UNA SOLA SORGENTE (index.html come testo)
   // ---------------------------------------------------------------
-  const sorgente = fs.readFileSync(repoPath('index.html'), 'utf8');
+  // ⚠️ DAL 2026-09-18 LEGGE ANCHE `app/`. Il Blocco Ascolto e' un componente
+  // dal passo C.3, e quel giorno e' andato in `app/ui-condivisa.js` insieme
+  // agli altri sei pezzi condivisi che stavano dentro un modulo per posizione.
+  // Cercandolo solo in index.html il test diceva «zero occorrenze: qualcuno ha
+  // ricopiato il Blocco Ascolto» — **l'accusa opposta a quello che era
+  // successo.** L'invariante non e' cambiato: il markup sta in un punto solo
+  // *dell'app*, non di un file.
+  const sorgente = [repoPath('index.html')].concat(
+    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return repoPath('app', f); })
+  ).map(function (f) { return fs.readFileSync(f, 'utf8'); }).join('\n');
 
   const markupPulsante = /class="btn btn-secondary btn-sm listen-block-btn"/g;
   const quante = (sorgente.match(markupPulsante) || []).length;
