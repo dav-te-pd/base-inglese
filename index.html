@@ -4347,7 +4347,9 @@
      e tutto quel che l'ha già letto dipende da quel riferimento) e viene
      salvata in localStorage per sopravvivere al reload, sostituendo per
      intero la sezione di primo livello toccata. ============================ */
-  var CONFIG_OVERRIDES_KEY = 'baseinglese:configOverrides';
+  // La chiave vive in app/avvio.js, che e' chi applica gli override PRIMA di
+  // tutto il resto. Qui se ne prende il nome: un posto solo, dichiarativo.
+  var CONFIG_OVERRIDES_KEY = BI.CONFIG_OVERRIDES_KEY;
   var configPanelOverlayEl = document.getElementById('config-panel-overlay');
   var configPanelBodyEl = document.getElementById('config-panel-body');
 

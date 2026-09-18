@@ -65,7 +65,7 @@ test_batch7.js 12
 test_batch8.js 8
 test_batch9.js 22
 test_blocco_ascolto.js 19
-test_config_estratto.js 12
+test_config_estratto.js 14
 test_config_letta.js 4
 test_conta_asserzioni.js 12
 test_conta_attese.js 16

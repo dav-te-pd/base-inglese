@@ -42,6 +42,34 @@ function log(nome, ok, extra) {
 }
 
 async function run() {
+  // ── [Z] LA CHIAVE DEGLI OVERRIDE, IN UN POSTO SOLO ──────────────────
+  //
+  // ⚠️ Seconda metà di un caso registrato il 2026-09-17, quando `app/avvio.js`
+  // è uscito: la chiave era un LETTERALE qui e una costante in index.html —
+  // due punti in due file. La prima metà (il tema) si è chiusa con
+  // `app/identita.js`; questa si chiude oggi, nello strato che la riunisce.
+  //
+  // Si conta sulle RIGHE DI CODICE e su TUTTA l'app, non sul singolo file:
+  // l'errore che questa riga prende è «ne è ricomparso uno da un'altra
+  // parte», non «questo file l'ha perso».
+  {
+    const letterale = "'baseinglese:configOverrides'";
+    const fs2 = require('fs');
+    const dove = fs2.readdirSync(repoPath('app'))
+      .filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) {
+        return { file: 'app/' + f, n: righeDiCodiceDi('app', f).filter(function (r) { return r.indexOf(letterale) !== -1; }).length };
+      })
+      .concat([{ file: 'index.html', n: righeDiCodiceDi('index.html').filter(function (r) { return r.indexOf(letterale) !== -1; }).length }])
+      .filter(function (x) { return x.n > 0; });
+    log('[Z] La chiave degli override esiste in UN posto solo, ed è app/avvio.js',
+      dove.length === 1 && dove[0].file === 'app/avvio.js' && dove[0].n === 1,
+      dove.map(function (x) { return x.file + ' x' + x.n; }).join(', ') || 'in nessun posto');
+    log('[Z] ...ed è esposta su BI, perché altri due punti la leggono',
+      /window\.BI\.CONFIG_OVERRIDES_KEY = CONFIG_OVERRIDES_KEY;/.test(
+        fs2.readFileSync(repoPath('app', 'avvio.js'), 'utf8')));
+  }
+
   // ── [A] DOVE STA, e come viene caricato ──────────────────────────────
   {
     const html = fs.readFileSync(repoPath('index.html'), 'utf8');

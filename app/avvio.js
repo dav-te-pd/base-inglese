@@ -25,6 +25,20 @@
 // due tag, e il fatto che questo blocco NON sia piu' in linea in index.html.
 // *Senza la seconda, rimettercelo dentro passerebbe verde.*
 
+  // ── LA CHIAVE DEGLI OVERRIDE, IN UN POSTO SOLO ──
+  //
+  // ⚠️ Seconda meta' di un caso registrato il 2026-09-17, quando questo file
+  // e' uscito: la chiave era scritta come LETTERALE qui e come costante
+  // `CONFIG_OVERRIDES_KEY` in index.html — due punti che sapevano la stessa
+  // cosa, in due file. La prima meta' (la chiave del tema) si e' chiusa con
+  // `app/identita.js`; questa aspettava lo strato che la riunisse.
+  //
+  // **Sta qui e non altrove perche' qui e' dove viene USATA per prima**: gli
+  // override si applicano PRIMA di tutto il resto, e chi possiede una cosa e'
+  // chi ha il problema che quella cosa risolve. Il Pannello Admin la legge e
+  // la scrive, ma arriva molto dopo.
+  var CONFIG_OVERRIDES_KEY = 'baseinglese:configOverrides';
+
   // Copia intatta della configurazione, presa PRIMA che gli override salvati
   // qui sotto la modifichino.
   //
@@ -65,7 +79,7 @@
   // touched in the panel stays at its coded default above.
   (function applyConfigOverrides() {
     try {
-      var raw = localStorage.getItem('baseinglese:configOverrides');
+      var raw = localStorage.getItem(CONFIG_OVERRIDES_KEY);
       if (!raw) return;
       var overrides = JSON.parse(raw);
       Object.keys(overrides).forEach(function (key) {
@@ -88,3 +102,8 @@
       }
     } catch (e) {}
   })();
+
+// Esposta perche' altri due punti la leggono: il Pannello Admin (index.html) e
+// `loadPersonalizationTables`, che lascia sovrascrivere le tabelle dei nomi.
+window.BI = window.BI || {};
+window.BI.CONFIG_OVERRIDES_KEY = CONFIG_OVERRIDES_KEY;
