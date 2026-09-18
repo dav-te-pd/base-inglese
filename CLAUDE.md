@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260918a**
+**Versione: 20260918b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -208,6 +208,44 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     un'informazione; l'assenza del blocco è un silenzio, e un silenzio si legge
     come «è andato tutto bene». *È la stessa forma della regola 37: una misura
     che non misura non somiglia a un errore, somiglia a un risultato.*
+
+14-bis. **SE LA RISPOSTA NON ARRIVA, O NON È A QUELLO CHE È STATO CHIESTO,
+    NON SI PARTE. SI SEGNALA.**
+
+    La regola 14 dice che forma ha la risposta. Questa dice **quando dopo la
+    risposta non si lavora**, ed è una cosa diversa — per questo è una regola
+    sua e non un sesto punto della 14.
+
+    **I tre casi, e sono tutti e tre «fermati e dillo»:**
+
+    | Il messaggio ricevuto | Cosa si fa |
+    |---|---|
+    | **non risponde** alla domanda posta (parla d'altro, o risponde a una domanda di due giri fa) | si dice **quale** domanda è rimasta senza risposta, e si aspetta |
+    | risponde, ma **dà per fatto qualcosa che nel repository non c'è** | si misura, si dice cosa non corrisponde, e si aspetta |
+    | contiene un'istruzione che **non ci si aspetta** — un nome mai visto, un numero che non torna, un passo fuori ordine | si dice cosa non torna **prima** di eseguire, non dopo |
+
+    ⚠️ **E NON VALE «procedo con l'interpretazione più probabile».** Quella è
+    esattamente la strada che è costata otto giri: ogni volta la risposta
+    diceva «vai col modulo», ogni volta la misura diceva che il modulo non
+    poteva uscire, e ogni volta ripartire sembrava più collaborativo che
+    fermarsi. Non lo era: **produceva misure invece di codice, e la
+    conversazione avanzava mentre il lavoro no.**
+
+    **La forma del segnale è un NUMERO, non una spiegazione.** «È il secondo
+    turno che questa dichiarazione aspetta» ferma; «come dicevo prima, questo
+    passo è bloccato» no. *Un numero si legge in un secondo e non si può
+    leggere come una sfumatura.*
+
+    **Dove si scrive:** nel blocco **DOMANDA** della regola 14, in cima, prima
+    delle scelte. Non in `COSA È SUCCESSO` — lì è un resoconto, e un resoconto
+    si legge come una cosa già avvenuta.
+
+    *Perché esiste, ed è un fatto misurato e non un timore: chi guida il
+    progetto legge queste risposte **senza il repository davanti**. Un suo
+    riassunto sbagliato arriva come una **conferma**, non come una premessa da
+    verificare — e una conferma non si mette in discussione da sola. L'unico
+    punto in cui quel giro si può rompere è qui: chi il repository ce l'ha
+    davanti si ferma e lo dice. **Al primo giro, non all'ottavo.***
 
 15. **Dopo aver scritto una modifica, guardare cosa si è effettivamente toccato — non cosa era stato chiesto — per decidere quali test lanciare.** Se la modifica resta dentro codice specifico di un modulo, bastano i test di quel modulo. Se tocca anche una sola riga di codice condiviso — un componente, una funzione, un parametro usato altrove — va lanciata la suite di regressione completa. Nel dubbio, la suite completa. Il criterio è il diff reale una volta fatta la modifica, non l'intenzione dichiarata nella richiesta: una richiesta piccola può finire per toccare qualcosa di condiviso, e lo si scopre solo dopo aver scritto il codice.
 
