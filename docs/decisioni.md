@@ -1250,6 +1250,21 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
+**FATTO il 2026-09-18 — `app/orchestrazione.js`, e nasce una SECONDA FILA di caricamento.**
+
+Due pezzi soli — `views` e `showView` — ma il passo non è piccolo: è il primo file che **tocca il markup mentre viene letto**. I nove strati precedenti stanno in `<head>` e non toccano un solo elemento (l'unico DOM a tempo di parsing in tutto `app/` sono i due `document.addEventListener` di `suoni.js`, cioè sul documento, che esiste sempre). `views` prende **tredici nodi** con `getElementById`: in `<head>` sarebbero tredici `null`.
+
+> **Il criterio degli strati divide per QUANDO una cosa gira, e qui la differenza non è di dimensione ma di natura:** i nove di `<head>` girano *prima del DOM*, questo *dopo*. Metterlo nella prima fila sarebbe far coincidere due momenti diversi perché portano lo stesso nome — «uno strato».
+
+**Da oggi la domanda non è «posso mettere il tag in `<head>`?» ma «questo file tocca il markup mentre viene letto?».** `ui-condivisa` andrà nella stessa fila, per la stessa ragione: `helpOverlayEl`, `howItWorksOverlayEl` e cinque `addEventListener` sul markup.
+
+⚠️ **E la conseguenza che è scritta NEL FILE e non qui, perché è lì che va letta:** otto delle tredici chiavi di `views` assomigliano a otto moduli che al 23 usciranno in file loro. **Oggi non è una dipendenza in avanti** — questo file non chiama nessuna di quelle funzioni, tiene dei nomi di chiave che corrispondono a id del markup. **Ma quando i moduli usciranno il verso cambia, e non perché cambia lui: perché cambiano loro.** Saranno i moduli a nominare `BI.showView`. Senza quella riga, fra un mese sembrerebbe un'estrazione fatta male.
+
+**`goHome` NON è uscita, ed è la parte da decidere.** Legge `currentEpisode.badge`, e `currentEpisode` è `EPISODES[CONFIG.episodioCorrente]` — appartiene al **catalogo**, che è ancora dentro `index.html`. Farla uscire significa una **seconda dipendenza all'insù**, della stessa specie già dichiarata per `BI.applyEpisodeDialogue`. È fattibile e coerente, ma farebbe salire il conto che `test_dipendenze_dichiarate.js` dice di far **calare, mai salire** — una riga scritta ieri. Non la alzo da solo: è una decisione, non un dettaglio di questo passo.
+
+**`boot` esce dopo `mappa`**, e la formulazione conta: non «boot va altrove», ma «boot deve uscire dopo mappa». Il piano lo dava come gruppo di tre; la misura lo spezza per una **dipendenza**, non per un criterio.
+
+---
 **FATTO il 2026-09-18 — la dichiarazione delle dipendenze, e NON era nel piano.**
 
 Nasce da una domanda: *«quante funzioni di modulo sono nominate da uno strato? Se sono poche è un caso, se sono molte l'ordine dei file diventa un vincolo vero.»* La risposta misurata è **24 su 134**, e si divide in due gruppi diversi: **sette** condivise per mestiere che stanno in mezzo a un modulo solo per posizione, e **diciassette** davvero interne a un modulo e chiamate da codice generico — `closeAttemptPopup` da riga 4010, `dgAudioProtected` da 10540, `vcUpdateMicNotice` da 3022.

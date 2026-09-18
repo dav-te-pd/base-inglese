@@ -3611,6 +3611,12 @@
     </div>
   </div>
 
+<!-- ⚠️ SECONDA FILA. Gli altri nove strati stanno in <head>; questo no, e non e'
+     una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
+     markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
+     cosa gira, e questo gira dopo il DOM. -->
+<script src="app/orchestrazione.js"></script>
+
 <script>
 (function () {
   var CONFIG = window.APP_CONFIG;
@@ -3630,6 +3636,8 @@
   var FEEDBACK_MESSAGES_FILE = BI.FEEDBACK_MESSAGES_FILE;
   var PERSONALIZATION_TABLES_FILE = BI.PERSONALIZATION_TABLES_FILE;
   var istruzioniInMemoria = BI.istruzioniInMemoria;
+  var views = BI.views;
+  var showView = BI.showView;
   var percentageBucket = BI.percentageBucket;
   var starsForPercent = BI.starsForPercent;
   var shuffle = BI.shuffle;
@@ -3946,21 +3954,6 @@
   /* ============================================================
      VIEW ROUTER
      ============================================================ */
-  var views = {
-    onboarding: document.getElementById('view-onboarding'),
-    home: document.getElementById('view-home'),
-    customize: document.getElementById('view-customize'),
-    map: document.getElementById('view-map'),
-    repeatAloud: document.getElementById('view-repeat-aloud'),
-    storyCards: document.getElementById('view-story-cards'),
-    voiceCoach: document.getElementById('view-voice-coach'),
-    match: document.getElementById('view-match'),
-    dialogo: document.getElementById('view-dialogo'),
-    speedMatch: document.getElementById('view-speed-match'),
-    flashcard: document.getElementById('view-flashcard'),
-    pronunciation: document.getElementById('view-pronunciation'),
-    error: document.getElementById('view-error')
-  };
 
   // Bumped by leaveModule() — cioe' DODICI delle quattordici navigazioni:
   // aprire un modulo diverso, tornare in mappa, andare a casa. Le due
@@ -4092,11 +4085,6 @@
 
   // Disegna e basta. Chi la chiama senza passare da `leaveModule` sta dicendo
   // «qui non c'e' nessun modulo da lasciare», ed e' vero in due punti soli.
-  function showView(name) {
-    Object.keys(views).forEach(function (key) {
-      views[key].classList.toggle('is-active', key === name);
-    });
-  }
 
   // Lascia il modulo attivo (se ce n'e' uno) e mostra un'altra vista.
   //
