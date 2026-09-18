@@ -149,8 +149,15 @@ async function run() {
   // `BASELINE-AVVIO.txt` e si fermava li', mentre il numero vive in DUE posti.
   // Il rosso e' arrivato dalla suite invece che dalla previsione, ed e' uno
   // scarto fra i due da ricordare al prossimo strato.*
-  log('[D] I file di script sono 10 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 10, foto.script.join(', '));
+  // ⚠️ E IL 2026-09-18 LO SCARTO SI E' RIPETUTO, con l'avviso scritto QUI
+  // SOPRA: estraendo `app/orchestrazione.js` non ho previsto ne' il baseline
+  // ne' questa riga, e il rosso e' arrivato di nuovo dalla suite. *Un avviso
+  // scritto accanto alla riga non impedisce di non leggerlo* — e' la stessa
+  // forma della regola 42: un limite dichiarato dice dove non guardi, non ti
+  // impedisce di fidarti. **La difesa che ha funzionato tutte le volte e'
+  // un'altra: scrivere il NUMERO atteso prima, e guardare lo scarto.**
+  log('[D] I file di script sono 11 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 11, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

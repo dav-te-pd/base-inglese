@@ -50,7 +50,17 @@ const STORIA = [
   "            conto passa da 8 a 9. Seconda delle cinque cose che servono al",
   "            primo modulo.",
   "2026-09-18  app/dati.js entra come NONO script. Il conto passa da 9 a 10.",
-  "            Terza delle cinque cose che servono al primo modulo."
+  "            Terza delle cinque cose che servono al primo modulo.",
+  "2026-09-18  app/orchestrazione.js entra come DECIMO script, e NON in <head>:",
+  "            e' il primo della SECONDA FILA, in fondo a <body>, subito prima",
+  "            dello script principale. Il conto passa da 10 a 11.",
+  "            ⚠️ E' la prima riga di questa storia che cambia il POSTO e non",
+  "            solo il numero. Gli altri nove stanno in <head> perche' non",
+  "            toccano il markup; `views` prende tredici nodi con",
+  "            getElementById a tempo di parsing, quindi il markup deve gia'",
+  "            esistere. Chi legge questo elenco cercando «dove va il tag",
+  "            nuovo» da qui in poi ha due risposte, e la domanda che le",
+  "            distingue e': questo file tocca il markup mentre viene letto?"
 ];
 
   const intestazione = [

@@ -47,6 +47,16 @@
 #               primo modulo.
 #   2026-09-18  app/dati.js entra come NONO script. Il conto passa da 9 a 10.
 #               Terza delle cinque cose che servono al primo modulo.
+#   2026-09-18  app/orchestrazione.js entra come DECIMO script, e NON in <head>:
+#               e' il primo della SECONDA FILA, in fondo a <body>, subito prima
+#               dello script principale. Il conto passa da 10 a 11.
+#               ⚠️ E' la prima riga di questa storia che cambia il POSTO e non
+#               solo il numero. Gli altri nove stanno in <head> perche' non
+#               toccano il markup; `views` prende tredici nodi con
+#               getElementById a tempo di parsing, quindi il markup deve gia'
+#               esistere. Chi legge questo elenco cercando «dove va il tag
+#               nuovo» da qui in poi ha due risposte, e la domanda che le
+#               distingue e': questo file tocca il markup mentre viene letto?
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-18
@@ -59,7 +69,8 @@ script 6 app/audio.js
 script 7 app/suoni.js
 script 8 app/quiz-engine.js
 script 9 app/dati.js
-script 10 (inline)
+script 10 app/orchestrazione.js
+script 11 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory
