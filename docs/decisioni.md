@@ -1250,6 +1250,22 @@ Misurate le `var` di primo livello dell'IIFE **scritte da più di una funzione**
 
 **Previsioni sui due posti:** `BASELINE-AVVIO` (8→9) e `test_avvio_invariato [D]` (8→9). **Esatte, quarta volta di fila.**
 
+**FATTO il 2026-09-18 — `app/dati.js`, terza delle cinque cose che servono al primo modulo.** 14 pezzi, 157 righe.
+
+⚠️ **DUE CONFINI RESPINTI DALLA MISURA, e sono la parte che conta più delle righe spostate.**
+
+**① `itemText` non è di `dati`.** Nomina `currentEpisode`, `currentValues`, `fillTemplate`: non **carica** un testo, lo **rende** coi segnaposto dello studente. Va con `personalizza`. *Ci stava per nome — «testo di una voce» — e non per mestiere.*
+
+**② `applyEpisodeDialogue` è rimasta col catalogo**, ed era l'unica delle quindici che **scrive** invece di leggere. Scrive `EPISODES`, che non è suo. **La strada comoda era esporre `EPISODES` su `BI`: due righe, suite verde, e il catalogo scrivibile da qualunque file per sempre.** *Scelta la strada opposta — la funzione resta con chi possiede il dato, e il caricatore le chiede (`BI.applyEpisodeDialogue(data)`).* Falsificando la strada comoda cadono tre asserzioni su quattordici; **l'app funziona identica**, che è precisamente perché serviva un'asserzione.
+
+> **Seconda volta in due giorni che la misura respinge un confine che non avrebbe prodotto nessun rosso.** La prima era `renderStars` in `quiz-engine`. *Un confine sbagliato che non produce nessun rosso è quello che si eredita — e i sei file che restano imiteranno questo.*
+
+⚠️ **E UNA DELLE TRE ASSERZIONI È NATA DEBOLE: cercava la chiamata nel TESTO del file, e il commento in testa la CITA fra apici inversi.** Con la chiamata tolta restava verde. **Nona comparsa della famiglia del conto sui commenti, in un'asserzione scritta venti minuti prima** — e trovata perché la previsione della falsificazione diceva 11/14 e l'osservato era 12/14. *Lo scarto di uno ha trovato il buco.*
+
+**I QUATTRO `fetch` DELL'APP SONO ORA IN UN FILE SOLO** — `module.dataFile`, `MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`, `PERSONALIZATION_TABLES_FILE` — e in `index.html` non ne resta nessuno, con un'asserzione che lo dice. *Il piano prevede di unificarli, e non è questo il passo: ma chi vorrà farlo ha un file da leggere invece di quattro punti distanti duemila righe.*
+
+⚠️ **IL GUASTO È IL PIÙ RUMOROSO DEI SEI: senza il file non parte niente**, né login né casa. `episodeDataFile(id)` gira mentre `MODULE_DESCRIPTORS` viene costruito, a tempo di parsing. *Su Pages basta aprire.*
+
 **FERMATE: una per strato, come prima.** | ☐ | **sì**, uno strato per volta |
 | **23** | I moduli, uno per famiglia: match+speedMatch, storyCards, dialogo, flashcard, voice, repeatAloud, personalizzazione, mappa+admin. **~15 file in tutto, quindi ~15 fermate.** ~~Un modulo sta fra 365 e 670 righe.~~<br><br>⚠️ **RICONTATO il 2026-09-18, e la forbice è FALSA su quattro gruppi su nove:**<br><br>| gruppo | funzioni | righe |<br>|---|---|---|<br>| voice | 17 | **621** |<br>| dialogo | 29 | 510 |<br>| storyCards | 16 | 453 |<br>| personalizza | 22 | 392 |<br>| flashcard | 15 | 317 |<br>| speedMatch | 20 | **313** |<br>| mappa+admin | 24 | **286** |<br>| match | 11 | **263** |<br>| repeatAloud | 3 | **106** |<br><br>**La forbice vera è 106–621**, e il minimo dichiarato (365) è sbagliato su quattro. *`repeatAloud` è il caso che spiega gli altri: 106 righe in tre funzioni, perché il Blocco Ascolto è diventato un componente condiviso (C.3) e i suoi listener sono entrati dentro `openRepeatAloud` (21-quater ④). **Non è un modulo piccolo: è un modulo a cui abbiamo tolto le parti condivise, una alla volta, e nessuno ha ricontato dopo.***<br><br>⚠️ **CHE COSA HA CAMBIATO IL 21-QUATER DI QUELLO CHE QUESTO PIANO DÀ PER FERMO — tre cose, e la terza è una decisione, non un numero.**<br><br>⚠️ ⚠️ **IL 23 NON PUÒ COMINCIARE, E IL MOTIVO È MISURATO — 2026-09-18, provando a estrarre Repeat Aloud.**
 

@@ -99,3 +99,4 @@ test_identita_estratta.js 13
 test_audio_estratto.js 13
 test_suoni_estratto.js 12
 test_quiz_engine_estratto.js 14
+test_dati_estratto.js 14

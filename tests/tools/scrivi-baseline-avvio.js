@@ -48,7 +48,9 @@ const STORIA = [
   "            una di quelle. Escono per servire chi verra' dopo.",
   "2026-09-18  app/quiz-engine.js entra come OTTAVO script, dopo suoni. Il",
   "            conto passa da 8 a 9. Seconda delle cinque cose che servono al",
-  "            primo modulo."
+  "            primo modulo.",
+  "2026-09-18  app/dati.js entra come NONO script. Il conto passa da 9 a 10.",
+  "            Terza delle cinque cose che servono al primo modulo."
 ];
 
   const intestazione = [
