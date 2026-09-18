@@ -5319,6 +5319,30 @@
 
      I testi howItWorks/helpReminder di ogni kind stanno in
      data/inglese/it/istruzioni-moduli.json (regola 8), non qui. */
+  // ── L'UNICO PUNTO IN CUI L'APP, DA FUORI, SA COME SI CHIAMA IL CANCELLO ──
+  //
+  // Personalizza non e' un modulo come gli altri: e' il passo che, finche' non
+  // e' completato, tiene chiusi quelli dopo. Due funzioni che NON gli
+  // appartengono — `migrateCustomizeSeenToModuleProgress` e
+  // `hasStartedEpisodeModules`, che stanno coi progressi e con la mappa —
+  // hanno bisogno di sapere quale passo sia, e fino al 2026-09-18 lo sapevano
+  // scrivendo il suo id a mano in quattro righe.
+  //
+  // ⚠️ LA PREMESSA DEL PASSO 23 NON E' «ZERO RIFERIMENTI»: E' «UNO SOLO, E
+  // DICHIARATIVO». Un modulo che nessuno puo' nominare non si puo' nemmeno
+  // mettere in sequenza — il catalogo lo nomina per forza, ed e' un dato. Il
+  // difetto non era che Personalizza fosse nominata: era che lo fosse in
+  // quattro punti sparsi, ognuno dei quali diventa un file diverso al 23.
+  //
+  // ⚠️ E LA STRADA CHE HO SCARTATO, scritta perche' e' quella che verrebbe in
+  // mente per seconda: usare `type: 'inizio'`, che oggi ce l'ha solo lei.
+  // Funzionerebbe, e sarebbe sbagliato — quel campo dice **che etichetta
+  // mostrare allo studente**, e fargli dire anche **chi fa da cancello** gli
+  // darebbe due mestieri. Il giorno che nasce un secondo passo di categoria
+  // Inizio, i due significati divergono e uno dei due diventa falso in
+  // silenzio. E' la famiglia ⓪-decies, e costa piu' di una costante.
+  var ID_PERSONALIZZA = 'personalizzazione';
+
   var MODULE_DESCRIPTORS = {
     // Categoria "Inizio" (docs/inglese/it/struttura-corso.md): è preparazione,
     // non studio. Prima era uno "studio" con l'etichetta sovrascritta a mano,
@@ -6029,12 +6053,12 @@
     // rilegge quell'id. Il primo episodio senza Personalizza — gli episodi
     // corti, o i grammaticali — e' dove smette di essere innocua.
     var haIlModulo = (episode.modules || []).some(function (m) {
-      return m.moduleId === 'personalizzazione';
+      return m.moduleId === ID_PERSONALIZZA;
     });
     if (!haIlModulo) return;
     var progress = loadModuleProgress(episode.id, userName);
-    if (progress.completed.indexOf('personalizzazione') === -1) {
-      markModuleCompleted(episode, userName, 'personalizzazione');
+    if (progress.completed.indexOf(ID_PERSONALIZZA) === -1) {
+      markModuleCompleted(episode, userName, ID_PERSONALIZZA);
     }
   }
 
@@ -6056,7 +6080,7 @@
   // n'era andato.
   function hasStartedEpisodeModules(episode, userName) {
     var progress = loadModuleProgress(episode.id, userName);
-    var completedBeyondCustomize = progress.completed.filter(function (id) { return id !== 'personalizzazione'; });
+    var completedBeyondCustomize = progress.completed.filter(function (id) { return id !== ID_PERSONALIZZA; });
     if (completedBeyondCustomize.length > 0) return true;
     if (Object.keys(loadMastery(episode.id, userName)).length > 0) return true;
     if (Object.keys(loadModuleOutcomes(episode.id, userName)).length > 0) return true;

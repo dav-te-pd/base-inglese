@@ -36,7 +36,7 @@
 // risoluzione arrivi alla funzione giusta.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
 const { openModule } = require('./map-driver');
 const { stepIds, stepsBefore } = require('./module-order');
 
@@ -89,6 +89,30 @@ async function vaiAllaMappa(page, utente, completati) {
   await page.click('#go-episode');
   await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
 }
+
+// ⚠️ IL BLOCCO [E] E' PROVVISORIO, E LA SUA CONDIZIONE STA QUI PERCHE'
+// LASCIARLO COM'E' NON SAREBBE NEUTRO.
+//
+// Verifica la premessa del passo 23 — «un modulo non e' nominato da fuori» —
+// nell'unica forma in cui e' vera: NON «zero riferimenti», ma **uno solo, e
+// dichiarativo**. Il catalogo deve nominarlo (un passo che nessuno puo'
+// nominare non si puo' mettere in sequenza) e il modulo deve dichiararsi.
+// Quello che non deve succedere e' che ALTRE funzioni scrivano il suo id a
+// mano — e fino al 2026-09-18 due funzioni dei progressi lo facevano, in
+// quattro righe.
+//
+// **QUANDO IL PRIMO MODULO SARA' FUORI, QUESTO BLOCCO CAMBIA FORMA:** oggi
+// legge `index.html`, e da allora dovra' leggere il file del modulo e quello
+// di chi resta — «dentro» e «fuori» saranno due file invece che due regioni
+// dello stesso.
+//
+// ⚠️ E COSA SUCCEDE SE NESSUNO LO CAMBIA, che e' la parte che va detta:
+// resterebbe **verde verificando una cosa sempre vera**. Cercare
+// `'personalizzazione'` dentro un `index.html` da cui Personalizza e' uscita
+// non trova niente **per costruzione**, non perche' la premessa regga — e il
+// verde direbbe «la premessa vale» mentre nessuno la sta piu' guardando.
+// *E' l'asserzione vacua, la forma che questa serie ha gia' incontrato due
+// volte.* **Lasciarlo com'e' non e' neutro: e' peggio che toglierlo.**
 
 async function run() {
   // ── [A] I NOMI SONO SPARITI DAL DISPATCH ─────────────────────────────
@@ -238,6 +262,33 @@ async function run() {
   }
 
   await browser.close();
+
+  // ── [E] LA PREMESSA DEL 23: UNO SOLO, E DICHIARATIVO ────────────────
+  // (provvisorio — vedi la nota in testa al file, e cosa succede se resta)
+  {
+    const codice = righeDiCodiceDi('index.html');
+    const corpoDi = function (nome) {
+      const i = codice.findIndex(function (r) { return new RegExp('^  function ' + nome + '\\s*\\(').test(r); });
+      if (i === -1) return null;
+      let j = i + 1;
+      while (j < codice.length && !/^  \}/.test(codice[j])) j++;
+      return codice.slice(i, j + 1).join('\n');
+    };
+
+    // Le due funzioni che NON appartengono a Personalizza e che hanno bisogno
+    // di sapere qual e' il passo-cancello. Nominate una per una: un elenco
+    // derivato direbbe «queste sono tutte» senza poterlo sapere.
+    ['migrateCustomizeSeenToModuleProgress', 'hasStartedEpisodeModules'].forEach(function (nome) {
+      const corpo = corpoDi(nome);
+      log('[E] ' + nome + ' non scrive a mano l\'id di Personalizza',
+        corpo !== null && corpo.indexOf("'personalizzazione'") === -1,
+        corpo === null ? 'funzione non trovata' : 'contiene ancora il letterale');
+    });
+
+    log('[E] ...e lo chiedono alla costante dichiarativa',
+      codice.some(function (r) { return /^  var ID_PERSONALIZZA = 'personalizzazione';$/.test(r); }));
+  }
+
   console.log('\n=== MODULI REGISTRATI SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   if (failed > 0) process.exit(1);
 }
