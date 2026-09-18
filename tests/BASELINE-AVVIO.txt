@@ -33,15 +33,19 @@
 #   2026-09-17  app/identita.js entra in TERZA posizione, e le tre righe dopo
 #               scalano: avvio, progressi, (inline). Il conto passa da 5 a 6.
 #               Sta prima di avvio.js perche' avvio legge BI.THEME_KEY.
+#   2026-09-18  app/audio.js entra come SESTO script, dopo progressi. Il conto
+#               passa da 6 a 7. E' l'ultimo strato del passo 22: da qui il
+#               conto non cambia piu' fino al 23.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
-# Ultimo aggiornamento: 2026-09-17
+# Ultimo aggiornamento: 2026-09-18
 script 1 app/config.js
 script 2 app/spazio.js
 script 3 app/identita.js
 script 4 app/avvio.js
 script 5 app/progressi.js
-script 6 (inline)
+script 6 app/audio.js
+script 7 (inline)
 modulo 1 personalizzazione
 modulo 2 repeatAloud
 modulo 3 meetTheStory

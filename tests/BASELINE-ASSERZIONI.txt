@@ -96,3 +96,4 @@ test_uscita_dal_modulo.js 11
 test_voicecoach.js 26
 test_progressi_estratto.js 10
 test_identita_estratta.js 13
+test_audio_estratto.js 13

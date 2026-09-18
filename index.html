@@ -9,6 +9,7 @@
 <script src="app/identita.js"></script>
 <script src="app/avvio.js"></script>
 <script src="app/progressi.js"></script>
+<script src="app/audio.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3614,6 +3615,17 @@
   // utenti: le pulizie dei moduli, che dal passo 21-bis si REGISTRANO invece
   // di essere nominate una per una da stopAllModuleActivity.
   var BI = window.BI;
+  var loadVoices = BI.loadVoices;
+  var looksLikeMaleVoice = BI.looksLikeMaleVoice;
+  var pickVoice = BI.pickVoice;
+  var vocePossibile = BI.vocePossibile;
+  var staParlando = BI.staParlando;
+  var fermaLaVoce = BI.fermaLaVoce;
+  var pausaLaVoce = BI.pausaLaVoce;
+  var riprendiLaVoce = BI.riprendiLaVoce;
+  var nuovaEpoca = BI.nuovaEpoca;
+  var epocaCorrente = BI.epocaCorrente;
+  var toggleSpeak = BI.toggleSpeak;
   var icon = BI.icon;
   var hydrateIcons = BI.hydrateIcons;
   var renderThemePicker = BI.renderThemePicker;
@@ -3964,7 +3976,6 @@
   // line, for example) fire one more step *after* the view had already
   // switched away, which is exactly how audio kept bleeding into whatever
   // module opened next.
-  var moduleEpoch = 0;
 
   // General rule (not a per-module patch): leaving any view — the map, a
   // module, going home — stops everything currently in flight for the
@@ -4014,7 +4025,7 @@
     // la riga dopo spegneva — ed era sbagliato: l'`onend` arriva in modo
     // ASINCRONO, cioè dopo tutta la pulizia, in qualunque ordine.
     //
-    // A neutralizzarlo è `moduleEpoch++`, che showView fa PRIMA di chiamare
+    // A neutralizzarlo è `nuovaEpoca()`, che leaveModule fa PRIMA di chiamare
     // questa funzione: ogni callback tardivo confronta l'epoca con cui era
     // partito e si ritira. **Quella riga è la protezione, e deve restare dove
     // sta** — un array di registrazioni fa pensare che la difesa sia qui
@@ -4042,7 +4053,7 @@
   // ⚠️ DUE FUNZIONI, NON UNA — separate il 2026-09-17 (passo 22, prima
   // estrazione), e la regola 21 di CLAUDE.md porta la misura che lo decide.
   //
-  // Prima `showView` faceva TRE lavori: incrementare `moduleEpoch`, chiamare
+  // Prima `showView` faceva TRE lavori: incrementare l'epoca, chiamare
   // `stopAllModuleActivity()` e cambiare la vista attiva. I primi due
   // appartengono a **lasciare un modulo**; il terzo a **disegnare**.
   //
@@ -4082,7 +4093,7 @@
 
   // Lascia il modulo attivo (se ce n'e' uno) e mostra un'altra vista.
   //
-  // `moduleEpoch++` sta qui e non in `showView` perche' e' meta' del
+  // `nuovaEpoca()` sta qui e non in `showView` perche' e' meta' del
   // «lasciare»: neutralizza le chiamate asincrone tardive del modulo che si
   // abbandona — un `onend` del sintetizzatore che arriva dopo l'uscita trova
   // l'epoca cambiata e non scrive piu' su una schermata che non c'e'
@@ -4090,7 +4101,7 @@
   // avrebbe voluto dire separare le due funzioni **tenendo dentro un pezzo di
   // quello che si stava separando**.
   function leaveModule(name) {
-    moduleEpoch++;
+    nuovaEpoca();
     stopAllModuleActivity();
     showView(name);
   }
@@ -4116,7 +4127,7 @@
      ⚠️ Fino al 2026-09-17 questa riga diceva «showView() chiama gia'
      stopAllModuleActivity()». Era vera, e la separazione di quel giorno
      l'ha resa falsa senza toccarla — stessa famiglia della riga su
-     moduleEpoch qui sopra.
+     l'epoca, che vive col nucleo audio (vedi `nuovaEpoca`).
      ============================================================ */
   var loadErrorRetry = null;
 
@@ -9341,7 +9352,7 @@
     // (no visible highlight, exactly what it looked like from the
     // outside). dgActiveBubble tracks whichever bubble's cycle is
     // current; a stale onEnd checks it before touching is-active at all,
-    // the same "am I still the one that matters" pattern moduleEpoch
+    // the same "am I still the one that matters" pattern the audio epoch
     // already uses for a different staleness problem.
     toggleSpeak(english, bubble, undefined, {
       onStart: function () {
@@ -10773,87 +10784,22 @@
     transcriptEl.innerHTML = '<strong>Hai detto:</strong> ' + (recognizedText ? recognizedText : '(nessun testo riconosciuto)');
   }
 
-  var synth = window.speechSynthesis;
-  var voices = [];
 
-  function loadVoices() {
-    voices = synth ? synth.getVoices() : [];
-  }
 
-  if (synth) {
-    loadVoices();
-    if ('onvoiceschanged' in synth) {
-      synth.onvoiceschanged = loadVoices;
-    }
-  }
 
   // Il pulsante appartiene alla vista `pronunciation` (morta, passo 25), non
   // al nucleo audio: sta qui sotto e chiede, invece di guardare `synth`.
   speakBtn.disabled = !vocePossibile();
 
-  // Heuristic-only: the Web Speech API exposes no real gender field, so a
-  // voice not in CONFIG.speech.preferredVoiceNames is guessed from its own
-  // name against maleVoiceNameHints — "female" is excluded explicitly
-  // first since it would otherwise match the "male" substring inside it.
-  function looksLikeMaleVoice(voice) {
-    var name = voice.name.toLowerCase();
-    if (name.indexOf('female') !== -1) return false;
-    return CONFIG.speech.maleVoiceNameHints.some(function (hint) { return name.indexOf(hint) !== -1; });
-  }
 
-  // ── LA VOCE, VISTA DA FUORI: quattro domande, nessun `synth` ──
-  //
-  // ⚠️ MISURATO IL 2026-09-18, PRIMA DI SCRIVERLE: `synth` era nominato da
-  // SETTE funzioni destinate a QUATTRO file diversi — il nucleo audio
-  // (loadVoices, pickVoice, toggleSpeak), la pulizia generale
-  // (stopAllModuleActivity), Dialogo (dgTogglePause, openDialogo) e Flash Card
-  // (fcFlip), piu' il listener globale del Blocco Ascolto.
-  //
-  // **Non e' una duplicazione: e' una RISORSA CONDIVISA.** E una risorsa
-  // condivisa non si divide per QUANDO una cosa gira, che e' l'unico criterio
-  // che lo spacchettamento ha — quindi su di lei il criterio non ha una
-  // risposta. Queste quattro funzioni gliene danno una: **`synth` appartiene
-  // al nucleo audio, e gli altri gli fanno domande.**
-  //
-  // Non aggiungono nessun comportamento: ognuna e' la riga che stava scritta
-  // sei volte, con lo stesso `synth &&` davanti. Quel controllo c'era in tutte
-  // e sei — il sintetizzatore puo' non esistere — e bastava che UNA se lo
-  // dimenticasse: adesso e' scritto una volta.
-  function vocePossibile() {
-    return !!synth;
-  }
 
-  function staParlando() {
-    return !!(synth && synth.speaking);
-  }
 
-  function fermaLaVoce() {
-    if (staParlando()) synth.cancel();
-  }
 
-  function pausaLaVoce() {
-    if (staParlando() && !synth.paused) synth.pause();
-  }
 
-  function riprendiLaVoce() {
-    if (synth && synth.paused) synth.resume();
-  }
 
-  function pickVoice() {
-    if (!synth) return null;
-    if (!voices.length) voices = synth.getVoices();
-    var preferredNames = CONFIG.speech.preferredVoiceNames;
-    for (var k = 0; k < preferredNames.length; k++) {
-      var match = voices.find(function (v) { return v.name === preferredNames[k]; });
-      if (match) return match;
-    }
-    var langVoices = voices.filter(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
-    if (!langVoices.length) {
-      langVoices = voices.filter(function (v) { return v.lang && v.lang.indexOf('en') === 0; });
-    }
-    if (!langVoices.length) return null;
-    return langVoices.find(looksLikeMaleVoice) || langVoices[0];
-  }
+
+
+
 
   // Regola Azione Critica, generic form. Correction (5th collaudo): a
   // prior round locked every OTHER control while any module's audio
@@ -10881,52 +10827,6 @@
     if (helpBtn) helpBtn.disabled = locked;
   }
 
-  // Shared text-to-speech helper: used by the full-sentence speak button
-  // and by every Repeat Aloud item's listen/rate buttons. Clicking the
-  // button that is currently playing stops it; clicking a different one
-  // while something else is playing interrupts that and starts the new
-  // one. rate is optional; omit it to use the app's tuned default.
-  // callbacks is optional ({onStart, onEnd}) for callers that need to react
-  // to this specific utterance's playback window — e.g. Voice Coach, which
-  // disables its own Record button while the model audio plays so the mic
-  // can't pick it up (see the vc-audio-controls click handler below).
-  // onStart fires synchronously, right before synth.speak() — NOT from
-  // SpeechSynthesisUtterance's own asynchronous "onstart" event, which
-  // some engines fire late enough (real, measurable delay) to make a
-  // same-tick UI lock feel unresponsive. onEnd stays tied to the real
-  // onend/onerror, since there's no way to know playback actually
-  // finished any earlier than the engine reports it.
-  function toggleSpeak(text, btn, rate, callbacks) {
-    if (!synth) return;
-    var wasSpeaking = btn.classList.contains('speaking');
-    fermaLaVoce();
-    if (wasSpeaking) return;
-    // Captured at start, compared in onend/onerror below — see moduleEpoch's
-    // own comment near showView(). Guards specifically against a module's
-    // own onEnd callback (e.g. Dialogo's dgPlayLine chaining into the next
-    // line) resurrecting itself after the user has already left the module,
-    // which is possible because cancel()'s onend/onerror can fire
-    // asynchronously, after showView()'s own synchronous cleanup already ran.
-    var epochAtStart = moduleEpoch;
-    var utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = CONFIG.speech.synthesisLang;
-    var voice = pickVoice();
-    if (voice) utterance.voice = voice;
-    utterance.rate = (rate === undefined || rate === null) ? CONFIG.speech.synthesisRate : rate;
-    utterance.onstart = function () { btn.classList.add('speaking'); };
-    utterance.onend = function () {
-      btn.classList.remove('speaking');
-      if (epochAtStart !== moduleEpoch) return;
-      if (callbacks && callbacks.onEnd) callbacks.onEnd();
-    };
-    utterance.onerror = function () {
-      btn.classList.remove('speaking');
-      if (epochAtStart !== moduleEpoch) return;
-      if (callbacks && callbacks.onEnd) callbacks.onEnd();
-    };
-    if (callbacks && callbacks.onStart) callbacks.onStart();
-    synth.speak(utterance);
-  }
 
   // Regola Azione Critica, single choke point (correction, 6th collaudo):
   // any click stops audio already playing — a future button inherits

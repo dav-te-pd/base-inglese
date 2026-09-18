@@ -36,7 +36,10 @@ const STORIA = [
   "            il conto passa da 4 a 5.",
   "2026-09-17  app/identita.js entra in TERZA posizione, e le tre righe dopo",
   "            scalano: avvio, progressi, (inline). Il conto passa da 5 a 6.",
-  "            Sta prima di avvio.js perche' avvio legge BI.THEME_KEY."
+  "            Sta prima di avvio.js perche' avvio legge BI.THEME_KEY.",
+  "2026-09-18  app/audio.js entra come SESTO script, dopo progressi. Il conto",
+  "            passa da 6 a 7. E' l'ultimo strato del passo 22: da qui il",
+  "            conto non cambia piu' fino al 23."
 ];
 
   const intestazione = [

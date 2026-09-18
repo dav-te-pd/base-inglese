@@ -147,7 +147,7 @@ async function run() {
     // e' seguirla dove la cosa che protegge e' andata a stare.
     //
     // `showView` faceva tre lavori; adesso disegna e basta, e `leaveModule` fa
-    // «lasciare» — `moduleEpoch++` incluso, perche' neutralizzare le chiamate
+    // «lasciare» — `nuovaEpoca()` inclusa, perche' neutralizzare le chiamate
     // asincrone tardive e' meta' del lasciare (CLAUDE.md regola 21).
     //
     // *L'invariante non e' cambiato di una virgola: l'incremento dell'epoca
@@ -158,7 +158,7 @@ async function run() {
     // La forma precedente prendeva 400 caratteri dall'inizio di `showView`, e
     // funzionava finche' `showView` era sola. Dopo la separazione, 400
     // caratteri dall'inizio di `showView` **sconfinano dentro `leaveModule`**
-    // — che `moduleEpoch++` e `stopAllModuleActivity()` li contiene per
+    // — che `nuovaEpoca()` e `stopAllModuleActivity()` li contiene per
     // definizione — e l'asserzione «showView non ne contiene nessuno dei due»
     // nasceva rossa su codice giusto.
     //
@@ -173,9 +173,16 @@ async function run() {
       return fine === -1 ? html.slice(i) : html.slice(i, fine);
     }
     const lm = corpoDi('leaveModule');
-    log('[A] moduleEpoch++ resta PRIMA di stopAllModuleActivity, in leaveModule',
-      lm.indexOf('moduleEpoch++') !== -1 &&
-      lm.indexOf('moduleEpoch++') < lm.indexOf('stopAllModuleActivity()'));
+    // ⚠️ `moduleEpoch++` si chiama `nuovaEpoca()` dal 2026-09-18, e anche
+    // questa riga e' rossa per una DECISIONE (⓪-undecies, quarta volta):
+    // l'epoca e' passata da variabile a due funzioni perche' IL PONTE DEGLI
+    // ALIAS NON FUNZIONA PER UN NUMERO — una copia avrebbe congelato il
+    // valore e la protezione sarebbe diventata inerte in silenzio.
+    // **L'invariante e' identico: si azzera l'epoca PRIMA di fermare i
+    // timer.** Cambia solo come lo si scrive.
+    log('[A] nuovaEpoca() resta PRIMA di stopAllModuleActivity, in leaveModule',
+      lm.indexOf('nuovaEpoca()') !== -1 &&
+      lm.indexOf('nuovaEpoca()') < lm.indexOf('stopAllModuleActivity()'));
 
     // ⚠️ E L'ALTRA META' DELLA DECISIONE, che prima non c'era niente a
     // proteggere: `showView` NON deve piu' contenere ne' l'incremento
@@ -184,7 +191,7 @@ async function run() {
     // trascinarsi dietro tre strati.
     const sv = corpoDi('showView');
     log('[A] ...e showView non ne contiene piu\' nessuno dei due: disegna e basta',
-      sv.indexOf('moduleEpoch++') === -1 && sv.indexOf('stopAllModuleActivity()') === -1);
+      sv.indexOf('nuovaEpoca()') === -1 && sv.indexOf('stopAllModuleActivity()') === -1);
   }
 
   const browser = await launchBrowser();
