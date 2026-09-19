@@ -2646,6 +2646,56 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ IL RIPASSO DI FLASH CARD: NON È CAMBIATO NIENTE — SONO DUE COLORI DIVERSI
+
+**Misurato il 2026-09-19** su una domanda precisa: *«il ripasso non sovrascrive
+più il colore; il 10 settembre scriveva. È cambiato, o il collaudo aveva letto
+altro?»*
+
+**Risposta: non è cambiato. Sono due colori, con due regole diverse, e valgono
+tutte e due da fine agosto.**
+
+| Colore | Chi lo scrive | Il ripasso lo tocca? |
+|---|---|---|
+| **le voci** (magazzino mastery) | `BI.recordPendingMastery(unitId, result)` in `fcRecordResult`, **senza nessuna guardia** | **SÌ**, a ogni risposta, ripasso compreso |
+| **il badge in mappa** (SelfScoreRules) | `fcFirstTryCorrectCount / fcVocab.length` in `fcFinishPassCheck` | **NO**, mai |
+
+E la seconda riga il codice la dice da sé, in un commento che sta lì da prima
+del collaudo: *«the Schermata Finale score counts first-try correct answers
+only — a later retry-pass success doesn't inflate it»*.
+
+**Le prove, e sono due indipendenti:**
+
+① **Confronto col codice del 10 settembre.** `fcFinishPassCheck` è **identica
+carattere per carattere** all'ultimo commit di quel giorno (`90dd9c2`,
+21:26 UTC). `fcRecordResult` differisce **solo** per il prefisso `BI.` aggiunto
+oggi con l'estrazione.
+
+② **Età dei due contatori.** `fcFirstTryCorrectCount` nasce il **2026-08-27**,
+`fcLastAvgPct` il **2026-08-28** — entrambi **prima** del collaudo. L'unico
+commit che li ha toccati dopo è lo spostamento di oggi.
+
+**Perché il collaudo del 10 diceva il vero.** Quel giro verificava *il travaso
+al gesto*, cioè il magazzino della mastery — la **prima** riga della tabella.
+Quella scriveva allora e scrive adesso. *Non è stato letto altro: è stato letto
+l'altro colore.*
+
+⚠️ **NON CONFERMATO GUIDANDO L'APP, e lo scrivo invece di lasciarlo credere.**
+Ho provato a pilotare un giro sbagliato + ripasso leggendo i due magazzini, e
+il pilota si è impigliato nel popup della valvola di sicurezza senza arrivare
+al riepilogo. La risposta qui sopra viene dal **codice e da `git`**, non dal
+browser. *Una prova non fatta si dichiara, non si arrotonda.*
+
+**Quello che resta aperto, ed è il motivo per cui questa riga sta fra i
+difetti e non fra le correzioni:** i due colori si chiamano tutti e due
+«colore» quando se ne parla, e **niente nell'interfaccia dice quale si sta
+guardando**. La domanda è nata da lì, non da un guasto.
+
+**Quando si esegue:** *al giro di design sulla mastery* — insieme alla media di
+Voice Practice che nessuno mostra, già registrata. Le due cose hanno la stessa
+forma: un dato che esiste, è corretto, e non ha un posto dove farsi leggere.
+
+
 ### ⚠️ IL TAGLIO PER SILENZIO CONTA DAL CLICK, UNA VOLTA SOLA — e il nome dice un'altra cosa
 
 **Misurato il 2026-09-19** su una domanda precisa di chi guida il progetto:
