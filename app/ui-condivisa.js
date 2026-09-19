@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing]
+// DIPENDE DA: dati.js [parsing], quiz-engine.js [parsing]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre
@@ -66,11 +66,6 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
-  var setIntroDismissed = BI.setIntroDismissed;
-  var getUserName = BI.getUserName;
-  var isIntroDismissed = BI.isIntroDismissed;
-  var toggleSpeak = BI.toggleSpeak;
-  var icon = BI.icon;
 
   // ⚠️ I QUATTRO NOMI CHE VENGONO DA ALTRI STRATI, e la riga DIPENDE DA in
   // testa li dichiara. Sono alias PRESI A TEMPO DI PARSING, quindi l'ordine
@@ -447,131 +442,6 @@
     if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
   }
 
-
-  // ⚠️ I SETTE PEZZI CONDIVISI ARRIVATI QUI IL 2026-09-18, ED E' UN DEBITO
-  // PAGATO PRIMA CHE DIVENTASSE LA FORMA DI TUTTI.
-  //
-  // Stavano dentro le regioni di Voice e Repeat Aloud **per posizione**, e
-  // quattro file gia' estratti li chiedevano da fuori: `app/mappa.js` chiedeva
-  // `closeAttemptPopup` (uno STRATO che chiede a un MODULO, il verso che
-  // questa serie esiste per eliminare), `app/storycards.js` ne chiedeva
-  // quattro, `app/personalizza.js` uno.
-  //
-  // **Qualunque dei sei moduli fosse uscito prima, avrebbe peggiorato:** con
-  // Repeat Aloud fuori, storycards e personalizza avrebbero dipeso da
-  // `repeat-aloud.js` — modulo che chiede a modulo. Con Voice fuori,
-  // `mappa.js` avrebbe dipeso da `voice.js`. E quella sarebbe diventata la
-  // forma degli ultimi sei.
-  //
-  // **Che fossero condivisi era gia' scritto, in due posti diversi:** il popup
-  // dei tentativi e' «un pezzo solo» dal passo 14b, il Blocco Ascolto e' un
-  // componente dal C.3. *Quattordicesima comparsa della famiglia «sta vicino
-  // non vuol dire e' suo».*
-  //
-  // ⚠️ `openAttemptPopup` viene con `closeAttemptPopup` benche' nessuno la
-  // chieda da fuori: sono le due meta' dello stesso pezzo, e separarle
-  // lascerebbe in un modulo la meta' che apre un popup che un altro file
-  // chiude.
-
-  // opts: { say, mini, blocco, extraClass }
-  //   say        — l'identificatore che finisce nell'attributo del tocco
-  //   mini       — solo il pulsante, senza le velocita'
-  //   blocco     — avvolge in <div class="listen-block">, per chi non ce l'ha
-  //   extraClass — classi in piu' sul contenitore
-  function renderListenBlock(opts) {
-    var o = opts || {};
-    var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
-    var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
-      attr + '="' + o.say + '" aria-label="' + uiText('bloccoAscolto.listenLabel') + '">' + icon('volume-2') + '</button>';
-    if (o.mini) return bottone;
-    var dentro = bottone +
-      '<div class="rate-group" role="group" aria-label="' + uiText('bloccoAscolto.rateGroupLabel') + '">' + renderRateButtons(o.say) + '</div>';
-    if (!o.blocco) return dentro;
-    return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
-  }
-
-  // Il tocco su un Blocco Ascolto. Il testo NON lo decide questa funzione: e'
-  // l'unica cosa che varia davvero fra i sei moduli — una ricerca nel file
-  // episodio, vcTargetText(), fcBackText(), l'opzione corrente — quindi lo
-  // risolve chi chiama e lo passa. Qui sta il resto, che era identico in
-  // cinque punti: leggere la velocita' dal pulsante e parlare.
-  function speakListenBlock(btn, testo) {
-    var rateAttr = btn.getAttribute('data-rate');
-    toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
-  }
-
-  // options.dismissPref for openHowItWorksOverlay, built from a module kind.
-  function introDismissPref(kind) {
-    return {
-      get: function () { return isIntroDismissed(kind, getUserName()); },
-      set: function (val) { setIntroDismissed(kind, getUserName(), val); }
-    };
-  }
-
-  // Shared by Story Cards and every Dialogo module (CLAUDE.md rule 13) —
-  // which side of the chat a line renders on. Driven by the line's own
-  // "ruolo" ('esterno' | 'famiglia') in the episode data, never derived
-  // from the speaker's name/id: names are personalizable per user, so a
-  // name-based rule (e.g. "guide" hardcoded) would silently break on a
-  // future episode with a different cast (a waiter, a police officer...).
-  function dialogueLineAlign(line) {
-    return line.ruolo === 'famiglia' ? 'right' : 'left';
-  }
-
-  function speakerLabel(episode, speaker) {
-    return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
-  }
-
-  function openAttemptPopup(wasCorrect, onRetry, onNext) {
-    attemptPopupOnRetry = onRetry || null;
-    attemptPopupOnNext = onNext || null;
-    document.getElementById('attempt-popup-retry').hidden = !attemptPopupOnRetry;
-    var fallback = wasCorrect
-      ? { title: 'Ce l\'hai fatta!', body: 'Continua pure, o vai avanti quando vuoi.' }
-      : { title: 'Tranquillo, capita!', body: 'Continua pure, o passa avanti quando vuoi.' };
-    document.getElementById('attempt-popup-title').textContent = fallback.title;
-    document.getElementById('attempt-popup-body').textContent = fallback.body;
-    document.getElementById('attempt-popup').classList.add('is-open');
-    loadFeedbackMessages().then(function (data) {
-      var group = data.valvolaSicurezzaMessages && data.valvolaSicurezzaMessages[wasCorrect ? 'riuscita' : 'nonRiuscita'];
-      if (!group) return;
-      document.getElementById('attempt-popup-title').textContent = group.title;
-      document.getElementById('attempt-popup-body').textContent = pickRandom(group.bodies);
-    }).catch(function () {});
-  }
-
-  function closeAttemptPopup() {
-    document.getElementById('attempt-popup').classList.remove('is-open');
-  }
-
-  // ⚠️ `activeHelpModule` viene RIASSEGNATA, quindi non si aliasa: si chiede.
-  // E' la stessa forma di `istruzioniInMemoria` — un alias ne congelerebbe il
-  // null iniziale (il caso che il 2026-09-18 ha fatto sette file rossi).
-  function moduloDiAiutoAttivo() { return activeHelpModule; }
-  function impostaModuloDiAiutoAttivo(m) { activeHelpModule = m; }
-
-  // ⚠️ LO STATO DEL POPUP E I SUOI DUE PULSANTI VENGONO COL PEZZO, e la
-  // prima volta li avevo lasciati indietro: `attemptPopupOnRetry is not
-  // defined`, DICIOTTO occorrenze su nove file. Un pezzo non e' solo le sue
-  // funzioni — sono le funzioni, lo stato che tengono e i listener che le
-  // chiamano. *La misura dei buchi non l'aveva visto perche' i due `var`
-  // erano nominati solo DENTRO i listener, che erano rimasti anche loro:
-  // da index.html il conto tornava.*
-  var attemptPopupOnRetry = null;
-  var attemptPopupOnNext = null;
-
-  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnRetry) attemptPopupOnRetry();
-  });
-
-  document.getElementById('attempt-popup-next').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnNext) attemptPopupOnNext();
-  });
-
-  BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
-  BI.impostaModuloDiAiutoAttivo = impostaModuloDiAiutoAttivo;
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
   BI.uiText = uiText;
   BI.uiTextWith = uiTextWith;
@@ -599,11 +469,4 @@
   BI.resolveSlotValue = resolveSlotValue;
   BI.LOAD_ERROR_LAST_RESORT = LOAD_ERROR_LAST_RESORT;
   BI.MODULE_RULES_LEVEL = MODULE_RULES_LEVEL;
-  BI.closeAttemptPopup = closeAttemptPopup;
-  BI.openAttemptPopup = openAttemptPopup;
-  BI.renderListenBlock = renderListenBlock;
-  BI.speakListenBlock = speakListenBlock;
-  BI.dialogueLineAlign = dialogueLineAlign;
-  BI.speakerLabel = speakerLabel;
-  BI.introDismissPref = introDismissPref;
 })(window.BI);
