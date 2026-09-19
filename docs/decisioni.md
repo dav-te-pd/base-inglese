@@ -2646,6 +2646,59 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ LA TERZA VOCE DEL GIRO DI DESIGN: REPORT VERDE E MAPPA ROSSA, TUTTI E DUE CORRETTI
+
+**Detta il 2026-09-19 da chi guida il progetto, e scritta qui perché era stata
+detta e mai registrata.** Le sue parole, non un mio riassunto:
+
+> Dopo un ripasso riuscito, il report mostrerà la parola **VERDE** mentre la
+> mappa continua a mostrare il badge del primo giro. Sono tutti e due
+> corretti, e allo studente sembreranno contraddittori — *«perché il report
+> dice che la so e la mappa dice che è andata male?»*.
+>
+> Si uniforma o si spiega **QUANDO IL REPORT SARÀ VISIBILE, non prima**: oggi
+> non sappiamo ancora cosa vedrà lo studente.
+
+⚠️ **È la conseguenza della prima voce, non una voce indipendente — e merita
+la sua riga lo stesso:** la prima descrive **due dati**, questa descrive
+**cosa vede una persona**. *Una riga che parla di dati non fa venire in mente
+la domanda che si farà lo studente; e la domanda è il problema, non i dati.*
+
+**Quando si esegue:** *quando il report sarà visibile allo studente*, e non
+prima. Decidere adesso fra «uniformare» e «spiegare» significherebbe scegliere
+senza sapere che cosa lui avrà davanti.
+
+**Il giro di design sulla mastery ha ora TRE voci**, e sono tutte della stessa
+famiglia — *un dato corretto senza un posto dove farsi leggere*:
+① i due colori che si chiamano tutti e due «colore»;
+② la media di Voice Practice che nessuno mostra;
+③ questa.
+
+### ⚠️ OGNI TAG `<script>` NUOVO ALLARGA LE CORSE CHE GIÀ C'ERANO
+
+**Misurato il 2026-09-19**, estraendo il terzo modulo: `test_new_features.js`
+è andato rosso su `window.APP_CONFIG` letto **subito dopo** il ricaricamento
+innescato dal «Reset» del Pannello Admin. L'attesa era su *«il documento è
+stato sostituito»* — vero all'**inizio** del nuovo documento, mentre fra quel
+momento e `APP_CONFIG` ci sono **diciotto script** da caricare.
+
+**Non l'ha rotta `app/match.js`: l'ha resa visibile.** La corsa c'era da
+sempre; il tag nuovo l'ha allargata quanto basta.
+
+⚠️ **È la regola 19 vista dal verso del NUMERO DI FILE invece che da quello
+della macchina lenta**, ed è un verso che la regola oggi non nomina. Lo
+spacchettamento è passato da 1 file a 18, e ne mancano **tre**.
+
+**Quindi, operativamente:** se un altro test diventa rosso su uno stato letto
+poco dopo un caricamento o un ricaricamento, **è questa famiglia, non un caso
+nuovo** — e la correzione è sempre la stessa, spostare l'approdo sull'ULTIMO
+effetto (`.view.is-active`, cioè `boot()` ha scelto una vista) invece che sul
+primo.
+
+**Quando si esegue:** *non c'è niente da eseguire finché non ricapita.* Questa
+riga esiste per far riconoscere il caso al primo colpo invece che al terzo.
+
+
 ### ⚠️ IL RIPASSO DI FLASH CARD: NON È CAMBIATO NIENTE — SONO DUE COLORI DIVERSI
 
 **Misurato il 2026-09-19** su una domanda precisa: *«il ripasso non sovrascrive
