@@ -2726,6 +2726,75 @@ trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non u
 avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
 esattamente quello che è appena successo.
 
+### DECISO: l'ordine A → B → C, e la classe `new` esce con la vista morta
+
+**2026-09-19**, dopo la valutazione a codice fermo
+(`docs/valutazione-catalogo.md`, commit `980eb99`).
+
+**L'ordine è A → B → C:**
+
+| | Passo |
+|---|---|
+| **A** | la vista morta `view-pronunciation` esce, e il listener globale della Regola Azione Critica si separa da dentro |
+| **B** | lo stato di sessione + i quattro pezzi bloccati |
+| **C** | il catalogo, **dopo** che la domanda delle edizioni ha una risposta |
+
+**E `LEVEL_CLASS` e la classe `new` escono con la vista morta, con la frase
+della regola 39 corretta nello stesso passo.** Deciso da chi guida il
+progetto, con la motivazione:
+
+> *«È la ⓪-quinquies su `CLAUDE.md`, e va chiusa. E se un report futuro vorrà
+> la classe `new`, la riscriverà: una classe CSS è cinque righe. Tenerla per un
+> report che non esiste significa tenere un esempio falso in una regola per
+> anni.»*
+
+*La regola 39 resta giusta sulla decisione — una voce mai incontrata non ha
+colore — e cambia solo la frase che la illustra, perché nomina un lettore che
+nessuno può eseguire.*
+
+**Quando si esegue:** A è il prossimo passo, appena arriva il suo prompt.
+
+### DA DECIDERE PRIMA DI C: che cosa è «l'edizione corrente»
+
+**La domanda non è stata ancora risposta**, ed è bloccante **solo per C**: A e B
+non la toccano.
+
+**I quattro valori, coi loro contenuti veri e i loro lettori:**
+
+| valore | contiene | lo studente lo legge? | siti |
+|---|---|---|---|
+| `CONFIG.grades` | `['A','B','C','D']` | no, è tecnico | 9 |
+| `CONFIG.gradeNames` | `{A:'Parole', B:'Espressioni', C:'Frasi', D:'Dialogo'}` | **sì** | 6 |
+| `CONFIG.moduleTypes` | le sei categorie con le `label` ('Inizio', 'Studio', 'Quiz'…) | **sì** | 10 |
+| `CONFIG.sequences` | i ventidue passi `{module, grade}` | no, ma può cambiare per edizione | 25 |
+
+**Due su quattro sono parole italiane che lo studente legge, e oggi sono un
+oggetto solo.**
+
+⚠️ **E la domanda vera sta sotto, ed è questa: OGGI NIENTE NELL'APP DICE
+QUALE EDIZIONE SI STA MOSTRANDO.** `CONFIG.episodioCorrente` dice quale
+*episodio*. Un'edizione corrente **non è un dato che esiste**: andrebbe
+inventata.
+
+**Raccomandazione (non decisione): il catalogo esce con UNA copia sola, e il
+file lo dichiara in testa.** Le ragioni:
+
+- **regola 42** — una struttura «per edizione» disegnata con **una sola
+  edizione** è disegnata sul caso comodo, il solo che abbiamo. La seconda la
+  romperebbe comunque, e intanto avremmo pagato l'indirezione su **cinquanta
+  siti** per un caso che non esiste;
+- **regola 4** — le edizioni future nascono *«copiando la cartella e
+  sostituendo i contenuti»*, e *«una correzione fatta in `it/` NON deve
+  arrivare nelle altre»*. **È un modello a COPIA, non a parametro**, e un
+  modello a copia non chiede un selettore a runtime: chiede una scelta prima,
+  al deploy o all'avvio. **Quella scelta non è mai stata presa.**
+
+*Un limite dichiarato in testa al file costa una riga; un limite non scritto
+costa il giorno in cui qualcuno ci costruisce sopra.*
+
+**Quando si esegue:** *prima di C, e come decisione sua* — non come effetto
+collaterale dello spostamento del catalogo.
+
 ### ⚠️ HO FERMATO UN PROCESSO PER NOME, AVENDO LETTO LA REGOLA CHE LO VIETA
 
 **2026-09-19, lanciando la suite dopo il sesto modulo.** Comando:
