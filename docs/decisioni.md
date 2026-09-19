@@ -2754,7 +2754,70 @@ nessuno può eseguire.*
 
 **Quando si esegue:** A è il prossimo passo, appena arriva il suo prompt.
 
-### IL MODELLO: DUE SCELTE INDIPENDENTI, COME DUOLINGO — deciso sugli screenshot
+### IL MODELLO: UNA SCELTA SOLA — la lingua base decide app E corsi
+
+**2026-09-19, e questa è la versione buona.** Ha corretto tutto **un secondo
+giro di screenshot**, chiesti da chi guida il progetto dopo che avevo dichiarato
+il contrario.
+
+**Cosa fa Duolingo davvero:** aprendo *«Per chi parla arabo»* e toccando una
+qualunque lingua, compare un foglio:
+
+> **«Questo cambierà la lingua dell'app in arabo.»**
+> *«Continua se sai già parlare arabo.»*  → **PASSA A ARABO** / ANNULLA
+
+Idem con *«Per chi parla inglese»* → Spanish: **«questo cambierà la lingua
+dell'app in inglese»**. E già nell'elenco aperto i nomi dei corsi sono **in
+inglese** («Spanish», «French») mentre le intestazioni sono ancora in italiano:
+il passaggio è annunciato prima ancora di essere confermato.
+
+⚠️ **QUINDI BABBEL E DUOLINGO FANNO LA STESSA COSA, e io avevo dichiarato che
+facevano due cose diverse.** L'elenco raggruppato per base **non** è un secondo
+asse: è un menù che **cambia il primo**. *È la terza volta oggi che una misura
+corregge una mia dichiarazione, ed è la più grossa: le altre due erano numeri,
+questa era un modello intero.*
+
+**La regola, ed è una sola riga:**
+
+> **La lingua base è UNA SCELTA, e decide due cose insieme: la lingua dell'app e
+> quali corsi esistono per te.** Scegliere un corso da un'altra base **cambia la
+> lingua dell'app**, e l'app lo dice prima e chiede conferma.
+
+**Cosa ne segue, e sono tutte semplificazioni:**
+
+- la domanda *«se scelgo inglese per italiani vorrò le scritte in italiano,
+  sennon che senso ha»* **è garantita per costruzione**, non per convenzione;
+- **non esistono schermate miste**: dentro un corso, chrome e istruzioni sono
+  sempre nella base di quel corso;
+- il caso vero del tedesco — *«non c'era tedesco per italiani, ma c'era tedesco
+  per inglesi»* — funziona: si passa all'inglese, **detto prima e confermato**;
+- «e se vuole studiare l'inglese?» non è un caso speciale: sceglie una base che
+  sa leggere, come per qualunque altra lingua. **Nessun pulsante «traduci»**, che
+  sarebbe creazione e non pesca.
+
+### La struttura dei file NON cambia, e il perché è una misura
+
+```
+data/app/{lingua}/            ← chrome, istruzioni-moduli, messaggi-feedback,
+                                 nomi dei gradi, categorie
+data/corsi/{imparata}/{base}/ ← episodi, tabelle di personalizzazione
+```
+
+**È la stessa struttura di prima**, con un invariante in più: **`lingua` ==
+`base`, sempre.** Una scelta sola sceglie tutte e due le cartelle.
+
+⚠️ **E `data/app/{lingua}/` serve ancora, per una ragione che non c'entra col
+modello scelto: la DUPLICAZIONE.** `istruzioni-moduli.json` +
+`messaggi-feedback.json` sono **36 KB** e **non crescono con gli episodi**. Se
+restassero dentro il corso, un italiano con quattro corsi avrebbe **quattro
+copie degli stessi 36 KB in italiano**, da tenere allineate a mano. *È la
+duplicazione che questa giornata ha passato a togliere.*
+
+**Il vincolo «la lingua francese dell'app esiste quando esiste un corso con base
+francese» adesso non è più una politica: è la struttura.** Le due cose sono la
+stessa scelta.
+
+### ⚠️ SUPERATA — la versione a due assi (sbagliata, tenuta per il metodo)
 
 **2026-09-19.** Questa voce **sostituisce** quella qui sotto sui «due assi»: lì
 il modello era stato ragionato, qui è stato **guardato**. Sette screenshot di
