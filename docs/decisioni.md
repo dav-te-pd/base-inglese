@@ -2754,7 +2754,87 @@ nessuno può eseguire.*
 
 **Quando si esegue:** A è il prossimo passo, appena arriva il suo prompt.
 
-### IL MODELLO DELLE EDIZIONI È A COPIA, E GLI ASSI SONO DUE
+### IL MODELLO: DUE SCELTE INDIPENDENTI, COME DUOLINGO — deciso sugli screenshot
+
+**2026-09-19.** Questa voce **sostituisce** quella qui sotto sui «due assi»: lì
+il modello era stato ragionato, qui è stato **guardato**. Sette screenshot di
+Babbel e Duolingo, e mostrano **due modelli diversi**, non uno.
+
+| | Babbel | Duolingo |
+|---|---|---|
+| la scelta | **UNA**: «Parlo» | **DUE**: lingua dell'app + corso |
+| cosa decide | lingua dell'app **e** corsi disponibili | l'app da una parte, il corso dall'altra |
+| la prova | le schermate «Parlo/Voglio studiare» sono **la stessa schermata** in spagnolo e in italiano | il selettore è **in italiano** e elenca *«Per chi parla italiano», «Per chi parla inglese», «Per chi parla arabo»…* |
+
+**È il modello Duolingo quello che descrive chi guida il progetto**, ed è un
+modello vero e spedito, non un'ipotesi:
+
+> *«Potrò anche scegliere tedesco per inglesi: in quel corso pesca le parole in
+> tedesco, ma quando esco dal corso vedo in italiano.»*
+
+**E Duolingo conferma anche l'altra cosa:** sotto «Per chi parla italiano» ci
+sono **Scacchi, Musica, Matematica** accanto alle lingue. *La cosa imparata non
+deve essere una lingua*, e il modello se ne accorge da solo.
+
+⚠️ **Limite di quello che gli screenshot provano, e va detto:** mostrano il
+**selettore**, non cosa succede **dentro** un corso a base diversa. Quella parte
+resta una scelta nostra, non un'osservazione.
+
+### La ragione che decide, ed è una misura
+
+| | | cresce con gli episodi? |
+|---|---|---|
+| **A** chrome dell'app | piccolo | no |
+| **C** `istruzioni-moduli.json` + `messaggi-feedback.json` | **36 KB** | **no** |
+| **B** episodi + tabelle | 14 KB a episodio | **sì** |
+
+**Il gruppo C è 36 KB, cioè due episodi e mezzo di testo, e NON cresce.**
+
+- **Col modello Babbel** (una scelta sola) C potrebbe restare dentro
+  l'edizione — ma verrebbe **copiato in ogni corso con la stessa base**. Un
+  italiano con quattro corsi = **quattro copie degli stessi 36 KB**, da tenere
+  allineate a mano.
+- **Col modello Duolingo** C sta in `data/app/{lingua}/`: **una copia per lingua
+  d'interfaccia**, condivisa da tutti i corsi.
+
+**È esattamente la duplicazione che questa giornata ha passato a togliere.** La
+regola 4 dice che *«un'edizione non è una traduzione»* e che le correzioni non
+devono propagarsi — ma parlava del **contenuto del corso**, non dei testi
+dell'app.
+
+### Il modello, per intero
+
+```
+data/app/{lingua-interfaccia}/     ← A + C: chrome, istruzioni-moduli,
+                                      messaggi-feedback, nomi dei gradi, categorie
+data/corsi/{imparata}/{base}/      ← B: episodi, tabelle di personalizzazione
+```
+
+**Due scelte indipendenti:**
+
+1. **la lingua dell'app** — sta nel profilo;
+2. **il corso** — la coppia `(imparata, base)`, scelta da un elenco **raggruppato
+   per base**, con la propria lingua **per prima e aperta**, le altre sotto e
+   chiuse (è lo screenshot 7 di Duolingo).
+
+**Così la combinazione strana non è il default: è il ripiego.** Nessuno ci
+finisce per caso — ci va perché nella sua lingua quel corso non esiste. Ed è il
+caso vero raccontato da chi guida il progetto: *«volevo studiare il tedesco e
+l'app non aveva tedesco per italiani, ma aveva tedesco per inglesi»*.
+
+**Dentro un corso a base diversa** lo studente legge: chrome e istruzioni nella
+**lingua dell'app**, contenuto dell'esercizio nella **base del corso**. *Non è un
+miscuglio: l'interfaccia parla a lui, il corso gli insegna.*
+
+**Il pulsante «traduci ancora» è SCARTATO**, e per il principio suo: *«il
+sistema deve sempre pescare e mai creare»*. Una traduzione a runtime è
+creazione, ed è il deragliamento che quel principio esiste per impedire.
+
+**E «la lingua francese dell'app sarà disponibile quando faremo inglese per
+francesi» è una POLITICA, non un vincolo della struttura:** dice *quando* si fa
+la traduzione, non *come* stanno i dati. Giusta, e separabile.
+
+### ⚠️ SUPERATA dalla voce qui sopra — IL MODELLO DELLE EDIZIONI È A COPIA, E GLI ASSI SONO DUE
 
 **Risposto il 2026-09-19 da chi guida il progetto**, e la risposta è più avanti
 della raccomandazione che l'aveva chiesta: **non dicevamo la stessa cosa.**
