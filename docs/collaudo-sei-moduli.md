@@ -71,8 +71,13 @@ in `index.html`; il modulo che lo fa scattare adesso è in un altro file.
 ### ④ Passi 4–7 · Match ×2, Flash Card ×2
 
 **Fai:** almeno **una risposta sbagliata di proposito** in Match, e in Flash
-Card **salta una carta senza girarla**. Poi, **riapri un modulo già finito** e
+Card premi **«Non lo so»** su una carta. Poi, **riapri un modulo già finito** e
 rispondi una volta.
+
+> ⚠️ *Corretto il 2026-09-19, collaudando: la prima versione diceva «salta una
+> carta senza girarla», e **in Flash Card quel gesto non esiste** — si preme
+> «Non lo so». Il gesto era giusto, la descrizione no, e chi rifà il collaudo
+> legge la descrizione.*
 
 **Deve succedere:** riaprendo, il pulsante fa partire l'azione **una volta
 sola** — non due.
@@ -91,6 +96,22 @@ cominciano con `match:` e con `flashcard-A:`.
 *Perché qui, ed è il punto che nessuno dei sei giri ha guardato:* cinque moduli
 in cinque file diversi scrivono nello **stesso** magazzino. Finché li si prova
 uno per uno non si vede mai se ci finiscono davvero tutti.
+
+> ⚠️ **E il 2026-09-19 questo punto ha detto PIÙ di quanto fosse stato
+> previsto, quindi la riga qui sopra è incompleta e va letta con questa.**
+> Misurato: **24 voci**, due moduli in due file, **e i due rossi erano
+> esattamente le due risposte sbagliate di proposito, con la striscia a 1 su
+> entrambe** — cioè il ripasso aveva scritto.
+>
+> *Non prova solo che le voci ci finiscono tutte: prova che **l'aritmetica è la
+> stessa attraverso i file**.* Il livello e la striscia sono la regola 39, e
+> quella regola vive in un file mentre i cinque che la applicano vivono in
+> altri cinque. **Due moduli che scrivono nello stesso magazzino con due
+> aritmetiche diverse darebbero comunque 24 voci:** è la corrispondenza fra i
+> rossi e gli errori veri che distingue.
+>
+> **Chi rifà il collaudo conti le voci e guardi i rossi**, non solo la presenza
+> delle chiavi.
 
 ### ⑥ Passo 12 · Voice Practice
 
