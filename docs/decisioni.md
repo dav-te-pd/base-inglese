@@ -2754,6 +2754,122 @@ nessuno può eseguire.*
 
 **Quando si esegue:** A è il prossimo passo, appena arriva il suo prompt.
 
+### IL MODELLO DELLE EDIZIONI È A COPIA, E GLI ASSI SONO DUE
+
+**Risposto il 2026-09-19 da chi guida il progetto**, e la risposta è più avanti
+della raccomandazione che l'aveva chiesta: **non dicevamo la stessa cosa.**
+
+> *«Ogni edizione ha i suoi file da dove prende le parole. Ognuno ha sempre le
+> sue cartelle e i suoi file separati e indipendenti. L'obiettivo è che il
+> sistema sempre peschi e mai crei, perché si rischia il deragliamento del
+> risultato.»*
+
+**La mia raccomandazione teneva i quattro valori NEL CODICE con un limite
+dichiarato: era un modo di non decidere.** Questa è una decisione, e va presa
+al posto di quella.
+
+**E c'è un secondo asse, che la raccomandazione non aveva nemmeno nominato:**
+
+> *«Lo studente entra col login, sceglie la lingua in cui vuole vedere l'app —
+> non il corso, proprio le etichette — e poi da lì sceglie il suo corso:
+> inglese per italiani, inglese per francesi, francese per italiani… Se mentre
+> fa "inglese per italiani" vuole l'app in spagnolo deve poterlo fare, ma al
+> corso non cambia niente: inglese per italiani avrà le scritte in italiano.»*
+
+**I due assi sono indipendenti, ed è giusto.**
+
+### ⚠️ MA I GRUPPI DI TESTO SONO TRE, NON DUE — e oggi il terzo sta dalla parte sbagliata
+
+| | Cosa | Deve seguire | Esempi |
+|---|---|---|---|
+| **A** | il **chrome** dell'app | la **lingua dell'interfaccia** | «Esci», il selettore dei temi, il login |
+| **B** | il **contenuto del corso** | l'**edizione** | le battute inglesi, le traduzioni, le skill |
+| **C** | **il ceto di mezzo** | ⚠️ **l'interfaccia — ma oggi segue l'edizione** | `gradeNames` («Parole»), `moduleTypes` («Studio»), `istruzioni-moduli.json`, `messaggi-feedback.json` |
+
+**Il gruppo C spiega COME SI USA L'APP, non l'inglese.** «Guarda come si fa»,
+«Ho finito, torna alla mappa», «Studio · Parole»: uno studente francese che fa
+«inglese per italiani» con l'app in spagnolo deve leggerli **in spagnolo**.
+
+**Il gruppo B no, e per una ragione che non è di comodo:** *«in inglese `I'm` è
+la contrazione di `I am`»* resta in **italiano**, perché il corso **è**
+l'inglese-spiegato-in-italiano. Mostrarlo in spagnolo non lo tradurrebbe: lo
+trasformerebbe in un altro corso, che non esiste.
+
+⚠️ **Oggi `data/inglese/it/istruzioni-moduli.json` — gruppo C — sta DENTRO
+l'edizione, e la regola 8 lo prescrive.** Non era sbagliato: con **una sola
+edizione**, l'`it` del percorso fa **due mestieri insieme** — «la lingua in cui
+il corso spiega» e «la lingua in cui l'app parla». *Sono la stessa cosa solo
+finché l'edizione è una.* È la famiglia ⓪-decies: **una cosa che risponde a due
+domande dà la risposta giusta a una e sbagliata all'altra, e nessuno se ne
+accorge finché le due non divergono.**
+
+**Il modello che ne segue:**
+
+```
+data/ui/{lingua-interfaccia}/            ← A + C
+data/{lingua-imparata}/{lingua-spiegazione}/   ← B (com'è oggi)
+```
+
+### Perché la copia è la strada giusta, e l'alternativa è peggiore
+
+**Cercata un'alternativa, e le due che esistono sono entrambe peggiori:**
+
+1. **Una cartella per COMBINAZIONE** (`inglese-it-es`, `inglese-it-fr`…): non è
+   più una copia lungo un asse, è un **prodotto** fra due. Dieci corsi × dieci
+   lingue d'interfaccia = **cento cartelle, novanta delle quali ripetono lo
+   stesso corso.** *Tenere i due assi separati è esattamente ciò che impedisce
+   al catalogo di diventare un prodotto.*
+2. **Parametrizzare invece di copiare** (un file con tutte le lingue dentro):
+   già escluso dalla regola 4, *«una correzione fatta in `it/` NON deve arrivare
+   nelle altre»*. Un file condiviso rende ogni correzione globale per
+   costruzione, cioè il contrario di quello che serve.
+
+**E «sempre pescare, mai creare» non è nuovo: è già nel progetto**, scritto per
+le collisioni delle opzioni (*«solo funzioni di lettura, mai di creazione a
+runtime»*). Qui diventa la regola del catalogo.
+
+### Cosa cambia per i passi già decisi
+
+| | |
+|---|---|
+| **A** (vista morta) | **niente**, non lo tocca |
+| **B** (stato di sessione) | **niente**, non lo tocca |
+| **C** (catalogo) | ⚠️ **cambia forma, e si spezza in due** |
+
+**C non è più «sposta il catalogo in un file».** Se il punto d'arrivo è «il
+catalogo si pesca dai file dell'edizione», spostarlo in un `.js` con i valori
+scritti dentro **è lavoro che poi si disfa**. Si spezza così:
+
+- **C1** — le **funzioni** escono (`resolveEpisodeOrder`, `buildEpisodes`,
+  `moduleStepId`): meccanico, nessuna decisione dentro, si può fare comunque;
+- **C2** — i **valori** diventano dati per edizione e per lingua d'interfaccia:
+  è il passo della divisione, e ha bisogno del modello qui sopra.
+
+**Quando si esegue:** C1 dopo B; **C2 è la divisione dei dati**, e la sua
+condizione sta nella riga qui sotto.
+
+### DA DECIDERE: l'ordine fra divisione dei dati, Supabase e pannello utente
+
+**Domanda posta il 2026-09-19:** *«il pannello utente e admin si fa dopo aver
+integrato Supabase, per farlo una volta sola. È corretto o meglio prima?»*
+
+**Raccomandazione (non decisione): né l'uno né l'altro per primo — prima LA
+DIVISIONE DEI DATI.**
+
+- È **l'unica delle tre che diventa più cara col tempo**, perché il suo costo è
+  proporzionale a **quanto contenuto esiste**. Oggi: due episodi e tre file
+  condivisi. Ogni episodio scritto prima della divisione è scritto con
+  l'assunzione sbagliata.
+- Non chiede né account né server, e **serve a tutte e due le altre**.
+
+**E sul resto l'istinto era giusto: Supabase PRIMA del pannello.** La forma del
+pannello dipende da dove vive l'identità; costruirlo su `localStorage` e poi
+rifarlo su Supabase è **farlo due volte**, cioè proprio la cosa da evitare.
+
+**Ordine proposto:** divisione dei dati → Supabase → pannello utente.
+
+**Quando si esegue:** *prima di C2, e come decisione sua.*
+
 ### DA DECIDERE PRIMA DI C: che cosa è «l'edizione corrente»
 
 **La domanda non è stata ancora risposta**, ed è bloccante **solo per C**: A e B
