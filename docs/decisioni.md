@@ -2726,6 +2726,44 @@ trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non u
 avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
 esattamente quello che è appena successo.
 
+### ⚠️ HO FERMATO UN PROCESSO PER NOME, AVENDO LETTO LA REGOLA CHE LO VIETA
+
+**2026-09-19, lanciando la suite dopo il sesto modulo.** Comando:
+`pkill -f "node tests/serve.js"` seguito, **nella stessa riga**, da `rm -f
+tests/suite.log` e dal lancio della suite.
+
+**Esito, identico al caso del 2026-09-15 che la regola 37 descrive parola per
+parola:** uscita **144** (SIGTERM) — il `pkill` ha trovato **la propria shell**
+e l'ha uccisa. Il `rm` non è mai girato, la suite non è mai partita, e
+`tests/suite.log` è rimasto quello di **trentatré minuti prima**, di un altro
+albero.
+
+⚠️ **Se avessi aspettato su quel file, `attendi.sh` avrebbe trovato
+`ALL FILES GREEN` e detto che era andato tutto bene.** Un verde vero di una
+corsa sbagliata: la regola 37 nella sua forma peggiore, un risultato vecchio
+che somiglia a un risultato nuovo.
+
+**Non mancava la regola: è scritta in `CLAUDE.md` con questo esatto esempio, e
+l'avevo letta lo stesso giorno.** È la stessa forma della 19 e della 42: *una
+frase che descrive un comportamento cede dove un comando non cederebbe.* Qui
+il comando giusto c'era pure — `SERVER_PID=$!` + `trap cleanup EXIT` dentro
+`tests/run_full_regression.sh` — e non l'ho guardato.
+
+**E il `pkill` non serviva a niente:** `run_full_regression.sh` stampa
+*«Server già attivo sulla porta 8955 — lo riuso»*. Il processo da fermare non
+c'era. *Il gesto più pericoloso della giornata è stato anche l'unico
+completamente inutile.*
+
+**Cosa ha salvato il giro:** aver guardato l'uscita del lancio invece di
+fidarsene, e la **data del file** — non lo strumento.
+
+**Quando si esegue:** *alla prima occasione in cui serve davvero fermare un
+processo.* Va deciso se la difesa debba diventare meccanica (uno script
+`tests/tools/ferma-server.sh` che lavora per porta e PID, come `attendi.sh` ha
+fatto per l'attesa) invece di restare una regola da ricordare. **La regola 41
+dice che un elenco di comandi o lo si esegue o non lo si esegue, mentre un
+elenco di nomi si crede di averlo applicato: qui vale uguale.**
+
 ### ⚠️ IL MAGAZZINO DELLE PULIZIE NON HA PIÙ UN CONTENUTO FISSO: HA QUELLO DEI FILE CARICATI
 
 **Trovato il 2026-09-19, estraendo `app/speedmatch.js` — il quarto modulo, e il
