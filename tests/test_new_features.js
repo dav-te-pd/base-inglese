@@ -303,6 +303,24 @@ async function run() {
     const ricaricata = await page.waitForFunction(() => !window.__primaDelReload, null, { timeout: 15000 })
       .then(() => true).catch(() => false);
     log('[B] Reset ricarica la pagina: il documento e\' stato sostituito', ricaricata);
+    // ⚠️ LA RIGA SOPRA DICE «il documento è stato sostituito», NON «l'app è
+    // pronta» — e fra le due c'è il caricamento di DICIOTTO script.
+    //
+    // Rossa il 2026-09-19, estraendo il terzo modulo: `window.APP_CONFIG` era
+    // ancora `undefined` quando la riga dopo lo leggeva. **Non l'ha rotta
+    // `app/match.js`: l'ha resa visibile.** La corsa c'era già, e ogni tag
+    // nuovo la allarga — è la regola 19 vista dal verso del numero di file
+    // invece che da quello della macchina lenta.
+    //
+    // L'approdo è `.view.is-active`, cioè **l'ultimo** effetto del
+    // ricaricamento: `boot()` ha scelto una vista, quindi tutti gli script
+    // sono girati. Non è nessuna delle due cose che le righe qui sotto
+    // leggono — `APP_CONFIG` e la chiave degli override (regola 44).
+    //
+    // *Primo tentativo: `#name-input`. Sbagliato — questo profilo è già
+    // registrato, quindi il login non compare e l'attesa scadeva. Una vista
+    // attiva c'è sempre, qualunque profilo.*
+    await page.waitForSelector('.view.is-active', { timeout: 15000 });
     const afterReset = await page.evaluate(() => window.APP_CONFIG.speedMatch.timeLimitSeconds);
     const overridesCleared = await page.evaluate(() => localStorage.getItem('baseinglese:configOverrides'));
     log('[B] Il reset riporta speedMatch.timeLimitSeconds al default catturato prima dell\'override (' + defaultTimeLimit + ')', afterReset === defaultTimeLimit);
