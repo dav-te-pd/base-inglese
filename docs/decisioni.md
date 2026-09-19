@@ -2726,6 +2726,56 @@ trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non u
 avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
 esattamente quello che è appena successo.
 
+### ⚠️ DUE STRUMENTI CERCAVANO IN `index.html` E BASTA — e uno è stato verde per costruzione
+
+**Trovato il 2026-09-19 col passo C1**, spostando `MODULE_DESCRIPTORS` da
+`index.html` a `app/catalogo.js`.
+
+**Due punti cercavano in un file solo:** `descrittori()` in
+`tests/listener-census.js` e `kindDaiDescrittori()` in
+`tests/test_moduli_registrati.js`. Corretti entrambi — adesso guardano
+`index.html` **più tutti i file di `app/`**, e se non trovano niente
+**alzano un errore che nomina i posti guardati**.
+
+⚠️ **MA LA COSA DA TENERE È COME SI SONO ROTTI, ed è diversa nei due casi:**
+
+| | Come si è rotto | Cosa si vedeva |
+|---|---|---|
+| `listener-census.js` | `throw` già previsto | **il file MUORE** a metà corsa (⓪-septies) |
+| `test_moduli_registrati.js` | `indexOf` a **-1** → `slice` → blocco **vuoto** | **una riga rossa e una VERDE** |
+
+**Il secondo è il caso che vale.** Con zero descrittori trovati, le due righe
+gemelle si sono comportate in modo **opposto**:
+
+- *«E nessun kind registrato è di troppo»* → **rossa**, tutti e quindici;
+- *«Ogni kind dichiarato è nel registro»* → **VERDE**, perché con un elenco
+  vuoto «tutti» è vero **per costruzione** (regola 44).
+
+*La stessa identica rottura ha prodotto un rosso su una riga e un verde che
+non prova niente sull'altra. Se il guasto avesse toccato solo la seconda, non
+se ne sarebbe accorto nessuno.*
+
+⚠️ **E IL CALO DELLE ASSERZIONI L'HA DETTO PRIMA DEL ROSSO: 1497 → 1491.** Il
+contatore ha fatto esattamente il mestiere per cui esiste — *un file che
+esegue meno asserzioni non fallisce, smette di girare* — e in questo caso ha
+segnalato il file morto **e** indirettamente il verde falso del secondo.
+
+**Il censimento è stato fatto, e il numero sta qui invece della frase:**
+`grep -rn "repoPath('index.html')" tests/` dà **18 occorrenze in 18 file**.
+
+⚠️ **Ma 18 NON è il numero dei difetti, ed è la distinzione che conta:**
+moltissime sono **legittime** — chi verifica i tag `<script>`, l'ordine del
+markup o la guardia `hidden` deve guardare `index.html`, perché è lì che
+quella cosa vive. Il difetto è un'altra cosa: **cercare in `index.html` una
+cosa che potrebbe essersi spostata**, e non accorgersi che non c'è.
+
+**Il criterio per distinguerli, e serve a chi farà il giro:** *se la ricerca
+non trova, il test lo dice o va avanti come se avesse trovato un elenco
+vuoto?* I due corretti oggi erano del secondo tipo.
+
+**Quando si esegue:** *prima del prossimo spostamento grosso* — C2, o il
+giorno in cui `CONFIG` si spezza.
+
 ### DECISO: l'ordine A → B → C, e la classe `new` esce con la vista morta
 
 **2026-09-19**, dopo la valutazione a codice fermo

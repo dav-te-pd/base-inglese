@@ -43,10 +43,34 @@ const { stepIds, stepsBefore } = require('./module-order');
 // I `kind` che i descrittori dichiarano, presi dal sorgente: è l'altro lato
 // della relazione che il registro deve rispettare, ed è raggiungibile da qui
 // mentre `EPISODES` (dentro l'IIFE) non lo è.
+// ⚠️ CERCA IN TUTTE LE SORGENTI, E SI ARRENDE RUMOROSAMENTE SE NON TROVA.
+//
+// Il 2026-09-19 (passo C1) `MODULE_DESCRIPTORS` e' passato da `index.html` a
+// `app/catalogo.js`, e questa funzione cercava in un file solo. Con
+// `indexOf` a **-1** lo `slice` tornava un blocco **vuoto**, cioe' ZERO kind
+// dichiarati — e da li' le due righe gemelle si sono comportate in modo
+// OPPOSTO:
+//
+//   • «E nessun kind registrato e' di troppo» → **rossa**, tutti e quindici
+//   • «Ogni kind dichiarato e' nel registro» → **VERDE**, perche' con un
+//     elenco vuoto «tutti» e' vero per costruzione (regola 44)
+//
+// *La stessa rottura ha dato un rosso su una riga e un verde che non prova
+// niente sull'altra. Se il caso fosse stato solo il secondo, non se ne
+// sarebbe accorto nessuno.* Da qui il `throw`: un elenco vuoto non e' un
+// risultato, e' un guasto della ricerca.
 function kindDaiDescrittori() {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const i = html.indexOf('var MODULE_DESCRIPTORS = {');
-  const blocco = html.slice(i, html.indexOf('\n  };', i));
+  const posti = ['index.html'].concat(
+    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return 'app/' + f; })
+  );
+  let blocco = null;
+  for (let k = 0; k < posti.length && blocco === null; k++) {
+    const src = fs.readFileSync(repoPath.apply(null, posti[k].split('/')), 'utf8');
+    const i = src.indexOf('var MODULE_DESCRIPTORS = {');
+    if (i !== -1) blocco = src.slice(i, src.indexOf('\n  };', i));
+  }
+  if (blocco === null) throw new Error('MODULE_DESCRIPTORS non trovato in nessuno di: ' + posti.join(', '));
   const kinds = [];
   (blocco.match(/kind: '([^']+)'/g) || []).forEach(function (m) {
     const k = m.slice("kind: '".length, -1);
@@ -304,8 +328,16 @@ async function run() {
         corpo === null ? 'funzione non trovata' : 'contiene ancora il letterale');
     });
 
+    // ⚠️ LA COSTANTE SI CERCA IN TUTTE LE SORGENTI, non nel solo `index.html`:
+    // il 2026-09-19 (passo C1) `ID_PERSONALIZZA` e' passata in
+    // `app/catalogo.js`, e questa riga cercava ancora dove stava prima.
+    // *Lo stesso difetto del `corpoDi` qui sopra, che le sorgenti le guarda
+    // tutte gia' da prima — e per quello le due righe sopra sono restate
+    // verdi mentre questa cadeva.*
     log('[E] ...e lo chiedono alla costante dichiarativa',
-      codice.some(function (r) { return /^  var ID_PERSONALIZZA = 'personalizzazione';$/.test(r); }));
+      sorgenti.some(function (src) {
+        return src.some(function (r) { return /^  var ID_PERSONALIZZA = 'personalizzazione';$/.test(r); });
+      }));
   }
 
   console.log('\n=== MODULI REGISTRATI SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');

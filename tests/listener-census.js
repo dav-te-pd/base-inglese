@@ -149,15 +149,31 @@ function listenerDi(famiglia) {
 //
 // Da qui in avanti la mappa si LEGGE, non si ricopia.
 //
-// Sta in index.html e non in app/config.js: `MODULE_DESCRIPTORS` descrive il
-// CODICE di ogni modulo (quale componente, quale profilo), non la sua
-// configurazione. Se un giorno si sposta, questa funzione lo segue — e il
-// controllo incrociato qui sotto se ne accorge subito, perche' la mappa
-// tornerebbe vuota.
+// `MODULE_DESCRIPTORS` descrive il CODICE di ogni modulo (quale componente,
+// quale profilo), non la sua configurazione — per questo non sta in
+// `app/config.js`.
+//
+// ⚠️ **E IL 2026-09-19 SI E' SPOSTATO DAVVERO** (passo C1: da `index.html` a
+// `app/catalogo.js`), cioe' il caso che il commento qui sopra prevedeva. Quel
+// commento diceva *«se un giorno si sposta, questa funzione lo segue»*: **non
+// lo seguiva**, cercava in un file solo, e il file e' MORTO con un `throw` a
+// meta' corsa invece di fallire — ⓪-septies. *Il calo di asserzioni l'ha
+// detto prima del rosso: 1497 → 1491.*
+//
+// Adesso cerca **dove sta**, in ordine, e se non lo trova da nessuna parte lo
+// dice nominando tutti i posti guardati.
 function descrittori() {
-  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const blocco = html.match(/var MODULE_DESCRIPTORS = \{([\s\S]*?)\n  \};/);
-  if (!blocco) throw new Error('MODULE_DESCRIPTORS non trovato in index.html');
+  const posti = ['index.html'].concat(
+    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return 'app/' + f; })
+  );
+  let blocco = null;
+  for (let i = 0; i < posti.length && !blocco; i++) {
+    const pezzi = posti[i].split('/');
+    blocco = fs.readFileSync(repoPath.apply(null, pezzi), 'utf8')
+      .match(/var MODULE_DESCRIPTORS = \{([\s\S]*?)\n  \};/);
+  }
+  if (!blocco) throw new Error('MODULE_DESCRIPTORS non trovato in nessuno di: ' + posti.join(', '));
   const out = {};
   const re = /^\s*([A-Za-z][A-Za-z0-9]*):\s*\{[^}]*\bkind:\s*'([^']+)'/gm;
   let m;
