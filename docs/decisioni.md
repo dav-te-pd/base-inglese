@@ -2699,6 +2699,33 @@ primo.
 riga esiste per far riconoscere il caso al primo colpo invece che al terzo.
 
 
+### ⚠️ `conta-asserzioni.js --scrivi` HA SCRITTO UN BASELINE DA ZERO SENZA FERMARSI
+
+**Trovato il 2026-09-19**, aggiornando il baseline dopo la suite del quarto
+modulo. Lanciato dalla radice del repository con `tests/test_*.js` invece che da
+`tests/` con i nomi nudi, lo strumento **non ha trovato nessun file di esito** e
+ha scritto un baseline di **`0 asserzioni in 0 file`**, riportando zero e
+uscendo con successo.
+
+**Il difetto non è il mio comando sbagliato: è che lo strumento ha SCRITTO.**
+Un baseline a zero è la cosa peggiore che quel file possa contenere — è il
+guardiano del «qualcosa ha smesso di girare», e a zero **non può più scendere**:
+qualunque corsa futura sarebbe «in aumento». *Il numero era stampato, quindi non
+era muto; ma era stampato **accanto a una scrittura già avvenuta**, e chi non lo
+legge ha appena disarmato la difesa senza nessun rosso.*
+
+È la regola 37 nella variante che riguarda chi SCRIVE e non chi misura: **una
+misura che non misura è pericolosa quando qualcuno se ne fida; una che non misura
+e si salva da sola è pericolosa anche quando nessuno la guarda.**
+
+**Ripreso a mano** (`git checkout`) e riscritto dalla cartella giusta: 1487 in 68.
+
+**Quando si esegue:** *alla prossima volta che si tocca `conta-asserzioni.js`*, e
+la correzione è di una riga — `--scrivi` si rifiuta quando i file di esito
+trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non un
+avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
+esattamente quello che è appena successo.
+
 ### ⚠️ IL MAGAZZINO DELLE PULIZIE NON HA PIÙ UN CONTENUTO FISSO: HA QUELLO DEI FILE CARICATI
 
 **Trovato il 2026-09-19, estraendo `app/speedmatch.js` — il quarto modulo, e il
