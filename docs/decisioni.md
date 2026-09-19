@@ -2851,12 +2851,25 @@ sintomo dichiarato scoperto in testa a `tests/test_comportamento_audio.js`.
 `baseinglese:configOverrides`) che cambi `silenceTimeoutSeconds` sul suo
 browser soltanto. Da qui non è visibile.
 
-**Quando si esegue:** *al primo lavoro sul microfono di Voice Practice.* Le due
-strade, nessuna scelta: ① riarmare il timer a ogni risultato — cioè far
-diventare vero quello che il nome promette; ② lasciarlo assoluto e **cambiargli
-nome** (`primoAscoltoEntroSecondi` o simile). *La prima cambia il
-comportamento, la seconda cambia solo chi legge — e vanno decise, non
-scelte da chi passa di lì.*
+**RICONFERMATO A MANO il 2026-09-19 da chi guida il progetto, con lo stesso
+confine:** partendo prima del secondo 2 sente, fra il 2 e il 3 non sente. *Non
+riprodotto qui e riprodotto lì due volte: la misura del codice e il gesto
+dicono la stessa cosa.*
+
+⚠️ **E UNA RIGA CHE CHIUDE LA STRADA ②, detta dallo stesso giro e non deducibile
+dal codice: RINOMINARLO NON BASTA.**
+
+> *«Lo studente vede "tre secondi" e pensa di avere tre secondi per
+> **cominciare** — non per finire. Qualunque nome gli diamo, quel confine resta
+> un bug agli occhi di chi lo usa.»*
+
+Il nome è quello che legge **chi scrive il codice**; il confine è quello che
+incontra **chi usa l'app**. La ② sistemava il primo e lasciava intatto il
+secondo — *e un difetto che resta difetto dopo la correzione non è stato
+corretto, è stato spiegato.* **Resta la ①: riarmare il timer.**
+
+**Quando si esegue:** *al passo 26.* Non prima, ed è una decisione presa: il
+lavoro sul microfono non si apre in mezzo allo spacchettamento.
 
 
 ### ⚠️ QUATTRO PEZZI CONDIVISI RESTANO IN `index.html` PERCHÉ LEGANO LA SESSIONE
