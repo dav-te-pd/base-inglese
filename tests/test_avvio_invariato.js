@@ -156,8 +156,11 @@ async function run() {
   // forma della regola 42: un limite dichiarato dice dove non guardi, non ti
   // impedisce di fidarti. **La difesa che ha funzionato tutte le volte e'
   // un'altra: scrivere il NUMERO atteso prima, e guardare lo scarto.**
-  log('[D] I file di script sono 15 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 15, foto.script.join(', '));
+  // ⚠️ 15 -> 16 col PRIMO MODULO (`app/repeataloud.js`, 2026-09-19). Lo
+  // scarto stavolta era previsto: il numero atteso e' stato scritto prima di
+  // lanciare, ed e' la difesa che ha funzionato tutte le volte.
+  log('[D] I file di script sono 16 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 16, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

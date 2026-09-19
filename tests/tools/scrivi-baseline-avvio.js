@@ -81,7 +81,19 @@ const STORIA = [
   "2026-09-18  app/storycards.js entra come QUATTORDICESIMO script, seconda",
   "            fila. Il conto passa da 14 a 15. E' il secondo modulo, e porta",
   "            DUE passi della mappa in un file solo: Meet the Story e Why We",
-  "            Say It. Zero delle sue diciassette funzioni guarda il profilo."
+  "            Say It. Zero delle sue diciassette funzioni guarda il profilo.",
+  "2026-09-19  app/repeataloud.js entra come QUINDICESIMO script, seconda fila.",
+  "            Il conto passa da 15 a 16. E' IL PRIMO MODULO del passo 23, ed",
+  "            e' uscito per primo perche' e' il piu' piccolo dei sei: quattro",
+  "            pezzi, 117 righe. Se la meccanica dell'estrazione ha un",
+  "            difetto, si vede li' al costo minore — e infatti ne ha avuto",
+  "            uno (l'alias su itemText, che viene da index.html e quindi non",
+  "            esiste ancora quando il file viene letto).",
+  "            ⚠️ E la fila: questo file NON tocca nessun nodo mentre viene",
+  "            letto — i suoi sette listener si agganciano dentro la sua open",
+  "            — eppure sta nella seconda fila lo stesso, per i venti alias e",
+  "            per registraModulo al primo livello dell'IIFE. Le ragioni",
+  "            della seconda fila sono DUE, non una."
 ];
 
   const intestazione = [
