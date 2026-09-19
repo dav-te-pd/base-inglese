@@ -129,7 +129,14 @@ const STORIA = [
   "            E porta via l'APPARATO: vcRecognition nasce a tempo di parsing",
   "            dentro quel file. Non cambia l'avvio finche' i diciannove tag",
   "            si caricano tutti al boot, ma da quel giorno in poi quel file",
-  "            non fa nascere solo del codice."
+  "            non fa nascere solo del codice.",
+  "2026-09-19  app/dialogo.js entra come VENTESIMO script, seconda fila. Il",
+  "            conto passa da 20 a 21, e con lui I SEI MODULI SONO TUTTI",
+  "            FUORI. Porta via la TERZA e ultima pulizia (dgClearAllTimers):",
+  "            da qui in poi stopAllModuleActivity non ne registra nessuna da",
+  "            index.html. E espone un nome, dgAudioProtected, che il listener",
+  "            globale in cattura di index.html chiama guardato - l'eccezione",
+  "            alla regola 16."
 ];
 
   const intestazione = [

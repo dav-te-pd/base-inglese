@@ -74,8 +74,10 @@ nodi.forEach(function (n) {
   // ⚠️ 8 -> 9 col TERZO MODULO (`app/match.js`).
   // ⚠️ 9 -> 10 col QUARTO MODULO (`app/speedmatch.js`).
   // ⚠️ 10 -> 11 col QUINTO (`app/voice.js`). Ne resta uno.
-  log('[B] Undici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 11, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 11 -> 12 col SESTO E ULTIMO (`app/dialogo.js`). I sei moduli sono
+  // fuori, e questo numero ha finito di salire per questa ragione.
+  log('[B] Dodici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 12, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -137,7 +139,17 @@ nodi.forEach(function (n) {
   // `app/mappa.js` usa gia'. *Sono funzioni, non alias: un alias
   // fotograferebbe il valore di adesso, una funzione legge quello di quando
   // la chiami.* Cinque moduli, nessuna ragione diversa dalla prima.
-  log('[B] Nove dipendenze ALL\'INSU\'', allInsu.length === 9,
+  // ⚠️ 9 -> 10 col SESTO E ULTIMO, e i suoi nomi sono DUE, tutti e due
+  // accessori: `episodioCorrente` e `valoriCorrenti`. **Nessuno dei quattro
+  // bloccati dallo stato di sessione serve al Dialogo** — non fa quiz a scelta
+  // multipla e non scrive mastery.
+  //
+  // ⚠️ E QUESTO E' IL NUMERO DA GUARDARE ADESSO, perche' da qui in poi puo'
+  // solo SCENDERE: i sei moduli sono fuori, non ne arrivano altri, e l'unica
+  // cosa che muove ancora questa riga e' il passo che libera lo stato di
+  // sessione. *Un conto che saliva con una ragione scritta ha finito di
+  // salire; se risale, la ragione non c'era.*
+  log('[B] Dieci dipendenze ALL\'INSU\'', allInsu.length === 10,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -175,8 +187,9 @@ nodi.forEach(function (n) {
   // del riconoscimento vocale — nasce a tempo di parsing, dentro questo file.
   // **E' l'unico modulo che non porta via solo del codice: porta via un
   // apparato.**
-  log('[B] Nove dipendenze a tempo di PARSING',
-    aParsing.length === 9,
+  // ⚠️ 9 -> 10 col sesto, per gli alias come tutti.
+  log('[B] Dieci dipendenze a tempo di PARSING',
+    aParsing.length === 10,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 

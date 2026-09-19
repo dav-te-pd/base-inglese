@@ -39,11 +39,39 @@ const f=process.argv[2];
 const s=fs.readFileSync('app/'+f,'utf8');
 new Function(s);
 const def=new Set([...s.matchAll(/^  (?:function|var) (\w+)/gm)].map(m=>m[1]));
-const ok=new Set(['BI','CONFIG','window','document','console','Math','Object','Array','JSON','Promise','String','Number','localStorage','setTimeout','clearTimeout','setInterval','clearInterval','Date','parseInt','parseFloat','isNaN','Set','Map','encodeURIComponent','RegExp','Error','KeyboardEvent','if','for','while','switch','catch','return','typeof','function','new','else','do']);
+const ok=new Set(['BI','CONFIG','window','document','console','Math','Object','Array','JSON','Promise','String','Number','localStorage','setTimeout','clearTimeout','setInterval','clearInterval','Date','parseInt','parseFloat','isNaN','Set','Map','encodeURIComponent','RegExp','Error','KeyboardEvent','true','false','null','undefined','this','if','for','while','switch','catch','return','typeof','function','new','else','do']);
 const ch=new Set();
 s.split('\n').forEach(r=>{const t=r.trim();if(!t||t.startsWith('//')||t.startsWith('*')||t.startsWith('/*'))return;
  [...r.matchAll(/(?<![.\w$'"`])([a-zA-Z_$][\w$]*)\s*\(/g)].forEach(m=>ch.add(m[1]));});
-console.log('BUCHI  in app/'+f+': '+([...ch].filter(n=>!def.has(n)&&!ok.has(n)).join(' ')||'ZERO'));
+// ⚠️ SECONDA RICERCA, E NASCE DA UN GUASTO CHE LA PRIMA NON POTEVA VEDERE.
+//
+// La prima cerca `nome(`, cioe' una CHIAMATA. Un nome passato come
+// RIFERIMENTO non ha la parentesi:
+//
+//     btn.addEventListener('click', openEpisodeMap);
+//
+// Il 2026-09-19, estraendo il Dialogo, questo strumento ha detto solo prosa e
+// il modulo si apriva sulla schermata d'errore con `openEpisodeMap is not
+// defined`. **E' la stessa forma del lookbehind di ieri: non un errore che si
+// annuncia, ma un controllo che dice «non c'e' niente» (regola 37)** — con
+// l'aggravante che stavolta il nome era passato a un listener, quindi il
+// guasto compariva solo aprendo quel modulo.
+//
+// La ricerca e' STRETTA di proposito: un identificatore nudo in posizione di
+// argomento, `(nome)` o `, nome)` o `(nome,`. Cercare ogni riferimento
+// darebbe ogni variabile del file. Si scartano i parametri delle funzioni e
+// le variabili locali, che altrimenti uscirebbero tutte.
+const parm=new Set();
+[...s.matchAll(/function\s*\w*\s*\(([^)]*)\)/g)].forEach(m=>
+  m[1].split(',').forEach(x=>{const t=x.trim(); if(t) parm.add(t);}));
+[...s.matchAll(/(?:var|let|const)\s+([\w$]+)/g)].forEach(m=>parm.add(m[1]));
+const rif=new Set();
+s.split('\n').forEach(r=>{const t=r.trim();if(!t||t.startsWith('//')||t.startsWith('*')||t.startsWith('/*'))return;
+ [...r.matchAll(/[(,]\s*([a-zA-Z_$][\w$]*)\s*[,)]/g)].forEach(m=>rif.add(m[1]));});
+const buchiChiamate=[...ch].filter(n=>!def.has(n)&&!ok.has(n));
+const buchiRiferimenti=[...rif].filter(n=>!def.has(n)&&!ok.has(n)&&!parm.has(n)&&!ch.has(n));
+console.log('BUCHI  in app/'+f+': '+(buchiChiamate.join(' ')||'ZERO'));
+console.log('BUCHI-RIF (nomi passati senza parentesi): '+(buchiRiferimenti.join(' ')||'ZERO'));
 const h=fs.readFileSync('index.html','utf8');
 const m=h.match(/<script>\n\(function \(\)[\s\S]*?\n<\/script>/)[0];
 new Function(m.replace(/^<script>\n/,'').replace(/\n<\/script>$/,''));
