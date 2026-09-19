@@ -2686,6 +2686,20 @@ renderla asincrona cambierebbe ogni chiamante. È **chi apre una schermata**:
 disegnare, come fa `openModuleFromMap` con `loadEpisodeData` dal 2026-09-10 —
 *la correzione esiste già nel progetto, applicata a un altro caso.*
 
+⚠️ **E LA CI L'HA PRESO DA SOLA, un'ora dopo questa riga.** La corsa su
+`a79ae01` è andata **rossa** su `[D] uiText restituisce un testo VERO` di
+`test_ui_condivisa_estratta.js` — verde in locale, rossa sul runner. È la
+regola 19 alla lettera: *il container è più veloce del runner, e un rosso
+della CI che non si riproduce qui non è un mistero: ha un nome.* Il rosso
+**non era una regressione** dello spostamento del Blocco Ascolto: era questa
+corsa, che c'era da sempre.
+
+La **riga del test** è stata corretta nello stesso giro — aspetta
+`loadModuleInstructions()`, cioè la CAUSA, non il valore che legge (regola
+44), e falsificata rendendo `uiText` sempre vuota cade lo stesso. **Il
+difetto dell'APP resta aperto**, ed è questo: qui si è tolta la corsa dal
+test, non il difetto dall'app.
+
 **Quando si esegue:** *quando si toccherà il pannello Help, oppure al primo
 giro dedicato alle schermate che leggono `uiText` prima dei dati.* Non adesso:
 è un difetto vecchio, non blocca niente, e infilarlo dentro il passo del Blocco

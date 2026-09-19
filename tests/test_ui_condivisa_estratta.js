@@ -132,6 +132,25 @@ async function run() {
     // ⚠️ IL TESTO VERO, non la presenza della funzione. E' il guasto che ha
     // fatto sette file rossi il 2026-09-18: uiText tornava stringa vuota e
     // ogni struttura era al suo posto.
+    //
+    // ⚠️ E QUESTA RIGA CORREVA CONTRO UN FETCH, ROSSA IN CI IL 2026-09-19.
+    // `uiText()` legge la cache delle istruzioni **senza aspettarla**: in
+    // locale il file era sempre già arrivato, sul runner della CI — più lento,
+    // regola 19 — no. Verde qui e rossa là, e il rosso **non era una
+    // regressione**: era la corsa, che c'era da sempre.
+    //
+    // L'attesa è su `loadModuleInstructions()`, cioè sulla CAUSA (il fetch
+    // finito), NON sul valore che l'asserzione legge. Aspettare
+    // «finché uiText non torna qualcosa» renderebbe la riga vera per
+    // costruzione (regola 44): se domani `uiText` sbagliasse il percorso
+    // dentro il JSON, con quell'attesa non se ne accorgerebbe nessuno; con
+    // questa, cade.
+    //
+    // *Il difetto dell'APP — un pannello aperto troppo presto resta vuoto per
+    // sempre, perché nessuno ridisegna — è un'altra cosa, ed è registrato in
+    // `docs/decisioni.md`. Qui si toglie la corsa dal TEST, non il difetto
+    // dall'app.*
+    if (viva) await page.evaluate(function () { return window.BI.loadModuleInstructions(); });
     const testo = viva ? await page.evaluate(function () {
       return {
         uno: window.BI.uiText('condivisi.introDontShowAgain'),
