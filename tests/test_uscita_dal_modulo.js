@@ -145,8 +145,13 @@ async function run() {
     const quante = righeDiCodice().filter(function (r) {
       return /(?<!function )leaveModule\('/.test(r);
     }).length;
-    log('[A] E i punti che lasciano un modulo passano da leaveModule: sono 12',
-      quante === 12, String(quante));
+    // ⚠️ 12 -> 11 il 2026-09-19 (passo A): il dodicesimo era
+    // `leaveModule('pronunciation')`, dentro la vista morta, ed è uscito con
+    // lei. **Rosso da seguire:** l'invariante è «ogni punto che lascia un
+    // modulo passa di qui», e un punto in meno non lo indebolisce — era il
+    // punto di una schermata che nessuno poteva aprire.
+    log('[A] E i punti che lasciano un modulo passano da leaveModule: sono 11',
+      quante === 11, String(quante));
   }
 
   // ── [B] USCENDO DA UN MODULO, LA PULIZIA AVVIENE ─────────────────────

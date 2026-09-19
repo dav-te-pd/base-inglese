@@ -2,9 +2,9 @@
 // suo tag stia DOVE DEVE — in fondo a <body>, non in <head> con gli altri.
 //
 // COSA SI PERDE SENZA QUESTO FILE. `app/orchestrazione.js` e' il primo strato
-// della SECONDA FILA: prende i tredici nodi delle viste con `getElementById`
+// della SECONDA FILA: prende i dodici nodi delle viste con `getElementById`
 // **a tempo di parsing**. Spostato in <head> — dove stanno tutti gli altri
-// nove, e dove uno andrebbe a metterlo per simmetria — i tredici diventano
+// nove, e dove uno andrebbe a metterlo per simmetria — i dodici diventano
 // `null` e il primo `showView()` muore. **Non e' un guasto sottile: l'app non
 // arriva alla schermata del nome.** Ma e' un guasto che nasce da una modifica
 // che sembra un riordino innocuo, ed e' esattamente il caso che un test deve
@@ -63,10 +63,13 @@ async function run() {
     const idCostruiti = righe.filter(function (r) {
       return /getElementById\(\s*(?:['"][^'"]*['"]\s*\+|\w+\s*\+|`)/.test(r);
     });
-    log('[B] I tredici id sono letterali, nessuno costruito', idCostruiti.length === 0, idCostruiti.join(' | '));
+    log('[B] I dodici id sono letterali, nessuno costruito', idCostruiti.length === 0, idCostruiti.join(' | '));
 
     const vistePrese = righe.filter(function (r) { return /getElementById\('view-/.test(r); });
-    log('[B] Le viste prese sono tredici', vistePrese.length === 13, String(vistePrese.length));
+    // ⚠️ 13 -> 12 il 2026-09-19 (passo A): `view-pronunciation` e' uscita,
+    // e la sua riga in `views` con lei. **Rosso da SEGUIRE, non da correggere**:
+    // l'invariante non e' «tredici», e' «l'elenco e' quello che credo».
+    log('[B] Le viste prese sono dodici', vistePrese.length === 12, String(vistePrese.length));
   }
 
   // ── [C] GUIDANDO L'APP ──────────────────────────────────────────────
@@ -100,8 +103,15 @@ async function run() {
       var v = window.BI.views;
       return { quante: Object.keys(v).length, nulle: Object.keys(v).filter(function (k) { return !v[k]; }) };
     }) : null;
-    log('[C] BI.views porta tredici nodi VERI, nessuno null',
-      !!nodi && nodi.quante === 13 && nodi.nulle.length === 0, JSON.stringify(nodi));
+    // ⚠️ 13 -> 12, e questa riga ha appena fatto il suo mestiere per DAVVERO.
+    // Il 2026-09-19, tolta la vista senza togliere la sua riga da `views`, la
+    // mappa conteneva un `null` e l'app moriva al PRIMO `showView` — mentre il
+    // boot riusciva lo stesso. **Il guasto che questo file esiste per tenere
+    // fermo si e' presentato**, ed e' stato preso guidando l'app; qui il conto
+    // scende di uno e `nulle` resta vuoto, che e' la prova che la riga e' stata
+    // tolta e non lasciata a `null`.
+    log('[C] BI.views porta dodici nodi VERI, nessuno null',
+      !!nodi && nodi.quante === 12 && nodi.nulle.length === 0, JSON.stringify(nodi));
 
     // Una sola vista accesa alla volta: l'invariante di showView, letto
     // dall'app vera invece che dal codice.
