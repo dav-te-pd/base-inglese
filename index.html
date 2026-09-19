@@ -26,15 +26,15 @@
      codice senza alzarla (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260919b"></script>
-<script src="app/spazio.js?v=20260919b"></script>
-<script src="app/identita.js?v=20260919b"></script>
-<script src="app/avvio.js?v=20260919b"></script>
-<script src="app/progressi.js?v=20260919b"></script>
-<script src="app/audio.js?v=20260919b"></script>
-<script src="app/suoni.js?v=20260919b"></script>
-<script src="app/quiz-engine.js?v=20260919b"></script>
-<script src="app/dati.js?v=20260919b"></script>
+<script src="app/config.js?v=20260919c"></script>
+<script src="app/spazio.js?v=20260919c"></script>
+<script src="app/identita.js?v=20260919c"></script>
+<script src="app/avvio.js?v=20260919c"></script>
+<script src="app/progressi.js?v=20260919c"></script>
+<script src="app/audio.js?v=20260919c"></script>
+<script src="app/suoni.js?v=20260919c"></script>
+<script src="app/quiz-engine.js?v=20260919c"></script>
+<script src="app/dati.js?v=20260919c"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3637,11 +3637,11 @@
      una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
      markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
      cosa gira, e questo gira dopo il DOM. -->
-<script src="app/orchestrazione.js?v=20260919b"></script>
-<script src="app/ui-condivisa.js?v=20260919b"></script>
-<script src="app/mappa.js?v=20260919b"></script>
-<script src="app/storycards.js?v=20260919b"></script>
-<script src="app/personalizza.js?v=20260919b"></script>
+<script src="app/orchestrazione.js?v=20260919c"></script>
+<script src="app/ui-condivisa.js?v=20260919c"></script>
+<script src="app/mappa.js?v=20260919c"></script>
+<script src="app/storycards.js?v=20260919c"></script>
+<script src="app/personalizza.js?v=20260919c"></script>
 
 <script>
 (function () {
@@ -3666,6 +3666,9 @@
   var showView = BI.showView;
   var chiudiOverlayAperti = BI.chiudiOverlayAperti;
   var moduloDiAiutoAttivo = BI.moduloDiAiutoAttivo;
+  var introDismissPref = BI.introDismissPref;
+  var dialogueLineAlign = BI.dialogueLineAlign;
+  var speakerLabel = BI.speakerLabel;
   var renderListenBlock = BI.renderListenBlock;
   var speakListenBlock = BI.speakListenBlock;
   var openAttemptPopup = BI.openAttemptPopup;
@@ -5281,12 +5284,6 @@
 
 
   // options.dismissPref for openHowItWorksOverlay, built from a module kind.
-  function introDismissPref(kind) {
-    return {
-      get: function () { return isIntroDismissed(kind, getUserName()); },
-      set: function (val) { setIntroDismissed(kind, getUserName(), val); }
-    };
-  }
 
 
 
@@ -5454,29 +5451,7 @@
   // from the speaker's name/id: names are personalizable per user, so a
   // name-based rule (e.g. "guide" hardcoded) would silently break on a
   // future episode with a different cast (a waiter, a police officer...).
-  function dialogueLineAlign(line) {
-    return line.ruolo === 'famiglia' ? 'right' : 'left';
-  }
 
-  /* L'etichetta sopra la bolla. UNA sola strada: quella dichiarata nel file
-     episodio, perché è contenuto (regola 4).
-
-     ⚠️ Fino al 2026-09-09 ce n'erano DUE, e la prima risolveva i personaggi
-     della famiglia sul NOME SCELTO: sopra la bolla del papà compariva
-     "Marco". La tabella dell'episodio dice il contrario — *«le etichette dei
-     personaggi personalizzabili non portano il nome scelto: sopra la bolla
-     c'è "Papà", non "Marco". Il nome sta DENTRO la battuta, dove lo studente
-     lo impara»* — e adesso il codice fa quello.
-
-     E l'etichetta porta il CONTORNO: "Hostess al gate", non "Hostess". Fra
-     l'hostess del gate, quella della porta e quella del carrello, senza il
-     contorno sono tutte la stessa persona.
-
-     Il ritorno su `speaker` quando l'etichetta manca è voluto: mostra l'id
-     tecnico, che è brutto e si nota — meglio di una bolla senza nome. */
-  function speakerLabel(episode, speaker) {
-    return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
-  }
 
 
 
@@ -8464,8 +8439,6 @@
   // ragione di `istruzioniInMemoria`: `currentValues` viene riassegnata, quindi
   // un alias ne congelerebbe il null iniziale.
   BI.ensureEpisodeSlotFields = ensureEpisodeSlotFields;
-  BI.dialogueLineAlign = dialogueLineAlign;
-  BI.speakerLabel = speakerLabel;
   BI.buildMultipleChoiceOptions = buildMultipleChoiceOptions;
   BI.recordMultipleChoiceResult = recordMultipleChoiceResult;
   BI.recordPendingMastery = recordPendingMastery;
@@ -8487,7 +8460,6 @@
   BI.leaveModule = leaveModule;
   BI.showLoadError = showLoadError;
   BI.renderIntroContent = renderIntroContent;
-  BI.introDismissPref = introDismissPref;
   BI.openEpisodeMap = openEpisodeMap;
 
   boot();

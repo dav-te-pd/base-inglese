@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], quiz-engine.js [parsing]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre
@@ -95,6 +95,9 @@
   // `audio.js` stanno in <head>, questo file nella seconda fila.
   var icon = BI.icon;
   var toggleSpeak = BI.toggleSpeak;
+  var getUserName = BI.getUserName;
+  var isIntroDismissed = BI.isIntroDismissed;
+  var setIntroDismissed = BI.setIntroDismissed;
 
   // Job 4 (second collaudo): the FIRST retry pass and the LAST one (the
   // one right before the module actually finishes — CONFIG.retryQueue.
@@ -577,7 +580,57 @@
     var rateAttr = btn.getAttribute('data-rate');
     toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
   }
+
+  // ⚠️ IL TERZO GRUPPO, e NESSUN SINTOMO lo chiedeva: `introDismissPref`,
+  // `dialogueLineAlign`, `speakerLabel`.
+  //
+  // È il motivo per cui il passo trasversale esiste, e non è cambiato: questi
+  // tre sono **pezzi condivisi che stavano in un modulo per POSIZIONE**, e i
+  // sei moduli ancora da estrarre li erediterebbero così — cioè uno strato
+  // finirebbe a chiedere a un modulo, il verso che questa serie esiste per
+  // eliminare. *Un confine sbagliato che non produce nessun rosso è quello che
+  // si eredita.*
+  //
+  // Chi li chiama, che è il criterio (non «dove stanno»):
+  //   introDismissPref   — otto punti, sette moduli + la mappa
+  //   dialogueLineAlign  — Dialogo e Meet the Story
+  //   speakerLabel       — Dialogo e Meet the Story
+  //
+  // Nessuno dei tre lega lo stato di sessione: `speakerLabel` riceve
+  // l'episodio come PARAMETRO, esattamente come `fillTemplate` — ed è la
+  // ragione per cui entra, mentre `itemText` resta fuori.
+  function introDismissPref(kind) {
+    return {
+      get: function () { return isIntroDismissed(kind, getUserName()); },
+      set: function (val) { setIntroDismissed(kind, getUserName(), val); }
+    };
+  }
+  function dialogueLineAlign(line) {
+    return line.ruolo === 'famiglia' ? 'right' : 'left';
+  }
+  /* L'etichetta sopra la bolla. UNA sola strada: quella dichiarata nel file
+     episodio, perché è contenuto (regola 4).
+
+     ⚠️ Fino al 2026-09-09 ce n'erano DUE, e la prima risolveva i personaggi
+     della famiglia sul NOME SCELTO: sopra la bolla del papà compariva
+     "Marco". La tabella dell'episodio dice il contrario — *«le etichette dei
+     personaggi personalizzabili non portano il nome scelto: sopra la bolla
+     c'è "Papà", non "Marco". Il nome sta DENTRO la battuta, dove lo studente
+     lo impara»* — e adesso il codice fa quello.
+
+     E l'etichetta porta il CONTORNO: "Hostess al gate", non "Hostess". Fra
+     l'hostess del gate, quella della porta e quella del carrello, senza il
+     contorno sono tutte la stessa persona.
+
+     Il ritorno su `speaker` quando l'etichetta manca è voluto: mostra l'id
+     tecnico, che è brutto e si nota — meglio di una bolla senza nome. */
+  function speakerLabel(episode, speaker) {
+    return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
+  }
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
+  BI.introDismissPref = introDismissPref;
+  BI.dialogueLineAlign = dialogueLineAlign;
+  BI.speakerLabel = speakerLabel;
   BI.renderListenBlock = renderListenBlock;
   BI.speakListenBlock = speakListenBlock;
   BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;

@@ -2646,6 +2646,36 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ L'ETICHETTA SOPRA LA BOLLA È GUARDATA IN MEET THE STORY E NON NEL DIALOGO
+
+**Misurato il 2026-09-19** falsificando lo spostamento del terzo gruppo:
+`speakerLabel` fatta tornare l'**id tecnico** invece dell'etichetta.
+
+| File | Esito col guasto |
+|---|---|
+| `test_story_modules.js` | **92/93** — cade, e nomina la cosa giusta |
+| `test_dialogo_extra.js` | **20/20**, verde |
+| `test_batch16.js` | **35/35**, verde |
+
+`speakerLabel` ha **due** lettori — Meet the Story e i tre Dialogue — e solo il
+primo ha un'asserzione che ne guarda l'**effetto visibile**. Sul Dialogo,
+un'etichetta che tornasse a mostrare `papa` invece di «Papà», o il solo mestiere
+invece del contorno («Hostess» invece di «Hostess al gate»), passerebbe verde.
+
+**Non è un difetto dell'app: è un buco della rete** — la stessa forma che il 18
+è costata cara, cioè una funzione raggiungibile e un comportamento non guidato.
+
+⚠️ **E la regola 4 dice che quelle due etichette sono decisioni didattiche
+scritte**, non dettagli: *«l'etichetta porta il CONTORNO, non il solo
+mestiere»* e *«l'etichetta di un personaggio personalizzabile NON porta il nome
+scelto»*. Sono esattamente il genere di cosa che si rompe in silenzio e che
+nessuno rilegge.
+
+**Quando si esegue:** *prima di estrarre il modulo Dialogo* — è il suo passo, e
+arrivarci senza la riga significa rifare il 18. La forma è nota: una riga che
+apre una bolla del Dialogo e legge il testo di `.dg-name`.
+
+
 ### ⚠️ IL PANNELLO HELP APERTO TROPPO PRESTO RESTA VUOTO **PER SEMPRE** — e non è una regressione
 
 **Segnalato da chi guida il progetto il 2026-09-19** (prima apertura di Help:
