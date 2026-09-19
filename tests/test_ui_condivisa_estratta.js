@@ -215,6 +215,65 @@ async function run() {
     log('[F] ...e il gestore di index.html arriva in fondo premendo «Promemoria»',
       !!menuHelp && menuHelp.cambiato === true, JSON.stringify(menuHelp));
 
+    // ── [G] I QUATTRO PEZZI DEL PRE-PASSO, GUIDATI ─────────────────
+    // ⚠️ QUESTE RIGHE NASCONO DA UNA FALSIFICAZIONE CHE NON HA MORSO.
+    // Spostando la barra del tempo in questo strato ho provato a romperla:
+    // durata a `9999s` → `test_batch9`, `test_batch16` e `test_dialogo_extra`
+    // **tutti verdi**; tolta perfino l'esposizione di `startTimerBar` →
+    // `test_batch9` ancora **22/22**. La barra del tempo non aveva **nessuna**
+    // rete: né sulla durata né sull'esistenza.
+    //
+    // È esattamente la forma che il 2026-09-18 è costata un revert — un pezzo
+    // raggiungibile e un comportamento non guidato — quindi la riga nasce col
+    // pezzo che la richiede (regola 23), non «prima o poi».
+    //
+    // COME: tutto dentro una chiamata SINCRONA su un elemento vero della
+    // pagina. `startTimerBar` è DOM e CSS puri: la durata finisce nella
+    // stringa `transition`, e leggerla subito non dipende da quanto è veloce
+    // la macchina (regola 19).
+    //
+    // ⚠️ E IL `try` NON È PRUDENZA GENERICA: senza, togliendo l'esposizione di
+    // `startTimerBar` questo file **MUORE** invece di fallire — la `evaluate`
+    // solleva, il processo esce e non stampa nessun riepilogo. *Un test che
+    // muore non è un test che fallisce* (⑰-septies): in una corsa parallela
+    // si legge come «il file non è partito», non come «il pezzo non c'è».
+    // Misurato provandolo, non immaginato.
+    let timer = null;
+    try {
+      timer = viva ? await page.evaluate(function () {
+      var d = document.createElement('div');
+      d.style.width = '120px';
+      document.body.appendChild(d);
+      window.BI.startTimerBar(d, 7000);
+      var dopoStart = { transizione: d.style.transition, larghezza: d.style.width };
+      d.style.width = '55px';
+      window.BI.freezeTimerBar(d);
+      var dopoFreeze = { transizione: d.style.transition, larghezza: d.style.width };
+      window.BI.renderChoiceBox('view-map', 'q-class', 'Domanda?', 'id-sec', 'No', 'id-pri', 'S\u00ec');
+      var box = {
+        secondario: !!document.getElementById('id-sec'),
+        primario: !!document.getElementById('id-pri'),
+        domanda: (document.querySelector('.q-class') || {}).textContent
+      };
+      d.remove();
+      return { dopoStart: dopoStart, dopoFreeze: dopoFreeze, box: box, direzioni: window.BI.DIRECTION_LABEL };
+      }) : null;
+    } catch (e) {
+      timer = { errore: String(e).split('\n')[0] };
+    }
+    log('[G] startTimerBar porta la DURATA chiesta nella transizione, e azzera la barra',
+      !!timer && !!timer.dopoStart && /\b7s\b/.test(timer.dopoStart.transizione) && timer.dopoStart.larghezza === '0%',
+      JSON.stringify(timer && (timer.dopoStart || timer.errore)));
+    log('[G] freezeTimerBar toglie la transizione e fissa la larghezza corrente',
+      !!timer && !!timer.dopoFreeze && timer.dopoFreeze.transizione === 'none' && /px$/.test(timer.dopoFreeze.larghezza),
+      JSON.stringify(timer && (timer.dopoFreeze || timer.errore)));
+    log('[G] renderChoiceBox costruisce i due pulsanti con gli id chiesti e la domanda',
+      !!timer && !!timer.box && timer.box.secondario && timer.box.primario && timer.box.domanda === 'Domanda?',
+      JSON.stringify(timer && (timer.box || timer.errore)));
+    log('[G] DIRECTION_LABEL ha le due direzioni',
+      !!timer && !!timer.direzioni && !!timer.direzioni['en-it'] && !!timer.direzioni['it-en'],
+      JSON.stringify(timer && (timer.direzioni || timer.errore)));
+
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }

@@ -2646,6 +2646,36 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ QUATTRO PEZZI CONDIVISI RESTANO IN `index.html` PERCHÉ LEGANO LA SESSIONE
+
+**Misurato il 2026-09-19**, prima del primo modulo. I sei moduli condividono
+**otto** pezzi ancora dentro `index.html`. Quattro sono usciti nel pre-passo;
+questi quattro no, e non è una dimenticanza:
+
+| pezzo | chi lo usa | cosa lo trattiene |
+|---|---|---|
+| `itemText` | flashcard, speedMatch, repeatAloud, match | legge `currentEpisode` e `currentValues` |
+| `recordPendingMastery` | flashcard, voice | scrive `pendingMastery` |
+| `recordMultipleChoiceResult` | speedMatch, match | chiama `recordPendingMastery` |
+| `buildMultipleChoiceOptions` | speedMatch, match | chiama `itemText` |
+
+Portarli in `app/ui-condivisa.js` romperebbe l'unica cosa che quello strato
+promette — *non sa quale modulo ha sopra e non tocca la sessione* — ed è la
+stessa riga per cui `itemText` era già stata lasciata fuori il 2026-09-18,
+mentre `fillTemplate` entrava: **una riceve episodio e valori come parametri,
+l'altra va a prenderli.**
+
+**Conseguenza da sapere prima di leggere il primo modulo:** ogni modulo che
+esce li chiederà **all'insù** a `index.html`, e nel suo file la riga
+`DIPENDE DA` lo dirà. *È un numero che sale con una ragione scritta, non un
+difetto — ma se al terzo modulo la ragione è ancora la stessa, il passo dello
+stato di sessione è in ritardo e si vede lì.*
+
+**Quando si esegue:** *col passo dello stato di sessione*, che li libera tutti
+e quattro insieme. Prima non si può, e spezzarli uno per uno costerebbe quattro
+giri per lo stesso blocco.
+
+
 ### ⚠️ L'ETICHETTA SOPRA LA BOLLA È GUARDATA IN MEET THE STORY E NON NEL DIALOGO
 
 **Misurato il 2026-09-19** falsificando lo spostamento del terzo gruppo:

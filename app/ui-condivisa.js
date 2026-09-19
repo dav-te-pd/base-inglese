@@ -627,7 +627,60 @@
   function speakerLabel(episode, speaker) {
     return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
   }
+
+  // ⚠️ IL PRE-PASSO AI SEI MODULI: quattro pezzi che i moduli CONDIVIDONO e
+  // che stavano in `index.html` per posizione.
+  //
+  // Misurato prima di muoverli — chi li chiama, non dove stanno:
+  //   renderChoiceBox  — Voice, Flash Card, Match, Dialogo Ascolta e Ripeti
+  //   startTimerBar    — Speed Match, Dialogo (Ripeti a Tempo e Continuo)
+  //   freezeTimerBar   — gli stessi due
+  //   DIRECTION_LABEL  — Flash Card, Speed Match, Match
+  //
+  // **Escono adesso e non col primo modulo**, per la ragione che questa serie
+  // ha già pagato due volte: un pezzo condiviso lasciato dentro viene
+  // **ereditato** dal primo modulo che esce, e da lì uno strato finisce a
+  // chiedere a un modulo. *Un confine sbagliato che non produce nessun rosso
+  // è quello che si eredita.*
+  //
+  // ⚠️ E QUATTRO RESTANO FUORI DI PROPOSITO, dichiarati invece che forzati:
+  // `itemText`, `recordPendingMastery`, `recordMultipleChoiceResult` e
+  // `buildMultipleChoiceOptions` sono condivisi allo stesso modo, ma legano
+  // lo **stato di sessione** (`currentEpisode`, `currentValues`,
+  // `pendingMastery`). Entrerebbero qui rompendo l'unica cosa che questo
+  // strato promette: *non sa quale modulo ha sopra, e non tocca la sessione.*
+  // Escono quando esce lo stato di sessione, che è un passo suo.
+  //
+  // Nessuno dei quattro qui sotto ha dipendenze: DOM, CSS e una tabella.
+  function renderChoiceBox(containerId, questionClass, questionText, secondaryBtnId, secondaryLabel, primaryBtnId, primaryLabel) {
+    document.getElementById(containerId).innerHTML =
+      '<p class="' + questionClass + '">' + questionText + '</p>' +
+      '<div class="pending-actions">' +
+      '<button type="button" class="btn btn-secondary" id="' + secondaryBtnId + '">' + secondaryLabel + '</button>' +
+      '<button type="button" class="btn btn-primary" id="' + primaryBtnId + '">' + primaryLabel + '</button>' +
+      '</div>';
+  }
+
+  function startTimerBar(fillEl, ms) {
+    fillEl.style.transition = 'none';
+    fillEl.style.width = '100%';
+    void fillEl.offsetWidth;
+    fillEl.style.transition = 'width ' + (ms / 1000) + 's linear';
+    fillEl.style.width = '0%';
+  }
+
+  function freezeTimerBar(fillEl) {
+    var w = getComputedStyle(fillEl).width;
+    fillEl.style.transition = 'none';
+    fillEl.style.width = w;
+  }
+
+  var DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
+  BI.renderChoiceBox = renderChoiceBox;
+  BI.startTimerBar = startTimerBar;
+  BI.freezeTimerBar = freezeTimerBar;
+  BI.DIRECTION_LABEL = DIRECTION_LABEL;
   BI.introDismissPref = introDismissPref;
   BI.dialogueLineAlign = dialogueLineAlign;
   BI.speakerLabel = speakerLabel;
