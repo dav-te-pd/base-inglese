@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260918b**
+**Versione: 20260919a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -134,6 +134,23 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
    Non c'è nient'altro da aggiornare a mano, e questo è il punto della regola: **quello che va fatto a mano dopo ogni modifica, prima o poi non viene fatto.**
 
+   ⚠️ **UNA COSA DA ALZARE C'È, DAL 2026-09-19, E PROPRIO PER QUESTO NON È LASCIATA ALLA MEMORIA: la versione sui quattordici tag `<script src="app/...js?v=...">`.**
+
+   Serve perché l'app non è più un file solo: sono quindici file con cache
+   indipendenti, e un browser può tenere `index.html` nuovo e uno degli `app/`
+   vecchio — cioè servire **un'app che nessuno ha mai scritto**. Con la stessa
+   versione su tutti e quattordici quel caso sparisce: un `index.html` vecchio
+   chiede i quattordici all'indirizzo vecchio e ottiene un insieme coerente.
+
+   **E non si deve ricordare:** `tests/test_versione_cache.js` verifica che i
+   quattordici la portino uguale, e la CI **rifiuta** un push che cambia
+   `index.html` o un file sotto `app/` senza alzarla
+   (`tests/tools/versione-salita.js`). *La regola non ha un'eccezione: ha un
+   caso in più in cui è stata applicata.*
+
+   **Resta scoperto, ed è registrato in `docs/decisioni.md`:** i quattro
+   `fetch` dei file di dati in `app/dati.js` non portano versione.
+
    **L'app carica i suoi contenuti da `data/{lingua}/` e non ne tiene nessuna copia dentro `index.html`.** Se un file non arriva — percorso sbagliato, rete che cade — il caricamento fallisce e lo studente vede la schermata d'errore (`showLoadError`, regola 35): un guasto si vede, non viene assorbito.
 
    *Perché la regola diceva un'altra cosa fino al 2026-09-06: l'app viveva anche su un artifact di claude.ai, una pagina sola dove il `fetch` dei dati fallisce sempre. Per farla funzionare lì, `index.html` teneva una copia inline dei tre file di dati (`window.FALLBACK_*`), da rigenerare a ogni modifica con uno strumento apposta e da sorvegliare con un test apposta. Quella copia costava tre cose da mantenere e ne nascondeva una peggiore: assorbiva in silenzio anche i guasti veri — un percorso sbagliato su Pages non si sarebbe visto, perché l'app avrebbe servito la copia interna. L'artifact non serviva a niente che Pages non desse, quindi sono spariti insieme: l'artifact, la copia, lo strumento e il test.*
@@ -177,9 +194,28 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     |---|---|---|
     | **COSA È SUCCESSO** | i fatti del turno, **a punti numerati** — mai in prosa continua | «niente: turno di sola misura» |
     | **VERIFICHE** | suite locale, conteggio asserzioni, CI, con gli esiti | «non lanciate» **e perché** |
-    | **DA VERIFICARE SU PAGES** | cosa deve guardare chi guida il progetto, e **quale delle cose elencate è quella che conta** | «niente da guardare» **e perché** |
+    | **DA VERIFICARE SU PAGES** | cosa deve guardare chi guida il progetto, e **quale delle cose elencate è quella che conta** — vedi il vincolo qui sotto | «niente da guardare» **e perché** |
     | **⚠️ DA REGISTRARE** | l'elenco qui sotto | «nulla da registrare» |
     | **DOMANDA** | le scelte da fare, numerate, con le opzioni — **e le problematiche** | «nessuna, procedo» |
+
+    ⚠️ **LA PRIMA COSA DA GUARDARE SU PAGES DEVE ESSERE QUALCOSA CHE PRIMA
+    NON FUNZIONAVA. Se funziona anche col codice vecchio, non è una verifica.**
+
+    Non è una raccomandazione di stile: è la difesa contro un giro intero
+    speso a cercare nel posto sbagliato. *Il 2026-09-19 ho chiesto di
+    verificare due cose, e la prima era il popup dei tentativi — che
+    funzionava **anche prima**. La risposta «il popup è a posto, l'altra cosa
+    no» sembrava dire «metà del lavoro è arrivato», e diceva invece «stai
+    guardando la versione vecchia»: era una cache. Un controllo che non può
+    fallire in nessuno dei due casi non distingue niente* — è la stessa forma
+    della regola 37, una misura che non misura.
+
+    **Quindi la voce in cima all'elenco è sempre quella che il codice vecchio
+    NON sa fare**, e va detto esplicitamente perché quella lo distingue. Se il
+    passo non ha nessun comportamento nuovo da mostrare — uno spostamento puro
+    — **si scrive proprio questo**, e si chiede di guardare che le cose di
+    prima funzionino ancora, dichiarando che quella verifica **non** distingue
+    le due versioni.
 
     **In "⚠️ DA REGISTRARE" ci va:**
     - funzioni e componenti nuovi o generalizzati, con il nome esatto;

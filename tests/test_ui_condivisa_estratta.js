@@ -33,7 +33,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
-const { verificaStruttura } = require('./strati');
+const { verificaStruttura, posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -48,7 +48,7 @@ async function run() {
 
   // ── [A] LA SECONDA FILA ─────────────────────────────────────────────
   {
-    const tag = html.indexOf('src="app/ui-condivisa.js"');
+    const tag = posizioneTag(html, 'app/ui-condivisa.js');
     const ultimaVista = html.indexOf('id="view-error"');
     const scriptPrincipale = html.indexOf('\n<script>\n(function () {');
     log('[A] Il tag arriva DOPO il markup', tag > ultimaVista, 'tag ' + tag);

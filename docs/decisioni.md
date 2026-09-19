@@ -2646,6 +2646,35 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ I QUATTRO `fetch` DEI FILE DI DATI NON PORTANO VERSIONE
+
+**Aperto il 2026-09-19**, mettendo la versione sui quattordici tag.
+
+Quella correzione rende impossibile il caso misto **fra i file di codice**. Non
+lo rende impossibile fra **codice e dati**: `app/dati.js` ha quattro `fetch`
+— `PERSONALIZATION_TABLES_FILE`, `MODULE_INSTRUCTIONS_FILE`, `module.dataFile`,
+`FEEDBACK_MESSAGES_FILE` — e nessuno porta `?v=`. Un JSON vecchio servito a
+codice nuovo resta possibile.
+
+**Perché non è stato chiuso nello stesso passo, ed è una scelta e non una
+dimenticanza:** i punti sono **quattro, non uno**. Farli passare da un punto
+solo è un lavoro su `dati.js` — uno strato condiviso — e questo passo
+esisteva per mettere in sicurezza la verifica su Pages **prima** di rifare i
+sette pezzi, non per toccare un altro strato.
+
+**E il rischio è di natura diversa, il che lo rende meno urgente:** un file di
+dati vecchio si vede come **contenuto vecchio** — una frase, una traduzione,
+un'etichetta — cioè come qualcosa di visibile e attribuibile. Il caso misto
+fra i file di codice si vedeva come *comportamento inspiegabile*, ed è quello
+che è costato due giri.
+
+**Quando si esegue:** *al prossimo lavoro su `app/dati.js`*, oppure prima di
+pubblicare una modifica ai file sotto `data/` che cambi qualcosa di strutturale
+(una chiave nuova che il codice nuovo si aspetta). La forma è già decisa: un
+punto solo che costruisce l'indirizzo, con la stessa versione dei tag — non
+quattro `?v=` scritti a mano, che sarebbero quattro punti da tenere allineati.
+
+
 ### ⚠️ DUE DEI TRE TEST CHE GUIDANO IL POPUP DEI TENTATIVI **MUOIONO** INVECE DI FALLIRE
 
 **Misurato il 2026-09-19**, togliendo di proposito i due listener del popup

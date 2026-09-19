@@ -17,7 +17,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
-const { verificaStruttura } = require('./strati');
+const { verificaStruttura, posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -31,11 +31,11 @@ async function run() {
 
   // ── [A] LA SECONDA FILA, misurata in posizioni ──────────────────────
   {
-    const tag = html.indexOf('src="app/orchestrazione.js"');
+    const tag = posizioneTag(html, 'app/orchestrazione.js');
     const primaVista = html.indexOf('id="view-onboarding"');
     const ultimaVista = html.indexOf('id="view-error"');
     const scriptPrincipale = html.indexOf('\n<script>\n(function () {');
-    const headStrati = html.indexOf('src="app/config.js"');
+    const headStrati = posizioneTag(html, 'app/config.js');
 
     log('[A] Il tag arriva DOPO il markup di tutte le viste',
       tag > ultimaVista && ultimaVista > primaVista, 'tag ' + tag + ', ultima vista ' + ultimaVista);

@@ -36,7 +36,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
-const { verificaStruttura } = require('./strati');
+const { verificaStruttura, posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -57,7 +57,7 @@ async function run() {
     log('[A] app/progressi.js espone piu' + "' di trenta nomi", nomi.length > 30, String(nomi.length));
     const posInline = html.indexOf('<script>\n(function () {');
     log('[A] ...e arriva prima dello script principale, che lo legge in cima al suo IIFE',
-      posInline !== -1 && html.indexOf('src="app/progressi.js"') < posInline);
+      posInline !== -1 && posizioneTag(html, 'app/progressi.js') < posInline);
   }
 
   // ── [C] GUIDANDO L'APP ──────────────────────────────────────────────

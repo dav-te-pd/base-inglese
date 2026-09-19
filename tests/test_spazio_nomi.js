@@ -86,7 +86,7 @@ async function run() {
       /BI\.registraPulizia\s*=\s*function/.test(spazio) &&
       /BI\.registraModulo\s*=\s*function/.test(spazio));
     log('[A] index.html lo carica, bloccante come config.js',
-      /<script src="app\/spazio\.js"><\/script>/.test(html));
+      /<script src="app\/spazio\.js(\?[^"]*)?"><\/script>/.test(html));
     // APP_CONFIG resta fuori, ed è una decisione: la riga che la dichiara deve
     // restare, altrimenti il prossimo "sistema" l'incoerenza.
     log('[A] Il file dichiara perché APP_CONFIG resta fuori',

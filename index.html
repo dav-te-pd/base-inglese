@@ -4,15 +4,37 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Base Inglese</title>
-<script src="app/config.js"></script>
-<script src="app/spazio.js"></script>
-<script src="app/identita.js"></script>
-<script src="app/avvio.js"></script>
-<script src="app/progressi.js"></script>
-<script src="app/audio.js"></script>
-<script src="app/suoni.js"></script>
-<script src="app/quiz-engine.js"></script>
-<script src="app/dati.js"></script>
+<!-- ⚠️ IL ?v= SUI QUATTORDICI TAG NON È UN VEZZO: È QUELLO CHE IMPEDISCE AL
+     BROWSER DI MESCOLARE FILE VECCHI E NUOVI.
+
+     Finché l'app era un file solo, «hai la pagina vecchia» era tutto-o-niente.
+     Da quando è quindici file con cache indipendenti, un browser può tenere
+     `index.html` nuovo e `app/ui-condivisa.js` vecchio — e il risultato è un'app
+     che nessuno ha mai scritto. È successo il 2026-09-19 (il pannello Help
+     morto su Pages mentre in locale funzionava), ed è il primo sospettato per
+     il guasto del 18, quando «le funzioni erano identiche carattere per
+     carattere e il comportamento era cambiato».
+
+     LA VERSIONE È LA STESSA SU TUTTI E QUATTORDICI, E DEVE RESTARLO. Se
+     `index.html` è vecchio, il browser chiede i quattordici all'indirizzo
+     vecchio e ottiene un insieme COERENTE (vecchio, ma coerente); se è nuovo,
+     ne ottiene uno coerente nuovo. Il caso misto sparisce.
+
+     SI ALZA A OGNI MODIFICA di `index.html` o di un file sotto `app/`. Non
+     dipende dal ricordarsene: `tests/test_versione_cache.js` verifica che i
+     quattordici la portino uguale, e la CI rifiuta un push che cambia il
+     codice senza alzarla (`tests/tools/versione-salita.js`).
+
+     Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
+<script src="app/config.js?v=20260919a"></script>
+<script src="app/spazio.js?v=20260919a"></script>
+<script src="app/identita.js?v=20260919a"></script>
+<script src="app/avvio.js?v=20260919a"></script>
+<script src="app/progressi.js?v=20260919a"></script>
+<script src="app/audio.js?v=20260919a"></script>
+<script src="app/suoni.js?v=20260919a"></script>
+<script src="app/quiz-engine.js?v=20260919a"></script>
+<script src="app/dati.js?v=20260919a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3615,11 +3637,11 @@
      una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
      markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
      cosa gira, e questo gira dopo il DOM. -->
-<script src="app/orchestrazione.js"></script>
-<script src="app/ui-condivisa.js"></script>
-<script src="app/mappa.js"></script>
-<script src="app/storycards.js"></script>
-<script src="app/personalizza.js"></script>
+<script src="app/orchestrazione.js?v=20260919a"></script>
+<script src="app/ui-condivisa.js?v=20260919a"></script>
+<script src="app/mappa.js?v=20260919a"></script>
+<script src="app/storycards.js?v=20260919a"></script>
+<script src="app/personalizza.js?v=20260919a"></script>
 
 <script>
 (function () {

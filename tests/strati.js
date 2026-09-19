@@ -58,21 +58,36 @@ function nomiRiassegnati(percorsoRelativo) {
 //
 // opts.prima  — percorsi di tag che devono precedere questo (es. app/spazio.js)
 // opts.dopo   — percorsi di tag che devono seguirlo (es. app/avvio.js)
+// ⚠️ LA POSIZIONE DI UN TAG SI CERCA SENZA LA VIRGOLETTA FINALE, e dal
+// 2026-09-19 è obbligatorio: i quattordici tag portano `?v=<versione>` per
+// impedire al browser di mescolare file vecchi e nuovi, quindi `src="app/x.js"`
+// non esiste più in `index.html`. Cercare la stringa chiusa dava -1 su tutti e
+// quattordici — cioè sei file di strato rossi per una ragione che non c'entra
+// niente con gli strati.
+//
+// Sta qui e non ricopiata in otto test: è la stessa domanda («dove sta il tag di
+// questo file?») e la versione cambierà ancora.
+function posizioneTag(html, src) {
+  return html.indexOf('src="' + src + '"') !== -1
+    ? html.indexOf('src="' + src + '"')
+    : html.indexOf('src="' + src + '?');
+}
+
 function verificaStruttura(log, etichetta, file, opts) {
   const html = fs.readFileSync(repoPath('index.html'), 'utf8');
   const nomi = nomiEsposti(file);
   const src = 'app/' + file[file.length - 1];
 
-  const tag = html.match(new RegExp('<script[^>]*src="' + src.replace('/', '\\/') + '"[^>]*>'));
+  const tag = html.match(new RegExp('<script[^>]*src="' + src.replace('/', '\\/') + '(\\?[^"]*)?"[^>]*>'));
   log('[S] ' + etichetta + ': index.html lo carica con un tag suo', !!tag, 'tag non trovato');
   log('[S] ' + etichetta + ': ...BLOCCANTE, niente defer/async/type=module',
     !!tag && !/\b(defer|async|type\s*=)/.test(tag[0]), tag ? tag[0] : 'n/d');
 
-  const pos = html.indexOf('src="' + src + '"');
+  const pos = posizioneTag(html, src);
   const ordineOk = (opts.prima || []).every(function (p) {
-    const q = html.indexOf('src="' + p + '"'); return q !== -1 && q < pos;
+    const q = posizioneTag(html, p); return q !== -1 && q < pos;
   }) && (opts.dopo || []).every(function (p) {
-    const q = html.indexOf('src="' + p + '"'); return q !== -1 && q > pos;
+    const q = posizioneTag(html, p); return q !== -1 && q > pos;
   });
   log('[S] ' + etichetta + ': arriva dopo [' + (opts.prima || []).join(' ') + '] e prima di [' +
     (opts.dopo || []).join(' ') + ']', ordineOk, 'posizione ' + pos);
@@ -118,4 +133,4 @@ function verificaStruttura(log, etichetta, file, opts) {
   return nomi;
 }
 
-module.exports = { nomiEsposti: nomiEsposti, nomiRiassegnati: nomiRiassegnati, verificaStruttura: verificaStruttura };
+module.exports = { nomiEsposti: nomiEsposti, nomiRiassegnati: nomiRiassegnati, verificaStruttura: verificaStruttura, posizioneTag: posizioneTag };

@@ -13,7 +13,20 @@ jobs:
     timeout-minutes: 90
 
     steps:
+      # ⚠️ fetch-depth: 0 serve al controllo della versione qui sotto: per sapere
+      # se è salita bisogna poter leggere il commit da cui parte il push.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ⚠️ LA VERSIONE SUI QUATTORDICI TAG DEVE SALIRE QUANDO CAMBIA IL CODICE.
+      # Senza questo passo la versione sarebbe «una cosa da fare a mano dopo ogni
+      # modifica», e CLAUDE.md regola 6 dice come va a finire. Non finisce con un
+      # guasto: finisce con un push che sembra pubblicato e non lo è — cioè una
+      # misura che non misura (regola 37). Sta PRIMA della suite perché costa due
+      # secondi e la suite nove minuti.
+      - name: La versione dei file serviti al browser e' salita
+        run: node tests/tools/versione-salita.js "${{ github.event.before }}" "${{ github.sha }}"
 
       - uses: actions/setup-node@v4
         with:

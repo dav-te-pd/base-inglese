@@ -34,6 +34,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -79,7 +80,7 @@ async function run() {
       html.indexOf('window.APP_CONFIG = {') === -1);
     log('[A] app/config.js lo dichiara', config.indexOf('window.APP_CONFIG = {') !== -1);
 
-    const tag = html.match(/<script[^>]*src="app\/config\.js"[^>]*>/);
+    const tag = html.match(/<script[^>]*src="app\/config\.js(\?[^"]*)?"[^>]*>/);
     log('[A] index.html lo carica con un tag suo', !!tag, 'tag non trovato');
     // ⚠️ L'asserzione che vale per tutte le estrazioni future, non solo questa.
     log('[A] ...BLOCCANTE: niente defer, async o type=module',
@@ -108,8 +109,8 @@ async function run() {
     // due righe che si possono scambiare.** *È la prima volta nella fase 4 che
     // un'estrazione toglie una garanzia invece di spostare codice, e
     // ricapiterà a ogni pezzo che esce da index.html.*
-    const posTag = html.indexOf('src="app/config.js"');
-    const posLettore = html.indexOf('src="app/avvio.js"');
+    const posTag = posizioneTag(html, 'app/config.js');
+    const posLettore = posizioneTag(html, 'app/avvio.js');
     log('[A] Il tag viene PRIMA del primo lettore a tempo di parsing',
       posTag !== -1 && posLettore !== -1 && posTag < posLettore,
       'tag=' + posTag + ' lettore=' + posLettore);
