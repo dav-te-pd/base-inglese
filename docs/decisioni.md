@@ -2754,6 +2754,41 @@ nessuno può eseguire.*
 
 **Quando si esegue:** A è il prossimo passo, appena arriva il suo prompt.
 
+### LA LINGUA DI AVVIO: prima della scelta si pesca dal SISTEMA, e solo lì
+
+**2026-09-19, precisazione di chi guida il progetto, e è corretta.**
+
+> *«Le prime schermate, prima della decisione, devono essere nella lingua del
+> sistema operativo o del browser, e quindi staccate. Ma solo quelle.»*
+
+**Sì, ed è obbligato:** prima della scelta **non esiste ancora una base da cui
+dedurre la lingua**. L'unico dato disponibile è `navigator.language` (web) o il
+locale del sistema (store). *Non è un'eccezione al modello: è il caso in cui il
+modello non ha ancora un ingresso.*
+
+**Quali schermate:** lo splash, «che lingua parli» / «cosa vuoi imparare» — cioè
+tutto ciò che sta **prima** della prima scelta. Da lì in poi comanda la base
+scelta, sempre.
+
+**Due conseguenze, piccole ma da decidere adesso perché dopo si scoprono per
+caso:**
+
+1. **Serve un ripiego DICHIARATO.** Se il sistema dice una lingua che non
+   abbiamo, la schermata non può restare vuota: si sceglie una lingua di
+   ripiego e si scrive qual è. *Una catena `sistema → se ce l'abbiamo →
+   altrimenti il ripiego`, non un `if` implicito.*
+2. **Chi torna NON ri-deduce dal sistema.** La regola è: **se una scelta esiste,
+   vince lei**; il sistema si guarda **solo** quando non c'è ancora niente. *Senza
+   questa riga, uno studente che ha scelto l'inglese si ritroverebbe l'app in
+   italiano ogni volta che cambia telefono.*
+
+**E NON serve una cartella nuova:** le schermate di scelta leggono da
+`data/app/{lingua}/` come tutto il resto. **L'unica cosa che cambia è QUALE
+`{lingua}` si usa finché una scelta non c'è.** *È la stessa pesca, con una chiave
+diversa — e nemmeno qui si crea niente.*
+
+**Quando si esegue:** col pannello utente, dopo la divisione dei dati.
+
 ### IL MODELLO: UNA SCELTA SOLA — la lingua base decide app E corsi
 
 **2026-09-19, e questa è la versione buona.** Ha corretto tutto **un secondo
