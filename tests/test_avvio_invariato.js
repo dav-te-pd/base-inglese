@@ -161,8 +161,12 @@ async function run() {
   // lanciare, ed e' la difesa che ha funzionato tutte le volte.
   // ⚠️ 18 -> 19 col QUARTO MODULO (`app/speedmatch.js`). Numero atteso
   // scritto prima di lanciare, come sempre.
-  log('[D] I file di script sono 19 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 19, foto.script.join(', '));
+  // ⚠️ 19 -> 20 col QUINTO (`app/voice.js`), e stavolta e' L'UNICA riga del
+  // baseline che cambia: l'ordine dei moduli e quello delle pulizie restano
+  // identici. Avevo dichiarato che sarebbero cambiati, e la misura mi ha
+  // smentito — la dichiarazione e' stata corretta verso la misura.
+  log('[D] I file di script sono 20 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 20, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

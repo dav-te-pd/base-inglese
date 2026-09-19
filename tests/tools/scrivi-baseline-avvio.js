@@ -113,7 +113,23 @@ const STORIA = [
   "            porta via una PULIZIA: srPulizia si registra quando questo file",
   "            viene letto, quindi risale nell'elenco. Registra anche due kind",
   "            con la stessa open (speedMatchEngIta, speedMatchItaEng), come",
-  "            match. Tutti e due i diff sono ATTESI dallo spostamento."
+  "            match. Tutti e due i diff sono ATTESI dallo spostamento.",
+  "2026-09-19  app/voice.js entra come DICIANNOVESIMO script, seconda fila. Il",
+  "            conto passa da 19 a 20, ed e' L'UNICA riga che cambia.",
+  "            ⚠️ AVEVO DICHIARATO DUE DIFF IN PIU', E LA MISURA LI HA",
+  "            SMENTITI. Avevo scritto che l'ordine dei moduli e quello delle",
+  "            pulizie sarebbero cambiati, come per flashcard e speedmatch:",
+  "            NON cambiano. voicePractice/voiceCoach restano 10 e 11,",
+  "            vcResetRecording resta pulizia 4 — perche' voice.js prende in",
+  "            fila il posto che la sua regione aveva rispetto agli altri file",
+  "            gia' usciti. *La dichiarazione e' stata corretta verso la",
+  "            misura, mai il contrario: uno spostamento che NON muove niente",
+  "            e' esattamente quello che l'intestazione di questo file",
+  "            chiede a un'estrazione fatta bene.*",
+  "            E porta via l'APPARATO: vcRecognition nasce a tempo di parsing",
+  "            dentro quel file. Non cambia l'avvio finche' i diciannove tag",
+  "            si caricano tutti al boot, ma da quel giorno in poi quel file",
+  "            non fa nascere solo del codice."
 ];
 
   const intestazione = [

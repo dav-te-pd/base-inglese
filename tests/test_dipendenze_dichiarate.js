@@ -73,8 +73,9 @@ nodi.forEach(function (n) {
   // è previsto.
   // ⚠️ 8 -> 9 col TERZO MODULO (`app/match.js`).
   // ⚠️ 9 -> 10 col QUARTO MODULO (`app/speedmatch.js`).
-  log('[B] Dieci file di app/ dipendono da qualcosa',
-    conDipendenze.length === 10, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 10 -> 11 col QUINTO (`app/voice.js`). Ne resta uno.
+  log('[B] Undici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 11, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -127,7 +128,16 @@ nodi.forEach(function (n) {
   // a scelta multipla con un timer in mezzo, quindi toccano la stessa fetta
   // dei quattro bloccati dallo stato di sessione. Nessuna ragione diversa,
   // per il secondo passo di fila.
-  log('[B] Otto dipendenze ALL\'INSU\'', allInsu.length === 8,
+  // ⚠️ 8 -> 9 col QUINTO MODULO, e il suo nome e' UNO SOLO:
+  // `recordPendingMastery` — lo stesso che chiedeva Flash Card, cioe' ancora
+  // uno dei quattro bloccati dallo stato di sessione. **E i due riferimenti
+  // che Voice fa allo stato di sessione non contano qui, perche' non sono
+  // nomi**: `currentEpisode` e `currentValues` si chiedono con
+  // `BI.episodioCorrente()` e `BI.valoriCorrenti()`, gli accessori che
+  // `app/mappa.js` usa gia'. *Sono funzioni, non alias: un alias
+  // fotograferebbe il valore di adesso, una funzione legge quello di quando
+  // la chiami.* Cinque moduli, nessuna ragione diversa dalla prima.
+  log('[B] Nove dipendenze ALL\'INSU\'', allInsu.length === 9,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -160,8 +170,13 @@ nodi.forEach(function (n) {
   // ⚠️ 5 -> 6 col secondo modulo, per gli alias come tutti gli altri.
   // ⚠️ 6 -> 7 col terzo modulo, per gli alias come tutti.
   // ⚠️ 7 -> 8 col quarto modulo, per gli alias come tutti.
-  log('[B] Otto dipendenze a tempo di PARSING',
-    aParsing.length === 8,
+  // ⚠️ 8 -> 9 col quinto. Voice ha una ragione IN PIU' di tutti gli altri per
+  // stare nella seconda fila, e non e' un alias: `vcRecognition` — l'oggetto
+  // del riconoscimento vocale — nasce a tempo di parsing, dentro questo file.
+  // **E' l'unico modulo che non porta via solo del codice: porta via un
+  // apparato.**
+  log('[B] Nove dipendenze a tempo di PARSING',
+    aParsing.length === 9,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
