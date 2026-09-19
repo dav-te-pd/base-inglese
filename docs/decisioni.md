@@ -2749,6 +2749,104 @@ trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non u
 avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
 esattamente quello che è appena successo.
 
+## DICHIARAZIONE: L'ASTRAZIONE DELLA FONTE (regola 31, da decidere)
+
+**Scritta il 2026-09-19 su richiesta, per essere valutata prima di costruire.**
+Non è stata eseguita: qui c'è l'intenzione, i numeri su cui si appoggia e i
+limiti.
+
+### Il problema, in una frase
+
+**Oggi il codice sa DOVE stanno i dati. Domani staranno altrove.**
+
+Misurato:
+
+| | |
+|---|---|
+| percorsi scritti | **4**, e tutti contengono `inglese/it` dentro la stringa |
+| l'episodio | `episodeDataFile(id)` → `'data/inglese/it/inglese-it-' + id + '.json'` |
+| siti che chiamano i quattro caricatori | **101** |
+
+*Sembra già astratto — i percorsi stanno in quattro costanti di `app/dati.js`,
+non sparsi.* **Non lo è, per due ragioni misurabili:**
+
+1. **la lingua e l'edizione sono scritte DENTRO il percorso**, quindi ogni
+   edizione nuova tocca quelle righe;
+2. la firma dice *«dammi questo file»*, non *«dammi l'episodio X del corso Y»*.
+   **La differenza si vede il giorno in cui l'origine non è un file:** un
+   endpoint non ha un percorso, ha una domanda.
+
+### La forma proposta
+
+Un file solo — `app/fonte.js` — che risponde a **domande**, non consegna
+percorsi:
+
+```
+BI.fonte.catalogo()         quali corsi ed episodi esistono
+BI.fonte.episodio(id)       il contenuto di un episodio
+BI.fonte.testiApp()         i testi dell'interfaccia
+BI.fonte.tabelle()          le tabelle di personalizzazione
+```
+
+**È l'unico file che sa DOVE.** Oggi dentro c'è un `fetch` a un file; domani una
+chiamata a Supabase. **Un file cambia, gli altri ventitré no.**
+
+### ⚠️ COSA PUÒ STARE SUL SERVER, e cosa non può — la tabella che serve davvero
+
+Il principio dato da chi guida il progetto: *«più le logiche stanno sul server
+meglio è, e mandiamo al browser pacchetti più piccoli possibile»*. **Giusto, e
+ha un confine fisico:**
+
+| | Dove DEVE stare | Perché |
+|---|---|---|
+| riconoscimento vocale | **browser** | usa il microfono di chi studia |
+| sintesi vocale | **browser** | è la voce del dispositivo |
+| il contenuto degli episodi | **server**, a pezzi | è il valore |
+| progressi e mastery | **server** | seguono la persona, non il telefono |
+| chi sei e cosa hai pagato | **server**, sempre | l'unica difesa contro i profili falsi e gli abbonamenti craccati |
+| **la correzione delle risposte** | **⚠️ È LA DOMANDA VERA** | vedi sotto |
+
+⚠️ **LA CORREZIONE DELLE RISPOSTE È IL PUNTO DI COPIA, E VA DETTO CHIARO.**
+
+Oggi il browser riceve **la domanda e la risposta giusta insieme**: stanno nello
+stesso file episodio. Chi apre gli strumenti del browser ha tutto il corso.
+*Nessun offuscamento cambia questo: se il browser deve correggere, il browser
+deve sapere.*
+
+**Le tre strade, con il loro costo, e NON vanno decise adesso:**
+
+| | Come | Costo |
+|---|---|---|
+| **A** | tutto resta nel browser, un episodio alla volta | copiabile chi fa il corso, **latenza zero** |
+| **B** | la correzione la fa il server | non copiabile, **ma una chiamata di rete a ogni risposta** — e Speed Match ha un countdown |
+| **C** | misto: a tempo nel browser, il resto sul server | complica, e il confine va deciso per modulo |
+
+**Quello che serve OGGI non è sceglierne una: è che l'astrazione non chiuda
+nessuna delle tre porte.** Una fonte che risponde a domande le lascia aperte
+tutte e tre; quattro percorsi scritti nel codice no.
+
+### Cosa questa astrazione NON risolve, dichiarato
+
+- **Non nasconde il login.** Oggi l'app apre e i dati arrivano; con Supabase
+  è *prima l'identità, poi i dati*. **È un cambio di FLUSSO, non di sorgente**, e
+  l'astrazione non deve fingere il contrario.
+- **Non rende il contenuto incopiabile.** Riduce **quanto arriva in una volta**;
+  la barriera vera è la scelta A/B/C qui sopra.
+- **Non toglie il lavoro di Supabase.** Lo rende un lavoro **in un file solo**
+  invece che in centouno siti.
+
+### Il costo, onesto
+
+**Basso adesso, e cresce ogni giorno che passa.** I quattro caricatori esistono
+già e sono già asincroni: l'astrazione è una rinomina delle firme più un file
+nuovo. **Farla dopo aver scritto altri dieci moduli significa toccare i
+centouno siti da capo.**
+
+**Quando si esegue:** *insieme a C2, la divisione dei dati.* Sono lo stesso
+lavoro visto da due lati — C2 decide **dove** stanno i dati, questa decide
+**come si chiedono** — e farle separate significa toccare gli stessi file due
+volte.
+
 ## ⚠️ LA STRADA FINO ALLA MESSA IN SICUREZZA — detta il 2026-09-19
 
 *Registrata perché detta in chat, e **la chat non sopravvive al container**
