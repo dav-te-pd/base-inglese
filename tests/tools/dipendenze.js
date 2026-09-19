@@ -121,7 +121,24 @@ function grafo(radice) {
           if (/^(?:window\.)?BI\.\w+\s*=\s*\w+;?\s*$/.test(s)) return;
           const dove = proprietario[n] || 'index.html';
           if (dove === f) return;
-          const quando = profondita > 0 ? 'chiamata' : 'parsing';  // 0 = corpo dell'IIFE
+          // ⚠️ LA PROFONDITÀ SI CONTA FINO AL NOME, NON FINO A INIZIO RIGA —
+          // sesta correzione di questa misura, e la piu' sottile.
+          //
+          // `profondita` viene aggiornata DOPO aver letto la riga, quindi su
+          // una funzione scritta tutta su una riga
+          //   `function fcFrontText() { return BI.itemText(...); }`
+          // la graffa aperta non era ancora contata: la chiamata risultava a
+          // profondita' 0, cioè **«a tempo di parsing»**. Falso, e falso nel
+          // verso che spaventa: «sta per succedere prima che index.html
+          // esista», su codice che invece gira solo quando lo si chiama.
+          //
+          // Trovato con `app/flashcard.js` (2026-09-19), che ha due funzioni
+          // di una riga sola. *Una misura sbagliata nel verso allarmante è
+          // peggio di una sbagliata nel verso comodo: si corregge il codice
+          // buono per far tacere lo strumento.*
+          const prima = r.slice(0, m.index);
+          const qui = profondita + (prima.match(/\{/g) || []).length - (prima.match(/\}/g) || []).length;
+          const quando = qui > 0 ? 'chiamata' : 'parsing';  // 0 = corpo dell'IIFE
           dipende[dove] = dipende[dove] || { parsing: [], chiamata: [] };
           if (dipende[dove][quando].indexOf(n) === -1) dipende[dove][quando].push(n);
         });

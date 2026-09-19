@@ -17,6 +17,21 @@
 // risulta «orfano» senza esserlo — successo su quattro nomi il 2026-09-18.
 // **Un risultato non-zero si legge, non si crede: si guarda la riga.**
 //
+// ⚠️ LA RICERCA USA UN LOOKBEHIND, E NON È UN VEZZO DI SINTASSI.
+//
+// Prima il delimitatore veniva CONSUMATO: `[^.\w$'"`]([a-zA-Z_$][\w$]*)\s*\(`.
+// Su `if (staParlando())` il primo match era `if (` — e si portava via la
+// parentesi, cioè il delimitatore di `staParlando`. **Il nome dentro la
+// condizione diventava invisibile.** Vale per `if (`, `while (`, `return (`,
+// `&& (`: tutti i posti in cui una chiamata sta subito dentro una parentesi
+// appena aperta.
+//
+// Trovato il 2026-09-19 estraendo Flash Card: questo strumento ha detto
+// **ZERO** su un file che moriva con `staParlando is not defined` al primo
+// tocco su una carta. *È la forma peggiore — non un errore che si annuncia,
+// ma un controllo che dice «non c'è niente» (regola 37).* Col lookbehind il
+// delimitatore non si consuma e il nome si vede.
+//
 // Uso: node tests/tools/buchi.js <nomefile.js>
 
 const fs=require('fs');
@@ -27,7 +42,7 @@ const def=new Set([...s.matchAll(/^  (?:function|var) (\w+)/gm)].map(m=>m[1]));
 const ok=new Set(['BI','CONFIG','window','document','console','Math','Object','Array','JSON','Promise','String','Number','localStorage','setTimeout','clearTimeout','setInterval','clearInterval','Date','parseInt','parseFloat','isNaN','Set','Map','encodeURIComponent','RegExp','Error','KeyboardEvent','if','for','while','switch','catch','return','typeof','function','new','else','do']);
 const ch=new Set();
 s.split('\n').forEach(r=>{const t=r.trim();if(!t||t.startsWith('//')||t.startsWith('*')||t.startsWith('/*'))return;
- [...r.matchAll(/(?:^|[^.\w$'"`])([a-zA-Z_$][\w$]*)\s*\(/g)].forEach(m=>ch.add(m[1]));});
+ [...r.matchAll(/(?<![.\w$'"`])([a-zA-Z_$][\w$]*)\s*\(/g)].forEach(m=>ch.add(m[1]));});
 console.log('BUCHI  in app/'+f+': '+([...ch].filter(n=>!def.has(n)&&!ok.has(n)).join(' ')||'ZERO'));
 const h=fs.readFileSync('index.html','utf8');
 const m=h.match(/<script>\n\(function \(\)[\s\S]*?\n<\/script>/)[0];

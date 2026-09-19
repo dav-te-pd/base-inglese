@@ -93,7 +93,16 @@ const STORIA = [
   "            letto — i suoi sette listener si agganciano dentro la sua open",
   "            — eppure sta nella seconda fila lo stesso, per i venti alias e",
   "            per registraModulo al primo livello dell'IIFE. Le ragioni",
-  "            della seconda fila sono DUE, non una."
+  "            della seconda fila sono DUE, non una.",
+  "2026-09-19  app/flashcard.js entra come SEDICESIMO script, seconda fila.",
+  "            Il conto passa da 16 a 17. E' il SECONDO modulo, e con lui",
+  "            cambiano anche l'ordine dei moduli registrati e quello delle",
+  "            pulizie: flashcard e fcClearNavTimeout risalgono, perche' ora",
+  "            si registrano quando il loro file viene letto invece che al",
+  "            punto in cui stavano dentro index.html. ⚠️ E' un diff",
+  "            ATTESO dello spostamento, non un cambio di comportamento:",
+  "            l'ordine di registrazione non decide niente — openModuleByKind",
+  "            cerca per chiave, e le pulizie girano tutte."
 ];
 
   const intestazione = [
