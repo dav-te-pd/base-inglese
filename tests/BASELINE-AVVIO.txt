@@ -142,6 +142,12 @@
 #               la dodicesima riga.*
 #               I moduli registrati e le pulizie NON cambiano: sessione.js non
 #               registra niente, tiene lo stato.
+#   2026-09-19  app/catalogo.js entra col PASSO C1, come DECIMO script e in
+#               <head>: dipende da uno solo (episodeDataFile) e non tocca il
+#               markup, quindi non ha nessuna ragione per la seconda fila. Il
+#               conto passa da 22 a 23, e i dodici file dopo di lui slittano.
+#               Moduli e pulizie invariati: il catalogo dice CHI esiste, non
+#               registra niente.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-19
@@ -154,19 +160,20 @@ script 6 app/audio.js
 script 7 app/suoni.js
 script 8 app/quiz-engine.js
 script 9 app/dati.js
-script 10 app/orchestrazione.js
-script 11 app/ui-condivisa.js
-script 12 app/sessione.js
-script 13 app/mappa.js
-script 14 app/storycards.js
-script 15 app/personalizza.js
-script 16 app/repeataloud.js
-script 17 app/flashcard.js
-script 18 app/match.js
-script 19 app/speedmatch.js
-script 20 app/voice.js
-script 21 app/dialogo.js
-script 22 (inline)
+script 10 app/catalogo.js
+script 11 app/orchestrazione.js
+script 12 app/ui-condivisa.js
+script 13 app/sessione.js
+script 14 app/mappa.js
+script 15 app/storycards.js
+script 16 app/personalizza.js
+script 17 app/repeataloud.js
+script 18 app/flashcard.js
+script 19 app/match.js
+script 20 app/speedmatch.js
+script 21 app/voice.js
+script 22 app/dialogo.js
+script 23 (inline)
 modulo 1 meetTheStory
 modulo 2 whyWeSayIt
 modulo 3 personalizzazione

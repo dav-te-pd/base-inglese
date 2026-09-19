@@ -78,8 +78,10 @@ nodi.forEach(function (n) {
   // fuori, e questo numero ha finito di salire per questa ragione.
   // ⚠️ 12 -> 13 col PASSO B: `app/sessione.js` e' un file nuovo, e dipende
   // come tutti.
-  log('[B] Tredici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 13, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 13 -> 14 col PASSO C1: `app/catalogo.js`, che dipende da uno solo
+  // (`episodeDataFile` di dati.js) — ed e' il motivo per cui era separabile.
+  log('[B] Quattordici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 14, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -166,7 +168,14 @@ nodi.forEach(function (n) {
   // scelta dichiarata di `dati.js`. *Avevo contato solo quello e dimenticato
   // gli altri: la previsione era ottimista di due file.*
   //
-  // **Da qui questo numero puo' solo scendere, e scende col catalogo.**
+  // ⚠️ COL PASSO C1 IL NUMERO DEI FILE RESTA 3, MA I NOMI SCENDONO DA 5 A 3:
+  // `EPISODES` e `ID_PERSONALIZZA` sono usciti in `app/catalogo.js`. Restano
+  // `applyEpisodeDialogue` (la scelta dichiarata di `dati.js`),
+  // `migrateCustomizeSeenToModuleProgress` e `ensureEpisodeSlotFields` — che
+  // non sono catalogo: sono **migrazione e personalizzazione**, due pezzi
+  // piccoli rimasti indietro, registrati e non portati per non allargare il
+  // passo. *Il conto dei FILE non si muove finche' non esce l'ultimo nome di
+  // ognuno: e' un conto per file, non per nome, ed e' un limite suo.*
   log('[B] Tre dipendenze ALL\'INSU\'', allInsu.length === 3,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
@@ -207,8 +216,9 @@ nodi.forEach(function (n) {
   // apparato.**
   // ⚠️ 9 -> 10 col sesto, per gli alias come tutti.
   // ⚠️ 10 -> 11 col passo B, per gli alias come tutti.
-  log('[B] Undici dipendenze a tempo di PARSING',
-    aParsing.length === 11,
+  // ⚠️ 11 -> 12 col passo C1, per l'alias come tutti.
+  log('[B] Dodici dipendenze a tempo di PARSING',
+    aParsing.length === 12,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 

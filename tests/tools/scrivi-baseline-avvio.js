@@ -145,7 +145,13 @@ const STORIA = [
   "            solo. *Chi lo legge non deve cercare nove cose: deve cercare",
   "            la dodicesima riga.*",
   "            I moduli registrati e le pulizie NON cambiano: sessione.js non",
-  "            registra niente, tiene lo stato."
+  "            registra niente, tiene lo stato.",
+  "2026-09-19  app/catalogo.js entra col PASSO C1, come DECIMO script e in",
+  "            <head>: dipende da uno solo (episodeDataFile) e non tocca il",
+  "            markup, quindi non ha nessuna ragione per la seconda fila. Il",
+  "            conto passa da 22 a 23, e i dodici file dopo di lui slittano.",
+  "            Moduli e pulizie invariati: il catalogo dice CHI esiste, non",
+  "            registra niente."
 ];
 
   const intestazione = [
