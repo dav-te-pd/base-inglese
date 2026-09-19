@@ -104,6 +104,12 @@
 #               kind con la stessa open (matchEngIta, matchItaEng): l'ordine
 #               dei moduli registrati cambia di conseguenza, ed e' un diff
 #               atteso dello spostamento come per flashcard.
+#   2026-09-19  app/speedmatch.js entra come DICIOTTESIMO script, seconda fila.
+#               Il conto passa da 18 a 19. E' il QUARTO modulo, e il PRIMO che
+#               porta via una PULIZIA: srPulizia si registra quando questo file
+#               viene letto, quindi risale nell'elenco. Registra anche due kind
+#               con la stessa open (speedMatchEngIta, speedMatchItaEng), come
+#               match. Tutti e due i diff sono ATTESI dallo spostamento.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-19
@@ -124,7 +130,8 @@ script 14 app/personalizza.js
 script 15 app/repeataloud.js
 script 16 app/flashcard.js
 script 17 app/match.js
-script 18 (inline)
+script 18 app/speedmatch.js
+script 19 (inline)
 modulo 1 meetTheStory
 modulo 2 whyWeSayIt
 modulo 3 personalizzazione
@@ -132,18 +139,18 @@ modulo 4 repeatAloud
 modulo 5 flashcard
 modulo 6 matchEngIta
 modulo 7 matchItaEng
-modulo 8 voicePractice
-modulo 9 voiceCoach
-modulo 10 dialogoAscoltaRipeti
-modulo 11 dialogoRipetiATempo
-modulo 12 dialogoContinuo
-modulo 13 speedMatchEngIta
-modulo 14 speedMatchItaEng
+modulo 8 speedMatchEngIta
+modulo 9 speedMatchItaEng
+modulo 10 voicePractice
+modulo 11 voiceCoach
+modulo 12 dialogoAscoltaRipeti
+modulo 13 dialogoRipetiATempo
+modulo 14 dialogoContinuo
 pulizia 1 storyCardsClearPendingStats
 pulizia 2 fcClearNavTimeout
-pulizia 3 vcResetRecording
-pulizia 4 dgClearAllTimers
-pulizia 5 srPulizia
+pulizia 3 srPulizia
+pulizia 4 vcResetRecording
+pulizia 5 dgClearAllTimers
 moduliCaricatiAlBoot true
 vistaDopoIlBoot view-onboarding
 APP_CONFIG object

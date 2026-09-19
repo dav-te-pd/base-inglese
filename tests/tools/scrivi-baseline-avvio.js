@@ -107,7 +107,13 @@ const STORIA = [
   "            Il conto passa da 17 a 18. E' il TERZO modulo, e registra DUE",
   "            kind con la stessa open (matchEngIta, matchItaEng): l'ordine",
   "            dei moduli registrati cambia di conseguenza, ed e' un diff",
-  "            atteso dello spostamento come per flashcard."
+  "            atteso dello spostamento come per flashcard.",
+  "2026-09-19  app/speedmatch.js entra come DICIOTTESIMO script, seconda fila.",
+  "            Il conto passa da 18 a 19. E' il QUARTO modulo, e il PRIMO che",
+  "            porta via una PULIZIA: srPulizia si registra quando questo file",
+  "            viene letto, quindi risale nell'elenco. Registra anche due kind",
+  "            con la stessa open (speedMatchEngIta, speedMatchItaEng), come",
+  "            match. Tutti e due i diff sono ATTESI dallo spostamento."
 ];
 
   const intestazione = [

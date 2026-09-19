@@ -72,8 +72,9 @@ nodi.forEach(function (n) {
   // ⚠️ 7 -> 8 col SECONDO MODULO (`app/flashcard.js`). Sale coi moduli, ed
   // è previsto.
   // ⚠️ 8 -> 9 col TERZO MODULO (`app/match.js`).
-  log('[B] Nove file di app/ dipendono da qualcosa',
-    conDipendenze.length === 9, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 9 -> 10 col QUARTO MODULO (`app/speedmatch.js`).
+  log('[B] Dieci file di app/ dipendono da qualcosa',
+    conDipendenze.length === 10, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -119,7 +120,14 @@ nodi.forEach(function (n) {
   // ogni modulo ne tocca una fetta diversa, non perché nasca una ragione
   // nuova.* **Era questa la domanda del terzo modulo, e la risposta è: nessuna
   // ragione diversa.** Spariscono tutti insieme col loro passo.
-  log('[B] Sette dipendenze ALL\'INSU\'', allInsu.length === 7,
+  // ⚠️ 7 -> 8 col QUARTO MODULO, e i suoi nomi sono gli STESSI TRE del terzo:
+  // `itemText`, `recordMultipleChoiceResult`, `buildMultipleChoiceOptions`.
+  // **Il numero dei NOMI ha smesso di salire, e dice la stessa cosa che
+  // diceva salendo:** Speed Match e Match Practice sono lo stesso meccanismo
+  // a scelta multipla con un timer in mezzo, quindi toccano la stessa fetta
+  // dei quattro bloccati dallo stato di sessione. Nessuna ragione diversa,
+  // per il secondo passo di fila.
+  log('[B] Otto dipendenze ALL\'INSU\'', allInsu.length === 8,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -151,8 +159,9 @@ nodi.forEach(function (n) {
   // questo file e' il primo che ci sta solo per la seconda.
   // ⚠️ 5 -> 6 col secondo modulo, per gli alias come tutti gli altri.
   // ⚠️ 6 -> 7 col terzo modulo, per gli alias come tutti.
-  log('[B] Sette dipendenze a tempo di PARSING',
-    aParsing.length === 7,
+  // ⚠️ 7 -> 8 col quarto modulo, per gli alias come tutti.
+  log('[B] Otto dipendenze a tempo di PARSING',
+    aParsing.length === 8,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 

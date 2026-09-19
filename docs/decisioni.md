@@ -2699,6 +2699,40 @@ primo.
 riga esiste per far riconoscere il caso al primo colpo invece che al terzo.
 
 
+### ⚠️ IL MAGAZZINO DELLE PULIZIE NON HA PIÙ UN CONTENUTO FISSO: HA QUELLO DEI FILE CARICATI
+
+**Trovato il 2026-09-19, estraendo `app/speedmatch.js` — il quarto modulo, e il
+primo che porta via una PULIZIA.**
+
+`srPulizia` chiama `BI.registraPulizia` **a tempo di parsing**, cioè quando il
+file viene letto. Finché stava dentro `index.html` si registrava sempre; adesso
+si registra **se quel file arriva**. Nel baseline dell'avvio si vede: la pulizia
+risale da `pulizia 5` a `pulizia 3`, perché ora è letta prima.
+
+**Oggi non cambia niente, e va detto per intero:** i diciotto tag si caricano
+tutti al boot, quindi tutte e cinque le pulizie ci sono, e `test_avvio_invariato`
+lo verifica (`[D] Le pulizie registrate sono 5`).
+
+⚠️ **Ma `stopAllModuleActivity` ha smesso di essere una funzione con un
+contenuto noto, ed è diventata una funzione con un contenuto DIPENDENTE dal
+caricamento.** Dal giorno in cui un modulo si carica su richiesta — che è
+esattamente quello che il passo 22 rende possibile e che `BI.moduliCaricatiAlBoot`
+esiste per dichiarare — **una pulizia non registrata è una pulizia che non
+gira**: un timer resta acceso uscendo da un modulo che non era mai stato aperto
+in quella sessione. *Non dà errore. È la forma del difetto silenzioso che questa
+serie ha già pagato due volte.*
+
+**E le altre quattro sono nella stessa condizione appena escono:** `vcResetRecording`
+(Voice) e `dgClearAllTimers` (Dialogo) sono i due moduli ancora da estrarre.
+
+**Quando si esegue:** *prima di rendere falsa `BI.moduliCaricatiAlBoot`*, cioè nel
+passo che fa caricare un modulo su richiesta — mai dopo. Chi lo scrive deve
+decidere lì se la pulizia di un modulo mai caricato debba esistere lo stesso
+(registrata dal catalogo invece che dal file) o se è giusto che non esista
+(non c'è niente da pulire in un modulo mai aperto). **Le due strade danno la
+stessa app oggi e due app diverse quel giorno**, ed è il motivo per cui la scelta
+va fatta guardandola, non ereditata.
+
 ### ⚠️ IL RIPASSO DI FLASH CARD: NON È CAMBIATO NIENTE — SONO DUE COLORI DIVERSI
 
 **Misurato il 2026-09-19** su una domanda precisa: *«il ripasso non sovrascrive
