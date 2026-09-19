@@ -135,4 +135,44 @@ function righeDiCodiceDi(...pezzi) {
     });
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi };
+// IL SORGENTE CHE CONTIENE UN PEZZO, cercato in `index.html` e in ogni file di
+// `app/`. Torna { nome, testo }; se nessuno lo contiene, **alza**.
+//
+// ⚠️ STA QUI, CONDIVISO, PER LO STESSO MOTIVO DI `righeDiCodiceDi` QUI SOPRA —
+// e il caso che l'ha fatto nascere e' del 2026-09-19, passo C2.
+//
+// Da quando l'app non e' piu' un file solo, un test che legge
+// `repoPath('index.html')` per trovarci una funzione dice la verita' finche'
+// quella funzione non si sposta. Il giorno che si sposta NON diventa rosso: la
+// ricerca non trova niente, e cosa succede dopo dipende da come e' scritta
+// l'asserzione. Misurato su `test_moduli_registrati.js` quel giorno:
+//
+//     due asserzioni ROSSE     — «risolve dal registro», «il ramo e' conservato»
+//     dodici VERDI per costruzione — «non nomina piu' X», su un pezzo sbagliato
+//
+// *La stessa rottura, i due esiti opposti della regola 44. Se il caso fosse
+// stato solo il secondo, non se ne sarebbe accorto nessuno.*
+//
+// Tre file cercavano cosi' (`test_moduli_registrati`, `test_modulo_pronto`,
+// `test_tabelle_personalizzazione`) e ognuno avrebbe dovuto ricordarsene da
+// solo a ogni estrazione. **Una difesa scritta in ogni posto si disallinea:
+// una sola, dove i test prendono gia' i percorsi.**
+//
+// LIMITE DICHIARATO: cerca il PRIMO file che contiene il pezzo, nell'ordine
+// `index.html` poi `app/*.js` in ordine alfabetico. Se due file lo
+// contenessero davvero, questa funzione non lo direbbe — e quel caso e' gia'
+// un guasto suo, che nessun test guarda oggi.
+function sorgenteChe(pezzo) {
+  const fs = require('fs');
+  const posti = ['index.html'].concat(
+    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return 'app/' + f; })
+  );
+  for (let k = 0; k < posti.length; k++) {
+    const testo = fs.readFileSync(repoPath.apply(null, posti[k].split('/')), 'utf8');
+    if (testo.indexOf(pezzo) !== -1) return { nome: posti[k], testo: testo };
+  }
+  throw new Error('«' + pezzo + '» non trovato in nessuno di: ' + posti.join(', '));
+}
+
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe };

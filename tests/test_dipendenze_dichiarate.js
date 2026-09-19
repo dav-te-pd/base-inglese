@@ -80,8 +80,11 @@ nodi.forEach(function (n) {
   // come tutti.
   // ⚠️ 13 -> 14 col PASSO C1: `app/catalogo.js`, che dipende da uno solo
   // (`episodeDataFile` di dati.js) — ed e' il motivo per cui era separabile.
-  log('[B] Quattordici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 14, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 14 -> 15 col PASSO C2: `app/apertura.js`, il file nuovo. Dipende come
+  // tutti, e questo numero non e' quello che dice se il passo e' riuscito —
+  // e' il prossimo.
+  log('[B] Quindici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 15, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -176,7 +179,23 @@ nodi.forEach(function (n) {
   // piccoli rimasti indietro, registrati e non portati per non allargare il
   // passo. *Il conto dei FILE non si muove finche' non esce l'ultimo nome di
   // ognuno: e' un conto per file, non per nome, ed e' un limite suo.*
-  log('[B] Tre dipendenze ALL\'INSU\'', allInsu.length === 3,
+  // ⚠️⚠️ **3 -> 0 COL PASSO C2, ED E' IL NUMERO PER CUI QUESTA RIGA ESISTE.**
+  //
+  // `applyEpisodeDialogue`, `migrateCustomizeSeenToModuleProgress` e
+  // `ensureEpisodeSlotFields` sono usciti insieme in `app/apertura.js`, che e'
+  // il file dove si apre un modulo: erano le tre preparazioni che l'apertura
+  // fa, sparse in tre regioni diverse di `index.html` per POSIZIONE.
+  //
+  // **Da oggi il ponte e' a senso unico:** `index.html` puo' chiedere ad
+  // `app/`, non essere chiesto. Quello che resta nel suo IIFE puo' uscire
+  // senza rompere niente a monte, perche' non c'e' piu' un monte.
+  //
+  // ⚠️ E ZERO NON E' UN TRAGUARDO CHE SI TIENE DA SOLO: e' un invariante da
+  // qui in avanti. Se questa riga torna a uno, qualcuno ha scritto un
+  // `BI.qualcosa` in `index.html` e un `app/*.js` glielo chiede — che e'
+  // esattamente il verso che tutta la serie ha lavorato per chiudere. *Non
+  // alzare il numero: spostare il nome.*
+  log('[B] Nessuna dipendenza ALL\'INSU\' verso index.html', allInsu.length === 0,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -217,23 +236,58 @@ nodi.forEach(function (n) {
   // ⚠️ 9 -> 10 col sesto, per gli alias come tutti.
   // ⚠️ 10 -> 11 col passo B, per gli alias come tutti.
   // ⚠️ 11 -> 12 col passo C1, per l'alias come tutti.
-  log('[B] Dodici dipendenze a tempo di PARSING',
-    aParsing.length === 12,
+  // ⚠️ 12 -> 13 col passo C2, per gli undici alias come tutti. `apertura.js`
+  // sta nella seconda fila per la PRIMA delle due ragioni (gli alias), non per
+  // la seconda: non tocca nessun nodo mentre viene letto.
+  log('[B] Tredici dipendenze a tempo di PARSING',
+    aParsing.length === 13,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
 // ── [C] L'ORDINE DEI TAG RISPETTA IL GRAFO ──────────────────────────
+// ⚠️ QUESTA RIGA ERA UNA SOLA, E IL 2026-09-19 (passo C2) SI E' SCOPERTA
+// DOPPIA — la famiglia ⓪-decies: una misura che risponde a due domande da' la
+// risposta giusta a una e sbagliata all'altra, e nessuno se ne accorge finche'
+// le due non divergono.
+//
+// Diceva «nessun file dipende da uno caricato DOPO di lui», e quello che il
+// suo commento spiegava e' un'altra cosa: **una dipendenza a tempo di PARSING
+// obbliga l'ordine dei tag; una a tempo di CHIAMATA no.** Finche' nessuna
+// dipendenza in avanti a tempo di chiamata esisteva, le due domande davano la
+// stessa risposta.
+//
+// Col passo C2 divergono, e non per una svista: `app/dati.js` chiama
+// `BI.applyEpisodeDialogue`, che SCRIVE dentro `EPISODES`. Chi carica i dati
+// viene letto PRIMA di chi possiede il catalogo — deve, perche' il catalogo
+// gli chiede `episodeDataFile` a tempo di parsing. **Quella chiamata in avanti
+// e' strutturale: girare l'ordine dei due tag creerebbe il ciclo opposto.**
+//
+// Quindi due righe invece di una, e nessuna delle due e' piu' debole
+// dell'originale:
+//   • in avanti a PARSING → zero, sempre, ed e' quella che tiene l'ordine;
+//   • in avanti a CHIAMATA → si contano e si NOMINANO, perche' restano una
+//     cosa da sapere anche quando sono legittime.
+//
+// *Togliere la seconda e tenere solo la prima avrebbe fatto sparire
+// l'informazione insieme al rosso.*
 {
   const ordine = ordineDiCaricamento(RADICE);
-  const inAvanti = [];
+  const aParsing = [], aChiamata = [];
   nodi.forEach(function (n) {
     Object.keys(n.dipende).forEach(function (k) {
       if (k === 'index.html') return;
-      if (ordine.indexOf(k) > ordine.indexOf(n.file)) inAvanti.push(n.file + ' -> ' + k);
+      if (ordine.indexOf(k) <= ordine.indexOf(n.file)) return;
+      (n.dipende[k].parsing.length ? aParsing : aChiamata).push(n.file + ' -> ' + k);
     });
   });
-  log('[C] Nessun file dipende da uno caricato DOPO di lui',
-    inAvanti.length === 0, inAvanti.join(' | '));
+  log('[C] Nessun file dipende A TEMPO DI PARSING da uno caricato DOPO di lui',
+    aParsing.length === 0, aParsing.join(' | '));
+  // I tre, e il perche' di ognuno sta in testa ad `app/apertura.js`:
+  // dati.js -> applyEpisodeDialogue, mappa.js -> migrateCustomizeSeenToModuleProgress
+  // e openModuleFromMap, personalizza.js -> ensureEpisodeSlotFields.
+  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono TRE, e sono queste',
+    aChiamata.length === 3 && aChiamata.every(function (r) { return / -> apertura\.js$/.test(r); }),
+    aChiamata.join(' | '));
 }
 
 // ── [D] LA MISURA SA DISTINGUERE POSSEDERE DA ESPORRE ────────────────

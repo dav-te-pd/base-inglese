@@ -36,7 +36,7 @@
 // risoluzione arrivi alla funzione giusta.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, sorgenteChe } = require('./test-env');
 const { openModule } = require('./map-driver');
 const { stepIds, stepsBefore } = require('./module-order');
 
@@ -59,6 +59,15 @@ const { stepIds, stepsBefore } = require('./module-order');
 // niente sull'altra. Se il caso fosse stato solo il secondo, non se ne
 // sarebbe accorto nessuno.* Da qui il `throw`: un elenco vuoto non e' un
 // risultato, e' un guasto della ricerca.
+// Il corpo di una funzione, cercata dove sta. La ricerca e' condivisa
+// (`sorgenteChe`, tests/test-env.js): qui resta solo il taglio fino alla
+// chiusura.
+function corpoDiFunzione(firma) {
+  const src = sorgenteChe(firma).testo;
+  const i = src.indexOf(firma);
+  return src.slice(i, src.indexOf('\n  }', i));
+}
+
 function kindDaiDescrittori() {
   const posti = ['index.html'].concat(
     fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
@@ -141,9 +150,21 @@ async function vaiAllaMappa(page, utente, completati) {
 async function run() {
   // ── [A] I NOMI SONO SPARITI DAL DISPATCH ─────────────────────────────
   {
-    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-    const i = html.indexOf('  function openModuleByKind(module) {');
-    const corpo = html.slice(i, html.indexOf('\n  }', i));
+    // ⚠️ IL 2026-09-19 (passo C2) `openModuleByKind` E' USCITA IN
+    // `app/apertura.js`, E QUESTO BLOCCO HA FATTO ESATTAMENTE QUELLO CHE IL
+    // SUO COMMENTO PREVEDEVA — vedi la nota sopra `run()`.
+    //
+    // Leggendo il solo `index.html` trovava `i === -1`, quindi `corpo` era la
+    // CODA del file invece della funzione. Esito misurato: **due asserzioni
+    // rosse e dodici verdi per costruzione** — le dodici «openModuleByKind non
+    // nomina piu' X» passavano perche' cercavano dentro il pezzo sbagliato.
+    // *La stessa rottura, di nuovo, con i due esiti opposti della regola 44.*
+    //
+    // Adesso la funzione si cerca DOVE STA, ovunque sia, e un elenco vuoto e'
+    // un `throw` invece di un verde: e' la forma gia' adottata da
+    // `kindDaiDescrittori()` qui sopra, applicata al secondo dei due posti in
+    // cui questo file legge il sorgente.
+    const corpo = corpoDiFunzione('  function openModuleByKind(module) {');
     // I commenti si tolgono prima di cercare: il corpo SPIEGA il cambio di
     // comportamento e nomina in prosa le proprietà di dispatch. Una verifica
     // per sottrazione che non distingue il codice dal commento è una misura

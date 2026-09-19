@@ -155,10 +155,18 @@ apre è tornata a essere la prima cosa falsa che legge — la seconda volta.*
 sulla mastery** con le sue tre voci.
 
 **Quello che resta dello svuotamento di `index.html`**, e non è nella catena
-perché il 23 la chiudeva: l'apertura dei moduli (`openModuleFromMap`), l'help,
-la personalizzazione e gli slot, i listener condivisi, il ponte degli alias.
-**Nessuno di questi ha una decisione aperta dentro**: sono estrazioni come le
-altre.
+perché il 23 la chiudeva: l'help, i listener condivisi, il pannello Admin, il
+ponte degli alias. **Nessuno di questi ha una decisione aperta dentro**: sono
+estrazioni come le altre.
+
+⚠️ **L'apertura dei moduli è USCITA il 2026-09-19 (passo C2), in
+`app/apertura.js`** — con lei le tre preparazioni che l'apertura fa
+(`ensureEpisodeSlotFields`, `applyEpisodeDialogue`,
+`migrateCustomizeSeenToModuleProgress`) e la bandiera `moduliCaricatiAlBoot`.
+**Il numero che dice se è riuscito: le dipendenze verso `index.html` sono
+passate da 3 file a 0** (`node tests/tools/dipendenze.js`). Da qui in avanti è
+un invariante, non un traguardo: `index.html` può chiedere ad `app/`, mai
+essere chiesto.
 
 ### ⚠️ Il 10 settembre è stato quasi tutto FUORI catena, e va saputo
 
@@ -3948,3 +3956,64 @@ scadere, o si sa che niente la farà, e si scrive quale dei due.
 | 2026-09-15 | **Lo script che conta le VARIANTI (non le copie) di una funzione ripetuta merita di diventare uno strumento in `tests/tools/`.** Oggi è stato scritto al volo per il triage del passo 16: estrae ogni definizione, la normalizza, e ne fa l'hash — così `23 copie` si legge `1 variante` e `28 copie` si legge `20 varianti`. | **È la differenza fra un lavoro meccanico e venti decisioni**, e non si vede contando le occorrenze con `grep -c`. Un conto di copie avrebbe detto «77 duplicazioni» e avrebbe fatto partire `bootAsUser` e `mockInit` insieme a `openModule`. ⚠️ **Limite noto, e va scritto se lo strumento nasce:** la normalizzazione decide cosa è «la stessa versione» — troppo aggressiva e venti varianti diventano una, troppo timida e due spazi fanno due varianti. Uno strumento di misura che sbaglia non lo dice (regola 37), quindi nasce con il suo test o non nasce. | **Quando servirà la seconda volta**, cioè al primo dei due passi su `bootAsUser`/`mockInit`. Scritto adesso per un uso solo sarebbe uno strumento senza un secondo lettore. |
 | 2026-09-15 | **Il controllo sui NOMI nei commenti — id del DOM, chiavi `CONFIG`, file e percorsi citati, numeri di regola — NON diventa una guardia in CI.** Costruito e misurato al triage del passo 17 su 66 file e 6569 righe di commento: **zero difetti veri, tre falsi positivi.** Funziona (provato iniettando `legacy/test_qm.js` in un commento: lo prende), ma non ha niente da sorvegliare. | ⚠️ **Una guardia che sorveglia una classe vuota è uno strumento che parla senza avere niente da dire — e quelli si imparano a ignorare.** E la classe è vuota per una ragione precisa, non per fortuna: è esattamente quello che le rinomine dei passi 1-6 hanno già spazzato. Metterlo in CI adesso significa aggiungere un verde in più che non prova niente, sulla suite dove ogni verde deve valere qualcosa. | **Alla prossima rinomina grossa** — cioè il giorno in cui quella classe torna a riempirsi. È li' che un controllo sui nomi paga: una rinomina sposta gli identificatori nel codice e **lascia indietro quelli citati nei commenti**, che nessun `grep` di verifica per sottrazione (regola 41) guarda. Nasce con il suo test, o non nasce. |
 | 2026-09-15 | **La LETTURA DEI COMMENTI entra nello spacchettamento come riga di ogni pezzo estratto**, invece di essere un passo suo (il 17, chiuso lo stesso giorno). Ogni pezzo che esce da `index.html` si legge, e i commenti che porta con sé si verificano allora. | La ragione del passo 17 era *«un commento falso spostato in un file nuovo nasce autorevole, quindi va corretto PRIMA»*. Ma lo spacchettamento **non copia i commenti alla cieca**: estraendo un pezzo si legge quello che si sposta, con il contesto davanti e su un pezzo per volta. Farlo prima vorrebbe dire leggere 6569 righe **due volte**. *E il solo caso noto di questa classe è stato trovato di passaggio, correggendo altro: è così che si trova.* | **Dentro la fase 4, a ogni estrazione** — non come giro a parte, mai come lavoro suo. ⚠️ E la cosa da tenere davanti mentre si legge è la distinzione **passato/presente**: un commento che nomina una cosa morta può essere corretto, se la sta dichiarando morta. Sono opposti e si somigliano. |
+
+---
+
+## I SERVIZI DI VOCE — da scegliere quando ci arriveremo (2026-09-19)
+
+**Registrato su richiesta, non deciso.** Oggi l'app usa quello che il browser
+ha già: `SpeechSynthesis` per far parlare e `SpeechRecognition` per ascoltare.
+Non costano niente e non chiedono nessun servizio esterno — ed è per questo che
+non c'è fretta.
+
+**Cosa non va bene, e lo dice il contenuto:** una hostess cinese che parla in un
+episodio deve suonare come una hostess cinese. La voce del browser non ha
+accenti: ha una lingua e basta. **Un episodio che costruisce una scena
+realistica non può avere quattro personaggi con la stessa voce**, ed è lo stesso
+argomento dell'etichetta col contorno (regola 4).
+
+**La strada indicata da chi guida il progetto: ElevenLabs** (`elevenlabs.io`),
+per le battute realistiche con accento.
+
+**Cosa va saputo prima di decidere, e non serve deciderlo adesso:**
+
+| | |
+|---|---|
+| **Sintesi (far parlare)** | Si può fare **prima**, una volta sola, e servire un file audio: una battuta di un episodio non cambia a ogni studente. Ma i segnaposto sì — «Marco» o «Luca» stanno *dentro* la battuta. Quindi o si generano le varianti, o si genera al volo, o si separa la parte fissa dal nome. **È una decisione sul contenuto, non sulla tecnologia.** |
+| **Riconoscimento (ascoltare)** | **Deve restare nel browser**, e non è una scelta: mandare l'audio del microfono a un servizio significa mandarlo davvero, con quello che costa in banda, in ritardo e in privacy. È l'unica cosa dell'app che il server non può prendersi. |
+| **Il costo** | Un servizio a consumo cambia il conto economico dell'app: oggi una lezione costa zero, con voci generate al volo costa per battuta ascoltata. Se si genera prima, costa una volta. |
+
+**Quando si esegue:** quando il contenuto lo chiede — cioè al primo episodio che
+ha personaggi con accenti diversi — e non prima. **Condizione precisa: dopo
+Supabase**, perché generare audio al volo è la prima cosa che vuole un server, e
+farlo dal browser significherebbe mettere una chiave di un servizio a pagamento
+dentro una pagina che chiunque scarica.
+
+---
+
+## LE REGOLE STANNO SUL SERVER, NON NEL BROWSER (chiarito il 2026-09-19)
+
+**Non è una decisione nuova: è la stessa frase, letta bene.** Il messaggio del
+19 settembre diceva *«in index meno c'è meglio è tutte le regole devono stare
+nel server»*, ed è la direzione che tutte le frasi intorno dicevano già: *«più
+le logiche stanno sul server meglio»*, *«in index solo il minimo
+funzionamento»*, *«mandiamo al browser più piccoli pacchetti possibili»*,
+*«tutto al sicuro in casa nostra e non degli hacker»*.
+
+**Cosa ne segue, e va scritto perché decide scelte future:**
+
+1. **Lo spacchettamento di `index.html` non è in contraddizione con questo.**
+   Spostare codice da `index.html` a `app/*.js` lo lascia nel browser: sposta
+   *dove sta scritto*, non *dove gira*. Serve a un'altra cosa — poter cambiare
+   un pezzo senza rileggere settemila righe — e **è il passo che rende
+   possibile il secondo**: un meccanismo che sta in un file suo si può
+   sostituire con una chiamata al server; uno sparso in un IIFE no.
+2. **La correzione delle risposte è il caso che conta** (vedi la dichiarazione
+   dell'astrazione della fonte, sopra): oggi il browser riceve la domanda e la
+   risposta giusta insieme. Delle tre strade registrate lì, **questa riga
+   esclude la A** («tutto nel browser») come approdo finale.
+3. **Due cose non possono andare sul server, e non è una scelta:** il
+   riconoscimento vocale e la sintesi. Vivono dove c'è il microfono e
+   l'altoparlante.
+4. **L'app non funziona senza rete, ed è accettato.** Vale già oggi: senza rete
+   non arriva nessun file episodio.

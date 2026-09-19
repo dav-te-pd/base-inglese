@@ -1,4 +1,4 @@
-// DIPENDE DA: avvio.js [chiamata], index.html [chiamata]
+// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata]
 // ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
 // tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
 // una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
@@ -16,14 +16,18 @@
 //    studente. Va con `personalizza`. *Ci stava per nome — «testo di una
 //    voce» — e non per mestiere.*
 //
-// ② **`applyEpisodeDialogue` e' rimasta in index.html, col catalogo.** Era
-//    l'unica delle quindici che SCRIVE invece di leggere, e quello che scrive
-//    e' `EPISODES`, che non e' suo. **La strada comoda era esporre `EPISODES`
-//    su `BI`**: due righe, suite verde, e il catalogo scrivibile da qualunque
-//    file per sempre. *Un confine sbagliato che non produce nessun rosso e'
-//    quello che si eredita — ed e' la seconda volta in due giorni che la
-//    misura lo respinge (la prima era `renderStars`).* Adesso il caricatore
-//    **chiede**: `BI.applyEpisodeDialogue(data)`.
+// ② **`applyEpisodeDialogue` non e' venuta via, ed e' in `app/apertura.js`
+//    dal 2026-09-19 (passo C2).** Era l'unica delle quindici che SCRIVE invece
+//    di leggere, e quello che scrive e' `EPISODES`, che non e' suo. **La
+//    strada comoda era esporre `EPISODES` su `BI`**: due righe, suite verde, e
+//    il catalogo scrivibile da qualunque file per sempre. *Un confine
+//    sbagliato che non produce nessun rosso e' quello che si eredita — ed e'
+//    la seconda volta in due giorni che la misura lo respinge (la prima era
+//    `renderStars`).* Il caricatore **chiede**: `BI.applyEpisodeDialogue(data)`.
+//
+//    ⚠️ Fino al passo C2 quella chiamata andava a `index.html`, cioe'
+//    ALL'INSU'. Adesso va a un file di `app/` come tutte le altre: la riga di
+//    codice non e' cambiata, e' cambiato chi risponde.
 //
 // ⚠️ I QUATTRO `fetch` DELL'APP SONO TUTTI QUI, e per la prima volta si
 // vedono insieme: `module.dataFile`, `MODULE_INSTRUCTIONS_FILE`,

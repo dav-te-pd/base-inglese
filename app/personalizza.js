@@ -1,4 +1,4 @@
-// DIPENDE DA: catalogo.js [chiamata], dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [chiamata], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: apertura.js [chiamata], catalogo.js [chiamata], dati.js [parsing], identita.js [parsing], mappa.js [chiamata], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL TAG STA NELLA SECONDA FILA, DOPO ui-condivisa.js, E NON E' UNA SCELTA
 // DI STILE: gli alias in cima all'IIFE (`slotOptions`, `uiText`, `fillTemplate`,
 // ...) si prendono il valore A TEMPO DI PARSING. In <head>, dove l'avevo messo
@@ -9,8 +9,14 @@
 // *E' la prima volta che l'ordine dei tag rompe qualcosa davvero, ed e' successo
 // il giorno dopo che la regola 45 lo aveva reso dichiarabile.*
 //
-// ⚠️ UNDICI NOMI ALL'INSU' VERSO index.html, ED E' LA FORMA DEL PRIMO MODULO —
-// quindi va letta, non ereditata.
+// ⚠️ ZERO NOMI ALL'INSU' VERSO index.html, dal 2026-09-19 (passo C2).
+//
+// Qui c'era scritto UNDICI, ed era «la forma del primo modulo». La riga qui
+// sotto prometteva che il conto dovesse scendere e diceva dove guardare. **E'
+// sceso a zero, e i nomi sono andati esattamente dove la riga li mandava.**
+// L'ultimo e' stato `ensureEpisodeSlotFields`, uscito in `app/apertura.js`.
+// Quello che segue e' il ragionamento di allora, tenuto perche' e' la prova
+// che il conto era un progetto e non un difetto — non una descrizione di oggi.
 //
 // Un numero che sale con una ragione scritta e' un progetto; senza, e' un
 // difetto. La ragione: un modulo non puo' non nominare l'episodio su cui

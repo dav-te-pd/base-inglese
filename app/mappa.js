@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], avvio.js [parsing], catalogo.js [chiamata], dati.js [parsing], identita.js [parsing], index.html [chiamata], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: apertura.js [chiamata], audio.js [parsing], avvio.js [parsing], catalogo.js [chiamata], dati.js [parsing], identita.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ LO STRATO DELLA MAPPA E DEL PANNELLO ADMIN — l'ultimo pezzo del 22 che non
 // e' un modulo.
 //
@@ -6,21 +6,35 @@
 // Pannello Admin per intero, `boot`, `goHome`, `leaveModule`,
 // `stopAllModuleActivity` e la schermata d'errore di caricamento.
 //
-// ⚠️ CHIEDE A index.html TRE COSE SOLE, ed e' il punto di questo passo: il
-// CATALOGO (`EPISODES`, `MODULE_DESCRIPTORS`, `resolveEpisodeOrder`,
-// `moduleStepId`, `applyEpisodeDialogue`) e i due dello STATO DI SESSIONE
+// ⚠️ NON CHIEDE PIU' NIENTE A index.html, dal 2026-09-19 (passo C2).
+//
+// Qui c'era scritto «CHIEDE A index.html TRE COSE SOLE», ed era il punto del
+// passo che ha creato questo file: il CATALOGO (`EPISODES`,
+// `MODULE_DESCRIPTORS`, `resolveEpisodeOrder`, `moduleStepId`,
+// `applyEpisodeDialogue`) e i due dello STATO DI SESSIONE
 // (`episodioCorrente()`, `masteryInSospeso()`). Nove funzioni qui dentro
 // nominavano `currentEpisode`, ed era il motivo per cui questo strato non
 // chiudeva: adesso lo CHIEDONO invece di possederlo.
 //
+// **Quel tre e' arrivato a zero, e i nomi sono gli stessi.** Il catalogo e'
+// uscito in `app/catalogo.js` (C1), lo stato di sessione in
+// `app/sessione.js` (B), `migrateCustomizeSeenToModuleProgress` e
+// `applyEpisodeDialogue` in `app/apertura.js` (C2). *Non hanno cambiato
+// chiamante: hanno cambiato chi risponde.*
+//
 // *Un numero che sale con una ragione scritta e' un progetto; senza, e' un
-// difetto. Questi nomi spariscono quando esce il catalogo, che e' l'unica cosa
-// grossa rimasta senza un nome nel piano.*
+// difetto. Il numero e' sceso, ed e' sceso dove la ragione diceva che sarebbe
+// sceso.*
 //
-// ⚠️ UNA CHIAMATA VA ANCORA IN AVANTI: `BI.openModuleFromMap`, che vive nel
-// catalogo e non e' ancora uscito.
+// ⚠️ DUE CHIAMATE VANNO ANCORA IN AVANTI, e vanno a `app/apertura.js`, che e'
+// caricato per ultimo: `BI.openModuleFromMap` (citata qui sotto, chiamata dal
+// listener che vive li') e `BI.migrateCustomizeSeenToModuleProgress`, dentro
+// `openEpisodeMap`. **Avanti non vuol dire all'insu':** entrambe girano quando
+// l'utente tocca qualcosa, mai al parsing, quindi l'ordine dei tag non e' un
+// vincolo — e lo strumento lo verifica invece di crederci
+// (`apertura.js [chiamata]` nella riga DIPENDE DA, non `[parsing]`).
 //
-// Erano DUE. L'altra era `BI.closeAttemptPopup` (dentro `stopAllModuleActivity`),
+// Prima erano altre DUE. Una era `BI.closeAttemptPopup` (dentro `stopAllModuleActivity`),
 // che stava nella regione di Voice: uno STRATO che chiedeva a un MODULO, il
 // verso sbagliato. Il 2026-09-19 il popup dei tentativi e' passato in
 // `app/ui-condivisa.js`, dove sta per mestiere e non per posizione, e quella

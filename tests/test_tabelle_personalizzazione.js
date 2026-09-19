@@ -40,7 +40,7 @@
 // porta il contenuto.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe } = require('./test-env');
 const { openModule } = require('./map-driver');
 
 let passed = 0, failed = 0;
@@ -109,10 +109,17 @@ async function run() {
       /var PERSONALIZATION_TABLES_FILE = '/.test(datiJs) &&
       !/fetch\('data\/inglese\/it\/tabelle/.test(datiJs) &&
       !/fetch\('data\/inglese\/it\/tabelle/.test(html));
+    // ⚠️ NON PIU' `html`: le due funzioni sono uscite in `app/apertura.js` il
+    // 2026-09-19 (passo C2), e cercarle in `index.html` sarebbe una misura che
+    // non misura — `/regex/.test(testo sbagliato)` e' `false`, cioe' un rosso
+    // che accusa il codice invece della ricerca. `sorgenteChe` le cerca dove
+    // sono e alza se non ci sono da nessuna parte.
+    const slotJs = sorgenteChe('function resolveSlotTable(').testo;
     log('[A] resolveSlotTable riceve il magazzino invece di prenderselo da CONFIG',
-      /function resolveSlotTable\(tableRef, episodeData, tables\)/.test(html));
+      /function resolveSlotTable\(tableRef, episodeData, tables\)/.test(slotJs));
     log('[A] ensureEpisodeSlotFields aspetta ANCHE il magazzino, non solo l\'episodio',
-      /loadPersonalizationTables\(\)[\s\S]{0,80}\]\)\.then/.test(html));
+      /loadPersonalizationTables\(\)[\s\S]{0,80}\]\)\.then/.test(
+        sorgenteChe('function ensureEpisodeSlotFields(').testo));
 
     const dati = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8'));
     log('[A] Il file esiste e porta le due radici', !!dati.people && !!dati.places);

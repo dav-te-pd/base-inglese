@@ -36,7 +36,7 @@
 // vede: lo prende l'asserzione strutturale ②, che vale per tutti.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, sorgenteChe } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 let passed = 0, failed = 0;
@@ -62,7 +62,14 @@ const mockInit = () => {
 async function run() {
   // ── ② Strutturale: non apre il browser ──────────────────────────────
   {
-    const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+    // ⚠️ IL SORGENTE NON E' PIU' `index.html`, E NON SI SCRIVE QUI QUALE SIA.
+    // `openModuleFromMap` e' uscita in `app/apertura.js` il 2026-09-19 (passo
+    // C2); `openVoiceCoach` in `app/voice.js` il giorno prima. Cercarli in un
+    // file NOMINATO significa che la prossima estrazione rompe questo blocco
+    // in silenzio — che e' successo, con due rosse e dodici verdi per
+    // costruzione altrove. `sorgenteChe` li cerca dove sono e ALZA se non ci
+    // sono da nessuna parte (tests/test-env.js).
+    const html = sorgenteChe('function openModuleFromMap(').testo;
     // Il corpo fino alla sua chiusura, non un numero di caratteri: i commenti
     // dentro quella funzione sono cresciuti e una finestra fissa li tagliava,
     // facendo fallire le asserzioni per il motivo sbagliato.
@@ -82,7 +89,8 @@ async function run() {
       corpo.indexOf('loadEpisodeData(module)') < corpo.indexOf('openModuleByKind('));
     // Il precaricamento travestito da dipendenza non deve tornare: il modulo
     // non aspetta un file di testi per aprirsi.
-    const apreVoiceCoach = (html.split('function openVoiceCoach(')[1] || '').slice(0, 4000);
+    const apreVoiceCoach = (sorgenteChe('function openVoiceCoach(').testo
+      .split('function openVoiceCoach(')[1] || '').slice(0, 4000);
     log('[A] Aprire Voice Coach NON aspetta il file dei messaggi di feedback',
       !/Promise\.all\(\[[^\]]*loadFeedbackMessages/.test(apreVoiceCoach));
   }
