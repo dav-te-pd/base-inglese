@@ -36,9 +36,9 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-19
-# Totale: 1476
+# Totale: 1478
 test_attendi.js 17
-test_attendi_ci.js 31
+test_attendi_ci.js 33
 test_attese_condivise.js 25
 test_audio_estratto.js 14
 test_avvio_invariato.js 9
