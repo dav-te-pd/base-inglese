@@ -2646,6 +2646,52 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ IL PANNELLO HELP APERTO TROPPO PRESTO RESTA VUOTO **PER SEMPRE** — e non è una regressione
+
+**Segnalato da chi guida il progetto il 2026-09-19** (prima apertura di Help:
+pannello aperto e tre card senza scritte; riaprendolo, a posto), e **misurato
+guidando l'app**, non dedotto.
+
+**Che cosa succede.** `uiText()` legge la cache delle istruzioni **senza
+aspettarla** (`istruzioniInMemoria()`); se il `fetch` di
+`istruzioni-moduli.json` non è ancora tornato, restituisce stringa vuota.
+`openHelpMenu` scrive il markup **una volta sola**.
+
+⚠️ **E il punto peggiore, che il sintomo non lascia indovinare: non si
+ripara da solo.** Misurato ritardando il `fetch` di 2 s:
+
+| | titolo | tre opzioni |
+|---|---|---|
+| subito dopo il click | `""` | `""`, `""`, `""` |
+| **1,5 s dopo, a dati arrivati** | `""` | `""`, `""`, `""` |
+
+Il pannello resta vuoto finché non lo si **chiude e riapre**. Non è una
+finestra che si chiude: è un disegno che non si ripete.
+
+⚠️ **NON È UNA REGRESSIONE DELLO SPACCHETTAMENTO, ed è la parte che andava
+misurata prima di toccare qualcosa.** La stessa prova girata sull'app **di un
+file solo** (commit `85c5024`, servita su una porta sua) dà **lo stesso identico
+esito**: vuoto subito, vuoto dopo. Il difetto c'era già.
+
+**Quello che NON ho misurato, e va detto:** se lo spacchettamento l'abbia reso
+più **probabile**. È plausibile — quindici richieste in più competono con quel
+`fetch` — ma è una probabilità, e misurarla vuol dire molte corse su una rete
+realistica. *Scrivo che non l'ho misurato invece di dedurlo: una spiegazione
+plausibile scritta come un fatto è la famiglia ⑰-quater.*
+
+**La forma della correzione, quando si farà** (non decisa, solo delimitata): il
+punto giusto NON è mettere un'attesa dentro `uiText` — la legge tutto, e
+renderla asincrona cambierebbe ogni chiamante. È **chi apre una schermata**:
+`openHelpFor` già potrebbe aspettare `loadModuleInstructions()` prima di
+disegnare, come fa `openModuleFromMap` con `loadEpisodeData` dal 2026-09-10 —
+*la correzione esiste già nel progetto, applicata a un altro caso.*
+
+**Quando si esegue:** *quando si toccherà il pannello Help, oppure al primo
+giro dedicato alle schermate che leggono `uiText` prima dei dati.* Non adesso:
+è un difetto vecchio, non blocca niente, e infilarlo dentro il passo del Blocco
+Ascolto darebbe due sospettati invece di uno.
+
+
 ### ⚠️ I QUATTRO `fetch` DEI FILE DI DATI NON PORTANO VERSIONE
 
 **Aperto il 2026-09-19**, mettendo la versione sui quattordici tag.
