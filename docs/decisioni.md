@@ -130,12 +130,35 @@ valori» ed erano 39 righe; il 16 sbagliava cinque numeri su sei.
 | **Fase 2-bis — la mastery** | ① ② ③ fatti e verificati il 2026-09-10. ④ chiude come voce con una nota, ⑤ è prodotto e slitta |
 | **Fase 3** | **14a** (2026-09-10), **14b** (2026-09-11, 186 → 0), **15** e **16** (2026-09-15) |
 
-### Cosa resta
+### Cosa resta — RIALLINEATO IL 2026-09-19 SERA
 
-**18** della fase 3 — e con quello la fase 3 finisce; la **fase delle stringhe**; la **fase 4** (19 → 26).
-Il **13** — le cinque righe della mastery — resta aperto come blocco a sé.
-Fuori catena, nati dal passo 16: **`view-pronunciation` dopo il 25** e i due
-passi su **`bootAsUser` / `mockInit`**.
+⚠️ **Questa sezione era disallineata, ed è esattamente il difetto che dichiara
+di voler evitare.** Diceva *«il prossimo passo è il 18»* e *«`view-pronunciation`
+dopo il 25»*: il 18 non è più il prossimo passo e `view-pronunciation` è
+**uscita il 19 mattina**, col passo A. *La prima sezione che una sessione nuova
+apre è tornata a essere la prima cosa falsa che legge — la seconda volta.*
+
+**Quello che resta della catena:**
+
+| | | |
+|---|---|---|
+| **18** | fase 3, le stringhe del markup | da ricontare prima, mai contate |
+| **23** | i moduli in file separati | ✅ **CHIUSO il 2026-09-19**: sei moduli, gli strati, lo stato di sessione, il catalogo |
+| **24** | `componenti-condivisi.md` e `componenti-singoli.md` | ☐ |
+| **25** | `CLAUDE.md`: regola 6, «l'app vive in un file solo», regola 8 | ✅ **le prime due FATTE il 2026-09-19 sera** (erano diventate false); **la regola 8 resta**, e ora ha una ragione in più: il modello delle edizioni sposta quei testi in `data/app/{lingua}/` |
+| **26** | collaudo dopo lo spacchettamento | ☐ — *gli otto punti di `docs/collaudo-sei-moduli.md` ne sono una metà: coprono i sei moduli, non gli strati* |
+| **13** | le cinque righe della mastery | ☐, blocco a sé |
+
+**Fuori catena, e ancora aperti:** i due passi su **`bootAsUser` / `mockInit`**
+(14 e 20 varianti), il **taglio per silenzio** del microfono (al 26), i
+**diciassette finti sintetizzatori senza `speaking`**, e il **giro di design
+sulla mastery** con le sue tre voci.
+
+**Quello che resta dello svuotamento di `index.html`**, e non è nella catena
+perché il 23 la chiudeva: l'apertura dei moduli (`openModuleFromMap`), l'help,
+la personalizzazione e gli slot, i listener condivisi, il ponte degli alias.
+**Nessuno di questi ha una decisione aperta dentro**: sono estrazioni come le
+altre.
 
 ### ⚠️ Il 10 settembre è stato quasi tutto FUORI catena, e va saputo
 
@@ -2725,6 +2748,127 @@ la correzione è di una riga — `--scrivi` si rifiuta quando i file di esito
 trovati sono **meno** di quelli chiesti, dicendo quanti e quali mancano. **Non un
 avviso: un rifiuto**, perché un avviso accanto a un file già scritto è
 esattamente quello che è appena successo.
+
+## ⚠️ LA STRADA FINO ALLA MESSA IN SICUREZZA — detta il 2026-09-19
+
+*Registrata perché detta in chat, e **la chat non sopravvive al container**
+(regola 43). Non è un piano eseguibile: è la direzione d'arrivo, perché chi
+sceglie il passo successivo sappia dove porta.*
+
+**Il principio che chi guida il progetto ha dato, e vale su tutto:**
+
+> *«Facciamo tutto quello che serve e poi Supabase. Non facciamo pezzi di qua e
+> di là. Più abbiamo pronto il sistema, più andremo veloci dopo e senza
+> intoppi.»*
+
+### La pila prevista
+
+| | Cosa | A che serve |
+|---|---|---|
+| **git + Pages** | il codice e il sito | oggi |
+| **Supabase** | server, database, identità | il pannello utente, i progressi che seguono la persona |
+| **Cloudflare** | l'uscita online | dominio, difesa al bordo |
+| **store** | le app | si parlava di **Composer**; la scelta si fa al momento |
+
+### Quello che manca prima, e non è poco
+
+Moduli ancora da costruire, il **report**, le **tabelle di interscambio per la
+regola 40/30/20/10 fra un episodio e l'altro**, il pannello utente e quello
+admin.
+
+### ⚠️ LA SICUREZZA, e la distinzione che decide dove si spende
+
+Il timore dichiarato: *«adesso chiunque scarica, siamo vulnerabilissimi»*. **È
+vero, e sono DUE minacce diverse** — tenerle insieme fa spendere su quella
+sbagliata:
+
+| | Minaccia | Cosa la chiude |
+|---|---|---|
+| ① | **il repository è pubblico**: chiunque clona il progetto intero | **repo privato** — chiude questa e **solo** questa |
+| ② | **il contenuto è servito in chiaro**: `data/inglese/it/*.json` sono file statici su Pages, scaricabili da chiunque conosca l'indirizzo, **senza login** | **NON** il repo privato. Solo il contenuto dietro identità — cioè Supabase |
+
+⚠️ **La ② è quella che conta, ed è quella che il repo privato NON tocca.** Il
+giorno in cui il repository diventa privato, `https://…/data/inglese/it/inglese-it-gate.json`
+resta scaricabile da chiunque. *È il contenuto il valore, non il codice.*
+
+**Da verificare prima di decidere:** GitHub Pages **da repository privato**
+richiede un piano a pagamento. Con un account gratuito, rendere privato il
+repository **spegne il sito**. Va misurato, non dato per fatto.
+
+**E un fatto sul browser, da dire chiaro invece di lasciarlo scoprire:**
+qualunque cosa arrivi al browser è copiabile. Non esiste un sistema che lo
+impedisca — si può solo **rendere scomodo** e **ridurre quanto arriva in una
+volta**. La difesa vera non è offuscare: è che il contenuto arrivi **a pezzi,
+dietro un'identità**, cioè esattamente ciò che Supabase con le sue regole di
+riga permette.
+
+**Il caso di studio, portato da chi guida il progetto:**
+**https://guida.omney.io/coaching** — *«ho provato a scaricare i dati ed è stato
+quasi impossibile»*. **Da analizzare prima di passare a Supabase**, per capire
+come bloccano e se ci sono sistemi simili o migliori da usare. *L'ipotesi
+probabile, da verificare e non da credere: contenuto dietro autenticazione,
+servito a pezzi, mai tutto in una richiesta.*
+
+Nello stesso ragionamento: gestione delle **chiavi**, **falsi profili**,
+**abbonamenti craccati**, **attacchi e penetrazione**.
+
+### ⚠️ LA CONSEGUENZA CHE CAMBIA L'ORDINE DEI LAVORI
+
+**La divisione dei dati (C2) decide la FORMA con cui il contenuto verrà
+servito.** Se la si fa pensando «file statici», il giorno di Supabase si
+rifà; se la si fa dietro **una fonte che può essere un file O un endpoint**,
+non si rifà.
+
+*È la stessa forma del passo B di oggi: `sessione.js` è potuto uscire prima del
+catalogo perché **riceve** l'episodio invece di andarselo a prendere. Chi riceve
+si sposta; chi va a prendere no.*
+
+### I framework, e perché la risposta è «no, ma»
+
+Chi guida il progetto li aveva proposti in chat di progetto e gli erano stati
+sconsigliati, *«specialmente adesso che abbiamo fatto un lavorone di
+sistemazione»* — e aggiunge: *«forse delle regole e architetture per
+standardizzare ci sono già, e quelle che servono mettiamole, sennnò impazziamo
+dietro queste sistemazioni»*.
+
+**Ha ragione sulla seconda metà, e la prima è già decisa.** Dopo lo
+spacchettamento il progetto **ha** un'architettura: ventiquattro file, un
+namespace (`BI`), le dipendenze **dichiarate in testa a ogni file e verificate
+da un test**, tre baseline che cadono se qualcosa si muove. *È un framework
+minimo fatto in casa, e regge.* Introdurre React o Vue ora significherebbe
+riscrivere tutto quello che oggi è verde.
+
+⚠️ **Ma la seconda metà è un buco vero: mancano le regole per il codice NUOVO.**
+Oggi ogni modulo nuovo è una trattativa. Con i moduli che restano, il report e
+le tabelle 40/30/20/10, quella trattativa si ripete decine di volte.
+
+**La proposta, da decidere:** non un framework, ma **un contratto del modulo** —
+un documento che dice come si scrive un modulo nuovo (quali file tocca, cosa
+espone, dove stanno i suoi testi, che pulizia registra) **e un test che lo
+verifica**, come `test_dipendenze_dichiarate` fa col grafo. *Un contratto
+verificato da un test non è una raccomandazione: o lo rispetti o la CI ti
+ferma.*
+
+### Un file nuovo e pulito?
+
+Ipotesi di chi guida il progetto: *«forse sarà da ripartire con un file nuovo
+pulito e mettere tutte le strutture che si creeranno nell'ottica di assicurare
+manutenzione leggera»*. **Registrata, non decisa.** *Da rileggere quando
+`index.html` sarà svuotato: se a quel punto quello che resta è markup più
+poche righe, il file nuovo non serve più — e se serve ancora, si saprà perché.*
+
+### LLMOps
+
+Nominato come modo di **organizzare al meglio tutto**. Registrato senza
+dettagli: non ne sono stati dati.
+
+### Le due prove da fare appena si può
+
+1. **La CI a 4 CPU** — oggi gira a due. Da provare e misurare.
+2. **Repo privato**, subito dopo — con la verifica su Pages qui sopra.
+
+**Quando si esegue:** *quando il da farsi è finito e verificato*, secondo il
+principio in testa a questa sezione.
 
 ### ⚠️ DUE STRUMENTI CERCAVANO IN `index.html` E BASTA — e uno è stato verde per costruzione
 

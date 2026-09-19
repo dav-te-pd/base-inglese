@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260919b**
+**Versione: 20260919c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -12,8 +12,17 @@ modifica alza la lettera se è lo stesso giorno, la data se è un altro.*
 
 App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente.
 
-**L'app vive in un file solo**: `index.html` — HTML, CSS e JS in linea, nessun
-passo di build, nessuna dipendenza esterna oltre ai Google Fonts.
+**L'app vive in VENTIQUATTRO file, e fino al 2026-09-16 ne aveva uno solo.**
+`index.html` tiene il markup, il CSS e quello che resta dello script; il resto
+è in `app/*.js`, un file per strato o per modulo, caricati da ventitré tag
+`<script src>`. **Nessun passo di build, nessuna dipendenza esterna oltre ai
+Google Fonts**: quella parte non è cambiata, e non deve.
+
+*Qui c'era scritto «l'app vive in un file solo», ed è rimasto vero fino al
+16 settembre. Lo spacchettamento (passo 22) l'ha reso falso il 18, e la frase
+è sopravvissuta altri due giorni — in cima al file che una sessione nuova legge
+per prima. **La riga che descrive l'architettura è quella che invecchia senza
+rumore: nessun test la guarda, nessuna schermata la mostra.***
 
 **Il progetto no.** Attorno a quel file ci sono `data/` (i contenuti che l'app
 legge), `docs/` (le fonti del contenuto e i documenti di lavoro), `tests/` (la
@@ -134,13 +143,21 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
    Non c'è nient'altro da aggiornare a mano, e questo è il punto della regola: **quello che va fatto a mano dopo ogni modifica, prima o poi non viene fatto.**
 
-   ⚠️ **UNA COSA DA ALZARE C'È, DAL 2026-09-19, E PROPRIO PER QUESTO NON È LASCIATA ALLA MEMORIA: la versione sui quattordici tag `<script src="app/...js?v=...">`.**
+   ⚠️ **UNA COSA DA ALZARE C'È, DAL 2026-09-19, E PROPRIO PER QUESTO NON È LASCIATA ALLA MEMORIA: la versione su OGNI tag `<script src="app/...js?v=...">`.**
 
-   Serve perché l'app non è più un file solo: sono quindici file con cache
-   indipendenti, e un browser può tenere `index.html` nuovo e uno degli `app/`
-   vecchio — cioè servire **un'app che nessuno ha mai scritto**. Con la stessa
-   versione su tutti e quattordici quel caso sparisce: un `index.html` vecchio
-   chiede i quattordici all'indirizzo vecchio e ottiene un insieme coerente.
+   Serve perché l'app non è più un file solo, e un browser può tenere
+   `index.html` nuovo e uno degli `app/` vecchio — cioè servire **un'app che
+   nessuno ha mai scritto**. Con la stessa versione su tutti quel caso
+   sparisce: un `index.html` vecchio chiede tutti all'indirizzo vecchio e
+   ottiene un insieme coerente.
+
+   ⚠️ **IL NUMERO NON SI SCRIVE QUI, ED È UNA CORREZIONE DEL 2026-09-19.**
+   Questa regola diceva «quattordici tag» e «quindici file»; erano quattordici
+   il 19 settembre mattina e sono **ventitré** la sera dello stesso giorno. *Un
+   numero dentro una regola invecchia a ogni file nuovo, e invecchia in
+   silenzio: la regola continua a leggersi bene.* Il conto vero lo dà un
+   comando — `grep -c 'src="app/' index.html` — e il test non lo chiede a
+   nessun documento: lo misura.
 
    **E non si deve ricordare:** `tests/test_versione_cache.js` verifica che i
    quattordici la portino uguale, e la CI **rifiuta** un push che cambia
@@ -211,11 +228,27 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     della regola 37, una misura che non misura.
 
     **Quindi la voce in cima all'elenco è sempre quella che il codice vecchio
-    NON sa fare**, e va detto esplicitamente perché quella lo distingue. Se il
-    passo non ha nessun comportamento nuovo da mostrare — uno spostamento puro
-    — **si scrive proprio questo**, e si chiede di guardare che le cose di
-    prima funzionino ancora, dichiarando che quella verifica **non** distingue
-    le due versioni.
+    NON sa fare**, e va detto esplicitamente perché quella lo distingue.
+
+    ⚠️ **E SE IL PASSO NON DISTINGUE LE DUE VERSIONI — uno spostamento puro —
+    IL BLOCCO HA UNA VOCE SOLA.** Non «questo, **e anche** due controlli
+    generici»: **una**, che dice cosa guardare e perché non distingue. Le cose
+    che si guarderebbero comunque — «apri l'app», «apri un modulo» — **non si
+    elencano**: le ha già fatte la suite, meglio e più volte.
+
+    *È il secondo caso della stessa forma, e NON è uguale al primo. Il 19
+    settembre mattina la voce in cima **sembrava distinguere e non
+    distingueva**: mancava la dichiarazione, e la regola è nata per quello. La
+    sera dello stesso giorno la dichiarazione c'era — «spostamento puro, non
+    distingue» — **e sotto restavano due voci lo stesso**, che chi legge ha
+    fatto prima di arrivare alla riga che le annullava. **La regola aveva chiuso
+    il buco e lasciato aperto il suo vicino: diceva cosa scrivere, non cosa
+    togliere.***
+
+    **Un elenco lungo e un elenco che conta si distinguono solo se il primo non
+    esiste.** *Limite dichiarato: vale per il blocco di fine turno. Un collaudo
+    vero — chiesto, con un documento suo — elenca quanto serve, ed è un'altra
+    cosa.*
 
     **In "⚠️ DA REGISTRARE" ci va:**
     - funzioni e componenti nuovi o generalizzati, con il nome esatto;
