@@ -340,8 +340,13 @@ sembrano ovvi: il § 4.1 era ovvio.
 
 23. `episodeFinalOutcomeCase` non è chiamata da nessuno: non c'è
     comportamento da proteggere finché il Modulo Finale non esiste.
-24. La vista `view-pronunciation` è irraggiungibile dall'interfaccia: nessun
-    test la copre, ed è corretto.
+24. ~~La vista `view-pronunciation` è irraggiungibile dall'interfaccia: nessun
+    test la copre, ed è corretto.~~ **CHIUSA il 2026-09-19 (passo A): la vista
+    è stata tolta.** Con lei 244 righe di JS, 43 di markup, quattro listener e
+    l'apparato `SpeechRecognition` che serviva solo a lei. *Non era un buco di
+    copertura: era codice che non poteva girare — e un buco che si chiude
+    togliendo la cosa, invece di scrivere un test, è il modo migliore in cui
+    può chiudersi.*
 
 ---
 

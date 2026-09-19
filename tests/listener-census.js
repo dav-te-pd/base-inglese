@@ -43,6 +43,13 @@ const { repoPath } = require('./test-env');
 // smettere di controllare chi la legge. Il «pulsante verso Personalizza»
 // suggeriva una relazione che non esiste.*
 //
+// ⚠️ **IL 2026-09-19 QUEI QUATTRO LISTENER SONO USCITI, col passo A: la
+// schermata è stata tolta.** Il ragionamento qui sopra resta al PASSATO ed è
+// voluto — è il caso che ha insegnato la regola, e la regola vale ancora per
+// i settantanove che restano. *Chi cerca `#edit-custom` in
+// `tests/BASELINE-LISTENER.txt` non lo trova piu', e deve trovare questa
+// riga invece del silenzio.*
+//
 // La schermata esce dopo il passo 25, quando il motore vocale con cui è
 // intrecciata avrà un file suo — vedi docs/decisioni.md.
 //

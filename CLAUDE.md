@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260919a**
+**Versione: 20260919b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -646,8 +646,18 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 39. **Una voce mai incontrata non ha colore.** È assenza di dato, non un
     giudizio: finché nessuno ha risposto, quella voce **non esiste** nel
     magazzino della mastery — e non serve rappresentarla, perché è già così.
-    L'unico lettore che abbia mai disegnato quei colori lo sa (`renderPhrase`
-    usa la classe `new` quando la voce manca).
+    ⚠️ **E DAL 2026-09-19 NESSUNO LA DISEGNA PIU', ed è un fatto, non un
+    difetto.** Qui c'era scritto *«l'unico lettore che abbia mai disegnato quei
+    colori lo sa (`renderPhrase` usa la classe `new` quando la voce manca)»*:
+    quel lettore viveva nella vista `pronunciation`, **irraggiungibile da
+    qualunque punto dell'app**, uscita col passo A insieme a `LEVEL_CLASS` e
+    alla classe `new`.
+
+    *La regola resta vera su ciò che decide — una voce senza risposta non ha
+    colore — e l'esempio che la illustrava puntava a codice che nessuno poteva
+    eseguire. Un esempio falso dentro una regola è peggio di nessun esempio:
+    si legge come una verifica già fatta.* Se un report futuro vorrà quel
+    colore, lo riscriverà: una classe CSS è cinque righe.
 
     **La prima risposta le dà il colore che quella risposta merita**, non un
     livello di partenza deciso a tavolino:

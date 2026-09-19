@@ -12,16 +12,25 @@
 # Il passo 21-quater SPOSTA i listener dentro l'open del proprio modulo, non
 # ne aggiunge e non ne toglie: **queste righe devono restare identiche per
 # tutte e otto le conversioni.** Un diff qui dentro durante il 21-quater e' un
-# errore, non un aggiornamento.
+# errore, non un aggiornamento. **In otto giri non e' cambiato di una riga.**
 #
 # Si riscrive solo quando qualcuno aggiunge o toglie un pulsante DI PROPOSITO:
 #   node tests/tools/scrivi-baseline-listener.js
 #
-# Ultimo aggiornamento: 2026-09-16
-# Totale: 107
+# ⚠️ E IL 2026-09-19 E' SUCCESSO PER LA PRIMA VOLTA, 107 -> 103. Il passo A ha
+# tolto `view-pronunciation`, la schermata che nessun punto dell'app poteva
+# aprire, e con lei i suoi QUATTRO listener: `back-home`, `edit-custom`,
+# `mic-btn`, `speak-btn`. **Non e' una regressione ed era previsto, scritto
+# prima di lanciare:** quattro, esattamente quattro, e nessun altro.
+#
+# *Il valore di questo file sta tutto qui: il giorno in cui cambia, il numero
+# atteso era gia' stato scritto. Un baseline che cala senza un numero scritto
+# prima non distingue una pulizia da una perdita.*
+#
+# Ultimo aggiornamento: 2026-09-19 (passo A)
+# Totale: 103
 condiviso attempt-popup-next|click 1
 condiviso attempt-popup-retry|click 1
-condiviso back-home|click 1
 condiviso config-panel-backdrop|click 1
 condiviso config-panel-body|change 1
 condiviso config-panel-body|click 1
@@ -42,7 +51,6 @@ dialogo dg-toolbar|click 1
 dialogo dialogo-back-map|click 1
 dialogo dialogo-help-btn|click 1
 dialogo dialogo-watch-btn|click 1
-condiviso edit-custom|click 1
 flashcard fc-card|click 1
 flashcard fc-card|keydown 1
 flashcard fc-complete-btn|click 2
@@ -69,7 +77,6 @@ condiviso map-watch-btn|click 1
 match match-back-map|click 1
 match match-help-btn|click 1
 match match-watch-btn|click 1
-condiviso mic-btn|click 1
 condiviso module-list|click 1
 condiviso onboarding-form|submit 1
 match qm-advance-btn|click 1
@@ -91,7 +98,6 @@ personalizza request-fields|keydown 1
 personalizza slot-grid|change 1
 personalizza slot-grid|click 1
 personalizza slot-grid|input 1
-condiviso speak-btn|click 1
 speedMatch speed-match-back-map|click 1
 speedMatch speed-match-help-btn|click 1
 speedMatch speed-match-watch-btn|click 1

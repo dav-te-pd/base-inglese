@@ -64,11 +64,21 @@
     dialogo: document.getElementById('view-dialogo'),
     speedMatch: document.getElementById('view-speed-match'),
     flashcard: document.getElementById('view-flashcard'),
-    pronunciation: document.getElementById('view-pronunciation'),
     error: document.getElementById('view-error')
   };
 
-  // Accende una vista e spegne le altre dodici. Cinque righe, e fa UNA cosa —
+  // ⚠️ `pronunciation` E' USCITA DA QUESTO ELENCO il 2026-09-19 (passo A), ed
+  // e' il punto in cui togliere una vista si e' fatto sentire: l'elemento non
+  // esisteva piu', questa riga metteva `null` nella mappa, e al PRIMO
+  // `showView` l'app moriva con `Cannot read properties of null`. **Il boot
+  // riusciva lo stesso** — `view-onboarding` si accendeva — quindi il guasto
+  // non si vedeva aprendo la pagina: si vedeva al primo cambio di schermata.
+  //
+  // *Chi toglie una vista deve togliere la sua riga QUI. L'elenco e' un dato,
+  // e un dato che nomina un elemento sparito non da' un elenco piu' corto: da'
+  // un `null` che aspetta.*
+
+  // Accende una vista e spegne le altre undici. Cinque righe, e fa UNA cosa —
   // dal 2026-09-17, quando la regola 21 le ha tolto la pulizia dei moduli che
   // si era sedimentata dentro. `showView` cambia la vista attiva; chi lascia
   // un modulo chiama la pulizia.
