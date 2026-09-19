@@ -2646,6 +2646,56 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ DICIASSETTE FINTI SINTETIZZATORI SU QUARANTUNO NON SANNO DIRE SE STANNO PARLANDO
+
+**Trovato il 2026-09-19** scrivendo `tests/test_comportamento_audio.js`, e
+**misurato file per file**, non dedotto.
+
+`fermaLaVoce()` cancella **solo** `if (staParlando())`, cioè solo se
+`synth.speaking` è vero. Un finto sintetizzatore che quella proprietà non ce
+l'ha risponde `undefined` per sempre: su di lui `cancel()` **non viene chiamato
+mai**, e tutto ciò che dipende dall'interruzione dell'audio passa senza essere
+provato — il secondo tocco che ferma il Blocco Ascolto, la **Regola Azione
+Critica** (regola 16: toccare qualcos'altro ferma la voce), `stopAllModuleActivity`
+che zittisce uscendo da un modulo. *Non è copertura mancante: è copertura che
+**sembra** esserci*, cioè la forma della regola 37.
+
+| Misura (`tests/*.js`, 2026-09-19) | Quanti |
+|---|---|
+| file che definiscono un finto sintetizzatore | **41** |
+| …di cui con una proprietà `speaking` modellata (diventa vera in `speak`, falsa in `cancel`) | **24** |
+| …di cui **senza** `speaking` | **17** |
+| file con un finto microfono dallo `stop() {}` **vuoto** | **4** (`test_voicecoach.js`, `test_avviso_microfono.js`, `test_batch3.js`, `test_batch3b.js`) |
+
+⚠️ **I diciassette non sono i file marginali: fra loro c'è `test_voicecoach.js`**,
+cioè il test del modulo che il microfono ce l'ha. È il motivo per cui «il
+microfono non si ferma al click» ha attraversato 1445 asserzioni: *il finto non
+aveva modo di mostrarlo.*
+
+I comandi, perché il numero si rimisuri invece di ricopiarsi:
+
+```bash
+grep -l "defineProperty(window, 'speechSynthesis'" tests/*.js | wc -l   # 41
+grep -ln "speaking:\s*\|get speaking" tests/*.js | wc -l               # 24
+grep -ln "stop() {}" tests/*.js                                        # 4 + il file nuovo
+```
+
+**Non corretti in questo giro, di proposito.** Rendere severi i finti condivisi
+significa rimettere in discussione, tutte insieme, le asserzioni che oggi
+girano sopra — ed è il tipo di lavoro che non sta nello stesso commit in cui si
+scrive la rete che serve adesso.
+
+**Quando si esegue:** *prima del prossimo spostamento che tocchi voce o
+microfono oltre ciò che `test_comportamento_audio.js` già guida.* Per il
+rifacimento dei sette pezzi condivisi la rete c'è e basta; per un passo più
+largo no.
+
+**Quello che NON va fatto:** sostituire i finti vecchi con quello nuovo «per
+uniformare». Il finto nuovo è più severo, quindi qualche asserzione diventerà
+rossa — e ognuna va guardata per decidere se è un difetto dell'app o
+un'asserzione che descriveva il finto invece del comportamento. *Un cambio in
+blocco produce un elenco di rossi che nessuno legge uno per uno.*
+
 ### ⚠️ Tre variabili di Voice Coach sopravvivono da un modulo all'altro
 
 Trovate misurando il difetto qui sopra, e **non lo spiegano**: sono un difetto a
