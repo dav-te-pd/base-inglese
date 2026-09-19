@@ -1,7 +1,17 @@
+// PROTEGGE: che il suono di fine barra suoni UNA volta sola, a barra finita e
+// piu' piano; che Ascolta e Ripeti resti a tocco libero; l'eccezione della
+// regola 16 (un tocco a vuoto non interrompe l'audio col countdown, toccare la
+// battuta si'); e da 2026-09-19 L'ETICHETTA SOPRA LA BOLLA del Dialogo.
+//
+// COME, sull'etichetta, perche' la strada ovvia non basta: il confronto NON
+// usa un elenco scritto qui. Le etichette attese si derivano da
+// `speakerLabels` del file episodio e i nomi scelti da `slotValues()`, cioe'
+// dalle due sorgenti che l'app stessa legge. *Un elenco scritto a mano dentro
+// un test e' un campione, e un campione sceglie chi non guardare.*
 const { launchBrowser, APP_URL } = require('./test-env');
 const { attendiVisibile } = require('./attese');
-const { gradeOf, stepsBefore } = require('./module-order');
-const { loadGrade } = require('./quiz-driver');
+const { gradeOf, stepsBefore, slotValues } = require('./module-order');
+const { loadGrade, loadEpisode } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
@@ -12,6 +22,14 @@ const BASE = APP_URL;
 const BATTUTE = loadGrade('D');
 const D1 = BATTUTE[0].id;
 const D2 = BATTUTE[1].id;
+
+// Le etichette attese vengono dal file episodio, non da qui: `speakerLabels`
+// e' la sorgente che `speakerLabel()` legge (regola 4, passo 9).
+const ETICHETTE = loadEpisode().speakerLabels;
+// I nomi scelti — «Marco», «Chiara» — coi valori predefiniti, cioe' quelli che
+// vede un utente di test. Servono a una sola asserzione, ed e' quella che
+// distingue «Papa'» da «Marco».
+const NOMI_SCELTI = Object.keys(slotValues()).map(k => slotValues()[k].it);
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }
@@ -195,6 +213,95 @@ async function run() {
     const translationsShown = await page.$$eval('.dg-translation', (els, n) => els.length === n && els.every(e => !e.hidden), quante);
     log('[Regression] Mod1 translations toggle rivela tutte le ' + quante + ' traduzioni', translationsShown);
     log('[Regression] No JS errors on Mod1', errors.length === 0);
+    await page.close();
+  }
+
+  // ============ [Etichetta] L'etichetta sopra la bolla, nel DIALOGO ============
+  //
+  // ⚠️ NASCE DA UN BUCO MISURATO, non da un difetto: il 2026-09-19, facendo
+  // tornare a `speakerLabel` l'id tecnico invece dell'etichetta,
+  // `test_story_modules` andava 92/93 e QUESTO FILE restava 20/20. La funzione
+  // ha due lettori — Meet the Story e i tre Dialogue — e solo il primo ne
+  // guardava l'effetto visibile.
+  //
+  // Le tre righe non sono ridondanti, e il motivo e' la diagnosi (⓪-octies):
+  // la prima cade su TUTTI e tre i guasti, la seconda e la terza dicono QUALE
+  // delle due decisioni didattiche della regola 4 si e' rotta —
+  //   «l'etichetta porta il CONTORNO, non il solo mestiere»
+  //   «l'etichetta di un personaggio personalizzabile NON porta il nome scelto»
+  // — invece di lasciar leggere un rosso solo e cercarne la causa a mano.
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    await bootAsUser(page, 'EtichettaBolla', stepsBefore('dialogoAscoltaRipeti'));
+    await openModule(page, 'dialogoAscoltaRipeti');
+    await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
+    await page.click('#dg-start-btn');
+    // L'approdo e' la PRIMA bolla disegnata, non un tempo: le etichette
+    // esistono da quando il markup c'e', e nessuna delle asserzioni qui sotto
+    // legge questo effetto (regola 44).
+    //
+    // ⚠️ IL `try` NON E' PRUDENZA GENERICA: senza, se le bolle non arrivassero
+    // il file MORIREBBE con un TimeoutError invece di stampare tre righe rosse
+    // (⓪-septies), e in una corsa parallela si legge come «non e' partito».
+    let letto = [];
+    let arrivo = '';
+    try {
+      // ⚠️ IL CONTENITORE E' `.dg-item`, NON `.dg-bubble`, e non e' un
+      // dettaglio di selettore: l'etichetta e' SORELLA della bolla, non figlia
+      // — la bolla e' un `<button>` e il nome sta FUORI, cosi' non finisce nel
+      // testo del bersaglio del tocco. Misurato: il primo giro cercava
+      // `.dg-bubble .dg-name` e trovava ZERO con nove nomi a schermo.
+      await page.waitForFunction(n => document.querySelectorAll('.dg-item').length === n,
+        BATTUTE.length, { timeout: 15000 });
+      letto = await page.$$eval('.dg-item', items => items.map(it => ({
+        id: (it.querySelector('.dg-bubble') || {}).getAttribute
+          ? it.querySelector('.dg-bubble').getAttribute('data-line-id') : null,
+        nome: (it.querySelector('.dg-name') || {}).textContent
+      })));
+    } catch (e) {
+      arrivo = ' — le bolle non sono arrivate: ' + await page.evaluate(() => ({
+        item: document.querySelectorAll('.dg-item').length,
+        bolle: document.querySelectorAll('.dg-bubble').length,
+        nomi: document.querySelectorAll('.dg-name').length,
+        errore: !document.getElementById('load-error-screen') || document.getElementById('load-error-screen').hidden ? 'no' : 'schermata d\'errore'
+      })).then(JSON.stringify).catch(() => 'pagina illeggibile');
+    }
+
+    // ── ① Ogni bolla mostra l'etichetta del file episodio ───────────────
+    // Il confronto e' su TUTTE le bolle, non sulla prima: il caso piu' diverso
+    // non e' la battuta piu' complicata, e' il personaggio con l'etichetta piu'
+    // lunga («Hostess al gate») accanto a quello personalizzabile («Papa'»).
+    const atteso = {};
+    BATTUTE.forEach(b => { atteso[b.id] = ETICHETTE[b.speaker] || b.speaker; });
+    const sbagliate = letto.filter(x => x.nome !== atteso[x.id]);
+    log('[Etichetta] Ogni bolla del Dialogo mostra l\'etichetta del file episodio' + arrivo
+      + (sbagliate.length ? ' — sbagliate: ' + sbagliate.map(x => x.id + ': "' + x.nome + '" invece di "' + atteso[x.id] + '"').join(' · ') : ''),
+      letto.length === BATTUTE.length && sbagliate.length === 0);
+
+    // ── ② Il CONTORNO, non il solo mestiere ────────────────────────────
+    // «Hostess al gate», mai «Hostess». Si guarda solo chi un contorno ce l'ha
+    // (etichetta di piu' di una parola), derivato dal file: se un giorno
+    // nessuna ne avesse, la riga lo dice invece di passare verde a vuoto.
+    const conContorno = Object.keys(ETICHETTE).filter(k => ETICHETTE[k].indexOf(' ') !== -1);
+    const contornoIntero = conContorno.every(k =>
+      letto.some(x => x.nome === ETICHETTE[k]) || !BATTUTE.some(b => b.speaker === k));
+    log('[Etichetta] L\'etichetta porta il contorno intero, non il solo mestiere ('
+      + conContorno.length + ' con contorno)',
+      conContorno.length > 0 && contornoIntero);
+
+    // ── ③ Il nome scelto sta nella BATTUTA, non sopra la bolla ─────────
+    // «Papa'», mai «Marco». I nomi scelti vengono da slotValues(), cioe' dalle
+    // tabelle di personalizzazione: e' il guasto del 2026-09-09, quando
+    // `dialogueSpeakers` risolveva il nome dentro l'etichetta.
+    const conNome = letto.filter(x => NOMI_SCELTI.indexOf(x.nome) !== -1);
+    log('[Etichetta] Nessuna etichetta porta il nome scelto'
+      + (conNome.length ? ' — ' + conNome.map(x => x.id + ': "' + x.nome + '"').join(' · ') : ''),
+      conNome.length === 0);
+
+    log('[Etichetta] Nessun errore JS', errors.length === 0);
     await page.close();
   }
 
