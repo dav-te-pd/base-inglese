@@ -99,6 +99,11 @@
 #               ATTESO dello spostamento, non un cambio di comportamento:
 #               l'ordine di registrazione non decide niente — openModuleByKind
 #               cerca per chiave, e le pulizie girano tutte.
+#   2026-09-19  app/match.js entra come DICIASSETTESIMO script, seconda fila.
+#               Il conto passa da 17 a 18. E' il TERZO modulo, e registra DUE
+#               kind con la stessa open (matchEngIta, matchItaEng): l'ordine
+#               dei moduli registrati cambia di conseguenza, ed e' un diff
+#               atteso dello spostamento come per flashcard.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-19
@@ -118,16 +123,17 @@ script 13 app/storycards.js
 script 14 app/personalizza.js
 script 15 app/repeataloud.js
 script 16 app/flashcard.js
-script 17 (inline)
+script 17 app/match.js
+script 18 (inline)
 modulo 1 meetTheStory
 modulo 2 whyWeSayIt
 modulo 3 personalizzazione
 modulo 4 repeatAloud
 modulo 5 flashcard
-modulo 6 voicePractice
-modulo 7 voiceCoach
-modulo 8 matchEngIta
-modulo 9 matchItaEng
+modulo 6 matchEngIta
+modulo 7 matchItaEng
+modulo 8 voicePractice
+modulo 9 voiceCoach
 modulo 10 dialogoAscoltaRipeti
 modulo 11 dialogoRipetiATempo
 modulo 12 dialogoContinuo

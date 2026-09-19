@@ -102,7 +102,12 @@ const STORIA = [
   "            punto in cui stavano dentro index.html. ⚠️ E' un diff",
   "            ATTESO dello spostamento, non un cambio di comportamento:",
   "            l'ordine di registrazione non decide niente — openModuleByKind",
-  "            cerca per chiave, e le pulizie girano tutte."
+  "            cerca per chiave, e le pulizie girano tutte.",
+  "2026-09-19  app/match.js entra come DICIASSETTESIMO script, seconda fila.",
+  "            Il conto passa da 17 a 18. E' il TERZO modulo, e registra DUE",
+  "            kind con la stessa open (matchEngIta, matchItaEng): l'ordine",
+  "            dei moduli registrati cambia di conseguenza, ed e' un diff",
+  "            atteso dello spostamento come per flashcard."
 ];
 
   const intestazione = [
