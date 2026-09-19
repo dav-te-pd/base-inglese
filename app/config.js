@@ -34,9 +34,16 @@
       synthesisLang: 'en-US',
       synthesisRate: 0.95,
       maxAlternatives: 1,
-      // Hard cap on one recording, in ms. Kept generous so a long phrase
-      // (like Episode 1's) has time to finish before we force a stop.
-      micMaxRecordingMs: 20000,
+      // ⚠️ `micMaxRecordingMs` E' USCITO il 2026-09-19 (passo A), e non l'ho
+      // visto io: l'ha visto `tests/test_config_letta.js`, che tiene fermo
+      // «ogni chiave di APP_CONFIG e' nominata da qualcuno». Lo leggeva **solo
+      // la vista morta** `pronunciation`, e togliendo quella e' rimasto un
+      // parametro dichiarato che nessuno legge — cioe' una manopola nel
+      // Pannello Admin che non muove niente.
+      //
+      // *Voice ha i suoi (`maxRecordingMsPerWord`, `maxRecordingMarginMs`) e
+      // non passava di qui.* **Un tetto al microfono continua a esistere: e'
+      // quello di Voice, calcolato per parola invece che fisso.**
       // Playback speed choices offered next to a listen button, as a
       // multiplier of normal rate (1 = 100%). Order here is render order.
       rateOptions: [1, 0.75, 0.5],
@@ -638,7 +645,6 @@
       'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
       'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi inglesi.',
       'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
-      'speech.micMaxRecordingMs': 'Tempo massimo di una registrazione al microfono, in millisecondi, oltre il quale si ferma da sola.',
       'speech.rateOptions': 'Velocità di riproduzione proposte accanto ai pulsanti di ascolto (1 = 100%).',
       'speech.preferredVoiceNames': 'Voci inglesi preferite, in ordine, se il dispositivo le ha disponibili.',
       'matching.similarThreshold': 'Quanto deve essere simile una parola detta a voce per essere segnata "simile" (giallo) invece che "sbagliata" (rosso). Valore tra 0 e 1: più alto è, più severo è il giudizio.',
