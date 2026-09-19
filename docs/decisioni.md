@@ -2687,7 +2687,7 @@ quattro `?v=` scritti a mano, che sarebbero quattro punti da tenere allineati.
 | `test_batch7.js` | ⚠️ **si appende** — terminato a 400 s senza stampare niente |
 | `test_outcome_step_ids.js` | ⚠️ **si appende** — idem |
 
-È la famiglia ⑰-septies: **un test che MUORE non è un test che FALLISCE.** Il
+È la famiglia ⓪-septies: **un test che MUORE non è un test che FALLISCE.** Il
 ciclo aspetta che il popup si chiuda per andare avanti; se non si chiude, non
 c'è nessuna asserzione rossa — c'è una suite che non finisce. In una corsa
 normale questo si vede come «la suite è lenta» o come un timeout della CI, non

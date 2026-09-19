@@ -28,7 +28,7 @@ const path = require('path');
 // strumento guardava SEMPRE il repository in cui vive, qualunque cartella gli
 // si desse — quindi provarlo su un repo finto misurava il repo vero, e le
 // prove tornavano verdi **per il motivo sbagliato**. Trovato da
-// `tests/test_versione_cache.js` al primo giro (famiglia ⑰-nonies: una prova
+// `tests/test_versione_cache.js` al primo giro (famiglia ⓪-nonies: una prova
 // che non morde dà lo stesso verde di una che regge).
 var RADICE = path.resolve(__dirname, '..', '..');
 var argv = process.argv.slice(2);

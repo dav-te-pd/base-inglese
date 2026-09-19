@@ -40,7 +40,17 @@ const path = require('path');
 // nuovo, in silenzio — che e' il difetto che questo file esiste per chiudere.
 function ordineDiCaricamento(radice) {
   const html = fs.readFileSync(path.join(radice, 'index.html'), 'utf8');
-  return [...html.matchAll(/<script[^>]*src="app\/([\w.-]+)"/g)].map(function (m) { return m[1]; });
+  // ⚠️ IL `?v=` FA PARTE DELL'INDIRIZZO, NON DEL NOME. Dal 2026-09-19 i tag
+  // portano una versione per impedire al browser di mescolare file vecchi e
+  // nuovi: senza il gruppo opzionale qui sotto questa riga non trovava PIU'
+  // NIENTE, e il grafo usciva vuoto — cioè 29 asserzioni che non partivano e
+  // un TypeError, non un rosso che spiega.
+  //
+  // ⚠️ E la verifica per sottrazione di quel giro NON l'aveva trovata: cercava
+  // `src="app` e qui c'è `src="app\/` con la barra ESCAPED. È la forma ⑥ della
+  // regola 41 — il percorso che non esiste mai per intero — e l'unico modo di
+  // prenderla è cercare il SEGMENTO, non la stringa.
+  return [...html.matchAll(/<script[^>]*src="app\/([\w.-]+)(?:\?[^"]*)?"/g)].map(function (m) { return m[1]; });
 }
 
 function nomiEsposti(testo) {
