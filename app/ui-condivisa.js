@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], quiz-engine.js [parsing]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], quiz-engine.js [parsing]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre
@@ -81,6 +81,20 @@
   var loadModuleInstructions = BI.loadModuleInstructions;
   var loadFeedbackMessages = BI.loadFeedbackMessages;
   var percentageBucket = BI.percentageBucket;
+
+  // ⚠️ I DUE DEL BLOCCO ASCOLTO, E LA RIGA CHE AVEVO SCRITTO QUI ERA FALSA.
+  //
+  // Avevo scritto «sono a tempo di CHIAMATA, perché servono quando un pulsante
+  // si disegna o si tocca». È vero di **dove vengono usati** e falso di **come
+  // arrivano**: un alias in cima all'IIFE si prende il valore mentre il file
+  // viene letto, quindi la dipendenza è a tempo di **parsing**, punto. L'ha
+  // detto `tests/test_dipendenze_dichiarate.js`, che misura invece di credere.
+  //
+  // *Non l'ho «corretta» allargando la dichiarazione: la misura aveva ragione e
+  // la frase no.* Il vincolo reale c'è già ed è soddisfatto — `identita.js` e
+  // `audio.js` stanno in <head>, questo file nella seconda fila.
+  var icon = BI.icon;
+  var toggleSpeak = BI.toggleSpeak;
 
   // Job 4 (second collaudo): the FIRST retry pass and the LAST one (the
   // one right before the module actually finishes — CONFIG.retryQueue.
@@ -518,7 +532,54 @@
     if (attemptPopupOnNext) attemptPopupOnNext();
   });
 
+
+  // ⚠️ IL BLOCCO ASCOLTO — il componente che SEI moduli indossano, e il
+  // sospettato principale delle due regressioni del 2026-09-18 (il tocco che
+  // rispondeva con tre secondi di ritardo, il microfono che non si fermava).
+  //
+  // Quel giro spostò questi due pezzi insieme ad altri cinque, la suite era
+  // verde tre volte, e su Pages si ruppe. Adesso escono **da soli**, con sotto
+  // `tests/test_comportamento_audio.js`, che li GUIDA invece di trovarli: se
+  // il ritardo torna, cade in locale prima di arrivare su Pages.
+  //
+  // Sta qui per mestiere: il markup del pulsante «ascolta» più le velocità è
+  // interfaccia che un modulo indossa, e `renderRateButtons` — la sua metà —
+  // vive già in questo file dal giorno in cui lo strato è nato. *Tenerle
+  // separate era «sta vicino» scambiato per «è suo», al contrario.*
+  //
+  // Le due dipendenze nuove — `icon` (`app/identita.js`) e `toggleSpeak`
+  // (`app/audio.js`) — sono a tempo di **parsing**, perché arrivano da un
+  // alias in cima all'IIFE. Vedi il commento accanto ai due alias: la prima
+  // riga che avevo scritto diceva «chiamata», e la misura l'ha smentita.
+  // opts: { say, mini, blocco, extraClass }
+  //   say        — l'identificatore che finisce nell'attributo del tocco
+  //   mini       — solo il pulsante, senza le velocita'
+  //   blocco     — avvolge in <div class="listen-block">, per chi non ce l'ha
+  //   extraClass — classi in piu' sul contenitore
+  function renderListenBlock(opts) {
+    var o = opts || {};
+    var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
+    var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
+      attr + '="' + o.say + '" aria-label="' + uiText('bloccoAscolto.listenLabel') + '">' + icon('volume-2') + '</button>';
+    if (o.mini) return bottone;
+    var dentro = bottone +
+      '<div class="rate-group" role="group" aria-label="' + uiText('bloccoAscolto.rateGroupLabel') + '">' + renderRateButtons(o.say) + '</div>';
+    if (!o.blocco) return dentro;
+    return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
+  }
+
+  // Il tocco su un Blocco Ascolto. Il testo NON lo decide questa funzione: e'
+  // l'unica cosa che varia davvero fra i sei moduli — una ricerca nel file
+  // episodio, vcTargetText(), fcBackText(), l'opzione corrente — quindi lo
+  // risolve chi chiama e lo passa. Qui sta il resto, che era identico in
+  // cinque punti: leggere la velocita' dal pulsante e parlare.
+  function speakListenBlock(btn, testo) {
+    var rateAttr = btn.getAttribute('data-rate');
+    toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
+  }
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
+  BI.renderListenBlock = renderListenBlock;
+  BI.speakListenBlock = speakListenBlock;
   BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
   BI.openAttemptPopup = openAttemptPopup;
   BI.closeAttemptPopup = closeAttemptPopup;

@@ -26,15 +26,15 @@
      codice senza alzarla (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260919a"></script>
-<script src="app/spazio.js?v=20260919a"></script>
-<script src="app/identita.js?v=20260919a"></script>
-<script src="app/avvio.js?v=20260919a"></script>
-<script src="app/progressi.js?v=20260919a"></script>
-<script src="app/audio.js?v=20260919a"></script>
-<script src="app/suoni.js?v=20260919a"></script>
-<script src="app/quiz-engine.js?v=20260919a"></script>
-<script src="app/dati.js?v=20260919a"></script>
+<script src="app/config.js?v=20260919b"></script>
+<script src="app/spazio.js?v=20260919b"></script>
+<script src="app/identita.js?v=20260919b"></script>
+<script src="app/avvio.js?v=20260919b"></script>
+<script src="app/progressi.js?v=20260919b"></script>
+<script src="app/audio.js?v=20260919b"></script>
+<script src="app/suoni.js?v=20260919b"></script>
+<script src="app/quiz-engine.js?v=20260919b"></script>
+<script src="app/dati.js?v=20260919b"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3637,11 +3637,11 @@
      una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
      markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
      cosa gira, e questo gira dopo il DOM. -->
-<script src="app/orchestrazione.js?v=20260919a"></script>
-<script src="app/ui-condivisa.js?v=20260919a"></script>
-<script src="app/mappa.js?v=20260919a"></script>
-<script src="app/storycards.js?v=20260919a"></script>
-<script src="app/personalizza.js?v=20260919a"></script>
+<script src="app/orchestrazione.js?v=20260919b"></script>
+<script src="app/ui-condivisa.js?v=20260919b"></script>
+<script src="app/mappa.js?v=20260919b"></script>
+<script src="app/storycards.js?v=20260919b"></script>
+<script src="app/personalizza.js?v=20260919b"></script>
 
 <script>
 (function () {
@@ -3666,6 +3666,8 @@
   var showView = BI.showView;
   var chiudiOverlayAperti = BI.chiudiOverlayAperti;
   var moduloDiAiutoAttivo = BI.moduloDiAiutoAttivo;
+  var renderListenBlock = BI.renderListenBlock;
+  var speakListenBlock = BI.speakListenBlock;
   var openAttemptPopup = BI.openAttemptPopup;
   var closeAttemptPopup = BI.closeAttemptPopup;
   var openEpisodeMap = BI.openEpisodeMap;
@@ -5255,32 +5257,6 @@
      costruisce le proprie righe a runtime chiede blocco: true.
      ============================================================ */
 
-  // opts: { say, mini, blocco, extraClass }
-  //   say        — l'identificatore che finisce nell'attributo del tocco
-  //   mini       — solo il pulsante, senza le velocita'
-  //   blocco     — avvolge in <div class="listen-block">, per chi non ce l'ha
-  //   extraClass — classi in piu' sul contenitore
-  function renderListenBlock(opts) {
-    var o = opts || {};
-    var attr = o.mini ? 'data-qm-listen-index' : 'data-say';
-    var bottone = '<button type="button" class="btn btn-secondary btn-sm listen-block-btn" ' +
-      attr + '="' + o.say + '" aria-label="' + uiText('bloccoAscolto.listenLabel') + '">' + icon('volume-2') + '</button>';
-    if (o.mini) return bottone;
-    var dentro = bottone +
-      '<div class="rate-group" role="group" aria-label="' + uiText('bloccoAscolto.rateGroupLabel') + '">' + renderRateButtons(o.say) + '</div>';
-    if (!o.blocco) return dentro;
-    return '<div class="listen-block' + (o.extraClass ? ' ' + o.extraClass : '') + '">' + dentro + '</div>';
-  }
-
-  // Il tocco su un Blocco Ascolto. Il testo NON lo decide questa funzione: e'
-  // l'unica cosa che varia davvero fra i sei moduli — una ricerca nel file
-  // episodio, vcTargetText(), fcBackText(), l'opzione corrente — quindi lo
-  // risolve chi chiama e lo passa. Qui sta il resto, che era identico in
-  // cinque punti: leggere la velocita' dal pulsante e parlare.
-  function speakListenBlock(btn, testo) {
-    var rateAttr = btn.getAttribute('data-rate');
-    toggleSpeak(testo, btn, rateAttr !== null ? parseFloat(rateAttr) : undefined);
-  }
 
   function renderRepeatAloud(data) {
     var ruleHtml = data.generalRule
@@ -8490,8 +8466,6 @@
   BI.ensureEpisodeSlotFields = ensureEpisodeSlotFields;
   BI.dialogueLineAlign = dialogueLineAlign;
   BI.speakerLabel = speakerLabel;
-  BI.renderListenBlock = renderListenBlock;
-  BI.speakListenBlock = speakListenBlock;
   BI.buildMultipleChoiceOptions = buildMultipleChoiceOptions;
   BI.recordMultipleChoiceResult = recordMultipleChoiceResult;
   BI.recordPendingMastery = recordPendingMastery;
