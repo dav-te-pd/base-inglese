@@ -171,7 +171,16 @@ except Exception:
 if not isinstance(corse, list) or len(corse) == 0:
     print("ASSENTE"); raise SystemExit(0)
 c = corse[0]
-print("STATO", c.get("status") or "?", c.get("conclusion") or "-")
+# ⚠️ LA DURATA DELLA CORSA, NON LA MIA ATTESA. Vedi il commento qui sotto.
+def secondi(a, b):
+    from datetime import datetime
+    try:
+        f = "%Y-%m-%dT%H:%M:%SZ"
+        return str(int((datetime.strptime(b, f) - datetime.strptime(a, f)).total_seconds()))
+    except Exception:
+        return "?"
+print("STATO", c.get("status") or "?", c.get("conclusion") or "-",
+      secondi(c.get("run_started_at") or "", c.get("updated_at") or ""))
 ' 2>/dev/null || echo ILLEGGIBILE
 }
 
@@ -182,17 +191,27 @@ mai_vista=1
 while :; do
   riga=$(leggi)
   [ -n "$riga" ] || riga=ILLEGGIBILE
+  # L'ultimo campo di "STATO <status> <conclusion> <secondi>" e' la durata vera.
+  durata="${riga##* }"
+  case "$riga" in "STATO "*) : ;; *) durata="?" ;; esac
   adesso=$(date +%s)
   trascorsi=$(( adesso - inizio ))
 
+  # ⚠️ IL NUMERO CHE SI STAMPA È QUELLO DELLA CORSA, NON DELLA MIA ATTESA — e
+  # la differenza non è teorica: il 2026-09-19 questo script ha scritto
+  # «completata con success (1s)» su una corsa durata **585 secondi**, perché
+  # l'attesa era partita a corsa già finita. *Un numero falso accanto a un
+  # verdetto vero è la forma della regola 37: il verdetto era giusto, il numero
+  # somigliava a una misura e non lo era.*
   case "$riga" in
-    "STATO completed success")
-      echo "VERDE — $WORKFLOW su $SHA: completata con success (${trascorsi}s)"
+    "STATO completed success"*)
+      echo "VERDE — $WORKFLOW su $SHA: completata con success (corsa: ${durata}s, attesa: ${trascorsi}s)"
       esito_commit
       exit 0
       ;;
     "STATO completed "*)
       esito="${riga#STATO completed }"
+      esito="${esito%% *}"
       if [ "$esito" = "cancelled" ]; then
         echo "ANNULLATA — $WORKFLOW su $SHA: conclusione \"$esito\"."
         echo "NON e' una corsa rossa: qualcuno o qualcosa l'ha fermata. Cerca un pulsante premuto, non un difetto."

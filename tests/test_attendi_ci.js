@@ -69,6 +69,15 @@ const CORSA = (stato, esito) => JSON.stringify({
   total_count: 1,
   workflow_runs: [{ status: stato, conclusion: esito, head_sha: 'abc1234', name: 'Suite di regressione' }]
 });
+// Una corsa già finita che dichiara le PROPRIE date: serve al caso [I].
+const CORSA_DATATA = (secondi) => JSON.stringify({
+  total_count: 1,
+  workflow_runs: [{
+    status: 'completed', conclusion: 'success', head_sha: 'abc1234', name: 'Suite di regressione',
+    run_started_at: '2026-09-19T12:00:00Z',
+    updated_at: new Date(Date.UTC(2026, 8, 19, 12, 0, secondi)).toISOString().replace(/\.\d+Z$/, 'Z')
+  }]
+});
 const NESSUNA = JSON.stringify({ total_count: 0, workflow_runs: [] });
 const SPAZZATURA = '{"message":"Not Found","documentation_url":"..."}';
 
@@ -225,6 +234,26 @@ async function run() {
       log('[H] ' + nome + ': ...e dice cosa farsene — «hai letto un\'altra corsa»',
           /hai letto un'altra corsa/.test(r.testo), r.testo.slice(0, 100));
     }
+  }
+
+  // ── [I] IL NUMERO È QUELLO DELLA CORSA, NON DELLA MIA ATTESA ────────
+  // ⚠️ Nasce da un numero falso stampato il 2026-09-19: «completata con
+  // success (1s)» su una corsa durata **585 secondi**. Il verdetto era giusto
+  // (letto dall'API), il numero no: era il tempo che lo script aveva aspettato,
+  // e l'attesa era partita a corsa già finita. *Un numero falso accanto a un
+  // verdetto vero è la forma della regola 37 — non somiglia a un errore,
+  // somiglia a una misura.*
+  //
+  // Il caso è costruito proprio così: la corsa è **già completed** al primo
+  // sguardo, quindi l'attesa è di zero o un secondo, mentre la corsa dichiara
+  // di essere durata 300. Se lo script tornasse a stampare la propria attesa,
+  // qui si vedrebbe subito.
+  {
+    const r = await caso('durata dalla corsa', [CORSA_DATATA(300)], 30);
+    log('[I] La durata stampata è quella della CORSA (300s), non dell\'attesa',
+      /corsa: 300s/.test(r.testo), r.testo.split('\n')[0]);
+    log('[I] ...e l\'attesa è dichiarata a parte, non spacciata per la durata',
+      /attesa: \d+s/.test(r.testo) && !/success \(\d+s\)/.test(r.testo), r.testo.split('\n')[0]);
   }
 
   console.log('');
