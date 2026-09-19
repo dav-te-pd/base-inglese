@@ -126,7 +126,30 @@ async function apriPasso(page, passo) {
   // ---------------------------------------------------------------
   // ① UNA SOLA SORGENTE (index.html come testo)
   // ---------------------------------------------------------------
-  const sorgente = fs.readFileSync(repoPath('index.html'), 'utf8');
+  // ⚠️ LA SORGENTE È TUTTO IL CODICE DELL'APP, NON PIÙ IL SOLO index.html —
+  // e questa riga è una DECISIONE SEGUITA, non un test allargato per farlo
+  // tornare verde (⑰-undecies).
+  //
+  // L'invariante non è cambiato di una virgola: «il markup del Blocco Ascolto ha
+  // UNA SOLA sorgente, quindi l'uguaglianza fra i sei moduli non è da
+  // verificare — non può non essere vera». È cambiato **dove** quella sorgente
+  // vive: il 2026-09-19 `renderListenBlock` e `speakListenBlock` sono passate in
+  // `app/ui-condivisa.js`, dove stanno per mestiere.
+  //
+  // Cercare nel solo `index.html` dava **zero occorrenze**, cioè il messaggio
+  // «qualcuno ha ricopiato il componente» su un albero in cui nessuno l'aveva
+  // ricopiato. *Una domanda giusta posta al file sbagliato dà una risposta
+  // sbagliata con la faccia di una giusta.*
+  //
+  // ⚠️ E la ricerca su TUTTI i file è più forte di quella su uno: l'ottava copia
+  // scritta a mano cade adesso **ovunque la si metta**, anche dentro uno strato.
+  // Finché l'app era un file solo le due cose coincidevano; da quando è quindici,
+  // no — e questa riga guardava solo il primo.
+  const sorgente = [repoPath('index.html')]
+    .concat(fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); })
+      .map(function (f) { return repoPath('app', f); }))
+    .map(function (f) { return fs.readFileSync(f, 'utf8'); })
+    .join('\n');
 
   const markupPulsante = /class="btn btn-secondary btn-sm listen-block-btn"/g;
   const quante = (sorgente.match(markupPulsante) || []).length;
