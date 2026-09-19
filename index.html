@@ -26,15 +26,15 @@
      codice senza alzarla (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260919d"></script>
-<script src="app/spazio.js?v=20260919d"></script>
-<script src="app/identita.js?v=20260919d"></script>
-<script src="app/avvio.js?v=20260919d"></script>
-<script src="app/progressi.js?v=20260919d"></script>
-<script src="app/audio.js?v=20260919d"></script>
-<script src="app/suoni.js?v=20260919d"></script>
-<script src="app/quiz-engine.js?v=20260919d"></script>
-<script src="app/dati.js?v=20260919d"></script>
+<script src="app/config.js?v=20260919e"></script>
+<script src="app/spazio.js?v=20260919e"></script>
+<script src="app/identita.js?v=20260919e"></script>
+<script src="app/avvio.js?v=20260919e"></script>
+<script src="app/progressi.js?v=20260919e"></script>
+<script src="app/audio.js?v=20260919e"></script>
+<script src="app/suoni.js?v=20260919e"></script>
+<script src="app/quiz-engine.js?v=20260919e"></script>
+<script src="app/dati.js?v=20260919e"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -3637,11 +3637,12 @@
      una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
      markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
      cosa gira, e questo gira dopo il DOM. -->
-<script src="app/orchestrazione.js?v=20260919d"></script>
-<script src="app/ui-condivisa.js?v=20260919d"></script>
-<script src="app/mappa.js?v=20260919d"></script>
-<script src="app/storycards.js?v=20260919d"></script>
-<script src="app/personalizza.js?v=20260919d"></script>
+<script src="app/orchestrazione.js?v=20260919e"></script>
+<script src="app/ui-condivisa.js?v=20260919e"></script>
+<script src="app/mappa.js?v=20260919e"></script>
+<script src="app/storycards.js?v=20260919e"></script>
+<script src="app/personalizza.js?v=20260919e"></script>
+<script src="app/repeataloud.js?v=20260919e"></script>
 
 <script>
 (function () {
@@ -5183,7 +5184,6 @@
      questa pagina, quindi un percorso sbagliato si vede subito invece
      di essere assorbito in silenzio.
      ============================================================ */
-  var currentRepeatAloudModule = null;
 
 
   /* Le etichette dei personaggi e i segnaposto ammessi ARRIVANO DAL FILE
@@ -5257,23 +5257,6 @@
      ============================================================ */
 
 
-  function renderRepeatAloud(data) {
-    var ruleHtml = data.generalRule
-      ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
-      : '';
-    var itemsHtml = episodeGradeRequired(data, currentRepeatAloudModule.grade, currentRepeatAloudModule).map(function (item) {
-      return '<div class="repeat-item panel">' +
-        '<div class="repeat-item-top">' +
-        '<span class="repeat-item-english">' + itemText(item, 'en') + '</span>' +
-        renderListenBlock({ say: item.id, blocco: true }) +
-        '</div>' +
-        '<span class="repeat-item-italian">' + itemText(item, 'it') + '</span>' +
-        '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
-        '</div>';
-    }).join('');
-    document.getElementById('repeat-aloud-body').innerHTML =
-      ruleHtml + '<div class="repeat-list">' + itemsHtml + '</div>';
-  }
 
 
 
@@ -5286,106 +5269,7 @@
 
 
 
-  // ---- Repeat Aloud intro screen — was its own trial implementation
-  // (renderRaIntroContent/openRaIntro, a near-verbatim duplicate of
-  // renderIntroContent/the inline branch every other module uses);
-  // aligned to the generic shape (censimento audit, follow-up) now that
-  // the pattern has long since extended past this one module. howItWorks
-  // still comes only from istruzioni-moduli.json (CLAUDE.md rule 8);
-  // dismissal goes through the same generic isIntroDismissed/
-  // setIntroDismissed('repeatAloud', ...) every other module uses. ----
-  function raShowScreen(name) {
-    document.getElementById('repeat-aloud-intro-screen').hidden = name !== 'intro';
-    document.getElementById('repeat-aloud-main-screen').hidden = name !== 'main';
-    document.getElementById('repeat-aloud-summary-screen').hidden = name !== 'summary';
-    // Nothing to explain on the completion screen — hide Spiegazione
-    // there (CLAUDE.md rule 10, same as every other module's Schermata
-    // Finale); Help stays available everywhere.
-    document.getElementById('repeat-aloud-watch-btn').hidden = name === 'summary';
-  }
 
-  function openRepeatAloud(module) {
-    // I listener di questo modulo, una volta sola.
-    //
-    // ⚠️ LA CHIAVE E' 'repeatAloud' E QUI FUNZIONEREBBE ANCHE `module.kind`,
-    // PERCHE' QUESTA `open` SERVE UN KIND SOLO. E' esattamente il caso in cui
-    // la regola sbagliata passa verde — come su Flash Card — quindi la chiave
-    // giusta si scrive lo stesso: la regola e' «il BLOCCO», non «il kind
-    // quando capita di coincidere». La regola per esteso sta accanto a
-    // `BI.unaVoltaSola` in app/spazio.js.
-    //
-    // Sul PERCHE' stiano prima di `showView`: vale la stessa cosa scritta in
-    // openSpeedMatch — oggi non e' verificabile, ed e' una precauzione per il
-    // passo 22. Dichiarata, non provata.
-    BI.unaVoltaSola('repeatAloud', function () {
-    document.getElementById('repeat-aloud-body').addEventListener('click', function (e) {
-      var btn = e.target.closest('[data-say]');
-      if (!btn) return;
-      var data = episodeDataCache[currentRepeatAloudModule.dataFile];
-      var item = data && episodeGrade(data, currentRepeatAloudModule.grade).find(function (it) { return it.id === btn.getAttribute('data-say'); });
-      if (!item) return;
-      // Correction (5th collaudo): job 1 (4th collaudo) locked every other
-      // control here, but this module has no countdown to desync — free
-      // browsing (tap any word, any order, any time) is the intended
-      // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
-      // handles switching between words safely on its own.
-      speakListenBlock(btn, itemText(item, 'en'));
-    });
-
-    document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);
-
-    document.getElementById('repeat-aloud-watch-btn').addEventListener('click', function () {
-      openHowItWorksOverlay(currentRepeatAloudModule, { dismissPref: introDismissPref('repeatAloud') });
-    });
-
-    document.getElementById('repeat-aloud-intro-start-btn').addEventListener('click', function () {
-      setIntroDismissed('repeatAloud', getUserName(), document.getElementById('repeat-aloud-intro-dont-show-again').checked);
-      raShowScreen('main');
-    });
-
-    document.getElementById('repeat-aloud-help-btn').addEventListener('click', function () {
-      openHelpFor(currentRepeatAloudModule);
-    });
-
-    document.getElementById('repeat-aloud-complete').addEventListener('click', function () {
-      // Job 4 (earlier turn): Traguardo plays on every positive/neutral
-      // completion — tied to THIS event (declaring the study done), same
-      // moment every other module's Traguardo fires (reaching its own
-      // Schermata Finale), never to "← Mappa" above (leaves without
-      // completing) nor to the summary's own exit button below.
-      sfxPlayTraguardoSound();
-      raShowScreen('summary');
-      applyOutcomeSubtitle('repeat-aloud-summary-title-sub', 'studioCompleteMessages', 'default');
-    });
-
-    document.getElementById('repeat-aloud-complete-btn').addEventListener('click', function () {
-      // Nessun esito: CONFIG.moduleOutcomeRules non nomina repeatAloud, quindi
-      // questo modulo non colora la mappa. Non e' una dimenticanza.
-      completeModule(currentRepeatAloudModule, null);
-    });
-    });
-    currentRepeatAloudModule = module;
-    document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
-    document.getElementById('repeat-aloud-type-badge').textContent = moduleTypeLabel(module);
-    document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
-    leaveModule('repeatAloud');
-    if (isIntroDismissed('repeatAloud', getUserName())) {
-      raShowScreen('main');
-    } else {
-      document.getElementById('repeat-aloud-intro-dont-show-again').checked = false;
-      renderIntroContent('repeatAloud', 'repeat-aloud-intro-title', 'repeat-aloud-intro-body', currentRepeatAloudModule.label, 'repeat-aloud-intro-start-btn', 'repeat-aloud-intro-dont-show-text');
-      raShowScreen('intro');
-    }
-    loadEpisodeData(module).then(function (data) {
-      if (currentRepeatAloudModule !== module) return;
-      renderRepeatAloud(data);
-    }).catch(function () {
-      if (currentRepeatAloudModule !== module) return;
-      showLoadError(function () { openRepeatAloud(module); });
-    });
-  }
-  // Repeat Aloud.
-  BI.registraModulo('repeatAloud', openRepeatAloud);
 
   // ---- I LISTENER DI REPEAT ALOUD NON STANNO PIU' QUI ----
   //

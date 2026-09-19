@@ -66,8 +66,11 @@ nodi.forEach(function (n) {
   // l'interfaccia condivisa e i progressi. Il numero sale con loro ed e'
   // previsto; quello che deve scendere e' l'ALTRO, quello verso index.html.
   // ⚠️ 4 -> 5 con app/mappa.js. Sale coi file, ed e' previsto.
-  log('[B] Sei file di app/ dipendono da qualcosa',
-    conDipendenze.length === 6, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 6 -> 7 con app/repeataloud.js, il PRIMO MODULO. Stessa ragione di
+  // sempre: un modulo usa l'interfaccia condivisa, i progressi e i suoni. Non
+  // e' questo il numero da guardare — e' quello sotto.
+  log('[B] Sette file di app/ dipendono da qualcosa',
+    conDipendenze.length === 7, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -90,7 +93,18 @@ nodi.forEach(function (n) {
   // ⚠️ 3 -> 4 col secondo modulo, e la ragione e' la stessa di sempre: un
   // modulo nomina l'episodio su cui lavora. **Tutte e quattro spariscono
   // insieme, quando esce il catalogo.**
-  log('[B] Quattro dipendenze ALL\'INSU\'', allInsu.length === 4,
+  // ⚠️ 4 -> 5 col PRIMO MODULO, `app/repeataloud.js`, e la ragione e' UNA
+  // SOLA, scritta in testa a quel file: `itemText`, che lega lo stato di
+  // sessione (`currentEpisode`, `currentValues`) e per questo non e' entrata
+  // in `ui-condivisa` insieme a `fillTemplate`, che invece li riceve come
+  // parametri.
+  //
+  // **UNO e' il numero da guardare quando uscira' il secondo modulo.** Se al
+  // terzo e' ancora uno e ancora `itemText`, il passo dello stato di sessione
+  // e' in ritardo e si vede qui. Se invece ne aggiunge altri, la ragione non
+  // c'era. *Un numero che sale con una ragione scritta e' un progetto; senza,
+  // e' un difetto.*
+  log('[B] Cinque dipendenze ALL\'INSU\'', allInsu.length === 5,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -114,8 +128,14 @@ nodi.forEach(function (n) {
   // ⚠️ 1 -> 2: personalizza.js prende i suoi alias a tempo di parsing, ed e'
   // il motivo per cui il suo tag sta nella seconda fila DOPO ui-condivisa. La
   // riga [C] e' quella che tiene fermo l'ordine.
-  log('[B] Quattro dipendenze a tempo di PARSING',
-    aParsing.length === 4,
+  // ⚠️ 4 -> 5 con `app/repeataloud.js`. Il primo modulo NON tocca nessun nodo
+  // mentre viene letto — i suoi sette listener si agganciano dentro la sua
+  // `open`, a tempo di chiamata — eppure sta nella seconda fila lo stesso,
+  // per i suoi venti alias e per `BI.registraModulo`, che gira al primo
+  // livello dell'IIFE. **Le ragioni della seconda fila sono due, non una**, e
+  // questo file e' il primo che ci sta solo per la seconda.
+  log('[B] Cinque dipendenze a tempo di PARSING',
+    aParsing.length === 5,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
@@ -150,6 +170,47 @@ nodi.forEach(function (n) {
   log('[D] ...e quindi NON risulta dipendere da index.html per i propri nomi',
     !nodoSpazio.dipende['index.html'],
     JSON.stringify(nodoSpazio.dipende['index.html'] || {}));
+}
+
+// ── [E] NESSUN ALIAS SU UN NOME CHE VIENE DA index.html ─────────────
+// ⚠️ NASCE DA UN GUASTO VERO, IL 2026-09-19, ED È LA RIGA CHE IMPEDISCE AI
+// CINQUE MODULI CHE MANCANO DI RIFARLO.
+//
+// Lo script inline di `index.html` è **l'ULTIMO**: sta in fondo a <body>, dopo
+// tutti i tag `<script src>`. Quindi un file di `app/` che scrive
+// `var itemText = BI.itemText;` in cima alla propria IIFE congela
+// **`undefined` per sempre** — il nome nascerà solo dopo.
+//
+// Successo con il primo modulo: `app/repeataloud.js` aliasava `itemText`, e il
+// modulo si apriva con il corpo fermo su «Caricamento...». `TypeError:
+// itemText is not a function`, **ingoiato dal `.catch` del caricamento** —
+// quindi nessun errore in pagina, solo un modulo che non finisce mai. E
+// `tests/tools/buchi.js` non poteva vederlo: guarda **se** un nome è
+// definito o aliasato, non **quando** arriva.
+//
+// La regola: dagli STRATI si aliasa (i loro tag stanno prima); da `index.html`
+// si chiama `BI.nome(...)` al momento dell'uso. È la stessa famiglia
+// dell'alias su una variabile riassegnata — *un alias fotografa, e il
+// problema è sempre QUANDO.*
+{
+  const daIndex = new Set();
+  const testoIndex = fs.readFileSync(repoPath('index.html'), 'utf8');
+  for (const m of testoIndex.matchAll(/^\s*BI\.(\w+)\s*=/gm)) daIndex.add(m[1]);
+  const daStrati = new Set();
+  for (const f of fs.readdirSync(repoPath('app'))) {
+    if (!/\.js$/.test(f)) continue;
+    for (const m of fs.readFileSync(repoPath('app', f), 'utf8').matchAll(/^\s*(?:window\.)?BI\.(\w+)\s*=/gm)) daStrati.add(m[1]);
+  }
+  const colpevoli = [];
+  for (const f of fs.readdirSync(repoPath('app'))) {
+    if (!/\.js$/.test(f)) continue;
+    for (const m of fs.readFileSync(repoPath('app', f), 'utf8').matchAll(/^\s*var (\w+) = BI\.(\w+);/gm)) {
+      if (daIndex.has(m[2]) && !daStrati.has(m[2])) colpevoli.push(f + ': ' + m[2]);
+    }
+  }
+  log('[E] Nessun file di app/ aliasa un nome che viene da index.html',
+    colpevoli.length === 0,
+    colpevoli.join(', ') + ' — index.html e\' l\'ULTIMO script: l\'alias congela undefined. Si chiama BI.nome(...) al momento dell\'uso.');
 }
 
 console.log('');
