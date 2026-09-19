@@ -29,7 +29,7 @@
 // rosso: la prima era `renderStars`.*
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, sorgenteChe } = require('./test-env');
 const { verificaStruttura } = require('./strati');
 
 let passed = 0, failed = 0;
@@ -45,9 +45,20 @@ async function run() {
   {
     const dati = fs.readFileSync(repoPath('app', 'dati.js'), 'utf8');
     log('[A] app/dati.js non nomina EPISODES', !/\bEPISODES\b/.test(dati.replace(/\/\/.*$/gm, '')));
-    log('[A] ...e applyEpisodeDialogue e' + "' rimasta col catalogo",
-      nomi.indexOf('applyEpisodeDialogue') === -1 &&
-      righeDiCodiceDi('index.html').some(function (r) { return /^  function applyEpisodeDialogue\(/.test(r); }));
+    // ⚠️ ROSSA IL 2026-09-19 PER UNA DECISIONE, E SEGUITA INVECE CHE TOLTA
+    // (⓪-undecies). Diceva «e' rimasta col catalogo», e cercava la funzione
+    // **in `index.html`**: col passo C2 e' uscita in `app/apertura.js`, col
+    // suo unico chiamante comune. **L'invariante non e' cambiato di una
+    // virgola — `dati.js` NON la possiede, la CHIEDE — e' cambiato chi
+    // risponde.** La riga adesso lo dice cosi': non e' fra i nomi di
+    // `dati.js`, ed esiste da qualche parte (`sorgenteChe` alza se non c'e').
+    // *Scriverci dentro il nome del file nuovo avrebbe rimesso la stessa
+    // trappola un passo piu' in la'.*
+    let doveSta = null;
+    try { doveSta = sorgenteChe('  function applyEpisodeDialogue(').nome; } catch (e) {}
+    log('[A] ...e applyEpisodeDialogue NON e' + "' sua: la possiede un altro file",
+      nomi.indexOf('applyEpisodeDialogue') === -1 && doveSta !== null && doveSta !== 'app/dati.js',
+      'trovata in: ' + String(doveSta));
     // ⚠️ SULLE RIGHE DI CODICE, NON SUL TESTO DEL FILE — e questa riga e' nata
     // debole: la prima versione cercava in tutto `dati`, e il commento in
     // testa al file CITA `BI.applyEpisodeDialogue(data)` fra apici inversi.

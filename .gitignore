@@ -11,3 +11,10 @@ tests/output/
 
 # Sistema
 .DS_Store
+
+# Lanciando la suite dalla radice con una redirezione a mano (2026-09-19):
+# .gitignore copriva solo tests/suite.log, e un log da 400 righe e' finito
+# in un commit. Un file di lavoro che entra nel repository non fa danno e non
+# si vede — ed e' per questo che la riga sta qui invece che nella memoria.
+suite.log
+server.log

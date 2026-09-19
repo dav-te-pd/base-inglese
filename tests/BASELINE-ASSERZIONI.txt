@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-19
-# Totale: 1499
+# Totale: 1502
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -73,7 +73,7 @@ test_conta_asserzioni.js 12
 test_conta_attese.js 16
 test_dati_estratto.js 15
 test_dialogo_extra.js 24
-test_dipendenze_dichiarate.js 51
+test_dipendenze_dichiarate.js 54
 test_episodi_corti.js 9
 test_episodio2.js 9
 test_errore_caricamento.js 13

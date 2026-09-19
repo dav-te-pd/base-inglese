@@ -169,8 +169,10 @@ async function run() {
   // fuori: questo numero smette di salire per l'estrazione dei moduli.
   // ⚠️ 21 -> 22 col PASSO B (`app/sessione.js`).
   // ⚠️ 22 -> 23 col PASSO C1 (`app/catalogo.js`).
-  log('[D] I file di script sono 23 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 23, foto.script.join(', '));
+  // ⚠️ 23 -> 24 col PASSO C2 (`app/apertura.js`), che sta per ULTIMO perche'
+  // possiede `moduliCaricatiAlBoot` — vera solo dopo l'ultimo file di modulo.
+  log('[D] I file di script sono 24 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 24, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

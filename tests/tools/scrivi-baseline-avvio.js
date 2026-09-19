@@ -151,7 +151,15 @@ const STORIA = [
   "            markup, quindi non ha nessuna ragione per la seconda fila. Il",
   "            conto passa da 22 a 23, e i dodici file dopo di lui slittano.",
   "            Moduli e pulizie invariati: il catalogo dice CHI esiste, non",
-  "            registra niente."
+  "            registra niente.",
+  "2026-09-19  app/apertura.js entra col PASSO C2, ULTIMO di tutti e nella",
+  "            seconda fila. Il conto passa da 23 a 24, e la riga inline",
+  "            scala di uno.",
+  "            ⚠️ L'ULTIMO POSTO NON E' UNA COMODITA': il file possiede",
+  "            `moduliCaricatiAlBoot`, che dichiara che al boot ogni modulo",
+  "            si e' registrato — vera solo dopo l'ultimo app/<modulo>.js.",
+  "            Moduli e pulizie invariati: apertura APRE i moduli, non ne",
+  "            registra nessuno."
 ];
 
   const intestazione = [
