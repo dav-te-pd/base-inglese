@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [chiamata], progressi.js [parsing], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [chiamata], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL TAG STA NELLA SECONDA FILA, DOPO ui-condivisa.js, E NON E' UNA SCELTA
 // DI STILE: gli alias in cima all'IIFE (`slotOptions`, `uiText`, `fillTemplate`,
 // ...) si prendono il valore A TEMPO DI PARSING. In <head>, dove l'avevo messo

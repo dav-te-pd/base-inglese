@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [parsing], progressi.js [parsing], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: dati.js [parsing], identita.js [parsing], mappa.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL PRIMO MODULO. Non uno strato: un MODULO — cioè la cosa che usa tutto
 // il resto, e il primo pezzo del progetto per cui «estrarre» ha voluto dire
 // «avere già estratto tutto quello che tocca».

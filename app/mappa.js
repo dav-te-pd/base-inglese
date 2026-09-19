@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], avvio.js [parsing], dati.js [parsing], identita.js [parsing], index.html [chiamata], orchestrazione.js [parsing], progressi.js [parsing], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: audio.js [parsing], avvio.js [parsing], dati.js [parsing], identita.js [parsing], index.html [chiamata], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ LO STRATO DELLA MAPPA E DEL PANNELLO ADMIN — l'ultimo pezzo del 22 che non
 // e' un modulo.
 //

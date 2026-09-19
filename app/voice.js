@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: dati.js [parsing], identita.js [parsing], mappa.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL QUINTO MODULO, E IL PIÙ GRANDE: 912 righe, 471 di codice. Voice
 // Practice e Voice Check sono un componente solo dietro due kind — `vcVariant`
 // è l'unica cosa che si dirama.

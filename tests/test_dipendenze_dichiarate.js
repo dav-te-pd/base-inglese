@@ -76,8 +76,10 @@ nodi.forEach(function (n) {
   // ⚠️ 10 -> 11 col QUINTO (`app/voice.js`). Ne resta uno.
   // ⚠️ 11 -> 12 col SESTO E ULTIMO (`app/dialogo.js`). I sei moduli sono
   // fuori, e questo numero ha finito di salire per questa ragione.
-  log('[B] Dodici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 12, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 12 -> 13 col PASSO B: `app/sessione.js` e' un file nuovo, e dipende
+  // come tutti.
+  log('[B] Tredici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 13, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -149,7 +151,23 @@ nodi.forEach(function (n) {
   // cosa che muove ancora questa riga e' il passo che libera lo stato di
   // sessione. *Un conto che saliva con una ragione scritta ha finito di
   // salire; se risale, la ragione non c'era.*
-  log('[B] Dieci dipendenze ALL\'INSU\'', allInsu.length === 10,
+  // ⚠️⚠️ **10 -> 3 COL PASSO B, ED E' IL NUMERO PER CUI QUESTA SERIE ESISTE.**
+  //
+  // Lo stato di sessione e i quattro pezzi che lo legavano sono usciti in
+  // `app/sessione.js`: **`itemText`, `recordPendingMastery`,
+  // `recordMultipleChoiceResult` e `buildMultipleChoiceOptions` non sono piu'
+  // nomi di `index.html`**, e i sei moduli hanno smesso di chiedere all'insu'.
+  //
+  // ⚠️ E LA MISURA HA CORRETTO LA PREVISIONE: avevo dichiarato **10 -> 1**.
+  // Sono tre, e i nomi che restano lo dicono da soli: `EPISODES`,
+  // `ID_PERSONALIZZA`, `ensureEpisodeSlotFields`,
+  // `migrateCustomizeSeenToModuleProgress` — **sono CATALOGO, non stato di
+  // sessione**, e escono col passo C. Il quarto e' `applyEpisodeDialogue`, la
+  // scelta dichiarata di `dati.js`. *Avevo contato solo quello e dimenticato
+  // gli altri: la previsione era ottimista di due file.*
+  //
+  // **Da qui questo numero puo' solo scendere, e scende col catalogo.**
+  log('[B] Tre dipendenze ALL\'INSU\'', allInsu.length === 3,
     allInsu.map(function (n) { return n.file; }).join(', '));
 
   const aParsing = nodi.filter(function (n) {
@@ -188,8 +206,9 @@ nodi.forEach(function (n) {
   // **E' l'unico modulo che non porta via solo del codice: porta via un
   // apparato.**
   // ⚠️ 9 -> 10 col sesto, per gli alias come tutti.
-  log('[B] Dieci dipendenze a tempo di PARSING',
-    aParsing.length === 10,
+  // ⚠️ 10 -> 11 col passo B, per gli alias come tutti.
+  log('[B] Undici dipendenze a tempo di PARSING',
+    aParsing.length === 11,
     aParsing.map(function (n) { return n.file; }).join(', '));
 }
 

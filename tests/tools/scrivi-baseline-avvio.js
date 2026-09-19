@@ -136,7 +136,16 @@ const STORIA = [
   "            da qui in poi stopAllModuleActivity non ne registra nessuna da",
   "            index.html. E espone un nome, dgAudioProtected, che il listener",
   "            globale in cattura di index.html chiama guardato - l'eccezione",
-  "            alla regola 16."
+  "            alla regola 16.",
+  "2026-09-19  app/sessione.js entra col PASSO B, e il conto passa da 21 a 22.",
+  "            ⚠️ MA E' IL PRIMO TAG CHE ENTRA IN MEZZO E NON IN FONDO: sta",
+  "            subito dopo ui-condivisa.js, perche' i moduli lo aliasano.",
+  "            Quindi NOVE file slittano di uno, da mappa.js a dialogo.js, e",
+  "            il diff di questo file e' lungo mentre il cambiamento e' uno",
+  "            solo. *Chi lo legge non deve cercare nove cose: deve cercare",
+  "            la dodicesima riga.*",
+  "            I moduli registrati e le pulizie NON cambiano: sessione.js non",
+  "            registra niente, tiene lo stato."
 ];
 
   const intestazione = [

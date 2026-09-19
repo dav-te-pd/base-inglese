@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: dati.js [parsing], identita.js [parsing], mappa.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL QUARTO MODULO. 419 righe — e il primo che porta via un TIMER.
 //
 // ⚠️ TRE NOMI ALL'INSÙ VERSO index.html, E SONO GLI STESSI TRE DI MATCH.

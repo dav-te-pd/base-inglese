@@ -133,6 +133,15 @@
 #               index.html. E espone un nome, dgAudioProtected, che il listener
 #               globale in cattura di index.html chiama guardato - l'eccezione
 #               alla regola 16.
+#   2026-09-19  app/sessione.js entra col PASSO B, e il conto passa da 21 a 22.
+#               ⚠️ MA E' IL PRIMO TAG CHE ENTRA IN MEZZO E NON IN FONDO: sta
+#               subito dopo ui-condivisa.js, perche' i moduli lo aliasano.
+#               Quindi NOVE file slittano di uno, da mappa.js a dialogo.js, e
+#               il diff di questo file e' lungo mentre il cambiamento e' uno
+#               solo. *Chi lo legge non deve cercare nove cose: deve cercare
+#               la dodicesima riga.*
+#               I moduli registrati e le pulizie NON cambiano: sessione.js non
+#               registra niente, tiene lo stato.
 #
 # Lo scrive tests/tools/scrivi-baseline-avvio.js guidando l'app.
 # Ultimo aggiornamento: 2026-09-19
@@ -147,16 +156,17 @@ script 8 app/quiz-engine.js
 script 9 app/dati.js
 script 10 app/orchestrazione.js
 script 11 app/ui-condivisa.js
-script 12 app/mappa.js
-script 13 app/storycards.js
-script 14 app/personalizza.js
-script 15 app/repeataloud.js
-script 16 app/flashcard.js
-script 17 app/match.js
-script 18 app/speedmatch.js
-script 19 app/voice.js
-script 20 app/dialogo.js
-script 21 (inline)
+script 12 app/sessione.js
+script 13 app/mappa.js
+script 14 app/storycards.js
+script 15 app/personalizza.js
+script 16 app/repeataloud.js
+script 17 app/flashcard.js
+script 18 app/match.js
+script 19 app/speedmatch.js
+script 20 app/voice.js
+script 21 app/dialogo.js
+script 22 (inline)
 modulo 1 meetTheStory
 modulo 2 whyWeSayIt
 modulo 3 personalizzazione

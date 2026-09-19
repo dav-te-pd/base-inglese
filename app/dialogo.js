@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], mappa.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ IL SESTO E ULTIMO MODULO. 736 righe, 430 di codice: un componente solo
 // per i tre passi del Dialogo Completo — Ascolta e Ripeti, Ripeti a Tempo,
 // Dialogo Continuo — che si distinguono per PROFILO, non per codice.

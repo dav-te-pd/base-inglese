@@ -75,9 +75,18 @@ async function run() {
     });
     log('[B] Non nomina nessuno stato di sessione', trovati.length === 0, trovati.join(', '));
 
-    log('[B] itemText e\' rimasta in index.html', !righe.some(function (r) {
+    // ⚠️ QUESTA RIGA E' CAMBIATA COL PASSO B (2026-09-19), e l'invariante
+    // NON e' cambiato con lei: **`ui-condivisa` non tocca lo stato di
+    // sessione.** Quello che e' cambiato e' DOVE sta l'altra meta' della
+    // prova: `itemText` non e' piu' in `index.html`, e' in
+    // `app/sessione.js`, insieme allo stato che va a prendere.
+    //
+    // *La coppia resta la stessa — `fillTemplate` qui perche' RICEVE,
+    // `itemText` di la' perche' VA A PRENDERE — ed e' il criterio che ha
+    // deciso entrambi i passi. Un rosso da seguire, non da correggere.*
+    log('[B] itemText sta in app/sessione.js, non qui', !righe.some(function (r) {
       return /^  function itemText\s*\(/.test(r);
-    }) && righeDiCodiceDi('index.html').some(function (r) { return /^  function itemText\s*\(/.test(r); }));
+    }) && righeDiCodiceDi('app', 'sessione.js').some(function (r) { return /^  function itemText\s*\(/.test(r); }));
 
     // fillTemplate entra perche' riceve episodio e valori: la prova e' la firma.
     const firma = righe.find(function (r) { return /^  function fillTemplate\s*\(/.test(r); });

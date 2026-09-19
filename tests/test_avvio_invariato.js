@@ -167,8 +167,9 @@ async function run() {
   // smentito — la dichiarazione e' stata corretta verso la misura.
   // ⚠️ 20 -> 21 col SESTO E ULTIMO (`app/dialogo.js`). I sei moduli sono
   // fuori: questo numero smette di salire per l'estrazione dei moduli.
-  log('[D] I file di script sono 21 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 21, foto.script.join(', '));
+  // ⚠️ 21 -> 22 col PASSO B (`app/sessione.js`).
+  log('[D] I file di script sono 22 (' + esterni + ' esterni + ' + inline + ' inline)',
+    foto.script.length === 22, foto.script.join(', '));
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'

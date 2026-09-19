@@ -1,4 +1,4 @@
-// DIPENDE DA: dati.js [parsing], identita.js [parsing], index.html [chiamata], mappa.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: dati.js [parsing], identita.js [parsing], mappa.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata], spazio.js [parsing], suoni.js [parsing], ui-condivisa.js [parsing]
 // IL SECONDO MODULO — Meet the Story e Why We Say It, e sono DUE passi della
 // mappa in un file solo.
 //
