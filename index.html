@@ -3643,6 +3643,9 @@
   var views = BI.views;
   var showView = BI.showView;
   var chiudiOverlayAperti = BI.chiudiOverlayAperti;
+  var moduloDiAiutoAttivo = BI.moduloDiAiutoAttivo;
+  var openAttemptPopup = BI.openAttemptPopup;
+  var closeAttemptPopup = BI.closeAttemptPopup;
   var openEpisodeMap = BI.openEpisodeMap;
   var completeModule = BI.completeModule;
   var openConfigPanel = BI.openConfigPanel;
@@ -4273,7 +4276,7 @@
     if (actionBtn) {
       var action = actionBtn.getAttribute('data-help-action');
       if (action === 'instructions') {
-        renderModuleInstructionField(activeHelpModule, 'helpReminder', uiText('aiuto.titleInstructions'));
+        renderModuleInstructionField(moduloDiAiutoAttivo(), 'helpReminder', uiText('aiuto.titleInstructions'));
       } else {
         document.getElementById('help-overlay-title').textContent =
           uiText(action === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
@@ -4282,7 +4285,7 @@
       return;
     }
     if (e.target.id === 'help-form-back') {
-      openHelpMenu(activeHelpModule);
+      openHelpMenu(moduloDiAiutoAttivo());
     }
   });
 
@@ -4294,7 +4297,7 @@
     if (!text) return;
     saveHelpRequest(getUserName(), {
       episodeId: currentEpisode.id,
-      moduleId: activeHelpModule.id,
+      moduleId: moduloDiAiutoAttivo().id,
       type: type,
       text: text,
       createdAt: new Date().toISOString()
@@ -5807,40 +5810,6 @@
 
 
 
-  // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
-  // Round/Match Practice/Flash Card reuse this same function+markup, never a
-  // copy each. wasCorrect picks the message group from
-  // messaggi-feedback.json's valvolaSicurezzaMessages: nonRiuscita (still
-  // hasn't gotten it right at the max attempt) vs riuscita (got it right
-  // despite needing several tries) — same reassuring-vs-recognition split
-  // for every caller. onRetry/onNext are the two actions; a caller with no
-  // meaningful "try again right now" step (Speed Match/Match Practice/Flash
-  // Card, where an answer is already locked in once submitted) passes
-  // onRetry as null/undefined and only "Vai avanti" shows.
-  var attemptPopupOnRetry = null;
-  var attemptPopupOnNext = null;
-
-  function openAttemptPopup(wasCorrect, onRetry, onNext) {
-    attemptPopupOnRetry = onRetry || null;
-    attemptPopupOnNext = onNext || null;
-    document.getElementById('attempt-popup-retry').hidden = !attemptPopupOnRetry;
-    var fallback = wasCorrect
-      ? { title: 'Ce l\'hai fatta!', body: 'Continua pure, o vai avanti quando vuoi.' }
-      : { title: 'Tranquillo, capita!', body: 'Continua pure, o passa avanti quando vuoi.' };
-    document.getElementById('attempt-popup-title').textContent = fallback.title;
-    document.getElementById('attempt-popup-body').textContent = fallback.body;
-    document.getElementById('attempt-popup').classList.add('is-open');
-    loadFeedbackMessages().then(function (data) {
-      var group = data.valvolaSicurezzaMessages && data.valvolaSicurezzaMessages[wasCorrect ? 'riuscita' : 'nonRiuscita'];
-      if (!group) return;
-      document.getElementById('attempt-popup-title').textContent = group.title;
-      document.getElementById('attempt-popup-body').textContent = pickRandom(group.bodies);
-    }).catch(function () {});
-  }
-
-  function closeAttemptPopup() {
-    document.getElementById('attempt-popup').classList.remove('is-open');
-  }
 
   // Voice Practice's "TENTATIVO N DI M" always names the attempt the
   // student is ABOUT to make, not the one they just finished — set at
@@ -6433,15 +6402,6 @@
 
 
 
-  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnRetry) attemptPopupOnRetry();
-  });
-
-  document.getElementById('attempt-popup-next').addEventListener('click', function () {
-    closeAttemptPopup();
-    if (attemptPopupOnNext) attemptPopupOnNext();
-  });
 
   // Recording/timers/popup are stopped centrally by showView()'s own
   // stopAllModuleActivity() (see near its definition) — not repeated here.
@@ -8520,7 +8480,6 @@
   BI.resolveEpisodeOrder = resolveEpisodeOrder;
   BI.moduleStepId = moduleStepId;
   BI.openModuleFromMap = openModuleFromMap;
-  BI.closeAttemptPopup = closeAttemptPopup;
   BI.migrateCustomizeSeenToModuleProgress = migrateCustomizeSeenToModuleProgress;
   BI.episodioCorrente = function () { return currentEpisode; };
   BI.valoriCorrenti = function () { return currentValues; };

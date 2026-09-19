@@ -2646,6 +2646,42 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ DUE DEI TRE TEST CHE GUIDANO IL POPUP DEI TENTATIVI **MUOIONO** INVECE DI FALLIRE
+
+**Misurato il 2026-09-19**, togliendo di proposito i due listener del popup
+(falsificazione del passo che l'ha spostato in `ui-condivisa`):
+
+| File | Cosa fa senza i listener |
+|---|---|
+| `test_ui_condivisa_estratta.js` | **rosso pulito**: `[C]` dice «4» invece di «6» |
+| `test_batch9.js` | **rosso pulito**: 20/21, cade «Match Practice reached Schermata Finale» |
+| `test_batch7.js` | ⚠️ **si appende** — terminato a 400 s senza stampare niente |
+| `test_outcome_step_ids.js` | ⚠️ **si appende** — idem |
+
+È la famiglia ⑰-septies: **un test che MUORE non è un test che FALLISCE.** Il
+ciclo aspetta che il popup si chiuda per andare avanti; se non si chiude, non
+c'è nessuna asserzione rossa — c'è una suite che non finisce. In una corsa
+normale questo si vede come «la suite è lenta» o come un timeout della CI, non
+come un difetto del popup.
+
+⚠️ **E correggeva una cosa che avevo detto io**: nella valutazione di questo
+passo avevo scritto che «il popup la suite lo guida già, quei cicli si
+fermerebbero». Vero a metà: **uno** dei tre si ferma dicendolo, **due** si
+fermano e basta.
+
+**Un secondo dettaglio trovato guardando lì:** `tests/quiz-driver.js:97` fa
+`page.click('#attempt-popup-next').catch(function () {})` — un errore ingoiato
+che non è censito in `tests/ERRORI-INGOIATI.md`.
+
+**Quando si esegue:** *al prossimo giro sulle attese dei quiz*, oppure prima di
+estrarre Match o Speed Match — sono i moduli i cui cicli si appendono. La forma
+della correzione è già nota: un'attesa con un tetto che, scaduto, fallisce
+dicendo cosa aspettava, invece di un `while` che gira per sempre.
+
+**Quello che NON va fatto:** alzare i timeout. *Un test che si appende non
+chiede più tempo: chiede un'asserzione.*
+
+
 ### ⚠️ DICIASSETTE FINTI SINTETIZZATORI SU QUARANTUNO NON SANNO DIRE SE STANNO PARLANDO
 
 **Trovato il 2026-09-19** scrivendo `tests/test_comportamento_audio.js`, e

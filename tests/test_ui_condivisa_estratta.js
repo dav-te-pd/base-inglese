@@ -88,13 +88,20 @@ async function run() {
     }));
   }
 
-  // ── [C] I QUATTRO LISTENER SONO VENUTI COL FILE ─────────────────────
+  // ── [C] I LISTENER SONO VENUTI COL FILE ─────────────────────
   {
     // ⚠️ Senza di loro nessun errore: gli overlay semplicemente non si
     // chiuderebbero. E' il guasto MUTO di questa estrazione, quindi e' la
     // riga che serve di piu'.
     const listener = righe.filter(function (r) { return /addEventListener\('click'/.test(r); });
-    log('[C] I quattro listener di chiusura sono nel file', listener.length === 4, String(listener.length));
+    // ⚠️ ERANO QUATTRO, SONO SEI dal 2026-09-19, e il numero è stato SEGUITO
+    // e non alzato per farlo tornare: il popup dei tentativi è entrato con i
+    // suoi DUE listener («Riprova» e «Vai avanti»), perché un pezzo non è solo
+    // le sue funzioni — sono le funzioni, lo stato che tengono e i listener
+    // che le chiamano. L'invariante non è cambiato: «questo file aggancia
+    // listener a tempo di parsing, ed è la ragione della seconda fila». È
+    // cambiato quanti ne aggancia, e adesso ci sono DUE ragioni invece di una.
+    log('[C] I sei listener sono nel file (4 di chiusura + 2 del popup)', listener.length === 6, String(listener.length));
     log('[C] E il listener di Escape NON c\'e\' (chiude anche l\'Admin)',
       !righe.some(function (r) { return /'keydown'/.test(r); }) &&
       righeDiCodiceDi('index.html').some(function (r) { return /'keydown'/.test(r); }));
@@ -154,6 +161,40 @@ async function run() {
     log('[E] L\'overlay Help si apre...', !!escape && escape.prima === true, JSON.stringify(escape));
     log('[E] ...e Escape lo chiude passando da BI.chiudiOverlayAperti',
       !!escape && escape.dopo === false, JSON.stringify(escape));
+
+    // ── [F] IL MENU HELP DA DENTRO: chi tiene lo stato lo tiene per tutti ──
+    // ⚠️ Stessa famiglia della [E], e nasce dal rosso OPPOSTO. `activeHelpModule`
+    // vive in questo strato ed è RIASSEGNATA (`openHelpFor`), ma i TRE punti che
+    // la leggono sono listener rimasti in index.html. Un alias non può
+    // funzionare — copierebbe `null` per sempre — quindi si chiede con
+    // `BI.moduloDiAiutoAttivo()`.
+    //
+    // ⚠️ COSA SI PERDE SENZA, ED È UN CASO VERO DEL 2026-09-19: quei tre punti
+    // davano `activeHelpModule is not defined`, cioè il pannello Help si apriva
+    // e **moriva al primo pulsante** — «Promemoria», «Indietro» e l'invio di una
+    // richiesta d'aiuto, tutti e tre morti. **Nessuna delle 1458 asserzioni lo
+    // vedeva**: [C] contava i listener, [D] apriva l'app, [E] guidava Escape.
+    // Nessuna premeva un pulsante DENTRO il menu.
+    //
+    // COME: click e lettura nella STESSA chiamata sincrona. Il gestore in
+    // index.html mette titolo e corpo prima di qualunque `fetch`, quindi se
+    // arriva in fondo il corpo è già cambiato quando la riga dopo lo legge; se
+    // muore alla prima riga, non c'è niente da leggere. Nessun cronometro
+    // (regola 19).
+    const menuHelp = viva ? await page.evaluate(function () {
+      window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
+      var chiesto = window.BI.moduloDiAiutoAttivo();
+      var corpoPrima = document.getElementById('help-overlay-body').innerHTML;
+      document.querySelector('[data-help-action="instructions"]').click();
+      return {
+        id: chiesto && chiesto.id,
+        cambiato: document.getElementById('help-overlay-body').innerHTML !== corpoPrima
+      };
+    }) : null;
+    log('[F] Lo strato sa dire QUALE modulo ha chiesto aiuto',
+      !!menuHelp && menuHelp.id === 'repeatAloud', JSON.stringify(menuHelp));
+    log('[F] ...e il gestore di index.html arriva in fondo premendo «Promemoria»',
+      !!menuHelp && menuHelp.cambiato === true, JSON.stringify(menuHelp));
 
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();

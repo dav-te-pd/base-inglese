@@ -156,7 +156,16 @@
       LOAD_ERROR_LAST_RESORT.inlineText + '</p>';
   }
 
+  // ⚠️ SI CHIEDE CON UNA FUNZIONE, NON CON UN ALIAS, e la ragione è la stessa
+  // che il 2026-09-18 ha fatto sette file rossi: `activeHelpModule` viene
+  // RIASSEGNATA (in `openHelpFor`), e un alias ne copia il valore del momento
+  // — cioè `null`, per sempre. `verificaStruttura` vieta apposta l'alias su un
+  // nome riassegnato.
   var activeHelpModule = null;
+
+  function moduloDiAiutoAttivo() {
+    return activeHelpModule;
+  }
 
   var helpOverlayEl = document.getElementById('help-overlay');
 
@@ -442,7 +451,77 @@
     if (howItWorksOverlayEl.classList.contains('is-open')) closeHowItWorksOverlay();
   }
 
+
+  // ⚠️ IL POPUP DEI TENTATIVI VIENE INTERO: le due funzioni, lo STATO che
+  // tengono e i DUE LISTENER che le chiamano. Non è pignoleria — lasciando lo
+  // stato e i listener in index.html, il 2026-09-18 sono usciti
+  // «attemptPopupOnRetry is not defined» su nove file. *Un pezzo non è solo le
+  // sue funzioni.*
+  //
+  // ⚠️ E LA MISURA DEI BUCHI NON LO VEDE, per una ragione che vale la pena
+  // sapere: i due `var` erano nominati SOLO dentro i listener, rimasti anche
+  // loro in index.html — quindi da lì il conto tornava. `buchi.js` guarda chi
+  // chiama cosa, non chi POSSIEDE lo stato di un pezzo.
+  //
+  // PERCHÉ STA QUI, e non in Voice dove viveva per posizione: lo chiamano
+  // quattro moduli (Voice Practice, Match, Speed Match, Flash Card) e
+  // `stopAllModuleActivity` in `app/mappa.js`. Finché stava dentro la regione
+  // di Voice, uno STRATO chiedeva a un MODULO — il verso che questa serie
+  // esiste per eliminare, e il debito dichiarato in testa a `app/mappa.js`.
+  // *Sta vicino non vuol dire è suo: il criterio è chi lo chiama.*
+  //
+  // ⚠️ I DUE LISTENER SI AGGANCIANO A TEMPO DI PARSING, quindi questo file
+  // deve restare nella SECONDA FILA. Era già vero per i due overlay; adesso lo
+  // è per un secondo motivo, e vale la pena che siano due.
+  // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
+  // Round/Match Practice/Flash Card reuse this same function+markup, never a
+  // copy each. wasCorrect picks the message group from
+  // messaggi-feedback.json's valvolaSicurezzaMessages: nonRiuscita (still
+  // hasn't gotten it right at the max attempt) vs riuscita (got it right
+  // despite needing several tries) — same reassuring-vs-recognition split
+  // for every caller. onRetry/onNext are the two actions; a caller with no
+  // meaningful "try again right now" step (Speed Match/Match Practice/Flash
+  // Card, where an answer is already locked in once submitted) passes
+  // onRetry as null/undefined and only "Vai avanti" shows.
+  var attemptPopupOnRetry = null;
+  var attemptPopupOnNext = null;
+
+  function openAttemptPopup(wasCorrect, onRetry, onNext) {
+    attemptPopupOnRetry = onRetry || null;
+    attemptPopupOnNext = onNext || null;
+    document.getElementById('attempt-popup-retry').hidden = !attemptPopupOnRetry;
+    var fallback = wasCorrect
+      ? { title: 'Ce l\'hai fatta!', body: 'Continua pure, o vai avanti quando vuoi.' }
+      : { title: 'Tranquillo, capita!', body: 'Continua pure, o passa avanti quando vuoi.' };
+    document.getElementById('attempt-popup-title').textContent = fallback.title;
+    document.getElementById('attempt-popup-body').textContent = fallback.body;
+    document.getElementById('attempt-popup').classList.add('is-open');
+    loadFeedbackMessages().then(function (data) {
+      var group = data.valvolaSicurezzaMessages && data.valvolaSicurezzaMessages[wasCorrect ? 'riuscita' : 'nonRiuscita'];
+      if (!group) return;
+      document.getElementById('attempt-popup-title').textContent = group.title;
+      document.getElementById('attempt-popup-body').textContent = pickRandom(group.bodies);
+    }).catch(function () {});
+  }
+
+  function closeAttemptPopup() {
+    document.getElementById('attempt-popup').classList.remove('is-open');
+  }
+
+  document.getElementById('attempt-popup-retry').addEventListener('click', function () {
+    closeAttemptPopup();
+    if (attemptPopupOnRetry) attemptPopupOnRetry();
+  });
+
+  document.getElementById('attempt-popup-next').addEventListener('click', function () {
+    closeAttemptPopup();
+    if (attemptPopupOnNext) attemptPopupOnNext();
+  });
+
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
+  BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
+  BI.openAttemptPopup = openAttemptPopup;
+  BI.closeAttemptPopup = closeAttemptPopup;
   BI.uiText = uiText;
   BI.uiTextWith = uiTextWith;
   BI.openOverlay = openOverlay;

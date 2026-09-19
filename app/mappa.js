@@ -17,12 +17,15 @@
 // difetto. Questi nomi spariscono quando esce il catalogo, che e' l'unica cosa
 // grossa rimasta senza un nome nel piano.*
 //
-// ⚠️ E DUE CHIAMATE VANNO IN AVANTI, VERSO COSE CHE NON SONO ANCORA USCITE:
-// `BI.closeAttemptPopup` (dentro `stopAllModuleActivity`) vive nella regione di
-// Voice, e `BI.openModuleFromMap` nel catalogo. La prima e' un pezzo CONDIVISO
-// che sta in un modulo per posizione — il popup dei tentativi e' «un pezzo
-// solo» dal passo 14b — e **va spostata in ui-condivisa prima che Voice esca**,
-// altrimenti questo strato dipendera' da un modulo, che e' il verso sbagliato.
+// ⚠️ UNA CHIAMATA VA ANCORA IN AVANTI: `BI.openModuleFromMap`, che vive nel
+// catalogo e non e' ancora uscito.
+//
+// Erano DUE. L'altra era `BI.closeAttemptPopup` (dentro `stopAllModuleActivity`),
+// che stava nella regione di Voice: uno STRATO che chiedeva a un MODULO, il
+// verso sbagliato. Il 2026-09-19 il popup dei tentativi e' passato in
+// `app/ui-condivisa.js`, dove sta per mestiere e non per posizione, e quella
+// riga adesso chiede a uno strato che questo file dichiara gia' fra le proprie
+// dipendenze.
 //
 // ⚠️ IL TAG STA NELLA SECONDA FILA: `configPanelOverlayEl` e `configPanelBodyEl`
 // prendono il loro nodo a tempo di parsing.
