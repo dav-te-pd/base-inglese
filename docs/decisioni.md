@@ -2646,6 +2646,55 @@ Protetto da `tests/test_modulo_pronto.js`, visto fallire su due guasti.
 
 ## Difetti silenziosi trovati e non ancora corretti
 
+### ⚠️ IL TAGLIO PER SILENZIO CONTA DAL CLICK, UNA VOLTA SOLA — e il nome dice un'altra cosa
+
+**Misurato il 2026-09-19** su una domanda precisa di chi guida il progetto:
+*«esiste, in quel percorso, un valore di attesa che NON è tre secondi?»*
+
+**Risposta: no.** Nella regione di Voice ci sono **due soli** timer, più uno che
+non decide niente:
+
+| timer | valore | cosa fa |
+|---|---|---|
+| `vcSilenceTimeoutId` | `silenceTimeoutSeconds * 1000` = **3000 ms** | taglia se non è stato riconosciuto NIENTE |
+| `vcTimeoutId` | `parole × 1000 + 3000` ms | il tetto massimo della registrazione |
+| `vcTimerInterval` | 1000 ms | aggiorna solo la scritta «0s, 1s, 2s» |
+
+Cercati anche i numeri nudi in tutta la regione: restano `1000` (la scritta) e
+`100`. **Nessun terzo valore.**
+
+⚠️ **MA LA MISURA NE HA TROVATA UN'ALTRA, e spiega il sintomo senza bisogno
+di un secondo numero: quel timer parte al CLICK e non viene MAI riavviato.**
+Misurato: `vcSilenceTimeoutId = setTimeout(...)` compare **una volta sola** in
+tutto il file, e `vcHeardAnySpeech` viene letto solo dentro quella callback.
+
+Quindi la regola vera non è «tre secondi di silenzio»: è **«entro tre secondi
+dal click devi essere già stato riconosciuto»**. Chi aspetta due secondi e poi
+parla lascia al riconoscimento **meno di un secondo** per produrre il suo primo
+risultato — e il primo interim di Chrome arriva con un ritardo suo. Se arriva
+dopo il terzo secondo, il taglio scatta **mentre la persona sta parlando**.
+
+*È la stessa forma della ⑰-quater: il codice fa quello che il suo commento
+dice («secondi dall'avvio»), ma il NOME `silenceTimeoutSeconds` fa pensare a una
+finestra che si riarma a ogni silenzio. Il nome è la cosa che si legge.*
+
+**NON È STATO RIPRODOTTO**, e va detto: il finto riconoscimento risponde
+subito, quindi il ritardo del primo interim **qui non esiste**. È il terzo
+sintomo dichiarato scoperto in testa a `tests/test_comportamento_audio.js`.
+
+**Quello che chi guida il progetto può escludere in un gesto, e io no:** un
+**override** del Pannello Admin nel suo `localStorage` (chiave
+`baseinglese:configOverrides`) che cambi `silenceTimeoutSeconds` sul suo
+browser soltanto. Da qui non è visibile.
+
+**Quando si esegue:** *al primo lavoro sul microfono di Voice Practice.* Le due
+strade, nessuna scelta: ① riarmare il timer a ogni risultato — cioè far
+diventare vero quello che il nome promette; ② lasciarlo assoluto e **cambiargli
+nome** (`primoAscoltoEntroSecondi` o simile). *La prima cambia il
+comportamento, la seconda cambia solo chi legge — e vanno decise, non
+scelte da chi passa di lì.*
+
+
 ### ⚠️ QUATTRO PEZZI CONDIVISI RESTANO IN `index.html` PERCHÉ LEGANO LA SESSIONE
 
 **Misurato il 2026-09-19**, prima del primo modulo. I sei moduli condividono
