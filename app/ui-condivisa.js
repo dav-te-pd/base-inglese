@@ -225,7 +225,8 @@
     var placeholderTitle = options.placeholderTitle || module.label || '';
     var titleEl = document.getElementById('howitworks-overlay-title');
     renderSpiegazioneTitle(titleEl, placeholderTitle);
-    document.getElementById('howitworks-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    document.getElementById('howitworks-overlay-body').innerHTML =
+      '<p class="module-status-text">' + uiText('condivisi.caricamento') + '</p>';
     howItWorksOverlayEl.classList.add('is-open');
 
     var checkboxRow = document.getElementById('howitworks-overlay-checkbox-row');
@@ -298,6 +299,41 @@
     var pezzi = percorso.split('.');
     for (var i = 0; i < pezzi.length && nodo; i++) nodo = nodo[pezzi[i]];
     return (typeof nodo === 'string' && nodo) ? nodo : (ultimaIstanza || '');
+  }
+
+  // ⚠️ IL PONTE FRA IL MARKUP E I TESTI — passo 1.3, 2026-09-20.
+  //
+  // Riempie col suo testo ogni elemento che porta `data-testo="percorso"`.
+  // **E' il gemello esatto di `hydrateIcons`** (app/identita.js): la' un
+  // attributo dice quale icona, qui quale testo. Chi scrive markup non chiama
+  // `uiText`, scrive un attributo — che e' la ragione per cui questo esiste
+  // invece di trentacinque righe `getElementById(...).textContent = ...`.
+  //
+  // ⚠️ PERCHE' NON BASTA CHIAMARLA UNA VOLTA AL BOOT: i testi arrivano da un
+  // `fetch`, e al boot la cache e' vuota. Chiamarla li' riempirebbe tutto di
+  // stringhe vuote **una volta sola**, e nessuno le rimetterebbe piu'.
+  //
+  // Gira dove i testi sono GARANTITI: dentro il `.then` di
+  // `openModuleFromMap`, che aspetta gia' `loadModuleInstructions` e, se non
+  // arriva, non apre il modulo (regola 35 — si va alla schermata d'errore).
+  // Quindi quando una vista di modulo compare, i suoi testi ci sono gia': non
+  // esiste l'istante in cui un pulsante e' vuoto.
+  //
+  // ⚠️ E LA MAPPA NON E' COPERTA, ED E' UN LIMITE DICHIARATO, NON UN BUCO
+  // DIMENTICATO: `openEpisodeMap` e' SINCRONA e non aspetta niente. Le sue
+  // stringhe restano scritte nel markup finche' non si decide se la mappa
+  // debba aspettare i testi — che e' una decisione sul COMPORTAMENTO (avrebbe
+  // una schermata d'errore in piu'), non uno spostamento. Sta in
+  // docs/decisioni-stato.md come 1.3b.
+  //
+  // Un percorso che non esiste lascia il testo com'era invece di svuotarlo:
+  // una chiave sbagliata si vede come "non e' cambiato niente", non come un
+  // pulsante senza scritta.
+  function hydrateTesti(root) {
+    (root || document).querySelectorAll('[data-testo]').forEach(function (el) {
+      var t = uiText(el.getAttribute('data-testo'));
+      if (t) el.textContent = t;
+    });
   }
 
   // Lo stesso testo con i segnaposto {nome} sostituiti. Separata da uiText
@@ -593,8 +629,24 @@
   // json; the em dash wrapped awkwardly on narrow screens, so the JSON's
   // own title is now just the module name and this always adds the
   // fixed row on top.
+  // ⚠️ «Spiegazione» ARRIVA DAL FILE, dal 2026-09-20 (passo 1.3): era scritta
+  // qui, e il passo che ha tolto le 54 dal markup non l'avrebbe vista — sta
+  // nel JavaScript, non in `index.html`. *Le stesse parole vivevano in due
+  // posti, e il censimento ne guardava uno solo.*
+  //
+  // ⚠️ E LA FRASE DI ULTIMA ISTANZA NON E' PIGRIZIA, e' l'unico punto del
+  // passo che ne ha bisogno: questo overlay si apre anche DALLA MAPPA, dove
+  // i testi possono non essere ancora arrivati (`openEpisodeMap` e' sincrona
+  // e non li aspetta). Senza, il titolo resterebbe vuoto per l'istante in cui
+  // il corpo dice gia' «Caricamento...» — cioe' un titolo muto su una
+  // schermata che sta parlando. Se ne va col passo 1.3b, quando si deciderà
+  // se la mappa debba aspettare i testi.
+  //
+  // *E' lo stesso secondo parametro che `uiText` ha da sempre per i casi in
+  // cui il testo vero non puo' essere ancora arrivato — non un meccanismo
+  // nuovo, e non l'eccezione della regola 35, che riguarda la circolarità.*
   function renderSpiegazioneTitle(el, moduleName) {
-    el.innerHTML = '<span class="spiegazione-title-kicker">Spiegazione</span>' +
+    el.innerHTML = '<span class="spiegazione-title-kicker">' + uiText('condivisi.spiegazione', 'Spiegazione') + '</span>' +
       (moduleName ? '<span class="spiegazione-title-name">' + moduleNameHtml(moduleName) + '</span>' : '');
   }
 
@@ -1066,6 +1118,7 @@
   BI.openAttemptPopup = openAttemptPopup;
   BI.closeAttemptPopup = closeAttemptPopup;
   BI.uiText = uiText;
+  BI.hydrateTesti = hydrateTesti;
   BI.uiTextWith = uiTextWith;
   BI.openOverlay = openOverlay;
   BI.closeOverlay = closeOverlay;

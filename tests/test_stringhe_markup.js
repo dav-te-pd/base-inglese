@@ -1,0 +1,168 @@
+// PROTEGGE: che le stringhe che lo studente legge dentro un modulo NON siano
+// scritte in `index.html`, e che il markup le riceva davvero invece di restare
+// vuoto.
+//
+// COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-20 «Spiegazione», «Help»,
+// «← Mappa», «Non lo so», «Avanti →», «Ripasso», «Caricamento...» e altri
+// erano scritti nel markup, 54 occorrenze in tutto. Un'edizione francese
+// avrebbe avuto la sua cartella `data/francese/it/` con i suoi testi — e
+// quelle 54 sarebbero rimaste italiane, perché non stanno in nessun file di
+// dati: stanno nel codice, che è uno solo per tutte le edizioni.
+//
+// ⚠️ E LE DUE ASSERZIONI SI COPRONO A VICENDA, nessuna delle due basta.
+//
+// La [A] toglie la POSSIBILITÀ: se in `index.html` quelle parole non ci sono
+// più, riscriverle è una modifica visibile invece di una scorciatoia. Ma da
+// sola è soddisfatta anche da un markup vuoto che **resta vuoto**: pulsanti
+// senza scritta, e nessun errore da nessuna parte.
+// La [C] guarda il rovescio — a modulo aperto i pulsanti hanno un testo — e da
+// sola sarebbe soddisfatta anche rimettendo le parole nel markup.
+//
+// IL CASO PIÙ DIVERSO (regola 42): **la Spiegazione aperta DALLA MAPPA, prima
+// di aver aperto un solo modulo.** È il caso che ha deciso dove sta la
+// chiamata: il titolo di quell'overlay è markup statico, e legare il
+// riempimento all'apertura di un modulo lo avrebbe lasciato vuoto proprio lì.
+// Non è il caso più complicato — è quello a cui MANCA il passaggio che tutti
+// gli altri hanno (nessun modulo aperto prima). La [D] lo guida.
+//
+// LIMITE DICHIARATO, e non è una dimenticanza: **la vista MAPPA non è
+// coperta**, perché le sue stringhe non si sono spostate. `openEpisodeMap` è
+// sincrona e non aspetta i testi: spostarle vorrebbe dire farla aspettare,
+// cioè darle una schermata d'errore in più — una decisione sul comportamento,
+// non uno spostamento. È il passo 1.3b in docs/decisioni-stato.md, e finché
+// non è deciso quelle sei occorrenze restano nel markup di proposito.
+
+const fs = require('fs');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, fileEdizione } = require('./test-env');
+const { openModule } = require('./map-driver');
+
+let passed = 0, failed = 0;
+function log(nome, ok, extra) {
+  if (ok) { passed++; console.log('OK   - ' + nome); }
+  else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
+}
+
+// Le parole che dal 2026-09-20 NON devono più comparire come testo nel markup
+// dei moduli. Non è l'elenco completo delle 54: è quello delle ripetute, cioè
+// quelle che una riscrittura per sbaglio rimetterebbe per prime.
+const SPARITE = ['Non lo so', 'Avanti →', 'Ripasso', 'Caricamento...',
+                 'Esci e riprendi dopo', 'Mostra pronuncia', 'Riprova ancora', 'Vai avanti →'];
+
+const mockInit = () => {
+  Object.defineProperty(window, 'speechSynthesis', { value: {
+    speak(u) { if (u.onstart) u.onstart(); setTimeout(function () { if (u.onend) u.onend(); }, 10); },
+    cancel() {}, pause() {}, resume() {},
+    getVoices() { return [{ name: 'F', lang: 'en-US' }]; }, onvoiceschanged: null
+  }, configurable: true });
+  window.SpeechSynthesisUtterance = function (t) { this.text = t; };
+};
+
+async function apriMappa(page, utente) {
+  await page.addInitScript(mockInit);
+  await page.goto(APP_URL);
+  await page.fill('#name-input', utente);
+  await page.click('#onboarding-form button[type=submit]');
+  await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
+  await page.evaluate(function (u) {
+    localStorage.setItem('baseinglese:gate:customizeSeen:' + u, '1');
+    localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
+  }, utente);
+  await page.click('#go-episode');
+  await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
+}
+
+async function run() {
+  const browser = await launchBrowser();
+  const html = fs.readFileSync(repoPath('index.html'), 'utf8');
+  const testi = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+
+  // ── [A] LA POSSIBILITÀ È TOLTA, non sconsigliata ─────────────────────
+  {
+    const rimaste = SPARITE.filter(function (t) { return html.indexOf('>' + t + '<') !== -1; });
+    log('[A] Le stringhe dei moduli non sono più scritte nel markup',
+      rimaste.length === 0, rimaste.join(' · '));
+
+    const quanti = (html.match(/data-testo="/g) || []).length;
+    log('[A] Il markup le chiede per attributo', quanti >= 50, String(quanti));
+  }
+
+  // ── [B] OGNI ATTRIBUTO PUNTA A UNA CHIAVE CHE ESISTE ─────────────────
+  //
+  // ⚠️ Una chiave sbagliata non alza e non lascia un rosso: `uiText` torna
+  // stringa vuota e il pulsante resta com'era. Su un markup vuoto, quindi,
+  // resta VUOTO — e chi l'ha scritta lo scopre guardando l'app.
+  {
+    const chiavi = (html.match(/data-testo="([^"]+)"/g) || [])
+      .map(function (m) { return m.slice('data-testo="'.length, -1); });
+    const rotte = chiavi.filter(function (k) {
+      let n = testi;
+      k.split('.').forEach(function (p) { n = n && n[p]; });
+      return typeof n !== 'string' || !n;
+    });
+    log('[B] Ogni `data-testo` punta a un testo che esiste nel file',
+      rotte.length === 0, Array.from(new Set(rotte)).join(' · '));
+  }
+
+  // ── [C] A MODULO APERTO I PULSANTI HANNO UN TESTO ────────────────────
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await apriMappa(page, 'Stringhe');
+    // Personalizza: il primo passo della sequenza, l'unico aperto su un
+    // profilo nuovo — gli altri sono col lucchetto finché non si completa.
+    await openModule(page, 'personalizzazione');
+    await page.waitForSelector('#view-customize.is-active', { timeout: 15000 });
+
+    const r = await page.evaluate(() => {
+      const vuoti = Array.from(document.querySelectorAll('#view-customize [data-testo]'))
+        .filter(el => !el.textContent.trim())
+        .map(el => el.getAttribute('data-testo'));
+      return {
+        vuoti: vuoti,
+        mappa: (document.getElementById('customize-back-home') || {}).textContent,
+        help: (document.getElementById('customize-help-btn') || {}).textContent
+      };
+    });
+    log('[C] Nessun elemento con `data-testo` resta vuoto', r.vuoti.length === 0, r.vuoti.join(' · '));
+    log('[C] «← Home» arriva dal file', r.mappa === testi.condivisi.tornaAllaHome, JSON.stringify(r.mappa));
+    log('[C] «Help» arriva dal file', r.help === testi.condivisi.help, JSON.stringify(r.help));
+    log('[C] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  // ── [D] IL CASO PIÙ DIVERSO: la Spiegazione aperta DALLA MAPPA ───────
+  //
+  // Nessun modulo è mai stato aperto. Se il riempimento fosse legato
+  // all'apertura di un modulo, il titolo di questo overlay sarebbe vuoto.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await apriMappa(page, 'StringheMappa');
+    await page.click('#map-watch-btn');
+    await page.waitForSelector('#howitworks-overlay.is-open', { timeout: 15000 });
+
+    // Solo l'occhiello: accanto c'è il nome del modulo, che è un'altra cosa.
+    const titolo = await page.evaluate(() => {
+      const k = document.querySelector('#howitworks-overlay-title .spiegazione-title-kicker');
+      return k ? k.textContent : null;
+    });
+    const chiudi = await page.evaluate(() =>
+      (document.getElementById('howitworks-overlay-close-btn') || {}).textContent);
+
+    log('[D] Il titolo della Spiegazione c\'è anche senza aver aperto un modulo',
+      titolo === testi.condivisi.spiegazione, JSON.stringify(titolo));
+    log('[D] ...e così il suo «Chiudi»', chiudi === testi.condivisi.chiudi, JSON.stringify(chiudi));
+    log('[D] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  await browser.close();
+  console.log('\n=== STRINGHE MARKUP SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
+  if (failed > 0) process.exit(1);
+}
+
+run().catch(function (e) { console.error(e); process.exit(1); });

@@ -128,6 +128,12 @@ sotto `tests/` scrivevano la forma della chiave a mano. Adesso si raggiungono da
 | `slotDefault` | Il valore di partenza di uno slot. | `(episode, chiave)` → la stringa, `''` se lo slot non c'è | Che `''` sia una risposta accettabile: è quello che `fillTemplate` usa quando lo studente non ha scelto niente. |
 | `resolveSlotValue` | Cosa si legge a schermo per un valore scelto, nella lingua chiesta: **è il punto che decide se una parola si traduce.** | `(episode, chiave, valoreSalvato, lang)` → la stringa da mostrare | ⚠️ **Lo decide la RIGA del magazzino** (`traducibile`), non il nome della tabella — cambiato il 2026-09-20 (passo 1.8), comportamento identico. **Chi manca vale «si traduce».** ⚠️ E il difetto da conoscere: **un valore salvato che non esiste più fra le opzioni ricade in silenzio sulla PRIMA** — nessun errore, nessun avviso, la personalizzazione di qualcuno diventa un'altra. *È il motivo per cui una rinomina degli id vuole una migrazione.* |
 
+## `app/ui-condivisa.js` — il ponte fra markup e testi
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `hydrateTesti` | Riempie col suo testo ogni elemento che porta `data-testo="percorso"`. **È il gemello esatto di `hydrateIcons`**: là un attributo dice quale icona, qui quale testo. | `(radice?)` → niente | Che i testi siano **già arrivati**: gira dentro il `.then` di `loadModuleInstructions`, cioè appena il file c'è, una volta sola, su tutto il documento. ⚠️ **Chiamarla al boot la riempirebbe di stringhe vuote e nessuno le rimetterebbe più.** Un percorso che non esiste **lascia il testo com'era** invece di svuotarlo: una chiave sbagliata si vede come «non è cambiato niente», non come un pulsante senza scritta. ⚠️ **E non copre la MAPPA**, che non aspetta i testi — limite dichiarato, è il passo 1.3b. |
+
 ## `app/mappa.js` — il Pannello Admin, parte sequenze
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |

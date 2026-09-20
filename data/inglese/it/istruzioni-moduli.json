@@ -298,6 +298,23 @@
     "introDontShowAgain": "Non mostrarmi più questa schermata",
     "introStart": "Ho capito, inizia",
     "readyTitle": "Pronto?",
-    "readyStart": "Pronto? Via!"
+    "readyStart": "Pronto? Via!",
+    "spiegazione": "Spiegazione",
+    "help": "Help",
+    "tornaAllaMappa": "← Mappa",
+    "tornaAllaHome": "← Home",
+    "hoFinito": "Ho finito",
+    "esciRiprendiDopo": "Esci e riprendi dopo",
+    "nonLoSo": "Non lo so",
+    "avanti": "Avanti →",
+    "ripasso": "Ripasso",
+    "caricamento": "Caricamento...",
+    "chiudi": "Chiudi",
+    "mostraPronuncia": "Mostra pronuncia",
+    "riprovaAncora": "Riprova ancora",
+    "vaiAvanti": "Vai avanti →",
+    "iniziaEpisodio": "Inizia l'episodio",
+    "personalizzaSottotitolo": "Personalizza la tua storia o lascia così.",
+    "repeatAloudSottotitolo": "Ascolta ogni parola o frase, ripetila ad alta voce."
   }
 }

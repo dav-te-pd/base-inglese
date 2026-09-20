@@ -335,14 +335,22 @@ nodi.forEach(function (n) {
   // interrompere l'audio a meta' sfaserebbe il timer (regola 16). Sta nel
   // nucleo audio perche' e' lui che spegne; il Dialogo e' caricato dopo, quindi
   // la domanda si fa **quando l'utente tocca**, mai al parsing.
+  //
+  // ⚠️ 5 -> 6 COL PASSO 1.3 (2026-09-20): `dati.js -> ui-condivisa.js`. Le
+  // stringhe delle viste di modulo non sono piu' scritte in `index.html`: il
+  // markup porta `data-testo` e `hydrateTesti` lo riempie. La chiamata sta
+  // dentro `loadModuleInstructions` — cioe' **appena i testi arrivano** — e
+  // non all'apertura di un modulo, perche' la Spiegazione si apre anche dalla
+  // mappa, prima che un solo modulo sia stato aperto.
   var atteseInAvanti = [
     'audio.js -> dialogo.js',
     'dati.js -> apertura.js',
+    'dati.js -> ui-condivisa.js',
     'mappa.js -> apertura.js',
     'personalizza.js -> apertura.js',
     'ui-condivisa.js -> sessione.js'
   ].sort().join(' | ');
-  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono CINQUE, e sono queste',
+  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono SEI, e sono queste',
     aChiamata.slice().sort().join(' | ') === atteseInAvanti,
     'misurate: ' + aChiamata.slice().sort().join(' | '));
 }

@@ -704,7 +704,7 @@
     document.getElementById('vc-warning').style.display = VCSpeechRecognition ? 'none' : 'block';
     document.getElementById('vc-record-btn').disabled = !VCSpeechRecognition;
     document.getElementById('vc-cue').textContent = '';
-    document.getElementById('vc-target').textContent = 'Caricamento...';
+    document.getElementById('vc-target').textContent = uiText('condivisi.caricamento');
     document.getElementById('vc-audio-controls').innerHTML = '';
     // Badge/title/retry-button text are the only visible traces of which
     // of the two variants this is — everything else in this view is one

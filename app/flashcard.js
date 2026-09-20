@@ -59,6 +59,7 @@
 
   var episodeGradeRequired = BI.episodeGradeRequired;
   var loadEpisodeData = BI.loadEpisodeData;
+  var uiText = BI.uiText;
   var getUserName = BI.getUserName;
   var isIntroDismissed = BI.isIntroDismissed;
   var setIntroDismissed = BI.setIntroDismissed;
@@ -480,7 +481,7 @@
     document.getElementById('flashcard-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
     document.getElementById('fc-counter').textContent = '';
-    document.getElementById('fc-front-word').textContent = 'Caricamento...';
+    document.getElementById('fc-front-word').textContent = uiText('condivisi.caricamento');
     document.getElementById('fc-back-word').textContent = '';
     fcIntroPending = !isIntroDismissed(module.kind, getUserName());
     if (fcIntroPending) {

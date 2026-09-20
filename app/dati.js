@@ -1,4 +1,4 @@
-// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata], magazzino.js [chiamata]
+// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata], magazzino.js [chiamata], ui-condivisa.js [chiamata]
 // ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
 // tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
 // una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
@@ -235,6 +235,23 @@ window.BI = window.BI || {};
       })
       .then(function (data) {
         moduleInstructionsCache = data;
+        // ⚠️ APPENA I TESTI CI SONO, IL MARKUP SI RIEMPIE — passo 1.3.
+        //
+        // Dal 2026-09-20 le stringhe delle viste di modulo non sono piu'
+        // scritte in `index.html`: il markup porta `data-testo="percorso"` e
+        // il testo arriva da questo file (regola 8).
+        //
+        // ⚠️ E LA CHIAMATA STA QUI, NON IN `openModuleFromMap`, PER UN CASO
+        // PRECISO: la Spiegazione si apre anche DALLA MAPPA, e il titolo di
+        // quell'overlay e' markup statico. Legandola all'apertura di un modulo
+        // sarebbe rimasto vuoto per chi tocca «Spiegazione» prima di aver
+        // aperto il primo modulo. **Qui gira appena il file arriva, una volta
+        // sola, e copre tutto il documento.**
+        //
+        // Se il file non arriva, questo `.then` non gira e i testi restano
+        // quelli del markup — che pero' da oggi sono vuoti: il modulo infatti
+        // non si apre affatto, si va alla schermata d'errore (regola 35).
+        if (BI.hydrateTesti) BI.hydrateTesti();
         return data;
       });
   }

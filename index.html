@@ -40,17 +40,17 @@
      (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260920q"></script>
-<script src="app/spazio.js?v=20260920q"></script>
-<script src="app/magazzino.js?v=20260920q"></script>
-<script src="app/identita.js?v=20260920q"></script>
-<script src="app/avvio.js?v=20260920q"></script>
-<script src="app/progressi.js?v=20260920q"></script>
-<script src="app/audio.js?v=20260920q"></script>
-<script src="app/suoni.js?v=20260920q"></script>
-<script src="app/quiz-engine.js?v=20260920q"></script>
-<script src="app/dati.js?v=20260920q"></script>
-<script src="app/catalogo.js?v=20260920q"></script>
+<script src="app/config.js?v=20260920r"></script>
+<script src="app/spazio.js?v=20260920r"></script>
+<script src="app/magazzino.js?v=20260920r"></script>
+<script src="app/identita.js?v=20260920r"></script>
+<script src="app/avvio.js?v=20260920r"></script>
+<script src="app/progressi.js?v=20260920r"></script>
+<script src="app/audio.js?v=20260920r"></script>
+<script src="app/suoni.js?v=20260920r"></script>
+<script src="app/quiz-engine.js?v=20260920r"></script>
+<script src="app/dati.js?v=20260920r"></script>
+<script src="app/catalogo.js?v=20260920r"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -72,18 +72,18 @@
 
      La `?v=` è la stessa dei tag `<script>` e per la stessa ragione: il perché
      sta scritto per esteso sopra i primi. -->
-<link rel="stylesheet" href="stile/base.css?v=20260920q">
-<link rel="stylesheet" href="stile/componenti.css?v=20260920q">
-<link rel="stylesheet" href="stile/condivisi.css?v=20260920q">
-<link rel="stylesheet" href="stile/guscio.css?v=20260920q">
-<link rel="stylesheet" href="stile/schermate.css?v=20260920q">
-<link rel="stylesheet" href="stile/repeataloud.css?v=20260920q">
-<link rel="stylesheet" href="stile/storycards.css?v=20260920q">
-<link rel="stylesheet" href="stile/voice.css?v=20260920q">
-<link rel="stylesheet" href="stile/match.css?v=20260920q">
-<link rel="stylesheet" href="stile/dialogo.css?v=20260920q">
-<link rel="stylesheet" href="stile/speedmatch.css?v=20260920q">
-<link rel="stylesheet" href="stile/flashcard.css?v=20260920q">
+<link rel="stylesheet" href="stile/base.css?v=20260920r">
+<link rel="stylesheet" href="stile/componenti.css?v=20260920r">
+<link rel="stylesheet" href="stile/condivisi.css?v=20260920r">
+<link rel="stylesheet" href="stile/guscio.css?v=20260920r">
+<link rel="stylesheet" href="stile/schermate.css?v=20260920r">
+<link rel="stylesheet" href="stile/repeataloud.css?v=20260920r">
+<link rel="stylesheet" href="stile/storycards.css?v=20260920r">
+<link rel="stylesheet" href="stile/voice.css?v=20260920r">
+<link rel="stylesheet" href="stile/match.css?v=20260920r">
+<link rel="stylesheet" href="stile/dialogo.css?v=20260920r">
+<link rel="stylesheet" href="stile/speedmatch.css?v=20260920r">
+<link rel="stylesheet" href="stile/flashcard.css?v=20260920r">
 </head>
 <body>
   <div class="app">
@@ -175,9 +175,9 @@
               <span class="badge" id="customize-episode-badge">Episodio 1</span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="customize-back-home">← Home</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="customize-back-home" data-testo="condivisi.tornaAllaHome"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="customize-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -186,7 +186,7 @@
                same content afterward as a popup instead. -->
           <div id="customize-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="customize-intro-title">Spiegazione</h1>
+              <h1 id="customize-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="customize-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -224,13 +224,13 @@
           <!-- MAIN SCREEN -->
           <div id="customize-main-screen" class="module-screen">
             <header class="app-header">
-              <h1>Personalizza la tua storia o lascia così.</h1>
+              <h1 data-testo="condivisi.personalizzaSottotitolo"></h1>
               <p style="opacity:0.7; font-size:0.92rem;" id="customize-page-description"></p>
             </header>
 
             <div class="slot-grid" id="slot-grid"></div>
 
-            <button type="button" class="btn btn-primary btn-block" id="start-episode">Inizia l'episodio</button>
+            <button type="button" class="btn btn-primary btn-block" id="start-episode" data-testo="condivisi.iniziaEpisodio"></button>
 
             <!-- REQUEST BOX: one small free-text field per personalization
                  category already shown above, for a name/place not in the
@@ -298,9 +298,9 @@
               <span class="module-row-type" id="repeat-aloud-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="repeat-aloud-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="repeat-aloud-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -310,7 +310,7 @@
                openHowItWorksOverlay), never this screen again. -->
           <div id="repeat-aloud-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="repeat-aloud-intro-title">Spiegazione</h1>
+              <h1 id="repeat-aloud-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="repeat-aloud-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -324,12 +324,12 @@
           <div id="repeat-aloud-main-screen" class="module-screen">
             <header class="app-header">
               <h1 id="repeat-aloud-title">Repeat Aloud</h1>
-              <p style="opacity:0.7; font-size:0.92rem;">Ascolta ogni parola o frase, ripetila ad alta voce.</p>
+              <p style="opacity:0.7; font-size:0.92rem;" data-testo="condivisi.repeatAloudSottotitolo"></p>
             </header>
 
             <div id="repeat-aloud-body"></div>
 
-            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete">Ho finito</button>
+            <button type="button" class="btn btn-primary btn-block" id="repeat-aloud-complete" data-testo="condivisi.hoFinito"></button>
           </div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
@@ -349,9 +349,9 @@
               <span class="module-row-type" id="story-cards-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="story-cards-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="story-cards-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="story-cards-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -361,7 +361,7 @@
                openHowItWorksOverlay), never this screen again. -->
           <div id="story-cards-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="story-cards-intro-title">Spiegazione</h1>
+              <h1 id="story-cards-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="story-cards-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -395,7 +395,7 @@
               <!-- Solo durante un primo giro non ancora completato: salva le
                    dichiarazioni fatte finora senza completare il modulo.
                    Uscire da "← Mappa" invece non salva, come ovunque. -->
-              <button type="button" class="btn btn-secondary btn-block" id="story-cards-resume-later" hidden>Esci e riprendi dopo</button>
+              <button type="button" class="btn btn-secondary btn-block" id="story-cards-resume-later" hidden data-testo="condivisi.esciRiprendiDopo"></button>
             </div>
           </div>
 
@@ -418,9 +418,9 @@
               <span class="module-row-type" id="voice-coach-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="voice-coach-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="voice-coach-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="voice-coach-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -429,7 +429,7 @@
                same content afterward as a popup instead. -->
           <div id="voice-coach-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="voice-coach-intro-title">Spiegazione</h1>
+              <h1 id="voice-coach-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="voice-coach-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -444,7 +444,7 @@
             <header class="app-header">
               <h1 id="voice-coach-title">Voice Coach</h1>
               <p class="sr-counter" id="vc-counter">1 / 1</p>
-              <span class="ripasso-badge" id="vc-ripasso-badge" hidden>Ripasso</span>
+              <span class="ripasso-badge" id="vc-ripasso-badge" hidden data-testo="condivisi.ripasso"></span>
             </header>
 
             <!-- Voice Practice only: "Esercitati ancora", capped at
@@ -470,7 +470,7 @@
                  Italian-style transcription, never IPA. Hidden entirely
                  (not just the text) when a line has no pronunciationTip
                  — see renderVoiceCoachSentence. -->
-            <button type="button" class="translation-toggle" id="vc-pronunciation-toggle" hidden>Mostra pronuncia</button>
+            <button type="button" class="translation-toggle" id="vc-pronunciation-toggle" hidden data-testo="condivisi.mostraPronuncia"></button>
             <p class="vc-pronunciation" id="vc-pronunciation" hidden></p>
 
             <div class="listen-block vc-audio-row" id="vc-audio-controls"></div>
@@ -526,7 +526,7 @@
                  updateVcActionButtons) — going back would risk
                  re-recording an already-counted attempt, same reasoning
                  as Flash Card's removed Indietro/Avanti. -->
-            <button type="button" class="btn btn-primary btn-block" id="vc-next-btn" disabled>Avanti →</button>
+            <button type="button" class="btn btn-primary btn-block" id="vc-next-btn" disabled data-testo="condivisi.avanti"></button>
 
             <div class="warning" id="vc-warning">
               Il tuo browser non supporta il riconoscimento vocale (Web Speech API).
@@ -570,9 +570,9 @@
               <span class="module-row-type" id="match-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="match-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-watch-btn" hidden>Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-help-btn" hidden>Help</button>
+              <button type="button" class="btn btn-secondary" id="match-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-watch-btn" hidden data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="match-help-btn" hidden data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -582,9 +582,9 @@
                countdown, since there's no countdown here. -->
           <div id="qm-start-screen">
             <header class="app-header">
-              <h1 id="qm-start-title">Spiegazione</h1>
+              <h1 id="qm-start-title" data-testo="condivisi.spiegazione"></h1>
             </header>
-            <div class="overlay-text panel" id="qm-start-body">Caricamento...</div>
+            <div class="overlay-text panel" id="qm-start-body" data-testo="condivisi.caricamento"></div>
             <label class="ra-intro-checkbox" id="qm-start-checkbox-row">
               <input type="checkbox" id="qm-start-dont-show-again">
               <span id="qm-start-dont-show-text"></span>
@@ -605,7 +605,7 @@
                direction (see qmRenderQuestion). -->
           <div id="qm-quiz-screen" hidden>
             <p class="sr-counter" id="qm-counter"></p>
-            <span class="ripasso-badge" id="qm-ripasso-badge" hidden>Ripasso</span>
+            <span class="ripasso-badge" id="qm-ripasso-badge" hidden data-testo="condivisi.ripasso"></span>
             <p class="sr-direction" id="qm-direction"></p>
 
             <div class="sr-prompt panel" id="qm-prompt"></div>
@@ -617,8 +617,8 @@
               <p id="qm-reveal-text"></p>
             </div>
 
-            <button type="button" class="btn btn-secondary btn-block" id="qm-dontknow-btn">Non lo so</button>
-            <button type="button" class="btn btn-primary btn-block" id="qm-advance-btn" hidden>Avanti →</button>
+            <button type="button" class="btn btn-secondary btn-block" id="qm-dontknow-btn" data-testo="condivisi.nonLoSo"></button>
+            <button type="button" class="btn btn-primary btn-block" id="qm-advance-btn" hidden data-testo="condivisi.avanti"></button>
           </div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
@@ -649,9 +649,9 @@
               <span class="module-row-type" id="dialogo-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="dialogo-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-watch-btn" hidden>Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-help-btn" hidden>Help</button>
+              <button type="button" class="btn btn-secondary" id="dialogo-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-watch-btn" hidden data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="dialogo-help-btn" hidden data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -660,9 +660,9 @@
                prompt after. -->
           <div id="dg-start-screen">
             <header class="app-header">
-              <h1 id="dg-start-title">Spiegazione</h1>
+              <h1 id="dg-start-title" data-testo="condivisi.spiegazione"></h1>
             </header>
-            <div class="overlay-text panel" id="dg-start-body">Caricamento...</div>
+            <div class="overlay-text panel" id="dg-start-body" data-testo="condivisi.caricamento"></div>
             <label class="ra-intro-checkbox" id="dg-start-checkbox-row">
               <input type="checkbox" id="dg-start-dont-show-again">
               <span id="dg-start-dont-show-text"></span>
@@ -737,9 +737,9 @@
               <span class="module-row-type" id="speed-match-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="speed-match-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-watch-btn" hidden>Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-help-btn" hidden>Help</button>
+              <button type="button" class="btn btn-secondary" id="speed-match-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-watch-btn" hidden data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="speed-match-help-btn" hidden data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -751,9 +751,9 @@
                timed countdown, so it never disappears entirely). -->
           <div id="sr-start-screen">
             <header class="app-header">
-              <h1 id="sr-start-title">Spiegazione</h1>
+              <h1 id="sr-start-title" data-testo="condivisi.spiegazione"></h1>
             </header>
-            <div class="overlay-text panel" id="sr-start-body">Caricamento...</div>
+            <div class="overlay-text panel" id="sr-start-body" data-testo="condivisi.caricamento"></div>
             <label class="ra-intro-checkbox" id="sr-start-checkbox-row">
               <input type="checkbox" id="sr-start-dont-show-again">
               <span id="sr-start-dont-show-text"></span>
@@ -774,7 +774,7 @@
           <!-- QUIZ SCREEN -->
           <div id="sr-quiz-screen" hidden>
             <p class="sr-counter" id="sr-counter"></p>
-            <span class="ripasso-badge" id="sr-ripasso-badge" hidden>Ripasso</span>
+            <span class="ripasso-badge" id="sr-ripasso-badge" hidden data-testo="condivisi.ripasso"></span>
             <p class="sr-direction" id="sr-direction"></p>
 
             <div class="sr-timerbar-track"><div class="sr-timerbar-fill" id="sr-timerbar-fill"></div></div>
@@ -787,8 +787,8 @@
               <p id="sr-reveal-text"></p>
             </div>
 
-            <button type="button" class="btn btn-secondary btn-block" id="sr-dontknow-btn">Non lo so</button>
-            <button type="button" class="btn btn-primary btn-block" id="sr-advance-btn" hidden>Avanti →</button>
+            <button type="button" class="btn btn-secondary btn-block" id="sr-dontknow-btn" data-testo="condivisi.nonLoSo"></button>
+            <button type="button" class="btn btn-primary btn-block" id="sr-advance-btn" hidden data-testo="condivisi.avanti"></button>
           </div>
 
           <!-- SUMMARY SCREEN: score/percentage/message deliberately omitted
@@ -818,9 +818,9 @@
               <span class="module-row-type" id="flashcard-type-badge"></span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="flashcard-back-map">← Mappa</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="flashcard-back-map" data-testo="condivisi.tornaAllaMappa"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="flashcard-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -829,7 +829,7 @@
                same content afterward as a popup instead. -->
           <div id="fc-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="fc-intro-title">Spiegazione</h1>
+              <h1 id="fc-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="fc-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -841,7 +841,7 @@
 
           <header class="app-header" id="fc-meta-header">
             <p class="sr-counter" id="fc-counter"></p>
-            <span class="ripasso-badge" id="fc-ripasso-badge" hidden>Ripasso</span>
+            <span class="ripasso-badge" id="fc-ripasso-badge" hidden data-testo="condivisi.ripasso"></span>
             <p class="fc-direction" id="fc-direction"></p>
           </header>
 
@@ -948,7 +948,7 @@
     <button type="button" class="overlay-backdrop" id="howitworks-overlay-backdrop" aria-label="Chiudi"></button>
     <div class="overlay-panel card">
       <div class="overlay-header">
-        <h2 id="howitworks-overlay-title">Spiegazione</h2>
+        <h2 id="howitworks-overlay-title"></h2>
       </div>
       <div class="overlay-body">
         <div class="overlay-text" id="howitworks-overlay-body"></div>
@@ -960,7 +960,7 @@
           <span id="howitworks-overlay-dont-show-text"></span>
         </label>
         <div class="overlay-actions">
-          <button type="button" class="btn btn-primary" id="howitworks-overlay-close-btn">Chiudi</button>
+          <button type="button" class="btn btn-primary" id="howitworks-overlay-close-btn" data-testo="condivisi.chiudi"></button>
         </div>
       </div>
     </div>
@@ -1046,8 +1046,8 @@
       <div class="overlay-body">
         <p class="overlay-text" id="attempt-popup-body"></p>
         <div class="overlay-actions">
-          <button type="button" class="btn btn-secondary" id="attempt-popup-retry">Riprova ancora</button>
-          <button type="button" class="btn btn-primary" id="attempt-popup-next">Vai avanti →</button>
+          <button type="button" class="btn btn-secondary" id="attempt-popup-retry" data-testo="condivisi.riprovaAncora"></button>
+          <button type="button" class="btn btn-primary" id="attempt-popup-next" data-testo="condivisi.vaiAvanti"></button>
         </div>
       </div>
     </div>
@@ -1061,19 +1061,19 @@
      *I due numeri che stavano qui — «nove strati», «tredici nodi» — erano
      diventati dieci e dodici senza che nessuno li toccasse. Il conto lo danno
      `grep -c 'src="app/' index.html` e `grep -c 'class="view"' index.html`.* -->
-<script src="app/orchestrazione.js?v=20260920q"></script>
-<script src="app/ui-condivisa.js?v=20260920q"></script>
-<script src="app/sessione.js?v=20260920q"></script>
-<script src="app/mappa.js?v=20260920q"></script>
-<script src="app/storycards.js?v=20260920q"></script>
-<script src="app/personalizza.js?v=20260920q"></script>
-<script src="app/repeataloud.js?v=20260920q"></script>
-<script src="app/flashcard.js?v=20260920q"></script>
-<script src="app/match.js?v=20260920q"></script>
-<script src="app/speedmatch.js?v=20260920q"></script>
-<script src="app/voice.js?v=20260920q"></script>
-<script src="app/dialogo.js?v=20260920q"></script>
-<script src="app/apertura.js?v=20260920q"></script>
+<script src="app/orchestrazione.js?v=20260920r"></script>
+<script src="app/ui-condivisa.js?v=20260920r"></script>
+<script src="app/sessione.js?v=20260920r"></script>
+<script src="app/mappa.js?v=20260920r"></script>
+<script src="app/storycards.js?v=20260920r"></script>
+<script src="app/personalizza.js?v=20260920r"></script>
+<script src="app/repeataloud.js?v=20260920r"></script>
+<script src="app/flashcard.js?v=20260920r"></script>
+<script src="app/match.js?v=20260920r"></script>
+<script src="app/speedmatch.js?v=20260920r"></script>
+<script src="app/voice.js?v=20260920r"></script>
+<script src="app/dialogo.js?v=20260920r"></script>
+<script src="app/apertura.js?v=20260920r"></script>
 
 <script>
 // ============================================================
