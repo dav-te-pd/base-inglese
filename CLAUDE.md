@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260919c**
+**Versione: 20260920a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -52,6 +52,7 @@ affidabile.
 | `docs/decisioni.md` | La **catena in corso** (in testa) e le decisioni prese e non ancora eseguite. Il primo file da aprire. |
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
 | `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
+| `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
 | `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
 | `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |

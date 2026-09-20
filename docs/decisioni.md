@@ -26,6 +26,13 @@ Una riga senza condizione (`da fissare`) è una decisione a metà: si è deciso
 *cosa*, non *quando*. Vale la pena fissarla alla prima occasione, invece di
 scoprirla scaduta.
 
+⚠️ **E UNA COSA NON STA QUI, DAL 2026-09-20: la sicurezza.** Le due analisi
+(penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i
+segreti e i backup vivono in **[`cyber-security.md`](cyber-security.md)**.
+*Non per ordine: perché questo file si SVUOTA e quello si ACCUMULA.* Una riga
+di sicurezza non sparisce quando viene eseguita — diventa una data, e la data è
+metà dell'informazione.
+
 ---
 
 # LA CATENA IN CORSO — a che punto siamo
