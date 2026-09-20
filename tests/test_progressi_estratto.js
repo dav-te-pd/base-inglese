@@ -55,7 +55,14 @@ async function run() {
   {
     const html = fs.readFileSync(repoPath('index.html'), 'utf8');
     log('[A] app/progressi.js espone piu' + "' di trenta nomi", nomi.length > 30, String(nomi.length));
-    const posInline = html.indexOf('<script>\n(function () {');
+    // ⚠️ LO SCRIPT IN LINEA NON E' PIU' UN IIFE (passo ③, 2026-09-20): in
+    // `index.html` resta `window.BI.boot()` e basta. Cercare
+    // `<script>\n(function () {` dava -1, e `tag < -1` e' falso — quindi
+    // questa riga sarebbe rossa **per sempre, su codice giusto**. Seguita e
+    // non tolta: l'invariante non e' cambiato — *questo tag deve venire prima
+    // dello script che accende l'app* — e' cambiato come si trova quello
+    // script. Si cerca la riga che lo accende, che e' l'unica cosa rimasta.
+    const posInline = html.indexOf('window.BI.boot();');
     log('[A] ...e arriva prima dello script principale, che lo legge in cima al suo IIFE',
       posInline !== -1 && posizioneTag(html, 'app/progressi.js') < posInline);
   }

@@ -1,4 +1,4 @@
-// DIPENDE DA: apertura.js [chiamata], audio.js [parsing], avvio.js [parsing], catalogo.js [chiamata], dati.js [parsing], identita.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: apertura.js [chiamata], audio.js [parsing], avvio.js [parsing], catalogo.js [parsing], dati.js [parsing], identita.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ LO STRATO DELLA MAPPA E DEL PANNELLO ADMIN — l'ultimo pezzo del 22 che non
 // e' un modulo.
 //
@@ -61,6 +61,25 @@
   var loadMastery = BI.loadMastery;
   var loadModuleInstructions = BI.loadModuleInstructions;
   var loadModuleOutcomes = BI.loadModuleOutcomes;
+  // ⚠️ I SEI NOMI DEL GUSCIO, arrivati col passo ② (2026-09-20). Vengono tutti
+  // da `app/identita.js` e da `app/catalogo.js`, che stanno nella prima fila:
+  // si possono aliasare qui in cima perche' sono gia' esistiti quando questo
+  // file viene letto.
+  var renderThemePicker = BI.renderThemePicker;
+  var setTheme = BI.setTheme;
+  var syncThemePicker = BI.syncThemePicker;
+  var setUserName = BI.setUserName;
+  var clearUserName = BI.clearUserName;
+  var hydrateIcons = BI.hydrateIcons;
+  var EPISODES = BI.EPISODES;
+  // ⚠️ I TRE NOMI DEI CINQUE PULSANTI DELLA MAPPA, arrivati col passo ③.
+  // Vengono da `ui-condivisa.js` e da `progressi.js`, tutti e due prima di
+  // questo file: si aliasano in cima come gli altri. Senza, i pulsanti erano
+  // agganciati e morivano al tocco — un altro guasto muto, visto guidandoli.
+  var openHowItWorksOverlay = BI.openHowItWorksOverlay;
+  var openHelpFor = BI.openHelpFor;
+  var introDismissPref = BI.introDismissPref;
+  var setIntroDismissed = BI.setIntroDismissed;
   var loadModuleProgress = BI.loadModuleProgress;
   var loadNextLineSkips = BI.loadNextLineSkips;
   var loadPersonalizationTables = BI.loadPersonalizationTables;
@@ -215,7 +234,166 @@
     leaveModule('home');
   }
 
+  // ============================================================
+  // IL GUSCIO DELL'APP — passo ②, 2026-09-20.
+  //
+  // Il selettore del tema, il limite di lunghezza del nome, le due schermate
+  // dell'identita' (entra / cambia utente) e il tasto Escape.
+  //
+  // ⚠️ PERCHE' QUI E NON IN `app/identita.js`, che e' dove vivono `setTheme`,
+  // `setUserName` e `clearUserName`: **quel file sta nella PRIMA fila**, cioe'
+  // nel `<head>`, e queste righe toccano il markup a tempo di parsing —
+  // `document.getElementById('theme-picker')` li' dentro troverebbe `null`.
+  // *Il confine non e' l'argomento: e' il momento.*
+  //
+  // ⚠️ E PERCHE' NON IN `app/orchestrazione.js`, che sta nella seconda fila ed
+  // e' «le viste»: il modulo di onboarding chiama `goHome`, che e' di questo
+  // file e viene DOPO. Sarebbe stata una dipendenza in avanti nuova, creata
+  // per mettere quattro listener in un file invece che in un altro.
+  //
+  // Sta con `boot()`, ed e' la ragione vera: **queste sono esattamente le
+  // schermate che `boot()` decide di mostrare.**
+  // ============================================================
+  renderThemePicker();
+
+  document.getElementById('theme-picker').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-theme-option]');
+    if (!btn) return;
+    setTheme(btn.getAttribute('data-theme-option'));
+  });
+
+  syncThemePicker();
+
+  /* ============================================================
+     USER IDENTITY
+     ============================================================ */
+
+  document.getElementById('name-input').maxLength = CONFIG.limits.userNameMaxLength;
+
+  document.getElementById('onboarding-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('name-input');
+    var name = input.value.trim();
+    if (!name) return;
+    setUserName(name);
+    goHome();
+  });
+
+  document.getElementById('switch-user').addEventListener('click', function () {
+    clearUserName();
+    var input = document.getElementById('name-input');
+    input.value = '';
+    showView('onboarding');
+    input.focus();
+  });
+
+  // Escape chiude quello che e' aperto, e non sa di chi sia: lo chiede ai due
+  // proprietari. Sta qui perche' non e' di nessuno dei due — e' una regola che
+  // vale per tutta l'app, come le quattro righe qui sopra.
+  document.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    // ⚠️ I due di `ui-condivisa` si chiedono a lei; il terzo e' del Pannello
+    // Admin, che sta ancora qui. E' il motivo per cui questo listener non e'
+    // uscito con lo strato: chiude overlay di DUE proprietari diversi.
+    BI.chiudiOverlayAperti();
+    BI.chiudiPannelloSeAperto();
+  });
+
+  // ============================================================
+  // ⚠️ `episodeFinalOutcomeCase` — ARRIVATA QUI COL PASSO ②, E OGGI NON HA
+  // NESSUN CHIAMANTE.
+  //
+  // E' pronta per il Modulo Finale, che non e' costruito. Sta qui perche'
+  // legge `loadModuleOutcomes`, che questo file aliasa gia': portarla altrove
+  // avrebbe creato una dipendenza nuova per del codice che nessuno chiama.
+  // *Registrata in `docs/decisioni.md` come trovata e non corretta.*
+  // ============================================================
+  // Modulo Finale (not yet built) needs to pick one of three contents —
+  // this is that decision, ready ahead of the screen itself. Only
+  // modules that actually carry a verde/giallo/rosso outcome.level
+  // count (ModuleRules or selfAssessment — see CONFIG.moduleOutcomeRules);
+  // a plain completionRules module (Repeat Aloud, Meet the Story, Your
+  // Story) has no judgment to weigh in, same as it never gets an
+  // outcome-* class on its own map row. 'almenoUnRosso' wins over
+  // 'gialloNoRosso' if both are present; an episode with no graded
+  // modules at all defaults to 'tuttiVerdi' (nothing to flag). Reads
+  // data/inglese/it/messaggi-feedback.json's episodeFinalMessages[caseKey] for the
+  // actual text (compliment first, then an optional trailing tip) —
+  // never write the copy here.
+  function episodeFinalOutcomeCase(episode, userName) {
+    var outcomes = loadModuleOutcomes(episode.id, userName);
+    var levels = episode.modules
+      .map(function (m) { return outcomes[m.id] && outcomes[m.id].level; })
+      .filter(Boolean);
+    if (levels.indexOf('rosso') !== -1) return 'almenoUnRosso';
+    if (levels.indexOf('giallo') !== -1) return 'gialloNoRosso';
+    return 'tuttiVerdi';
+  }
+
+  // ============================================================
+  // I CINQUE PULSANTI DELLA MAPPA — arrivati qui col passo ③, 2026-09-20.
+  //
+  // «Vai all'episodio», la barra «Guarda come si fa», il pulsante che chiude
+  // l'introduzione, «Help» e «← Home». Erano gli ultimi listener rimasti in
+  // `index.html`, nella regione EPISODE MAP.
+  //
+  // ⚠️ E LI HO PERSI PER QUINDICI MINUTI, PRIMA DI RIMETTERLI. Svuotando lo
+  // script in linea ho tagliato l'INTERVALLO, non i pezzi che avevo censito
+  // uno per uno: questi cinque non erano in nessuno degli otto blocchi
+  // dichiarati e sono spariti con tutto il resto. L'app partiva, la
+  // schermata iniziale c'era, il nome si scriveva — e «Vai all'episodio»
+  // **non faceva niente, senza nessun errore.** Ripresi da `git show HEAD`.
+  //
+  // *Ed e' la ragione per cui questo passo si e' guidato invece di leggerlo:
+  // un listener che non c'e' piu' non alza niente. E' il guasto MUTO, la
+  // stessa forma che la regola 12 chiude per `hidden` e che qui non aveva
+  // nessuna rete — nessun test apriva la mappa da `#go-episode` con un
+  // profilo nuovo.*
+  // ============================================================
+  document.getElementById('go-episode').addEventListener('click', openEpisodeMap);
+
+  document.getElementById('map-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(MAP_PSEUDO_MODULE, { dismissPref: introDismissPref('mappaEpisodio') });
+  });
+
+  document.getElementById('map-intro-start-btn').addEventListener('click', function () {
+    setIntroDismissed('mappaEpisodio', getUserName(), document.getElementById('map-intro-dont-show-again').checked);
+    mapShowScreen('main');
+  });
+
+  document.getElementById('map-help-btn').addEventListener('click', function () {
+    openHelpFor(MAP_PSEUDO_MODULE);
+  });
+
+  document.getElementById('map-back-home').addEventListener('click', goHome);
+
   function boot() {
+    // ⚠️ LE ICONE PRIMA DI TUTTO: il markup statico porta dei segnaposto
+    // `data-icon`, e finche' nessuno li riempie le schermate hanno dei buchi.
+    // Stava in fondo all'IIFE di `index.html`, che girava prima di `boot()`
+    // per posizione; adesso e' la prima riga di `boot()`, che e' dove "l'app
+    // si accende" ha un nome.
+    hydrateIcons(document);
+
+  // ⚠️ QUESTO CALCOLO RESTA QUI, E LO STATO NO. Passo B, 2026-09-19.
+  //
+  // Scegliere QUALE episodio aprire e' un mestiere del **catalogo** — legge
+  // `EPISODES` e `CONFIG.episodioCorrente` — mentre TENERE l'episodio aperto
+  // e' lo stato di sessione, che sta in `app/sessione.js`.
+  //
+  // Quindi qui si calcola e si CONSEGNA. La consegna e' una riga, e permette
+  // allo stato di uscire **prima** del catalogo: se `sessione.js` calcolasse
+  // da se', chiederebbe `EPISODES` all'insu' e il conto salirebbe invece di
+  // scendere. *Chi riceve puo' stare ovunque; chi va a prendere deve stare
+  // dove sono le cose.*
+  var episodioIniziale = EPISODES[CONFIG.episodioCorrente];
+  if (!episodioIniziale) {
+    console.error('[base-inglese] CONFIG.episodioCorrente vale "' + CONFIG.episodioCorrente +
+      '", che non e\' un episodio dichiarato: si apre il primo (' + Object.keys(EPISODES)[0] + ').');
+    episodioIniziale = EPISODES[Object.keys(EPISODES)[0]];
+  }
+  BI.impostaEpisodioCorrente(episodioIniziale);
+
     if (getUserName()) {
       goHome();
     } else {

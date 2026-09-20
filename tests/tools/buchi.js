@@ -39,7 +39,7 @@ const f=process.argv[2];
 const s=fs.readFileSync('app/'+f,'utf8');
 new Function(s);
 const def=new Set([...s.matchAll(/^  (?:function|var) (\w+)/gm)].map(m=>m[1]));
-const ok=new Set(['BI','CONFIG','window','document','console','Math','Object','Array','JSON','Promise','String','Number','localStorage','setTimeout','clearTimeout','setInterval','clearInterval','Date','parseInt','parseFloat','isNaN','Set','Map','encodeURIComponent','RegExp','Error','KeyboardEvent','true','false','null','undefined','this','if','for','while','switch','catch','return','typeof','function','new','else','do']);
+const ok=new Set(['BI','CONFIG','window','document','console','Math','Object','Array','JSON','Promise','String','Number','localStorage','setTimeout','clearTimeout','setInterval','clearInterval','Date','parseInt','parseFloat','isNaN','Set','Map','encodeURIComponent','RegExp','Error','KeyboardEvent','URLSearchParams','Boolean','true','false','null','undefined','this','if','for','while','switch','catch','return','typeof','function','new','else','do']);
 const ch=new Set();
 s.split('\n').forEach(r=>{const t=r.trim();if(!t||t.startsWith('//')||t.startsWith('*')||t.startsWith('/*'))return;
  [...r.matchAll(/(?<![.\w$'"`])([a-zA-Z_$][\w$]*)\s*\(/g)].forEach(m=>ch.add(m[1]));});
@@ -72,13 +72,30 @@ const buchiChiamate=[...ch].filter(n=>!def.has(n)&&!ok.has(n));
 const buchiRiferimenti=[...rif].filter(n=>!def.has(n)&&!ok.has(n)&&!parm.has(n)&&!ch.has(n));
 console.log('BUCHI  in app/'+f+': '+(buchiChiamate.join(' ')||'ZERO'));
 console.log('BUCHI-RIF (nomi passati senza parentesi): '+(buchiRiferimenti.join(' ')||'ZERO'));
+// ⚠️ IL 2026-09-20 (passo ③) L'IIFE DI `index.html` E' SPARITO, E QUESTA
+// RICERCA MORIVA INVECE DI DIRLO.
+//
+// Cercava `<script>\n(function () {`, ci faceva `[0]` sopra e con `null`
+// alzava un `TypeError`: lo strumento **non partiva piu'**, su nessun file.
+// *E' la ⓪-septies — un attrezzo che MUORE non e' un attrezzo che dice di no —
+// ed e' la forma piu' cara, perche' chi lo lancia legge una pila di chiamate
+// invece di un risultato.*
+//
+// Adesso l'assenza dell'IIFE e' una RISPOSTA, non un guasto: se in
+// `index.html` non c'e' piu' codice, non ci possono essere orfani. La riga
+// lo dice, cosi' chi la legge sa che la ricerca e' stata fatta e non saltata
+// (regola 41: uno zero scritto e' una ricerca fatta).
 const h=fs.readFileSync('index.html','utf8');
-const m=h.match(/<script>\n\(function \(\)[\s\S]*?\n<\/script>/)[0];
-new Function(m.replace(/^<script>\n/,'').replace(/\n<\/script>$/,''));
-const idef=new Set([...m.matchAll(/^  (?:function|var) (\w+)/gm)].map(x=>x[1]));
-const orf=[...def].filter(n=>!idef.has(n)&&m.split('\n').some(r=>{const t=r.trim();
-  return t&&!t.startsWith('//')&&!t.startsWith('*')&&!t.startsWith('/*')&&new RegExp('(^|[^.\\w$])'+n+'\\b').test(r)}));
-console.log('ORFANI in index.html: '+(orf.join(' ')||'ZERO'));
+const m=(h.match(/<script>\n\(function \(\)[\s\S]*?\n<\/script>/)||[null])[0];
+if (m === null) {
+  console.log('ORFANI in index.html: NESSUNO POSSIBILE — index.html non ha piu\' un IIFE (passo ③, 2026-09-20)');
+} else {
+  new Function(m.replace(/^<script>\n/,'').replace(/\n<\/script>$/,''));
+  const idef=new Set([...m.matchAll(/^  (?:function|var) (\w+)/gm)].map(x=>x[1]));
+  const orf=[...def].filter(n=>!idef.has(n)&&m.split('\n').some(r=>{const t=r.trim();
+    return t&&!t.startsWith('//')&&!t.startsWith('*')&&!t.startsWith('/*')&&new RegExp('(^|[^.\\w$])'+n+'\\b').test(r)}));
+  console.log('ORFANI in index.html: '+(orf.join(' ')||'ZERO'));
+}
 
 // ⚠️ TERZA RICERCA, E NASCE DA UN GUASTO CHE LE PRIME DUE NON POTEVANO VEDERE
 // (2026-09-20).

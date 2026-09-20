@@ -50,7 +50,14 @@ async function run() {
   {
     const tag = posizioneTag(html, 'app/ui-condivisa.js');
     const ultimaVista = html.indexOf('id="view-error"');
-    const scriptPrincipale = html.indexOf('\n<script>\n(function () {');
+    // ⚠️ LO SCRIPT IN LINEA NON E' PIU' UN IIFE (passo ③, 2026-09-20): in
+    // `index.html` resta `window.BI.boot()` e basta. Cercare
+    // `<script>\n(function () {` dava -1, e `tag < -1` e' falso — quindi
+    // questa riga sarebbe rossa **per sempre, su codice giusto**. Seguita e
+    // non tolta: l'invariante non e' cambiato — *questo tag deve venire prima
+    // dello script che accende l'app* — e' cambiato come si trova quello
+    // script. Si cerca la riga che lo accende, che e' l'unica cosa rimasta.
+    const scriptPrincipale = html.indexOf('window.BI.boot();');
     log('[A] Il tag arriva DOPO il markup', tag > ultimaVista, 'tag ' + tag);
     log('[A] ...e PRIMA dello script principale', tag < scriptPrincipale && scriptPrincipale > 0, 'tag ' + tag);
     // I due nodi presi a tempo di parsing sono la RAGIONE della seconda fila:
@@ -120,11 +127,25 @@ async function run() {
     // ⚠️ E il secondo listener del pannello Aiuto, quello sul `submit`, NON
     // entra in questo conto: la riga qui sopra cerca `addEventListener('click'`
     // apposta. Lo guarda il blocco [F], che lo preme.
-    log('[C] I sette listener sono nel file (4 di chiusura + 2 del popup + 1 dell\'Aiuto)',
-      listener.length === 7, String(listener.length));
+    // ⚠️ 7 -> 8 COL PASSO ② (2026-09-20), e l'ottavo non e' un listener nuovo:
+    // e' quello che `renderSummaryScreen` attacca al pulsante «Ho finito» di
+    // ogni modulo per farci il suono d'uscita. E' venuto col componente, come
+    // sempre.
+    log('[C] Gli otto listener sono nel file (4 di chiusura + 2 del popup + 1 dell\'Aiuto + 1 della Schermata Finale)',
+      listener.length === 8, String(listener.length));
+    // ⚠️ LA RIGA SU ESCAPE E' STATA SEGUITA, NON TOLTA (⓪-undecies).
+    //
+    // Diceva: «il listener di Escape non e' in questo file, ed e' in
+    // `index.html`». La prima meta' e' l'invariante e non e' cambiata — Escape
+    // chiude overlay di DUE proprietari, quindi non puo' stare in uno dei due.
+    // La seconda meta' era un INDIRIZZO, ed e' scaduta: col passo ② Escape e'
+    // andato in `app/mappa.js`, col resto del guscio dell'app.
+    //
+    // *Tenerla puntata a `index.html` l'avrebbe resa rossa su codice giusto;
+    // toglierla del tutto avrebbe perso l'invariante. Si sposta il puntatore.*
     log('[C] E il listener di Escape NON c\'e\' (chiude anche l\'Admin)',
       !righe.some(function (r) { return /'keydown'/.test(r); }) &&
-      righeDiCodiceDi('index.html').some(function (r) { return /'keydown'/.test(r); }));
+      righeDiCodiceDi('app', 'mappa.js').some(function (r) { return /'keydown'/.test(r); }));
   }
 
   // ── [D] GUIDANDO L'APP ──────────────────────────────────────────────

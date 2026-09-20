@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata], suoni.js [parsing]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre
@@ -102,6 +102,13 @@
   // guidandolo, non rileggendolo — `tests/tools/buchi.js` non poteva vederlo
   // perche' guarda un file per volta e il nome era appena arrivato.
   var saveHelpRequest = BI.saveHelpRequest;
+  // ⚠️ Serve a `renderSummaryScreen`, arrivata col passo ② (2026-09-20): e' il
+  // punto unico che attacca il suono di uscita al pulsante «Ho finito» di OGNI
+  // modulo. Senza questo alias le quattordici chiamate di montaggio, che
+  // girano a tempo di PARSING, morivano alla prima — quindi **nessuna
+  // Schermata Finale veniva costruita**, e l'app arrivava alla mappa senza che
+  // nessun errore lo dicesse a schermo. Misurato guidandola.
+  var sfxPlayExitSound = BI.sfxPlayExitSound;
   var isIntroDismissed = BI.isIntroDismissed;
   var setIntroDismissed = BI.setIntroDismissed;
 
@@ -800,6 +807,151 @@
   BI.speakerLabel = speakerLabel;
   BI.renderListenBlock = renderListenBlock;
   BI.speakListenBlock = speakListenBlock;
+  // ============================================================
+  // I COMPONENTI CONDIVISI E IL LORO MONTAGGIO — passo ②, 2026-09-20.
+  //
+  // `renderSummaryScreen` (la Schermata Finale di ogni modulo),
+  // `renderRetryIntroScreen` (la schermata Ripasso) e `applyRotatingSubtitle`,
+  // piu' le QUATTORDICI chiamate che le montano nel markup.
+  //
+  // ⚠️ IL MONTAGGIO VIENE COL PEZZO, E NON E' UN DETTAGLIO. Un componente non
+  // e' solo la sua funzione: e' la funzione e i punti in cui viene montato.
+  // Lasciare le quattordici chiamate in `index.html` avrebbe significato che
+  // il file che non sa piu' niente dei moduli continuava a nominarne sette per
+  // id — ed e' la stessa ragione per cui il popup dei tentativi si e' portato
+  // dietro i suoi due listener (2026-09-19).
+  //
+  // ⚠️ E QUESTE RIGHE GIRANO A TEMPO DI PARSING, sul markup statico: sono una
+  // delle due ragioni per cui il tag di questo file sta nella SECONDA fila.
+  // L'altra erano gli alias.
+  // ============================================================
+  // Box Doppia Scelta: a question + a secondary/primary button pair.
+  // Each caller keeps its OWN outer wrapper class already in the static
+  // HTML (.vc-confirm-box's tinted callout vs .fc-choice-row's plain
+  // padded block — genuinely different looks, not accidental
+  // duplication) — only the inner markup is shared. Labels may contain
+  // markup (e.g. an icon via icon()), not just plain text.
+
+  // Schermata Finale: the .sr-summary/.sr-summary-title shape (already
+  // shared verbatim as CSS classes by Speed Match/Match Practice/Flash
+  // Card) plus the one explicit completion button every module needs
+  // (CLAUDE.md rule 7) — same "Ho finito, torna alla mappa" label
+  // everywhere, so it isn't re-typed per module either. Job 6 (3rd
+  // collaudo): also the one place that wires the "uscita" sound onto that
+  // button — every module's own click handler (markModuleCompleted etc.)
+  // stays untouched, this listener is purely the sound, added once here
+  // instead of copied into all 7 module-specific handlers.
+  function renderSummaryScreen(screenId, titleId, titleText, completeBtnId) {
+    document.getElementById(screenId).innerHTML =
+      '<div class="sr-summary panel">' +
+      '<p class="sr-summary-title" id="' + titleId + '">' + titleText + '</p>' +
+      '<p class="sr-summary-subtitle" id="' + titleId + '-sub"></p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary btn-block" id="' + completeBtnId + '">Ho finito, torna alla mappa</button>';
+    document.getElementById(completeBtnId).addEventListener('click', sfxPlayExitSound);
+  }
+
+  // Schermata Ripasso: the message shown once before a new retry pass
+  // starts (whatever went wrong/unanswered comes back) — same panel shape
+  // for every module with a retry queue (Speed Match, Match Practice, Flash
+  // Card, Voice Coach), only continueBtnId/continueLabel differ per
+  // caller. Deliberately its own visually prominent treatment (not a
+  // plain page header + loose text like before) since this is an
+  // important transition that used to go unnoticed — see CLAUDE.md, and
+  // .retry-intro's own comment near its CSS for the color choice.
+  // Title AND text are both filled in dynamically at SHOW time (see
+  // applyRetryIntroContent below) — this only builds the empty shell.
+  function renderRetryIntroScreen(screenId, continueBtnId, continueLabel) {
+    document.getElementById(screenId).innerHTML =
+      '<div class="retry-intro panel">' +
+      '<p class="retry-intro-title" id="' + screenId + '-title"></p>' +
+      '<p class="retry-intro-text" id="' + screenId + '-text"></p>' +
+      '</div>' +
+      '<button type="button" class="btn btn-primary btn-block" id="' + continueBtnId + '">' + (continueLabel || 'Continua →') + '</button>';
+  }
+
+
+  // Job 2: rotating second sentence for a recurring message — the FIRST
+  // sentence stays the module's own fixed/informative text (titleText
+  // above, or bodyText for Schermata Ripasso); this fills in the second,
+  // picked at random each time the screen is actually shown (not once at
+  // boot, when these two render functions run). Prose pools live in
+  // data/inglese/it/messaggi-feedback.json like every other feedback message —
+  // reuses the SAME loadFeedbackMessages()/pickRandom() pair Voice
+  // Coach's star messages and the safety-valve popup already use, not a
+  // second mechanism for the same kind of thing.
+  function applyRotatingSubtitle(elId, listKey) {
+    var el = document.getElementById(elId);
+    if (!el) return;
+    el.textContent = '';
+    loadFeedbackMessages().then(function (data) {
+      var list = data[listKey];
+      if (list && list.length) el.textContent = pickRandom(list);
+    }).catch(function () {});
+  }
+
+
+
+
+  renderChoiceBox('vc-confirm-box', 'vc-confirm-text', 'Sicuro? Invia per la valutazione, o cancella e riprova.', 'vc-cancel-btn', icon('x') + ' Cancella', 'vc-send-btn', icon('check') + ' Invia');
+  renderChoiceBox('fc-choice-row', 'fc-choice-question', 'L\'hai imparata?', 'fc-not-yet-btn', 'Non ancora', 'fc-know-it-btn', 'Sì, la so!');
+
+  renderSummaryScreen('repeat-aloud-summary-screen', 'repeat-aloud-summary-title', 'Esercizio completato!', 'repeat-aloud-complete-btn');
+  renderSummaryScreen('story-cards-summary-screen', 'story-cards-summary-title', 'Esercizio completato!', 'story-cards-complete-btn');
+  renderSummaryScreen('sr-summary-screen', 'sr-summary-title', 'Round completato!', 'sr-complete-btn');
+  renderSummaryScreen('qm-summary-screen', 'qm-summary-title', 'Round completato!', 'qm-complete-btn');
+  renderSummaryScreen('fc-summary-screen', 'fc-summary-title', 'Tutte le carte ripassate!', 'fc-complete-btn');
+  // Same generic completion title regardless of "Sì, lo so"/"Non ancora"
+  // — the verde/giallo distinction already shows on the map badge (see
+  // MODULE OUTCOME), no need to repeat it here.
+  renderSummaryScreen('dg-summary-screen', 'dg-summary-title', 'Dialogo ripassato!', 'dg-complete-btn');
+
+  renderRetryIntroScreen('sr-retry-intro-screen', 'sr-retry-continue-btn');
+  renderRetryIntroScreen('qm-retry-intro-screen', 'qm-retry-continue-btn');
+  renderRetryIntroScreen('fc-retry-intro-screen', 'fc-retry-continue-btn', 'Continua');
+  renderRetryIntroScreen('voice-coach-retry-intro-screen', 'voice-coach-retry-continue-btn');
+
+  renderSummaryScreen('voice-coach-summary-screen', 'voice-coach-summary-title', 'Modulo completato!', 'voice-coach-complete-btn');
+
+  // ============================================================
+  // ⚠️ `buildTargetTokens` — ARRIVATA QUI COL PASSO ②, E OGGI NON HA NESSUN
+  // CHIAMANTE.
+  //
+  // Non e' un errore e non e' da togliere di iniziativa (regola 1): costruisce
+  // l'elenco dei token di una frase con i valori dello studente gia' dentro,
+  // ed e' scritta per un allineamento parola-per-parola. Sta QUI e non nel
+  // catalogo perche' i soli due nomi che usa — `slotDefault` e
+  // `resolveSlotValue` — sono in questo file: portarla altrove avrebbe creato
+  // una dipendenza nuova **per del codice che nessuno chiama**.
+  //
+  // *Registrata in `docs/decisioni.md` come trovata e non corretta: tenerla o
+  // toglierla e' una decisione di chi guida il progetto, non mia.*
+  // ============================================================
+  // Builds the flat target token list for alignment/rendering: each token
+  // is a rendered word plus the stable mastery unit it belongs to. Fixed
+  // words get a position-based id; every word of a slot's value shares the
+  // slot's own id, so changing a slot's selection never shifts or resets
+  // other items' progress.
+  function buildTargetTokens(episode, values) {
+    var tokens = [];
+    var fixedIdx = 0;
+    episode.segments.forEach(function (seg) {
+      if (seg.text) {
+        tokens.push({ word: seg.text, unitId: 'fixed:' + (fixedIdx++) });
+      } else {
+        var rawValue = (values[seg.slot] || '').trim() || slotDefault(episode, seg.slot);
+        var phrase = resolveSlotValue(episode, seg.slot, rawValue, 'en');
+        var words = phrase.split(/\s+/).filter(Boolean);
+        if (!words.length) words = [''];
+        words.forEach(function (w, i) {
+          var isLast = i === words.length - 1;
+          tokens.push({ word: w + (isLast && seg.suffix ? seg.suffix : ''), unitId: 'slot:' + seg.slot });
+        });
+      }
+    });
+    return tokens;
+  }
+
   BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
   BI.openAttemptPopup = openAttemptPopup;
   BI.closeAttemptPopup = closeAttemptPopup;

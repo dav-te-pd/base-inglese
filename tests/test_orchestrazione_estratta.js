@@ -34,7 +34,14 @@ async function run() {
     const tag = posizioneTag(html, 'app/orchestrazione.js');
     const primaVista = html.indexOf('id="view-onboarding"');
     const ultimaVista = html.indexOf('id="view-error"');
-    const scriptPrincipale = html.indexOf('\n<script>\n(function () {');
+    // ⚠️ LO SCRIPT IN LINEA NON E' PIU' UN IIFE (passo ③, 2026-09-20): in
+    // `index.html` resta `window.BI.boot()` e basta. Cercare
+    // `<script>\n(function () {` dava -1, e `tag < -1` e' falso — quindi
+    // questa riga sarebbe rossa **per sempre, su codice giusto**. Seguita e
+    // non tolta: l'invariante non e' cambiato — *questo tag deve venire prima
+    // dello script che accende l'app* — e' cambiato come si trova quello
+    // script. Si cerca la riga che lo accende, che e' l'unica cosa rimasta.
+    const scriptPrincipale = html.indexOf('window.BI.boot();');
     const headStrati = posizioneTag(html, 'app/config.js');
 
     log('[A] Il tag arriva DOPO il markup di tutte le viste',

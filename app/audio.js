@@ -1,4 +1,9 @@
-// DIPENDE DA: nessuno
+// DIPENDE DA: dialogo.js [chiamata]
+// ⚠️ ED E' UNA DIPENDENZA IN AVANTI, VOLUTA: `dialogo.js` e' caricato molto
+// dopo di questo file. La Regola Azione Critica qui sotto chiede
+// `BI.dgAudioProtected` **quando l'utente tocca qualcosa**, mai al parsing —
+// quindi l'ordine dei tag non e' vincolato, e la guardia `&&` non e' prudenza:
+// senza il Dialogo caricato, la risposta giusta e' «nessuna protezione».
 // Nessun altro file di `app/` e nessun nome di `index.html`: questo file si
 // regge da solo, e l'ordine del suo tag non e' un vincolo.
 //
@@ -221,4 +226,39 @@ window.BI = window.BI || {};
   BI.nuovaEpoca = nuovaEpoca;
   BI.epocaCorrente = epocaCorrente;
   BI.toggleSpeak = toggleSpeak;
+
+  // ============================================================
+  // LA REGOLA AZIONE CRITICA — arrivata qui col passo ②, 2026-09-20.
+  //
+  // Il punto unico da cui qualunque tocco spegne la voce (CLAUDE.md regola
+  // 16). Stava da sola in fondo all'IIFE di `index.html`, col suo commento che
+  // spiegava perche' stesse li': **perche' non era di nessun modulo.** Non lo
+  // e' ancora — ma e' del NUCLEO AUDIO, che e' questo file: e' lui che spegne.
+  //
+  // ⚠️ E' UN LISTENER SUL `document`, NON SU UN ELEMENTO. Per questo puo'
+  // stare nella prima fila (`<head>`) mentre gli altri listener del passo ②
+  // sono dovuti andare nella seconda: `document` c'e' gia' quando questo file
+  // viene letto, un `#theme-picker` no. *Il confine e' il momento, non
+  // l'argomento.*
+  //
+  // ⚠️ E LA CHIAMATA A `BI.dgAudioProtected` VA IN AVANTI, verso
+  // `app/dialogo.js`, che e' caricato molto dopo. E' voluta e va letta cosi':
+  // la guardia `BI.dgAudioProtected && ...` **non e' prudenza** — senza il
+  // Dialogo caricato la risposta giusta e' «nessuna protezione». La
+  // dipendenza e' a tempo di CHIAMATA (l'utente tocca qualcosa), quindi non
+  // vincola l'ordine dei tag, ed e' contata e nominata dal blocco [C] di
+  // tests/test_dipendenze_dichiarate.js.
+  // ============================================================
+  document.addEventListener('click', function (e) {
+    if (!staParlando()) return;
+    if (e.target.closest('[data-say], [data-qm-listen-index], .dg-bubble')) return;
+    // ⚠️ `dgAudioProtected` E' USCITA CON IL DIALOGO (app/dialogo.js,
+    // 2026-09-19): la risposta la sa solo lui, perche' dipende dal profilo e
+    // dalla vista attiva. La guardia `&&` non e' prudenza generica — se quel
+    // file non e' caricato la risposta GIUSTA e' «nessuna protezione»: senza
+    // Dialogo aperto non c'e' nessun countdown da sfasare.
+    if (BI.dgAudioProtected && BI.dgAudioProtected()) return;
+    fermaLaVoce();
+  }, true);
+
 })(window.BI);

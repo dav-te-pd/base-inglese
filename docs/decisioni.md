@@ -166,6 +166,26 @@ perché il 23 la chiudeva: l'help, i listener condivisi, il pannello Admin, il
 ponte degli alias. **Nessuno di questi ha una decisione aperta dentro**: sono
 estrazioni come le altre.
 
+⚠️⚠️ **LO SVUOTAMENTO È FINITO IL 2026-09-20. `index.html` NON HA PIÙ CODICE.**
+
+Resta `window.BI.boot()`, tre parole. Il ponte degli alias — 163 righe della
+forma `var nome = BI.nome;` — non è stato smontato: **si è svuotato da solo**,
+una riga per volta, a ogni estrazione. I passi ① ② ③ hanno portato via il
+pannello Aiuto e le porte dell'Admin, il guscio dell'app (tema, nome,
+onboarding, cambio utente, Escape), i componenti condivisi col loro montaggio,
+la Regola Azione Critica e la scelta dell'episodio iniziale.
+
+**Due cose sono rimaste senza chiamanti, e non sono state tolte** (regola 1 —
+toglierle è una decisione di chi guida il progetto, non mia):
+
+| | Dove sta ora | Perché non ha chiamanti |
+|---|---|---|
+| `episodeFinalOutcomeCase` | `app/mappa.js` | È pronta per il **Modulo Finale**, che non è costruito |
+| `buildTargetTokens` | `app/ui-condivisa.js` | Costruisce i token di una frase per un allineamento parola-per-parola. Nessuno lo fa oggi |
+
+**Condizione: si decide quando si costruisce il Modulo Finale** — allora la
+prima si usa, e della seconda si saprà se serve.
+
 ⚠️ **L'apertura dei moduli è USCITA il 2026-09-19 (passo C2), in
 `app/apertura.js`** — con lei le tre preparazioni che l'apertura fa
 (`ensureEpisodeSlotFields`, `applyEpisodeDialogue`,

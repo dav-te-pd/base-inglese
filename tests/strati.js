@@ -124,11 +124,41 @@ function verificaStruttura(log, etichetta, file, opts) {
   log('[S] ' + etichetta + ': nessun nome esposto viene RIASSEGNATO dentro lo strato',
     esposti.length === 0, esposti.join(', ') + ' — un nome che cambia esce come funzione, non come valore');
 
-  const alias = nomi.filter(function (n) {
-    return righe.some(function (r) { return new RegExp('^\\s*var ' + n + ' = BI\\.' + n + ';\\s*$').test(r); });
+  // ⚠️ QUESTA RIGA CHIEDEVA IL PONTE DEGLI ALIAS, E IL PONTE NON C'E' PIU'
+  // (passo ③, 2026-09-20). E' una rossa per una DECISIONE, seguita invece che
+  // tolta — settima comparsa della ⓪-undecies.
+  //
+  // Chiedeva che `index.html` avesse `var nome = BI.nome;` per OGNI nome
+  // esposto dallo strato. Quella domanda aveva senso finche' dentro
+  // `index.html` c'era del codice che quei nomi li usava **nudi**: l'alias era
+  // la prova che il nome fosse arrivato fin li'. Da oggi in `index.html` c'e'
+  // una riga sola, `window.BI.boot()`, e di alias non ce n'e' piu' nessuno —
+  // quindi la riga di prima sarebbe **rossa per tutti e nove gli strati, per
+  // sempre**, su codice giusto.
+  //
+  // ⚠️ E LA DOMANDA NON SI E' PERSA, E' CAMBIATA DI POSTO: l'invariante vero
+  // non era «esiste l'alias», era **«il nome esposto e' davvero raggiungibile
+  // da chi lo usa»**. Adesso chi lo usa e' un altro file di `app/`, e a
+  // guardarlo c'e' gia' `tests/test_dipendenze_dichiarate.js`, che misura il
+  // grafo e lo confronta con la riga `DIPENDE DA` di ogni file — una verifica
+  // piu' forte di questa, perche' distingue anche il MOMENTO.
+  //
+  // Resta qui la meta' che quel file non guarda: **un nome esposto e che
+  // nessuno legge e' esposizione morta.** Non e' un errore — un pezzo puo'
+  // nascere prima del suo primo utente (e' successo con `app/spazio.js`, per
+  // scelta scritta) — ma va VISTO, perche' altrimenti il conto dei nomi
+  // esposti sale e basta.
+  const sorgenti = fs.readdirSync(repoPath('app'))
+    .filter(function (f) { return /\.js$/.test(f) && f !== file; })
+    .map(function (f) { return fs.readFileSync(repoPath('app', f), 'utf8'); })
+    .concat([fs.readFileSync(repoPath('index.html'), 'utf8')]);
+  const senzaLettori = nomi.filter(function (n) {
+    return !sorgenti.some(function (src) {
+      return new RegExp('BI\\.' + n + '\\b').test(src) || new RegExp('\\bvar ' + n + ' = BI\\.' + n + ';').test(src);
+    });
   });
-  log('[S] ' + etichetta + ': e ognuno dei ' + nomi.length + ' nomi ha il suo alias',
-    alias.length === nomi.length, alias.length + ' su ' + nomi.length);
+  log('[S] ' + etichetta + ': ognuno dei ' + nomi.length + ' nomi esposti ha almeno un lettore',
+    senzaLettori.length === 0, 'senza lettori: ' + (senzaLettori.join(', ') || 'nessuno'));
 
   return nomi;
 }

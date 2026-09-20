@@ -83,8 +83,11 @@ nodi.forEach(function (n) {
   // ⚠️ 14 -> 15 col PASSO C2: `app/apertura.js`, il file nuovo. Dipende come
   // tutti, e questo numero non e' quello che dice se il passo e' riuscito —
   // e' il prossimo.
-  log('[B] Quindici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 15, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ 15 -> 16 col PASSO ②: `app/audio.js` ne acquista una — la Regola Azione
+  // Critica, che chiede `BI.dgAudioProtected` al Dialogo. Non e' un file nuovo:
+  // e' un file che prima non dipendeva da nessuno e adesso dipende da uno.
+  log('[B] Sedici file di app/ dipendono da qualcosa',
+    conDipendenze.length === 16, conDipendenze.map(function (n) { return n.file; }).join(', '));
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -300,13 +303,21 @@ nodi.forEach(function (n) {
   // falsa in silenzio se l'avessimo allentata a «sono quattro». Quindi si
   // nominano le COPPIE, che e' l'unica forma che non si puo' soddisfare per
   // caso.
+  //
+  // ⚠️ 4 -> 5 COL PASSO ② (2026-09-20): `audio.js -> dialogo.js`, la Regola
+  // Azione Critica. E' il listener unico da cui qualunque tocco spegne la voce,
+  // e chiede al Dialogo se questo e' uno dei due profili col countdown, dove
+  // interrompere l'audio a meta' sfaserebbe il timer (regola 16). Sta nel
+  // nucleo audio perche' e' lui che spegne; il Dialogo e' caricato dopo, quindi
+  // la domanda si fa **quando l'utente tocca**, mai al parsing.
   var atteseInAvanti = [
+    'audio.js -> dialogo.js',
     'dati.js -> apertura.js',
     'mappa.js -> apertura.js',
     'personalizza.js -> apertura.js',
     'ui-condivisa.js -> sessione.js'
   ].sort().join(' | ');
-  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono QUATTRO, e sono queste',
+  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono CINQUE, e sono queste',
     aChiamata.slice().sort().join(' | ') === atteseInAvanti,
     'misurate: ' + aChiamata.slice().sort().join(' | '));
 }

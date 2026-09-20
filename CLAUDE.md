@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920a**
+**Versione: 20260920b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -13,9 +13,11 @@ modifica alza la lettera se è lo stesso giorno, la data se è un altro.*
 App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente.
 
 **L'app vive in VENTIQUATTRO file, e fino al 2026-09-16 ne aveva uno solo.**
-`index.html` tiene il markup, il CSS e quello che resta dello script; il resto
-è in `app/*.js`, un file per strato o per modulo, caricati da ventitré tag
-`<script src>`. **Nessun passo di build, nessuna dipendenza esterna oltre ai
+`index.html` tiene il markup, il CSS e **una riga sola di JavaScript** —
+`window.BI.boot()` — dal 2026-09-20; il resto è in `app/*.js`, un file per
+strato o per modulo, caricati da ventitré tag `<script src>`.
+
+*Il numero dei tag non si legge da qui, si conta:* `grep -c 'src="app/' index.html`. **Nessun passo di build, nessuna dipendenza esterna oltre ai
 Google Fonts**: quella parte non è cambiata, e non deve.
 
 *Qui c'era scritto «l'app vive in un file solo», ed è rimasto vero fino al
