@@ -58,10 +58,8 @@ lavorare su una base che non si può misurare.*
 | **1.8** | **Le tabelle di personalizzazione escono da `APP_CONFIG`** | Vanno sotto `data/{lingua}/` come il resto dell'edizione (regola 4) |
 | **1.9** | **I quattro `fetch` di `app/dati.js` prendono il `?v=`** | Oggi solo i 23 tag `<script>` ce l'hanno: i file di dati possono restare in cache vecchi |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
-| **1.11** | **L'edizione diventa un valore** — `CONFIG.edizione = 'inglese/it'` | Oggi è scritta a mano **quattro volte** in `app/dati.js` (righe 53, 59, 72, 135). La convenzione delle cartelle è decisa dal 2026-09-09 (regola 4): **quello che manca non è la decisione, è il valore nel codice** |
-| **1.12** | **`CONFIG.episodes` diventa per edizione** | È il **catalogo del corso**: `gate` e `aircraft-door` sono episodi d'inglese, e un corso di francese ha i suoi. È la più «per edizione» delle cinque chiavi |
-| **1.13** | **Le due chiavi di TESTO escono da `APP_CONFIG`** | `gradeNames` e le `label` di `moduleTypes` vanno in `data/{lingua}/{studente}/etichette.json`. **`grades` e `sequences` restano dove sono** |
-| **1.14** | **Due episodi di «francese per italiani»** | Il collaudo dell'edizione: prova cartelle, percorsi e catalogo. ⚠️ **Non prova le due chiavi di testo** — il perché è nel blocco qui sotto. Il contenuto viene da `docs/francese/it/` (regole 26 e 33), cioè da chi guida il progetto |
+| **1.11** | **La struttura del corso esce da `APP_CONFIG` e diventa un file per edizione** | `grades`, `gradeNames`, `moduleTypes`, `sequences`, `episodes` e le due lingue di `speech` vanno in `data/{lingua}/{studente}/struttura-corso.json`. **Tutte, senza eccezioni** — vedi il blocco qui sotto |
+| **1.12** | **Due episodi di «francese per italiani»** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase: prova cartelle, percorsi, catalogo, sequenze e nomi dei gradi tutti insieme. Il contenuto lo scrive chi guida il progetto, in `docs/francese/it/` (regole 26 e 33), corretto davvero — un francese finto non farebbe vedere gli errori |
 
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
@@ -74,58 +72,50 @@ lavorare su una base che non si può misurare.*
 - ~~le quattro chiavi globali~~ — **deciso il 2026-09-20**, e sono **cinque**,
   non quattro: vedi i passi **1.11–1.14** qui sopra e il blocco qui sotto.
 
-### ⚠️ LE CINQUE CHIAVI GLOBALI — deciso il 2026-09-20
+### ⚠️ LA STRUTTURA DEL CORSO È TUTTA PER EDIZIONE — deciso il 2026-09-20
 
-Erano quattro nella domanda; misurandole sono **cinque**: `CONFIG.episodes` ha
-la stessa forma e non era nell'elenco.
+**Una regola sola, nessuna eccezione: un'edizione è un abbinamento
+`{lingua-che-si-impara}/{lingua-studente}`, e TUTTO ciò che riguarda la
+struttura di quel corso vive nell'edizione.**
 
-| Chiave | Lettori veri (righe di codice) | Verdetto |
-|---|---|---|
-| `grades` `['A','B','C','D']` | **1** — `app/mappa.js:1164`, solo il Pannello Admin | **resta globale**: lettere tecniche, nessun testo |
-| `sequences` | **3** — `app/catalogo.js:269` e `:272`, `app/mappa.js:666` | **resta globale**: già indicizzata per NOME |
-| `gradeNames` | **1** — `app/mappa.js:939`, il badge della mappa | **esce**: è testo che lo studente legge |
-| `moduleTypes` | **1** — `app/mappa.js:957`, stesso badge | **esce la sola `label`**; la chiave (`studio`, `quiz`) resta |
-| `episodes` | `resolveEpisodeOrder`, `app/catalogo.js:257` | **esce**: è il catalogo del corso |
+⚠️ **Questa decisione ne CORREGGE una scritta poche ore prima nello stesso
+file**, e vale la pena dire perché, perché l'argomento scartato è ragionevole e
+tornerà. Avevo proposto un taglio: fuori solo ciò che è *testo*, dentro ciò che
+è *struttura* — con la misura che `gradeNames` per `francese/it` sarebbe
+identico a quello di `inglese/it` («Parole, Espressioni, Frasi, Dialogo» sono
+italiano, e valgono per il francese). **La misura era giusta e la conclusione
+no.** I nomi dei gradi non sono una traduzione: sono una **decisione didattica
+di quel corso**. Tenerli condivisi vuol dire che una scelta presa per l'inglese
+governa il francese in silenzio — che è esattamente ciò che la regola 4 vieta
+quando dice che una correzione fatta in `it/` **non deve** arrivare nelle altre
+edizioni. *Ottimizzare «non duplicare quattro parole» costava la regola unica;
+duplicare quattro parole non costa niente.*
 
-**Il criterio è uno solo, e vale per le due chiavi di testo: dipendono dalla
-SECONDA metà della coppia, mai dalla prima.** `gradeNames` (Parole, Espressioni,
-Frasi, Dialogo) e le `label` di `moduleTypes` (Studio, Quiz, …) sono testo nella
-lingua dello **studente**:
+**Il file: `data/{lingua}/{studente}/struttura-corso.json`**, uscita diretta e
+1:1 di `docs/{lingua}/{studente}/struttura-corso.md` (regola 26) — che è già per
+edizione. Oggi quel markdown per-edizione scarica il suo risultato in valori
+globali: **era quello il disallineamento.**
 
-| Seconda edizione | Le due chiavi di testo |
+| Va nell'edizione | Perché |
 |---|---|
-| `francese/it` — corso diverso, **stesso** studente | **non cambiano**: «Parole» e «Studio» valgono identiche per il francese |
-| `inglese/de` — stesso corso, studente **diverso** | **cambiano tutte**: *Wörter, Ausdrücke, Sätze, Dialog* |
+| `episodes` | quali episodi ha QUESTO corso, in che ordine, e quale sequenza usa ciascuno |
+| `sequences` | quante ne vuole chi guida il progetto, con i nomi che vuole |
+| `grades` | le lettere dei gradi di questo corso |
+| `gradeNames` | i nomi che lo studente legge |
+| `moduleTypes` (le `label`) | le categorie che lo studente legge |
+| `speech.recognitionLang` / `synthesisLang` | ⚠️ **trovate misurando, non erano nell'elenco**: oggi valgono `en-US`, e un corso di francese vuole `fr-FR` |
 
-**Ne segue che il collaudo `francese/it` (1.14) NON mette alla prova le due
-chiavi di testo:** mette alla prova cartelle, percorsi e catalogo. Resta il
-collaudo giusto da fare per primo, perché quei tre pezzi sono esattamente quelli
-che Supabase eredita.
-
-**Dove vanno le due che escono, e perché un file nuovo invece di una chiave in
-`istruzioni-moduli.json`:** i due file condivisi di un'edizione si distinguono
-oggi con un criterio netto — lì **come si usa** un modulo, là **cosa è andato
-come**. I nomi delle cose sono un terzo mestiere, e infilarli in uno dei due
-toglierebbe proprio la nitidezza che permette di sapere dove va un testo nuovo
-(forma ⓪-decies: una cosa che risponde a due domande). Quindi `etichette.json`,
-con il suo criterio scritto: **i NOMI di ciò che lo studente vede**. La
-duplicazione fra `inglese/it` e `francese/it` — le stesse quattro parole scritte
-due volte — non è un incidente: è la scelta già presa dalla regola 4, che vuole
-le edizioni indipendenti.
-
-**Perché `sequences` e `grades` restano:** non contengono testo, e `sequences` è
-già indicizzata per NOME — un'edizione che volesse un altro ordine aggiunge
-`'narrativo-standard-de'` **accanto**, senza sovrascrivere niente. Spostarle
-costerebbe la vista di riordino del Pannello Admin, che è il loro solo editore,
-senza comprare niente.
+| Resta in `APP_CONFIG` | Perché |
+|---|---|
+| soglie, tempi, suoni, limiti, temi, coda dei ripassi | sono le **manopole dell'app**, non del corso: non cambiano cambiando lingua |
 
 **⚠️ E LA DIREZIONE È L'OPPOSTA DI COME SI RACCONTA FACILMENTE: non è la
 sequenza che dichiara i suoi episodi.** È l'**episodio** che dichiara la sua
 sequenza, per nome — `CONFIG.episodes.gate = { sequence: 'narrativo-standard' }`,
 letto da `resolveEpisodeOrder` (`app/catalogo.js:269`). Una sequenza non sa
 niente degli episodi che la usano, e due episodi possono chiedere la stessa.
-Quando `CONFIG.episodes` passerà all'edizione (1.12), il posto che dice «quali
-episodi ci sono» esisterà davvero — ma sarà l'**edizione**, non la sequenza.
+**Nel file di edizione il posto che dice «quali episodi ci sono» esisterà
+davvero** — ed è l'edizione, non la sequenza.
 
 **⚠️ E DUE LUCCHETTI DIVERSI, CON NOMI CHE SI SOMIGLIANO:**
 
@@ -137,6 +127,10 @@ episodi ci sono» esisterà davvero — ma sarà l'**edizione**, non la sequenza
   `storyCardsRefreshExplanationStates`: sta **dentro** due moduli (le bolle di
   Ripeti a Tempo, le card di Why We Say It). Stessa idea, **niente a che vedere**
   con la sequenza dei moduli.
+
+**Cosa resta aperto di questa decisione:** il passo 1.11 la esegue, e va
+dichiarato prima di essere costruito (regola 31) — è un file di dati nuovo e un
+cammino di caricamento nuovo, non uno spostamento.
 
 ## ② IL COLLAUDO — il passo 26
 

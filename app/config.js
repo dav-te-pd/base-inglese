@@ -28,6 +28,31 @@
 // ============================================================
 
   window.APP_CONFIG = {
+    // ---- L'EDIZIONE: quale corso, per quale studente. Passo 1.11, 2026-09-20.
+    //
+    // È la coppia della regola 4 — `{lingua-che-si-impara}/{lingua-studente}` —
+    // e da qui si ricavano TUTTI i percorsi dei dati: la cartella
+    // `data/inglese/it/` e il prefisso `inglese-it-` dei file episodio.
+    //
+    // ⚠️ PRIMA ERA SCRITTA A MANO QUATTRO VOLTE, tutte in `app/dati.js`
+    // (i tre file condivisi piu' `episodeDataFile`). La convenzione delle
+    // cartelle era decisa dal 2026-09-09; quello che non esisteva era il
+    // VALORE che la rappresenta — quindi rinominare una cartella voleva dire
+    // trovare quattro stringhe, e trovarne tre non alzava nessun errore:
+    // l'app sarebbe partita leggendo mezza edizione vecchia e mezza nuova.
+    //
+    // ⚠️ DUE CAMPI E NON UNA STRINGA `'inglese/it'` (regola 25): il prefisso
+    // dei file episodio li vuole separati e uniti con un trattino invece che
+    // con una barra. Con una stringa sola andrebbe spezzata per ricomporla,
+    // cioe' il dato vero sarebbero comunque due.
+    //
+    // Cambiarlo dal Pannello Admin punta l'app a un'altra edizione: se quella
+    // cartella non c'e', i dati non arrivano e si vede la schermata d'errore
+    // (regola 35) — un guasto che si vede, non uno che si assorbe. ----
+    edizione: {
+      lingua: 'inglese',
+      studente: 'it'
+    },
     // ---- speech recognition & synthesis ----
     speech: {
       recognitionLang: 'en-US',
@@ -639,6 +664,8 @@
     // implementation detail, with a sensible range where one exists.
     // Purely descriptive — never read by anything except the panel. ----
     configFieldDescriptions: {
+      'edizione.lingua': 'La lingua che si impara — la prima metà della coppia che dà il nome alla cartella dei dati e al prefisso dei file degli episodi. Cambiarla senza che quella cartella esista porta alla schermata d\'errore: non è un modo per tradurre l\'app, è il modo di puntarla a un\'altra edizione già scritta.',
+      'edizione.studente': 'La lingua di chi studia — la seconda metà della coppia. Decide in che lingua lo studente legge spiegazioni, nomi dei gradi ed etichette. Vale la stessa avvertenza della voce sopra.',
       'episodioCorrente': 'Quale episodio apre l\'app. Il menu elenca gli episodi che esistono: sceglierne uno ricarica la pagina, perché mappa, progressi e contenuti si costruiscono all\'avvio. Serve a raggiungere un episodio per provarlo — la scelta dell\'episodio per lo studente sarà un\'altra cosa, con il suo disegno.',
       'sequences': 'Le sequenze di passi, una per nome. Ogni episodio ne dichiara una (CONFIG.episodes.&lt;id&gt;.sequence), e nessun episodio ne eredita una in silenzio. Qui sotto si modifica quella dell\'episodio corrente: le frecce spostano il passo, il pulsante con la lettera cambia grado (A → B → C → D), l\'occhio accende e spegne. Ricarica la pagina per vedere l\'effetto in mappa.',
       'grades': 'Lettere dei gradi dell\'episodio, nell\'ordine in cui il pulsante del grado le fa girare nella vista di riordino.',

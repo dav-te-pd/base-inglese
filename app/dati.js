@@ -47,16 +47,33 @@ window.BI = window.BI || {};
 
   var CONFIG = window.APP_CONFIG;
 
+  // ⚠️ L'UNICO PUNTO CHE SA DOVE STANNO I DATI DELL'EDIZIONE. Passo 1.11.
+  //
+  // I quattro percorsi qui sotto si RICAVANO da `CONFIG.edizione`, invece di
+  // portare `data/inglese/it/` scritto dentro. Prima erano quattro copie dello
+  // stesso dato, e una rinomina che ne trovava tre su quattro non alzava
+  // niente: l'app leggeva meta' edizione vecchia e meta' nuova.
+  //
+  // `percorsoEdizione` sta qui e non in un file suo perche' i suoi quattro
+  // lettori sono tutti in questo file. Quando nascera' `app/fonte.js` (passo
+  // 1.7) — l'unico strato che sapra' se i dati vengono da un file o dal
+  // server — questa funzione e' esattamente il pezzo che si sposta li'.
+  function percorsoEdizione(nomeFile) {
+    var ed = CONFIG.edizione;
+    return 'data/' + ed.lingua + '/' + ed.studente + '/' + nomeFile;
+  }
+
+
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
   // shared across episodes and keyed by module kind — never hardcoded
   // here. Fetched once and cached, same pattern as episode data.
-  var MODULE_INSTRUCTIONS_FILE = 'data/inglese/it/istruzioni-moduli.json';
+  var MODULE_INSTRUCTIONS_FILE = percorsoEdizione('istruzioni-moduli.json');
 
   // Il quarto file di dati, e l'unico che fino al 2026-09-09 aveva il percorso
   // scritto dentro la riga di fetch invece che qui. Era l'unico dei tre che
   // uno spostamento di cartelle poteva rompere in silenzio: non compariva in
   // nessun elenco di percorsi, stava in mezzo a una funzione.
-  var FEEDBACK_MESSAGES_FILE = 'data/inglese/it/messaggi-feedback.json';
+  var FEEDBACK_MESSAGES_FILE = percorsoEdizione('messaggi-feedback.json');
 
   // Le tabelle di personalizzazione condivise (nomi, citta', paesi). Uscite da
   // APP_CONFIG il 2026-09-15: sono contenuto dell'edizione (CLAUDE.md regola 4),
@@ -69,7 +86,7 @@ window.BI = window.BI || {};
   // "dest-cina", traducibilita' dichiarata per riga) arriva col passo che
   // porta anche il secondo campo per riga e le eta' in lettere. La differenza
   // e' scritta dentro il JSON, sotto "_nota".
-  var PERSONALIZATION_TABLES_FILE = 'data/inglese/it/tabelle-personalizzazione.json';
+  var PERSONALIZATION_TABLES_FILE = percorsoEdizione('tabelle-personalizzazione.json');
 
   var moduleInstructionsCache = null;
 
@@ -132,7 +149,8 @@ window.BI = window.BI || {};
   // episodio volesse un percorso suo, la regola 4 sarebbe da riaprire prima
   // di questa riga.
   function episodeDataFile(episodeId) {
-    return 'data/inglese/it/inglese-it-' + episodeId + '.json';
+    var ed = CONFIG.edizione;
+    return percorsoEdizione(ed.lingua + '-' + ed.studente + '-' + episodeId + '.json');
   }
 
   var episodeDataCache = {};
