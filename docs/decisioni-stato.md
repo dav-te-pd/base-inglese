@@ -50,10 +50,8 @@ lavorare su una base che non si può misurare.*
 |---|---|---|
 | **1.3** | **Passo 18 — le stringhe del markup** | ⚠️ **Da RICONTARE prima: non sono mai state contate.** Il numero su cui si pianificava non esiste |
 | **1.4** | **Passo 24 — `componenti-condivisi.md` e `componenti-singoli.md`** | ⚠️ **MISURATO IL 2026-09-20, ed è più grosso di come era accorpato: 560 pezzi** (320 funzioni in `app/*.js`, 240 classi in `stile/*.css`), ognuno con tre campi di prosa che **una persona scrive leggendo la funzione**. Non si fa in un giro. **Nato il 2026-09-20 con lo strumento che lo rende contabile** (`tests/tools/censimento-pezzi.js`: dice quanti mancano **e in quale file stanno**) e con la prima tranche: `app/dati.js`, `app/avvio.js` e `app/orchestrazione.js` chiusi, **14 su 560**. Si prende **un file per volta**, e il numero sale. ⚠️ **Non si generano righe vuote in automatico:** «un file vuoto in attesa è un invito a riempirlo di intenzioni», e 546 righe finte sembrerebbero un catalogo |
-| **1.5** | **Passo 25 — la regola 8 di `CLAUDE.md`** | Le prime due parti sono fatte; resta la terza |
-| **1.6** | **Passo 13 — le cinque righe della mastery** | Blocco a sé, già delimitato |
 | **1.7** | **L'astrazione della fonte + C2** | `app/fonte.js`: l'unico file che sa DOVE stanno i dati. ⚠️ **Fatta prima, Supabase è un lavoro in UN file invece che in 101 punti** |
-| **1.8** | **Le tabelle di personalizzazione escono da `APP_CONFIG`** | Vanno sotto `data/{lingua}/` come il resto dell'edizione (regola 4) |
+| **1.8** | **Le tabelle di personalizzazione prendono la forma nuova** | ⚠️ **Sono gia' USCITE da `APP_CONFIG` il 2026-09-15**, in `data/inglese/it/tabelle-personalizzazione.json` — ma **col contenuto vecchio**, come deciso allora: sei destinazioni invece di undici, id `marco` invece di `papa-marco`, traducibilità dedotta invece che dichiarata. Quello che resta è la FORMA: i punti ② ③ ⑤ di *Cosa manca* in `docs/inglese/it/tabelle-personalizzazione.md`, **tutti e tre verificati aperti il 2026-09-20** nel codice, non nel documento. ⚠️ **E qui si tolgono le colonne `fr`/`es`/`de` vuote** — vedi il divieto 7 |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
 | **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* |
 
@@ -213,6 +211,7 @@ storico, nelle quattro sezioni che portano lo stesso nome.
 | **CI rosse che non dicono cosa fare** | storico, sezione omonima | Valori ricopiati invece che letti dalla fonte |
 | **Il volume di default di `sfxPlayTone`** | storico, `## DA FARE` | Deve uscire dal codice ed entrare in `APP_CONFIG` (regola 3) |
 | **`test_batch19.js`** | storico, `## ⚠️ APERTO` | La causa si stava stringendo l'11→15 settembre e non è stata chiusa |
+| **Le due voci del passo 13 che restano** | storico, «Le cinque voci della 2-bis» | ⑤ **il report per grado** — *«è prodotto, non strumento»*, quindi va con i prodotti della tappa ④, non qui. **D3** — sospesa, torna **quando esisterà un colore sopra i compartimenti**. *Le altre tre voci sono chiuse: ① e ② e ③ eseguite il 2026-09-10, ④ chiusa il 2026-09-20 scrivendo la nota accanto a `recordPendingMastery`.* |
 | **Le cose del Pannello Admin** | tappa ③, sotto la tabella | I due campi dell'edizione da bloccare e la vista di tutte le sequenze. **Stanno lì e non qui** perché si chiudono tutte insieme al passo 3.5, quando il pannello viene rifatto |
 
 ⚠️ **E una cosa che NON è piccola e sta qui solo perché è già registrata:
@@ -281,6 +280,21 @@ Non si deducono guardando il codice.
    (regola 23), e si vede **fallire apposta** prima di fidarsene (regola 32).
 5. **Ogni commit scrive la propria riga** in `correzioni.md` o qui (regola 43).
 6. **Un file sotto `docs/{lingua}/` non si tocca di iniziativa** (regola 33).
+7. ⚠️ **I NOMI FRANCESI NON VANNO NELLE COLONNE `fr` DI
+   `data/inglese/it/tabelle-personalizzazione.json`.** Quel file porta `fr`,
+   `es`, `de` vuote — la forma «una riga, cinque lingue» — e finche' il passo
+   1.8 non le toglie, **sono li' e sembrano il posto giusto**. Non lo sono: i
+   nomi francesi vanno in `data/francese/it/tabelle-personalizzazione.json`,
+   il file di quell'edizione. *Il rischio non e' che quelle colonne restino:
+   e' che qualcuno ci scriva dentro prima che il passo arrivi, e allora
+   toglierle diventa una migrazione invece di una cancellazione.*
+8. ⚠️ **In un file di contenuto si cercano prima le ISTRUZIONI false, poi i
+   fatti falsi.** Un fatto sbagliato confonde chi legge; **un'istruzione
+   sbagliata viene ESEGUITA.** Il caso: `inglese-it-gate.md` dice *«finche' non
+   e' fatta, l'id e' `episode1` e va usato quello»* — una sessione che lo legge
+   fa quello che dice. Le altre righe false dello stesso file dicono soltanto
+   cose non piu' vere. **Vale per tutti e sei i file**, e decide l'ordine in cui
+   si riscrivono.
 
 ---
 

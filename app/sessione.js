@@ -98,9 +98,18 @@
   function applyMasteryResult(entry, result) {
     if (!entry) {
       // Una voce mai incontrata NON esiste: assenza di dato, non un giudizio.
-      // Non serve rappresentarlo — e' gia' cosi', e l'unico lettore che abbia
-      // mai DISEGNATO questi colori lo sa: renderPhrase usa la classe 'new'
-      // quando entry manca. Per questo qui non c'e' un quarto livello: un
+      // Non serve rappresentarlo — e' gia' cosi'.
+      //
+      // ⚠️ QUI C'ERA SCRITTO «l'unico lettore che abbia mai DISEGNATO questi
+      // colori lo sa: renderPhrase usa la classe 'new' quando entry manca»,
+      // ed e' FALSO dal 2026-09-19: quel lettore viveva nella vista
+      // `pronunciation`, irraggiungibile da qualunque punto dell'app, uscita
+      // col passo A insieme a `LEVEL_CLASS` e alla classe `new`. *La regola 39
+      // di CLAUDE.md lo dichiara dal giorno stesso; questa riga e' rimasta
+      // indietro.* Se un report futuro vorra' quel colore, lo riscrivera': una
+      // classe CSS e' cinque righe.
+      //
+      // Per questo qui non c'e' un quarto livello: un
       // livello sotto rosso entrerebbe in LEVELS, che e' l'array su cui
       // nextLevel/prevLevel fanno l'aritmetica, e cambierebbe la retrocessione
       // di TUTTE le voci per sistemare solo le nuove.
@@ -168,6 +177,24 @@
   // la scala la scavalcano apposta: il "Non lo so" dichiarato e il
   // force-accept della coda di ripasso. Ritorna la voce risultante, cosi' chi
   // chiama puo' usarla senza rileggere.
+  // ⚠️ CHI PRODUCE UN COLORE DELLA MASTERY, E CHI APPOSTA NO. Voce ④ del
+  // passo 13, chiusa il 2026-09-20 — e chiude scrivendolo qui, accanto al
+  // punto unico che mescola, invece che in un documento.
+  //
+  // Le voci dei gradi A, B e C prendono un colore da Repeat Aloud, Match
+  // Practice, Speed Match, Flash Card, Voice Practice e Voice Check.
+  // **Le battute del grado D lo prendono SOLO da Voice Practice e Voice
+  // Check.**
+  //
+  // ⚠️ **I TRE MODULI DIALOGO NON NE PRODUCONO NESSUNO, e non e' un buco da
+  // riempire.** La loro domanda finale e' un'autovalutazione sull'INTERO
+  // dialogo — «l'hai imparato?» — non una misura per voce: non c'e' niente da
+  // attribuire a una battuta piuttosto che a un'altra. *E' la ragione per cui
+  // l'esito del Dialogo vive in `moduleOutcome`, che colora il passo in mappa,
+  // e non qui dentro, che colora le singole voci.*
+  //
+  // Chi aggiunge un modulo nuovo decide da che parte sta, e lo scrive: un
+  // modulo che non produce colori non e' un modulo incompleto.
   function recordPendingMastery(unitId, result) {
     var corrente = pendingMastery[unitId];
     if (corrente === undefined) {

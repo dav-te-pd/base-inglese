@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920f**
+**Versione: 20260920g**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -106,7 +106,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
      **Il nome ripete le due lingue del percorso, ed è voluto:** il file esce dal repository — cartella Download, poi una chat — e lì il percorso si perde. `gate.json` da solo non dice niente.
 
      **Il livello NON sta nel nome, e non è per accorciare:** il livello non è una proprietà dell'episodio, è un'etichetta su un tratto di sequenza. Un episodio non «è» A1.2: sta in un tratto che si chiama così, e se lo si sposta cambia gruppo. Metterlo nel nome, o in una cartella, congelerebbe una posizione — lo stesso errore di `episode1`. **L'id invece non cambia mai:** `gate`, `aircraft-door` — descrittivo, in inglese, congelato. I gradi sono condivisi tra più moduli e devono restare un'unica fonte di verità: ogni modulo legge il proprio grado dallo stesso file episodio, non ne duplica il contenuto in un file suo. I moduli che oggi ci leggono dentro sono Meet the Story, Why We Say It, Repeat Aloud, Voice Practice, Voice Check, Match Practice (en→it, it→en), Speed Match (en→it, it→en), Flash Card (en→it, it→en) e i tre Dialogue (Listen & Repeat, Repeat in Time, Real Dialogue). **Previsti ma non ancora costruiti**: Scrittura e il Test di verifica finale — non esistono nel codice, quindi non cercarli.
-   - **Le tabelle di personalizzazione** (nomi, città, paesi — oggi `APP_CONFIG.people` / `APP_CONFIG.places`) restano separate dai file episodio: un file episodio vi fa riferimento (es. "usa la tabella nomi-papà"), non le duplica al suo interno. Sono condivise fra tutti gli episodi **della stessa edizione**, non fra edizioni: i nomi propri plausibili sono quelli di chi studia, e un'edizione tedesca vuole i suoi. Quando usciranno da `APP_CONFIG` — lavoro previsto, non ancora fatto — andranno sotto `data/{lingua}/` come tutto il resto dell'edizione.
+   - **Le tabelle di personalizzazione** (nomi, città, paesi) restano separate dai file episodio: un file episodio vi fa riferimento (es. "usa la tabella nomi-papà"), non le duplica al suo interno. Sono condivise fra tutti gli episodi **della stessa edizione**, non fra edizioni: i nomi propri plausibili sono quelli di chi studia, e un'edizione tedesca vuole i suoi. ⚠️ **Sono USCITE da `APP_CONFIG` il 2026-09-15** e stanno in `data/{lingua-che-si-impara}/{lingua-studente}/tabelle-personalizzazione.json`, come tutto il resto dell'edizione. *Questa riga diceva «lavoro previsto, non ancora fatto».*
 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` espressioni (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`.
 
@@ -196,7 +196,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
-8. **I testi di un modulo vivono sempre in `data/{lingua}/istruzioni-moduli.json`** (oggi `data/inglese/it/istruzioni-moduli.json`), mai scritti nel codice del componente.
+8. **I testi di un modulo vivono sempre in `data/{lingua-che-si-impara}/{lingua-studente}/istruzioni-moduli.json`** (oggi `data/inglese/it/istruzioni-moduli.json`), mai scritti nel codice del componente. *Il percorso porta ENTRAMBE le lingue, come ogni file dell'edizione: qui c'era scritto `data/{lingua}/`, che è mezzo percorso.*
 
     **Non è l'unico file di testi condivisi: ce n'è un secondo, `messaggi-feedback.json`**, con i messaggi di fine modulo e quelli dei tentativi. I due si distinguono così: qui i testi che spiegano **come si usa** un modulo, lì quelli che **rispondono a un esito**. Entrambi si raggiungono da una costante in cima allo script (`MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`), mai con il percorso scritto dentro una riga di `fetch`. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
 
@@ -459,7 +459,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 26. **Due file in `docs/` sono la fonte, e non vanno mai scavalcati da quello che viene detto in chat.**
 
-    - **`docs/{lingua-che-si-impara}/{lingua-studente}/{edizione}-{id}.md`, uno per episodio** (es. `docs/inglese/it/inglese-it-gate.md`) — il contenuto di quell'episodio. Da lì viene scritto `data/{lingua}/{livello}-episodio{N}-{lingua-che-si-impara}.json`, la fonte da cui l'app pesca (regola 4). Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
+    - **`docs/{lingua-che-si-impara}/{lingua-studente}/{edizione}-{id}.md`, uno per episodio** (es. `docs/inglese/it/inglese-it-gate.md`) — il contenuto di quell'episodio. Da lì viene scritto `data/{lingua-che-si-impara}/{lingua-studente}/{lingua-che-si-impara}-{lingua-studente}-{id}.json` — es. `data/inglese/it/inglese-it-gate.json` — la fonte da cui l'app pesca (regola 4). ⚠️ *Qui c'era `data/{lingua}/{livello}-episodio{N}-{lingua-che-si-impara}.json`, cioè la nomenclatura di PRIMA del 2026-09-09: col livello dentro il nome e col numero al posto dell'id, **le due cose che la regola 4 vieta due schermate più sopra**. Una regola che contraddice un'altra nello stesso file è peggio di una regola mancante: chi legge trova una fonte e si ferma lì.* Il markdown contiene anche le motivazioni delle scelte, il JSON solo i dati: non sono due copie della stessa cosa — uno spiega, l'altro esegue.
     - **`docs/{lingua-che-si-impara}/{lingua-studente}/struttura-corso.md`, uno per edizione** — la struttura: ordine dei moduli con i loro gradi, nomi dei gradi mostrati allo studente, categorie, regole di esito. Da lì viene scritto `data/{lingua-che-si-impara}/{lingua-studente}/struttura-corso.json`, che l'app carica all'avvio. Vale per l'intero corso di quell'edizione, non per un episodio: un ordine per episodio significherebbe riordinarlo venti volte.
 
       *Sta sotto la lingua perché i nomi dei gradi sono testo che lo studente legge — "Parole", "Espressioni" — e un'edizione tedesca vuole i suoi.*
@@ -580,7 +580,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 35. **Un messaggio che segnala il fallimento di un meccanismo non può
     dipendere da quel meccanismo.** È l'**unica eccezione ammessa alla
     regola 8** — i testi che lo studente legge stanno in
-    `data/{lingua}/istruzioni-moduli.json` — e va scritta **con il motivo
+    `data/{lingua}/{studente}/istruzioni-moduli.json` — e va scritta **con il motivo
     accanto**, nel codice, non lasciata sembrare una dimenticanza.
 
     Il caso che l'ha fatta nascere: la schermata d'errore di caricamento
