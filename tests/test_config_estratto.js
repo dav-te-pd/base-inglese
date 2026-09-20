@@ -182,6 +182,72 @@ async function run() {
     await page.close();
   }
 
+  // ── [D] IL PANNELLO APERTO DA UN PROFILO CHE HA GIA' RISPOSTO ───────
+  //
+  // ⚠️ IL CASO PIU' DIVERSO (regola 42), E NON E' UN ALTRO PANNELLO: E' UN
+  // ALTRO PROFILO.
+  //
+  // Le cinque asserzioni che in tutta la suite aprono il Pannello Admin lo
+  // aprono da profilo NUOVO. Sembra il caso generale e non lo e': la tabella
+  // delle risposte all'autovalutazione ha un ciclo che gira **una volta per
+  // battuta che ha una risposta**, quindi su un profilo nuovo non gira mai.
+  // **Tutto il codice dentro quel ciclo era senza rete.**
+  //
+  // E li' c'era un guasto vivo, trovato il 2026-09-20 su Pages e non qui:
+  // `STORY_CARDS_ANSWER_LABEL` era rimasta nell'IIFE di `index.html` quando la
+  // sua unica lettrice e' uscita in `app/mappa.js`. Il pannello alzava
+  // `is not defined` e **non si apriva piu'** — cioe' l'unico modo di cambiare
+  // la configurazione a caldo spariva appena qualcuno rispondeva una volta a
+  // «Hai capito la spiegazione?». *Cosa fa il collaudo, al secondo passo.*
+  //
+  // COME: si scrive il magazzino a mano invece di guidare Why We Say It. Non
+  // e' una scorciatoia — guidare il modulo proverebbe il modulo, e quello e'
+  // gia' coperto da `test_story_modules.js`. Qui serve la CONDIZIONE, cioe'
+  // «esiste una battuta con una risposta», nel modo piu' corto che la produce.
+  // La versione del magazzino si chiede a `BI`, non si ricopia: un numero
+  // ricopiato qui diventerebbe falso al primo cambio di formato, e il test
+  // tornerebbe verde su un magazzino scartato — vera per costruzione.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await page.goto(APP_URL);
+    await page.fill('#name-input', 'ConfigRisposto');
+    await page.click('#onboarding-form button[type=submit]');
+    await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
+    const scritto = await page.evaluate(function () {
+      try {
+        localStorage.setItem('baseinglese:storyCardsExplanationStats:gate:ConfigRisposto',
+          JSON.stringify({ versione: window.BI.STORY_CARDS_STATS_VERSIONE,
+            byLine: { 'L1': { corrente: 'chiara', cambi: 0 } } }));
+        return true;
+      } catch (e) { return false; }
+    });
+    log('[D] Il magazzino con una risposta e\' stato scritto', scritto === true);
+
+    // ⚠️ L'APPRODO E' IL PANNELLO APERTO, NON LA RIGA CHE L'ASSERZIONE LEGGE
+    // (regola 44): aspettare la riga renderebbe vera per costruzione proprio
+    // l'asserzione che la conta.
+    await page.goto(APP_URL + '?config');
+    let aperto = true;
+    try {
+      await page.waitForSelector('#config-panel-overlay.is-open', { timeout: 15000 });
+    } catch (e) { aperto = false; }
+    log('[D] Il pannello si apre anche con una risposta gia\' data', aperto,
+      'non si e\' aperto: ' + (errori[0] || 'nessun errore in pagina'));
+
+    const righe = aperto ? await page.evaluate(function () {
+      var el = document.getElementById('config-story-cards-explanation-stats');
+      return el ? el.querySelectorAll('.config-audio-usage-row').length : -1;
+    }) : -1;
+    // Tre righe: quella della battuta piu' i due totali. Si chiede «almeno la
+    // riga della battuta c'e'», perche' i due totali ci sono anche a vuoto.
+    log('[D] ...e la tabella disegna la riga di quella battuta', righe >= 3, String(righe));
+    log('[D] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
   await browser.close();
   console.log('\n=== CONFIG ESTRATTO SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   if (failed > 0) process.exit(1);

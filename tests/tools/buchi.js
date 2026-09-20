@@ -79,3 +79,57 @@ const idef=new Set([...m.matchAll(/^  (?:function|var) (\w+)/gm)].map(x=>x[1]));
 const orf=[...def].filter(n=>!idef.has(n)&&m.split('\n').some(r=>{const t=r.trim();
   return t&&!t.startsWith('//')&&!t.startsWith('*')&&!t.startsWith('/*')&&new RegExp('(^|[^.\\w$])'+n+'\\b').test(r)}));
 console.log('ORFANI in index.html: '+(orf.join(' ')||'ZERO'));
+
+// ⚠️ TERZA RICERCA, E NASCE DA UN GUASTO CHE LE PRIME DUE NON POTEVANO VEDERE
+// (2026-09-20).
+//
+// La prima cerca `nome(` — una CHIAMATA. La seconda `(nome,` — un nome passato
+// come RIFERIMENTO. Ne mancava una terza forma, ed e' quella di una COSTANTE:
+//
+//     STORY_CARDS_ANSWER_LABEL[s.corrente]
+//
+// Non e' una chiamata e non e' un argomento: e' una LETTURA. `app/mappa.js`
+// leggeva quel nome mentre la riga che lo dichiara era rimasta nell'IIFE di
+// `index.html` — due IIFE diversi — e il Pannello Admin moriva con
+// `is not defined` appena un profilo aveva risposto una volta a
+// un'autovalutazione. **Questo strumento diceva ZERO.**
+//
+// COME, e perche' non basta aggiungere un'altra espressione regolare: le prime
+// due scartano i commenti guardando l'INIZIO della riga, quindi un commento in
+// coda passa. Su una ricerca che raccoglie OGNI identificatore quel rumore
+// sarebbe ingestibile, percio' qui si toglie prima il testo che non e' codice —
+// commenti su piu' righe, commenti in coda, e le tre forme di stringa.
+//
+// ⚠️ LIMITE DICHIARATO, E VA LETTO PRIMA DI FIDARSI DELLO ZERO: resta del
+// rumore che NON e' un buco. Le lettere delle espressioni regolari (`g`, `s`,
+// `d`), i `$` dei template, le chiavi di un oggetto scritte su piu' righe, e i
+// globali del browser non elencati qui sotto. **Per questo la terza ricerca sta
+// in uno STRUMENTO e non in un test:** una riga rossa su codice buono si impara
+// a ignorare, e da li' in poi non protegge piu' niente (regola 37). Si legge
+// l'elenco e si guarda se c'e' un nome che sembra una costante o una funzione
+// del progetto.
+(function terzaRicerca() {
+  const nudo = s
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .split('\n').map(function (r) { return r.replace(/\/\/.*$/, ''); }).join('\n')
+    .replace(/'(?:[^'\\]|\\.)*'/g, "''")
+    .replace(/"(?:[^"\\]|\\.)*"/g, '""')
+    .replace(/`(?:[^`\\]|\\.)*`/g, '``');
+  const KEY = new Set('var function return if else for while do switch case break continue new typeof instanceof delete void in of this true false null undefined try catch finally throw let const class extends super yield await async default'.split(' '));
+  const GLOB = new Set('window document console Math Object Array JSON Promise String Number Boolean localStorage sessionStorage setTimeout clearTimeout setInterval clearInterval requestAnimationFrame cancelAnimationFrame Date parseInt parseFloat isNaN Infinity Set Map WeakMap encodeURIComponent decodeURIComponent RegExp Error TypeError URLSearchParams fetch getComputedStyle Audio AudioContext webkitAudioContext SpeechSynthesisUtterance speechSynthesis navigator location history Element Node NodeList HTMLElement Intl arguments BI CONFIG'.split(' '));
+  const dich = new Set();
+  [...nudo.matchAll(/\b(?:var|let|const)\s+([A-Za-z_$][\w$]*)/g)].forEach(function (m) { dich.add(m[1]); });
+  [...nudo.matchAll(/\bfunction\s*([A-Za-z_$][\w$]*)?\s*\(([^)]*)\)/g)].forEach(function (m) {
+    if (m[1]) dich.add(m[1]);
+    m[2].split(',').map(function (x) { return x.trim(); }).filter(Boolean).forEach(function (x) { dich.add(x); });
+  });
+  [...nudo.matchAll(/\bcatch\s*\(\s*([A-Za-z_$][\w$]*)/g)].forEach(function (m) { dich.add(m[1]); });
+  const letti = new Set();
+  [...nudo.matchAll(/(?<![.\w$])([A-Za-z_$][\w$]*)/g)].forEach(function (m) {
+    const n = m[1];
+    if (KEY.has(n) || GLOB.has(n) || dich.has(n)) return;
+    if (/^\s*:/.test(nudo.slice(m.index + n.length, m.index + n.length + 2))) return;
+    letti.add(n);
+  });
+  console.log('BUCHI-LET (nomi LETTI e mai dichiarati qui): ' + ([...letti].join(' ') || 'ZERO'));
+})();

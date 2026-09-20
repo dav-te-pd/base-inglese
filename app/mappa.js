@@ -895,6 +895,31 @@
   }
 
   BI.chiudiPannelloSeAperto = chiudiPannelloSeAperto;
+
+  // ⚠️ RIMASTA INDIETRO IN `index.html` FINO AL 2026-09-20, E IL PANNELLO
+  // ADMIN MORIVA — su Pages, non in un test.
+  //
+  // Le tre etichette le legge SOLO la funzione qui sotto, ma la riga
+  // `var STORY_CARDS_ANSWER_LABEL = {...}` e' rimasta nell'IIFE di
+  // `index.html` quando la funzione e' uscita: due IIFE diversi, quindi il
+  // nome qui dentro non esiste. `openConfigPanel()` alzava
+  // `STORY_CARDS_ANSWER_LABEL is not defined` e il pannello **non si apriva
+  // piu'** — l'unico modo per cambiare la configurazione a caldo.
+  //
+  // ⚠️ E NON SI VEDEVA, perche' il guasto ha una CONDIZIONE: la riga che la
+  // legge gira solo per una battuta che ha una risposta (`s.corrente`). Su un
+  // profilo nuovo `byLine` e' vuoto, il ciclo non parte, e il pannello si apre
+  // benissimo. **Le cinque asserzioni che aprivano il pannello lo facevano
+  // tutte da profilo nuovo** — il caso comodo della regola 42. Bastava
+  // rispondere una volta a «Hai capito la spiegazione?» per romperlo, ed e'
+  // quello che fa il collaudo.
+  //
+  // *Stessa famiglia di `activeHelpModule` (2026-09-19) e di `staParlando` in
+  // Flash Card: un nome lasciato indietro, `is not defined`, in una strada che
+  // nessun test percorreva.* Il blocco [D] di `tests/test_config_estratto.js`
+  // adesso la percorre.
+  var STORY_CARDS_ANSWER_LABEL = { chiara: 'chiara', nonAncora: 'non ancora', nonChiara: 'non chiara' };
+
   function renderStoryCardsExplanationStatsPanel() {
     var el = document.getElementById('config-story-cards-explanation-stats');
     if (!el) return;
