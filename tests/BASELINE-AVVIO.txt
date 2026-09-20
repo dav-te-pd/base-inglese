@@ -3,6 +3,17 @@
 #
 # ⚠️ IL PASSO 22 NON DEVE CAMBIARE QUESTO FILE.
 #
+# ⚠️ E IL 2026-09-20 L'HA CAMBIATO UN PASSO CHE NON E' IL 22, di proposito:
+# il passo 1.7 AGGIUNGE uno strato — `app/magazzino.js`, il solo file che
+# tocca il posto dove si salva — e uno strato in piu' sposta l'indice di
+# tutti quelli dopo. **Non e' la stessa cosa di un'estrazione**: la' il
+# baseline deve restare identico perche' il codice si sposta soltanto; qui
+# un file nasce, e il baseline lo registra.
+#
+# *La distinzione, per chi arriva: un diff qui e' un guasto quando il passo
+# SPOSTA, ed e' il lavoro quando il passo AGGIUNGE. Il commit deve dire
+# quale dei due sta facendo.*
+#
 # Il 22 SPOSTA codice in file separati. Un'estrazione fatta bene lascia
 # l'avvio identico: stessi moduli registrati nello stesso ordine, stesse
 # pulizie, stessa vista alla fine. **Un diff qui durante un'estrazione e'
@@ -161,28 +172,29 @@
 # Ultimo aggiornamento: 2026-09-19
 script 1 app/config.js
 script 2 app/spazio.js
-script 3 app/identita.js
-script 4 app/avvio.js
-script 5 app/progressi.js
-script 6 app/audio.js
-script 7 app/suoni.js
-script 8 app/quiz-engine.js
-script 9 app/dati.js
-script 10 app/catalogo.js
-script 11 app/orchestrazione.js
-script 12 app/ui-condivisa.js
-script 13 app/sessione.js
-script 14 app/mappa.js
-script 15 app/storycards.js
-script 16 app/personalizza.js
-script 17 app/repeataloud.js
-script 18 app/flashcard.js
-script 19 app/match.js
-script 20 app/speedmatch.js
-script 21 app/voice.js
-script 22 app/dialogo.js
-script 23 app/apertura.js
-script 24 (inline)
+script 3 app/magazzino.js
+script 4 app/identita.js
+script 5 app/avvio.js
+script 6 app/progressi.js
+script 7 app/audio.js
+script 8 app/suoni.js
+script 9 app/quiz-engine.js
+script 10 app/dati.js
+script 11 app/catalogo.js
+script 12 app/orchestrazione.js
+script 13 app/ui-condivisa.js
+script 14 app/sessione.js
+script 15 app/mappa.js
+script 16 app/storycards.js
+script 17 app/personalizza.js
+script 18 app/repeataloud.js
+script 19 app/flashcard.js
+script 20 app/match.js
+script 21 app/speedmatch.js
+script 22 app/voice.js
+script 23 app/dialogo.js
+script 24 app/apertura.js
+script 25 (inline)
 modulo 1 meetTheStory
 modulo 2 whyWeSayIt
 modulo 3 personalizzazione

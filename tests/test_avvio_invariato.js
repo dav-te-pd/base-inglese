@@ -171,8 +171,23 @@ async function run() {
   // ⚠️ 22 -> 23 col PASSO C1 (`app/catalogo.js`).
   // ⚠️ 23 -> 24 col PASSO C2 (`app/apertura.js`), che sta per ULTIMO perche'
   // possiede `moduliCaricatiAlBoot` — vera solo dopo l'ultimo file di modulo.
-  log('[D] I file di script sono 24 (' + esterni + ' esterni + ' + inline + ' inline)',
-    foto.script.length === 24, foto.script.join(', '));
+  // ⚠️ IL NUMERO NON SI SCRIVE PIU', E IL 2026-09-20 SAREBBE LA DODICESIMA
+  // VOLTA CHE QUESTA RIGA LO CAMBIA (i tredici ⚠️ qui sopra sono la sua
+  // storia). Ogni passo che aggiunge un file la fa rossa **per il motivo
+  // sbagliato**: non «uno script e' sparito», ma «ne e' nato uno che doveva
+  // nascere» — e infatti la si aggiornava ogni volta.
+  //
+  // **Quello che il totale voleva proteggere lo proteggono gia' [A], [B] e [C]**,
+  // che confrontano l'elenco INTERO col baseline: uno script che sparisce, uno
+  // che compare o uno fuori posto sono tre rossi la' sopra, coi nomi.
+  //
+  // Qui resta la cosa che quei tre non dicono e che il passo 22 ha comprato:
+  // **c'e' UN SOLO blocco inline.** Era l'intera app dentro `index.html`; oggi
+  // e' la riga che l'accende. *Un secondo blocco inline non farebbe sparire
+  // niente — aggiungerebbe, quindi [A] resterebbe verde — ed e' esattamente la
+  // forma con cui il codice tornerebbe dentro `index.html` un pezzo per volta.*
+  log('[D] Un solo blocco inline: e\' la riga che accende l\'app, non un posto dove scrivere',
+    inline === 1, inline + ' blocchi inline su ' + foto.script.length + ' script');
 
   // ⚠️ E QUESTA E' LA RIGA CHE IL 22 PUO' RENDERE FALSA, ed e' l'unica del
   // file messa qui per quello: `moduliCaricatiAlBoot` dice che ogni modulo e'
