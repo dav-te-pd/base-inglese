@@ -58,6 +58,10 @@ lavorare su una base che non si può misurare.*
 | **1.8** | **Le tabelle di personalizzazione escono da `APP_CONFIG`** | Vanno sotto `data/{lingua}/` come il resto dell'edizione (regola 4) |
 | **1.9** | **I quattro `fetch` di `app/dati.js` prendono il `?v=`** | Oggi solo i 23 tag `<script>` ce l'hanno: i file di dati possono restare in cache vecchi |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
+| **1.11** | **L'edizione diventa un valore** — `CONFIG.edizione = 'inglese/it'` | Oggi è scritta a mano **quattro volte** in `app/dati.js` (righe 53, 59, 72, 135). La convenzione delle cartelle è decisa dal 2026-09-09 (regola 4): **quello che manca non è la decisione, è il valore nel codice** |
+| **1.12** | **`CONFIG.episodes` diventa per edizione** | È il **catalogo del corso**: `gate` e `aircraft-door` sono episodi d'inglese, e un corso di francese ha i suoi. È la più «per edizione» delle cinque chiavi |
+| **1.13** | **Le due chiavi di TESTO escono da `APP_CONFIG`** | `gradeNames` e le `label` di `moduleTypes` vanno in `data/{lingua}/{studente}/etichette.json`. **`grades` e `sequences` restano dove sono** |
+| **1.14** | **Due episodi di «francese per italiani»** | Il collaudo dell'edizione: prova cartelle, percorsi e catalogo. ⚠️ **Non prova le due chiavi di testo** — il perché è nel blocco qui sotto. Il contenuto viene da `docs/francese/it/` (regole 26 e 33), cioè da chi guida il progetto |
 
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
@@ -67,10 +71,72 @@ lavorare su una base che non si può misurare.*
 - le varianti di **`bootAsUser` / `mockInit`** nei test;
 - **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun
   chiamante**. Si decide quando nasce il Modulo Finale;
-- **`CONFIG.grades` / `gradeNames` / `moduleTypes` / `sequences` sono globali
-  singoli**: con una seconda edizione due `struttura-corso.md` rivendicherebbero
-  la stessa voce. ⚠️ **Va risolto prima della seconda lingua, non prima di
-  Supabase.**
+- ~~le quattro chiavi globali~~ — **deciso il 2026-09-20**, e sono **cinque**,
+  non quattro: vedi i passi **1.11–1.14** qui sopra e il blocco qui sotto.
+
+### ⚠️ LE CINQUE CHIAVI GLOBALI — deciso il 2026-09-20
+
+Erano quattro nella domanda; misurandole sono **cinque**: `CONFIG.episodes` ha
+la stessa forma e non era nell'elenco.
+
+| Chiave | Lettori veri (righe di codice) | Verdetto |
+|---|---|---|
+| `grades` `['A','B','C','D']` | **1** — `app/mappa.js:1164`, solo il Pannello Admin | **resta globale**: lettere tecniche, nessun testo |
+| `sequences` | **3** — `app/catalogo.js:269` e `:272`, `app/mappa.js:666` | **resta globale**: già indicizzata per NOME |
+| `gradeNames` | **1** — `app/mappa.js:939`, il badge della mappa | **esce**: è testo che lo studente legge |
+| `moduleTypes` | **1** — `app/mappa.js:957`, stesso badge | **esce la sola `label`**; la chiave (`studio`, `quiz`) resta |
+| `episodes` | `resolveEpisodeOrder`, `app/catalogo.js:257` | **esce**: è il catalogo del corso |
+
+**Il criterio è uno solo, e vale per le due chiavi di testo: dipendono dalla
+SECONDA metà della coppia, mai dalla prima.** `gradeNames` (Parole, Espressioni,
+Frasi, Dialogo) e le `label` di `moduleTypes` (Studio, Quiz, …) sono testo nella
+lingua dello **studente**:
+
+| Seconda edizione | Le due chiavi di testo |
+|---|---|
+| `francese/it` — corso diverso, **stesso** studente | **non cambiano**: «Parole» e «Studio» valgono identiche per il francese |
+| `inglese/de` — stesso corso, studente **diverso** | **cambiano tutte**: *Wörter, Ausdrücke, Sätze, Dialog* |
+
+**Ne segue che il collaudo `francese/it` (1.14) NON mette alla prova le due
+chiavi di testo:** mette alla prova cartelle, percorsi e catalogo. Resta il
+collaudo giusto da fare per primo, perché quei tre pezzi sono esattamente quelli
+che Supabase eredita.
+
+**Dove vanno le due che escono, e perché un file nuovo invece di una chiave in
+`istruzioni-moduli.json`:** i due file condivisi di un'edizione si distinguono
+oggi con un criterio netto — lì **come si usa** un modulo, là **cosa è andato
+come**. I nomi delle cose sono un terzo mestiere, e infilarli in uno dei due
+toglierebbe proprio la nitidezza che permette di sapere dove va un testo nuovo
+(forma ⓪-decies: una cosa che risponde a due domande). Quindi `etichette.json`,
+con il suo criterio scritto: **i NOMI di ciò che lo studente vede**. La
+duplicazione fra `inglese/it` e `francese/it` — le stesse quattro parole scritte
+due volte — non è un incidente: è la scelta già presa dalla regola 4, che vuole
+le edizioni indipendenti.
+
+**Perché `sequences` e `grades` restano:** non contengono testo, e `sequences` è
+già indicizzata per NOME — un'edizione che volesse un altro ordine aggiunge
+`'narrativo-standard-de'` **accanto**, senza sovrascrivere niente. Spostarle
+costerebbe la vista di riordino del Pannello Admin, che è il loro solo editore,
+senza comprare niente.
+
+**⚠️ E LA DIREZIONE È L'OPPOSTA DI COME SI RACCONTA FACILMENTE: non è la
+sequenza che dichiara i suoi episodi.** È l'**episodio** che dichiara la sua
+sequenza, per nome — `CONFIG.episodes.gate = { sequence: 'narrativo-standard' }`,
+letto da `resolveEpisodeOrder` (`app/catalogo.js:269`). Una sequenza non sa
+niente degli episodi che la usano, e due episodi possono chiedere la stessa.
+Quando `CONFIG.episodes` passerà all'edizione (1.12), il posto che dice «quali
+episodi ci sono» esisterà davvero — ma sarà l'**edizione**, non la sequenza.
+
+**⚠️ E DUE LUCCHETTI DIVERSI, CON NOMI CHE SI SOMIGLIANO:**
+
+- i **lucchetti della mappa** — `moduleStatus` (`app/mappa.js:818`): un passo è
+  `locked` finché tutti quelli prima non sono completati, con l'icona `lock`.
+  **Questi vengono dalla sequenza**, e l'occhio del Pannello Admin li sposta
+  spegnendo un passo (`off: true`);
+- lo **«Sblocco Sequenziale»** (regola 30) — `dgApplySequenceLock` e
+  `storyCardsRefreshExplanationStates`: sta **dentro** due moduli (le bolle di
+  Ripeti a Tempo, le card di Why We Say It). Stessa idea, **niente a che vedere**
+  con la sequenza dei moduli.
 
 ## ② IL COLLAUDO — il passo 26
 
