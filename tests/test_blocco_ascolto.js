@@ -21,7 +21,7 @@
 //
 //    ⚠️ LIMITE E COSTO DICHIARATI. Questa asserzione aggiunge una terza
 //    dipendenza da index.html letto come testo (le altre due sono registrate
-//    in docs/decisioni.md), ed e' una scelta, non una distrazione: e' l'unica
+//    in docs/decisioni-stato.md), ed e' una scelta, non una distrazione: e' l'unica
 //    forma che impedisce all'OTTAVA copia di nascere. Un test che aprisse i
 //    sei moduli e li confrontasse proverebbe meno — direbbe che i sei di oggi
 //    si assomigliano, non che domani non se ne aggiunge un settimo a mano.

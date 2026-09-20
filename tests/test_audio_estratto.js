@@ -67,7 +67,7 @@ async function run() {
     // esse dice «l'epoca, che vive col nucleo audio», ed e' prosa.
     // **Settima comparsa della famiglia del conto sui commenti**, e stavolta
     // su un'asserzione scritta dieci minuti prima. Il limite del filtro e'
-    // gia' registrato in docs/decisioni.md: qui si lavora dentro quel limite
+    // gia' registrato in docs/decisioni-stato.md: qui si lavora dentro quel limite
     // cercando un uso da CODICE (assegnazione, incremento, lettura in
     // un'espressione) invece del nome nudo.
     const usiCodice = righeDiCodiceDi('index.html').filter(function (r) {

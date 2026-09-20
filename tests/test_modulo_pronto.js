@@ -28,7 +28,7 @@
 //    moduli, e deve aspettare SIA la personalizzazione SIA il contenuto.
 //    L'alternativa scartata era spegnere i pulsanti in ognuno degli otto
 //    moduli — sarebbe stata la nona famiglia della conoscenza che ogni file
-//    deve ricordarsi da solo (docs/decisioni.md).
+//    deve ricordarsi da solo (docs/decisioni-stato.md).
 //
 // LIMITE DICHIARATO: si guida un modulo solo, Voice Coach, perché è l'unico che
 // nella finestra ESPLODE — gli altri sette accettano un gesto che non fa

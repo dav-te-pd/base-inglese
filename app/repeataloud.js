@@ -16,7 +16,7 @@
 // parametri. *Una li riceve, l'altra li va a prendere.* Esce col passo dello
 // stato di sessione, insieme a `recordPendingMastery`,
 // `recordMultipleChoiceResult` e `buildMultipleChoiceOptions`: sono i quattro
-// registrati in `docs/decisioni.md` come bloccati dalla stessa cosa.
+// registrati in `docs/decisioni-stato.md` come bloccati dalla stessa cosa.
 //
 // **Uno è il numero da guardare quando uscirà il secondo modulo.** Se al terzo
 // è ancora uno e ancora `itemText`, il passo dello stato di sessione è in

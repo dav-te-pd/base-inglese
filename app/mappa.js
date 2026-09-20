@@ -306,7 +306,7 @@
   // E' pronta per il Modulo Finale, che non e' costruito. Sta qui perche'
   // legge `loadModuleOutcomes`, che questo file aliasa gia': portarla altrove
   // avrebbe creato una dipendenza nuova per del codice che nessuno chiama.
-  // *Registrata in `docs/decisioni.md` come trovata e non corretta.*
+  // *Registrata in `docs/decisioni-stato.md` come trovata e non corretta.*
   // ============================================================
   // Modulo Finale (not yet built) needs to pick one of three contents —
   // this is that decision, ready ahead of the screen itself. Only
@@ -1237,7 +1237,7 @@
   // traduce, quindi metterlo in data/{lingua}/ lo legherebbe a una lingua per
   // cui non e' scritto.
   //
-  // Sta scritto qui e non solo in decisioni.md perche' senza questa riga sono
+  // Sta scritto qui e non solo in decisioni-stato.md perche' senza questa riga sono
   // indistinguibili dalle altre: chi passa col passo 18 in mano le sposta, e
   // avrebbe ragione a farlo.
 

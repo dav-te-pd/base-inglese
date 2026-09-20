@@ -28,7 +28,7 @@
 //
 // LIMITE DICHIARATO: i quattro `fetch` dei file di dati (`app/dati.js`) NON
 // portano versione, quindi un JSON vecchio con codice nuovo resta possibile.
-// È registrato in `docs/decisioni.md` con la sua condizione. Qui non si vede.
+// È registrato in `docs/decisioni-stato.md` con la sua condizione. Qui non si vede.
 
 'use strict';
 const fs = require('fs');

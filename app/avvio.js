@@ -56,7 +56,7 @@
   // Il ripristino funziona; non funziona cosi'.
   //
   // Resta in piedi perche' toglierla e' una rimozione e non una correzione
-  // (CLAUDE.md regola 1): registrata in docs/decisioni.md con la sua
+  // (CLAUDE.md regola 1): registrata in docs/decisioni-stato.md con la sua
   // condizione. Costa una copia profonda di ~660 righe a ogni caricamento.
   //
   // *Trovata leggendo la FUNZIONE che il commento indicava, non la riga —
@@ -67,7 +67,7 @@
   // rimozione mascherata da estrazione** (CLAUDE.md regola 1), e un passo che
   // sposta codice non e' il posto dove si decide cosa cancellare.
   //
-  // LA SUA DECISIONE E' APERTA, con la sua condizione, in docs/decisioni.md:
+  // LA SUA DECISIONE E' APERTA, con la sua condizione, in docs/decisioni-stato.md:
   // **si decide nello strato che contiene il Pannello Admin.** Li' si sapra' se
   // il ripristino «ai valori di partenza» debba davvero tornare ai valori del
   // codice — e allora `DEFAULTS` serve e va *letta* — oppure se cancellare gli

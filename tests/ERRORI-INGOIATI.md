@@ -428,7 +428,7 @@ E il test era **rosso** in tutti e due i casi.
 - **① Speed Match, 2026-09-16.** `replace(v, '    (function () {', 1)`. Esito
   registrato dal test: `speedMatch:sr-ready-btn/click atteso 1, osservato 0`,
   e così per tutti e nove. *Non è stata riconosciuta:* è stata rifatta e basta,
-  e il `1 → 4` che sta in `docs/decisioni.md` viene dalla seconda corsa, quella
+  e il `1 → 4` che sta in `docs/decisioni-stato.md` viene dalla seconda corsa, quella
   giusta. La conclusione del ① è sana — **ma per fortuna, non per metodo.**
 - **⑤ Match, 2026-09-16.** La stessa identica sostituzione, con lo stesso
   identico esito. Stavolta è stata **riconosciuta leggendo quale asserzione

@@ -10,7 +10,7 @@
 // Non è una coincidenza e non è un conto che sale: Speed Match e Match
 // Practice sono lo **stesso meccanismo a scelta multipla** con un timer in
 // mezzo, quindi toccano la stessa fetta dei quattro pezzi bloccati dallo
-// **stato di sessione** (`docs/decisioni.md`). *Il numero che smette di
+// **stato di sessione** (`docs/decisioni-stato.md`). *Il numero che smette di
 // salire al quarto modulo dice la stessa cosa che diceva salendo ai primi
 // tre: la ragione è una sola.*
 //
@@ -23,7 +23,7 @@
 // non viene caricato, la pulizia non è registrata — ed è giusto così, perché
 // non c'è niente da pulire in un modulo mai aperto. Ma vuol dire che il
 // magazzino di `stopAllModuleActivity` **non ha più un contenuto fisso**: ha
-// quello dei file caricati. Registrato in `docs/decisioni.md`.
+// quello dei file caricati. Registrato in `docs/decisioni-stato.md`.
 //
 // IL TAG STA NELLA SECONDA FILA per gli alias, non per il markup: i nove
 // listener si agganciano dentro `openSpeedMatch`, a tempo di chiamata.

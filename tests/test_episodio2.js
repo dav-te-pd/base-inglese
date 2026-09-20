@@ -26,7 +26,7 @@
 // estendere il confronto testuale vuol dire un secondo lettore di markdown per
 // una forma diversa da quella dell'episodio 1, che è esattamente il costo che
 // questo file aveva deciso di non pagare. La riga è registrata in
-// `docs/decisioni.md` con la sua condizione, invece di restare qui come una
+// `docs/decisioni-stato.md` con la sua condizione, invece di restare qui come una
 // promessa scaduta.
 
 const fs = require('fs');

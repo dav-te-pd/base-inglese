@@ -1010,7 +1010,7 @@
   // `resolveSlotValue` — sono in questo file: portarla altrove avrebbe creato
   // una dipendenza nuova **per del codice che nessuno chiama**.
   //
-  // *Registrata in `docs/decisioni.md` come trovata e non corretta: tenerla o
+  // *Registrata in `docs/decisioni-stato.md` come trovata e non corretta: tenerla o
   // toglierla e' una decisione di chi guida il progetto, non mia.*
   // ============================================================
   // Builds the flat target token list for alignment/rendering: each token

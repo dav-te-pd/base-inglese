@@ -5,7 +5,7 @@ tre cose che riguardano la sicurezza dell'app: **cosa si può portare via**,
 **cosa uno studente può vedere e cambiare**, e **cosa si perde se qualcosa va
 storto**.
 
-> ⚠️ **PERCHÉ UN FILE SUO E NON UNA SEZIONE DI `decisioni.md`**, ed è una
+> ⚠️ **PERCHÉ UN FILE SUO E NON UNA SEZIONE DI `decisioni-stato.md`**, ed è una
 > ragione e non una preferenza: quel file ha come proprietà dichiarata che **si
 > svuota** — una riga si sposta in `correzioni.md` quando viene eseguita e
 > sparisce. *Un registro della sicurezza fa l'opposto: si ACCUMULA.* Un
@@ -41,7 +41,7 @@ Non «si può entrare», che è troppo vago per essere misurato. Le domande vere
 |---|---|
 | **Uno studente può leggere i dati di un ALTRO studente?** | I progressi, il nome, le risposte |
 | **Uno studente può SCRIVERE dove non deve?** | Il proprio punteggio, la configurazione del corso, i progressi altrui |
-| **Il pannello Admin è raggiungibile senza essere admin?** | Vedi la voce su `config` in `decisioni.md` |
+| **Il pannello Admin è raggiungibile senza essere admin?** | Vedi la voce su `config` in `decisioni-stato.md` |
 | **Una chiave o una password sono finite dentro qualcosa che il browser scarica?** | Il caso più comune e il più banale: una chiave in un file JS |
 | **Il repository contiene un segreto nella sua STORIA?** | Togliere un file non toglie il commit che l'ha aggiunto |
 
@@ -52,7 +52,7 @@ lavoro**: gli episodi, le traduzioni, le spiegazioni, le tabelle.
 
 | | |
 |---|---|
-| **Cosa arriva al browser, e quanto di quello serve DAVVERO a quella schermata** | Vedi «le regole stanno sul server» e la nota sul CSS in `decisioni.md` |
+| **Cosa arriva al browser, e quanto di quello serve DAVVERO a quella schermata** | Vedi «le regole stanno sul server» e la nota sul CSS in `decisioni-stato.md` |
 | **Un episodio si può scaricare per intero con una richiesta sola?** | Oggi sì: è un file JSON |
 | **Le risposte dei quiz arrivano insieme alle domande?** | Oggi sì — è il punto di copia, ed è scritto nella dichiarazione dell'astrazione della fonte |
 | **Si può scaricare TUTTO il catalogo indovinando i nomi?** | `…-gate.json`, `…-aircraft-door.json`: i nomi sono descrittivi per scelta |
@@ -60,7 +60,7 @@ lavoro**: gli episodi, le traduzioni, le spiegazioni, le tabelle.
 
 ⚠️ **E IL CASO DI STUDIO C'È GIÀ:** `https://guida.omney.io/coaching`, dove
 scaricare i dati è risultato quasi impossibile. **Va analizzato per capire come
-fanno**, ed è registrato in `decisioni.md`. *Un esempio che funziona vale più di
+fanno**, ed è registrato in `decisioni-stato.md`. *Un esempio che funziona vale più di
 un elenco di tecniche.*
 
 ---
@@ -123,7 +123,7 @@ delle ragioni per cui va fatto.
 
 ## Le due prove da fare appena si può, già registrate altrove
 
-Stanno in `decisioni.md` e si ripetono qui perché sono il passaggio che apre
+Stanno in `decisioni-stato.md` e si ripetono qui perché sono il passaggio che apre
 tutto questo:
 
 1. **La CI su 4 CPU** — se il runner ne ha 4, la suite costa la metà.

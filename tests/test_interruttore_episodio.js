@@ -17,7 +17,7 @@
 //
 // Il contenuto atteso si legge dal file dati su disco, mai ricopiato qui: una
 // battuta ricopiata in un test invecchia e rompe la CI senza che niente sia
-// rotto (docs/decisioni.md, i quattro valori ricopiati).
+// rotto (docs/decisioni-stato.md, i quattro valori ricopiati).
 //
 // PROTEGGE ANCHE, dal 2026-09-09 (C.4): che il pulsante di casa e il badge in
 // mappa nominino lo STESSO episodio. La stringa era incollata nell'HTML e

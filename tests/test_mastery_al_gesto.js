@@ -32,7 +32,7 @@
 //    scrittura diretta, il giorno che qualcuno la aggiunge, fa cadere la CI.
 //
 //    ⚠️ LIMITE E COSTO DICHIARATI. È una dipendenza da index.html letto come
-//    testo (ce ne sono altre, registrate in docs/decisioni.md), e il conto si
+//    testo (ce ne sono altre, registrate in docs/decisioni-stato.md), e il conto si
 //    fa sulle righe con i commenti tolti: una riga che contenesse "//" dentro
 //    una stringa verrebbe troncata e potrebbe nascondere una chiamata. Oggi
 //    non ce ne sono; se un giorno servisse, questo conto va rifatto con un

@@ -123,7 +123,7 @@ nodi.forEach(function (n) {
   // e' un difetto.*
   // ⚠️ 5 -> 6 col SECONDO MODULO, e i NOMI sono due: `itemText` e
   // `recordPendingMastery`. **La ragione resta UNA: lo stato di sessione.**
-  // Sono due dei quattro registrati in `docs/decisioni.md` come bloccati da
+  // Sono due dei quattro registrati in `docs/decisioni-stato.md` come bloccati da
   // quello, e escono tutti insieme col suo passo. *Quello da guardare al
   // terzo modulo non è se il numero sale: è se compare una ragione DIVERSA.*
   // ⚠️ 6 -> 7 col TERZO MODULO, e i suoi nomi sono TRE: `itemText`,

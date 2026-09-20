@@ -189,7 +189,7 @@ async function run() {
     //
     // *Il difetto dell'APP — un pannello aperto troppo presto resta vuoto per
     // sempre, perché nessuno ridisegna — è un'altra cosa, ed è registrato in
-    // `docs/decisioni.md`. Qui si toglie la corsa dal TEST, non il difetto
+    // `docs/decisioni-stato.md`. Qui si toglie la corsa dal TEST, non il difetto
     // dall'app.*
     if (viva) await page.evaluate(function () { return window.BI.loadModuleInstructions(); });
     const testo = viva ? await page.evaluate(function () {

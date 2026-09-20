@@ -117,7 +117,7 @@ Un modulo produce un tipo di dato diverso a seconda di com'è fatto, e la regola
 ## I nomi in codice
 
 *Decisi il 2026-09-08, **eseguiti il 2026-09-09**. Erano la «rinomina unica»
-registrata in `docs/decisioni.md`; adesso sono lo stato del codice.*
+registrata in `docs/decisioni-storico.md`; adesso sono lo stato del codice.*
 
 I nomi mostrati allo studente stanno in `CONFIG.moduleLabels` e non sono
 cambiati. Questa sezione riguarda i nomi che si leggono solo nel codice — `kind`,
@@ -136,7 +136,7 @@ id dei moduli, funzioni — e che nel tempo avevano smesso di dire cosa nominava
 Round» erano rimasti vivi in 22 file — commenti ed etichette dei test, cioè il
 posto che si legge davvero — perché la verifica cercava la forma col trattino e
 non quella con lo spazio. Da lì la regola sulle quattro forme in
-`docs/decisioni.md`.
+`docs/decisioni-stato.md`.
 
 ### Cosa segue il nome, e cosa no
 

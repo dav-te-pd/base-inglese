@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920c**
+**Versione: 20260920d**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -33,11 +33,21 @@ esistono proprio per governarli.
 
 ## Prima di prendere qualunque lavoro
 
-**Apri `docs/decisioni.md`.** Se in testa c'è una **catena in corso**, il
-prossimo passo è lì — insieme ai divieti che non si deducono leggendo il codice
-(quali passi non si interrompono, quali vanno fatti insieme, quali punti sono
-fermate sicure). Il suo gemello `docs/correzioni.md` dice invece cosa è già
-stato fatto.
+**Apri `docs/decisioni-stato.md`.** Dice **cosa è aperto adesso e in che
+ordine**, insieme ai divieti che non si deducono leggendo il codice. È corto
+apposta: lo si legge in cinque minuti prima di scegliere cosa prendere.
+
+I suoi due vicini rispondono ad altre due domande, e **non vanno aperti per
+sapere cosa fare**: `docs/correzioni.md` dice **cosa è già stato fatto**, con il
+commit; `docs/decisioni-storico.md` dice **perché è così** — la catena passo per
+passo, i triage, le misure.
+
+⚠️ **Erano un file solo fino al 2026-09-20, ed era arrivato a 4328 righe.**
+Portava due cose che si comportano in modo opposto: **quello che è aperto si
+SVUOTA** (una riga se ne va in `correzioni.md` quando viene eseguita), **il
+ragionamento si ACCUMULA**. Tenendoli insieme vinceva il secondo, e la parte che
+serve per lavorare era sepolta. *La divisione non ha riscritto niente: lo storico
+è l'originale intero, lo stato è stato riscritto da capo.*
 
 *Sta qui e non fra le regole perché va incontrata **prima** di scegliere cosa
 prendere, non mentre si legge la regola che si è già cominciata.*
@@ -51,10 +61,11 @@ affidabile.
 
 | File | Cosa c'è dentro |
 |---|---|
-| `docs/decisioni.md` | La **catena in corso** (in testa) e le decisioni prese e non ancora eseguite. Il primo file da aprire. |
+| `docs/decisioni-stato.md` | **Cosa è aperto adesso e in che ordine.** Il primo file da aprire, e il solo che serve per scegliere un passo. **Si svuota**: una riga eseguita se ne va in `correzioni.md`. |
+| `docs/decisioni-storico.md` | **Perché è così.** La catena dello spacchettamento passo per passo, i triage, le misure, il ragionamento dietro ogni scelta. **Si accumula**, ed è lungo apposta — si apre per rispondere a «perché», mai per cercare il prossimo passo. |
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
 | `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
-| `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
+| `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni-stato.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
 | `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
 | `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |
@@ -82,7 +93,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      **Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla COPPIA di lingue, non alla lingua che si impara: *"I have ten years"* è una trappola italiana e non tedesca, quindi un'edizione tedesca non è `docs/inglese/it/` tradotto — è un contenuto suo. Le edizioni future nascono **copiando la cartella e sostituendo i contenuti**, e **una correzione fatta in `it/` NON deve arrivare nelle altre**: se una cosa va corretta ovunque, va corretta ovunque a mano, di proposito.
 
-     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/decisioni.md`, `docs/censimento-moduli.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
+     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/decisioni-stato.md`, `docs/decisioni-storico.md`, `docs/cyber-security.md`, `docs/censimento-moduli.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
 
      **La regola nomina la cartella, non i file che ci stanno dentro**, ed è una correzione del 2026-09-08: prima elencava due file mentre ce n'erano sei. Un elenco dentro una regola invecchia a ogni file nuovo — e qui invecchiava in silenzio proprio dove la regola 33 va a leggere per sapere cosa proteggere.
 
@@ -168,7 +179,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
    (`tests/tools/versione-salita.js`). *La regola non ha un'eccezione: ha un
    caso in più in cui è stata applicata.*
 
-   **Resta scoperto, ed è registrato in `docs/decisioni.md`:** i quattro
+   **Resta scoperto, ed è registrato in `docs/decisioni-stato.md`:** i quattro
    `fetch` dei file di dati in `app/dati.js` non portano versione.
 
    **L'app carica i suoi contenuti da `data/{lingua}/` e non ne tiene nessuna copia dentro `index.html`.** Se un file non arriva — percorso sbagliato, rete che cade — il caricamento fallisce e lo studente vede la schermata d'errore (`showLoadError`, regola 35): un guasto si vede, non viene assorbito.
@@ -871,12 +882,13 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     il cui messaggio non nomina il registro che ha toccato è un commit che quel
     registro non l'ha scritto». **Misurata sui quindici commit del 2026-09-10
     dava otto falsi allarmi su quindici**: dodici commit toccavano
-    `decisioni.md` e solo quattro lo nominavano. Era una misura che non misura
+    il registro delle decisioni (allora un file solo, `decisioni.md`) e solo
+    quattro lo nominavano. Era una misura che non misura
     (regola 37) messa a guardia della regola che serve a non averne. Il diff non
     ha questo difetto.*
 
     **Il caso vero, misurato:** il 2026-09-10, quindici commit, **uno solo** un
-    passo della catena. `decisioni.md` toccato **12 volte su 15** — lo stato
+    passo della catena. `decisioni-stato.md` toccato **12 volte su 15** — lo stato
     della catena veniva scritto quasi sempre. **`correzioni.md` UNA volta su
     quindici.** *Il buco non era «registrare»: era registrare **quello che era
     stato corretto**.* Il giorno dopo è servito un giro di allineamento per
@@ -888,7 +900,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     | Il commit | Dove va la riga |
     |---|---|
     | ha **corretto** qualcosa | `docs/correzioni.md` |
-    | ha **trovato** qualcosa e non l'ha corretto | `docs/decisioni.md`, con la sua **condizione** |
+    | ha **trovato** qualcosa e non l'ha corretto | `docs/decisioni-stato.md`, con la sua **condizione** |
     | ha **cambiato la catena** (uno stato, un numero, una motivazione) | la riga della catena, subito |
 
     ⚠️ **IL LIMITE, e sta DENTRO la regola perché il caso è previsto:** una

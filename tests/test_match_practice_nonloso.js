@@ -23,7 +23,7 @@
 // domanda puo' cambiare ancora.
 //
 // E' il modello con cui vanno riscritte le diciannove attese fisse di
-// test_batch19.js (docs/decisioni.md): non "togliere il numero", ma **dire
+// test_batch19.js (docs/decisioni-stato.md): non "togliere il numero", ma **dire
 // cosa si sta aspettando**.
 //
 // Il giro di domande non si guida a caso fino a indovinare: sull'ULTIMA

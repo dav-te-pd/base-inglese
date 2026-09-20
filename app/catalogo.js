@@ -170,7 +170,7 @@
       // vista `pronunciation`, che non è raggiungibile da nessun punto
       // dell'app (nessuno chiama startPronunciationExercise). Sparisce
       // insieme a quella vista, allo spacchettamento — è registrato in
-      // docs/decisioni.md fra le pulizie rimandate. Non è né contenuto
+      // docs/decisioni-stato.md fra le pulizie rimandate. Non è né contenuto
       // dell'episodio né struttura: è un residuo.
       //
       // Fixed words are authored individually so punctuation stays attached

@@ -51,7 +51,7 @@ const { repoPath } = require('./test-env');
 // riga invece del silenzio.*
 //
 // La schermata esce dopo il passo 25, quando il motore vocale con cui è
-// intrecciata avrà un file suo — vedi docs/decisioni.md.
+// intrecciata avrà un file suo — vedi docs/decisioni-stato.md.
 //
 // ⚠️ DUE CAMPI PER TORNARE ALLA MAPPA, E NON E' UNA RIDONDANZA — aggiunto il
 // 2026-09-17 (passo 21-quater ⑦).

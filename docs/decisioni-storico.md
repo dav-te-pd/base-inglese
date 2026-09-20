@@ -1,39 +1,40 @@
-# Decisioni prese, non ancora eseguite
+# Decisioni — LO STORICO
 
-Il gemello di [`correzioni.md`](correzioni.md), e ne è il contrario nel tempo:
-lì stanno i fatti **fatti**, qui i fatti **decisi**. Una decisione presa è un
-fatto datato che non si rinegozia — non è un piano, non dice cosa viene prima,
-non va tenuto allineato a niente. È una lista non ordinata di cose che abbiamo
-deciso e non abbiamo ancora fatto.
-
-Tre regole, e sono tutte:
-
-1. **Una riga per decisione: data, cosa, perché, quando si esegue.** Il *quando*
-   è una **condizione**, non una data: «prima di un collaudo su profilo nuovo»,
-   non «giovedì». Le date scadono da sole e mentono; le condizioni no.
-2. **Si scrive nel commit in cui la decisione viene presa**, come i test
-   (regola 23) e come le correzioni. Una decisione registrata dopo è una
-   decisione che, nel frattempo, si è già persa.
-3. **Quando viene eseguita, la riga si SPOSTA in `correzioni.md`** con il commit
-   che la applica, e sparisce da qui.
-
-**Lo svuotarsi è la proprietà che tiene onesto questo file.** Un registro che
-solo cresce diventa un cimitero che nessuno rilegge; uno che si svuota mostra
-da solo cosa è rimasto indietro. Se una riga è qui da sei mesi, si vede — ed è
-un'informazione, non un fastidio.
-
-Una riga senza condizione (`da fissare`) è una decisione a metà: si è deciso
-*cosa*, non *quando*. Vale la pena fissarla alla prima occasione, invece di
-scoprirla scaduta.
-
-⚠️ **E UNA COSA NON STA QUI, DAL 2026-09-20: la sicurezza.** Le due analisi
-(penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i
-segreti e i backup vivono in **[`cyber-security.md`](cyber-security.md)**.
-*Non per ordine: perché questo file si SVUOTA e quello si ACCUMULA.* Una riga
-di sicurezza non sparisce quando viene eseguita — diventa una data, e la data è
-metà dell'informazione.
+> ⚠️ **QUESTO FILE NON SI APRE PER SAPERE COSA FARE. Per quello c'è
+> [`decisioni-stato.md`](decisioni-stato.md).**
+>
+> Qui c'è **come ci siamo arrivati**: la catena dello spacchettamento passo per
+> passo, i triage, le misure, i difetti trovati e il ragionamento con cui ogni
+> scelta è stata presa. È lungo apposta — *una decisione senza il suo perché è
+> un'istruzione, e un'istruzione senza perché si ribalta alla prima difficoltà.*
+>
+> **Si apre quando serve rispondere a «perché è così?»**, non quando si cerca il
+> prossimo passo.
 
 ---
+
+## Perché questo file esiste, e cosa è successo il 2026-09-20
+
+Fino a quel giorno era **un file solo**, `decisioni.md`, e portava due cose che
+si comportano in modo opposto:
+
+| | |
+|---|---|
+| **Quello che è aperto** | **si SVUOTA** — una riga se ne va in `correzioni.md` quando viene eseguita |
+| **Il ragionamento** | **si ACCUMULA** — il perché di una scelta non sparisce quando la scelta è fatta |
+
+Tenendoli insieme vinceva il secondo: **4328 righe**, e il primo — l'unica parte
+che serve per lavorare — era sepolto. *«I file lunghi e con informazioni
+obsolete non li legge nessuno»*, ed è la ragione per cui la divisione è stata
+proposta da chi guida il progetto.
+
+⚠️ **E la divisione è stata fatta SENZA RISCRIVERE NIENTE:** questo file è
+l'originale intero, col solo cappello aggiunto in testa. Quello che è aperto è
+stato **riscritto da capo** nell'altro, corto e ordinato. *Riassumere quattromila
+righe avrebbe voluto dire decidere cosa perdere, e quella decisione non è mia.*
+
+---
+
 
 # LA CATENA IN CORSO — a che punto siamo
 

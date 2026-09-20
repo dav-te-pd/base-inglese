@@ -321,7 +321,7 @@
     //
     // La strada alternativa era spegnere i pulsanti di lavoro in ognuno degli
     // otto moduli: scartata perche' sarebbe stata la NONA famiglia della
-    // conoscenza che ogni file deve ricordarsi da solo (vedi docs/decisioni.md),
+    // conoscenza che ogni file deve ricordarsi da solo (vedi docs/decisioni-stato.md),
     // aggiunta proprio mentre ne stiamo chiudendo quattro.
     // ⚠️ Personalizza NON legge il file dell'episodio: nel suo descrittore non
     // c'e' `dataFile` (MODULE_DESCRIPTORS), ed e' l'unica eccezione fra i

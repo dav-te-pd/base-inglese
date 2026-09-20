@@ -7,7 +7,7 @@
 //   `itemText`             legge `currentEpisode` e `currentValues`
 //   `recordPendingMastery` scrive `pendingMastery`
 //
-// Sono due dei QUATTRO registrati in `docs/decisioni.md` come bloccati dallo
+// Sono due dei QUATTRO registrati in `docs/decisioni-stato.md` come bloccati dallo
 // **stato di sessione** — gli altri due sono `recordMultipleChoiceResult` e
 // `buildMultipleChoiceOptions`. *I nomi sono due, la ragione è una: escono
 // tutti insieme col passo dello stato di sessione, non uno alla volta.*

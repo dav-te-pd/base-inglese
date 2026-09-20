@@ -9,7 +9,7 @@
 //   `buildMultipleChoiceOptions` chiama `itemText`
 //
 // **Questi tre e i due di Flash Card sono lo STESSO insieme di quattro**,
-// registrato in `docs/decisioni.md` come bloccato dallo **stato di sessione**.
+// registrato in `docs/decisioni-stato.md` come bloccato dallo **stato di sessione**.
 // Il primo modulo ne chiedeva uno, il secondo due, il terzo tre: *il numero
 // sale perché ogni modulo ne tocca una fetta diversa, non perché nasca una
 // ragione nuova.* **Quello che doveva essere guardato al terzo modulo era

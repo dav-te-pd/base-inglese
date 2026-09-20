@@ -17,7 +17,7 @@
 //
 // ⚠️ E PORTA VIA UNA PULIZIA, la seconda della serie dopo `srPulizia`:
 // `vcResetRecording` si registra a tempo di parsing. Vale la riga di
-// `docs/decisioni.md`: il magazzino di `stopAllModuleActivity` ha il contenuto
+// `docs/decisioni-stato.md`: il magazzino di `stopAllModuleActivity` ha il contenuto
 // dei file caricati, non un contenuto fisso.
 //
 // ⚠️ UN SOLO NOME ALL'INSÙ VERSO index.html, ed è ANCORA UNO DEI QUATTRO:
@@ -844,7 +844,7 @@
     //     scala. ⚠️ Non e' la LastAttemptRule: quella vale per il BADGE
     //     della mappa (vcLastAttemptPercentByLine), che tiene solo l'ultimo.
     //     Il nome dice una cosa che qui non succede — registrato in
-    //     docs/decisioni.md fra i nomi che mentono.
+    //     docs/decisioni-stato.md fra i nomi che mentono.
     //   check — SOLO il primo (strada B). Le stelle di Voice Check gia' fanno
     //     cosi' (FirstAttemptRule): se i colori scrivessero a ogni tentativo,
     //     lo stesso modulo terrebbe due risposte diverse alla stessa domanda.
@@ -862,7 +862,7 @@
     // esistono per evitare.
     //   (Il badge, in quel caso, segna 0% — cioe' "hai sbagliato tutto"
     //   mentre la verita' e' "non ti abbiamo sentito". E' un difetto suo,
-    //   registrato in docs/decisioni.md; non si corregge da qui.)
+    //   registrato in docs/decisioni-stato.md; non si corregge da qui.)
     // La condizione sul riconoscimento vuoto NON e' una soglia sul rumore: e'
     // la regola spostata da COME e' finita la registrazione a COSA ha
     // prodotto. Il ramo che scartava la registrazione muta (il timeout di
