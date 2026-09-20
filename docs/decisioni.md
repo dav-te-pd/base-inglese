@@ -3991,6 +3991,103 @@ dentro una pagina che chiunque scarica.
 
 ---
 
+### ⚠️ LA FORMA PROPOSTA IL 2026-09-20, e risolve il costo prima di porlo
+
+**«Si registra una volta, si paga una volta, l'app pesca.»** Non si genera al
+volo: si generano i file **una volta sola**, si mettono accanto al contenuto, e
+l'app li scarica come scarica il JSON dell'episodio.
+
+**È giusta, e la ragione è nel contenuto, non nella tecnologia:** oggi l'app
+**non ha nessuna frase generativa**. Le battute di un episodio sono scritte in
+`docs/inglese/it/`, passano da una revisione, e cambiano quando le cambia chi
+guida il progetto — cioè quasi mai. *Un testo che non cambia non ha nessun
+bisogno di una voce che si rigenera.*
+
+**Cosa ne segue, e sono conseguenze, non opinioni:**
+
+| | |
+|---|---|
+| **Il costo** | Da «per battuta ascoltata» a «per battuta **scritta**». Diventa un costo del contenuto, come scrivere l'episodio: si paga quando nasce, mai più. |
+| **La chiave del servizio** | Non serve nell'app. La generazione avviene **fuori**, con uno strumento in `tools/`, e nel repository finiscono i file audio. **Quindi questo pezzo NON aspetta Supabase** — la condizione qui sopra cade per questa strada. |
+| **Il browser** | Riceve **un file audio per battuta**, non una libreria di sintesi. È esattamente il «mandare al browser il minimo possibile». |
+| **Senza rete** | Un file audio già scaricato funziona. È il primo pezzo dell'app che va offline da solo, ed è un'altra ragione per questa strada. |
+
+⚠️ **E il problema che questa forma NON risolve, e va scritto adesso: i
+segnaposto.** Una battuta del grado D contiene `{{papa}}`, e il nome lo sceglie
+lo studente. **Una battuta registrata una volta ha un nome dentro, fisso.**
+Tre strade, nessuna decisa:
+
+1. **Si registra una variante per nome.** La tabella dei nomi ha N voci, quindi
+   N file per battuta. Costa N volte, ma sempre una volta sola.
+2. **Si spezza la battuta**: parte fissa registrata, nome detto dalla voce del
+   browser. *Si sente lo stacco* — ed è proprio la cosa che ElevenLabs serve a
+   togliere.
+3. **I personaggi personalizzabili non passano da ElevenLabs.** «Papà» è di
+   famiglia e parla senza accento straniero: la voce del browser gli basta.
+   L'accento serve alla hostess cinese, che **non è personalizzabile** e quindi
+   non ha segnaposto dentro.
+
+*La ③ è quella che il contenuto suggerisce da sé, e va misurata prima di
+sceglierla: quante battute hanno un segnaposto, e di chi sono.*
+
+---
+
+### ⚠️ ELEVENLABS SOLO SUI GRADI C E D? — la domanda è giusta, la risposta non è il costo
+
+**La proposta:** i gradi A e B sono parole e blocchi di parole, dove l'accento
+non serve; l'accento serve in C e D, dove c'è una persona che parla. Quindi
+ElevenLabs solo lì, e la voce del browser per A e B.
+
+**Abbatterebbe i costi davvero** — A e B sono le voci più numerose di un
+episodio. **Ma introduce una cosa peggiore del costo: lo studente sente DUE
+voci diverse per la stessa parola.** Impara `boarding pass` dalla voce del
+browser al grado A, e la risente da ElevenLabs dentro la battuta al grado D.
+*Non è un dettaglio estetico: il grado A esiste per preparare il grado D, e due
+voci diverse rompono proprio il collegamento che la sequenza costruisce.*
+
+**La proposta che chi guida il progetto ha fatto da sé — «per uniformare
+sarebbe perfetto usare la voce del figlio per tutti i gradi» — è la risposta
+giusta**, e il criterio non è il grado: **è CHI dice quella voce.**
+
+> **Una voce del grado A o B non è di nessuno: è una parola dell'episodio.**
+> Quindi la dice **una voce sola, la stessa per tutto l'episodio** — quella del
+> personaggio principale. I gradi C e D invece hanno un `speaker`: lì la voce è
+> di quel personaggio, e l'accento è suo.
+
+**Così il conto cala lo stesso** (A e B sono una voce sola, non quattro) **e la
+parola del grado A suona come suonerà dentro la battuta.** Resta da misurare
+quanto costa davvero: il numero vero di voci di A e B di un episodio sta in
+testa al suo markdown, e si conta prima di decidere (regola 29).
+
+**Quello che NON va fatto, e va scritto perché è la strada comoda:** decidere
+il confine sul GRADO invece che sul PARLANTE. Un giorno un grado B conterrà
+un'espressione che nel dialogo dice la hostess, e il confine per grado la
+darebbe alla voce sbagliata **senza che nessuno se ne accorga**.
+
+---
+
+## LA MODALITÀ OFFLINE — da studiare guardando come fanno gli altri (2026-09-20)
+
+**Registrato, non deciso, e con il metodo già scelto da chi guida il progetto:**
+prima si guarda cosa fanno **Babbel e Duolingo**, poi si ragiona. *È lo stesso
+metodo che il 19 settembre ha risolto il modello delle edizioni — lì una
+schermata di Duolingo ha corretto un modello che avevo dichiarato sbagliato, e
+l'ha corretto in un messaggio invece che in tre giri.*
+
+**Cosa sapere prima di guardare, così l'analisi sa cosa cercare:**
+
+| | |
+|---|---|
+| **Cosa può andare offline** | Il contenuto di un episodio (è un JSON), i testi dell'interfaccia, i progressi (si scrivono già in `localStorage`), e — con la forma proposta qui sopra — **l'audio registrato**. |
+| **Cosa non può** | Il riconoscimento vocale. Vive nel browser ma **parla con un servizio**: senza rete non sente. Quindi Voice Practice e Voice Check offline non esistono. |
+| **La tensione da tenere presente** | «Offline» e «mandare al browser il minimo possibile» tirano in due direzioni opposte: offline vuol dire **aver già scaricato tutto**. La domanda vera non è *se* scaricare, è **quando e cosa** — ed è esattamente la domanda a cui Babbel e Duolingo hanno già risposto. |
+
+**La domanda da portare all'analisi:** *scaricano un episodio alla volta su
+richiesta («scarica questa lezione»), o tengono tutto? E cosa fanno con gli
+esercizi che hanno bisogno della rete — li nascondono, o li mostrano spenti?*
+
+---
+
 ## LE REGOLE STANNO SUL SERVER, NON NEL BROWSER (chiarito il 2026-09-19)
 
 **Non è una decisione nuova: è la stessa frase, letta bene.** Il messaggio del
@@ -4016,4 +4113,20 @@ funzionamento»*, *«mandiamo al browser più piccoli pacchetti possibili»*,
    riconoscimento vocale e la sintesi. Vivono dove c'è il microfono e
    l'altoparlante.
 4. **L'app non funziona senza rete, ed è accettato.** Vale già oggi: senza rete
-   non arriva nessun file episodio.
+   non arriva nessun file episodio. *Da rivedere insieme alla modalità offline
+   (sezione sotto).*
+5. **E VALE ANCHE PER IL CSS** (aggiunto il 2026-09-20). Oggi `index.html`
+   porta il foglio di stile **intero**, cioè le regole di tutti e sedici i
+   moduli, a chiunque apra la pagina — compreso chi non aprirà mai il Dialogo.
+   La direzione è la stessa: **al browser va quello che serve a quella
+   schermata, non il catalogo di tutte.**
+
+   ⚠️ **Non è ancora un passo, ed è per una ragione misurabile:** oggi il CSS
+   è dentro `index.html`, quindi non si può nemmeno chiedere a pezzi. **Il
+   primo passo è separarlo in file** — la stessa cosa fatta col JavaScript —
+   e solo dopo ha senso chiedersi quali mandare. *Farlo nell'ordine opposto
+   significherebbe decidere i confini senza poterli misurare.*
+
+   **E il beneficio vero non è il peso, è lo stesso di sempre:** un foglio di
+   stile che nessuno ha chiesto è codice che si legge, e leggerlo è il primo
+   passo per copiarlo.
