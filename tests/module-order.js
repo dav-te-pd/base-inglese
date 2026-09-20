@@ -8,7 +8,7 @@
 // e nessuna diceva perché: solo "timeout aspettando un modulo".
 //
 // Qui la lista si calcola dalla sequenza vera dell'episodio 1
-// (CONFIG.sequences['narrativo-standard']), che è l'unico posto che decide
+// (sequences['narrativo-standard'] del file dell'edizione), l'unico posto che decide
 // l'ordine. Un riordino futuro non tocca più nessun test.
 //
 // La sequenza si cerca per NOME e non "la prima che c'è": quando ne
@@ -16,32 +16,30 @@
 // prima vorrebbe dire cambiare in silenzio cosa provano tutti i test il
 // giorno in cui qualcuno ne aggiunge una in cima.
 //
-// La lettura è statica — index.html come testo — invece che dalla pagina:
-// così la lista è disponibile PRIMA di aprire il browser, dove i test ne
-// hanno bisogno, e non serve cambiare la firma di nessuna funzione.
+// La lettura è da disco e non dalla pagina: così la lista è disponibile
+// PRIMA di aprire il browser, dove i test ne hanno bisogno, e non serve
+// cambiare la firma di nessuna funzione.
 
 const fs = require('fs');
-const { repoPath } = require('./test-env');
+const { repoPath, strutturaCorso, fileEdizione } = require('./test-env');
 
-// ⚠️ LEGGE app/config.js, NON index.html — dal 2026-09-15 (passo 20).
+// ⚠️ LEGGE IL FILE DELL'EDIZIONE, NON PIU' UN SORGENTE. Dal 2026-09-20
+// (passo 1.11b), ed e' la TERZA volta che questa funzione cambia indirizzo:
+// index.html → app/config.js → data/{lingua}/{studente}/struttura-corso.json.
 //
-// `CONFIG.sequences` e' uscito da index.html insieme a tutto APP_CONFIG. E'
-// la seconda volta in due passi che una funzione di questo file leggeva un
-// dato dal SORGENTE DELL'APP perche' era li' per costruzione (la prima era
-// readTable, al passo 19): entrambe sono la famiglia ⓪-sexies, e stavolta
-// il passo l'ha previsto invece di scoprirlo da un rosso.
+// **Le prime due volte era la famiglia ⓪-sexies** — leggere un dato dal
+// sorgente dell'app perche' oggi e' li' per costruzione. Adesso non lo e'
+// piu': la sequenza e' un DATO, in un file di dati, e si legge con
+// `JSON.parse` invece che con un'espressione regolare su del codice.
+//
+// *Il guadagno non e' l'eleganza: una regex su un sorgente dice «non
+// trovato» sia quando il dato e' sparito sia quando qualcuno ha scritto
+// `module:` con due spazi. `JSON.parse` distingue le due cose.*
 function readOrder() {
-  const html = fs.readFileSync(repoPath('app', 'config.js'), 'utf8');
-  const block = html.match(/'narrativo-standard':\s*\[([\s\S]*?)\n\s*\]/);
-  if (!block) throw new Error("La sequenza 'narrativo-standard' non e' stata trovata in app/config.js");
-  const pairs = [];
-  const re = /\{\s*module:\s*'([^']+)'(?:\s*,\s*grade:\s*'([^']+)')?(?:\s*,\s*off:\s*(true|false))?\s*\}/g;
-  let m;
-  while ((m = re.exec(block[1])) !== null) {
-    pairs.push({ module: m[1], grade: m[2], off: m[3] === 'true' });
-  }
-  if (!pairs.length) throw new Error("La sequenza 'narrativo-standard' e' vuota o in un formato non riconosciuto");
-  return pairs;
+  const seq = strutturaCorso().sequences['narrativo-standard'];
+  if (!Array.isArray(seq)) throw new Error("La sequenza 'narrativo-standard' non e' in " + fileEdizione('struttura-corso.json'));
+  if (!seq.length) throw new Error("La sequenza 'narrativo-standard' e' vuota");
+  return seq.map(p => ({ module: p.module, grade: p.grade, off: !!p.off }));
 }
 
 // Gli id dei passi, nell'ordine della mappa. Stessa regola di moduleStepId()

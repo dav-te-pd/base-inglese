@@ -83,7 +83,18 @@
   // outside a text field). One whole top-level CONFIG section at a time
   // — a saved section replaces that section entirely, anything never
   // touched in the panel stays at its coded default above.
-  (function applyConfigOverrides() {
+  // ⚠️ DA IIFE A FUNZIONE CON UN NOME, il 2026-09-20 (passo 1.11b), e non per
+  // stile: adesso va chiamata DUE VOLTE. Qui, come sempre, appena la
+  // configurazione del codice e' in memoria; e una seconda volta quando
+  // arriva `struttura-corso.json`, che riempie sei chiavi di `APP_CONFIG`
+  // dopo — se non si riapplicasse, il file sovrascriverebbe in silenzio la
+  // sequenza che il Pannello Admin ha appena salvato.
+  //
+  // *Non e' una regola nuova: e' la stessa che `loadPersonalizationTables`
+  // applica gia' alle tabelle dei nomi — gli override del pannello stanno
+  // SOPRA il file. Qui si riusa la funzione invece di riscriverne una seconda
+  // (regola 13).*
+  function applyConfigOverrides() {
     try {
       var raw = localStorage.getItem(CONFIG_OVERRIDES_KEY);
       if (!raw) return;
@@ -92,7 +103,8 @@
         window.APP_CONFIG[key] = overrides[key];
       });
     } catch (e) {}
-  })();
+  }
+  applyConfigOverrides();
 
   // Applied before first paint so a returning user's saved theme never flashes to the default.
   (function () {
@@ -113,3 +125,4 @@
 // `loadPersonalizationTables`, che lascia sovrascrivere le tabelle dei nomi.
 window.BI = window.BI || {};
 window.BI.CONFIG_OVERRIDES_KEY = CONFIG_OVERRIDES_KEY;
+window.BI.applyConfigOverrides = applyConfigOverrides;

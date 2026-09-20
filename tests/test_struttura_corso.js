@@ -1,4 +1,4 @@
-// PROTEGGE: che docs/inglese/it/struttura-corso.md e APP_CONFIG dicano la stessa cosa su
+// PROTEGGE: che docs/inglese/it/struttura-corso.md e la struttura viva dicano la stessa cosa su
 // ordine dei passi, nomi dei gradi e categorie. Il markdown è la fonte
 // (CLAUDE.md regola 26) e APP_CONFIG l'esecuzione: se divergono, si legge un
 // documento che descrive un'app diversa da quella che gira — ed è il caso in
@@ -74,6 +74,19 @@ async function run() {
   };
 
   await page.goto(APP_URL);
+  // ⚠️ SI ASPETTA, E L'ATTESA NON E' UN RITARDO: dal 2026-09-20 (passo 1.11b)
+  // i gradi, i loro nomi, le categorie e le sequenze non stanno piu' in
+  // `app/config.js` — arrivano da `struttura-corso.json`, cioe' da un
+  // `fetch`. Leggere `window.APP_CONFIG` appena caricata la pagina li
+  // troverebbe `undefined`: non una regressione, una corsa.
+  //
+  // L'approdo e' la schermata del nome visibile, cioe' la prova che
+  // `accendi()` e' girato — e `accendi()` gira solo DOPO che la struttura e'
+  // stata applicata. ⚠️ **E nessuna delle asserzioni di questo file legge
+  // quella schermata** (regola 44): leggono `grades`, `gradeNames`,
+  // `moduleTypes` e l'ordine dei passi. Aspettare uno di quelli avrebbe reso
+  // vera per costruzione proprio la riga che li verifica.
+  await page.waitForSelector('#name-input', { state: 'visible', timeout: 10000 });
   const config = await page.evaluate(() => window.APP_CONFIG);
   await page.close();
   await browser.close();

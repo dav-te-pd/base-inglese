@@ -36,7 +36,7 @@
 // era invisibile a schermo. Rispondendo sbagliato il punteggio è 0% -> rosso
 // -> badge "Da riprovare", e la differenza (o la sua assenza) si vede anche
 // nel testo.
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const { stepIds, gradeOf, stepsBefore } = require('./module-order');
 
@@ -79,6 +79,11 @@ async function waitForAny(page, selectors) {
 // Profilo pulito: nessun progresso, nessun esito, nessun intro già chiuso.
 async function bootFresh(page) {
   await page.goto(BASE);
+  // L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): si aspetta che una delle due porte ci sia, poi si guarda
+  // quale. Senza, «non c'e' il campo del nome» e «non c'e' ancora niente» si
+  // leggono uguali.
+  await attendiPrimaSchermata(page);
   if (!(await visible(page, '#name-input'))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input', { state: 'visible' });
@@ -206,6 +211,11 @@ function readRow(page, stepId) {
 // NON usa questa scorciatoia — lì il punto è proprio giocare davvero.
 async function bootSeeded(page, userName, completed) {
   await page.goto(BASE);
+  // L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): si aspetta che una delle due porte ci sia, poi si guarda
+  // quale. Senza, «non c'e' il campo del nome» e «non c'e' ancora niente» si
+  // leggono uguali.
+  await attendiPrimaSchermata(page);
   if (!(await visible(page, '#name-input'))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input', { state: 'visible' });

@@ -175,4 +175,66 @@ function sorgenteChe(pezzo) {
   throw new Error('«' + pezzo + '» non trovato in nessuno di: ' + posti.join(', '));
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe };
+// ⚠️ LA PRIMA SCHERMATA DELL'APP, ASPETTATA UNA VOLTA SOLA. Passo 1.11b,
+// 2026-09-20.
+//
+// Dal passo 1.11b `boot()` non disegna niente finche' non arriva
+// `struttura-corso.json`: senza sequenze, gradi ed episodi non c'e' nessuna
+// mappa da fare. Quindi «vai all'indirizzo e guarda cosa c'e' a schermo»
+// — che cinque punti di quattro file facevano subito dopo `goto` — adesso
+// guarda una pagina ancora vuota e conclude la cosa sbagliata: non «non c'e'
+// il campo del nome», ma «non c'e' ANCORA NIENTE».
+//
+// Sta qui e non in ogni file (regola 13): la domanda e' la stessa in tutti e
+// cinque, ed e' una sola — *l'app ha finito di accendersi?*
+//
+// ⚠️ ASPETTA UNA DELLE DUE PORTE, non il campo del nome: al secondo giro il
+// nome e' gia' salvato e l'app apre direttamente la schermata di casa. Un
+// test che aspettasse solo `#name-input` aspetterebbe per sempre proprio nel
+// caso in cui l'app funziona.
+async function attendiPrimaSchermata(page, timeout) {
+  await page.waitForFunction(function () {
+    return ['#name-input', '#go-episode'].some(function (sel) {
+      const el = document.querySelector(sel);
+      return !!el && el.getClientRects().length > 0;
+    });
+  }, undefined, { timeout: timeout || 10000 });
+}
+
+// ⚠️ I FILE DELL'EDIZIONE, senza che nessun test scriva `data/inglese/it/`.
+// Passo 1.11b, 2026-09-20 — e' il gemello di `percorsoEdizione` in
+// `app/dati.js`, dal lato dei test.
+//
+// Perche' sta qui e non in ogni file che ne ha bisogno: la coppia che dice
+// quale edizione e' viva sta in UN posto solo dell'app (`CONFIG.edizione`),
+// e i test devono chiederla allo stesso posto. Un test che si scrive il
+// percorso a mano e' la famiglia ⓪-sexies: legge un dato dal sorgente
+// perche' oggi e' li' per costruzione, e il giorno che si sposta dice
+// «non trovato» invece di «e' cambiato».
+//
+// `app/config.js` si esegue davvero, in un contesto finto, invece di
+// cercarci dentro con un'espressione regolare: cosi' il test legge il valore
+// e non il modo in cui e' scritto.
+let _configApp = null;
+function configApp() {
+  if (!_configApp) {
+    const vm = require('vm');
+    const sandbox = { window: {} };
+    vm.createContext(sandbox);
+    vm.runInContext(require('fs').readFileSync(repoPath('app', 'config.js'), 'utf8'), sandbox);
+    _configApp = sandbox.window.APP_CONFIG;
+  }
+  return _configApp;
+}
+
+function fileEdizione(nome) {
+  const ed = configApp().edizione;
+  return repoPath('data', ed.lingua, ed.studente, nome);
+}
+
+// La struttura del corso dell'edizione viva, gia' letta.
+function strutturaCorso() {
+  return JSON.parse(require('fs').readFileSync(fileEdizione('struttura-corso.json'), 'utf8'));
+}
+
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, strutturaCorso, attendiPrimaSchermata };

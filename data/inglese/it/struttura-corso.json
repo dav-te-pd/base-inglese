@@ -1,0 +1,137 @@
+{
+  "speech": {
+    "recognitionLang": "en-US",
+    "synthesisLang": "en-US"
+  },
+  "grades": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "gradeNames": {
+    "A": "Parole",
+    "B": "Espressioni",
+    "C": "Frasi",
+    "D": "Dialogo"
+  },
+  "moduleTypes": {
+    "inizio": {
+      "label": "Inizio"
+    },
+    "studio": {
+      "label": "Studio"
+    },
+    "dialogo": {
+      "label": "Studia il dialogo"
+    },
+    "quiz": {
+      "label": "Quiz"
+    },
+    "test": {
+      "label": "Verifica finale"
+    },
+    "fine": {
+      "label": "Fine"
+    }
+  },
+  "sequences": {
+    "narrativo-standard": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardAEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardAItaEng",
+        "grade": "A"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "B"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "B"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "B"
+      },
+      {
+        "module": "flashcardAEngIta",
+        "grade": "B"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "B"
+      },
+      {
+        "module": "whyWeSayIt",
+        "grade": "D"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "C"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "C"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "C"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoRipetiATempo",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoContinuo",
+        "grade": "D"
+      },
+      {
+        "module": "speedMatchEngIta",
+        "grade": "C"
+      },
+      {
+        "module": "speedMatchItaEng",
+        "grade": "C"
+      },
+      {
+        "module": "voiceCoach",
+        "grade": "C"
+      }
+    ]
+  },
+  "episodes": {
+    "gate": {
+      "sequence": "narrativo-standard"
+    },
+    "aircraft-door": {
+      "sequence": "narrativo-standard"
+    }
+  }
+}

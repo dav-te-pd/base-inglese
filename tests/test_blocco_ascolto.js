@@ -61,7 +61,7 @@
 // dichiarato: dice che qualcuno guarda, e non guarda nessuno.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore, stepIds } = require('./module-order');
 const { attendiVisibile } = require('./attese');
 
@@ -87,6 +87,11 @@ const mockVoce = () => {
 
 async function apriPasso(page, passo) {
   await page.goto(BASE);
+  // L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): prima si aspetta che UNA delle due porte ci sia, poi si
+  // guarda quale. Senza, «non c'e' il campo del nome» e «non c'e' ancora
+  // niente» si leggono uguali.
+  await attendiPrimaSchermata(page);
   // Dal secondo giro in poi il nome e' gia' salvato e la schermata di
   // benvenuto non compare: si guarda cosa c'e' a schermo invece di dare per
   // scontato di essere al primo giro.

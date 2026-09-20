@@ -67,6 +67,65 @@ window.BI = window.BI || {};
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
   // shared across episodes and keyed by module kind — never hardcoded
   // here. Fetched once and cached, same pattern as episode data.
+  // ⚠️ LA STRUTTURA DEL CORSO — il quinto file dell'edizione, e il primo che
+  // l'app deve avere PRIMA di disegnare qualunque cosa. Passo 1.11b.
+  //
+  // Porta sei cose che stavano in `app/config.js`: `grades`, `gradeNames`,
+  // `moduleTypes`, `sequences`, `episodes` e le due lingue di `speech`. Sono
+  // la struttura del CORSO, e un corso appartiene a un'edizione — un corso di
+  // francese vuole i suoi nomi dei gradi e le sue sequenze, e la regola 4
+  // vieta che una correzione fatta per l'inglese arrivi altrove da sola.
+  //
+  // ⚠️ I VALORI TORNANO SU `APP_CONFIG`, E NON E' PIGRIZIA: e' quello che
+  // lascia i loro lettori dove sono. `CONFIG.gradeNames[g]` si scrive come
+  // ieri, il Pannello Admin continua a costruire i suoi gruppi leggendo
+  // `APP_CONFIG`, e questo passo cambia UNA cosa sola — da dove vengono.
+  // Fare anche il giro «ogni lettore chiede al nuovo strato» avrebbe mescolato
+  // due cambiamenti in un rosso solo.
+  var STRUTTURA_CORSO_FILE = percorsoEdizione('struttura-corso.json');
+
+  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'sequences', 'episodes'];
+
+  var strutturaPromise = null;
+
+  function applicaStruttura(dati) {
+    CHIAVI_STRUTTURA.forEach(function (k) { CONFIG[k] = dati[k]; });
+    // Le due lingue sono le uniche che entrano DENTRO una sezione invece di
+    // esserlo: `speech` resta di `app/config.js` (velocita', voci preferite,
+    // alternative) e il corso ne riempie due chiavi.
+    if (dati.speech) {
+      CONFIG.speech.recognitionLang = dati.speech.recognitionLang;
+      CONFIG.speech.synthesisLang = dati.speech.synthesisLang;
+    }
+    // ⚠️ E GLI OVERRIDE DEL PANNELLO ADMIN VANNO SOPRA IL FILE, altrimenti
+    // questo `fetch` cancella in silenzio la sequenza appena riordinata a
+    // mano: `applyConfigOverrides` gira a tempo di parsing, cioe' PRIMA che
+    // il file arrivi. Non e' una regola nuova — e' la stessa che
+    // `loadPersonalizationTables` applica gia' alle tabelle dei nomi — e si
+    // riusa la funzione invece di riscriverne una seconda (regola 13).
+    BI.applyConfigOverrides();
+  }
+
+  function caricaStrutturaCorso() {
+    if (strutturaPromise) return strutturaPromise;
+    strutturaPromise = fetch(STRUTTURA_CORSO_FILE)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        // Come gli altri quattro loader: il rifiuto arriva a chi ha chiamato
+        // — qui `boot()` — che manda alla schermata d'errore (regola 35).
+        // Senza struttura non c'e' niente da disegnare: nessuna sequenza,
+        // nessun grado, nessun episodio. Una mappa vuota sarebbe il guasto
+        // muto al posto di quello che si vede.
+        strutturaPromise = null;
+        throw new Error('no course structure available');
+      })
+      .then(function (dati) {
+        applicaStruttura(dati);
+        return dati;
+      });
+    return strutturaPromise;
+  }
+
   var MODULE_INSTRUCTIONS_FILE = percorsoEdizione('istruzioni-moduli.json');
 
   // Il quarto file di dati, e l'unico che fino al 2026-09-09 aveva il percorso
@@ -258,6 +317,8 @@ window.BI = window.BI || {};
     return moduleInstructionsCache;
   }
 
+  BI.caricaStrutturaCorso = caricaStrutturaCorso;
+  BI.STRUTTURA_CORSO_FILE = STRUTTURA_CORSO_FILE;
   BI.loadEpisodeData = loadEpisodeData;
   BI.episodeGrade = episodeGrade;
   BI.episodeGradeRequired = episodeGradeRequired;

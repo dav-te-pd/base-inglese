@@ -1,4 +1,4 @@
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore, allSteps } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -83,17 +83,33 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.addInitScript(() => {
-      // Swap the first two entries before boot renders the map.
-      const origDescriptor = Object.getOwnPropertyDescriptor(window, 'APP_CONFIG');
-    });
+    // ⚠️ LO SCAMBIO PASSA DAGLI OVERRIDE, E IL TEST CI GUADAGNA. Riscritto il
+    // 2026-09-20 seguendo la rossa del passo 1.11b (⓪-undecies).
+    //
+    // La forma vecchia scambiava i primi due passi mutando
+    // `window.APP_CONFIG.sequences` DOPO il caricamento — quando
+    // `episode.modules` era gia' costruito — e infatti la sua asserzione lo
+    // ammetteva: verificava solo che il NUMERO dei passi non cambiasse, con
+    // scritto accanto «order computed at load time is expected/documented
+    // behavior». *Era una riga che non poteva accorgersi di niente.* C'era
+    // pure un `addInitScript` che leggeva un descrittore e non ne faceva
+    // nulla: due righe rimaste di un tentativo.
+    //
+    // Adesso lo scambio si scrive dove lo scrive il Pannello Admin — la
+    // chiave degli override in `localStorage` — che e' la strada VERA con cui
+    // un riordino arriva in mappa, e che `applyConfigOverrides` riapplica
+    // SOPRA `struttura-corso.json` appena il file arriva. Quindi la riga
+    // adesso verifica lo scambio per davvero.
+    const ordineScambiato = strutturaCorso().sequences['narrativo-standard'].slice();
+    const tmp = ordineScambiato[0]; ordineScambiato[0] = ordineScambiato[1]; ordineScambiato[1] = tmp;
+    await page.addInitScript(function (ordine) {
+      localStorage.setItem('baseinglese:configOverrides',
+        JSON.stringify({ sequences: { 'narrativo-standard': ordine } }));
+    }, ordineScambiato);
     await page.goto(BASE);
-    await page.evaluate(() => {
-      var order = window.APP_CONFIG.sequences['narrativo-standard'];
-      var tmp = order[0]; order[0] = order[1]; order[1] = tmp;
-    });
+    await attendiPrimaSchermata(page);
     var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
-    if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForTimeout(100); }
+    if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForSelector('#name-input', { state: 'visible' }); }
     await page.fill('#name-input', 'ReorderTester');
     await page.click('#onboarding-form button[type=submit]');
     await page.waitForTimeout(100);
@@ -104,10 +120,20 @@ async function run() {
     }, 'ReorderTester');
     await page.click('#go-episode');
     await page.waitForTimeout(150); // ATTESA-LEGITTIMA: NON e' una guardia di questa famiglia — l'asserzione legge un DATO (un conteggio), non un pulsante ne' una classe. Il censimento l'ha messa fra «un pulsante o una classe che cambia stato» perche' nella finestra c'e' un getAttribute che appartiene a un'ALTRA riga. Marcata per toglierla dal debito, non perche' il tempo sia la misura: qui si legge l'ELENCO dei moduli in mappa
-    // Note: order array was mutated pre-boot via addInitScript-style evaluate before go-episode;
-    // but EPISODES.modules was computed once at script load. Re-check by reading it directly.
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
-    log('[A] Module ids present after swap attempt (sanity, order computed at load time is expected/documented behavior)', order.length === allSteps().length);
+    // Gli id attesi si calcolano dall'ordine scambiato con la stessa regola
+    // di `moduleStepId` — la prima apparizione tiene l'id nudo — invece di
+    // essere scritti a mano: scriverli qui li fotograferebbe al giorno d'oggi.
+    const vistiSw = {};
+    const attesiSw = ordineScambiato.filter(p => !p.off).map(p => {
+      const id = vistiSw[p.module] ? p.module + '-' + (vistiSw[p.module] + 1) : p.module;
+      vistiSw[p.module] = (vistiSw[p.module] || 0) + 1;
+      return id;
+    });
+    log('[A] Riordinare la sequenza riordina DAVVERO la mappa',
+      JSON.stringify(order) === JSON.stringify(attesiSw));
+    log('[A] ...e i primi due passi sono proprio scambiati rispetto al file',
+      order[0] === attesiSw[0] && order[1] === attesiSw[1] && order[0] !== allSteps()[0]);
     log('[A] No JS errors on reorder test', errors.length === 0);
     await page.close();
   }

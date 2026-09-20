@@ -124,7 +124,15 @@ async function run() {
         JSON.stringify({ edizione: { lingua: 'francese', studente: 'it' } }));
     });
     await page.reload();
-    await page.waitForSelector('#name-input', { state: 'visible', timeout: 10000 });
+    // ⚠️ QUI NON SI ASPETTA PIU' LA SCHERMATA DEL NOME, E IL MOTIVO E' UN
+    // COMPORTAMENTO NUOVO CHE VALE LA PENA VERIFICARE INVECE DI AGGIRARE.
+    // Dal passo 1.11b l'app aspetta `struttura-corso.json` prima di disegnare
+    // qualunque cosa: puntata a un'edizione che non esiste, quel file non
+    // arriva e si vede la schermata d'errore (regola 35) invece dell'app.
+    // L'approdo e' quindi la schermata d'errore, e i quattro percorsi si
+    // leggono da `BI`, dove esistono da tempo di parsing.
+    await page.waitForSelector('#view-error.is-active', { state: 'visible', timeout: 10000 });
+    log('[B] Puntata a un\'edizione che non esiste, l\'app lo DICE invece di partire a meta\'', true);
 
     const dopo = await page.evaluate(function () {
       return {

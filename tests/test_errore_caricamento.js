@@ -28,7 +28,7 @@
 // apertura è la più corta.
 const fs = require('fs');
 const path = require('path');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 const PASSO = 'matchEngIta';
@@ -61,6 +61,11 @@ async function clickIfVisible(page, sel) {
 // Porta un profilo pulito fino alla mappa, con i passi precedenti già fatti.
 async function finoAllaMappa(page, utente) {
   await page.goto(APP_URL);
+  // L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): si aspetta che una delle due porte ci sia, poi si guarda
+  // quale. Senza, «non c'e' il campo del nome» e «non c'e' ancora niente» si
+  // leggono uguali.
+  await attendiPrimaSchermata(page);
   if (!(await visible(page, '#name-input'))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input', { state: 'visible' });

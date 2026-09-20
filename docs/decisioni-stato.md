@@ -58,8 +58,15 @@ lavorare su una base che non si può misurare.*
 | **1.8** | **Le tabelle di personalizzazione escono da `APP_CONFIG`** | Vanno sotto `data/{lingua}/` come il resto dell'edizione (regola 4) |
 | **1.9** | **I quattro `fetch` di `app/dati.js` prendono il `?v=`** | Oggi solo i 23 tag `<script>` ce l'hanno: i file di dati possono restare in cache vecchi |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
-| **1.11** | **La struttura del corso esce da `APP_CONFIG` e diventa un file per edizione** | `grades`, `gradeNames`, `moduleTypes`, `sequences`, `episodes` e le due lingue di `speech` vanno in `data/{lingua}/{studente}/struttura-corso.json`. **Tutte, senza eccezioni** — vedi il blocco qui sotto. ⚠️ **Spezzato in due, e non per prudenza generica: le due metà possono fallire per ragioni diverse, e insieme un rosso non direbbe quale.** **a) FATTO il 2026-09-20** — i passi di ogni episodio si costruiscono in `boot()` (`costruisciPassi()`) invece che a tempo di parsing: stessa sorgente di prima, cambia solo il momento. **b) resta** — il file nasce, `boot()` lo aspetta, le sei chiavi escono da `APP_CONFIG`. ⚠️ **E l'asincrono non è una preferenza:** l'indirizzo di quel file dipende da `CONFIG.edizione`, un valore di runtime, quindi non può essere un tag `<script>` bloccante come `app/config.js` — quel tag dovrebbe portare `data/inglese/it/` inciso dentro, cioè rimettere il guasto muto appena tolto |
-| **1.12** | **La CATENA DI VALIDAZIONE delle edizioni: francese, tedesco, spagnolo — due episodi ciascuna, per italiani** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: `francese/it` mette alla prova il modello, `tedesco/it` che non fosse un caso, `spagnolo/it` che il costo scenda invece di restare uguale. *Se la terza costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/it/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **LIMITE DICHIARATO, e va saputo prima di leggere il verde:** tutte e tre hanno `it` come lingua dello studente, quindi provano a fondo cartelle, catalogo, sequenze e gradi, **e non toccano mai la seconda metà della coppia**. La prima edizione con uno studente non italiano (`inglese/de`) resta non provata, e nessuna di queste tre lo dirà |
+| **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* |
+
+⚠️ **UNA COSA CHE IL PASSO 1.11 HA APERTO, e va decisa prima di Supabase:
+l'app non disegna NIENTE finché `struttura-corso.json` non arriva.** Oggi è
+un file statico sulla stessa origine, quindi si parla di millisecondi e non
+si vede. **Con i dati sul server no**: su una rete lenta resterebbe una
+pagina vuota senza spiegazione, che è la forma del guasto muto. Serve una
+schermata di attesa — non la si inventa adesso perché oggi non c'è niente da
+attendere abbastanza a lungo da poterla provare.
 
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
@@ -163,6 +170,20 @@ falla da trovare, è lo stato dichiarato.
 | **3.9** | **Il passo di pubblicazione che toglie i commenti** | Minificazione. ⚠️ **Il prezzo va detto: il file servito non è più quello in git** |
 | **3.10** | **Il caso di studio `guida.omney.io`** | Lì scaricare i dati è risultato quasi impossibile: va capito come |
 
+### ⚠️ IL PANNELLO ADMIN — l'elenco di cosa dovrà avere
+
+**Questo posto non esisteva e nasce il 2026-09-20**, perché le cose del
+pannello stavano già in due punti diversi e sarebbero diventate tre. Si
+chiudono tutte al passo **3.5**, quando il pannello viene rifatto dietro il
+login: prima di allora è un embrione locale, e metterci dentro un lavoro
+serio significherebbe farlo due volte.
+
+| | Cosa | Perché |
+|---|---|---|
+| **A** | **I due campi dell'edizione bloccati** | `edizione.lingua` e `edizione.studente` oggi si modificano come qualunque altro campo, e toccarli per sbaglio punta l'app a una cartella che non esiste: schermata d'errore finché non si riapre il pannello e si ripristina. Non modificabili con un click solo |
+| **B** | **La vista di TUTTE le sequenze in un posto solo** | ⚠️ **Oggi non esiste, ed è una mancanza vera:** il pannello mostra **una** sequenza — quella dell'episodio che si sta guardando (`sequenzaInModifica`) — quindi per sapere quale episodio usa quale bisogna cambiare episodio e riaprire il pannello, uno per uno. Serve l'elenco delle sequenze con, accanto a ognuna, **gli episodi che la chiedono**, e la possibilità di modificarle da lì. *Diventa più utile, non meno, quando le sequenze saranno per edizione (passo 1.11): l'elenco è per edizione, e la domanda «questo episodio segue la sequenza standard o una sua?» si risponde con un'occhiata invece che con cinque click* |
+
+
 ## ④ DOPO — costruire, non più riordinare
 
 | | |
@@ -195,7 +216,7 @@ storico, nelle quattro sezioni che portano lo stesso nome.
 | **CI rosse che non dicono cosa fare** | storico, sezione omonima | Valori ricopiati invece che letti dalla fonte |
 | **Il volume di default di `sfxPlayTone`** | storico, `## DA FARE` | Deve uscire dal codice ed entrare in `APP_CONFIG` (regola 3) |
 | **`test_batch19.js`** | storico, `## ⚠️ APERTO` | La causa si stava stringendo l'11→15 settembre e non è stata chiusa |
-| **I due campi dell'edizione nel Pannello Admin** | qui | `edizione.lingua` e `edizione.studente` oggi si modificano come qualunque altro campo, e toccarli per sbaglio punta l'app a una cartella che non esiste: schermata d'errore finché non si apre il pannello e si ripristina. **Vanno bloccati** — non modificabili con un click solo. ⚠️ **Non si fa adesso di proposito:** il pannello di oggi è un embrione, e il blocco va disegnato col Pannello Admin vero, insieme al login (tappa ③). *Condizione: quando nasce il Pannello Admin vero.* Per ora il rischio è noto e sta in mano a una persona sola |
+| **Le cose del Pannello Admin** | tappa ③, sotto la tabella | I due campi dell'edizione da bloccare e la vista di tutte le sequenze. **Stanno lì e non qui** perché si chiudono tutte insieme al passo 3.5, quando il pannello viene rifatto |
 
 ⚠️ **E una cosa che NON è piccola e sta qui solo perché è già registrata:
 `srPulizia` ha mostrato che il magazzino di `stopAllModuleActivity` non ha più

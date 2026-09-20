@@ -73,6 +73,7 @@
   var hydrateIcons = BI.hydrateIcons;
   var EPISODES = BI.EPISODES;
   var costruisciPassi = BI.costruisciPassi;
+  var caricaStrutturaCorso = BI.caricaStrutturaCorso;
   // ⚠️ I TRE NOMI DEI CINQUE PULSANTI DELLA MAPPA, arrivati col passo ③.
   // Vengono da `ui-condivisa.js` e da `progressi.js`, tutti e due prima di
   // questo file: si aliasano in cima come gli altri. Senza, i pulsanti erano
@@ -376,6 +377,29 @@
     // si accende" ha un nome.
     hydrateIcons(document);
 
+    // ⚠️ DA QUI IN POI SI ASPETTA UN FILE. Passo 1.11b, 2026-09-20.
+    //
+    // `struttura-corso.json` porta le sequenze, i gradi, i loro nomi, le
+    // categorie e l'elenco degli episodi di QUESTA edizione. Senza, non c'e'
+    // niente da disegnare: non una mappa povera, proprio nessuna mappa.
+    //
+    // Quindi l'accensione si spezza in due: le icone subito — il markup
+    // statico e' gia' li' e i suoi segnaposto vanno riempiti comunque — e
+    // tutto il resto quando il file c'e'.
+    //
+    // Il rifiuto NON si ingoia: va alla schermata d'errore (regola 35), con
+    // il suo «riprova» che rifa' `boot()`. Una mappa vuota al posto di un
+    // messaggio sarebbe il guasto muto invece di quello che si vede.
+    caricaStrutturaCorso().then(accendi).catch(function () {
+      showLoadError(function () { boot(); });
+    });
+  }
+
+  // La seconda meta' di `boot()`: tutto cio' che ha bisogno della struttura
+  // del corso. Separata e non lasciata dentro il `.then` perche' li' dentro
+  // finirebbero sessanta righe, e un rientro in piu' su un blocco lungo
+  // nasconde dove comincia e dove finisce.
+  function accendi() {
     // ⚠️ I PASSI DI OGNI EPISODIO, PRIMA DI TUTTO IL RESTO. Passo 1.11a.
     //
     // `EPISODES` porta chi sono gli episodi e i loro descrittori; `modules`
@@ -428,6 +452,7 @@
     try {
       if (new URLSearchParams(window.location.search).has('config')) openConfigPanel();
     } catch (e) {}
+  
   }
 
   var configPanelOverlayEl = document.getElementById('config-panel-overlay');

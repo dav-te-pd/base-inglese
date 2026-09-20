@@ -54,7 +54,7 @@
 // anche che il parametro venga davvero letto. Il caso [C] lo rilegge a 2 —
 // se la funzione avesse il numero cablato, [A] e [C] non potrebbero dare
 // risultati diversi.
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore, gradeOf } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 
@@ -109,6 +109,11 @@ async function waitForAny(page, selectors) {
 async function preparaEApri(page, utente, semina, promotionStreak, grado) {
   await mazzoDiUnaCarta(page, grado);
   await page.goto(APP_URL);
+  // L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): si aspetta che una delle due porte ci sia, poi si guarda
+  // quale. Senza, «non c'e' il campo del nome» e «non c'e' ancora niente» si
+  // leggono uguali.
+  await attendiPrimaSchermata(page);
   if (!(await visible(page, '#name-input'))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input', { state: 'visible' });

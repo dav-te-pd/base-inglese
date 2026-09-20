@@ -68,10 +68,27 @@ async function run() {
     log('[A] ...e il caricatore gliela CHIEDE',
       righeDiCodiceDi('app', 'dati.js').some(function (r) { return /BI\.applyEpisodeDialogue\(data\)/.test(r); }));
 
-    // I quattro fetch dell'app, adesso in un file solo: e' la condizione che
-    // rende possibile il passo che li unifica, e vale la pena che si veda.
+    // ⚠️ LA RIGA DICEVA «I QUATTRO FETCH», ED E' ANDATA ROSSA IL 2026-09-20
+    // PER UNA DECISIONE (⓪-undecies): col passo 1.11b sono cinque, perche'
+    // nasce `struttura-corso.json`. **L'invariante non era il numero — era
+    // che stessero tutti nello stesso posto** — e il numero era una
+    // fotografia che invecchiava al primo file di dati in piu'.
+    //
+    // Quindi adesso il numero si MISURA e non si scrive, e la riga che conta
+    // guarda dall'altra parte: **nessun file dell'app, tranne `dati.js`, fa
+    // un `fetch`**. Cosi' vale per i cinque di oggi e per il sesto di domani,
+    // e un `fetch` che spunta altrove e' rosso subito invece di far salire
+    // un conteggio che nessuno rilegge.
+    const fs2 = require('fs');
     const fetches = righeDiCodiceDi('app', 'dati.js').filter(function (r) { return /\bfetch\(/.test(r); });
-    log('[A] I quattro fetch dell' + "'app stanno tutti qui", fetches.length === 4, String(fetches.length));
+    console.log('    [A] fetch in app/dati.js: ' + fetches.length);
+    log('[A] I fetch dell' + "'app stanno in app/dati.js", fetches.length > 0, String(fetches.length));
+    const altrove = fs2.readdirSync(repoPath('app'))
+      .filter(function (f) { return /\.js$/.test(f) && f !== 'dati.js'; })
+      .filter(function (f) {
+        return righeDiCodiceDi('app', f).some(function (r) { return /\bfetch\(/.test(r); });
+      });
+    log('[A] ...e nessun altro file di app/ ne fa uno', altrove.length === 0, altrove.join(', '));
     log('[A] ...e in index.html non ne resta nessuno',
       righeDiCodiceDi('index.html').filter(function (r) { return /\bfetch\(/.test(r); }).length === 0);
   }

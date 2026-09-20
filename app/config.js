@@ -55,8 +55,15 @@
     },
     // ---- speech recognition & synthesis ----
     speech: {
-      recognitionLang: 'en-US',
-      synthesisLang: 'en-US',
+      // ⚠️ `recognitionLang` e `synthesisLang` NON sono qui, e non e' una
+      // dimenticanza: sono le due lingue del CORSO, non manopole dell'app, e
+      // dal 2026-09-20 arrivano da `data/{lingua}/{studente}/struttura-corso.json`
+      // insieme al resto della struttura (passo 1.11b). Un corso di francese
+      // vuole `fr-FR`; `synthesisRate` e le voci preferite no.
+      //
+      // Le due chiavi COMPAIONO su `CONFIG.speech` appena quel file arriva —
+      // prima di qualunque schermata — quindi i tre punti che le leggono
+      // (app/audio.js due volte, app/voice.js una) non sono cambiati.
       synthesisRate: 0.95,
       maxAlternatives: 1,
       // ⚠️ `micMaxRecordingMs` E' USCITO il 2026-09-19 (passo A), e non l'ho
@@ -407,96 +414,25 @@
         }
       }
     },
-    // ---- I gradi dell'episodio, nell'ordine in cui si presentano nel
-    // pannello — le lettere delle sezioni di levels nei file
-    // data/{lingua}/{studente}/{lingua}-{studente}-{id}.json (regola 4).
-    // Questa è solo la lista da cui la vista di riordino fa scegliere, e
-    // da cui il pulsante del grado cicla.
+    // ⚠️ QUI MANCANO SEI COSE, E MANCANO DI PROPOSITO — passo 1.11b, 2026-09-20.
     //
-    // ⚠️ Come si chiama ogni grado per lo studente lo dice gradeNames, due
-    // righe sotto — NON il file episodio. Fino al 15 settembre qui c'era
-    // scritto il contrario («il nome esteso di ciascun grado, levels.A.label,
-    // sta nel file episodio»), due righe sopra la chiave che lo smentisce.
-    // Il campo levels.X.label nei file dati esiste ancora (regola 4 lo
-    // richiede) ma non lo legge nessuno: episodeGrade() prende .items e
-    // basta. Un commento che manda a cercare un dato vivo nel posto
-    // sbagliato costa più di un commento che manca. ----
-    grades: ['A', 'B', 'C', 'D'],
-    // ---- Come si chiama ogni grado per lo studente (docs/inglese/it/struttura-corso.md).
-    // La lettera è l'identificativo tecnico — codice, dati, Pannello Admin —
-    // e allo studente non dice niente: senza il nome, gli esercizi sembrano
-    // ripetersi senza motivo, invece di lavorare su cose diverse. Si mostra
-    // accanto alla categoria, separato da gradeSeparator: "Studio · Parole". ----
-    gradeNames: {
-      A: 'Parole',
-      B: 'Espressioni',
-      C: 'Frasi',
-      D: 'Dialogo'
-    },
+    // `grades`, `gradeNames`, `moduleTypes`, `sequences`, `episodes` e le due
+    // lingue di `speech` stavano qui e adesso stanno in
+    // `data/{lingua}/{studente}/struttura-corso.json`: sono la struttura del
+    // CORSO, e un corso appartiene a un'edizione. Tenerle qui significava che
+    // una decisione didattica presa per l'inglese governava il francese in
+    // silenzio — la regola 4 dice l'opposto.
+    //
+    // ⚠️ RICOMPAIONO SU `APP_CONFIG` appena quel file arriva, prima di
+    // qualunque schermata (`caricaStrutturaCorso`, chiamata da `boot()`).
+    // Quindi **nessuno dei loro lettori e' cambiato** — `CONFIG.gradeNames[g]`
+    // si scrive come ieri — e il Pannello Admin continua a mostrarle, perche'
+    // costruisce i suoi gruppi leggendo `APP_CONFIG` quando lo apri, cioe'
+    // dopo. *Quello che e' cambiato e' da dove vengono, non dove stanno.*
+    //
+    // `gradeSeparator` invece RESTA: e' il punto medio fra categoria e grado,
+    // cioe' tipografia condivisa, non una parola che si traduce.
     gradeSeparator: ' · ',
-    // ---- Le SEQUENZE: l'unico posto che decide l'ordine dei passi E su
-    // quale grado dell'episodio ciascuno lavora.
-    //
-    // Una sequenza è una lista di COPPIE { module, grade }: quale modulo, e
-    // su quale grado. Lo stesso modulo può comparire più volte su gradi
-    // diversi (Flash Card sul grado A e sul grado B); il grado NON vive nel
-    // descrittore del modulo (EPISODES.gate.modulesById), che resta
-    // uguale per tutte le sue apparizioni. Un modulo che non legge contenuto
-    // dall'episodio (Personalizza) non ha grade.
-    //
-    // OGNI EPISODIO DICHIARA LA SUA, sempre, anche il primo: non esiste più
-    // una sequenza di default che qualcuno eredita in silenzio. Un episodio
-    // che non dichiara niente è un errore che si vede, non un episodio che
-    // ne prende una a caso — vedi resolveEpisodeOrder.
-    //
-    // Un'eccezione non si dichiara come "narrativo-standard meno Flash
-    // Card": chi fa eccezione scrive la sua sequenza PER INTERO. Una
-    // sottrazione si legge solo tenendo aperti due documenti, e quando la
-    // base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
-    //
-    // Editabile dal Pannello Admin, che mostra la sequenza dell'episodio
-    // corrente (vedi renderModuleOrderField): su/giù per l'ordine, il
-    // pulsante con la lettera per il grado, l'occhio per accendere e
-    // spegnere un passo.
-    sequences: {
-      'narrativo-standard': [
-        { module: 'personalizzazione' },
-        { module: 'meetTheStory', grade: 'D' },
-        { module: 'repeatAloud', grade: 'A' },
-        { module: 'matchEngIta', grade: 'A' },
-        { module: 'matchItaEng', grade: 'A' },
-        { module: 'flashcardAEngIta', grade: 'A' },
-        { module: 'flashcardAItaEng', grade: 'A' },
-        { module: 'repeatAloud', grade: 'B' },
-        { module: 'matchEngIta', grade: 'B' },
-        { module: 'matchItaEng', grade: 'B' },
-        { module: 'flashcardAEngIta', grade: 'B' },
-        { module: 'voicePractice', grade: 'B' },
-        { module: 'whyWeSayIt', grade: 'D' },
-        { module: 'matchEngIta', grade: 'C' },
-        { module: 'matchItaEng', grade: 'C' },
-        { module: 'voicePractice', grade: 'C' },
-        { module: 'dialogoAscoltaRipeti', grade: 'D' },
-        { module: 'dialogoRipetiATempo', grade: 'D' },
-        { module: 'dialogoContinuo', grade: 'D' },
-        { module: 'speedMatchEngIta', grade: 'C' },
-        { module: 'speedMatchItaEng', grade: 'C' },
-        { module: 'voiceCoach', grade: 'C' }
-      ]
-    },
-    // Ogni episodio dichiara la sua sequenza per NOME. In alternativa può
-    // scrivere il proprio ordine per intero in `moduleOrder` — è la strada
-    // che il Pannello Admin usa quando riordini a mano. Dichiararle
-    // ENTRAMBE è un errore, e viene detto invece che risolto in silenzio
-    // scegliendone una (resolveEpisodeOrder).
-    episodes: {
-      gate: { sequence: 'narrativo-standard' },
-      // L'ordine è uno solo per tutto il corso (docs/inglese/it/struttura-corso.md):
-      // un episodio può sovrascriverlo, ma è l'eccezione, e l'episodio 2 non
-      // lo è — ha tutti e quattro i gradi, quindi i ventidue passi lo
-      // percorrono per intero.
-      'aircraft-door': { sequence: 'narrativo-standard' }
-    },
     // Quale episodio apre l'app. È un parametro come gli altri (regola 3) e
     // non uno stato nascosto: il Pannello Admin gli dà un menu invece del
     // campo di testo generico (renderEpisodeSwitchField), così l'unico modo
@@ -508,29 +444,6 @@
     // RAGGIUNGERE un episodio per provarlo, e non deve diventare per
     // sbaglio il modo in cui gli studenti ne cambiano.
     episodioCorrente: 'gate',
-    // ---- Module "type" labels (see each modulesById entry's own `type`)
-    // — shown next to a module's name on the map so the student knows
-    // what to expect before opening it. Purely declarative for now: not
-    // yet tied to map colors or to the valvola/richiamo mechanics (a
-    // later, dedicated pass will derive those from this same `type`). ----
-    // Job: six category labels, describing the EXPERIENCE (how much
-    // pressure — pace yourself vs. a clock/auto-advance/no retry) rather
-    // than the underlying mechanism. A module is graded or not per
-    // moduleOutcomeRules below regardless of which of these it shows —
-    // "studio" is not a promise of "ungraded", just "no time pressure".
-    moduleTypes: {
-      // Le sei categorie (docs/inglese/it/struttura-corso.md). Dicono allo studente cosa
-      // lo aspetta, NON se verrà valutato: ogni modulo registra il risultato,
-      // sempre. La differenza fra studio e quiz non è la valutazione, è la
-      // pressione — nello studio si va al proprio ritmo, nel quiz c'è il tempo
-      // o l'avanzamento automatico.
-      inizio: { label: 'Inizio' },
-      studio: { label: 'Studio' },
-      dialogo: { label: 'Studia il dialogo' },
-      quiz: { label: 'Quiz' },
-      test: { label: 'Verifica finale' }, // previsto: Test
-      fine: { label: 'Fine' } // previsti: Modulo Finale, Download
-    },
     // ---- Module Rules — which of three systems colors a module's map
     // badge, keyed by module id. Read this instead of the code to know
     // how a module gets judged:
