@@ -64,6 +64,12 @@ non le sa scrivere.
 | `loadPersonalizationTables` | Le tabelle condivise di nomi, città e paesi dell'edizione. | `()` → `Promise` di `{ people, places }` | ⚠️ **Applica sopra il file gli override salvati dal Pannello Admin**: chi la sostituisse con un `fetch` nudo farebbe sparire le personalizzazioni **senza un errore e senza un rosso**. |
 | `caricaStrutturaCorso` | La struttura del corso dell'edizione — gradi, nomi dei gradi, categorie, sequenze, elenco degli episodi, lingue del parlato — e la **applica** a `APP_CONFIG`. | `()` → `Promise` dei dati grezzi | Che sia chiamata **prima di disegnare qualunque cosa**: senza, non esiste nessuna mappa. Riapplica gli override del pannello **dopo** il file, altrimenti il `fetch` cancellerebbe in silenzio la sequenza appena riordinata a mano. |
 
+## `app/ui-condivisa.js` — la personalizzazione
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `fillTemplate` | Sostituisce i `{{segnaposto}}` di un testo coi valori scelti dallo studente, nella lingua chiesta. **Cinque file lo usano** — i tre Dialogue, Why We Say It, Voice e la sessione. | `(testo, episode, valori, lang)` → il testo riempito | Che `episode.placeholderMap` sia già arrivato (viene dal **file dell'episodio**, attaccato da `applyEpisodeDialogue` dopo il fetch): chiamarlo prima lascia i segnaposto a schermo. ⚠️ **Un segnaposto sconosciuto NON rompe la riga**: resta com'è e finisce in `console.warn` — perché un `{{token}}` rimasto a schermo era l'unico segno che qualcosa mancava. Un segnaposto può chiedere la propria lingua con `{{chiave:en}}`: serve dove una spiegazione italiana cita la frase inglese. |
+
 ## `app/orchestrazione.js` — chi decide cosa si vede
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |

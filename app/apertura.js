@@ -102,9 +102,12 @@
   }
   BI.applyEpisodeDialogue = applyEpisodeDialogue;
 
-  // Normalizes a slot's option list into { value, it, en, fr, es, de }: a
-  // plain value (e.g. an age number) becomes all columns the same; people
-  // and place rows already have this shape.
+  // ⚠️ Qui c'erano due commenti attaccati, e il primo descriveva un'ALTRA
+  // funzione: `slotOptions`, che vive in app/ui-condivisa.js. Diceva anche
+  // `{ value, it, en, fr, es, de }`, forma uscita il 2026-09-20 (passo 1.8).
+  // Un commento che descrive la funzione sbagliata non si nota rileggendo: si
+  // nota solo quando qualcuno ci si fida.
+  //
   // Resolves a personalizationTablesUsed entry's "table" reference to its
   // actual option list: a shared CONFIG.* table (people/places — reused
   // across every episode and language, CLAUDE.md rule 4) by default, or,
@@ -140,12 +143,18 @@
         options: resolveSlotTable(slot.table, episodeData, tables),
         def: slot.default,
         group: slot.group,
-        narrow: slot.narrow,
-        // Job 1 (3rd collaudo): a "people.*" table holds a person's own
-        // name, never translated in the dialogue — see resolveSlotValue's
-        // own comment. A "places.*"/episode-local table (toponyms, ages)
-        // keeps translating normally.
-        isPersonName: slot.table.indexOf('people.') === 0
+        narrow: slot.narrow
+        // ⚠️ QUI C'ERA `isPersonName`, USCITO IL 2026-09-20 (passo 1.8).
+        //
+        // Diceva «questo slot pesca da una tabella `people.*`, quindi il suo
+        // valore non si traduce», e lo ricavava dal nome della tabella:
+        // `slot.table.indexOf('people.') === 0`. Era esatto e viveva nel posto
+        // sbagliato — **una proprieta' della RIGA, decisa dal contenitore**.
+        //
+        // Adesso ogni riga del magazzino porta `traducibile`, e chi lo legge e'
+        // `resolveSlotValue` (app/ui-condivisa.js), dove sta la nota per esteso.
+        // Il comportamento e' identico: ogni riga ha ricevuto il valore che la
+        // deduzione le dava.
       };
     });
   }

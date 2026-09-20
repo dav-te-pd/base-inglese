@@ -33,11 +33,16 @@
 //
 // LIMITE DICHIARATO: questo file NON verifica che il contenuto del magazzino
 // sia quello di `docs/inglese/it/tabelle-personalizzazione.md`. Oggi NON lo è,
-// ed è una scelta scritta (sei destinazioni invece di undici, id vecchi,
-// traducibilità dedotta dalla tabella invece che dichiarata per riga): il
+// ed è una scelta scritta (sei destinazioni invece di undici, id vecchi): il
 // passo che ha creato il file è una conversione pura. Il confronto col
 // magazzino vero è il test rovesciato ⑤ del markdown, e nasce col passo che
 // porta il contenuto.
+//
+// ⚠️ LA TERZA DIFFERENZA È CHIUSA dal 2026-09-20 (passo 1.8): la
+// traducibilità non è più dedotta dalla tabella, la dichiara la riga. A
+// proteggere quel meccanismo è tests/test_traducibilita_per_riga.js, non
+// questo file — e la riga qui sopra diceva il contrario finché quel passo
+// non è arrivato.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe, globDati } = require('./test-env');
@@ -260,7 +265,7 @@ async function run() {
     await page.addInitScript(() => {
       localStorage.setItem('baseinglese:configOverrides', JSON.stringify({
         people: {
-          papa: [{ value: 'zzz', it: 'Zenone', en: 'Zeno', fr: '', es: '', de: '' }],
+          papa: [{ value: 'zzz', it: 'Zenone', en: 'Zeno', traducibile: false }],
           mamma: [], figlia: [], figlio: [], cognome: []
         },
         places: { departures: [], destinations: [] }

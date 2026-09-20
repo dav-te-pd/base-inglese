@@ -94,7 +94,7 @@ lavorare su una base che non si può misurare.*
 | | Passo | Perché adesso |
 |---|---|---|
 | **1.3** | **Passo 18 — le stringhe del markup** | ⚠️ **Da RICONTARE prima: non sono mai state contate.** Il numero su cui si pianificava non esiste |
-| **1.8** | **Le tabelle di personalizzazione prendono la forma nuova** | ⚠️ **Sono gia' USCITE da `APP_CONFIG` il 2026-09-15**, in `data/inglese/it/tabelle-personalizzazione.json` — ma **col contenuto vecchio**, come deciso allora: sei destinazioni invece di undici, id `marco` invece di `papa-marco`, traducibilità dedotta invece che dichiarata. Quello che resta è la FORMA: i punti ② ③ ⑤ di *Cosa manca* in `docs/inglese/it/tabelle-personalizzazione.md`, **tutti e tre verificati aperti il 2026-09-20** nel codice, non nel documento. ⚠️ **E qui si tolgono le colonne `fr`/`es`/`de` vuote** — vedi il divieto 7 |
+| **1.8** | **Le tabelle di personalizzazione prendono la forma nuova** | ⚠️ **PRIMA PARTE FATTA IL 2026-09-20 (1.8 A):** via le colonne `fr`/`es`/`de` (147 stringhe vuote, zero lettori), **traducibilità dichiarata per riga** invece che dedotta dal nome della tabella, e il test rovesciato ⑤ **nella forma che oggi è possibile** — «ogni tabella nominata da un episodio esiste, e ogni valore predefinito esiste dentro di essa» (9 slot su 9 passano). ⚠️ **RESTA 1.8-bis, E ASPETTA IL CONTENUTO DI CHI GUIDA IL PROGETTO:** il punto ② (città+paese sulla stessa riga) e il ③ (età in lettere) **non sono osservabili senza le righe nuove** — il magazzino non ha un secondo campo e le età sono numeri nudi dentro il file dell'episodio. E con loro arriva obbligatoriamente la **migrazione ④** (`marco → papa-marco`, `16 → eta-16`): senza, `resolveSlotValue` **ricade in silenzio sulla prima opzione** e chi ha personalizzato si ritrova scelte altrui, senza un avviso e senza un rosso |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
 | **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* |
 
@@ -143,6 +143,24 @@ sono già stati letti riga per riga**, che è il solo momento in cui la colonna
 *Misura che lo dimostra: il passo 1.7 ha letto `progressi.js` (38 pezzi) e
 `identita.js` (9) riga per riga — **quarantasette pezzi erano catalogabili quel
 giorno a costo quasi zero**, e sono ancora scoperti.*
+
+### ⚠️ LE QUATTRO DELLE SEQUENZE — una condizione sola
+
+**Trovate il 2026-09-20 misurando il Pannello Admin** per rispondere a chi guida
+il progetto. Nessuna è rotta **oggi**, e la ragione è una sola: *esiste una
+sequenza sola.* Tutte e quattro diventano vere — e verificabili — nello stesso
+momento.
+
+| | Cosa |
+|---|---|
+| ① | **`persistConfigSection('sequences')` salva l'oggetto INTERO**, e `applyConfigOverrides` sostituisce la chiave intera. Il primo riordino dal pannello **congela tutte le sequenze**: una aggiunta al file dopo non comparirebbe più su quel browser |
+| ② | **`episodes.<id>.sequence` è modificabile dal pannello ma NON ricarica.** Cambi il nome, si salva, e la mappa resta quella di prima — *«una manopola che sembra aver fatto qualcosa e non l'ha fatto»*, la frase che un commento del file accanto usa per il campo che invece il ricaricamento ce l'ha |
+| ③ | **Il Pannello Admin non sa creare né cancellare una sequenza.** Riordina, cambia grado, accende e spegne: il magazzino si riempie solo a mano nel file |
+| ④ | **`resolveEpisodeOrder` ha il nome della cosa sbagliata**: dice «l'ordine degli episodi», restituisce l'ordine dei **moduli di un** episodio. 5 occorrenze. È la prova che l'ambiguità della parola «sequenza» non è solo nella chat |
+
+**La condizione: il passo che rende le sequenze davvero più d'una.** Prima di
+allora nessun test potrebbe farle diventare rosse — e una correzione che nessun
+caso può esercitare è una riga che nessuno sa se funziona.
 
 ### ⚠️ TROVATO CATALOGANDO — `wipeEpisodeProgress` conosce tre chiavi su sette
 

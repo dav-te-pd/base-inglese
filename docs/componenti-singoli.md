@@ -111,6 +111,23 @@ sotto `tests/` scrivevano la forma della chiave a mano. Adesso si raggiungono da
 | `loadStoryCardsDeclarations` | Le dichiarazioni con cui Why We Say It si riapre dove lo si era lasciato. | `(episodeId, utente)` → `{ lineId: risposta }` | Che il modulo le usi per lo **Sblocco Sequenziale** (regola 30): riaprendo, le card già dichiarate restano aperte. |
 | `saveStoryCardsDeclarations` | Scrive quelle dichiarazioni. | `(episodeId, utente, risposte)` → niente | Sovrascrive l'oggetto intero, come `saveMastery`: chi chiama tiene la mappa completa in memoria per tutta la sessione del modulo. |
 
+## `app/apertura.js` — da dove arrivano gli slot
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `resolveSlotTable` | Trasforma il nome di una tabella scritto da un episodio (`"people.papa"`) nella lista vera delle opzioni. | `(nome, datiEpisodio, magazzino)` → la lista, **`[]` se non la trova** | Che il prefisso `episode.` voglia dire «cercala **dentro** il file di questo episodio» e tutto il resto «cercala nel magazzino condiviso». ⚠️ **Un nome sbagliato non alza: torna una lista vuota**, e lo slot compare senza opzioni — un guasto che si vede a schermo e non nei log. Chi la chiama deve avere **già aspettato** il magazzino. |
+| `buildSlotFields` | Costruisce gli slot di personalizzazione che l'episodio dichiara in `personalizationTablesUsed`. | `(datiEpisodio, magazzino)` → la lista degli slot | Che tutto ciò che sta a valle (la griglia di Personalizza, il Riquadro Richieste, i segnaposto) legga **questa** forma. ⚠️ **Non decide più se un valore si traduce** — dal 2026-09-20 lo dichiara la riga del magazzino, e questa funzione non lo sa nemmeno. |
+| `ensureEpisodeSlotFields` | Garantisce che `episode.slotFields` esista, aspettando il file dell'episodio e il magazzino **una volta sola**. | `episode` → `Promise` | Che **ogni** punto che tocca `slotFields` passi prima di qui. ⚠️ **Senza, `episode.slotFields` è `undefined`**, non una lista vuota: chi ci scorre sopra cade invece di trovare zero slot. |
+
+## `app/ui-condivisa.js` — gli slot, letti
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `slotOptions` | Porta ogni opzione alla stessa forma `{ value, it, en }`. Una riga del magazzino ce l'ha già; un valore nudo — un'età — diventa tutte le colonne uguali. | `campo` → lista normalizzata | ⚠️ **Non aggiunge `traducibile`**, e non è una dimenticanza: un valore nudo che non lo dichiara vale «si traduce», e dargli un valore d'ufficio farebbe sembrare una decisione quella che è un'assenza. *`fr`/`es`/`de` sono uscite il 2026-09-20: un'altra edizione non aggiunge una colonna qui, ha il suo file.* |
+| `slotField` | Lo slot di un episodio, cercato per chiave. | `(episode, chiave)` → lo slot, o `undefined` | Che `episode.slotFields` ci sia già (vedi `ensureEpisodeSlotFields`). |
+| `slotDefault` | Il valore di partenza di uno slot. | `(episode, chiave)` → la stringa, `''` se lo slot non c'è | Che `''` sia una risposta accettabile: è quello che `fillTemplate` usa quando lo studente non ha scelto niente. |
+| `resolveSlotValue` | Cosa si legge a schermo per un valore scelto, nella lingua chiesta: **è il punto che decide se una parola si traduce.** | `(episode, chiave, valoreSalvato, lang)` → la stringa da mostrare | ⚠️ **Lo decide la RIGA del magazzino** (`traducibile`), non il nome della tabella — cambiato il 2026-09-20 (passo 1.8), comportamento identico. **Chi manca vale «si traduce».** ⚠️ E il difetto da conoscere: **un valore salvato che non esiste più fra le opzioni ricade in silenzio sulla PRIMA** — nessun errore, nessun avviso, la personalizzazione di qualcuno diventa un'altra. *È il motivo per cui una rinomina degli id vuole una migrazione.* |
+
 ## `app/repeataloud.js`
 
 *(da catalogare — `node tests/tools/censimento-pezzi.js` dice quanti)*

@@ -475,11 +475,23 @@
     document.getElementById('help-overlay-body').innerHTML = renderHelpConfirmation();
   });
 
+  // Porta ogni opzione alla forma { value, it, en, traducibile }. Una riga del
+  // magazzino ce l'ha gia'; un valore nudo — un'eta', che vive dentro il file
+  // dell'episodio — diventa tutte le colonne uguali.
+  //
+  // ⚠️ `fr`, `es` e `de` sono USCITE il 2026-09-20 (passo 1.8): erano tre
+  // stringhe vuote per riga, 147 in tutto, e non le leggeva nessuno. Un'altra
+  // edizione non aggiunge una colonna qui: ha il suo file, sotto la sua
+  // cartella (regola 4 — un'edizione non e' una traduzione).
+  //
+  // ⚠️ E `traducibile` NON si mette qui: un valore nudo che non lo dichiara
+  // vale «si traduce», e per le eta' `it` ed `en` coincidono comunque. Darglielo
+  // d'ufficio farebbe sembrare una decisione quello che e' un'assenza.
   function slotOptions(field) {
     return (field.options || []).map(function (item) {
       if (item && typeof item === 'object') return item;
       var s = String(item);
-      return { value: s, it: s, en: s, fr: '', es: '', de: '' };
+      return { value: s, it: s, en: s };
     });
   }
 
@@ -504,15 +516,27 @@
       var match = opts.find(function (o) { return o.value === rawValue; });
       var picked = match || opts[0];
       if (!picked) return rawValue;
-      // Job 1 (3rd collaudo): a person's own name is never translated,
-      // whichever language the dialogue line is being rendered in — an
-      // Italian traveler abroad still introduces themselves as
-      // "Francesco", not "Francis" (also: personalization exists so the
-      // student recognizes themselves in the story). Only used to show
-      // BOTH forms in the Customize screen, never to substitute one for
-      // the other in the dialogue. Toponyms (places) keep translating
-      // normally — 'it'/'en' picked by lang as before.
-      return field.isPersonName ? picked.it : picked[lang];
+      // Un nome proprio non si traduce in nessuna lingua: un viaggiatore
+      // italiano all'estero si presenta come "Francesco", non "Francis" — e la
+      // personalizzazione esiste perche' lo studente si riconosca nella storia.
+      // Un toponimo invece si traduce: Torino -> Turin.
+      //
+      // ⚠️ CHI LO DECIDE E' CAMBIATO IL 2026-09-20 (passo 1.8), E IL
+      // COMPORTAMENTO NO. Qui c'era `field.isPersonName`, un valore che
+      // `buildSlotFields` ricavava dal NOME DELLA TABELLA
+      // (`slot.table.indexOf('people.') === 0`). Adesso lo dichiara la RIGA.
+      //
+      // Non e' pulizia: era una deduzione che teneva solo finche' le due
+      // famiglie restavano due. Un cognome che si traduce, o una citta' che
+      // non si traduce, non avevano modo di esistere — e la prima che
+      // servisse avrebbe chiesto di spostare una riga in un'altra tabella
+      // per una ragione che con quella tabella non c'entra niente.
+      //
+      // ⚠️ E L'ASSENZA VALE «SI TRADUCE», non «non si sa»: le tabelle interne
+      // a un episodio (le eta') sono valori nudi e non dichiarano niente. Per
+      // loro `it` ed `en` coincidono, quindi il ramo e' indifferente — ma il
+      // default va scelto, e questo e' quello che non cambia niente oggi.
+      return picked.traducibile === false ? picked.it : picked[lang];
     }
     return rawValue;
   }
