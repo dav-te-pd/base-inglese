@@ -15,7 +15,7 @@
      own .vc-counter rule here — smaller, unbolded, faded to 0.6 opacity —
      visibly different from Speed Match/Match Practice/Flash Card's own
      counters even though it's the exact same kind of information. Now
-     shares .sr-counter (see near .sr-direction) like Match Practice already
+     shares .sr-counter (in `stile/speedmatch.css`) like Match Practice already
      did, instead of a fourth near-duplicate rule. */
 
   .vc-cue {

@@ -14,7 +14,7 @@
   /* ============================================================
      SHARED: Help entry point (+ "Spiegazione") — every module drops
      these two buttons into its .header-actions-row (see .header-2row
-     near .header-2row), wired to openHowItWorksOverlay()/openHelpFor().
+     in `stile/guscio.css`), wired to openHowItWorksOverlay()/openHelpFor().
      .header-actions-row > .btn already sets the sizing that applies to
      every button there, .help-btn is just the semantic/JS-hook marker.
      ============================================================ */

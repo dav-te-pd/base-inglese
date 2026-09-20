@@ -4,68 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Base Inglese</title>
-<!-- ⚠️ IL ?v= SUI QUATTORDICI TAG NON È UN VEZZO: È QUELLO CHE IMPEDISCE AL
-     BROWSER DI MESCOLARE FILE VECCHI E NUOVI.
+<!-- ⚠️ IL `?v=` SU OGNI TAG NON È UN VEZZO: È QUELLO CHE IMPEDISCE AL
+     BROWSER DI MESCOLARE FILE VECCHI E NUOVI. Vale per i `<script>` di `app/`
+     qui sotto E per i fogli di `stile/` più giù: sono la stessa cosa.
 
      Finché l'app era un file solo, «hai la pagina vecchia» era tutto-o-niente.
-     Da quando è quindici file con cache indipendenti, un browser può tenere
-     `index.html` nuovo e `app/ui-condivisa.js` vecchio — e il risultato è un'app
-     che nessuno ha mai scritto. È successo il 2026-09-19 (il pannello Help
-     morto su Pages mentre in locale funzionava), ed è il primo sospettato per
-     il guasto del 18, quando «le funzioni erano identiche carattere per
+     Da quando è tanti file con cache indipendenti, un browser può tenere
+     `index.html` nuovo e `app/ui-condivisa.js` vecchio — e il risultato è
+     un'app che nessuno ha mai scritto. È successo il 2026-09-19 (il pannello
+     Help morto su Pages mentre in locale funzionava), ed è il primo sospettato
+     per il guasto del 18, quando «le funzioni erano identiche carattere per
      carattere e il comportamento era cambiato».
 
-     LA VERSIONE È LA STESSA SU TUTTI E QUATTORDICI, E DEVE RESTARLO. Se
-     `index.html` è vecchio, il browser chiede i quattordici all'indirizzo
-     vecchio e ottiene un insieme COERENTE (vecchio, ma coerente); se è nuovo,
-     ne ottiene uno coerente nuovo. Il caso misto sparisce.
+     ⚠️ CON UN FOGLIO DI STILE SI VEDE ANCORA MENO: un JavaScript scompagnato
+     prima o poi alza un errore, un CSS scompagnato no — l'app si vede storta e
+     basta.
 
-     SI ALZA A OGNI MODIFICA di `index.html` o di un file sotto `app/`. Non
-     dipende dal ricordarsene: `tests/test_versione_cache.js` verifica che i
-     quattordici la portino uguale, e la CI rifiuta un push che cambia il
-     codice senza alzarla (`tests/tools/versione-salita.js`).
+     LA VERSIONE È LA STESSA SU TUTTI, E DEVE RESTARLO. Se `index.html` è
+     vecchio, il browser chiede tutto all'indirizzo vecchio e ottiene un insieme
+     COERENTE (vecchio, ma coerente); se è nuovo, ne ottiene uno coerente nuovo.
+     Il caso misto sparisce.
+
+     ⚠️ IL NUMERO DEI TAG NON È SCRITTO QUI, ED È UNA CORREZIONE: questo stesso
+     commento ha detto «i quattordici tag» mentre erano diventati ventitré, e
+     poi trentacinque. *Un numero dentro un commento invecchia a ogni file
+     nuovo, e invecchia in silenzio: il commento continua a leggersi bene.* Il
+     conto vero lo danno due comandi —
+     `grep -c 'src="app/' index.html` e `grep -c 'href="stile/' index.html` —
+     e i test non lo chiedono a nessun documento: lo misurano.
+
+     SI ALZA A OGNI MODIFICA di `index.html`, di un file sotto `app/` o di un
+     foglio sotto `stile/`. Non dipende dal ricordarsene:
+     `tests/test_versione_cache.js` verifica che tutti la portino uguale, e la
+     CI rifiuta un push che cambia il codice senza alzarla
+     (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260920k"></script>
-<script src="app/spazio.js?v=20260920k"></script>
-<script src="app/identita.js?v=20260920k"></script>
-<script src="app/avvio.js?v=20260920k"></script>
-<script src="app/progressi.js?v=20260920k"></script>
-<script src="app/audio.js?v=20260920k"></script>
-<script src="app/suoni.js?v=20260920k"></script>
-<script src="app/quiz-engine.js?v=20260920k"></script>
-<script src="app/dati.js?v=20260920k"></script>
-<script src="app/catalogo.js?v=20260920k"></script>
+<script src="app/config.js?v=20260920l"></script>
+<script src="app/spazio.js?v=20260920l"></script>
+<script src="app/identita.js?v=20260920l"></script>
+<script src="app/avvio.js?v=20260920l"></script>
+<script src="app/progressi.js?v=20260920l"></script>
+<script src="app/audio.js?v=20260920l"></script>
+<script src="app/suoni.js?v=20260920l"></script>
+<script src="app/quiz-engine.js?v=20260920l"></script>
+<script src="app/dati.js?v=20260920l"></script>
+<script src="app/catalogo.js?v=20260920l"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<!-- ⚠️ IL CSS STA IN `stile/`, E L'ORDINE DI QUESTI DODICI TAG E' LA CASCATA.
-     Passo 1.1, 2026-09-20: qui c'erano 2496 righe di CSS in un tag di stile, il 70%
-     del file. Sono state TAGLIATE e non riscritte — la concatenazione dei
-     dodici fogli, in quest'ordine, e' identica carattere per carattere al
-     foglio di prima.
+<!-- ⚠️ IL CSS STA IN `stile/`, E L'ORDINE DI QUESTI TAG È LA CASCATA.
+     Passo 1.1, 2026-09-20: qui c'erano 2496 righe di CSS in un tag di stile, il
+     70% del file. Sono state TAGLIATE e non riscritte — la concatenazione dei
+     fogli, in quest'ordine, è identica carattere per carattere al foglio di
+     prima.
 
-     Quindi spostare un tag non e' un riordino estetico: cambia quali regole
-     vincono, in silenzio. `base.css` va per primo perche' porta le variabili
-     dei temi e la guardia `[hidden]` (regola 12); i moduli vanno per ultimi
-     perche' specializzano quello che viene prima.
+     Quindi spostare un tag non è un riordino estetico: cambia quali regole
+     vincono, in silenzio. `base.css` va per primo perché porta le variabili dei
+     temi e la guardia `[hidden]` (regola 12); i moduli vanno per ultimi perché
+     specializzano quello che viene prima.
 
-     La `?v=` e' la stessa dei tag `<script>` qui sotto e per la stessa
-     ragione (regola 6): un browser non deve poter tenere un foglio vecchio
-     accanto a un JavaScript nuovo. `tests/tools/versione-salita.js` rifiuta
-     un push che tocca `stile/` senza alzarla. -->
-<link rel="stylesheet" href="stile/base.css?v=20260920k">
-<link rel="stylesheet" href="stile/componenti.css?v=20260920k">
-<link rel="stylesheet" href="stile/condivisi.css?v=20260920k">
-<link rel="stylesheet" href="stile/guscio.css?v=20260920k">
-<link rel="stylesheet" href="stile/schermate.css?v=20260920k">
-<link rel="stylesheet" href="stile/repeataloud.css?v=20260920k">
-<link rel="stylesheet" href="stile/storycards.css?v=20260920k">
-<link rel="stylesheet" href="stile/voice.css?v=20260920k">
-<link rel="stylesheet" href="stile/match.css?v=20260920k">
-<link rel="stylesheet" href="stile/dialogo.css?v=20260920k">
-<link rel="stylesheet" href="stile/speedmatch.css?v=20260920k">
-<link rel="stylesheet" href="stile/flashcard.css?v=20260920k">
+     ⚠️ E OGGI NESSUN SELETTORE VIVE IN DUE FOGLI — misurato, zero — che è la
+     ragione per cui scambiarne due non si vede. `tests/test_stile_estratto.js`
+     tiene ferma quella misura: il giorno in cui una regola comparirà in due
+     fogli, l'ordine comincerà a contare e quella riga lo dirà.
+
+     La `?v=` è la stessa dei tag `<script>` e per la stessa ragione: il perché
+     sta scritto per esteso sopra i primi. -->
+<link rel="stylesheet" href="stile/base.css?v=20260920l">
+<link rel="stylesheet" href="stile/componenti.css?v=20260920l">
+<link rel="stylesheet" href="stile/condivisi.css?v=20260920l">
+<link rel="stylesheet" href="stile/guscio.css?v=20260920l">
+<link rel="stylesheet" href="stile/schermate.css?v=20260920l">
+<link rel="stylesheet" href="stile/repeataloud.css?v=20260920l">
+<link rel="stylesheet" href="stile/storycards.css?v=20260920l">
+<link rel="stylesheet" href="stile/voice.css?v=20260920l">
+<link rel="stylesheet" href="stile/match.css?v=20260920l">
+<link rel="stylesheet" href="stile/dialogo.css?v=20260920l">
+<link rel="stylesheet" href="stile/speedmatch.css?v=20260920l">
+<link rel="stylesheet" href="stile/flashcard.css?v=20260920l">
 </head>
 <body>
   <div class="app">
@@ -110,10 +127,9 @@
       </div>
     </section>
 
-    <!-- ============ VIEW: HOME ============ -->
     <!-- ============ VIEW: HOME ============
          ⚠️ ANCHE I TESTI DI QUESTA SCHERMATA RESTANO NEL MARKUP, DI
-         PROPOSITO — stessa categoria dell'onboarding qui sotto, e per la
+         PROPOSITO — stessa categoria dell'onboarding qui sopra, e per la
          stessa frase:
 
            UNA COSA CHE DEVE FUNZIONARE QUANDO NIENTE FUNZIONA NON PUO'
@@ -446,7 +462,7 @@
 
             <div class="vc-target" id="vc-target"></div>
 
-            <!-- Mostra pronuncia: same reveal pattern as Story Cards's
+            <!-- Mostra pronuncia: same reveal pattern as the story cards'
                  "Mostra traduzione" (.translation-toggle, CLAUDE.md rule
                  13) — reveals the line's own pronunciationTip (already
                  the vocabulary's field name, reused here per-line) as an
@@ -464,15 +480,14 @@
               </button>
               <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
               <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
-              <!-- Job 6b: shown when the silence timeout auto-stops a
+              <!-- Shown when the silence timeout auto-stops a
                    recording with no voice detected — that recording is
                    discarded, never offered for Invia/Cancella. -->
               <p class="status-text is-error" id="vc-silence-warning" hidden></p>
 
               <div class="vc-confirm-area" id="vc-confirm-area" hidden>
                 <!-- Box Doppia Scelta: inner markup generated by the shared
-                     renderChoiceBox() (CLAUDE.md rule 13, see near
-                     hydrateIcons) — this wrapper keeps its own
+                     renderChoiceBox() (CLAUDE.md rule 13, in `app/ui-condivisa.js`) — this wrapper keeps its own
                      .vc-confirm-box class/styling untouched. -->
                 <div class="vc-confirm-box" id="vc-confirm-box"></div>
               </div>
@@ -520,14 +535,14 @@
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
                generated by the shared renderRetryIntroScreen() (CLAUDE.md
-               rule 13, see near hydrateIcons). Shown before re-asking any
+               rule 13, in `app/ui-condivisa.js`). Shown before re-asking any
                sentence left with 0-1 stars, same mechanic as Speed Match/
                Match Practice/Flash Card's own retry pass. -->
           <div id="voice-coach-retry-intro-screen" class="module-screen" hidden></div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
                the shared renderSummaryScreen() (CLAUDE.md rule 13, see
-               near hydrateIcons) — previously absent, the last sentence's
+               in `app/ui-condivisa.js`) — previously absent, the last sentence's
                "Avanti" button doubled as completion instead. -->
           <div id="voice-coach-summary-screen" class="module-screen" hidden></div>
         </div>
@@ -578,7 +593,7 @@
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
                generated by the shared renderRetryIntroScreen() (CLAUDE.md
-               rule 13, see near hydrateIcons). -->
+               rule 13, in `app/ui-condivisa.js`). -->
           <div id="qm-retry-intro-screen" hidden></div>
 
           <!-- QUIZ SCREEN: .sr-counter/.sr-direction/.sr-prompt/.sr-options/
@@ -607,7 +622,7 @@
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
                the shared renderSummaryScreen() (CLAUDE.md rule 13, see
-               near hydrateIcons). -->
+               in `app/ui-condivisa.js`). -->
           <div id="qm-summary-screen" hidden></div>
         </div>
       </div>
@@ -622,7 +637,7 @@
          Pausa/Riprendi vs nothing) is generated per profile by
          dgSetupToolbar, not hardcoded here — see the JS module comment
          for the full per-profile behavior. Same dialogue content as
-         Story Cards, same shared dialogueLineAlign()/speakerLabel()
+         le card della storia, same shared dialogueLineAlign()/speakerLabel()
          (CLAUDE.md rule 13) — no new data, no new file. -->
     <section id="view-dialogo" class="view">
       <div class="card">
@@ -685,7 +700,7 @@
             <!-- Box Doppia Scelta: reuses Flash Card's own .fc-choice-row
                  class verbatim (CLAUDE.md rule 13/5 — same plain padded
                  shape, zero new CSS), inner markup generated by the
-                 shared renderChoiceBox() (see near hydrateIcons). Always
+                 shared renderChoiceBox() (in `app/ui-condivisa.js`). Always
                  present, but disabled like every other control while a
                  line is playing (see dgLockAll). -->
             <div class="panel fc-choice-row" id="dg-choice-row"></div>
@@ -752,7 +767,7 @@
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
                generated by the shared renderRetryIntroScreen() (CLAUDE.md
-               rule 13, see near hydrateIcons). -->
+               rule 13, in `app/ui-condivisa.js`). -->
           <div id="sr-retry-intro-screen" hidden></div>
 
           <!-- QUIZ SCREEN -->
@@ -831,7 +846,7 @@
 
           <!-- RETRY-PASS INTRO SCREEN (Schermata Ripasso): inner markup
                generated by the shared renderRetryIntroScreen() (CLAUDE.md
-               rule 13, see near hydrateIcons). Shown before every new
+               rule 13, in `app/ui-condivisa.js`). Shown before every new
                retry pass, not just the first (loops until a pass has
                zero misses). -->
           <div id="fc-retry-intro-screen" hidden></div>
@@ -857,20 +872,18 @@
                  re-present anything wrong, so manual back-navigation would
                  only risk re-recording an already-counted attempt. -->
             <!-- Box Doppia Scelta: inner markup generated by the shared
-                 renderChoiceBox() (CLAUDE.md rule 13, see near
-                 hydrateIcons) — this wrapper keeps its own .fc-choice-row
+                 renderChoiceBox() (CLAUDE.md rule 13, in `app/ui-condivisa.js`) — this wrapper keeps its own .fc-choice-row
                  class/styling untouched. -->
             <div class="panel fc-choice-row" id="fc-choice-row" hidden></div>
           </div>
 
           <!-- SUMMARY SCREEN (Schermata Finale): inner markup generated by
                the shared renderSummaryScreen() (CLAUDE.md rule 13, see
-               near hydrateIcons). -->
+               in `app/ui-condivisa.js`). -->
           <div id="fc-summary-screen" hidden></div>
         </div>
       </div>
     </section>
-
 
     <!-- ============ SHARED: SCHERMATA DI ERRORE DI CARICAMENTO ============
          Una sola schermata per ogni fallimento BLOCCANTE del caricamento
@@ -984,7 +997,8 @@
           <summary>"Prossima frase" (quante volte è stato usato)</summary>
           <div class="config-group-body" id="config-next-line-skips"></div>
         </details>
-        <!-- Job 10 (2nd collaudo): Story Cards's "Cosa imparo qui" self-check
+        <!-- Le risposte al «Cosa imparo qui» delle card di Meet the Story /
+             Why We Say It (prefisso `storyCards`), self-check
              answers per linea, same accumulated-data reasoning as the two
              panels above (CLAUDE.md rule 13). Filled in by
              renderStoryCardsExplanationStatsPanel(), called alongside
@@ -1038,27 +1052,31 @@
     </div>
   </div>
 
-<!-- ⚠️ SECONDA FILA. Gli altri nove strati stanno in <head>; questo no, e non e'
-     una svista: prende i tredici nodi delle viste a tempo di parsing, quindi il
-     markup deve gia' esistere. Il criterio degli strati divide per QUANDO una
-     cosa gira, e questo gira dopo il DOM. -->
-<script src="app/orchestrazione.js?v=20260920k"></script>
-<script src="app/ui-condivisa.js?v=20260920k"></script>
-<script src="app/sessione.js?v=20260920k"></script>
-<script src="app/mappa.js?v=20260920k"></script>
-<script src="app/storycards.js?v=20260920k"></script>
-<script src="app/personalizza.js?v=20260920k"></script>
-<script src="app/repeataloud.js?v=20260920k"></script>
-<script src="app/flashcard.js?v=20260920k"></script>
-<script src="app/match.js?v=20260920k"></script>
-<script src="app/speedmatch.js?v=20260920k"></script>
-<script src="app/voice.js?v=20260920k"></script>
-<script src="app/dialogo.js?v=20260920k"></script>
-<script src="app/apertura.js?v=20260920k"></script>
+<!-- ⚠️ SECONDA FILA, E NON E' UNA SVISTA. Gli strati della prima stanno in
+     `<head>`; questi no, perche' prendono i nodi delle viste **a tempo di
+     parsing**, quindi il markup deve gia' esistere. Il criterio degli strati
+     divide per QUANDO una cosa gira, e questa gira dopo il DOM.
+
+     *I due numeri che stavano qui — «nove strati», «tredici nodi» — erano
+     diventati dieci e dodici senza che nessuno li toccasse. Il conto lo danno
+     `grep -c 'src="app/' index.html` e `grep -c 'class="view"' index.html`.* -->
+<script src="app/orchestrazione.js?v=20260920l"></script>
+<script src="app/ui-condivisa.js?v=20260920l"></script>
+<script src="app/sessione.js?v=20260920l"></script>
+<script src="app/mappa.js?v=20260920l"></script>
+<script src="app/storycards.js?v=20260920l"></script>
+<script src="app/personalizza.js?v=20260920l"></script>
+<script src="app/repeataloud.js?v=20260920l"></script>
+<script src="app/flashcard.js?v=20260920l"></script>
+<script src="app/match.js?v=20260920l"></script>
+<script src="app/speedmatch.js?v=20260920l"></script>
+<script src="app/voice.js?v=20260920l"></script>
+<script src="app/dialogo.js?v=20260920l"></script>
+<script src="app/apertura.js?v=20260920l"></script>
 
 <script>
 // ============================================================
-// QUELLO CHE RESTA DI `index.html`, e sono tre righe — passo ③, 2026-09-20.
+// QUELLO CHE RESTA DI `index.html`, ed e' UNA RIGA — passo ③, 2026-09-20.
 //
 // Questo file ha avuto fino a settemila righe di JavaScript dentro un IIFE.
 // Dal 16 settembre lo spacchettamento le ha portate in `app/*.js`, un file per

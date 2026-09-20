@@ -20,7 +20,7 @@
     gap: 18px;
   }
 
-  /* Job 9 (2nd collaudo): stays fixed at the top of the viewport while
+  /* Stays fixed at the top of the viewport while
      scrolling through a long dialogue — Pausa/Riprendi and Prossima
      frase need to be reachable the instant they're needed (the dialogue
      can be advancing on its own), not after scrolling back up to find

@@ -12,7 +12,7 @@
 
   /* ---------- flash card view ---------- */
   /* The two-row header itself now lives in the shared .header-2row/
-     .header-badge-row/.header-actions-row rules (near .header-2row) — Flash
+     .header-badge-row/.header-actions-row rules (in `stile/guscio.css`) — Flash
      Card was just the module that trialed it first. */
 
   .fc-direction {

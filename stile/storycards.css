@@ -10,7 +10,11 @@
    nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
    e la guardia `[hidden]` non si tocca (sta in `base.css`). */
 
-  /* ---------- speak easy view (chat bubbles) ---------- */
+  /* ---------- le bolle del dialogo (#view-story-cards) ----------
+     ⚠️ SI CHIAMAVA «speak easy view», e quel nome non esiste piu' da nessuna
+     parte: ne' un modulo, ne' una vista, ne' una classe. La vista e'
+     `#view-story-cards` e la usano DUE moduli — Meet the Story e Why We Say
+     It — che e' il motivo per cui non porta il nome di nessuno dei due. */
   .chat-list {
     display: flex;
     flex-direction: column;
@@ -70,7 +74,7 @@
     outline-offset: 2px;
   }
 
-  /* Job 10 (2nd collaudo): "Cosa imparo qui" — row holding "Mostra
+  /* "Cosa imparo qui" — row holding "Mostra
      traduzione" and (when the line has one) the explanation toggle,
      side by side like the audio controls above them. */
   .chat-actions {
@@ -84,7 +88,7 @@
      treatment as .retry-intro/.vc-cue (CLAUDE.md rule 11: reuse the
      established "important aside" look, not a new color). */
   /* ---------- Why We Say It: una card per battuta ----------
-     Il modulo aveva la grafica di Story Cards, pensata per leggere un
+     Il modulo aveva la grafica delle card, pensata per leggere un
      dialogo, non per studiare delle regole. Qui ogni battuta è una card:
      dentro, la bolla con la sua traduzione, e sotto la regola a tutta
      larghezza. La bolla resta allineata per chi parla (l'informazione c'è),

@@ -167,7 +167,7 @@
     gap: 4px;
     margin: 2px auto 0;
     font-family: var(--font-mono);
-    /* Job 5 (2nd collaudo): same font-size as .sr-direction's "INGLESE →
+    /* Same font-size as .sr-direction's "INGLESE →
        ITALIANO" label — was 0.72rem, too small to read as a real notice. */
     font-size: 1.15rem;
     font-weight: 700;

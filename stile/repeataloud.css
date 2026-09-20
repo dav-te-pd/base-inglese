@@ -161,7 +161,7 @@
   }
 
   /* Shared by every module's intro/main screen div added after Repeat
-     Aloud's (Story Cards, Voice Coach, Flash Card): each is one level
+     Aloud's (le card della storia, Voice Coach, Flash Card): each is one level
      deeper than direct .card-body children, so needs the same flex
      column + gap .card-body already gives its own direct children.
      Repeat Aloud's own pair
