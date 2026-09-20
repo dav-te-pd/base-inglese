@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-20
-# Totale: 1521
+# Totale: 1522
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -102,7 +102,7 @@ test_struttura_corso.js 9
 test_suoni_estratto.js 13
 test_tabelle_personalizzazione.js 25
 test_testi_interfaccia.js 21
-test_ui_condivisa_estratta.js 27
+test_ui_condivisa_estratta.js 28
 test_uscita_dal_modulo.js 11
 test_versione_cache.js 12
 test_voicecoach.js 26
