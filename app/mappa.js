@@ -222,6 +222,19 @@
       showView('onboarding');
       document.getElementById('name-input').focus();
     }
+    // La seconda porta del Pannello Admin: `?config` nell'indirizzo, per i
+    // telefoni, dove digitare «config» vorrebbe dire aprire la tastiera. Non
+    // e' scopribile per caso piu' della sequenza da tastiera — bisogna
+    // scriverlo nella barra degli indirizzi.
+    //
+    // ⚠️ STA QUI, IN FONDO A `boot()`, E IL PERCHE' E' SCRITTO ACCANTO ALLA
+    // PORTA DA TASTIERA: prima era un `setTimeout(…, 0)` che si fidava di
+    // essere l'ultimo script della pagina, e col passo ① ha smesso di esserlo.
+    // Qui non c'e' niente da stimare — `boot()` E' il momento in cui l'app e'
+    // in piedi.
+    try {
+      if (new URLSearchParams(window.location.search).has('config')) openConfigPanel();
+    } catch (e) {}
   }
 
   var configPanelOverlayEl = document.getElementById('config-panel-overlay');
@@ -1063,34 +1076,29 @@
   document.getElementById('config-panel-close-btn').addEventListener('click', closeConfigPanel);
   document.getElementById('config-panel-backdrop').addEventListener('click', closeConfigPanel);
 
-  // Second reveal path, for phones (typing "config" needs a keyboard):
-  // a ?config query param, checked once at boot. Still not something a
-  // beta tester stumbles into by browsing the app — only by typing it
-  // into the address bar — same "not discoverable by accident" bar as
-  // the keyboard sequence above. Deferred to the next tick: openConfigPanel
-  // -> renderConfigPanel reads EPISODES, which this script assigns later
-  // (further down, top-to-bottom) — by the time a 0ms timeout fires, the
-  // whole script has finished running and EPISODES exists.
+  // ---- LA SECONDA PORTA, `?config`, E' DENTRO `boot()` ----
   //
-  // ⚠️ E QUESTO RAGIONAMENTO VALE PER EPISODES E NON VALEVA PIU' PER IL
-  // MAGAZZINO, che dal 2026-09-15 arriva da un fetch.
+  // ⚠️ E CI E' FINITA PER UN ROSSO, NON PER ELEGANZA. Qui c'era
+  // `setTimeout(openConfigPanel, 0)`, col suo commento che spiegava perche'
+  // funzionava: «un timeout a 0 ms scatta quando QUESTO script ha finito, e
+  // a quel punto l'app e' in piedi». Era vero finche' «questo script» voleva
+  // dire l'IIFE di `index.html`, **l'ultimo di tutti**.
   //
-  //   setTimeout(…, 0) aspetta "piu' tardi nello stesso script".
-  //   Non aspetta "piu' tardi sulla rete".
+  // Portando le porte qui dentro (passo ①, 2026-09-20) «questo script» e'
+  // diventato `app/mappa.js`, che finisce molto PRIMA che `index.html`
+  // assegni l'episodio corrente. Il timeout scattava fra un tag e l'altro e
+  // `openConfigPanel` trovava `BI.episodioCorrente()` a `null`:
+  // **`Cannot read properties of null (reading 'id')`**, pannello chiuso,
+  // quattro file di test rossi.
   //
-  // Era un commento giusto reso falso non da una modifica al codice che
-  // descrive, ma dal MONDO INTORNO che e' cambiato: nessuno lo stava
-  // toccando quando ha smesso di essere vero. E' la famiglia ⓪-quinquies di
-  // tests/ERRORI-INGOIATI.md, e riguarda ogni difesa che si appoggia a
-  // "tanto e' gia' tutto in memoria".
+  // *Il commento vecchio non era sbagliato: era vero per una premessa che lo
+  // spostamento ha cambiato sotto. E' la ⓪-quinquies — un commento giusto che
+  // smette di esserlo perche' cambia il mondo intorno, non il codice che
+  // descrive — e stavolta l'ha cambiato il mio commit.*
   //
-  // La riga qui sotto resta com'e' perche' EPISODES e' ancora sincrono; a
-  // reggere il magazzino e' openConfigPanel, che lo aspetta per conto suo.
-  try {
-    if (new URLSearchParams(window.location.search).has('config')) {
-      setTimeout(openConfigPanel, 0);
-    }
-  } catch (e) {}
+  // La riga adesso sta in fondo a `boot()`, dove «l'app e' in piedi» non e'
+  // una stima sul momento in cui scatta un timer: e' il punto in cui e'
+  // appena successo.
 
 
 
