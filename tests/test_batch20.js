@@ -4,7 +4,7 @@
 // every existing test on these modules checks behavior (locks, disabled
 // states, scoring) but none reads the prompt/answer/front/back text
 // itself, so a swapped en-it/it-en ternary would go completely unnoticed.
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -26,6 +26,11 @@ const mockInit = () => {
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali, e il test clicca un pulsante che
+  // non e' ancora comparso. Vedi `attendiPrimaSchermata` in test-env.js.
+  await attendiPrimaSchermata(page);
   var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
   if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForTimeout(100); }
   await page.fill('#name-input', userName);

@@ -35,7 +35,7 @@
 // parametri costruiti per uno scopo, che sono quelli che smettono di essere
 // letti.
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 
 const ESCLUDI_DESCRIZIONI = true;
 
@@ -174,6 +174,20 @@ async function run() {
   const log = (msg, ok) => { risultati.push(ok); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
   await page.goto(APP_URL);
+  // ⚠️ SI ASPETTA, E NON PER EVITARE UN ROSSO — PER EVITARE UN VERDE.
+  //
+  // Dal passo 1.11b sei chiavi di `APP_CONFIG` (`grades`, `gradeNames`,
+  // `moduleTypes`, `sequences`, `episodes`, le due lingue di `speech`)
+  // arrivano da `struttura-corso.json`. Leggere la configurazione appena
+  // caricata la pagina non darebbe un errore: darebbe un oggetto **con sei
+  // chiavi in meno**, e questo file — che verifica «ogni chiave di
+  // APP_CONFIG e' nominata da qualcuno» — smetterebbe di guardarle
+  // **restando verde**.
+  //
+  // *E' esattamente il difetto che il commento qui sotto descrive per il
+  // magazzino dei nomi, ripresentato da un'altra parte: un inventario che si
+  // accorcia da solo non fallisce, si limita a proteggere meno.*
+  await attendiPrimaSchermata(page);
   const config = await page.evaluate(() => window.APP_CONFIG);
   await page.close();
   await browser.close();

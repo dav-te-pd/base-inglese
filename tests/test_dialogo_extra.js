@@ -8,7 +8,7 @@
 // `speakerLabels` del file episodio e i nomi scelti da `slotValues()`, cioe'
 // dalle due sorgenti che l'app stessa legge. *Un elenco scritto a mano dentro
 // un test e' un campione, e un campione sceglie chi non guardare.*
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { attendiVisibile } = require('./attese');
 const { gradeOf, stepsBefore, slotValues } = require('./module-order');
 const { loadGrade, loadEpisode } = require('./quiz-driver');
@@ -44,6 +44,11 @@ const mockInit = () => {
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali, e il test clicca un pulsante che
+  // non e' ancora comparso. Vedi `attendiPrimaSchermata` in test-env.js.
+  await attendiPrimaSchermata(page);
   var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
   if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForTimeout(100); }
   await page.fill('#name-input', userName);

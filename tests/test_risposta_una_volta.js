@@ -47,7 +47,7 @@
 // coperto da qui.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, attendiPrimaSchermata } = require('./test-env');
 const { allSteps } = require('./module-order');
 const { openModule } = require('./map-driver');
 
@@ -79,6 +79,10 @@ const mockInit = () => {
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(APP_URL);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali (vedi `attendiPrimaSchermata`).
+  await attendiPrimaSchermata(page);
   if (!(await page.isVisible('#name-input').catch(() => false))) {
     await page.click('#switch-user'); await page.waitForTimeout(100);
   }

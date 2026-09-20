@@ -58,7 +58,7 @@
 // regola 13 esiste per evitare. La regola resta questa; lì c'è il suo caso.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore, gradeOf } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
 const { attendiSottotitoloEsito } = require('./attese');
@@ -85,6 +85,10 @@ const mockVoce = () => {
 
 async function boot(page, utente, passo) {
   await page.goto(BASE);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali (vedi `attendiPrimaSchermata`).
+  await attendiPrimaSchermata(page);
   if (!(await page.isVisible('#name-input').catch(() => false))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input', { state: 'visible' });

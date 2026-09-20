@@ -17,7 +17,7 @@
 // il test deve attraversare davvero.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { loadGrade, loadEpisode } = require('./quiz-driver');
 
@@ -245,6 +245,10 @@ const mockInit = () => {
 
 async function bootAsUser(page, userName, moduleId) {
   await page.goto(BASE);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali (vedi `attendiPrimaSchermata`).
+  await attendiPrimaSchermata(page);
   if (!(await page.isVisible('#name-input').catch(() => false))) {
     await page.click('#switch-user');
     await page.waitForSelector('#name-input');

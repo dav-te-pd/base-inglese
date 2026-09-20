@@ -36,7 +36,7 @@
 // vede: lo prende l'asserzione strutturale ②, che vale per tutti.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, sorgenteChe } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, sorgenteChe, attendiPrimaSchermata } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 let passed = 0, failed = 0;
@@ -110,6 +110,10 @@ async function run() {
       await route.continue();
     });
     await page.goto(APP_URL);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali (vedi `attendiPrimaSchermata`).
+  await attendiPrimaSchermata(page);
     if (!(await page.isVisible('#name-input').catch(() => false))) {
       await page.click('#switch-user');
       await page.waitForSelector('#name-input', { state: 'visible' });
@@ -164,6 +168,10 @@ async function run() {
     page.on('pageerror', e => errori.push(String(e).slice(0, 100)));
     await page.addInitScript(mockInit);
     await page.goto(APP_URL);
+  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
+  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
+  // c'e' ancora niente» si leggono uguali (vedi `attendiPrimaSchermata`).
+  await attendiPrimaSchermata(page);
     if (!(await page.isVisible('#name-input').catch(() => false))) {
       await page.click('#switch-user');
       await page.waitForSelector('#name-input', { state: 'visible' });
