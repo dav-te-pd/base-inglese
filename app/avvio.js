@@ -78,11 +78,13 @@
   // protegge, e tutte e due sarebbero sbagliate.*
   window.APP_CONFIG_DEFAULTS = JSON.parse(JSON.stringify(window.APP_CONFIG));
 
-  // Applies any parameter overrides saved locally by the hidden config
-  // panel (embryo of the future Admin panel — reveal: type "config"
-  // outside a text field). One whole top-level CONFIG section at a time
-  // — a saved section replaces that section entirely, anything never
-  // touched in the panel stays at its coded default above.
+  // Applica sopra APP_CONFIG gli override salvati dal Pannello Admin
+  // (si apre digitando "config" fuori da un campo di testo, o con ?config).
+  // Quello che nel pannello nessuno ha mai toccato resta al valore del codice.
+  //
+  // ⚠️ Qui c'era scritto «una sezione salvata SOSTITUISCE quella sezione per
+  // intero»: vero fino al 2026-09-20, falso da questo commit. Vedi il blocco
+  // qui sotto.
   // ⚠️ DA IIFE A FUNZIONE CON UN NOME, il 2026-09-20 (passo 1.11b), e non per
   // stile: adesso va chiamata DUE VOLTE. Qui, come sempre, appena la
   // configurazione del codice e' in memoria; e una seconda volta quando
@@ -94,12 +96,53 @@
   // applica gia' alle tabelle dei nomi — gli override del pannello stanno
   // SOPRA il file. Qui si riusa la funzione invece di riscriverne una seconda
   // (regola 13).*
+  // ⚠️ DAL 2026-09-20 L'OVERRIDE SI FONDE, NON SOSTITUISCE — e non e' una
+  // rifinitura: la sostituzione produce un guasto MUTO, e il giorno in cui
+  // le sequenze diventano piu' d'una lo produce di sicuro.
+  //
+  // La forma vecchia faceva `APP_CONFIG[chiave] = override[chiave]`, cioe'
+  // **la pagina del foglietto sostituiva il capitolo intero del libro**:
+  //
+  //     file:      sequences = { narrativo-standard, prova-corta }
+  //     override:  sequences = { narrativo-standard }   (salvato ieri)
+  //     risultato: sequences = { narrativo-standard }   ← prova-corta SPARITA
+  //
+  // Una sequenza aggiunta al file dopo un qualunque riordino fatto dal
+  // Pannello Admin non compariva piu' su quel browser. Nessun errore, nessun
+  // rosso: **l'episodio che la chiede mostra la schermata d'errore, e il
+  // file e' giusto.** Chi lo incontra conclude «la seconda sequenza non
+  // funziona» e va a cercare nel posto sbagliato.
+  //
+  // Adesso: quando **entrambi** sono oggetti semplici, le chiavi del
+  // foglietto vincono una per una e le altre restano. Array e valori
+  // singoli si sostituiscono come prima — su un array non esiste una
+  // fusione che voglia dire qualcosa.
+  //
+  // ⚠️ IL CASO PIU' DIVERSO (regola 42) NON E' `sequences`: e' `speech`,
+  // l'UNICA chiave scritta da DUE sorgenti — `app/config.js` (velocita',
+  // voci) e `struttura-corso.json` (le due lingue, via applicaStruttura).
+  // Con la sostituzione, un override salvato prima di cambiare edizione
+  // cancellava le lingue della nuova **senza dirlo**. Con la fusione no.
+  //
+  // ⚠️ E COSA SI PERDE, dichiarato invece che scoperto dopo: **non si puo'
+  // piu' TOGLIERE una chiave con un override**, si puo' solo cambiarne il
+  // valore. Oggi nessun punto dell'app lo fa — il pannello sa cambiare,
+  // accendere e spegnere, non cancellare — e il giorno che servisse va
+  // chiesto esplicitamente, non ottenuto per effetto collaterale.
+  function eOggettoSemplice(v) {
+    return v !== null && typeof v === 'object' && !Array.isArray(v);
+  }
+
   function applyConfigOverrides() {
     try {
       var overrides = window.BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return null; });
       if (!overrides) return;
       Object.keys(overrides).forEach(function (key) {
-        window.APP_CONFIG[key] = overrides[key];
+        var dalFile = window.APP_CONFIG[key];
+        var dalFoglietto = overrides[key];
+        window.APP_CONFIG[key] = (eOggettoSemplice(dalFile) && eOggettoSemplice(dalFoglietto))
+          ? Object.assign({}, dalFile, dalFoglietto)
+          : dalFoglietto;
       });
     } catch (e) {}
   }

@@ -153,12 +153,20 @@ momento.
 
 | | Cosa |
 |---|---|
-| ① | **`persistConfigSection('sequences')` salva l'oggetto INTERO**, e `applyConfigOverrides` sostituisce la chiave intera. Il primo riordino dal pannello **congela tutte le sequenze**: una aggiunta al file dopo non comparirebbe più su quel browser |
-| ② | **`episodes.<id>.sequence` è modificabile dal pannello ma NON ricarica.** Cambi il nome, si salva, e la mappa resta quella di prima — *«una manopola che sembra aver fatto qualcosa e non l'ha fatto»*, la frase che un commento del file accanto usa per il campo che invece il ricaricamento ce l'ha |
+| ~~①~~ | ✅ **CHIUSA il 2026-09-20.** L'override **si fonde** invece di sostituire: le chiavi del foglietto vincono una per una, quelle nuove del file restano. `persistConfigSection` continua a salvare l'oggetto intero, e adesso va bene così |
+| ~~②~~ | ✅ **CHIUSA il 2026-09-20.** È un **menu** con i nomi che esistono, e **ricarica**. Un nome che non esiste resta nell'elenco dichiarandosi, invece di far cambiare la sequenza in silenzio al primo salvataggio |
 | ③ | **Il Pannello Admin non sa creare né cancellare una sequenza.** Riordina, cambia grado, accende e spegne: il magazzino si riempie solo a mano nel file |
 | ④ | **`resolveEpisodeOrder` ha il nome della cosa sbagliata**: dice «l'ordine degli episodi», restituisce l'ordine dei **moduli di un** episodio. 5 occorrenze. È la prova che l'ambiguità della parola «sequenza» non è solo nella chat |
 
-**La condizione: il passo che rende le sequenze davvero più d'una.** Prima di
+⚠️ **DUE SU QUATTRO CHIUSE IL 2026-09-20**, col passo dei selettori — cioè
+esattamente la condizione che era scritta qui. Le due che restano (③ e ④) non
+hanno cambiato condizione: ③ è il «crea e cancella dal pannello», che serve
+quando le sequenze dovranno memorizzarsi senza aprire il file; ④ è una
+rinomina, **e chi guida il progetto l'ha rimandata di proposito il 2026-09-20**
+— *«non rinominiamo più perché parliamo di cose differenti, le rinomine le
+rivedremo più avanti»*.
+
+**La condizione era: il passo che rende le sequenze davvero più d'una.** Prima di
 allora nessun test potrebbe farle diventare rosse — e una correzione che nessun
 caso può esercitare è una riga che nessuno sa se funziona.
 

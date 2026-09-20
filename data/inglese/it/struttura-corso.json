@@ -124,6 +124,27 @@
         "module": "voiceCoach",
         "grade": "C"
       }
+    ],
+    "prova-corta": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      }
     ]
   },
   "episodes": {
@@ -133,5 +154,6 @@
     "aircraft-door": {
       "sequence": "narrativo-standard"
     }
-  }
+  },
+  "_nota_prova_corta": "SONDA, NON CONTENUTO. 'prova-corta' e' stata aggiunta il 2026-09-20 per provare i due selettori del Pannello Admin: cinque passi contro ventidue, cosi' la mappa si accorcia sotto gli occhi e 'ha funzionato' si distingue da 'sto guardando la vecchia'. NON viene da docs/inglese/it/struttura-corso.md e nessun episodio la dichiara: e' inerte finche' qualcuno non la sceglie dal pannello. Si toglie quando arrivano le sequenze vere."
 }

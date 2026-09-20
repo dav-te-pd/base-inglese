@@ -601,11 +601,52 @@
     return wrap;
   }
 
+  // La sequenza di un episodio: un MENU con i nomi che esistono, non la
+  // casella di testo che il pannello darebbe da solo a un parametro stringa.
+  //
+  // ⚠️ Perche' un menu, e le due ragioni sono diverse. La prima: un nome
+  // scritto a mano che non esiste manda l'episodio sulla schermata d'errore
+  // all'apertura della mappa — un guasto che si vede, ma cercato nel posto
+  // sbagliato. La seconda, peggiore: il campo si salvava **senza ricaricare**,
+  // e i passi si costruiscono all'avvio. Cambiavi il nome, il pannello lo
+  // salvava, e la mappa restava quella di prima — «una manopola che sembra
+  // aver fatto qualcosa e non l'ha fatto», la stessa frase che il commento
+  // dell'interruttore dell'episodio usa per spiegare il suo data-config-reload.
+  //
+  // ⚠️ E IL NOME CHE NON ESISTE RESTA NELL'ELENCO, invece di sparire: un
+  // <select> il cui valore non e' fra le opzioni mostra la PRIMA, e al primo
+  // salvataggio cambierebbe in silenzio la sequenza dell'episodio. Meglio
+  // un'opzione che dice che non esiste, e che chi legge puo' correggere.
+  function renderSequenceChoiceField(path, value) {
+    var id = 'cfg-' + path.join('-');
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    var nomi = nomiDelleSequenze();
+    var opzioni = nomi.map(function (n) {
+      return '<option value="' + n + '"' + (n === value ? ' selected' : '') + '>' + n + '</option>';
+    });
+    if (nomi.indexOf(value) === -1) {
+      opzioni.unshift('<option value="' + String(value).replace(/"/g, '&quot;') + '" selected>' +
+        String(value) + ' — non esiste</option>');
+    }
+    wrap.innerHTML =
+      '<label class="config-field-label" for="' + id + '">' + path[path.length - 1] + '</label>' +
+      // La spiegazione e' UNA per tutti gli episodi, quindi si cerca con una
+      // chiave fissa e non col percorso vero (`episodes.gate.sequence`): una
+      // riga per episodio andrebbe riscritta a ogni episodio nuovo.
+      configFieldDescriptionHtml(['episodes', '*', 'sequence']) +
+      '<select id="' + id + '" data-config-path="' + path.join('.') + '" data-config-reload>' +
+      opzioni.join('') + '</select>';
+    return wrap;
+  }
+
   function renderConfigFields(container, obj, path) {
     Object.keys(obj).forEach(function (key) {
       var value = obj[key];
       var fieldPath = path.concat([key]);
-      if (Array.isArray(value)) {
+      if (path[0] === 'episodes' && key === 'sequence' && typeof value === 'string') {
+        container.appendChild(renderSequenceChoiceField(fieldPath, value));
+      } else if (Array.isArray(value)) {
         container.appendChild(renderConfigJsonField(fieldPath, value));
       } else if (value !== null && typeof value === 'object') {
         var sub = document.createElement('div');
@@ -696,9 +737,40 @@
   //
   // Un episodio con un moduleOrder proprio non ha una sequenza da riordinare
   // qui: la vista lo dice invece di mostrare le righe di qualcun altro.
-  function sequenzaInModifica() {
+  // ⚠️ DUE FUNZIONI E NON UNA, dal 2026-09-20, e non e' pulizia: da oggi il
+  // pannello puo' modificare una sequenza DIVERSA da quella dell'episodio
+  // aperto, e le due domande divergono appena tocchi il menu.
+  //
+  // «Quale sequenza usa l'episodio aperto» e «quale sequenza sto guardando»
+  // erano la stessa risposta finche' la seconda non si poteva scegliere. Una
+  // cosa che risponde a due domande da' la risposta giusta a una e sbagliata
+  // all'altra (famiglia ⓪-decies) — qui divergerebbero in silenzio, mostrando
+  // le righe di una e salvandole sull'altra.
+  function sequenzaDellEpisodio() {
     var ep = (CONFIG.episodes && CONFIG.episodes[BI.episodioCorrente() && BI.episodioCorrente().id]) || {};
     return (typeof ep.sequence === 'string' && ep.sequence) || null;
+  }
+
+  // La scelta fatta col menu. NON e' un parametro di APP_CONFIG (regola 3) e
+  // non si salva: e' lo stato del pannello mentre e' aperto, come lo scorrimento
+  // di una lista. Metterla in configurazione vorrebbe dire farla comparire nel
+  // pannello stesso, cioe' una manopola che governa il pannello dal pannello.
+  var sequenzaScelta = null;
+
+  function nomiDelleSequenze() {
+    return Object.keys((window.APP_CONFIG && window.APP_CONFIG.sequences) || {});
+  }
+
+  // Quale sequenza sta guardando il pannello: quella scelta col menu, o —
+  // finche' nessuno ha scelto — quella dell'episodio aperto.
+  //
+  // ⚠️ La scelta vale solo se quella sequenza ESISTE ancora: il pulsante
+  // «Ripristina valori di partenza» puo' portarsene via una mentre il menu
+  // la sta indicando, e mostrare le righe di una sequenza sparita sarebbe
+  // peggio che tornare a quella dell'episodio.
+  function sequenzaInModifica() {
+    if (sequenzaScelta && nomiDelleSequenze().indexOf(sequenzaScelta) !== -1) return sequenzaScelta;
+    return sequenzaDellEpisodio();
   }
 
   function ordineInModifica() {
@@ -759,17 +831,59 @@
     return wrap;
   }
 
+  // Il menu «quale sequenza sto modificando». Elenca le sequenze che
+  // ESISTONO, come l'interruttore dell'episodio elenca gli episodi che
+  // esistono: una sequenza nuova nel file compare qui da sola.
+  //
+  // ⚠️ NON ricarica la pagina, e la differenza con l'altro menu e' precisa:
+  // quello cambia QUALE episodio l'app ha costruito all'avvio, questo cambia
+  // solo cosa il pannello sta guardando. Ricaricare qui butterebbe via la
+  // scelta invece di applicarla.
+  function renderSequencePickerHtml() {
+    var nomi = nomiDelleSequenze();
+    if (nomi.length < 2) return '';
+    var corrente = sequenzaInModifica();
+    var opzioni = nomi.map(function (n) {
+      return '<option value="' + n + '"' + (n === corrente ? ' selected' : '') + '>' + n + '</option>';
+    }).join('');
+    return '<label class="config-field-label" for="cfg-sequenza-scelta">quale sequenza stai modificando</label>' +
+      '<select id="cfg-sequenza-scelta" data-sequence-pick="1">' + opzioni + '</select>';
+  }
+
+  // ⚠️ Modificare una sequenza che l'episodio aperto NON usa e' legittimo, e
+  // va detto invece che lasciato scoprire: il riordino si salva, ma in mappa
+  // non si vede niente — la mappa e' di un altro episodio. Senza questa riga
+  // sembra che il pannello non abbia funzionato.
+  function avvisoSequenzaAltrui() {
+    var scelta = sequenzaInModifica();
+    var dellEpisodio = sequenzaDellEpisodio();
+    if (!scelta || scelta === dellEpisodio) return '';
+    return '<p class="config-field-hint">Stai modificando <code>' + scelta + '</code>, che questo episodio non usa' +
+      (dellEpisodio ? ' (usa <code>' + dellEpisodio + '</code>)' : '') +
+      ': le modifiche si salvano, ma in mappa non le vedrai finché un episodio che usa questa sequenza non è quello aperto.</p>';
+  }
+
   function renderModuleOrderField() {
     var wrap = document.createElement('div');
     wrap.className = 'config-field';
     // Il testo della spiegazione sta in CONFIG.configFieldDescriptions come
     // quello di ogni altro parametro (CLAUDE.md regola 25), non scritto qui.
-    wrap.innerHTML = configFieldDescriptionHtml(['sequences']);
+    wrap.innerHTML = configFieldDescriptionHtml(['sequences']) + renderSequencePickerHtml() + avvisoSequenzaAltrui();
     var list = document.createElement('div');
     list.className = 'config-module-order-list';
     wrap.appendChild(list);
     renderModuleOrderRows(list);
     return wrap;
+  }
+
+  // Ridisegna il gruppo `sequences` per intero: serve quando cambia la
+  // SCELTA, perche' cambiano anche il menu selezionato e l'avviso, non solo
+  // le righe. `renderModuleOrderRows` da sola lascerebbe l'avviso vecchio.
+  function ridisegnaGruppoSequenze(dentro) {
+    var gruppo = dentro && dentro.closest('.config-group-body');
+    if (!gruppo) return;
+    gruppo.innerHTML = '';
+    gruppo.appendChild(renderModuleOrderField());
   }
 
   // Il magazzino non sta piu' in APP_CONFIG, quindi l'enumerazione qui sotto
@@ -1084,6 +1198,17 @@
 
   configPanelBodyEl.addEventListener('change', function (e) {
     var target = e.target;
+
+    // Il menu «quale sequenza sto modificando» NON e' un campo di
+    // configurazione e non porta `data-config-path`: cambia cosa il pannello
+    // guarda, non un valore dell'app. Se lo portasse, il listener qui sotto
+    // gli scriverebbe una chiave dentro APP_CONFIG.
+    if (target.hasAttribute('data-sequence-pick')) {
+      sequenzaScelta = target.value;
+      ridisegnaGruppoSequenze(target);
+      return;
+    }
+
     var pathAttr = target.getAttribute('data-config-path');
     if (!pathAttr) return;
     var path = pathAttr.split('.');

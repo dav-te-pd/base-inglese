@@ -128,6 +128,24 @@ sotto `tests/` scrivevano la forma della chiave a mano. Adesso si raggiungono da
 | `slotDefault` | Il valore di partenza di uno slot. | `(episode, chiave)` → la stringa, `''` se lo slot non c'è | Che `''` sia una risposta accettabile: è quello che `fillTemplate` usa quando lo studente non ha scelto niente. |
 | `resolveSlotValue` | Cosa si legge a schermo per un valore scelto, nella lingua chiesta: **è il punto che decide se una parola si traduce.** | `(episode, chiave, valoreSalvato, lang)` → la stringa da mostrare | ⚠️ **Lo decide la RIGA del magazzino** (`traducibile`), non il nome della tabella — cambiato il 2026-09-20 (passo 1.8), comportamento identico. **Chi manca vale «si traduce».** ⚠️ E il difetto da conoscere: **un valore salvato che non esiste più fra le opzioni ricade in silenzio sulla PRIMA** — nessun errore, nessun avviso, la personalizzazione di qualcuno diventa un'altra. *È il motivo per cui una rinomina degli id vuole una migrazione.* |
 
+## `app/mappa.js` — il Pannello Admin, parte sequenze
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `sequenzaDellEpisodio` | Il **nome** della sequenza che usa l'episodio aperto. | `()` → la stringa, **`null`** se l'episodio ha un `moduleOrder` proprio | Che `null` voglia dire «non c'è niente da riordinare qui», non «errore». |
+| `sequenzaInModifica` | Il nome della sequenza che **il pannello sta guardando**: quella scelta col menu, o quella dell'episodio finché nessuno ha scelto. | `()` → la stringa, o `null` | ⚠️ **Sono due funzioni e non una da quando la scelta esiste**: «quale usa l'episodio» e «quale sto guardando» divergono appena tocchi il menu, e una cosa che risponde a due domande mostrerebbe le righe di una salvandole sull'altra. **Scarta una scelta che non esiste più**: il ripristino può portarsi via una sequenza mentre il menu la indica. |
+| `nomiDelleSequenze` | I nomi che esistono adesso. | `()` → array, `[]` se non c'è niente | Legge `APP_CONFIG`, cioè **dopo** gli override: una sequenza tolta dal pannello non compare. |
+| `renderSequencePickerHtml` | Il menu «quale sequenza sto modificando». | `()` → HTML, **`''` se le sequenze sono meno di due** | Che con una sequenza sola un menu di un elemento sia rumore. **Non ricarica la pagina**, al contrario del menu dell'episodio: cambia cosa il pannello guarda, non cosa l'app ha costruito all'avvio. |
+| `avvisoSequenzaAltrui` | La riga che dice «stai modificando una sequenza che questo episodio non usa». | `()` → HTML, `''` quando coincidono | ⚠️ **Senza, modificare la sequenza di un altro episodio sembra non aver funzionato**: si salva, e in mappa non si vede niente. |
+| `ridisegnaGruppoSequenze` | Ridisegna il gruppo `sequences` per intero quando cambia la scelta. | `dentro` (un nodo del gruppo) → niente | Che ridisegnare **solo le righe** non basti: cambiano anche il menu selezionato e l'avviso. |
+| `renderSequenceChoiceField` | Il menu della sequenza **di un episodio**, al posto della casella di testo. | `(percorso, valore)` → il nodo del campo | ⚠️ **Porta `data-config-reload`**: i passi si costruiscono all'avvio, e senza ricaricamento è una manopola muta. ⚠️ **E un nome che non esiste resta nell'elenco** invece di sparire: un `<select>` il cui valore non è fra le opzioni mostra la prima, e al primo salvataggio cambierebbe in silenzio la sequenza dell'episodio. |
+
+## `app/avvio.js` — la fusione
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `eOggettoSemplice` | Dice se un valore è un oggetto su cui una fusione vuol dire qualcosa. | `valore` → booleano | Che **array e valori singoli non si fondano**: su un array non esiste una fusione che voglia dire qualcosa, e si sostituiscono come prima. |
+
 ## `app/repeataloud.js`
 
 *(da catalogare — `node tests/tools/censimento-pezzi.js` dice quanti)*
