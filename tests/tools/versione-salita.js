@@ -1,6 +1,6 @@
 // ⚠️ IL CONTROLLO CHE RENDE LA VERSIONE UN MECCANISMO E NON UN PROMEMORIA.
 //
-// I quattordici tag di index.html portano `?v=<versione>` perché il browser non
+// I tag di index.html — `app/*.js` e `stile/*.css` — portano `?v=<versione>` perché il browser non
 // possa mescolare file vecchi e nuovi (vedi il cappello in testa a index.html).
 // Ma una versione che va alzata a mano è, testualmente, «quello che va fatto a
 // mano dopo ogni modifica» — e CLAUDE.md regola 6 dice come va a finire:
@@ -37,7 +37,11 @@ if (iRepo !== -1) {
   RADICE = path.resolve(argv[iRepo + 1] || '');
   argv.splice(iRepo, 2);
 }
-const SORGENTE = /^(index\.html|app\/.+\.js)$/;
+// ⚠️ `stile/` E' ENTRATO IL 2026-09-20 (passo 1.1), E NON E' UN'AGGIUNTA PER
+// SIMMETRIA: un foglio di stile vecchio accanto a un JavaScript nuovo produce
+// la stessa app-che-nessuno-ha-scritto dei file di `app/` mescolati — anzi si
+// vede meno, perche' non alza nessun errore: si vede storta.
+const SORGENTE = /^(index\.html|app\/.+\.js|stile\/.+\.css)$/;
 
 function git(args) {
   return execFileSync('git', args, { cwd: RADICE, encoding: 'utf8' }).trim();
@@ -84,6 +88,6 @@ if (prima === dopo) {
   esci(1, 'LA VERSIONE NON E\' SALITA — e\' ancora ' + dopo + ', ma sono cambiati ' + sorgenti.length +
     ' file serviti al browser:\n  ' + sorgenti.join('\n  ') +
     '\n\n  Chi apre l\'app con la cache piena ricevera\' i file VECCHI a questo stesso indirizzo,' +
-    '\n  e vedra\' un\'app che nessuno ha scritto. Alza la versione nei quattordici tag di index.html.');
+    '\n  e vedra\' un\'app che nessuno ha scritto. Alza la versione su TUTTI i tag di index.html — quelli di app/ e quelli di stile/.');
 }
 esci(0, 'A POSTO — ' + sorgenti.length + ' file serviti al browser sono cambiati, e la versione e\' salita da ' + prima + ' a ' + dopo + '.');

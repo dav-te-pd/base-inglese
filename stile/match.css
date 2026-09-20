@@ -1,0 +1,45 @@
+/* match.css — Match Practice.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- match practice view ----------
+     Screens/prompt/options/reveal/summary all reuse Speed Match's own
+     #qm-*-screen ids (own, since they're different DOM elements) but
+     Speed Match's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
+     .sr-reveal/.sr-summary CLASSES verbatim — see the markup comment on
+     view-match. Only the Ita-Eng per-option mini listen button
+     needs a new layout rule. */
+  #qm-start-screen,
+  #qm-retry-intro-screen,
+  #qm-quiz-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Ita-Eng only: pairs each option's answer button with its own compact
+     icon-only listen button, so tapping the icon plays the audio instead
+     of submitting that option as the answer. */
+  .qm-option-row {
+    display: flex;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .qm-option-row .sr-option {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .qm-option-row .listen-block-btn {
+    flex-shrink: 0;
+  }
+

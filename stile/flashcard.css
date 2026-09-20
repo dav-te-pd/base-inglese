@@ -1,0 +1,171 @@
+/* flashcard.css — Flash Card.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- flash card view ---------- */
+  /* The two-row header itself now lives in the shared .header-2row/
+     .header-badge-row/.header-actions-row rules (near .header-2row) — Flash
+     Card was just the module that trialed it first. */
+
+  .fc-direction {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 4px 0 0;
+  }
+
+  /* job 8 (3rd collaudo): the "N / M" counter used to have its own
+     .fc-counter rule here, nearly identical to .sr-counter already
+     (same family/size/weight, just a different margin/no letter-
+     spacing) — now shares .sr-counter directly instead of a near-
+     duplicate, same as Match Practice and Voice Coach's own counters. */
+
+  #fc-card-screen,
+  #fc-retry-intro-screen,
+  #fc-summary-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .fc-card {
+    position: relative;
+    display: block;
+    width: 100%;
+    cursor: pointer;
+    perspective: 1200px;
+    transition: transform 0.26s ease, opacity 0.26s ease;
+  }
+
+  /* Card-to-card navigation (Avanti/Indietro): the outgoing card slides out
+     to the right, then — once the new card's content is already in place
+     and front-facing — the next one settles in from a slight offset. This
+     is a separate transform from the flip (on .fc-card-inner below), so
+     the two never fight over the "transform" property. */
+  .fc-card.is-sliding-out {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+
+  .fc-card.is-sliding-in {
+    transform: translateX(-24px);
+    opacity: 0;
+    transition: none;
+  }
+
+  .fc-card:focus-visible .fc-card-inner {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .fc-card-inner {
+    position: relative;
+    width: 100%;
+    min-height: 220px;
+    border-radius: 16px;
+    transition: transform 0.5s ease;
+    transform-style: preserve-3d;
+  }
+
+  .fc-card.is-flipped .fc-card-inner { transform: rotateY(180deg); }
+
+  .fc-card-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    padding: 32px 20px;
+    border-radius: 16px;
+    background: var(--primary);
+    color: var(--primary-ink);
+    backface-visibility: hidden;
+  }
+
+  .fc-card-back { transform: rotateY(180deg); }
+
+  .fc-card-word {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.6rem;
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  /* The shared listen/speed-control buttons default to light-card tokens
+     (--text/--border/--card); override to --primary-ink — the contrast
+     ink paired with --primary specifically (not --accent-ink, which
+     pairs with --accent and can be the wrong contrast against
+     --primary in some themes) — so they stay legible on every theme. */
+  .fc-card-face .listen-block-btn {
+    color: var(--primary-ink);
+    border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent);
+  }
+
+  .fc-card-face .listen-block-btn:hover:not(:disabled) {
+    border-color: var(--primary-ink);
+    color: var(--primary-ink);
+    opacity: 0.85;
+  }
+
+  .fc-card-face .rate-btn {
+    background: color-mix(in srgb, var(--primary-ink) 14%, transparent);
+    color: var(--primary-ink);
+    border-color: color-mix(in srgb, var(--primary-ink) 45%, transparent);
+  }
+
+  .fc-card-face .rate-btn:hover,
+  .fc-card-face .rate-btn.speaking {
+    border-color: var(--primary-ink);
+    color: var(--primary-ink);
+    background: color-mix(in srgb, var(--primary-ink) 26%, transparent);
+  }
+
+  .fc-choice-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .fc-choice-question {
+    font-weight: 600;
+    margin: 0;
+  }
+
+  /* Explains a disabled Box Doppia Scelta in Dialogo (job 3) — small,
+     secondary tone, same treatment as .sr-summary-subtitle/.module-row-
+     subtitle. Text from istruzioni-moduli.json's dialogoShared.choiceBoxHint;
+     hidden once the box itself activates (dgUpdateChoiceBoxLock). */
+  .choice-box-hint {
+    text-align: center;
+    font-size: 0.82rem;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  .warning {
+    background: var(--wrong-bg);
+    border: 1px solid color-mix(in srgb, var(--wrong-ink) 40%, transparent);
+    color: var(--wrong-ink);
+    padding: 12px 16px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+    display: none;
+  }

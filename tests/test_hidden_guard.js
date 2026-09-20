@@ -25,7 +25,7 @@
 //
 //   node tests/test_hidden_guard.js     (con il server attivo)
 
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 
 async function run() {
   const browser = await launchBrowser();
@@ -88,8 +88,17 @@ async function run() {
       });
     }
 
+    // ⚠️ SI CONTANO I FOGLI LETTI, dal 2026-09-20 (passo 1.1). Il `catch` qui
+    // sotto ignora un foglio che non si riesce a leggere — ed era innocuo
+    // finche' il CSS era UNO SOLO e dentro la pagina. Adesso i fogli sono
+    // dodici e stanno in `stile/`: se domani uno di loro diventasse
+    // illeggibile (un percorso sbagliato, un 404, un giorno un CDN), questo
+    // test **non fallirebbe**. Girerebbe sulle regole rimaste e direbbe
+    // verde, cioe' proteggerebbe un pezzo di app invece di tutta.
+    var fogliLetti = 0, fogliSaltati = 0;
     Array.prototype.forEach.call(document.styleSheets, function (sheet) {
-      try { walk(sheet.cssRules); } catch (e) { /* foglio non leggibile: ignorato */ }
+      try { walk(sheet.cssRules); fogliLetti++; }
+      catch (e) { fogliSaltati++; }
     });
 
     // body ha il suo display: flex e non si può duplicare, quindi si prova
@@ -98,7 +107,7 @@ async function run() {
     var bodyDisplay = getComputedStyle(document.body).display;
     document.body.hidden = false;
 
-    return { checked: checked, skipped: skipped, broken: broken, guardFound: guardFound, bodyDisplay: bodyDisplay };
+    return { checked: checked, skipped: skipped, broken: broken, guardFound: guardFound, bodyDisplay: bodyDisplay, fogliLetti: fogliLetti, fogliSaltati: fogliSaltati };
   });
 
   const results = [];
@@ -106,6 +115,20 @@ async function run() {
 
   log('La guardia [hidden] esiste ed è !important', report.guardFound);
   log('Almeno una regola con display è stata messa alla prova (' + report.checked + ' selettori, ' + report.skipped + ' non riproducibili)', report.checked > 0);
+  // Il numero atteso si CONTA sui tag, non si scrive: un foglio in piu' domani
+  // deve alzare il conto da solo, invece di lasciare questa riga indietro.
+  const fogliAttesi = (require('fs').readFileSync(repoPath('index.html'), 'utf8')
+    .match(/<link rel="stylesheet" href="stile\/[^"]+">/g) || []).length;
+  // ⚠️ NON si chiede «zero saltati», e il motivo va scritto o la riga torna
+  // rossa a ogni giro: UNO e' sempre saltato ed e' giusto cosi' — il foglio
+  // dei Google Fonts e' di un'altra origine e il browser non ne lascia
+  // leggere le regole. Quello che conta e' che i DODICI locali siano stati
+  // letti tutti: se uno di `stile/` diventasse irraggiungibile, il conto
+  // scenderebbe e questa riga lo direbbe, invece di lasciare il test girare
+  // su meno regole e dire verde lo stesso.
+  log('Tutti e ' + fogliAttesi + ' i fogli di stile locali sono stati LETTI (nessuno perso in silenzio)',
+    report.fogliLetti >= fogliAttesi);
+  console.log('    fogli letti: ' + report.fogliLetti + ' | saltati: ' + report.fogliSaltati + ' (di norma 1: i Google Fonts, altra origine) | attesi da index.html: ' + fogliAttesi);
   log('body con hidden risulta display:none (era ' + report.bodyDisplay + ')', report.bodyDisplay === 'none');
   log('Nessuna regola resta visibile con hidden (' + report.broken.length + ' rotte)', report.broken.length === 0);
   report.broken.forEach(function (b) {

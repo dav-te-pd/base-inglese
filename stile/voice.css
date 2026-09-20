@@ -1,0 +1,180 @@
+/* voice.css — Voice Practice e Voice Check.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- voice coach view ---------- */
+  /* job 8 (3rd collaudo): the "1 / 7" progress counter used to have its
+     own .vc-counter rule here — smaller, unbolded, faded to 0.6 opacity —
+     visibly different from Speed Match/Match Practice/Flash Card's own
+     counters even though it's the exact same kind of information. Now
+     shares .sr-counter (see near .sr-direction) like Match Practice already
+     did, instead of a fourth near-duplicate rule. */
+
+  .vc-cue {
+    padding: 12px 16px;
+    text-align: center;
+    font-size: 0.95rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+
+  .vc-target {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.3rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .vc-audio-row { justify-content: center; }
+
+  .vc-mic-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Single button that morphs through the record states — never swapped
+     for a different element, just restyled/re-labeled by JS. */
+  .record-toggle-btn {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: var(--accent-ink);
+    background: var(--correct-ink);
+    cursor: pointer;
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--correct-ink) 60%, transparent);
+    transition: transform 0.15s ease, background 0.15s ease;
+  }
+
+  .record-toggle-btn:hover { transform: scale(1.05); }
+  .record-toggle-btn:active { transform: scale(0.96); }
+
+  /* Same disabled treatment as .btn:disabled — needed here because
+     .record-toggle-btn isn't a .btn. Covers the permanent case (no
+     SpeechRecognition support) — pressing Record while the model audio
+     plays now stops that audio instead of being disabled (correction,
+     5th collaudo). */
+  .record-toggle-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .record-toggle-btn:disabled:hover,
+  .record-toggle-btn:disabled:active { transform: none; }
+
+  .record-toggle-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  .record-toggle-btn.is-recording {
+    background: var(--wrong-ink);
+    animation: pulse-strong 1.1s infinite;
+  }
+
+  @keyframes pulse-strong {
+    0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--wrong-ink) 55%, transparent); transform: scale(1); }
+    50%  { transform: scale(1.08); }
+    70%  { box-shadow: 0 0 0 22px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; transform: scale(1); }
+  }
+
+  .vc-record-timer {
+    font-family: var(--font-mono);
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--wrong-ink);
+  }
+
+  .vc-retry-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .vc-confirm-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+  }
+
+  /* A real callout box on Voice Coach's light card background — tinted
+     fill using the existing "similar" semantic tokens (the same amber/
+     mustard already used for the mid-mastery color, reused here rather
+     than inventing a new color), full border, a little top margin to
+     separate it from the target phrase above without floating it
+     outside the card it lives in. Holds the confirm text AND the
+     Cancella/Invia buttons — the whole decision lives in one box. */
+  .vc-confirm-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    text-align: center;
+    padding: 16px;
+    border: 1px solid var(--similar-ink);
+    border-radius: 12px;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+    margin: 8px 0 0;
+  }
+
+  .vc-confirm-text {
+    font-size: 0.92rem;
+    margin: 0;
+  }
+
+  .pending-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .vc-attempt-label {
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    margin: 0;
+  }
+
+  .vc-stars {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    font-size: 1.6rem;
+    line-height: 1;
+  }
+
+  .vc-star { color: var(--border); }
+  .vc-star.is-filled { color: var(--correct-ink); }
+
+  .vc-feedback-message {
+    text-align: center;
+    font-size: 0.92rem;
+    opacity: 0.85;
+    margin: 4px 0 0;
+  }
+
+  #attempt-popup .overlay-backdrop { cursor: default; }
+

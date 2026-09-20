@@ -1,0 +1,354 @@
+/* storycards.css — Le bolle del dialogo (Meet the Story) e le card di Why We Say It.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- speak easy view (chat bubbles) ---------- */
+  .chat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .chat-row { display: flex; }
+  .chat-row.left { justify-content: flex-start; }
+  .chat-row.right { justify-content: flex-end; }
+
+  .chat-bubble {
+    max-width: 84%;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .chat-speaker {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  .chat-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  .chat-italian { font-size: 0.88rem; opacity: 0.8; margin: 0; }
+
+  /* Voice Coach's "Mostra pronuncia" reveal — same recipe as .chat-
+     italian above, own class since it's a different context (not a
+     chat bubble), not a hardcoded new color/pattern. */
+  .vc-pronunciation { font-size: 0.88rem; opacity: 0.8; margin: 4px 0 0; }
+
+  .translation-toggle {
+    align-self: flex-start;
+    background: none;
+    border: none;
+    padding: 2px 0;
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--accent);
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  .translation-toggle:hover { opacity: 0.8; }
+
+  .translation-toggle:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Job 10 (2nd collaudo): "Cosa imparo qui" — row holding "Mostra
+     traduzione" and (when the line has one) the explanation toggle,
+     side by side like the audio controls above them. */
+  .chat-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* The revealed explanation + its self-check — same tinted-panel
+     treatment as .retry-intro/.vc-cue (CLAUDE.md rule 11: reuse the
+     established "important aside" look, not a new color). */
+  /* ---------- Why We Say It: una card per battuta ----------
+     Il modulo aveva la grafica di Story Cards, pensata per leggere un
+     dialogo, non per studiare delle regole. Qui ogni battuta è una card:
+     dentro, la bolla con la sua traduzione, e sotto la regola a tutta
+     larghezza. La bolla resta allineata per chi parla (l'informazione c'è),
+     la regola no: allineare un paragrafo lungo produce solo rientri che si
+     leggono male. */
+  /* Nove card in colonna non si contano a colpo d'occhio: le separa lo
+     spazio, non un bordo più spesso. Un bordo più spesso su nove card
+     aggiunge nove linee da guardare; lo spazio separa senza disegnare
+     niente — e se non basta il bordo si può sempre ingrossare dopo, il
+     contrario no. */
+  .wws-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  /* Bordo e sfondo marcati: con un solo pixel di bordo e lo stesso sfondo
+     della pagina le card non si distinguevano una dall'altra, e la lista
+     sembrava un blocco unico. */
+  .wws-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--card-2);
+  }
+
+  /* La card su cui si sta lavorando: stesso bordo accento da 2px di
+     .sr-reveal (CLAUDE.md regola 5, non uno spessore nuovo). Il padding si
+     riduce di 1px per compensare il bordo più spesso, così le card non
+     ballano quando la corrente cambia. */
+  .wws-card.is-current {
+    border-color: var(--accent);
+  }
+
+  /* La card già dichiarata: lo stesso inchiostro della spunta, quasi
+     annacquato. Il fondo è per lo sguardo che scorre, la spunta per l'occhio
+     che si ferma — due letture della stessa cosa, non due cose. Nessun
+     colore nuovo: un colore nuovo direbbe una terza cosa che non abbiamo. */
+  .wws-card.is-done {
+    background: color-mix(in srgb, var(--correct-ink) 6%, var(--card-2));
+  }
+
+  .wws-card-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .wws-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+
+  .wws-state svg { width: 14px; height: 14px; }
+  .wws-state.is-done { color: var(--correct-ink); opacity: 1; }
+
+  .wws-row { display: flex; }
+  .wws-row.left { justify-content: flex-start; }
+  .wws-row.right { justify-content: flex-end; }
+
+  /* Tutte le bolle dello stesso colore: la posizione dice già chi parla, e
+     un secondo codice cromatico sarebbe rumore. */
+  .wws-bubble {
+    max-width: 88%;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+  }
+
+  .wws-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    margin: 0;
+  }
+
+  /* La traduzione sta DENTRO la bolla, sotto l'inglese: frase e traduzione
+     sono una coppia, e separarle fa perdere il legame. Più piccola e in
+     tono secondario perché è il supporto, non la frase da imparare. */
+  .wws-italian {
+    font-size: 0.88rem;
+    opacity: 0.75;
+    margin: 0;
+  }
+
+  /* La regola: riquadro col colore accento, non verde — non è un giudizio
+     su come è andata, è "qui c'è qualcosa di nuovo". */
+  .story-cards-explanation {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 2px solid var(--accent);
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--accent) 7%, var(--card));
+  }
+
+  .wws-rule-top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .wws-rule-kicker {
+    font-family: var(--font-mono);
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .story-cards-explanation-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0;
+  }
+
+  .story-cards-explanation-text {
+    font-size: 0.9rem;
+    margin: 0;
+  }
+
+  /* Battuta senza regola: nessun riquadro, nessun pulsante, nessun segno di
+     stato — chiedere "l'hai capita?" dove non si spiega niente è una
+     domanda senza oggetto. Resta una riga che lo dice, e la card non blocca
+     la sequenza. */
+  .wws-no-rule {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    font-style: italic;
+    margin: 0;
+  }
+
+  /* Sblocco Sequenziale, variante per dichiarazione: le card successive
+     alla corrente restano VISIBILI (far vedere cosa aspetta invoglia ad
+     andare avanti) ma attenuate, e della regola si legge solo il titolo. */
+  .wws-card.is-ahead .wws-card-top,
+  .wws-card.is-ahead .wws-english,
+  .wws-card.is-ahead .wws-italian {
+    opacity: 0.45;
+  }
+
+  .wws-card.is-ahead .wws-bubble {
+    background: none;
+    border-style: dashed;
+  }
+
+  /* Lo stato "non ancora raggiunta" è della singola regola, non della card:
+     la card corrente può contenerne due, e la seconda deve leggersi come
+     bloccata anche lì.
+
+     E NON usa l'accento. L'accento dice "sei qui", e lo dice il bordo della
+     card corrente: se lo usa anche ogni regola futura, in una colonna di
+     nove card il segnale "sei qui" finisce in minoranza di nove a uno nella
+     stessa tinta e smette di segnalare. Non mancava niente al disegno —
+     erano due stati opposti dipinti con lo stesso colore. Un accento scarso
+     si vede da solo. Il tratteggio e l'attenuazione restano: sono loro a
+     dire "bloccata", e non hanno bisogno di un colore per farlo. */
+  .story-cards-explanation.is-ahead {
+    border-style: dashed;
+    border-color: var(--border);
+    background: none;
+    opacity: 0.6;
+  }
+
+  /* Il "NUOVA REGOLA" è la seconda cosa che porta accento dentro il riquadro,
+     ed è la più ripetuta: una volta per regola, nove volte per schermata. */
+  .story-cards-explanation.is-ahead .wws-rule-kicker {
+    color: var(--text);
+  }
+
+  .story-cards-declared {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--correct-ink);
+  }
+
+  .story-cards-declared svg { width: 13px; height: 13px; }
+
+  /* Le due uscite del modulo, affiancate: sono due modi di andarsene, non
+     un'azione e il suo ripensamento. */
+  .story-cards-complete-row {
+    display: flex;
+    gap: 10px;
+  }
+
+  /* Affiancati devono starci anche su un telefono stretto: a 360px — la
+     larghezza di gran parte degli Android — "Esci e riprendi dopo" usciva
+     dallo schermo. Stesso rimedio dei tre pulsanti di risposta: possono
+     andare a capo dentro il pulsante invece di allargarlo. */
+  .story-cards-complete-row .btn {
+    flex: 1;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    white-space: normal;
+    line-height: 1.2;
+  }
+
+  .story-cards-selfcheck-question {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    margin: 0;
+  }
+
+  /* I tre pulsanti sulla stessa riga: sono tre risposte alla stessa
+     domanda, e incolonnarli le faceva sembrare tre azioni diverse. */
+  .story-cards-selfcheck-actions {
+    display: flex;
+    gap: 8px;
+  }
+
+  .story-cards-selfcheck-actions .btn {
+    flex: 1;
+    min-width: 0;
+    padding-left: 8px;
+    padding-right: 8px;
+    /* Le tre risposte sono frasi, non parole: su uno schermo stretto devono
+       poter andare a capo dentro il pulsante, altrimenti la terza finisce
+       fuori dallo schermo. */
+    white-space: normal;
+    font-size: 0.78rem;
+    line-height: 1.2;
+  }
+
+  /* La risposta data resta accesa, così si vede senza riaprire niente.
+     Accento e non verde: marcare in verde "Sì, mi è chiara" e lasciare
+     grigio "Non mi è chiara" farebbe sembrare la prima giusta e la seconda
+     sbagliata, mentre sono due risposte oneste alla stessa domanda.
+     Nell'app l'accento vuol dire "comunicazione di sistema", non giudizio. */
+  .story-cards-selfcheck-actions .btn.is-chosen {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: transparent;
+  }
+
+  .story-cards-selfcheck-followup {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin: 0;
+  }
+

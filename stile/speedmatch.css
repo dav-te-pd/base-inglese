@@ -1,0 +1,181 @@
+/* speedmatch.css — Speed Match.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- speed match view ---------- */
+  #sr-start-screen,
+  #sr-retry-intro-screen,
+  #sr-quiz-screen,
+  #sr-summary-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Dialogo Continuo's dg-ready-screen (3-2-1) reuses this exact shape
+     (CLAUDE.md rule 13/5), own id since it's a distinct element. */
+  #sr-countdown-screen,
+  #dg-ready-screen {
+    display: flex;
+    justify-content: center;
+    padding: 40px 0;
+  }
+
+  .sr-countdown-number {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 4rem;
+    color: var(--accent);
+  }
+
+  .sr-counter {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin: 0;
+  }
+
+  .sr-direction {
+    text-align: center;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    margin: 0;
+  }
+
+  .sr-timerbar-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--card-2);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  .sr-timerbar-fill {
+    height: 100%;
+    width: 100%;
+    background: var(--accent);
+  }
+
+  .sr-prompt {
+    text-align: center;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.4;
+    padding: 26px 16px;
+  }
+
+  .sr-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .sr-option:disabled { cursor: default; opacity: 0.85; }
+  .sr-option.is-correct { background: var(--correct-bg); color: var(--correct-ink); border-color: transparent; }
+  .sr-option.is-wrong { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
+
+  .sr-reveal {
+    text-align: center;
+    padding: 12px 16px;
+    border: 2px solid var(--accent);
+  }
+
+  .sr-reveal p { margin: 0; font-size: 0.92rem; }
+
+  .sr-summary {
+    text-align: center;
+    padding: 28px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .sr-summary-title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  /* Rotating second sentence (job 2, applyRotatingSubtitle) under the
+     fixed completion title — secondary tone, plain text, empty when the
+     feedback data hasn't loaded yet (no placeholder gap). */
+  .sr-summary-subtitle {
+    font-size: 0.9rem;
+    opacity: 0.75;
+    margin: 0;
+  }
+
+  /* Schermata Ripasso (renderRetryIntroScreen) — same tinted-panel
+     treatment as .vc-confirm-box (yellow theme tone, not a new color)
+     so this transition reads as important instead of blending into the
+     surrounding plain text like the old per-module markup did. */
+  .retry-intro {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+    padding: 20px 16px;
+    border: 1px solid var(--similar-ink);
+    border-radius: 12px;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+  }
+
+  .retry-intro-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 0;
+  }
+
+  .retry-intro-text {
+    font-size: 0.92rem;
+    margin: 0;
+  }
+
+  /* Small persistent tag shown next to a question/sentence for as long as
+     the RETRY pass lasts (Match Practice, Speed Match, Voice Check) —
+     without it, seeing the same item again reads as an app glitch rather
+     than the deliberate richiamo it is. Same --similar-ink/--similar-bg
+     pairing as .retry-intro (its one-time transition screen), just a
+     persistent tag instead of a whole panel. */
+  .ripasso-badge {
+    display: flex;
+    align-self: center;
+    width: fit-content;
+    align-items: center;
+    gap: 4px;
+    margin: 2px auto 0;
+    font-family: var(--font-mono);
+    /* Job 5 (2nd collaudo): same font-size as .sr-direction's "INGLESE →
+       ITALIANO" label — was 0.72rem, too small to read as a real notice. */
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 4px 14px;
+    border-radius: 999px;
+    background: var(--similar-bg);
+    color: var(--similar-ink);
+  }
+

@@ -1,0 +1,236 @@
+/* guscio.css — Il guscio dell'app: intestazione, pannelli di avviso, la schermata
+   d'errore, e l'intestazione a due righe dei moduli (regola 9).
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ============================================================
+     APP SHELL
+     ============================================================ */
+  .app {
+    width: 100%;
+    max-width: 620px;
+  }
+
+  .view { display: none; }
+  .view.is-active { display: flex; flex-direction: column; gap: var(--space-xl); }
+
+  .card-body {
+    padding: var(--space-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  @media (min-width: 480px) {
+    .card-body { padding: var(--space-xl); }
+  }
+
+  @media (min-width: 768px) {
+    .card-body { padding: 40px; }
+  }
+
+  header.app-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+  }
+
+  /* "Spiegazione" title (renderSpiegazioneTitle): row 1 is the fixed
+     kicker, small and secondary; row 2 is the module's own name, in
+     evidence — replaces the old single "Spiegazione — X" line, which
+     wrapped awkwardly on narrow screens. Both spans are block-level so
+     they stack even though they live inside one <h1>. */
+  .spiegazione-title-kicker {
+    display: block;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.85rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .spiegazione-title-name {
+    display: block;
+  }
+
+  /* Trailing "en→it"/"it→en" direction suffix inside a module name
+     (moduleNameHtml()) — smaller and more discreet than the name itself,
+     but inline with it (part of the name, not a second label). em units
+     so it scales with whatever font-size the name is shown at (map row,
+     Spiegazione title, module badges). */
+  .module-name-direction {
+    font-size: 0.78em;
+    opacity: 0.65;
+    font-weight: 400;
+  }
+
+  /* Danger panel (Personalizza's mid-episode wipe warning) — the ONE
+     place in the app where confirming a button destroys data, so it's
+     deliberately styled to look unlike every other panel: thick border,
+     the wrong/error tone (--wrong-bg/--wrong-ink, already the app's
+     "something's off" color — not a new hardcoded one) instead of the
+     neutral .panel background, and a warning icon up top. Never reuse
+     this look for anything that isn't itself destructive. */
+  .danger-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-align: center;
+    padding: 22px 18px;
+    border: 3px solid var(--wrong-ink);
+    border-radius: 12px;
+    background: var(--wrong-bg);
+    color: var(--wrong-ink);
+  }
+
+  .danger-panel-icon svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .danger-panel-title {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin: 0;
+  }
+
+  .danger-panel-body {
+    font-size: 0.92rem;
+    text-align: left;
+  }
+
+  .danger-panel-body p { margin: 0 0 10px; }
+  .danger-panel-body p:last-child { margin-bottom: 0; }
+
+  /* Neutral variant of .danger-panel — same shape (icon up top, thick
+     border, centered title) for an attention message that is NOT
+     destructive: Voice Coach's progressive mic-trouble notice (job 6).
+     Deliberately not --wrong-ink/--wrong-bg (reserved for the one
+     destructive action in the app, see .danger-panel's own comment) and
+     not --correct-ink/--similar-ink either (those already mean "parola
+     giusta"/"parola incerta" — reusing them here would misread as a
+     pronunciation judgment). --accent is the one theme-varying,
+     judgment-free color already available. Same look at all three
+     escalation levels on purpose — the gradualità is in the text. */
+  .danger-panel-notice {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 12%, var(--card));
+    color: var(--text);
+  }
+
+  .danger-panel-notice .danger-panel-icon,
+  .danger-panel-notice .danger-panel-title { color: var(--accent); }
+
+  /* I due pulsanti della schermata di errore (#view-error): impilati e a
+     tutta larghezza, come ogni altra coppia di uscite a pieno schermo.
+     Nessun colore qui: .btn-primary/.btn-secondary li portano gia'. */
+  .load-error-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  /* ---------- shared: two-row module header ----------
+     Generalized from the Flash Card trial (was .fc-header/.fc-header-*,
+     scoped to that one module) into the shared pattern every module with
+     a badge + Mappa/Spiegazione/Help header now uses — a future module
+     gets it automatically by reusing these same three classes instead of
+     copying its own header markup/CSS. Row 1: badge alone, centered, full
+     width, plain text, not clickable. Row 2: back button + Spiegazione +
+     Help — a 3-column grid (job 7, 3rd collaudo) with Mappa pinned left,
+     Spiegazione centered, Help pinned right (see .header-actions-row's
+     own comment for why grid, not flex). When one or two are hidden
+     (per-screen, e.g. Speed Match's timed screens; or CLAUDE.md rule 10
+     on an evaluative summary) the remaining ones stay exactly where they
+     are — nothing redistributes into the gap. Each module's own JS still
+     decides which of ITS buttons are hidden and when — this only
+     provides the shared layout, not a shared visibility policy. */
+  .header-2row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .header-badge-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Job 7 (3rd collaudo): grid, not flex, so Spiegazione can sit at the
+     row's true center regardless of how wide "← Mappa"/"← Home" and
+     Help each happen to be — a plain flex row (or flex's auto-margin
+     trick) only ever balances the LEFTOVER space between siblings, it
+     can't center one independently of two differently-sized neighbors.
+     The three fixed 1fr/auto/1fr columns give Mappa the left column,
+     Help the right one, and Spiegazione the middle one, each pinned to
+     its own edge/center via justify-self — sizes stay exactly what Job
+     7 (2nd collaudo) already fixed below, this only repositions them.
+     nth-child keeps working correctly even when Spiegazione is hidden
+     (Schermata Finale, CLAUDE.md rule 10) since a hidden button is
+     still the DOM's 2nd child — Mappa and Help don't shift columns. */
+  .header-actions-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Job 2 (4th collaudo): grid-column pinned explicitly on each — without
+     it, a hidden Spiegazione (CLAUDE.md rule 10, every Schermata Finale)
+     drops out of the grid's own auto-placement flow, and the remaining
+     two buttons compact into columns 1+2 instead of keeping their slots,
+     landing Help in the middle. nth-child still identifies the right
+     button when hidden (a display:none element stays in the DOM), but
+     nothing was telling grid which COLUMN that button belongs in — this
+     does, regardless of which sibling is missing. */
+  .header-actions-row > .btn:first-child { grid-column: 1; justify-self: start; }
+  .header-actions-row > .btn:nth-child(2) { grid-column: 2; justify-self: center; }
+  .header-actions-row > .btn:last-child { grid-column: 3; justify-self: end; }
+
+  /* Job 7 (2nd collaudo): EVERY button in this row — "← Mappa" AND
+     Spiegazione/Help — keeps its own fixed size on every screen, in
+     every module, regardless of how many siblings are visible (Speed
+     Round's timed questions, any Schermata Finale hide Spiegazione;
+     Voice Check hides the whole retry row; etc.) — a grid column never
+     stretches its item unless the item itself is told to. Forcing the
+     same padding/font-size across all of them (reusing the existing
+     --btn-padding-sm/--btn-text-sm tokens, not new ones) keeps Mappa
+     and Spiegazione/Help visually consistent with each other too, not
+     just with themselves across screens. */
+  .header-actions-row > .btn {
+    width: auto;
+    min-width: 0;
+    padding: var(--btn-padding-sm);
+    font-size: var(--btn-text-sm);
+  }
+
+  /* Below this width the row gets too cramped — stack the buttons one
+     per row instead of letting them wrap unpredictably. Every button
+     goes full-width once stacked; that's the intentional narrow-
+     viewport layout, distinct from the fixed-width rule above — the
+     left/center/right alignment above only applies at normal widths. */
+  @media (max-width: 420px) {
+    .header-actions-row {
+      display: flex;
+      flex-direction: column;
+    }
+    .header-actions-row > .btn {
+      width: 100%;
+    }
+  }
+

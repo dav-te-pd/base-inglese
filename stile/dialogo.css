@@ -1,0 +1,215 @@
+/* dialogo.css — I tre Dialogue: Ascolta e Ripeti, Ripeti a Tempo, Dialogo Continuo.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- dialogo view ----------
+     .fc-choice-row/.sr-summary/.sr-summary-title reused verbatim (see
+     view-dialogo's markup comment) — only the bubble list itself is new. */
+  #dg-start-screen,
+  #dg-main-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Job 9 (2nd collaudo): stays fixed at the top of the viewport while
+     scrolling through a long dialogue — Pausa/Riprendi and Prossima
+     frase need to be reachable the instant they're needed (the dialogue
+     can be advancing on its own), not after scrolling back up to find
+     them. The menu row above (Mappa/Spiegazione/Help, .header-2row) is
+     deliberately NOT sticky — it's only for leaving the module, not
+     needed mid-exercise. Solid background (not transparent) so the
+     bubble list scrolling underneath doesn't show through once stuck. */
+  .dg-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--card);
+    padding: 8px 0;
+  }
+
+  .dg-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .dg-row { display: flex; }
+  .dg-row.left { justify-content: flex-start; }
+  .dg-row.right { justify-content: flex-end; }
+
+  .dg-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-width: 80%;
+  }
+
+  .dg-row.left .dg-item { align-items: flex-start; }
+  .dg-row.right .dg-item { align-items: flex-end; }
+
+  .dg-name-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .dg-name {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    opacity: 0.7;
+  }
+
+  /* Always visible now (job 3) — an empty outline circle for a line not
+     yet heard is the actual signal ("this one's missing"), not just the
+     absence of a checkmark, which was easy to miss. .is-heard fills it
+     in with the check icon, same --correct-ink tone as everywhere else
+     "done" is shown. */
+  .dg-heard-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .dg-heard-check.is-heard {
+    border-color: var(--correct-ink);
+    background: var(--correct-bg);
+    color: var(--correct-ink);
+  }
+
+  .dg-heard-check svg { width: 12px; height: 12px; }
+
+  /* The bubble itself is a <button> for accessibility (keyboard/focus),
+     styled borderless so it still reads as a chat bubble, not a button. */
+  .dg-bubble {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    text-align: left;
+    padding: 12px 14px;
+    border-radius: var(--radius-md);
+    font-family: var(--font-body);
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  }
+
+  .dg-bubble-them { background: var(--bubble-them-bg); border: 1px solid var(--bubble-them-border); }
+  .dg-bubble-us { background: var(--bubble-us-bg); border: 1px solid var(--bubble-us-border); }
+
+  .dg-bubble-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .dg-listen-icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    margin-top: 3px;
+    color: var(--accent);
+  }
+
+  .dg-listen-icon svg { width: 18px; height: 18px; }
+
+  .dg-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: var(--text-body);
+    margin: 0;
+  }
+
+  .dg-translation {
+    font-size: var(--text-label);
+    color: var(--secondary);
+    margin: 0;
+    padding-left: 26px;
+  }
+
+  /* Regola Azione Critica: the speaking bubble lifts (same raised-shadow
+     language as Voice Coach's record-toggle-btn, toned down for a
+     rectangular bubble instead of a circular button); every other bubble
+     dims and stops responding to clicks until playback ends. */
+  .dg-bubble.is-active {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 26px -8px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+
+  /* L'inerzia non sta piu' qui: la porta .is-tap-locked, che dgApplyBubbleLock
+     aggiunge insieme a questa classe. Qui resta solo l'aspetto. */
+  .dg-bubble.is-locked {
+    opacity: 0.4;
+  }
+
+  /* Ripeti a Tempo/Dialogo Continuo only: the per-line countdown bar
+     shown inside the bubble once its audio finishes (reuses Speed
+     Round's own .sr-timerbar-track/.sr-timerbar-fill verbatim, CLAUDE.md
+     rule 13/5 — see dgStartLineTimer). Toggled via a class on the
+     bubble, not the "hidden" attribute. */
+  .dg-line-timer {
+    display: none;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: 4px;
+  }
+
+  .dg-bubble.dg-bubble-timer .dg-line-timer { display: flex; }
+
+  /* Mentre la barra scorre è tutta la bolla a rispondere al tocco (salta
+     alla battuta successiva), quindi lo dice anche il cursore. */
+  .dg-bubble.dg-bubble-timer { cursor: pointer; }
+
+  .dg-line-timer-caption {
+    margin: 0;
+    font-size: var(--text-label);
+    opacity: 0.75;
+  }
+
+  /* Ripeti a Tempo only: the suggested next line (dgSuggestNext) gets a
+     quiet highlight, then — if untouched for CONFIG.dialogo.
+     pulsareDopoInattivita — a slow opacity breathing (a soft dissolve,
+     never a hard blink). No timeout ever forces an advance. */
+  .dg-bubble.is-suggested {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 35%, transparent);
+  }
+
+  /* Job: the old 1 -> 0.55 range read as "almost imperceptible" — widened
+     to 1 -> 0.35 (still a smooth ease-in-out dissolve, never a hard
+     blink) so the suggestion is actually noticeable at a glance. */
+  @keyframes dg-pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .dg-bubble.is-pulsing {
+    animation: dg-pulse-soft 2.2s ease-in-out infinite;
+  }
+
+  /* Sblocco Sequenziale, variante per ascolto (Ripeti a Tempo) — una bolla
+     oltre la prossima raggiungibile, più sbiadita del dim temporaneo di
+     is-locked (quello dice "aspetta un attimo", questo "non ancora, prima
+     ascolta le precedenti"). L'altra variante è per dichiarazione, in Why
+     We Say It (vedi .wws-card.is-ahead e storyCardsRefreshExplanationStates). */
+  .dg-bubble.is-ahead-locked {
+    opacity: 0.35;
+  }
+

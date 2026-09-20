@@ -48,7 +48,6 @@ lavorare su una base che non si può misurare.*
 
 | | Passo | Perché adesso |
 |---|---|---|
-| **1.1** | **Il CSS esce da `index.html` in file separati** | È il **70%** del file. Prima si separa, poi si può chiedere «cosa serve a questa schermata» — l'ordine opposto decide i confini senza poterli misurare |
 | **1.2** | **Righe vuote e commenti scaduti di `index.html`** | Misurato: **424 righe vuote**, **72 commenti HTML**, **109 righe di commento nel CSS**, molti su codice che non c'è più |
 | **1.3** | **Passo 18 — le stringhe del markup** | ⚠️ **Da RICONTARE prima: non sono mai state contate.** Il numero su cui si pianificava non esiste |
 | **1.4** | **Passo 24 — `componenti-condivisi.md` e `componenti-singoli.md`** | La mappa di cosa è condiviso. Serve prima di aggiungere moduli nuovi, non dopo |

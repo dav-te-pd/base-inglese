@@ -79,9 +79,19 @@ async function run() {
   const html = fs.readFileSync(repoPath('index.html'), 'utf8');
 
   // ── [A] I TAG ───────────────────────────────────────────────────────
-  const tutti = html.match(/<script src="app\/[^"]+"><\/script>/g) || [];
+  // ⚠️ DAL 2026-09-20 I TAG SONO DI DUE SPECIE, e vanno guardati INSIEME.
+  // Col passo 1.1 il CSS e' uscito in `stile/*.css`: un foglio di stile
+  // vecchio accanto a un JavaScript nuovo e' lo stesso caso misto di due
+  // file di `app/` scompagnati, **e si vede meno** — non alza nessun errore,
+  // si vede storto. Controllare le due specie separatamente le lascerebbe
+  // andare a due versioni diverse restando verde.
+  const tutti = (html.match(/<script src="app\/[^"]+"><\/script>/g) || [])
+    .concat(html.match(/<link rel="stylesheet" href="stile\/[^"]+">/g) || []);
   const conVersione = tutti.filter(function (t) { return /\?v=[^"]+"/.test(t); });
-  log('[A] index.html carica dei file da app/', tutti.length > 0, String(tutti.length));
+  log('[A] index.html carica dei file da app/ e da stile/', tutti.length > 0, String(tutti.length));
+  const fogli = html.match(/<link rel="stylesheet" href="stile\/[^"]+">/g) || [];
+  log('[A] ...e i fogli di stile ci sono (il CSS non e\' tornato dentro index.html)',
+    fogli.length > 0 && !/<style>/.test(html), fogli.length + ' fogli');
   log('[A] ...e OGNUNO porta la sua versione', tutti.length === conVersione.length,
     (tutti.length - conVersione.length) + ' senza: ' + tutti.filter(function (t) { return !/\?v=/.test(t); }).join(' '));
 

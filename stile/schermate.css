@@ -1,0 +1,363 @@
+/* schermate.css — Le schermate che non sono moduli: nome, casa, Personalizza, il riquadro
+   delle parole colorate e la mappa dell'episodio.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- onboarding ---------- */
+  #view-onboarding .card-body { align-items: center; text-align: center; }
+  #onboarding-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* ---------- home ---------- */
+  .greeting { font-size: 1.5rem; }
+
+  .theme-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .theme-swatch {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 7px 14px 7px 9px;
+    border-radius: 999px;
+    background: var(--card-2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+  }
+
+  .theme-swatch:hover { border-color: var(--accent); }
+
+  .theme-swatch[aria-pressed="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--card-2));
+  }
+
+  .theme-swatch:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .swatch-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid var(--border);
+  }
+
+  .home-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .switch-user {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text);
+    opacity: 0.65;
+    background: none;
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    font-family: var(--font-body);
+    padding: 4px;
+  }
+
+  .switch-user:hover { opacity: 1; color: var(--accent); }
+
+  /* ---------- customization view ---------- */
+  .slot-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .slot-card {
+    padding: 16px;
+    display: flex;
+    align-items: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .slot-card-fields {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .slot-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    flex: 1;
+    min-width: 120px;
+  }
+
+  .slot-field.slot-field-narrow { flex: 0 1 90px; min-width: 80px; }
+
+  .slot-label {
+    font-size: 0.76rem;
+    color: var(--text);
+    opacity: 0.65;
+  }
+
+  .slot-card input[type="text"], .slot-card select { background: var(--card); }
+
+  .request-box {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+  }
+
+  .request-fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+  }
+
+  .request-field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .request-field-input-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .request-field-input-row input[type="text"] {
+    flex: 1;
+    min-width: 0;
+    background: var(--card);
+  }
+
+  .request-field-feedback {
+    font-size: var(--text-label);
+    margin: 0;
+  }
+
+  .request-field-feedback.is-warning { color: var(--wrong-ink); }
+  .request-field-feedback.is-success { color: var(--correct-ink); }
+
+  /* ---------- il riquadro delle parole colorate ----------
+     ⚠️ SI CHIAMAVA «---------- pronunciation view ----------», e quel nome ha
+     quasi fatto cancellare queste regole insieme alla vista morta il
+     2026-09-19. **`.phrase` è VIVA: la usa `#vc-feedback` di Voice**, che ci
+     scrive dentro uno `<span class="correct|similar|wrong">` per parola.
+     *Un'intestazione che nomina una vista fa sembrare di quella vista tutto
+     ciò che sta sotto — anche quello che un altro modulo ha riusato.* Presa
+     misurando i lettori invece di leggendo il titolo. */
+  .phrase {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 2.3;
+    text-align: center;
+    padding: 24px 20px;
+  }
+
+  .phrase span {
+    display: inline-block;
+    padding: 3px 8px;
+    margin: 2px;
+    border-radius: 7px;
+    color: var(--text);
+  }
+
+  .phrase span.correct { background: var(--correct-bg); color: var(--correct-ink); }
+  .phrase span.similar { background: var(--similar-bg); color: var(--similar-ink); }
+  .phrase span.wrong   { background: var(--wrong-bg); color: var(--wrong-ink); }
+
+  .status-text {
+    color: var(--text);
+    opacity: 0.7;
+    font-size: 0.88rem;
+    min-height: 1.2em;
+    text-align: center;
+  }
+
+  /* Same wrong/error tone as .module-status-text.is-error — reused, not a
+     new color (job 6b: Voice Coach's silence-timeout warning). */
+  .status-text.is-error { color: var(--wrong-ink); opacity: 1; }
+
+  .transcript-box {
+    padding: 14px 18px;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    opacity: 0.85;
+    min-height: 1.4em;
+    text-align: center;
+  }
+
+  .transcript-box strong { opacity: 1; font-weight: 500; }
+
+  /* ---------- episode map view ---------- */
+  .module-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .module-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--card-2);
+    font-family: var(--font-body);
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .module-row:disabled { cursor: not-allowed; opacity: 0.55; }
+  .module-row:not(:disabled):hover { border-color: var(--accent); }
+
+  .module-row:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .module-row.current {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, var(--card-2));
+  }
+
+  /* Tenue background tint per state, same 10% mix strength as .current
+     above — the border alone was too subtle to read at a glance (job:
+     "stati in mappa più leggibili"). Locked gets no tint of its own: it
+     has no corresponding semantic color, only its existing reduced
+     opacity (see .module-row.locked .module-status-icon/.module-state-
+     badge below), so nothing to add here without inventing one. */
+  .module-row.completed {
+    border-color: color-mix(in srgb, var(--correct-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--correct-ink) 10%, var(--card-2));
+  }
+
+  .module-row-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .module-row-label-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .module-row-title {
+    font-weight: 600;
+  }
+
+  /* Module "type" caption (Studio / Studia il dialogo / Quiz / Verifica
+     finale / Fine — CONFIG.moduleTypes) under the module name. Declarative
+     only for now, so it deliberately reuses the row's own muted-caption
+     look rather than a colored badge (see CLAUDE.md: not yet wired to
+     map colors). */
+  .module-row-type {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    opacity: 0.65;
+  }
+
+  /* Italian subtitle under a module's (now English) display name in the
+     map row — CONFIG.moduleLabels[id].subtitle. Small and secondary,
+     plain (not mono/uppercase like .module-row-type) since it reads as
+     a short phrase, not a caption. */
+  .module-row-subtitle {
+    font-size: 0.82rem;
+    opacity: 0.7;
+  }
+
+  .module-status-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+  }
+
+  .module-row.completed .module-status-icon { background: var(--correct-bg); color: var(--correct-ink); border-color: transparent; }
+  .module-row.current .module-status-icon { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .module-row.locked .module-status-icon { opacity: 0.6; }
+
+  .module-state-badge {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .module-row.completed .module-state-badge { background: var(--correct-bg); color: var(--correct-ink); }
+  .module-row.current .module-state-badge { background: color-mix(in srgb, var(--accent) 16%, var(--card)); color: var(--accent); }
+  .module-row.locked .module-state-badge { background: var(--card); color: var(--text); opacity: 0.6; }
+
+  /* Optional colored outcome (see MODULE OUTCOME in JS) — a completed
+     module that was self-assessed "Non ancora" shows giallo/"Da
+     rivedere" instead of the plain green "Completato". Same specificity
+     as the .completed rules above, placed after them so it wins on a
+     row carrying both classes; every other module never gets this class. */
+  .module-row.outcome-giallo {
+    border-color: color-mix(in srgb, var(--similar-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--similar-ink) 10%, var(--card-2));
+  }
+  .module-row.outcome-giallo .module-status-icon { background: var(--similar-bg); color: var(--similar-ink); border-color: transparent; }
+  .module-row.outcome-giallo .module-state-badge { background: var(--similar-bg); color: var(--similar-ink); }
+
+  /* rosso (ModuleRules, job "ModuleRules" — ex: Voice Coach below
+     CONFIG.percentageThresholds.medio) — same shape as outcome-giallo
+     above, --wrong-ink/--wrong-bg instead: the app's one "andato male"
+     color, never used for a non-judgment state (see the --accent fix
+     near :root, same job). */
+  .module-row.outcome-rosso {
+    border-color: color-mix(in srgb, var(--wrong-ink) 45%, var(--border));
+    background: color-mix(in srgb, var(--wrong-ink) 10%, var(--card-2));
+  }
+  .module-row.outcome-rosso .module-status-icon { background: var(--wrong-bg); color: var(--wrong-ink); border-color: transparent; }
+  .module-row.outcome-rosso .module-state-badge { background: var(--wrong-bg); color: var(--wrong-ink); }
+

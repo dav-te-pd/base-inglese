@@ -1,0 +1,237 @@
+/* base.css — La guardia `[hidden]` (regola 12), i cinque temi e le regole di base.
+   Deve restare il PRIMO foglio: qui nascono le variabili che tutti gli altri
+   leggono, e la guardia vince su tutto proprio perche' e' d'autore.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ============================================================
+     GUARDIA [hidden] — la regola che rende impossibile il bug, non solo
+     sconsigliato (CLAUDE.md regola 12).
+
+     Il browser nasconde un elemento con l'attributo hidden tramite il
+     proprio foglio di stile predefinito, che è il livello più debole
+     della cascata: QUALUNQUE regola d'autore che imposti un display
+     (display: flex su una riga, inline-block su una parola, block su un
+     titolo) lo batte, e l'elemento resta visibile pur essendo hidden.
+     Non dipende dalla specificità né dall'ordine: dipende solo da chi ha
+     scritto la regola. È il bug che si è ripresentato cinque volte in
+     questo progetto (.btn, .header-actions, header.app-header, le
+     schermate di Speed Match e Flash Card), sempre allo stesso modo:
+     qualcuno aggiunge un display a una classe e non poteva sapere che
+     quella classe sarebbe stata nascosta altrove.
+
+     Una regola d'autore con !important batte ogni regola d'autore senza,
+     sempre. Quindi questa riga da sola copre ogni classe già scritta e
+     ogni classe che verrà scritta: non c'è più niente da ricordarsi
+     quando si aggiunge un display, e nessun override da mettere accanto.
+     tests/test_hidden_guard.js lo verifica su ogni regola del foglio,
+     comprese quelle future.
+
+     until-found è escluso perché quel valore serve a farsi trovare da
+     Ctrl+F: è "nascosto ma cercabile", e nasconderlo davvero lo
+     romperebbe. Non è usato oggi, ma escluderlo ora costa zero.
+     ============================================================ */
+  [hidden]:not([hidden="until-found"]) {
+    display: none !important;
+  }
+
+  /* ============================================================
+     DESIGN TOKENS — 5 selectable palettes + fixed semantic colors
+     ============================================================ */
+  :root {
+    /* Viaggio — default */
+    --bg: #F2F4EE;
+    --card: #FFFFFF;
+    --card-2: color-mix(in srgb, #FFFFFF 85%, #F2F4EE 15%);
+    --text: #1C2B26;
+    --primary: #1F3B36;
+    --primary-ink: #FFFFFF; /* contrast ink for text/icons on a --primary background (e.g. flash cards) */
+    /* Was #B7472A — identical to --wrong-ink below, purely by accident.
+       --accent is the app's neutral, judgment-free highlight (buttons,
+       focus rings, the map's "Attuale" state, ...); --wrong-ink is the
+       ONE color that means "andato male". Sharing a hex value made
+       "Attuale" (not yet attempted) visually read as a red/failing
+       state before the student had even started. Blue, as requested —
+       keeps every existing --accent usage the same shape, just no
+       longer colliding with red. Keep CONFIG.themes.options[0].dot (the
+       theme-picker swatch) in sync with this value.
+       Audit across all 5 themes (CIE76 dE, <40 flagged as too close to
+       a semantic color — --correct-ink/--similar-ink/--wrong-ink, fixed
+       across every theme, see their own comment below): Viaggio fixed
+       here; Notte's old #E8A33D (dE 38/43 vs similar/wrong) and
+       Mediterraneo's old #E8734A (dE 39/17 vs similar/wrong) and
+       Moderno's old #17A2B8 (dE 38 vs correct) were real collisions,
+       fixed in their own theme blocks below. Natura's #7ec850 sits at
+       dE 48 vs correct-ink — distinct hue (yellow-green vs teal-green)
+       and lightness, left as-is; worth another look only if it's ever
+       actually reported as confusing in that one theme. */
+    --accent: #2B6CA3;
+    --accent-ink: #FFFFFF; /* contrast ink for text/icons on an --accent background — not the same pairing as above */
+    --secondary: #D9A441;
+    --border: #D8D6C9;
+    --shadow: 0 1px 2px rgba(20, 20, 15, 0.06);
+
+    /* Dialogue bubble colors (Dialogo Ascolta e Ripeti and future dialogue
+       modules) — derived from the tokens above via color-mix, not fixed
+       hex values, so every theme gets its own coherent pair automatically
+       instead of needing a manual override. "them" = esterno (outside the
+       family — a guide, a waiter, ...), "us" = famiglia. */
+    --bubble-them-bg: var(--card-2);
+    --bubble-them-border: var(--border);
+    --bubble-us-bg: color-mix(in srgb, var(--accent) 12%, var(--card));
+    --bubble-us-border: color-mix(in srgb, var(--accent) 35%, var(--card));
+
+    /* Semantic feedback colors: fixed across every theme, never overridden */
+    --correct-bg: #DFEEE3;
+    --correct-ink: #3F7D58;
+    --similar-bg: #F7E9CC;
+    --similar-ink: #7A5205;
+    --wrong-bg: #F3E0D9;
+    --wrong-ink: #B7472A;
+
+    /* Typography */
+    --font-display: "Source Serif 4", Georgia, serif;
+    --font-body: "Inter", system-ui, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+    /* ---- Design tokens: spacing / radius / text size / buttons ----
+       Non colori (quelli restano per-tema sopra): questi valori sono
+       fissi in ogni tema, derivati dalla scala già in uso nel progetto. */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 12px;
+    --space-lg: 18px;
+    --space-xl: 26px;
+
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-full: 999px;
+
+    --text-label: 0.75rem;
+    --text-body: 0.92rem;
+    --text-title: 1.3rem;
+    --text-title-lg: 2rem;
+
+    --btn-padding-sm: 8px 14px;
+    --btn-padding-md: 13px 24px;
+    --btn-padding-lg: 16px 30px;
+    --btn-text-sm: 0.8rem;
+    --btn-text-md: 0.95rem;
+    --btn-text-lg: 1.05rem;
+  }
+
+  [data-theme="notte"] {
+    --bg: #14181C;
+    --card: #1E252B;
+    --card-2: color-mix(in srgb, #1E252B 85%, #14181C 15%);
+    --text: #EDEFEF;
+    --primary: #EDEFEF;
+    --primary-ink: #14181C;
+    /* Was #E8A33D — a gold/orange close enough (CIE76 dE ~38/43) to both
+       --similar-ink and --wrong-ink to blur the "Attuale" state into a
+       judgment color, same collision class as Viaggio's old accent. A
+       night-blue reads as "moonlight", stays far (dE 80+) from all three
+       semantic tones — see the audit near :root's own --accent comment. */
+    --accent: #5B8DEF;
+    --accent-ink: #0A1220;
+    --secondary: #4FA8A0;
+    --border: #2D363D;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+
+  [data-theme="mediterraneo"] {
+    --bg: #FBF3E8;
+    --card: #FFFFFF;
+    --card-2: color-mix(in srgb, #FFFFFF 85%, #FBF3E8 15%);
+    --text: #2B2118;
+    --primary: #1B5E63;
+    --primary-ink: #FFFFFF;
+    /* Was #E8734A — the same warm red-orange family as --wrong-ink (CIE76
+       dE ~17, the closest of any theme's collision) and close to
+       --similar-ink too (dE ~39). A sea blue reads as "Mediterraneo" as
+       naturally as the orange did, and stays far (dE 55+) from all three
+       semantic tones — see the audit near :root's own --accent comment. */
+    --accent: #3372A8;
+    --accent-ink: #FFFFFF;
+    --secondary: #E3A857;
+    --border: #E5D6BE;
+    --shadow: 0 1px 2px rgba(30, 20, 10, 0.06);
+  }
+
+  [data-theme="moderno"] {
+    --bg: #F4F5F7;
+    --card: #FFFFFF;
+    --card-2: color-mix(in srgb, #FFFFFF 85%, #F4F5F7 15%);
+    --text: #1A1D23;
+    --primary: #2F4FD1;
+    --primary-ink: #FFFFFF;
+    /* Was #17A2B8 — a teal/cyan close enough (CIE76 dE ~38) to
+       --correct-ink's own green to blur "Attuale" toward a judgment
+       color. A cleaner, less green-leaning blue stays far (dE 57+) from
+       all three semantic tones — see the audit near :root's own --accent
+       comment. */
+    --accent: #1B6FA8;
+    --accent-ink: #FFFFFF;
+    --secondary: #6C5CE7;
+    --border: #DDE1E6;
+    --shadow: 0 1px 2px rgba(20, 20, 30, 0.05);
+  }
+
+  [data-theme="natura"] {
+    --bg: #0f1a14;
+    --card: #1e2d18;
+    --card-2: #243320;
+    --text: #e8f0e0;
+    --primary: #e8f0e0;
+    --primary-ink: #1e2d18;
+    --accent: #7ec850;
+    --accent-ink: #0F1A14;
+    --secondary: #7ec850;
+    --border: #2e4428;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  }
+
+  /* ============================================================
+     BASE
+     ============================================================ */
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-lg) var(--space-md);
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+
+  @media (min-width: 768px) {
+    body { padding: 32px 20px; }
+  }
+
+  h1, h2 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--text-title-lg); }
+  h2 { font-size: var(--text-title); }
+
+  p { margin: 0; }
+

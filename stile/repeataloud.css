@@ -1,0 +1,213 @@
+/* repeataloud.css — Repeat Aloud, piu' il Blocco Ascolto e le schermate intro/main che da lui
+   sono diventate condivise.
+
+   Uscito da `index.html` il 2026-09-20 (passo 1.1), dove il CSS era il 70%
+   del file. ⚠️ L'ORDINE DEI `<link>` E' LA CASCATA: questi fogli sono stati
+   tagliati dal foglio unico SENZA riordinare niente, e vanno caricati
+   nell'ordine in cui `index.html` li elenca. Spostarne uno cambia quali
+   regole vincono, e non alza nessun errore.
+
+   Le regole 2, 3 e 12 di CLAUDE.md valgono qui come valevano prima:
+   nessun colore fisso fuori dai temi, nessun valore modificabile nel CSS,
+   e la guardia `[hidden]` non si tocca (sta in `base.css`). */
+
+  /* ---------- repeat aloud module view ---------- */
+  .module-status-text {
+    text-align: center;
+    opacity: 0.7;
+    padding: 20px;
+  }
+
+  .module-status-text.is-error { color: var(--wrong-ink); }
+
+  /* Tono neutro per un fallimento NON bloccante (un testo d'aiuto che non
+     arriva): stesso ragionamento di .danger-panel-notice — un file che non
+     si carica non e' uno sbaglio dello studente, quindi mai il rosso di
+     .is-error, che qui significa "hai sbagliato". */
+  .is-notice { color: var(--accent); }
+
+  .repeat-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .repeat-item {
+    padding: 16px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .repeat-item-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .repeat-item-english {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.1rem;
+  }
+
+  /* Il Blocco Ascolto: il pulsante "ascolta" e le velocita', un pezzo solo.
+     Il markup lo produce renderListenBlock() e il tocco lo gestisce
+     speakListenBlock() — qui c'e' solo come si dispone. Fino al 2026-09-09
+     queste due classi si chiamavano repeat-item-audio e repeat-listen-btn:
+     il prefisso del primo modulo che le aveva introdotte, Repeat Aloud,
+     rimasto addosso a un pezzo che nel frattempo usavano in sei
+     (CLAUDE.md regola 18).
+
+     I nomi vecchi sono scritti qui SENZA il punto davanti, ed e' voluto:
+     test_blocco_ascolto.js cerca la forma con il punto o con la virgoletta —
+     cioe' il nome in POSIZIONE D'USO, un selettore o un attributo class — per
+     accorgersi se tornano vivi. Nominarli in prosa, come qui, non deve far
+     fallire quel test: la memoria di un nome tolto non e' il nome tolto. */
+  .listen-block {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .listen-block-btn.speaking { border-color: var(--accent); color: var(--accent); }
+
+  /* Lo spegnimento condiviso. "Bloccato" vuol dire UNA cosa sola — inerte al
+     dito — e vuol dire la stessa cosa nelle due varianti dello Sblocco
+     Sequenziale (regola 30) e nel dim temporaneo del Dialogo.
+
+     Quello che NON si unifica e' l'aspetto, ed e' voluto: il Dialogo sbiadisce
+     tutta la bolla perche' li' "bloccato" dice solo "non ancora"; Why We Say It
+     tiene leggibile il titolo della regola che aspetta, perche' li' far vedere
+     cosa aspetta invoglia ad andare avanti. Uguali nel comportamento, diversi
+     nel disegno, perche' dicono due cose diverse — unificarli sarebbe l'errore
+     opposto di quello che questa classe corregge.
+
+     E NON e' qui che il blocco vive: pointer-events e' una difesa cosmetica,
+     un click sintetico la attraversa. Il blocco vero sta nella funzione che
+     esegue (regola 20) — la guardia in cima al gestore di Why We Say It e
+     dgHandleBubbleTap nel Dialogo. Questa riga serve a farlo VEDERE. */
+  .is-tap-locked {
+    pointer-events: none;
+    cursor: not-allowed;
+  }
+
+  /* Dentro qualcosa di bloccato, il Blocco Ascolto si spegne con il resto.
+     Senza questa riga restava a opacita' piena in una card sbiadita: l'audio
+     non partiva (la guardia funzionava) ma il pulsante cambiava sotto il dito
+     ed era la cosa piu' viva di una card morta. */
+  .is-tap-locked .listen-block,
+  .is-tap-locked .listen-block-btn,
+  .is-tap-locked .rate-group {
+    opacity: 0.45;
+  }
+
+  .rate-group {
+    display: flex;
+    gap: 4px;
+  }
+
+  .rate-btn {
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.02em;
+    padding: 4px 9px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text);
+    opacity: 0.75;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease, background 0.15s ease;
+  }
+
+  .rate-btn:hover { opacity: 1; border-color: var(--accent); color: var(--accent); }
+
+  .rate-btn:focus-visible {
+    outline: 3px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .rate-btn.speaking {
+    opacity: 1;
+    border-color: var(--accent);
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 14%, var(--card));
+  }
+
+  /* Same disabled treatment as .btn:disabled, needed here because .rate-btn
+     isn't a .btn — the Voice Coach listen block gets grayed out during
+     active recording (Regola Azione Critica) same as Guarda/Help. */
+  .rate-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .repeat-item-italian { font-size: 0.92rem; opacity: 0.8; }
+  .repeat-item-tip { font-size: 0.85rem; opacity: 0.7; font-style: italic; }
+
+  /* Repeat Aloud's intro screen and its main content each need their own
+     flex column (with the .card-body's usual gap) now that they're one
+     level deeper than direct .card-body children. */
+  #repeat-aloud-intro-screen,
+  #repeat-aloud-main-screen {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+  }
+
+  /* Shared by every module's intro/main screen div added after Repeat
+     Aloud's (Story Cards, Voice Coach, Flash Card): each is one level
+     deeper than direct .card-body children, so needs the same flex
+     column + gap .card-body already gives its own direct children.
+     Repeat Aloud's own pair
+     above predates this shared class and still works standalone —
+     see CLAUDE.md rule 11, flagged for a future consolidation pass
+     rather than touched here. */
+  .module-screen {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xl);
+  }
+
+  .ra-intro-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .ra-intro-checkbox input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+
+  #repeat-aloud-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .general-rule {
+    padding: 16px 18px;
+    text-align: center;
+  }
+
+  .general-rule-label {
+    display: block;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
