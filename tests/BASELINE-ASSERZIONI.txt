@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-20
-# Totale: 1545
+# Totale: 1548
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -71,10 +71,10 @@ test_config_estratto.js 18
 test_config_letta.js 4
 test_conta_asserzioni.js 12
 test_conta_attese.js 16
-test_dati_estratto.js 15
+test_dati_estratto.js 16
 test_dialogo_extra.js 24
 test_dipendenze_dichiarate.js 54
-test_edizione_una_volta.js 11
+test_edizione_una_volta.js 12
 test_episodi_corti.js 9
 test_episodio2.js 9
 test_errore_caricamento.js 13
@@ -86,7 +86,7 @@ test_mastery_al_gesto.js 26
 test_match_practice_nonloso.js 6
 test_moduli_registrati.js 30
 test_modulo_pronto.js 12
-test_new_features.js 30
+test_new_features.js 31
 test_orchestrazione_estratta.js 16
 test_outcome_step_ids.js 21
 test_progressi_estratto.js 11
