@@ -107,6 +107,39 @@ pagina vuota senza spiegazione, che è la forma del guasto muto. Serve una
 schermata di attesa — non la si inventa adesso perché oggi non c'è niente da
 attendere abbastanza a lungo da poterla provare.
 
+### ⚠️ I CINQUE CHE RESTANO, MISURATI TUTTI — 2026-09-20
+
+*Applicata la regola 45 a tutta la coda invece che alla coppia successiva.*
+
+| | Tocca | Superficie misurata |
+|---|---|---|
+| **1.3** stringhe del markup | **CODICE** | 101 occorrenze in `index.html`, **48 distinte**; 64 occorrenze sono **15 stringhe ripetute** (`Spiegazione` ×19, `Help` ×9, `← Mappa` ×7). **Almeno 24 delle 48 NON si spostano**: 8 di onboarding/home (decisione presa — devono funzionare quando niente funziona), 8 del Pannello Admin (strumento, non studente), 8 nomi di moduli **sovrascritti a runtime** da `CONFIG.moduleLabels`, cioè segnaposto |
+| **1.4** catalogo dei pezzi | **DOCUMENTI** | 548 scoperti su 562 — e cresce da sé quando nascono file |
+| **1.8** tabelle di personalizzazione | **CODICE** | **27 punti in sei file**: `ui-condivisa.js` 10 · `personalizza.js` 7 · `apertura.js` 6 · `config.js` 2 · `catalogo.js` 1 · `mappa.js` 1. Più **sei file di test** che ci passano dentro |
+| **1.10** giro dei buchi | documenti | **per definizione ULTIMO**: «si fa quando la lista smette di cambiare» |
+| **1.12** edizioni | contenuto di chi guida il progetto | `docs/francese/` non esiste ancora |
+
+**Cosa si può accorpare, secondo la regola 45:**
+
+- **1.3 + 1.8 = codice + codice → MAI insieme.**
+- **1.10 non si accorpa con niente**, e non per la sua natura: per la sua
+  *condizione*. Accorparlo con un passo che cambia la lista lo farebbe girare
+  su una lista che sta cambiando — cioè lo farebbe **girare a vuoto**.
+- **1.12 dipende da chi scrive il contenuto**, non dall'ordine dei passi.
+
+> **1.4 È L'UNICO ACCORPABILE, E LA MISURA DICE UNA COSA PIÙ UTILE:
+> NON È UN PASSO, È UNA CODA.**
+
+I suoi 548 pezzi stanno **dentro i file che gli altri passi toccano**. Tenerlo
+come riga a sé significa, un giorno, rileggere ventiquattro file per
+catalogarli; attaccarlo a ogni passo di codice significa catalogarli **quando
+sono già stati letti riga per riga**, che è il solo momento in cui la colonna
+«cosa dà per scontato» si scrive senza indovinare.
+
+*Misura che lo dimostra: il passo 1.7 ha letto `progressi.js` (38 pezzi) e
+`identita.js` (9) riga per riga — **quarantasette pezzi erano catalogabili quel
+giorno a costo quasi zero**, e sono ancora scoperti.*
+
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
 - il **taglio per silenzio** del microfono (rivisto tre volte, mai corretto);
