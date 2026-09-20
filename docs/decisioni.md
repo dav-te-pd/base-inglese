@@ -4215,3 +4215,114 @@ indietro**, quel pannello smette di cambiare *un browser* e comincia a cambiare
 
 **Condizione di esecuzione:** insieme al passaggio della configurazione a
 Supabase. **Non è un passo a sé e non va anticipato.**
+
+---
+
+## LE NOVE COSE DEL 2026-09-20 — dette in chat, quindi altrimenti perse
+
+Registrate su richiesta, dopo la fine dello spacchettamento. **Nessuna è
+eseguita.** Lo spartiacque proposto da chi guida il progetto — *prima o dopo
+Supabase* — è in fondo.
+
+### ① I progressi vanno sul server, non nel browser
+
+**Deciso, non eseguito.** Oggi i progressi di uno studente vivono **solo** nel
+suo `localStorage`: cambiare telefono li cancella, e nessun attacco serve. Vanno
+in Supabase. *«Nel browser non va nulla, tranne il minimo per far girare
+l'applicazione.»*
+
+**Da parlarne quando ci arriviamo**, perché non è un travaso: cambia cosa
+succede quando la rete cade a metà di un esercizio, e cambia chi decide se una
+risposta è giusta (vedi le tre strade nella dichiarazione dell'astrazione della
+fonte).
+
+### ② Il CSS esce da `index.html` — **mancava dalla mia lista, ed era un buco**
+
+Misurato oggi: `index.html` è **3561 righe**, e **2498 sono CSS** — il 70%. Il
+JavaScript è una riga. *Quando ho scritto «non c'è più codice» intendevo il
+JavaScript, e non l'ho detto: il file resta grosso, ed è quasi tutto foglio di
+stile.*
+
+Il passo è lo stesso già fatto col JavaScript: prima **separarlo in file**, poi
+chiedersi quali mandare a quale schermata. Farlo nell'ordine opposto vuol dire
+decidere i confini senza poterli misurare.
+
+### ③ Le righe vuote e i commenti scaduti di `index.html`
+
+Misurato: **424 righe vuote** su 3561, **72 commenti HTML**, **109 righe di
+commento nel CSS**. Molti descrivono codice che non è più lì.
+
+### ④ ⚠️ I COMMENTI PRIMA DI ANDARE PUBBLICI — la domanda e la mia risposta
+
+**La domanda:** *«una volta pubblici saranno da togliere tutti. Decidiamo già
+ora per non fare il lavoro due volte. Mettiamo dei richiami e facciamo un file a
+parte sul server, così nessuno li legge? Come farebbe un ingegnere del
+software?»*
+
+**Cosa fa un ingegnere del software, ed è una risposta sola:** i commenti
+restano **dove sono**, nel sorgente, e **non arrivano mai al browser**. A
+toglierli è un **passo di pubblicazione** (minificazione) che gira sul file
+prima di metterlo online. Il sorgente resta leggibile, il file pubblicato è
+piccolo e muto. *Nessuno tiene due copie, e nessun commento viene separato dal
+codice che descrive.*
+
+⚠️ **E il file a parte va scartato, per una ragione che questo progetto ha già
+pagato cinque volte:** un commento diventa falso quando cambia il mondo intorno,
+non il codice che descrive (famiglia ⓪-quinquies — `setTimeout(…, 0)` il
+2026-09-20, «l'app vive in un file solo», «quattordici tag», «è rimasta col
+catalogo»). **Un commento che sta tre file più in là diventa falso prima e non
+lo legge nessuno.** La distanza fra il commento e il suo codice è esattamente
+quello che ne determina la vita.
+
+**Quindi: non c'è nessun lavoro da fare due volte, perché non c'è nessun lavoro
+da fare adesso.** Togliere i commenti è meccanico e si fa una volta, alla fine,
+con un comando.
+
+⚠️ **IL COSTO VA DICHIARATO, perché è vero:** con un passo di pubblicazione
+**il file servito non è più il file che sta in git**. Oggi quella proprietà vale
+— si spinge su `main` e su Pages c'è esattamente quello — ed è una delle cose
+che rendono questo progetto facile da capire. Perderla significa che, quando
+qualcosa non va su Pages, bisogna chiedersi anche *«è il codice o è il
+passo?»*. **È il prezzo, e si paga una volta sola quando si va pubblici, non
+adesso.**
+
+### ⑤ Il taglio per silenzio di Voice — **era già registrato**
+
+Sta in questo file dalla riga di Voice del 2026-09-19, con la nota aggiunta lo
+stesso giorno: *rinominarlo non basta, «tre secondi» lo studente lo legge come
+«tre secondi per cominciare»*. Condizione: al 26.
+
+### ⑥ Via «Help» e «← Mappa» dalle Schermate Finali
+
+**Proposto, da valutare.** ⚠️ **Tocca la regola 9 e la regola 10 di
+`CLAUDE.md`**, che oggi dicono il contrario: la 10 toglie solo la watch-bar
+dalla Schermata Finale e dice esplicitamente di mostrare *«Help se previsto»* e
+le azioni di uscita. Quindi non è una pulizia: è un cambio di regola, e va
+deciso con la regola 34 in mano.
+
+### ⑦ `decisioni.md` si spezza in due
+
+**Proposto:** `decisioni-stato.md` (solo quello che è aperto adesso) e
+`decisioni-storico.md` (quello che è stato deciso e fatto). *«I file lunghi e
+con informazioni obsolete non li legge nessuno.»* Vedi la valutazione in fondo.
+
+### ⑧ Il giro finale: cosa abbiamo saltato
+
+Alla fine, un passaggio che rilegge tutto e mette in cronologia quello che non
+c'è. **Non è un riassunto: è una ricerca di buchi**, e va fatto quando la lista
+smette di cambiare.
+
+### ⑨ Lo spartiacque: **prima o dopo Supabase**
+
+| Prima | Dopo |
+|---|---|
+| CSS separato in file (②) | i progressi sul server (①) |
+| righe vuote e commenti scaduti (③) | il passo di pubblicazione che toglie i commenti (④) |
+| `decisioni.md` spezzato in due (⑦) | le due analisi di sicurezza e i loro test |
+| il collaudo dopo lo spacchettamento | il pannello Admin dietro login, e `config` che sparisce |
+| il giro dei buchi (⑧) | ElevenLabs |
+
+*Il criterio non è l'importanza: è **cosa diventa più difficile se lo si fa
+dopo**. Il CSS separato prima rende misurabile «cosa mandare al browser»; i
+commenti tolti prima renderebbero il codice più difficile da leggere proprio
+mentre ci si lavora sopra.*

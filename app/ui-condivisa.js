@@ -318,10 +318,48 @@
       '</div>';
   }
 
+  // ⚠️ IL MENU ASPETTA I SUOI TESTI, E FINO AL 2026-09-20 NON LO FACEVA.
+  //
+  // Le tre voci del menu le scrive `uiText()`, che legge la cache di
+  // `istruzioni-moduli.json`. Quella cache si riempie con un `fetch`. Aprendo
+  // l'Help **dalla mappa** prima che il file fosse arrivato — cioe' subito dopo
+  // un ricaricamento forzato, o su rete lenta — `uiText()` tornava stringa
+  // vuota e il pannello compariva con **il titolo vuoto e tre pulsanti
+  // vuoti**. Segnalato con uno screenshot da chi guida il progetto, e
+  // riprodotto qui ritardando quel solo file di 2,5 secondi.
+  //
+  // ⚠️ NON ERA UN FALLIMENTO, ERA UNA FINESTRA — e per questo non lo copriva
+  // la regola 35: quella difende il caso in cui il file NON arriva, non i
+  // millisecondi in cui sta arrivando. *La regola 35 dice che un'interfaccia
+  // che si svuota non e' un caso da gestire, e' un caso da rendere
+  // impossibile; questa riga chiude l'altra meta' di quella frase.*
+  //
+  // PERCHE' SOLO DALLA MAPPA: un modulo aspetta gia' i testi prima di aprirsi
+  // (`openModuleFromMap` fa `Promise.all([..., loadModuleInstructions()])`),
+  // quindi quando il suo «Help» e' premibile la cache e' piena da un pezzo. La
+  // mappa no: si apre subito, ed e' giusto che lo faccia.
+  //
+  // COME, e riusa la forma che `renderModuleInstructionField` ha gia': si apre
+  // l'overlay SUBITO — il gesto deve rispondere — con la riga di caricamento,
+  // e si disegna il menu quando i testi ci sono. Se non arrivano, la schermata
+  // d'errore in linea (regola 35), invece di tre pulsanti muti.
   function openHelpMenu(module) {
-    document.getElementById('help-overlay-title').textContent = uiText('aiuto.menuTitle');
-    document.getElementById('help-overlay-body').innerHTML = renderHelpMenu();
+    var titoloEl = document.getElementById('help-overlay-title');
+    var corpoEl = document.getElementById('help-overlay-body');
+    // ⚠️ IL TITOLO HA LA SUA FRASE DI ULTIMA ISTANZA, ED E' L'ECCEZIONE DELLA
+    // REGOLA 35 APPLICATA A UNA FINESTRA invece che a un fallimento: il titolo
+    // vero sta nel file che stiamo aspettando, quindi in questi millisecondi
+    // **non puo' esistere**. Senza questa riga l'intestazione resta vuota
+    // sopra «Caricamento...», che e' la meta' di un pannello.
+    titoloEl.textContent = uiText('aiuto.menuTitle', 'Hai bisogno di aiuto?');
+    corpoEl.innerHTML = '<p class="module-status-text">Caricamento...</p>';
     openOverlay();
+    return loadModuleInstructions().then(function () {
+      titoloEl.textContent = uiText('aiuto.menuTitle');
+      corpoEl.innerHTML = renderHelpMenu();
+    }).catch(function () {
+      corpoEl.innerHTML = loadErrorInlineHtml('overlay-text');
+    });
   }
 
   function openHelpFor(module) {

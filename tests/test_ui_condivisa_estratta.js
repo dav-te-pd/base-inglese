@@ -241,8 +241,20 @@ async function run() {
     // arriva in fondo il corpo è già cambiato quando la riga dopo lo legge; se
     // muore alla prima riga, non c'è niente da leggere. Nessun cronometro
     // (regola 19).
+    // ⚠️ DUE PASSI INVECE DI UNO, DAL 2026-09-20: `openHelpMenu` ASPETTA i suoi
+    // testi (vedi il blocco [H] piu' sotto e il commento in `ui-condivisa.js`),
+    // quindi le tre voci non esistono ancora quando la chiamata torna. Si
+    // aspetta che il menu sia disegnato — **che non e' quello che le due
+    // asserzioni leggono**: leggono chi ha chiesto aiuto, e il corpo DOPO il
+    // click (regola 44). Poi si preme e si legge, sempre in una chiamata
+    // sincrona sola.
+    if (viva) {
+      await page.evaluate(function () {
+        window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
+      });
+      await page.waitForSelector('[data-help-action="instructions"]', { timeout: 15000 });
+    }
     const menuHelp = viva ? await page.evaluate(function () {
-      window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
       var chiesto = window.BI.moduloDiAiutoAttivo();
       var corpoPrima = document.getElementById('help-overlay-body').innerHTML;
       document.querySelector('[data-help-action="instructions"]').click();
@@ -274,11 +286,16 @@ async function run() {
     // (regola 19). E la riga che conta non è «la conferma è comparsa» — quella
     // comparirebbe anche se il salvataggio fallisse a valle: è **il magazzino
     // cresciuto di uno**.
+    if (viva) {
+      await page.evaluate(function () {
+        window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
+      });
+      await page.waitForSelector('[data-help-action="clarify"]', { timeout: 15000 });
+    }
     const inviata = viva ? await page.evaluate(function () {
       function richieste() {
         return Object.keys(localStorage).filter(function (k) { return k.indexOf('help') !== -1; }).length;
       }
-      window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
       var prima = richieste();
       document.querySelector('[data-help-action="clarify"]').click();
       var form = document.getElementById('help-form');
@@ -294,6 +311,64 @@ async function run() {
     log('[F] Il modulo di richiesta d\'aiuto si apre e si invia',
       !!inviata && !inviata.errore && inviata.dopo > inviata.prima,
       JSON.stringify(inviata));
+
+    // ⚠️ [H] IL MENU HELP NELLA FINESTRA IN CUI I SUOI TESTI NON SONO ANCORA
+    // ARRIVATI — segnalato con uno screenshot il 2026-09-20: pannello aperto,
+    // **titolo vuoto e tre pulsanti vuoti**, subito dopo un ricaricamento
+    // forzato.
+    //
+    // NON era un fallimento, era una FINESTRA, e per questo la regola 35 non
+    // lo copriva: quella difende il caso in cui il file NON arriva. *Un modulo
+    // aspetta gia' i testi prima di aprirsi; la mappa no, e il suo «Help» era
+    // premibile mentre il fetch era in volo.*
+    //
+    // COME, e non si puo' fare altrimenti: la finestra dura 1 ms su rete
+    // normale, quindi non si GUARDA — si **riproduce**, ritardando quel solo
+    // file di due secondi e mezzo (regola 19, e la stessa strada di
+    // `test_modulo_pronto`). Un test che aprisse l'Help e basta sarebbe verde
+    // sempre, su codice rotto.
+    //
+    // L'approdo e' il pannello APERTO — `#help-overlay.is-open` — che nessuna
+    // delle due asserzioni legge: leggono il titolo e i pulsanti (regola 44).
+    {
+      const lenta = await browser.newPage({ viewport: { width: 400, height: 900 } });
+      const erroriLenti = [];
+      lenta.on('pageerror', function (e) { erroriLenti.push(e.message); });
+      await bloccaFontEsterni(lenta);
+      await lenta.route('**/istruzioni-moduli.json', async function (route) {
+        await new Promise(function (r) { setTimeout(r, 2500); });
+        await route.continue();
+      });
+      let arrivata = true;
+      try {
+        await lenta.goto(APP_URL);
+        await lenta.fill('#name-input', 'HelpFinestra');
+        await lenta.click('#onboarding-form button[type=submit]');
+        await lenta.waitForSelector('#view-home.is-active', { timeout: 20000 });
+        await lenta.click('#go-episode');
+        await lenta.waitForSelector('#view-map.is-active', { timeout: 20000 });
+        await lenta.click('#map-help-btn');
+        await lenta.waitForSelector('#help-overlay.is-open', { timeout: 20000 });
+      } catch (e) { arrivata = false; }
+      const dentro = arrivata ? await lenta.evaluate(function () {
+        var bottoni = [].slice.call(document.querySelectorAll('#help-overlay-body .help-option'));
+        return {
+          titolo: document.getElementById('help-overlay-title').textContent.trim(),
+          corpo: document.getElementById('help-overlay-body').textContent.trim(),
+          vuoti: bottoni.filter(function (b) { return !b.textContent.trim(); }).length,
+          bottoni: bottoni.length
+        };
+      }) : null;
+      log('[H] Il pannello Help si apre anche mentre i suoi testi stanno arrivando', arrivata);
+      log('[H] ...e NON e\' vuoto: il titolo c\'e\'',
+        !!dentro && dentro.titolo.length > 0, JSON.stringify(dentro));
+      // La prova che conta: o i pulsanti ci sono col loro testo, o al loro
+      // posto c'e' una riga che dice che sta arrivando. Mai tre bottoni muti.
+      log('[H] ...e non ci sono pulsanti MUTI',
+        !!dentro && dentro.vuoti === 0 && dentro.corpo.length > 0, JSON.stringify(dentro));
+      log('[H] Nessun errore JS', erroriLenti.length === 0, erroriLenti[0]);
+      await lenta.close();
+    }
 
     // ── [G] I QUATTRO PEZZI DEL PRE-PASSO, GUIDATI ─────────────────
     // ⚠️ QUESTE RIGHE NASCONO DA UNA FALSIFICAZIONE CHE NON HA MORSO.
