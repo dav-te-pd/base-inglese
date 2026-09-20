@@ -30,7 +30,7 @@
 // smettesse di CHIAMARLA, tornando a scrivere il testo nel codice, qui non si
 // vedrebbe.
 const fs = require('fs');
-const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, globDati } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
 const J = JSON.parse(fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
@@ -190,7 +190,7 @@ async function run() {
   // osserva correndole contro: si RIPRODUCE. Quattrocento millisecondi sono
   // la rete di uno studente vero, non un numero di comodo — e dentro quella
   // finestra la garanzia del giro B o c'e' o non c'e'.
-  await pagina3.route('**/istruzioni-moduli.json', async function (route) {
+  await pagina3.route(globDati('istruzioni-moduli.json'), async function (route) {
     await new Promise(function (r) { setTimeout(r, 400); });
     await route.continue();
   });

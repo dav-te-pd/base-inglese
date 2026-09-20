@@ -54,13 +54,13 @@
 // anche che il parametro venga davvero letto. Il caso [C] lo rilegge a 2 —
 // se la funzione avesse il numero cablato, [A] e [C] non potrebbero dare
 // risultati diversi.
-const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
 const { stepsBefore, gradeOf } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 
 const PASSO = 'flashcardAEngIta'; // prima apparizione di Flash Card, grado A
 const PRIMA = stepsBefore(PASSO);
-const FILE_EPISODIO = '**/data/inglese/it/inglese-it-gate.json';
+const FILE_EPISODIO = globDati('inglese-it-gate.json');
 
 // Serve una copia del file episodio col grado di Flash Card ridotto alla
 // PRIMA voce: un mazzo di una carta sola. Si intercetta la richiesta invece di

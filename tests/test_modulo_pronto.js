@@ -36,7 +36,7 @@
 // vede: lo prende l'asserzione strutturale ②, che vale per tutti.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, sorgenteChe, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, sorgenteChe, attendiPrimaSchermata, globDati } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 let passed = 0, failed = 0;
@@ -105,7 +105,7 @@ async function run() {
     await page.addInitScript(mockInit);
     // Due secondi su un file di TESTI: se il modulo lo aspettasse ancora,
     // qui la battuta non ci sarebbe e il microfono sarebbe già premibile.
-    await page.route('**/messaggi-feedback.json', async (route) => {
+    await page.route(globDati('messaggi-feedback.json'), async (route) => {
       await new Promise(r => setTimeout(r, 2000));
       await route.continue();
     });

@@ -32,7 +32,7 @@
 // Adesso [E] guida Escape sull'app vera.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, globDati } = require('./test-env');
 const { verificaStruttura, posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
@@ -335,7 +335,7 @@ async function run() {
       const erroriLenti = [];
       lenta.on('pageerror', function (e) { erroriLenti.push(e.message); });
       await bloccaFontEsterni(lenta);
-      await lenta.route('**/istruzioni-moduli.json', async function (route) {
+      await lenta.route(globDati('istruzioni-moduli.json'), async function (route) {
         await new Promise(function (r) { setTimeout(r, 2500); });
         await route.continue();
       });

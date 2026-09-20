@@ -1,4 +1,4 @@
-const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
 const { attendiClasse, attendiTono } = require('./attese');
 const { declareAllSkills } = require('./story-driver');
 const { allSteps } = require('./module-order');
@@ -137,7 +137,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.route('**/data/inglese/it/inglese-it-gate.json', async (route) => {
+    await page.route(globDati('inglese-it-gate.json'), async (route) => {
       const response = await route.fetch();
       const json = await response.json();
       if (json.levels.D.items && json.levels.D.items.length) {

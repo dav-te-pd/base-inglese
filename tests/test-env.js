@@ -175,6 +175,25 @@ function sorgenteChe(pezzo) {
   throw new Error('«' + pezzo + '» non trovato in nessuno di: ' + posti.join(', '));
 }
 
+// ⚠️ IL GLOB DI UN FILE DI DATI, E NON SI SCRIVE A MANO. Passo 1.9,
+// 2026-09-20.
+//
+// Dal passo 1.9 i percorsi dei dati portano `?v=<versione>`, quindi un
+// `page.route('**/istruzioni-moduli.json', ...)` NON corrisponde piu': la
+// rotta non scatta, il file arriva subito, e il test che voleva misurare
+// «cosa si vede mentre il file non c'e' ancora» misura il caso opposto.
+//
+// ⚠️ **E NON SI ROMPE IN MODO RUMOROSO.** Playwright non dice «questa rotta
+// non ha mai corrisposto»: il test gira, vede l'app funzionante e fallisce
+// sull'asserzione, che accusa il codice invece della rotta. Otto punti in sei
+// file, tutti insieme, il 2026-09-20.
+//
+// Quindi il glob lo costruisce questa funzione, una volta per tutte: `*` in
+// coda prende la query se c'e' e non da' fastidio se non c'e'.
+function globDati(nomeFile) {
+  return '**/' + nomeFile + '*';
+}
+
 // ⚠️ LA PRIMA SCHERMATA DELL'APP, ASPETTATA UNA VOLTA SOLA. Passo 1.11b,
 // 2026-09-20.
 //
@@ -237,4 +256,4 @@ function strutturaCorso() {
   return JSON.parse(require('fs').readFileSync(fileEdizione('struttura-corso.json'), 'utf8'));
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, strutturaCorso, attendiPrimaSchermata };
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, strutturaCorso, attendiPrimaSchermata, globDati };

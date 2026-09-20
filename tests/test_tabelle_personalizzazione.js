@@ -40,7 +40,7 @@
 // porta il contenuto.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe, globDati } = require('./test-env');
 const { openModule } = require('./map-driver');
 
 let passed = 0, failed = 0;
@@ -195,7 +195,7 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
-    await page.route('**/tabelle-personalizzazione.json', async function (route) {
+    await page.route(globDati('tabelle-personalizzazione.json'), async function (route) {
       await new Promise(function (x) { setTimeout(x, 800); });
       await route.continue();
     });
@@ -296,7 +296,7 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
-    await page.route('**/tabelle-personalizzazione.json', async function (route) {
+    await page.route(globDati('tabelle-personalizzazione.json'), async function (route) {
       await new Promise(function (x) { setTimeout(x, 800); });
       await route.continue();
     });

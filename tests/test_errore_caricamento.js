@@ -28,7 +28,7 @@
 // apertura è la più corta.
 const fs = require('fs');
 const path = require('path');
-const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata, globDati } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 const PASSO = 'matchEngIta';
@@ -136,7 +136,7 @@ async function run() {
   page.on('pageerror', e => errors.push(String(e)));
 
   // ---- [A] la schermata compare quando il file episodio non arriva ----
-  await page.route('**/' + FILE_EPISODIO, route => route.abort());
+  await page.route(globDati(FILE_EPISODIO), route => route.abort());
   await finoAllaMappa(page, 'ErroreA');
   await page.click('[data-module="' + PASSO + '"]');
   await page.waitForSelector('#view-error.is-active', { state: 'attached', timeout: 15000 });
@@ -163,7 +163,7 @@ async function run() {
     s.coloreTitolo + ' vs accento ' + rgbDaHex(s.coloreAccento));
 
   // ---- [C] "Riprova" rifà l'apertura fallita ----
-  await page.unroute('**/' + FILE_EPISODIO);
+  await page.unroute(globDati(FILE_EPISODIO));
   await page.click('#load-error-retry');
   await page.waitForSelector('#view-match.is-active', { state: 'attached', timeout: 15000 });
   const dopoRiprova = await page.evaluate(function () {
@@ -176,7 +176,7 @@ async function run() {
   log('[C] ...e la schermata d\'errore sparisce', !dopoRiprova.erroreVisibile);
 
   // ---- [D] "Torna alla mappa" riporta in mappa ----
-  await page.route('**/' + FILE_EPISODIO, route => route.abort());
+  await page.route(globDati(FILE_EPISODIO), route => route.abort());
   await page.evaluate(() => { location.reload(); });
   await page.waitForSelector('#go-episode', { state: 'visible', timeout: 15000 });
   await page.click('#go-episode');
@@ -190,7 +190,7 @@ async function run() {
     await page.evaluate(() => document.getElementById('view-map').classList.contains('is-active')));
 
   // ---- [E] il contrario: senza guasto la schermata non compare ----
-  await page.unroute('**/' + FILE_EPISODIO);
+  await page.unroute(globDati(FILE_EPISODIO));
   await finoAllaMappa(page, 'ErroreE');
   await page.click('[data-module="' + PASSO + '"]');
   await page.waitForSelector('#view-match.is-active', { state: 'attached', timeout: 15000 });
