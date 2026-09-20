@@ -105,10 +105,25 @@ async function run() {
     // index.html perche' «tanto li' non ci sono piu' fetch» renderebbe la
     // riga vera per costruzione il giorno in cui uno tornasse.
     const datiJs = fs.readFileSync(repoPath('app', 'dati.js'), 'utf8');
+    // ⚠️ ROSSA UNA SECONDA VOLTA IL 2026-09-20, ANCORA PER UNA DECISIONE
+    // (⓪-undecies), e la forma vecchia dice da sola perche': cercava
+    // `PERSONALIZATION_TABLES_FILE = '` — cioe' l'APICE, cioe' un percorso
+    // LETTERALE. Col passo 1.11 la costante vale
+    // `percorsoEdizione('tabelle-personalizzazione.json')`: e' ancora una
+    // costante, ed e' ancora fuori dalla riga di fetch. **L'invariante non e'
+    // cambiato di una virgola; era cambiato come il valore ci arriva.**
+    //
+    // Quindi si segue, e si guadagna: l'apice richiedeva proprio la cosa che
+    // adesso e' vietata. La riga chiede la costante, vieta il fetch nudo su
+    // entrambi i file (toglierlo da `index.html` perche' «tanto li' non ci
+    // sono piu' fetch» la renderebbe vera per costruzione il giorno in cui
+    // uno tornasse) e in piu' vieta che il percorso dell'edizione torni
+    // scritto a mano qui dentro.
     log('[A] Il percorso del magazzino sta in una costante, non dentro un fetch',
-      /var PERSONALIZATION_TABLES_FILE = '/.test(datiJs) &&
-      !/fetch\('data\/inglese\/it\/tabelle/.test(datiJs) &&
-      !/fetch\('data\/inglese\/it\/tabelle/.test(html));
+      /var PERSONALIZATION_TABLES_FILE = \S/.test(datiJs) &&
+      !/fetch\(['"]data\//.test(datiJs) &&
+      !/fetch\(['"]data\//.test(html) &&
+      !/PERSONALIZATION_TABLES_FILE = ['"]data\//.test(datiJs));
     // ⚠️ NON PIU' `html`: le due funzioni sono uscite in `app/apertura.js` il
     // 2026-09-19 (passo C2), e cercarle in `index.html` sarebbe una misura che
     // non misura — `/regex/.test(testo sbagliato)` e' `false`, cioe' un rosso
