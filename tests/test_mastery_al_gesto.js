@@ -280,7 +280,7 @@ async function run() {
   // [C] Il Dialogo: l'autovalutazione MOSTRA, il pulsante SCRIVE.
   // ---------------------------------------------------------------
   {
-    const page = await browser.newPage({ viewport: { width: 420, height: 900 } });
+    let page = await browser.newPage({ viewport: { width: 420, height: 900 } });
     const errori = [];
     page.on('pageerror', e => errori.push(e.message));
     await page.addInitScript(mockVoce);
@@ -316,9 +316,33 @@ async function run() {
     log('[C] La Schermata Finale risponde alla dichiarazione — entro 15s, o questa riga è rossa per timeout',
       arrivato, arrivato ? sottotitolo : 'TIMEOUT: il sottotitolo è rimasto vuoto');
 
+    // ⚠️ L'USCITA SI E' SPOSTATA DI SCHERMATA, E L'INVARIANTE NO (⓪-undecies,
+    // 2026-09-20). Qui si usciva con `#dialogo-back-map` **dalla Schermata
+    // Finale**; da oggi su quella schermata la riga delle azioni non c'è più —
+    // è stata tolta perché quel pulsante buttava via l'esercizio (regola 10,
+    // riscritta). *L'invariante che questo blocco protegge non è cambiato di
+    // una virgola — **un esito che nessuno ha confermato non si scrive** — è
+    // cambiato DOVE quel gesto è ancora possibile: a metà esercizio, dove la
+    // riga c'è e «← Mappa» significa ancora «lascio perdere».*
+    //
+    // Quindi si riapre il modulo e si esce da lì. **Non si riusa la pagina di
+    // prima:** da quella Schermata Finale non si torna indietro, e l'unica
+    // uscita rimasta SCRIVE — cioè misurerebbe l'opposto di quello che questa
+    // riga chiede.
+    await page.close();
+    page = await browser.newPage({ viewport: { width: 400, height: 900 } });
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await page.addInitScript(mockVoce);
+    await boot(page, 'GestoDialogoMeta', 'dialogoAscoltaRipeti');
+    await apri(page, 'dialogoAscoltaRipeti');
+    await page.waitForSelector('#dg-start-btn', { state: 'visible', timeout: 20000 }).catch(function () {});
+    if (await page.isVisible('#dg-start-btn').catch(function () { return false; })) await page.click('#dg-start-btn');
+    await page.waitForSelector('.dg-bubble', { state: 'visible', timeout: 20000 });
+    await page.locator('.dg-bubble').nth(0).click();
+    await page.waitForTimeout(150);
     await tornaAllaMappa(page, '#dialogo-back-map');
-    const dopoMappa = await leggiTutto(page, 'GestoDialogo');
-    log('[C] Uscendo da "← Mappa" l\'esito non c\'è: nessun colore che nessuno ha confermato',
+    const dopoMappa = await leggiTutto(page, 'GestoDialogoMeta');
+    log('[C] Uscendo da "← Mappa" A META\' ESERCIZIO l\'esito non c\'è: nessun colore che nessuno ha confermato',
       !dopoMappa.esiti.dialogoAscoltaRipeti, JSON.stringify(dopoMappa.esiti));
     log('[C] ...e il modulo non risulta fatto', dopoMappa.completati.indexOf('dialogoAscoltaRipeti') === -1);
     log('[C] Nessun errore JS', errori.length === 0, errori.join(' | '));

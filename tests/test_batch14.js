@@ -375,10 +375,42 @@ async function run() {
     await openModule(page, 'repeatAloud'); // Mappa + Spiegazione + Help all visible
     await attendiClasse(page, '#view-repeat-aloud', 'is-active'); // il gesto e' l'apertura del modulo, non la geometria che l'asserzione misura
     const widthAllVisible = await page.$eval('#repeat-aloud-back-map', el => el.getBoundingClientRect().width);
-    await page.click('#repeat-aloud-complete'); // -> summary screen, Spiegazione hides, only Mappa+Help left... but back-map row is per-screen; header stays same row regardless
-    await attendiVisibile(page, '#repeat-aloud-summary-screen'); // approdo: la Schermata Finale, non la larghezza che l'asserzione misura
-    const widthOnSummary = await page.$eval('#repeat-aloud-back-map', el => el.getBoundingClientRect().width);
-    log('[Job9a] "← Mappa" width unchanged whether Spiegazione is visible or hidden', Math.abs(widthAllVisible - widthOnSummary) < 1);
+    // ⚠️ LA SCHERMATA FINALE NON SERVE PIU' A MISURARE QUESTO, E NON PERCHE'
+    // L'INVARIANTE SIA CAMBIATO (⓪-undecies, 2026-09-20).
+    //
+    // Qui si apriva la Schermata Finale, dove «Spiegazione» si nascondeva, e
+    // si rimisurava «← Mappa». Dal 2026-09-20 su quella schermata **la riga
+    // delle azioni non c'è più** (regola 10, riscritta perché «← Mappa» lì
+    // buttava via l'esercizio): il pulsante è nascosto, la sua larghezza è
+    // ZERO, e il confronto sarebbe rosso su codice giusto.
+    //
+    // *L'invariante della regola 9 non è cambiato — «se uno dei tre pulsanti
+    // viene nascosto, gli altri restano esattamente dove sono: le posizioni
+    // sono fissate a colonna, non redistribuite» — è cambiata la schermata in
+    // cui lo si poteva osservare per caso.* Quindi adesso si PRODUCE il caso
+    // invece di aspettarlo da un'altra funzionalità: si nasconde
+    // «Spiegazione» a mano, restando sulla schermata dell'esercizio.
+    //
+    // ⚠️ E SI MISURA ANCHE LA POSIZIONE, non solo la larghezza: una griglia
+    // che ridistribuisce le colonne può lasciare la larghezza identica e
+    // spostare il pulsante al centro. *La larghezza da sola non distingue le
+    // due cose, ed è la domanda che la regola 9 pone.*
+    const prima = await page.evaluate(function () {
+      var r = document.getElementById('repeat-aloud-back-map').getBoundingClientRect();
+      return { w: r.width, x: r.left };
+    });
+    const dopo = await page.evaluate(function () {
+      document.getElementById('repeat-aloud-watch-btn').hidden = true;
+      var r = document.getElementById('repeat-aloud-back-map').getBoundingClientRect();
+      document.getElementById('repeat-aloud-watch-btn').hidden = false;
+      return { w: r.width, x: r.left };
+    });
+    log('[Job9a] "← Mappa" non cambia larghezza quando Spiegazione si nasconde',
+      Math.abs(prima.w - dopo.w) < 1, JSON.stringify({ prima: prima, dopo: dopo }));
+    log('[Job9a] ...e non si sposta: le colonne sono fisse, non redistribuite (regola 9)',
+      Math.abs(prima.x - dopo.x) < 1, JSON.stringify({ prima: prima, dopo: dopo }));
+    // La larghezza di partenza resta quella misurata col modulo appena aperto.
+    const widthOnSummary = prima.w;
     log('[Job9a] No JS errors', errors.length === 0);
     await page.close();
   }
