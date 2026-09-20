@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920h**
+**Versione: 20260920i**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -64,7 +64,7 @@ affidabile.
 | `docs/decisioni-stato.md` | **Cosa è aperto adesso e in che ordine.** Il primo file da aprire, e il solo che serve per scegliere un passo. **Si svuota**: una riga eseguita se ne va in `correzioni.md`. |
 | `docs/decisioni-storico.md` | **Perché è così.** La catena dello spacchettamento passo per passo, i triage, le misure, il ragionamento dietro ogni scelta. **Si accumula**, ed è lungo apposta — si apre per rispondere a «perché», mai per cercare il prossimo passo. |
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
-| `docs/componenti-condivisi.md`, `docs/componenti-singoli.md` | **Il magazzino da cui si preleva, e la sua sala d'attesa.** Si guardano **prima** di scrivere un pezzo nuovo: se c'è già, si riusa; se sta fra i singoli, si **promuove** invece di riscriverlo. Quanto manca lo dice un comando, non una stima: `node tests/tools/censimento-pezzi.js`. |
+| `docs/componenti-condivisi.md`, `docs/componenti-singoli.md` | **Il magazzino da cui si preleva, e la sua sala d'attesa.** Si guardano **prima** di scrivere un pezzo nuovo: se c'è già, si riusa; se sta fra i singoli, si **promuove** invece di riscriverlo. **Ci si SCRIVE dentro quando un passo di codice tocca un file** (regola 46). Quanto manca lo dice un comando, non una stima: `node tests/tools/censimento-pezzi.js`. |
 | `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
 | `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni-stato.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
@@ -1028,6 +1028,57 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     sezione «Come si prende un passo»** — qui c'è la regola, lì i numeri che
     l'hanno scritta. *Una regola si applica ogni giorno, i numeri si rileggono
     quando qualcuno vuole cambiarla.*
+
+46. **CHI TOCCA, CATALOGA** — quando si scrive una riga del catalogo dei pezzi.
+
+    > **Un passo di codice non è finito finché i file che ha toccato non sono
+    > catalogati.**
+
+    Le righe vanno in `docs/componenti-condivisi.md` (lo usa più di un file) o
+    in `docs/componenti-singoli.md` (oggi lo usa un file solo), **nello stesso
+    commit del passo** — come i test (regola 23) e come i registri (regola 43).
+    Quanto manca lo dice un comando, non una stima:
+    `node tests/tools/censimento-pezzi.js`.
+
+    **Il criterio è «letto», non «comparso nel diff».** Si catalogano i pezzi
+    dei file che il passo ha dovuto **capire**, riga per riga. Un file in cui
+    è cambiata una riga senza leggerlo non entra: *una riga di catalogo
+    scritta indovinando è peggio di una riga mancante, perché la seconda si
+    vede e la prima no.*
+
+    ⚠️ **IL COSTO SI DICHIARA, PERCHÉ C'È: ogni passo di codice diventa più
+    lungo.** Quello di ieri (1.7) sarebbe cresciuto di **quarantasette righe di
+    catalogo**. **Non è gratis: è spostato** — dal giro finale, dove costerebbe
+    rileggere ventiquattro file da capo, al giro in cui quei file sono già
+    aperti.
+
+    **La misura che l'ha scritta, ed è un fatto e non un timore:** il passo 1.7
+    ha letto `progressi.js` (38 pezzi) e `identita.js` (9) **riga per riga** —
+    quarantasette pezzi erano catalogabili quel giorno a costo quasi zero, e il
+    giorno dopo erano ancora scoperti. Catalogarli dopo è costato **un turno
+    suo**, speso a rileggere quello che era già stato letto.
+
+    **Perché il MOMENTO è la regola, e non l'elenco:** delle tre colonne, due
+    si scrivono guardando la firma — *cosa fa*, *cosa gli passi → cosa torna*.
+    **La terza no.** «Cosa dà per scontato» esiste solo nella testa di chi ha
+    appena letto il corpo della funzione, e un'ora dopo è già una supposizione.
+
+    ⚠️ **E il catalogo TROVA, non descrive soltanto.** Catalogare i
+    venticinque pezzi di `progressi.js` il giorno dopo averlo letto ha fatto
+    vedere che `wipeEpisodeProgress` cancella **tre** chiavi per episodio su
+    sette, con l'elenco scritto a mano: una cosa che la lettura del passo 1.7
+    non aveva visto. *La terza colonna costringe a dire cosa un pezzo dà per
+    scontato, ed è lì che si scopre che dà per scontata una cosa falsa.*
+
+    **Non si generano righe vuote in automatico**: un file di segnaposto è un
+    invito a riempirlo di intenzioni, e quattrocento righe finte sembrerebbero
+    un catalogo.
+
+    *Ne segue che il catalogo NON è un passo della catena — era la riga 1.4, ed
+    è stata tolta il 2026-09-20. **È una coda attaccata a ogni passo di
+    codice**: non finisce mai perché cresce da sé quando nascono file nuovi, e
+    un passo che non finisce mai, messo in fila con quelli che finiscono, li
+    blocca tutti.*
 
 ## Riferimenti operativi
 

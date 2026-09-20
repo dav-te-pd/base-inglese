@@ -94,7 +94,6 @@ lavorare su una base che non si può misurare.*
 | | Passo | Perché adesso |
 |---|---|---|
 | **1.3** | **Passo 18 — le stringhe del markup** | ⚠️ **Da RICONTARE prima: non sono mai state contate.** Il numero su cui si pianificava non esiste |
-| **1.4** | **Passo 24 — `componenti-condivisi.md` e `componenti-singoli.md`** | ⚠️ **MISURATO IL 2026-09-20, ed è più grosso di come era accorpato: 560 pezzi** (320 funzioni in `app/*.js`, 240 classi in `stile/*.css`), ognuno con tre campi di prosa che **una persona scrive leggendo la funzione**. Non si fa in un giro. **Nato il 2026-09-20 con lo strumento che lo rende contabile** (`tests/tools/censimento-pezzi.js`: dice quanti mancano **e in quale file stanno**) e con la prima tranche: `app/dati.js`, `app/avvio.js` e `app/orchestrazione.js` chiusi, **14 su 560**. Si prende **un file per volta**, e il numero sale. ⚠️ **Non si generano righe vuote in automatico:** «un file vuoto in attesa è un invito a riempirlo di intenzioni», e 546 righe finte sembrerebbero un catalogo |
 | **1.8** | **Le tabelle di personalizzazione prendono la forma nuova** | ⚠️ **Sono gia' USCITE da `APP_CONFIG` il 2026-09-15**, in `data/inglese/it/tabelle-personalizzazione.json` — ma **col contenuto vecchio**, come deciso allora: sei destinazioni invece di undici, id `marco` invece di `papa-marco`, traducibilità dedotta invece che dichiarata. Quello che resta è la FORMA: i punti ② ③ ⑤ di *Cosa manca* in `docs/inglese/it/tabelle-personalizzazione.md`, **tutti e tre verificati aperti il 2026-09-20** nel codice, non nel documento. ⚠️ **E qui si tolgono le colonne `fr`/`es`/`de` vuote** — vedi il divieto 7 |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
 | **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* |
@@ -114,7 +113,7 @@ attendere abbastanza a lungo da poterla provare.
 | | Tocca | Superficie misurata |
 |---|---|---|
 | **1.3** stringhe del markup | **CODICE** | 101 occorrenze in `index.html`, **48 distinte**; 64 occorrenze sono **15 stringhe ripetute** (`Spiegazione` ×19, `Help` ×9, `← Mappa` ×7). **Almeno 24 delle 48 NON si spostano**: 8 di onboarding/home (decisione presa — devono funzionare quando niente funziona), 8 del Pannello Admin (strumento, non studente), 8 nomi di moduli **sovrascritti a runtime** da `CONFIG.moduleLabels`, cioè segnaposto |
-| **1.4** catalogo dei pezzi | **DOCUMENTI** | 548 scoperti su 562 — e cresce da sé quando nascono file |
+| ~~**1.4**~~ catalogo dei pezzi | **DOCUMENTI** | 548 scoperti su 562 — e cresce da sé quando nascono file. ⚠️ **NON È PIÙ UN PASSO dal 2026-09-20: è la regola 46 «CHI TOCCA, CATALOGA»** — la riga resta qui perché è la misura che ha scritto la regola |
 | **1.8** tabelle di personalizzazione | **CODICE** | **27 punti in sei file**: `ui-condivisa.js` 10 · `personalizza.js` 7 · `apertura.js` 6 · `config.js` 2 · `catalogo.js` 1 · `mappa.js` 1. Più **sei file di test** che ci passano dentro |
 | **1.10** giro dei buchi | documenti | **per definizione ULTIMO**: «si fa quando la lista smette di cambiare» |
 | **1.12** edizioni | contenuto di chi guida il progetto | `docs/francese/` non esiste ancora |
@@ -129,6 +128,11 @@ attendere abbastanza a lungo da poterla provare.
 
 > **1.4 È L'UNICO ACCORPABILE, E LA MISURA DICE UNA COSA PIÙ UTILE:
 > NON È UN PASSO, È UNA CODA.**
+>
+> ⚠️ **ESEGUITO IL 2026-09-20: è diventato la regola 46 «CHI TOCCA,
+> CATALOGA», e la sua riga è uscita dalla tabella della tappa ①.** *Un passo
+> che non finisce mai, messo in fila con quelli che finiscono, li blocca
+> tutti.*
 
 I suoi 548 pezzi stanno **dentro i file che gli altri passi toccano**. Tenerlo
 come riga a sé significa, un giorno, rileggere ventiquattro file per
@@ -139,6 +143,32 @@ sono già stati letti riga per riga**, che è il solo momento in cui la colonna
 *Misura che lo dimostra: il passo 1.7 ha letto `progressi.js` (38 pezzi) e
 `identita.js` (9) riga per riga — **quarantasette pezzi erano catalogabili quel
 giorno a costo quasi zero**, e sono ancora scoperti.*
+
+### ⚠️ TROVATO CATALOGANDO — `wipeEpisodeProgress` conosce tre chiavi su sette
+
+**Trovato il 2026-09-20** scrivendo le righe di `app/progressi.js` nel catalogo
+dei pezzi — *cioè dalla terza colonna, «cosa dà per scontato», e non dalla
+lettura del passo 1.7, che pure aveva letto lo stesso file riga per riga.*
+
+`wipeEpisodeProgress` è la conseguenza del «sì» all'avviso di metà episodio:
+azzera il progresso che dipende dalla personalizzazione che sta per cambiare.
+**Cancella tre chiavi** — passi completati, esiti, mastery — e le nomina a
+mano. Le chiavi per episodio sono **sette**: sopravvivono `audioSecondsSent`,
+`nextLineSkips`, `storyCardsExplanationStats` e `storyCardsDeclarations`.
+
+**Due delle quattro non sono un difetto, ed è la parte che serve sapere:**
+`audioSecondsSent` e `nextLineSkips` sono **conti, non progresso** — quanto
+audio è stato speso, quante volte si è saltata l'attesa — e azzerarli
+perderebbe una misura per un motivo che non la riguarda.
+
+**Le altre due sono una domanda vera:** `storyCardsDeclarations` regge lo
+«Sblocco Sequenziale» di Why We Say It (regola 30), quindi dopo un `wipe` il
+modulo si ri-blocca in mappa **ma riapre le card già dichiarate**.
+
+**Non corretto in questo giro, e la condizione è questa:** si decide **quando
+si tocca Why We Say It o la schermata Personalizza**, non prima — e chiunque
+**aggiunga una chiave per episodio** deve passare di qui, perché l'elenco a
+mano non lo dirà da solo.
 
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 

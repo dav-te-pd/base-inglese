@@ -10,6 +10,12 @@ nuovo è l'ultima spiaggia, non la prima.
 > esistiti sette Blocchi Ascolto:** nessuno aveva un posto dove guardare prima
 > di scrivere.
 
+> **Quando si SCRIVE una riga qui dentro lo dice la regola 46 «CHI TOCCA,
+> CATALOGA»**: un passo di codice non è finito finché i file che ha toccato non
+> sono catalogati, **nello stesso commit**. *Non è un giro di pulizia a parte:
+> era la riga 1.4 del piano, ed è stata tolta il 2026-09-20 proprio perché un
+> passo che non finisce mai blocca quelli che finiscono.*
+
 ## Le tre colonne, e perché sono tre
 
 | Colonna | Cosa ci va |
@@ -63,3 +69,35 @@ non le sa scrivere.
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
 |---|---|---|---|
 | `showView` | Accende una vista e spegne le altre. **Ha un mestiere solo: cambiare la vista attiva.** | `nome` della vista (`'map'`, `'onboarding'`, …) → niente | ⚠️ **NON pulisce più niente, ed è una regola** (regola 21, riscritta il 2026-09-17): timer, registrazioni e sequenze in corso li azzera `stopAllModuleActivity`, che **chiama chi lascia un modulo**, non chi disegna. *Prima la pulizia viaggiava attaccata qui, e su due dei quattordici punti di chiamata era un no-op garantito: una cosa che risponde a due domande dà la risposta giusta a una e sbagliata all'altra.* |
+
+## `app/magazzino.js` — dove si salva
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `magLeggiJson` | Rilegge un oggetto salvato. Se non c'è, se è illeggibile o se non supera il controllo, **torna il vuoto che gli dai tu** — non `null`, non un'eccezione. | `(chiave, vuoto, valida?)` → l'oggetto, oppure `vuoto()` | Che il `vuoto` sia una **funzione**, non un valore: due chiamate non devono condividere lo stesso oggetto. **Ingoia sempre**: in navigazione privata `localStorage` alza, e un errore lì fermerebbe il disegno di una schermata per una preferenza. |
+| `magScriviJson` | Salva un oggetto. **Se non riesce, non lo dice.** | `(chiave, valore)` → niente | Che chi chiama **non abbia bisogno di sapere se ha funzionato**. Con i dati del sito bloccati questa non salva nulla e l'app continua: è voluto. Il giorno del server questa riga diventa asincrona e i chiamanti si toccano. |
+| `magLeggiTesto` | Rilegge una stringa: le bandierine `'1'`/`'0'` e il nome dell'utente. | `(chiave, vuoto?)` → la stringa, oppure `''` (o il `vuoto` che passi) | Che il valore salvato **non** sia JSON. ⚠️ Il default è `''`, non `null`: chi deve distinguere «mai scritto» da «scritto vuoto» passa `null` esplicitamente — lo fa `isIntroDismissed`. |
+| `magScriviTesto` | Salva una stringa. | `(chiave, valore)` → niente | Converte con `String()`: un booleano diventa `"true"`, non `'1'`. Chi vuole `'1'`/`'0'` lo scrive lui. |
+| `magCancella` | Toglie una chiave. | `chiave` → niente | Che togliere una chiave che non c'è **non sia un errore**. |
+
+## `app/identita.js` — chi è lo studente, e come vede l'app
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `icon` | Il markup SVG di un'icona, da inserire dentro un `innerHTML`. **Sei file lo usano.** | `(nome, classeExtra?)` → stringa HTML, **`''` se il nome non esiste** | Che il nome sia una chiave di `ICONS`. ⚠️ **Un nome sbagliato non alza: torna stringa vuota**, quindi il pulsante resta senza icona e nessuno se ne accorge. |
+| `getUserName` | Il nome dello studente corrente. **È il lettore più usato dell'app: dodici file.** | `()` → la stringa, **`''` se non c'è** | Che `''` significhi «non si è ancora presentato» — è la condizione con cui `boot()` sceglie fra la schermata del nome e la casa. |
+
+## `app/progressi.js` — quello che lo studente lascia dietro di sé
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `loadMastery` | I colori di ogni voce (parola, frase, battuta) di un episodio, per quell'utente. | `(episodeId, userName)` → `{ unitId: { level, streak } }`, `{}` se vuoto | Che una voce **assente** significhi «mai incontrata», non «rossa» (regola 39). Chi la scorre non deve inventarle un livello. |
+| `loadModuleProgress` | Quali passi di un episodio sono completati. **È da qui che la mappa decide i lucchetti.** | `(episodeId, userName)` → `{ completed: [...] }` | Che l'elenco contenga **id di PASSO**, non di modulo: la seconda apparizione di Flash Card è `flashcardAEngIta-2`. Confonderli sblocca il passo sbagliato. |
+| `markModuleCompleted` | Segna un passo come fatto. **Solo su gesto esplicito** (regola 7). | `(episode, userName, moduleId)` → niente | Che chi chiama sia il pulsante «Ho finito», non la fine di un'animazione. Scrive subito: non c'è una coda da svuotare dopo. |
+| `loadModuleOutcomes` | Il colore del passo in mappa — verde/giallo/rosso — quando quel modulo ne produce uno. | `(episodeId, userName)` → `{ moduleId: { level, ... } }` | Che **non tutti i moduli ne producano**: i tre Dialogue ne hanno uno, i moduli di sola lettura no. Un passo senza esito non è un passo incompleto. |
+| `saveModuleOutcome` | Scrive quel colore. | `(episode, userName, moduleId, outcome)` → niente | Che il livello arrivi già calcolato da `moduleRulesLevel`, **mai ricalcolato qui**: la matematica verde/giallo/rosso vive in un posto solo. |
+| `loadCustomValues` | Le scelte di personalizzazione di quell'episodio (nomi, città). | `(episode, userName)` → `{ chiave: valore }` | Che una scelta salvata possa **non esistere più** nel magazzino delle tabelle: filtra invece di fidarsi. *È la protezione che il punto ④ di `tabelle-personalizzazione.md` chiede e che oggi c'è solo a metà.* |
+| `isCustomizeSeen` | Se lo studente ha già visto la schermata Personalizza di quell'episodio. | `(episodeId, userName)` → booleano | Che il valore salvato sia la **stringa** `'1'`, non un booleano: passa da `magLeggiTesto` e non da `magLeggiJson`. Cambiare formato romperebbe i profili esistenti. |
+| `isIntroDismissed` | Se lo studente ha spuntato «non mostrare più» sull'intro di un tipo di modulo. **Dieci file la chiamano.** | `(kind, userName)` → booleano | ⚠️ Che esista un **secondo nome storico** per Repeat Aloud (`repeatAloudIntroDismissed`), letto se il primo manca: chi lo togliesse rifarebbe comparire l'intro a chi l'aveva già chiusa. |
+| `setIntroDismissed` | Scrive quella spunta. **Dieci file la chiamano.** | `(kind, userName, dismissed)` → niente | Scrive `'1'`/`'0'` come stringa, non il booleano. La coppia con `isIntroDismissed` va tenuta: sono lo stesso formato da due lati. |
+| `saveHelpRequest` | Accoda una richiesta di aiuto scritta dallo studente. | `(userName, entry)` → niente | Che la lista cresca e **non venga mai svuotata dall'app**: è un registro, non una coda. Nessuna schermata la mostra ancora. |
