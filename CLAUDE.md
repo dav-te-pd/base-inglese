@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920g**
+**Versione: 20260920h**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -985,6 +985,49 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     lascia un rosso. Lascia un verde che non prova più niente — e il conto delle
     attese a tempo **scende**, cioè il numero migliora proprio quando il lavoro
     fa danno.*
+
+45. **ANALISI A DUE, CODICE A UNO** — come si prende un passo.
+
+    **Due momenti, e il primo non costa niente.**
+
+    **① L'ANALISI, SEMPRE, E SUI DUE PASSI SUCCESSIVI INSIEME.** Prima di
+    scrivere una riga si misura **cosa resta davvero** dei due passi in cima
+    alla lista. Costa dieci minuti, **zero suite e zero CI**, e non si salta.
+
+    ⚠️ **Non è prudenza: è che il piano invecchia più in fretta di quanto
+    sembri.** Misurato il 2026-09-20, quattro righe guardate e **quattro
+    sbagliate**: un passo era quattro volte più grande della stima, uno era già
+    fatto, uno per tre quinti, e il quarto era per metà fatto **e col nome che
+    mandava a guardare proprio la metà fatta**.
+
+    **② L'ACCORPAMENTO, e la regola è misurata, non prudente.**
+
+    ⚠️ **L'analisi NON riduce le suite: rende possibile la decisione di
+    accorpare, ed è l'accorpamento che le riduce.** La distinzione conta,
+    perché misurando si scopre che l'accorpamento fa risparmiare **solo in un
+    caso**. *Il conto del 2026-09-20: otto passi, **dodici suite**. Le quattro
+    in più vengono **tutte** da passi che toccano codice che gira — **nessuna**
+    dall'accorpamento.*
+
+    > **SI ACCORPA QUANDO AL MASSIMO UNO DEI DUE TOCCA CODICE CHE GIRA.**
+
+    | I due passi | Cosa si fa |
+    |---|---|
+    | documenti/commenti **+** documenti/commenti | **insieme**, una suite sola |
+    | codice **+** documenti | **insieme**; se va rosso, il rosso è del primo |
+    | **codice + codice** | **MAI insieme** |
+
+    **L'ultima riga non è prudenza, ed è la sola che vale la pena motivare:**
+    due passi di codice costeranno **due suite comunque** — lo dice il conto —
+    quindi accorparli paga **lo stesso prezzo più l'ambiguità** di non sapere
+    quale dei due ha rotto cosa. *Divisi apposta, `1.11a` e `1.11b` hanno
+    prodotto 7 rossi al primo giro e 26 al secondo: **tutti attribuiti in un
+    secondo**.*
+
+    **Le tabelle con le misure per esteso stanno in `docs/decisioni-stato.md`,
+    sezione «Come si prende un passo»** — qui c'è la regola, lì i numeri che
+    l'hanno scritta. *Una regola si applica ogni giorno, i numeri si rileggono
+    quando qualcuno vuole cambiarla.*
 
 ## Riferimenti operativi
 
