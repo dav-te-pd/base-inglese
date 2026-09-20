@@ -86,8 +86,28 @@ nodi.forEach(function (n) {
   // ⚠️ 15 -> 16 col PASSO ②: `app/audio.js` ne acquista una — la Regola Azione
   // Critica, che chiede `BI.dgAudioProtected` al Dialogo. Non e' un file nuovo:
   // e' un file che prima non dipendeva da nessuno e adesso dipende da uno.
-  log('[B] Sedici file di app/ dipendono da qualcosa',
-    conDipendenze.length === 16, conDipendenze.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ IL NUMERO NON SI SCRIVE PIU', E IL 2026-09-20 E' LA QUARTA VOLTA CHE
+  // QUESTA RIGA LO CAMBIEREBBE (13 → 14 → 15 → 16 → 18). Ogni passo che
+  // aggiunge un file la fa rossa **per il motivo sbagliato**: non «una
+  // dipendenza e' sparita», ma «ne e' nata una che doveva nascere».
+  //
+  // ⚠️ E AL PRIMO TENTATIVO DI SOSTITUIRLO HO SCRITTO UN ALTRO NUMERO
+  // SBAGLIATO: «i tre che non dipendono da nessuno». Sono SEI — `config.js`,
+  // `spazio.js`, `magazzino.js`, `suoni.js`, `quiz-engine.js`,
+  // `orchestrazione.js` — e l'ho saputo dal rosso, non dalla memoria. *Lo
+  // scrivo perche' e' la dimostrazione della riga che segue: un elenco scritto
+  // a mano e' sbagliato anche quando lo scrive chi sta correggendo un elenco
+  // scritto a mano.*
+  //
+  // Quindi resta UNA cosa, e non e' un conto: **`magazzino.js` non deve
+  // dipendere da nessuno.** E' il fondo della pila — l'unico file che tocca il
+  // `localStorage` — e il giorno in cui dipendesse da qualcosa non sarebbe piu'
+  // il fondo: vorrebbe dire che qualcuno gli ha messo sotto un altro strato, e
+  // il passo 1.7 sarebbe da rifare.
+  const magazzino = nodi.filter(function (n) { return n.file === 'magazzino.js'; })[0];
+  log('[B] magazzino.js esiste ed e\' il fondo della pila: non dipende da nessuno',
+    !!magazzino && conDipendenze.indexOf(magazzino) === -1,
+    magazzino ? JSON.stringify(Object.keys(magazzino.dipende)) : 'file non trovato');
 
   const allInsu = nodi.filter(function (n) { return n.dipende['index.html']; });
   // ⚠️ QUESTO CONTO DEVE CALARE, MAI SALIRE. Una dipendenza verso index.html e'
@@ -242,9 +262,14 @@ nodi.forEach(function (n) {
   // ⚠️ 12 -> 13 col passo C2, per gli undici alias come tutti. `apertura.js`
   // sta nella seconda fila per la PRIMA delle due ragioni (gli alias), non per
   // la seconda: non tocca nessun nodo mentre viene letto.
-  log('[B] Tredici dipendenze a tempo di PARSING',
-    aParsing.length === 13,
-    aParsing.map(function (n) { return n.file; }).join(', '));
+  // ⚠️ STESSA STORIA DEL NUMERO QUI SOPRA (9 → 10 → 11 → 12 → 13 → 14), e
+  // stessa correzione: quello che conta non e' quanti sono, e' che **chi ha
+  // una dipendenza a tempo di parsing stia DOPO quello da cui dipende** — che
+  // e' gia' verificato riga per riga dal blocco [A]. Qui resta il fatto che
+  // rende quel controllo necessario: **ce ne sono, e sono la maggioranza.**
+  log('[B] Le dipendenze a tempo di PARSING sono la maggioranza: e\' il motivo per cui l\'ordine dei tag e\' un vincolo',
+    aParsing.length > nodi.length / 2,
+    aParsing.length + ' su ' + nodi.length + ': ' + aParsing.map(function (n) { return n.file; }).join(', '));
 }
 
 // ── [C] L'ORDINE DEI TAG RISPETTA IL GRAFO ──────────────────────────

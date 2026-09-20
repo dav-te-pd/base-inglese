@@ -1,4 +1,4 @@
-// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata]
+// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata], magazzino.js [chiamata]
 // ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
 // tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
 // una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
@@ -212,7 +212,7 @@ window.BI = window.BI || {};
       .then(function (data) {
         var tabelle = { people: data.people || {}, places: data.places || {} };
         var overrides = {};
-        try { overrides = JSON.parse(localStorage.getItem(BI.CONFIG_OVERRIDES_KEY) || '{}'); } catch (e) {}
+        overrides = BI.magLeggiJson(BI.CONFIG_OVERRIDES_KEY, function () { return {}; });
         ['people', 'places'].forEach(function (k) {
           if (overrides[k]) tabelle[k] = overrides[k];
         });

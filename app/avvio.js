@@ -1,4 +1,4 @@
-// DIPENDE DA: identita.js [chiamata]
+// DIPENDE DA: identita.js [chiamata], magazzino.js [chiamata]
 // ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
 // tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
 // una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
@@ -96,9 +96,8 @@
   // (regola 13).*
   function applyConfigOverrides() {
     try {
-      var raw = localStorage.getItem(CONFIG_OVERRIDES_KEY);
-      if (!raw) return;
-      var overrides = JSON.parse(raw);
+      var overrides = window.BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return null; });
+      if (!overrides) return;
       Object.keys(overrides).forEach(function (key) {
         window.APP_CONFIG[key] = overrides[key];
       });
@@ -114,7 +113,7 @@
       // 'baseinglese:theme' e index.html conosceva la stessa chiave come
       // THEME_KEY: due punti che sapevano la stessa cosa, in due file da
       // quando lo strato 0 e' uscito. Adesso e' uno solo.
-      var saved = localStorage.getItem(window.BI.THEME_KEY);
+      var saved = window.BI.magLeggiTesto(window.BI.THEME_KEY, null);
       if (saved && saved !== window.APP_CONFIG.themes.defaultTheme) {
         document.documentElement.setAttribute('data-theme', saved);
       }

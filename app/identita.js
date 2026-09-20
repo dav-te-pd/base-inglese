@@ -1,4 +1,4 @@
-// DIPENDE DA: nessuno
+// DIPENDE DA: magazzino.js [chiamata]
 // Nessun altro file di `app/` e nessun nome di `index.html`: questo file si
 // regge da solo, e l'ordine del suo tag non e' un vincolo.
 //
@@ -99,7 +99,7 @@ window.BI = window.BI || {};
     } else {
       document.documentElement.setAttribute('data-theme', name);
     }
-    try { localStorage.setItem(THEME_KEY, name); } catch (e) {}
+    BI.magScriviTesto(THEME_KEY, name);
     syncThemePicker();
   }
 
@@ -113,15 +113,15 @@ window.BI = window.BI || {};
   var NAME_KEY = 'baseinglese:userName';
 
   function getUserName() {
-    try { return localStorage.getItem(NAME_KEY) || ''; } catch (e) { return ''; }
+    return BI.magLeggiTesto(NAME_KEY);
   }
 
   function setUserName(name) {
-    try { localStorage.setItem(NAME_KEY, name); } catch (e) {}
+    BI.magScriviTesto(NAME_KEY, name);
   }
 
   function clearUserName() {
-    try { localStorage.removeItem(NAME_KEY); } catch (e) {}
+    BI.magCancella(NAME_KEY);
   }
 
   BI.icon = icon;

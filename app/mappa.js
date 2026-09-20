@@ -1,4 +1,4 @@
-// DIPENDE DA: apertura.js [chiamata], audio.js [parsing], avvio.js [parsing], catalogo.js [parsing], dati.js [parsing], identita.js [parsing], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
+// DIPENDE DA: apertura.js [chiamata], audio.js [parsing], avvio.js [parsing], catalogo.js [parsing], dati.js [parsing], identita.js [parsing], magazzino.js [chiamata], orchestrazione.js [parsing], progressi.js [parsing], sessione.js [chiamata], spazio.js [parsing], ui-condivisa.js [parsing]
 // ⚠️ LO STRATO DELLA MAPPA E DEL PANNELLO ADMIN — l'ultimo pezzo del 22 che non
 // e' un modulo.
 //
@@ -1192,9 +1192,9 @@
 
   function persistConfigSection(sectionKey) {
     var overrides = {};
-    try { overrides = JSON.parse(localStorage.getItem(CONFIG_OVERRIDES_KEY) || '{}'); } catch (e) { overrides = {}; }
+    overrides = BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return {}; });
     overrides[sectionKey] = window.APP_CONFIG[sectionKey];
-    try { localStorage.setItem(CONFIG_OVERRIDES_KEY, JSON.stringify(overrides)); } catch (e) {}
+    BI.magScriviJson(CONFIG_OVERRIDES_KEY, overrides);
   }
 
   // Il grado successivo nel giro CONFIG.grades (A → B → C → D → A). Un
@@ -1339,7 +1339,7 @@
 
 
   document.getElementById('config-panel-reset-btn').addEventListener('click', function () {
-    try { localStorage.removeItem(CONFIG_OVERRIDES_KEY); } catch (e) {}
+    BI.magCancella(CONFIG_OVERRIDES_KEY);
     location.reload();
   });
 

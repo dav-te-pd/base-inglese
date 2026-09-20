@@ -1,4 +1,4 @@
-// DIPENDE DA: nessuno
+// DIPENDE DA: magazzino.js [parsing]
 // Nessun altro file di `app/` e nessun nome di `index.html`: questo file si
 // regge da solo, e l'ordine del suo tag non e' un vincolo.
 //
@@ -11,7 +11,7 @@
 // prima di `vista`, che invece ne ha tre.
 //
 // ⚠️ COSA C'E' DENTRO, E COL CRITERIO INVECE CHE COLL'ELENCO: ogni funzione
-// che tocca una chiave di localStorage di PROGRESSO PER UTENTE, piu' il
+// che tocca una chiave di PROGRESSO PER UTENTE, piu' il
 // costruttore di quella chiave. Sono dodici chiavi. Restano fuori per
 // costruzione le tre che progresso non sono — il nome (NAME_KEY), il tema
 // (THEME_KEY) e gli override della configurazione — che stanno negli strati
@@ -74,22 +74,14 @@ window.BI = window.BI || {};
   // profili che ce l'hanno gia') o dare a queste funzioni una seconda
   // modalita': una cosa che risponde a due domande da' la risposta giusta a
   // una e sbagliata all'altra (famiglia ⓪-decies).
-  function leggiMagazzino(chiave, vuoto, valida) {
-    try {
-      var raw = localStorage.getItem(chiave);
-      var letto = raw ? JSON.parse(raw) : null;
-      if (letto && (!valida || valida(letto))) return letto;
-      return vuoto();
-    } catch (e) { return vuoto(); }
-  }
-
-  function scriviMagazzino(chiave, valore) {
-    try { localStorage.setItem(chiave, JSON.stringify(valore)); } catch (e) {}
-  }
-
-  function cancellaMagazzino(chiave) {
-    try { localStorage.removeItem(chiave); } catch (e) {}
-  }
+  // ⚠️ DAL 2026-09-20 (passo 1.7) QUESTE TRE NON TOCCANO PIU' `localStorage`:
+  // lo tocca `app/magazzino.js`, l'unico file che sa DOVE si salva. Restano
+  // qui come nomi perche' i loro venti chiamanti sono qui, ma il `try/catch` e
+  // il `JSON.parse` se ne sono andati — *erano la stessa riga scritta
+  // diciassette volte.*
+  var leggiMagazzino = BI.magLeggiJson;
+  var scriviMagazzino = BI.magScriviJson;
+  var cancellaMagazzino = BI.magCancella;
 
   function helpRequestsKey(userName) {
     return 'baseinglese:helpRequests:' + userName;
@@ -263,7 +255,7 @@ window.BI = window.BI || {};
   }
 
   function isCustomizeSeen(episodeId, userName) {
-    try { return localStorage.getItem(customizeSeenKey(episodeId, userName)) === '1'; } catch (e) { return false; }
+    return BI.magLeggiTesto(customizeSeenKey(episodeId, userName)) === '1';
   }
 
   // The consequence of confirming the mid-episode warning: every piece of
@@ -300,15 +292,15 @@ window.BI = window.BI || {};
 
   function isIntroDismissed(kind, userName) {
     try {
-      var stored = localStorage.getItem(introDismissedKey(kind, userName));
+      var stored = BI.magLeggiTesto(introDismissedKey(kind, userName), null);
       if (stored !== null) return stored === '1';
-      if (kind === 'repeatAloud') return localStorage.getItem(legacyRaIntroDismissedKey(userName)) === '1';
+      if (kind === 'repeatAloud') return BI.magLeggiTesto(legacyRaIntroDismissedKey(userName)) === '1';
       return false;
     } catch (e) { return false; }
   }
 
   function setIntroDismissed(kind, userName, dismissed) {
-    try { localStorage.setItem(introDismissedKey(kind, userName), dismissed ? '1' : '0'); } catch (e) {}
+    BI.magScriviTesto(introDismissedKey(kind, userName), dismissed ? '1' : '0');
   }
 
   function storyCardsDeclarationsKey(episodeId, userName) {
