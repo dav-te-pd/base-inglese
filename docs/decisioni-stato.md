@@ -224,6 +224,48 @@ Condizione: quando nasce il caricamento a richiesta.
 
 ---
 
+# ⚠️ I SEI FILE DI CONTENUTO: COSA E' FALSO OGGI — misurato il 2026-09-20
+
+**Misurato su richiesta, e NON corretto di proposito** (regola 33: quei file
+sono di chi guida il progetto). Sta qui perche' altrimenti vive solo in chat, e
+la chat non sopravvive al container.
+
+⚠️ **Il grosso viene TUTTO dalla stessa data: i cinque file non toccati dopo il
+2026-09-09.** Non sono sviste sparse — sono **una fotografia del repository di
+quel giorno**, scattata prima dei passi 6 (le cartelle e i nomi), 19 (le tabelle
+in un file) e 1.11 (la struttura per edizione).
+
+| File | Ultimo commit | Cosa dice di falso |
+|---|---|---|
+| `struttura-corso.md` | 2026-09-20 | `docs/it/` in due punti; «il contenuto di un episodio sta in `docs/episodio-N.md`» |
+| `sequenza-episodi.md` | 2026-09-09 | numera `gate`=3 e `aircraft-door`=4, l'app li mostra come «Episodio 1» e «Episodio 2» |
+| `obiettivi-a1.md` | 2026-09-09 | `docs/it/`; dice `aircraft-door` «deciso non scritto» — e' scritto, trascritto e vivo |
+| `inventario-grammaticale.md` | 2026-09-09 | `docs/it/` in quattro punti |
+| `tabelle-personalizzazione.md` | 2026-09-15 | si dichiara «non ancora trascrivibile», ed e' trascritto dal 15 (col contenuto vecchio, come deciso) |
+| `inglese-it-gate.md` | 2026-09-09 | «id oggi `episode1`», «diventera' `gate`», il percorso e il nome del JSON, «le tabelle non esistono ancora» (due volte) |
+| `inglese-it-aircraft-door.md` | 2026-09-09 | «id non ancora assegnato», «`episodeId: "episode2"`» |
+
+**Cosa e' vero oggi, in una riga:** gli id sono `gate` e `aircraft-door` (nel
+codice **e** dentro i JSON), i file dati stanno in
+`data/inglese/it/inglese-it-{id}.json`, le tabelle esistono in
+`data/inglese/it/tabelle-personalizzazione.json`, la sola sequenza e'
+`narrativo-standard` con 22 passi, e i numeri attesi dei due episodi **tornano
+tutti**.
+
+### Le tre cose trovate che non erano state chieste
+
+- ⚠️ **`level: "A1"` e `episodeTitle` nei due JSON non li legge NESSUNO**
+  (misurato: zero lettori in `app/`). E `level` contraddice la regola 4 —
+  *«il livello non e' una proprieta' dell'episodio»*. Condizione: si decide col
+  passo che tocca i file episodio.
+- ⚠️ **Il JSON delle tabelle porta colonne `fr`, `es`, `de` VUOTE**, cioe' la
+  forma «una riga, cinque lingue». Contraddice la decisione del 2026-09-20 —
+  un'edizione non e' una traduzione — e va sciolta **prima** che nasca
+  `francese/it`, altrimenti i nomi francesi finiscono in due posti.
+- **I due JSON episodio non hanno le stesse chiavi:** `gate` porta
+  `generalRule` e `ageOptions`, `aircraft-door` no. Puo' essere giusto (uno ha
+  le eta', l'altro no), ma nessuno l'ha dichiarato.
+
 # ⚠️ I DIVIETI — si leggono PRIMA di prendere un passo
 
 Non si deducono guardando il codice.
