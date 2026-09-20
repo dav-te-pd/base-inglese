@@ -993,6 +993,130 @@
 
   BI.openEpisodeMap = openEpisodeMap;
   BI.completeModule = completeModule;
+  // ============================================================
+  // LE PORTE DEL PANNELLO ADMIN — arrivate qui il 2026-09-20, passo ①.
+  //
+  // Il pannello e' in questo file da giorni; le sue PORTE erano rimaste in
+  // `index.html`: la sequenza `config` da tastiera, l'indirizzo `?config`, i
+  // due modi di chiuderlo e il pulsante che azzera gli override.
+  //
+  // ⚠️ E NON E' STATO FATTO UN `app/pannello-admin.js`, ED ERA IL PIANO
+  // DICHIARATO. La misura l'ha cambiato: un file con quel nome avrebbe avuto
+  // dentro **le maniglie di una porta che sta in un altro file** — e chi
+  // cercasse il pannello lo cercherebbe li'. *Un nome che promette una cosa e
+  // ne contiene un'altra costa piu' delle righe che fa risparmiare.*
+  //
+  // ⚠️ `isEditableTarget` viene con loro perche' ha un lettore solo, ed e'
+  // quello qui sotto: serve a non aprire il pannello mentre si scrive il
+  // proprio nome in un campo di testo.
+  // ============================================================
+  /* ============================================================
+     HIDDEN: DEV CONFIG PANEL (CLAUDE.md, embrione del pannello Admin)
+     Legge/scrive window.APP_CONFIG dal vivo. Si apre digitando "config"
+     fuori da un campo di testo (nessuna UI scopribile per caso). Ogni
+     modifica muta window.APP_CONFIG IN PLACE (mai una riassegnazione:
+     CONFIG, nel secondo <script>, è un riferimento allo stesso oggetto,
+     e tutto quel che l'ha già letto dipende da quel riferimento) e viene
+     salvata in localStorage per sopravvivere al reload, sostituendo per
+     intero la sezione di primo livello toccata. ============================ */
+  // La chiave vive in app/avvio.js, che e' chi applica gli override PRIMA di
+  // tutto il resto. Qui se ne prende il nome: un posto solo, dichiarativo.
+  var CONFIG_OVERRIDES_KEY = BI.CONFIG_OVERRIDES_KEY;
+
+  function isEditableTarget(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || el.isContentEditable;
+  }
+
+  var configRevealBuffer = '';
+  document.addEventListener('keydown', function (e) {
+    if (isEditableTarget(e.target)) return;
+    if (e.key.length !== 1) return;
+    configRevealBuffer = (configRevealBuffer + e.key).slice(-6);
+    if (configRevealBuffer.toLowerCase() === 'config') openConfigPanel();
+  });
+
+  // ⚠️ I TESTI ITALIANI DEI PANNELLI QUI SOTTO RESTANO NEL CODICE, DI
+  // PROPOSITO — non sono una dimenticanza del passo 18.
+  //
+  // La regola 8 parla dei testi che legge LO STUDENTE. Il Pannello Admin non
+  // lo vede: si apre digitando "config" fuori da un campo di testo, e serve a
+  // chi guida il progetto. Una seconda edizione (inglese per tedeschi) non lo
+  // traduce, quindi metterlo in data/{lingua}/ lo legherebbe a una lingua per
+  // cui non e' scritto.
+  //
+  // Sta scritto qui e non solo in decisioni.md perche' senza questa riga sono
+  // indistinguibili dalle altre: chi passa col passo 18 in mano le sposta, e
+  // avrebbe ragione a farlo.
+
+
+
+
+  // ---- `STORY_CARDS_ANSWER_LABEL` E' IN app/mappa.js DAL 2026-09-20 ----
+  // Era rimasta qui quando la sua unica lettrice e' uscita, e il Pannello
+  // Admin moriva con `is not defined`. Il motivo per cui non si vedeva sta
+  // accanto alla riga, nel file nuovo.
+
+
+
+  document.getElementById('config-panel-close-btn').addEventListener('click', closeConfigPanel);
+  document.getElementById('config-panel-backdrop').addEventListener('click', closeConfigPanel);
+
+  // Second reveal path, for phones (typing "config" needs a keyboard):
+  // a ?config query param, checked once at boot. Still not something a
+  // beta tester stumbles into by browsing the app — only by typing it
+  // into the address bar — same "not discoverable by accident" bar as
+  // the keyboard sequence above. Deferred to the next tick: openConfigPanel
+  // -> renderConfigPanel reads EPISODES, which this script assigns later
+  // (further down, top-to-bottom) — by the time a 0ms timeout fires, the
+  // whole script has finished running and EPISODES exists.
+  //
+  // ⚠️ E QUESTO RAGIONAMENTO VALE PER EPISODES E NON VALEVA PIU' PER IL
+  // MAGAZZINO, che dal 2026-09-15 arriva da un fetch.
+  //
+  //   setTimeout(…, 0) aspetta "piu' tardi nello stesso script".
+  //   Non aspetta "piu' tardi sulla rete".
+  //
+  // Era un commento giusto reso falso non da una modifica al codice che
+  // descrive, ma dal MONDO INTORNO che e' cambiato: nessuno lo stava
+  // toccando quando ha smesso di essere vero. E' la famiglia ⓪-quinquies di
+  // tests/ERRORI-INGOIATI.md, e riguarda ogni difesa che si appoggia a
+  // "tanto e' gia' tutto in memoria".
+  //
+  // La riga qui sotto resta com'e' perche' EPISODES e' ancora sincrono; a
+  // reggere il magazzino e' openConfigPanel, che lo aspetta per conto suo.
+  try {
+    if (new URLSearchParams(window.location.search).has('config')) {
+      setTimeout(openConfigPanel, 0);
+    }
+  } catch (e) {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  document.getElementById('config-panel-reset-btn').addEventListener('click', function () {
+    try { localStorage.removeItem(CONFIG_OVERRIDES_KEY); } catch (e) {}
+    location.reload();
+  });
+
   BI.openConfigPanel = openConfigPanel;
   BI.closeConfigPanel = closeConfigPanel;
   BI.renderConfigPanel = renderConfigPanel;

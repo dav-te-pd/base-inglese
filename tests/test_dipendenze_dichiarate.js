@@ -282,12 +282,33 @@ nodi.forEach(function (n) {
   });
   log('[C] Nessun file dipende A TEMPO DI PARSING da uno caricato DOPO di lui',
     aParsing.length === 0, aParsing.join(' | '));
-  // I tre, e il perche' di ognuno sta in testa ad `app/apertura.js`:
-  // dati.js -> applyEpisodeDialogue, mappa.js -> migrateCustomizeSeenToModuleProgress
-  // e openModuleFromMap, personalizza.js -> ensureEpisodeSlotFields.
-  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono TRE, e sono queste',
-    aChiamata.length === 3 && aChiamata.every(function (r) { return / -> apertura\.js$/.test(r); }),
-    aChiamata.join(' | '));
+  // Le quattro, con la ragione di ognuna:
+  //   dati.js        -> apertura.js    applyEpisodeDialogue
+  //   mappa.js       -> apertura.js    migrateCustomizeSeenToModuleProgress, openModuleFromMap
+  //   personalizza.js-> apertura.js    ensureEpisodeSlotFields
+  //   ui-condivisa.js-> sessione.js    episodioCorrente, dal passo ① del 2026-09-20
+  //
+  // ⚠️ 3 -> 4 COL PASSO ①, e la ragione e' scritta perche' un numero che sale
+  // senza ragione e' un difetto. I moduli del pannello Aiuto sono tornati in
+  // `ui-condivisa.js`, dove sta il menu che li apre; l'unico nome che non e'
+  // in casa e' `BI.episodioCorrente()`, che stampa l'episodio sulla richiesta
+  // d'aiuto. `sessione.js` e' caricato DOPO `ui-condivisa.js`, quindi si
+  // chiede a tempo di chiamata — un alias congelerebbe `undefined`.
+  //
+  // ⚠️ E LA DESTINAZIONE NON E' PIU' UNA SOLA: l'asserzione di prima chiedeva
+  // che finissero tutte in `apertura.js`, e quella riga sarebbe diventata
+  // falsa in silenzio se l'avessimo allentata a «sono quattro». Quindi si
+  // nominano le COPPIE, che e' l'unica forma che non si puo' soddisfare per
+  // caso.
+  var atteseInAvanti = [
+    'dati.js -> apertura.js',
+    'mappa.js -> apertura.js',
+    'personalizza.js -> apertura.js',
+    'ui-condivisa.js -> sessione.js'
+  ].sort().join(' | ');
+  log('[C] Le dipendenze in avanti a tempo di CHIAMATA sono QUATTRO, e sono queste',
+    aChiamata.slice().sort().join(' | ') === atteseInAvanti,
+    'misurate: ' + aChiamata.slice().sort().join(' | '));
 }
 
 // ── [D] LA MISURA SA DISTINGUERE POSSEDERE DA ESPORRE ────────────────

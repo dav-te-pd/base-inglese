@@ -110,7 +110,18 @@ async function run() {
     // che le chiamano. L'invariante non è cambiato: «questo file aggancia
     // listener a tempo di parsing, ed è la ragione della seconda fila». È
     // cambiato quanti ne aggancia, e adesso ci sono DUE ragioni invece di una.
-    log('[C] I sei listener sono nel file (4 di chiusura + 2 del popup)', listener.length === 6, String(listener.length));
+    // ⚠️ 6 -> 7 COL PASSO ① (2026-09-20), e anche questa volta il numero e'
+    // stato SEGUITO: i moduli del pannello Aiuto sono tornati col menu che li
+    // apre, e portano il listener sui click dentro `#help-overlay-body` —
+    // quello che sceglie fra «Promemoria», «non mi e' chiaro» e «Indietro».
+    // *Un pezzo non e' solo le sue funzioni: sono le funzioni, lo stato che
+    // tengono e i listener che le chiamano.* L'invariante non cambia.
+    //
+    // ⚠️ E il secondo listener del pannello Aiuto, quello sul `submit`, NON
+    // entra in questo conto: la riga qui sopra cerca `addEventListener('click'`
+    // apposta. Lo guarda il blocco [F], che lo preme.
+    log('[C] I sette listener sono nel file (4 di chiusura + 2 del popup + 1 dell\'Aiuto)',
+      listener.length === 7, String(listener.length));
     log('[C] E il listener di Escape NON c\'e\' (chiude anche l\'Admin)',
       !righe.some(function (r) { return /'keydown'/.test(r); }) &&
       righeDiCodiceDi('index.html').some(function (r) { return /'keydown'/.test(r); }));
@@ -221,8 +232,47 @@ async function run() {
     }) : null;
     log('[F] Lo strato sa dire QUALE modulo ha chiesto aiuto',
       !!menuHelp && menuHelp.id === 'repeatAloud', JSON.stringify(menuHelp));
-    log('[F] ...e il gestore di index.html arriva in fondo premendo «Promemoria»',
+    log('[F] ...e il gestore arriva in fondo premendo «Promemoria»',
       !!menuHelp && menuHelp.cambiato === true, JSON.stringify(menuHelp));
+
+    // ⚠️ IL LIMITE DICHIARATO DI [F] SI CHIUDE QUI, IL 2026-09-20, E NON PER
+    // ZELO: il limite diceva «dei tre punti che leggevano quel nome ne guido
+    // UNO — Promemoria». Il passo ① ha portato quei gestori dentro questo
+    // strato, e **nel farlo ne ha rotto uno**: `saveHelpRequest` non era fra
+    // gli alias, quindi l'invio di una richiesta d'aiuto moriva con
+    // `saveHelpRequest is not defined` — **la conferma non compariva e la
+    // richiesta non veniva salvata**. Trovato GUIDANDOLO, non rileggendolo.
+    //
+    // *Un limite dichiarato dice dove non guardi; non ti impedisce di
+    // romperlo proprio lì (regola 42).* Adesso si guida il percorso intero —
+    // scegli «non mi è chiaro», scrivi, invia — e si legge l'unica prova che
+    // non si può avere per costruzione: **la richiesta nel magazzino**.
+    //
+    // COME: l'invio passa da `saveHelpRequest`, che scrive in localStorage in
+    // modo SINCRONO, quindi click e lettura stanno nella stessa chiamata
+    // (regola 19). E la riga che conta non è «la conferma è comparsa» — quella
+    // comparirebbe anche se il salvataggio fallisse a valle: è **il magazzino
+    // cresciuto di uno**.
+    const inviata = viva ? await page.evaluate(function () {
+      function richieste() {
+        return Object.keys(localStorage).filter(function (k) { return k.indexOf('help') !== -1; }).length;
+      }
+      window.BI.openHelpFor({ kind: 'repeatAloud', id: 'repeatAloud', label: 'x' });
+      var prima = richieste();
+      document.querySelector('[data-help-action="clarify"]').click();
+      var form = document.getElementById('help-form');
+      if (!form) return { errore: 'il modulo di richiesta non è comparso' };
+      document.getElementById('help-text').value = 'prova di invio';
+      form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+      return {
+        prima: prima,
+        dopo: richieste(),
+        corpo: document.getElementById('help-overlay-body').textContent.slice(0, 40)
+      };
+    }) : null;
+    log('[F] Il modulo di richiesta d\'aiuto si apre e si invia',
+      !!inviata && !inviata.errore && inviata.dopo > inviata.prima,
+      JSON.stringify(inviata));
 
     // ── [G] I QUATTRO PEZZI DEL PRE-PASSO, GUIDATI ─────────────────
     // ⚠️ QUESTE RIGHE NASCONO DA UNA FALSIFICAZIONE CHE NON HA MORSO.

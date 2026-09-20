@@ -1,4 +1,4 @@
-// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing]
+// DIPENDE DA: audio.js [parsing], dati.js [parsing], identita.js [parsing], progressi.js [parsing], quiz-engine.js [parsing], sessione.js [chiamata]
 // ⚠️ A TEMPO DI PARSING, quindi l'ordine dei tag e' un vincolo VERO: i quattro
 // alias in cima all'IIFE (`istruzioniInMemoria`, `loadModuleInstructions`,
 // `loadFeedbackMessages`, `percentageBucket`) si prendono il valore mentre
@@ -96,6 +96,12 @@
   var icon = BI.icon;
   var toggleSpeak = BI.toggleSpeak;
   var getUserName = BI.getUserName;
+  // ⚠️ Serve al modulo di richiesta d'aiuto, arrivato col passo ① il 2026-09-20.
+  // Mancava, e il modulo si inviava con `saveHelpRequest is not defined`: la
+  // conferma NON compariva e la richiesta non veniva salvata. Trovato
+  // guidandolo, non rileggendolo — `tests/tools/buchi.js` non poteva vederlo
+  // perche' guarda un file per volta e il nome era appena arrivato.
+  var saveHelpRequest = BI.saveHelpRequest;
   var isIntroDismissed = BI.isIntroDismissed;
   var setIntroDismissed = BI.setIntroDismissed;
 
@@ -315,6 +321,114 @@
     activeHelpModule = module;
     openHelpMenu(module);
   }
+
+  // ============================================================
+  // I MODULI DEL PANNELLO AIUTO — arrivati qui il 2026-09-20, passo ①.
+  //
+  // Erano rimasti in `index.html` quando il pannello e' uscito, e la riga che
+  // spiega perche' vengono adesso e non prima non c'e': **non c'era una
+  // ragione, c'era un confine tirato per posizione.** Il menu (`renderHelpMenu`,
+  // `openHelpMenu`, `openHelpFor`, `moduloDiAiutoAttivo`) stava qui sopra; i
+  // tre pezzi che il menu APRE — il promemoria, il modulo di richiesta, la
+  // conferma — stavano nell'altro file, insieme ai due listener che li legano.
+  //
+  // ⚠️ E QUELLA SEPARAZIONE AVEVA GIA' FATTO DANNO, il 2026-09-19:
+  // `activeHelpModule` vive qui ed e' RIASSEGNATA, ma i tre punti che la
+  // leggevano erano listener rimasti in `index.html` — quindi «Promemoria»,
+  // «Indietro» e l'invio di una richiesta d'aiuto davano tutti e tre
+  // `activeHelpModule is not defined`. **Il pannello si apriva e moriva al
+  // primo pulsante.** La correzione di allora fu l'accessore
+  // `moduloDiAiutoAttivo()`; questa e' la causa, chiusa un giorno dopo.
+  //
+  // ⚠️ NON SI E' FATTO UN `app/aiuto.js`, ED ERA IL PIANO DICHIARATO. La
+  // misura l'ha cambiato: un file nuovo avrebbe avuto dentro la META' di un
+  // pannello e avrebbe chiesto all'altra meta' sei nomi che qui sono gia' in
+  // casa (`uiText`, `openOverlay`, `moduloDiAiutoAttivo`, `openHelpMenu`,
+  // `loadErrorInlineHtml`, `helpOverlayEl`). *Un file si giustifica se separa
+  // qualcosa, non se taglia in due una cosa sola.*
+  //
+  // ⚠️ L'UNICO NOME CHE NON E' IN CASA E' `BI.episodioCorrente()`, e si chiede
+  // a tempo di CHIAMATA: `app/sessione.js` e' caricato DOPO questo file, quindi
+  // un alias in cima congelerebbe `undefined` per sempre. E' la quarta
+  // dipendenza in avanti del progetto, contata e nominata dal blocco [C] di
+  // tests/test_dipendenze_dichiarate.js.
+  // ============================================================
+
+  // Renders a module-instructions field (today just "helpReminder", the
+  // Help menu's "Rivedi come funziona l'esercizio" option) for a module's
+  // kind into the shared help overlay. "howItWorks" itself is rendered by
+  // renderIntroContent()/openHowItWorksOverlay() instead — the intro
+  // screen and its header popup, not this overlay.
+  function renderModuleInstructionField(module, field, fallbackTitle) {
+    document.getElementById('help-overlay-title').textContent = fallbackTitle;
+    document.getElementById('help-overlay-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
+    openOverlay();
+    loadModuleInstructions().then(function (data) {
+      var entry = data[module.kind] && data[module.kind][field];
+      document.getElementById('help-overlay-title').textContent = (entry && entry.title) || fallbackTitle;
+      document.getElementById('help-overlay-body').innerHTML = entry
+        ? '<div class="overlay-text">' + entry.body + '</div>'
+        : '<p class="overlay-text">Contenuto non ancora disponibile per questo modulo.</p>';
+    }).catch(function () {
+      document.getElementById('help-overlay-body').innerHTML = loadErrorInlineHtml('overlay-text');
+    });
+  }
+
+
+
+  function renderHelpForm(type) {
+    var helper = uiText(type === 'urgent' ? 'aiuto.formHintUrgent' : 'aiuto.formHintClarify');
+    return '<form id="help-form" data-help-type="' + type + '">' +
+      '<p class="overlay-text">' + helper + '</p>' +
+      '<textarea id="help-text" rows="4" placeholder="' + uiText('aiuto.formPlaceholder') + '" required></textarea>' +
+      '<div class="overlay-actions">' +
+      '<button type="button" class="btn btn-secondary" id="help-form-back">' + uiText('aiuto.formBack') + '</button>' +
+      '<button type="submit" class="btn btn-primary">' + uiText('aiuto.formSubmit') + '</button>' +
+      '</div>' +
+      '</form>';
+  }
+
+  function renderHelpConfirmation() {
+    return '<p class="overlay-text">' + uiText('aiuto.confirmationText') + '</p>' +
+      '<div class="overlay-actions"><button type="button" class="btn btn-secondary" id="help-form-back">' + uiText('aiuto.confirmationBack') + '</button></div>';
+  }
+
+
+  document.getElementById('help-overlay-body').addEventListener('click', function (e) {
+    var actionBtn = e.target.closest('[data-help-action]');
+    if (actionBtn) {
+      var action = actionBtn.getAttribute('data-help-action');
+      if (action === 'instructions') {
+        renderModuleInstructionField(moduloDiAiutoAttivo(), 'helpReminder', uiText('aiuto.titleInstructions'));
+      } else {
+        document.getElementById('help-overlay-title').textContent =
+          uiText(action === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
+        document.getElementById('help-overlay-body').innerHTML = renderHelpForm(action);
+      }
+      return;
+    }
+    if (e.target.id === 'help-form-back') {
+      openHelpMenu(moduloDiAiutoAttivo());
+    }
+  });
+
+  document.getElementById('help-overlay-body').addEventListener('submit', function (e) {
+    if (e.target.id !== 'help-form') return;
+    e.preventDefault();
+    var type = e.target.getAttribute('data-help-type');
+    var text = document.getElementById('help-text').value.trim();
+    if (!text) return;
+    saveHelpRequest(getUserName(), {
+      episodeId: BI.episodioCorrente().id,
+      moduleId: moduloDiAiutoAttivo().id,
+      type: type,
+      text: text,
+      createdAt: new Date().toISOString()
+    });
+    document.getElementById('help-overlay-title').textContent =
+      uiText(type === 'urgent' ? 'aiuto.titleUrgent' : 'aiuto.titleClarify');
+    document.getElementById('help-overlay-body').innerHTML = renderHelpConfirmation();
+  });
 
   function slotOptions(field) {
     return (field.options || []).map(function (item) {
