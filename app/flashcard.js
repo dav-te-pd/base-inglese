@@ -380,28 +380,66 @@
     });
 
     // Sì/Non ancora advance straight to the next card — no Avanti click, and
-    // no Indietro to go back: a card can only be answered once. fcAnswered=
-    // true still guards fcFlip during the brief slide-out (fcNavigateTo/
-    // fcNavLocked already guards against a double advance).
+    // no Indietro to go back: **una carta si risponde UNA VOLTA SOLA**, e
+    // questa funzione è il punto in cui quella frase diventa vera.
+    //
+    // ⚠️ DIFETTO VIVO, TROVATO SU PAGES IL 2026-09-20 E MISURATO QUI.
+    //
+    // La guardia c'era ed era nel posto sbagliato: `fcNavLocked`, dentro
+    // `fcNavigateTo`, cioè nell'ANIMAZIONE — l'ultima delle tre funzioni che
+    // un click attraversa, quando il danno è già fatto. Il percorso vero è
+    //
+    //     click → fcRecordResult → fcGoNext → fcAdvance → fcNavigateTo
+    //                  ①                          ②            ③ guardia
+    //
+    // e un secondo click durante i 300 ms della slide passava per ① e ②:
+    // **registrava una seconda risposta sulla stessa voce** e faceva un
+    // secondo `fcPassIndex++`. Il commento di prima diceva «fcNavigateTo/
+    // fcNavLocked already guards against a double advance»: era una frase
+    // che descriveva un comportamento, e il comportamento non c'era.
+    //
+    // ⚠️ E IL DANNO PEGGIORE NON È LA CARTA SALTATA, È LA MASTERY. Misurato
+    // sulla prima carta di un profilo nuovo, tre click rapidi contro uno:
+    //
+    //     un click   → contatore 1→2, la voce diventa **giallo** streak 1
+    //     tre click  → contatore 1→**3**, la voce diventa **verde** streak 1
+    //
+    // Cioè una voce mai vista salta a verde alla sua PRIMA risposta, contro
+    // la regola 39 («la prima risposta giusta dà giallo con la striscia a 1,
+    // così la seconda giusta promuove»). Lo sbaglio non resta nel modulo: va
+    // nel magazzino e decide i ripassi, dove nessuno lo rivede più.
+    //
+    // La correzione è la regola 20: **il blocco vive nella funzione che
+    // esegue l'azione**, non nel listener e non in fondo alla catena. I due
+    // pulsanti chiamano questa, che si rifiuta subito se la carta ha già una
+    // risposta — e `fcAnswered` è già la bandiera giusta, perché
+    // `fcRenderCard` la rimette a false su ogni carta nuova.
+    //
+    // ⚠️ Il `fcAnswered = true` sta PRIMA di `fcRecordResult`, non dopo: fra
+    // le due righe non deve esistere un istante in cui un secondo click passa.
+    function fcRispondi(result, suono) {
+      if (fcAnswered) return;
+      fcAnswered = true;
+      var attemptNum = fcRecordResult(result);
+      if (suono) suono();
+      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) {
+        fcPendingNudge = { wasCorrect: result === 'correct' };
+      }
+      fcGoNext();
+    }
+
     // "Non ancora" deliberately plays NO sound (job: sound catalog) — a
     // still-learning card is expected here, not an error, so the generic
     // sbagliato tone would misread as a small failure on every other card.
     document.getElementById('fc-not-yet-btn').addEventListener('click', function () {
-      var attemptNum = fcRecordResult('wrong');
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: false };
-      fcAnswered = true;
-      fcGoNext();
+      fcRispondi('wrong', null);
     });
 
     // "Sì, la so" plays Corretto — one card of fifteen, not a completion
     // (Traguardo stays reserved for fcFinishPassCheck's own Schermata
     // Finale, see sfxPlayTraguardoSound's comment).
     document.getElementById('fc-know-it-btn').addEventListener('click', function () {
-      var attemptNum = fcRecordResult('correct');
-      sfxPlayCorrectSound();
-      if (attemptNum === CONFIG.retryQueue.attemptsReminderThreshold) fcPendingNudge = { wasCorrect: true };
-      fcAnswered = true;
-      fcGoNext();
+      fcRispondi('correct', sfxPlayCorrectSound);
     });
 
     document.getElementById('fc-retry-continue-btn').addEventListener('click', fcRenderCard);
