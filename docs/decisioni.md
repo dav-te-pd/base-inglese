@@ -4130,3 +4130,61 @@ funzionamento»*, *«mandiamo al browser più piccoli pacchetti possibili»*,
    **E il beneficio vero non è il peso, è lo stesso di sempre:** un foglio di
    stile che nessuno ha chiesto è codice che si legge, e leggerlo è il primo
    passo per copiarlo.
+
+---
+
+## IL PANNELLO ADMIN E LA PAROLA `config` — cosa cambia con Supabase (2026-09-20)
+
+**La domanda, posta da chi guida il progetto:** *«una volta che ci sarà il
+pannello admin e Supabase, scrivere `config` dovrebbe sparire come funzione?
+sennò ogni studente ci potrebbe entrare? e io dovrei gestire config dal pannello
+mio admin nella sezione impostazioni?»*
+
+**La risposta è sì, ma il MOMENTO conta più della risposta** — e oggi il rischio
+non è quello che sembra.
+
+### Cosa fa `config` OGGI, misurato
+
+Apre un pannello che scrive gli override in **`localStorage`**, cioè nel browser
+di chi l'ha digitato. **Non tocca nessun altro.** Uno studente che lo scopre
+rompe la propria app e basta; il pulsante «azzera» la rimette a posto.
+
+E non rivela niente che non sia già pubblico: la configurazione **è** un file
+scaricabile (`app/config.js`), servito in chiaro a chiunque apra il sito.
+*L'esposizione è il file, non il pannello* — chiudere il pannello e lasciare il
+file sarebbe una porta chiusa accanto a una finestra aperta. **Quindi oggi non
+c'è niente da fare, ed è questa la parte che va sottolineata: la mossa giusta
+adesso è nessuna mossa.**
+
+### Cosa cambia con Supabase, ed è un cambio di NATURA
+
+Il giorno in cui la configurazione arriva dal server e il pannello **scrive
+indietro**, quel pannello smette di cambiare *un browser* e comincia a cambiare
+*il corso*. Uno studente che lo apre non rompe più sé stesso: **rompe tutti.**
+
+> **La parola `config` non è una password. È una scorciatoia comoda finché il
+> danno è locale, e diventa una porta aperta nel momento esatto in cui il danno
+> smette di esserlo.**
+
+### Quindi, e sono tre cose e non una
+
+1. **La scorciatoia da tastiera (e `?config`) sparisce QUANDO il pannello
+   smette di essere locale**, non prima e non dopo. Toglierla prima lascerebbe
+   il progetto senza nessun modo di cambiare la configurazione a caldo — che è
+   l'unico strumento che oggi permette di tarare senza un commit.
+2. **Il suo posto è dentro il pannello admin autenticato**, nella sezione
+   Impostazioni, come detto nella domanda. Non è una schermata nuova: è
+   **questa** schermata, dietro un login che dice «sei tu».
+3. ⚠️ **E c'è una distinzione che oggi il pannello non fa, e che conviene fare
+   allora:** ci sono dentro DUE cose diverse.
+
+   | | Dove va allora |
+   |---|---|
+   | **Tarare il corso per tutti** — soglie, sequenze, tempi, quale episodio è quello corrente | Pannello admin, dietro login. Scrive sul server. |
+   | **Un override LOCALE per provare** — vedere come si comporta l'app con una soglia diversa, senza toccare nessuno | Può restare com'è: scrive solo nel proprio browser, e serve proprio a chi sviluppa. |
+
+   *Sono la stessa schermata oggi perché il danno è lo stesso — nessuno. Quando
+   uno dei due comincia a scrivere sul server, non lo sono più.*
+
+**Condizione di esecuzione:** insieme al passaggio della configurazione a
+Supabase. **Non è un passo a sé e non va anticipato.**
