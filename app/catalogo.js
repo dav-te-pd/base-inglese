@@ -237,12 +237,16 @@
   // ha scelto e che tutti ereditano. Il primo episodio corto avrebbe preso
   // i ventidue passi narrativi senza che nessuno l'avesse deciso.
   //
-  // Perche' NON alza un'eccezione: questa funzione gira al caricamento
-  // dello script, dentro il ciclo che costruisce EPISODES. Un throw li'
-  // fermerebbe il resto dello script e lascerebbe una pagina bianca — un
+  // Perche' NON alza un'eccezione: gira dentro `costruisciPassi()`, cioe'
+  // all'accensione dell'app, prima che si veda qualunque schermata. Un throw
+  // li' fermerebbe `boot()` a meta' e lascerebbe una pagina bianca — un
   // guasto peggiore di quello che segnala. Restituisce invece l'errore, che
   // openEpisodeMap trasforma nella schermata d'errore (regola 35): lo
   // studente vede qualcosa, e chi sviluppa lo trova anche in console.
+  //
+  // *Fino al 2026-09-20 questa riga diceva «gira al caricamento dello
+  // script, dentro il ciclo che costruisce EPISODES»: era vero, e l'ha resa
+  // falsa il passo 1.11a spostando quel ciclo dentro una funzione.*
   //
   // ⚠️ I MESSAGGI QUI DENTRO RESTANO NEL CODICE, DI PROPOSITO — non sono una
   // dimenticanza del passo 18. Sono DIAGNOSTICA D'AUTORE: parlano a chi
@@ -274,34 +278,59 @@
     return { order: seq, errore: null };
   }
 
-  Object.keys(EPISODES).forEach(function (episodeId) {
-    var episode = EPISODES[episodeId];
-    var risolto = resolveEpisodeOrder(episodeId);
-    var order = risolto.order;
-    // L'errore viaggia con l'episodio: chi apre la mappa lo trova (vedi
-    // openEpisodeMap) invece di trovare una mappa vuota senza spiegazione.
-    episode.orderError = risolto.errore;
-    if (risolto.errore) console.error('[base-inglese] ' + risolto.errore);
-    var seen = {};
-    // Una coppia con off: true e' spenta: sparisce dalla mappa invece di
-    // restare grigia, cosi' provando un ordine si vede l'episodio come lo
-    // vedra' lo studente. Il conteggio delle apparizioni (seen) si fa PRIMA
-    // del filtro, cosi' spegnere il primo Flash Card non rinomina il secondo
-    // — e riaccenderlo non sposta di nuovo i progressi.
-    episode.modules = order.map(function (pair) {
-      var moduleId = pair.module;
-      var module = Object.assign({ id: moduleStepId(moduleId, seen[moduleId] || 0), moduleId: moduleId }, episode.modulesById[moduleId]);
-      seen[moduleId] = (seen[moduleId] || 0) + 1;
-      // Il grado arriva dalla coppia, non dal descrittore: è l'unica cosa
-      // che distingue due apparizioni dello stesso modulo.
-      if (pair.grade) module.grade = pair.grade;
-      var labelInfo = CONFIG.moduleLabels[moduleId];
-      module.label = (labelInfo && labelInfo.name) || moduleId;
-      module.subtitle = labelInfo && labelInfo.subtitle;
-      module.off = !!pair.off;
-      return module;
-    }).filter(function (module) { return !module.off; });
-  });
+  // ⚠️ I PASSI DI OGNI EPISODIO SI COSTRUISCONO ALL'ACCENSIONE, NON A TEMPO
+  // DI PARSING. Passo 1.11a, 2026-09-20.
+  //
+  // Prima questo ciclo girava nudo, appena lo script veniva letto. Funzionava
+  // perche' quello che legge — `CONFIG.sequences` e `CONFIG.episodes` — stava
+  // gia' in memoria: `app/config.js` e' un tag bloccante caricato prima.
+  //
+  // ⚠️ E SMETTE DI FUNZIONARE AL PASSO DOPO, PER UNA RAGIONE CHE NON E' UNA
+  // PREFERENZA. Col 1.11b quei due valori arrivano da
+  // `data/{lingua}/{studente}/struttura-corso.json`, cioe' da un `fetch`, che
+  // e' asincrono. **E non si puo' evitare rendendolo un tag `<script>`
+  // bloccante come `app/config.js`:** l'indirizzo di quel file dipende da
+  // `CONFIG.edizione`, che e' un valore di RUNTIME, e un tag scritto in
+  // `index.html` dovrebbe portare `data/inglese/it/` inciso dentro — cioe'
+  // rimettere esattamente il guasto muto che il passo 1.11 ha appena tolto.
+  //
+  // *Quindi l'asincrono non e' una scelta di stile: e' la conseguenza di
+  // avere l'edizione come valore.* Questo passo prepara la cucitura e non la
+  // usa ancora: la sorgente e' la stessa di ieri, cambia solo il MOMENTO.
+  //
+  // Chi chiama: `boot()`, prima di scegliere l'episodio iniziale. Nessuno
+  // legge `episode.modules` fra il caricamento degli script e quella riga —
+  // i ventitre file di `app/` a tempo di parsing dichiarano soltanto.
+  function costruisciPassi() {
+    Object.keys(EPISODES).forEach(function (episodeId) {
+      var episode = EPISODES[episodeId];
+      var risolto = resolveEpisodeOrder(episodeId);
+      var order = risolto.order;
+      // L'errore viaggia con l'episodio: chi apre la mappa lo trova (vedi
+      // openEpisodeMap) invece di trovare una mappa vuota senza spiegazione.
+      episode.orderError = risolto.errore;
+      if (risolto.errore) console.error('[base-inglese] ' + risolto.errore);
+      var seen = {};
+      // Una coppia con off: true e' spenta: sparisce dalla mappa invece di
+      // restare grigia, cosi' provando un ordine si vede l'episodio come lo
+      // vedra' lo studente. Il conteggio delle apparizioni (seen) si fa PRIMA
+      // del filtro, cosi' spegnere il primo Flash Card non rinomina il secondo
+      // — e riaccenderlo non sposta di nuovo i progressi.
+      episode.modules = order.map(function (pair) {
+        var moduleId = pair.module;
+        var module = Object.assign({ id: moduleStepId(moduleId, seen[moduleId] || 0), moduleId: moduleId }, episode.modulesById[moduleId]);
+        seen[moduleId] = (seen[moduleId] || 0) + 1;
+        // Il grado arriva dalla coppia, non dal descrittore: è l'unica cosa
+        // che distingue due apparizioni dello stesso modulo.
+        if (pair.grade) module.grade = pair.grade;
+        var labelInfo = CONFIG.moduleLabels[moduleId];
+        module.label = (labelInfo && labelInfo.name) || moduleId;
+        module.subtitle = labelInfo && labelInfo.subtitle;
+        module.off = !!pair.off;
+        return module;
+      }).filter(function (module) { return !module.off; });
+    });
+  }
 
   /* ============================================================
      MODULE PROGRESS
@@ -335,4 +364,5 @@
   BI.EPISODES = EPISODES;
   BI.moduleStepId = moduleStepId;
   BI.resolveEpisodeOrder = resolveEpisodeOrder;
+  BI.costruisciPassi = costruisciPassi;
 })(window.BI);

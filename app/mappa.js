@@ -72,6 +72,7 @@
   var clearUserName = BI.clearUserName;
   var hydrateIcons = BI.hydrateIcons;
   var EPISODES = BI.EPISODES;
+  var costruisciPassi = BI.costruisciPassi;
   // ⚠️ I TRE NOMI DEI CINQUE PULSANTI DELLA MAPPA, arrivati col passo ③.
   // Vengono da `ui-condivisa.js` e da `progressi.js`, tutti e due prima di
   // questo file: si aliasano in cima come gli altri. Senza, i pulsanti erano
@@ -374,6 +375,20 @@
     // per posizione; adesso e' la prima riga di `boot()`, che e' dove "l'app
     // si accende" ha un nome.
     hydrateIcons(document);
+
+    // ⚠️ I PASSI DI OGNI EPISODIO, PRIMA DI TUTTO IL RESTO. Passo 1.11a.
+    //
+    // `EPISODES` porta chi sono gli episodi e i loro descrittori; `modules`
+    // — l'ordine dei passi col grado di ciascuno — lo mette questa chiamata,
+    // leggendo `CONFIG.sequences` e `CONFIG.episodes`. Girava da sola a
+    // tempo di parsing in `app/catalogo.js`; adesso e' `boot()` a chiederla,
+    // perche' col passo dopo quei due valori arriveranno da un `fetch` e un
+    // valore che arriva dopo non puo' essere letto prima.
+    //
+    // Sta PRIMA della scelta dell'episodio iniziale e non dopo: `goHome()`
+    // disegna la mappa, e una mappa disegnata su `episode.modules` non
+    // ancora costruito sarebbe vuota senza dire perche'.
+    costruisciPassi();
 
   // ⚠️ QUESTO CALCOLO RESTA QUI, E LO STATO NO. Passo B, 2026-09-19.
   //
