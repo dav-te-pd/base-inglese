@@ -245,7 +245,7 @@
     document.querySelectorAll('#qm-options .sr-option').forEach(function (b, i) {
       if (qmCurrentOptions[i] && qmCurrentOptions[i].correct) b.classList.add('is-correct');
     });
-    document.getElementById('qm-reveal-text').textContent = 'Risposta corretta: ' + correctOpt.text;
+    document.getElementById('qm-reveal-text').textContent = uiText('condivisi.rispostaCorretta') + correctOpt.text;
     document.getElementById('qm-reveal').hidden = false;
     document.getElementById('qm-dontknow-btn').hidden = true;
     document.getElementById('qm-advance-btn').hidden = false;

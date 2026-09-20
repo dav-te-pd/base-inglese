@@ -19,7 +19,8 @@
       "confirmLabel": "Scrivi \"cancella episodio\" per confermare",
       "confirmButton": "Cancella i progressi e modifica",
       "cancelButton": "Annulla, torna alla mappa"
-    }
+    },
+    "requestBoxSaved": "✓ Richiesta salvata. Grazie!"
   },
   "meetTheStory": {
     "howItWorks": {
@@ -239,7 +240,10 @@
     "nextLineLabel": "Prossima frase",
     "pauseLabel": "Pausa",
     "choiceNotYet": "Non ancora",
-    "choiceKnown": "Sì, lo so"
+    "choiceKnown": "Sì, lo so",
+    "resumeLabel": "Riprendi",
+    "showTranslations": "Mostra traduzioni",
+    "hideTranslations": "Nascondi traduzioni"
   },
   "erroreCaricamento": {
     "title": "Non riusciamo a caricare il contenuto",
@@ -292,7 +296,8 @@
         "body": "Dopo diversi tentativi non abbiamo ancora sentito nulla: molto probabilmente è un problema del microfono o dei permessi, non della tua pronuncia. Puoi tornare alla mappa e riprovare più tardi.",
         "actionLabel": "Torna alla mappa"
       }
-    }
+    },
+    "attemptLabel": "TENTATIVO {n} DI {tot}"
   },
   "condivisi": {
     "introDontShowAgain": "Non mostrarmi più questa schermata",
@@ -315,6 +320,8 @@
     "vaiAvanti": "Vai avanti →",
     "iniziaEpisodio": "Inizia l'episodio",
     "personalizzaSottotitolo": "Personalizza la tua storia o lascia così.",
-    "repeatAloudSottotitolo": "Ascolta ogni parola o frase, ripetila ad alta voce."
+    "repeatAloudSottotitolo": "Ascolta ogni parola o frase, ripetila ad alta voce.",
+    "rispostaCorretta": "Risposta corretta: ",
+    "nascondiPronuncia": "Nascondi pronuncia"
   }
 }

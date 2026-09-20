@@ -590,7 +590,7 @@
     if (!dgPaused && dgLineTimerTimeoutId === null) return;
     dgPaused = !dgPaused;
     var btn = document.getElementById('dg-pause-btn');
-    if (btn) btn.textContent = dgPaused ? 'Riprendi' : 'Pausa';
+    if (btn) btn.textContent = uiText(dgPaused ? 'dialogoShared.resumeLabel' : 'dialogoShared.pauseLabel');
     if (dgPaused) {
       pausaLaVoce();
       dgPauseLineTimer();
@@ -709,7 +709,7 @@
         var btn = e.target;
         var next = !btn.classList.contains('btn-primary');
         document.querySelectorAll('#dg-list .dg-translation').forEach(function (el) { el.hidden = !next; });
-        btn.textContent = next ? 'Nascondi traduzioni' : 'Mostra traduzioni';
+        btn.textContent = uiText(next ? 'dialogoShared.hideTranslations' : 'dialogoShared.showTranslations');
         btn.classList.toggle('btn-primary', next);
         btn.classList.toggle('btn-secondary', !next);
       } else if (e.target.id === 'dg-pause-btn') {

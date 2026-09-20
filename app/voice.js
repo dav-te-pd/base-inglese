@@ -461,7 +461,7 @@
     var pronToggle = document.getElementById('vc-pronunciation-toggle');
     var pronEl = document.getElementById('vc-pronunciation');
     pronToggle.hidden = !line.pronunciationTip;
-    pronToggle.textContent = 'Mostra pronuncia';
+    pronToggle.textContent = uiText('condivisi.mostraPronuncia');
     pronEl.textContent = line.pronunciationTip || '';
     pronEl.hidden = true;
     document.getElementById('vc-audio-controls').innerHTML = renderListenBlock({ say: line.id });
@@ -643,7 +643,7 @@
       var pronEl = document.getElementById('vc-pronunciation');
       var reveal = pronEl.hidden;
       pronEl.hidden = !reveal;
-      this.textContent = reveal ? 'Nascondi pronuncia' : 'Mostra pronuncia';
+      this.textContent = uiText(reveal ? 'condivisi.nascondiPronuncia' : 'condivisi.mostraPronuncia');
     });
 
     document.getElementById('vc-next-btn').addEventListener('click', vcNextLine);
@@ -800,7 +800,8 @@
     // updateVcActionButtons), so it's still set fresh at evaluation time.
     if (vcVariant !== 'practice') {
       var attemptsMax = CONFIG.retryQueue.attemptsReminderThreshold;
-      document.getElementById('vc-attempt-label').textContent = 'TENTATIVO ' + attemptNum + ' DI ' + attemptsMax;
+      document.getElementById('vc-attempt-label').textContent =
+        uiTextWith('voceShared.attemptLabel', { n: attemptNum, tot: attemptsMax });
     }
 
     var pct = targetWords.length ? Math.round((correctCount / targetWords.length) * 100) : 0;

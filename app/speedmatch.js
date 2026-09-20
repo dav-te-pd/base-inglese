@@ -290,7 +290,7 @@
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b, i) {
       if (srCurrentOptions[i] && srCurrentOptions[i].correct) b.classList.add('is-correct');
     });
-    document.getElementById('sr-reveal-text').textContent = 'Risposta corretta: ' + correctText;
+    document.getElementById('sr-reveal-text').textContent = uiText('condivisi.rispostaCorretta') + correctText;
     document.getElementById('sr-reveal').hidden = false;
     document.getElementById('sr-dontknow-btn').hidden = true;
     document.getElementById('sr-advance-btn').hidden = false;

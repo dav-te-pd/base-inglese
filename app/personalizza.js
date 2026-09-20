@@ -185,7 +185,7 @@
           text: value,
           createdAt: new Date().toISOString()
         });
-        feedbackEl.textContent = '✓ Richiesta salvata. Grazie!';
+        feedbackEl.textContent = uiText('personalizzazione.requestBoxSaved');
         feedbackEl.className = 'request-field-feedback is-success';
         input.value = '';
       }

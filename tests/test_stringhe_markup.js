@@ -48,6 +48,13 @@ function log(nome, ok, extra) {
 const SPARITE = ['Non lo so', 'Avanti →', 'Ripasso', 'Caricamento...',
                  'Esci e riprendi dopo', 'Mostra pronuncia', 'Riprova ancora', 'Vai avanti →'];
 
+// Le stesse, più quelle che vivevano SOLO nel JavaScript (passo 1.3c). Un
+// letterale che finisce in `textContent`/`innerHTML` è testo per lo studente
+// tanto quanto uno scritto nel markup — e nessuna misura sul markup lo vede.
+const PAROLE = SPARITE.concat(['Pausa', 'Riprendi', 'Mostra traduzioni',
+  'Nascondi traduzioni', 'Risposta corretta', 'Nascondi pronuncia', 'TENTATIVO',
+  'Richiesta salvata']);
+
 const mockInit = () => {
   Object.defineProperty(window, 'speechSynthesis', { value: {
     speak(u) { if (u.onstart) u.onstart(); setTimeout(function () { if (u.onend) u.onend(); }, 10); },
@@ -144,6 +151,16 @@ async function run() {
     await apriMappa(page, 'StringheMappa');
     await page.click('#map-watch-btn');
     await page.waitForSelector('#howitworks-overlay.is-open', { timeout: 15000 });
+    // ⚠️ `is-open` è il PRIMO effetto del tocco, non l'ultimo: l'overlay si apre
+    // subito e i testi arrivano col fetch. Aspettare lì significava correre
+    // contro la rete — passava per fortuna (regola 44). L'approdo giusto è il
+    // corpo riempito: è l'ULTIMO effetto, arriva dopo `hydrateTesti` (che gira
+    // dentro lo stesso `loadModuleInstructions`, prima di chi l'ha chiamato),
+    // e **nessuna asserzione di questo blocco lo legge**.
+    await page.waitForFunction(function () {
+      var b = document.getElementById('howitworks-overlay-body');
+      return b && b.innerHTML.indexOf('module-status-text') === -1;
+    }, { timeout: 15000 });
 
     // Solo l'occhiello: accanto c'è il nome del modulo, che è un'altra cosa.
     const titolo = await page.evaluate(() => {
@@ -158,6 +175,40 @@ async function run() {
     log('[D] ...e così il suo «Chiudi»', chiudi === testi.condivisi.chiudi, JSON.stringify(chiudi));
     log('[D] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
+  }
+
+  // ── [E] E NEL JAVASCRIPT — passo 1.3c ────────────────────────────────
+  //
+  // ⚠️ IL BUCO CHE 1.3a HA SCOPERTO AVENDO GUARDATO SOLO IL MARKUP: le
+  // stesse parole vivevano anche in `app/*.js`, dove nessuna misura sul
+  // markup poteva vederle. `'Pausa'` stava **due volte** — nel file dei testi
+  // e dentro il codice che fa il toggle — e le due potevano divergere senza
+  // che niente lo dicesse.
+  //
+  // Si guarda dove la stringa ARRIVA ALLO SCHERMO, non la stringa in sé:
+  // un letterale dentro un `console.warn` o un nome di classe non è testo
+  // per lo studente.
+  {
+    const dentroIlCodice = [];
+    fs.readdirSync(repoPath('app')).filter(f => f.endsWith('.js')).forEach(function (f) {
+      const righe = fs.readFileSync(repoPath('app/' + f), 'utf8').split('\n');
+      let blocco = false;
+      righe.forEach(function (l, i) {
+        const t = l.trim();
+        if (blocco) { if (t.indexOf('*/') !== -1) blocco = false; return; }
+        if (t.indexOf('/*') === 0) { if (t.indexOf('*/') === -1) blocco = true; return; }
+        if (t.indexOf('//') === 0) return;
+        const riga = l.replace(/\s\/\/.*$/, '');
+        if (!/textContent|innerHTML/.test(riga)) return;
+        PAROLE.forEach(function (p) {
+          if (riga.indexOf("'" + p) !== -1 || riga.indexOf('"' + p) !== -1) {
+            dentroIlCodice.push(f + ':' + (i + 1) + ' → ' + p);
+          }
+        });
+      });
+    });
+    log('[E] Le stesse parole non sono scritte nemmeno dentro app/*.js',
+      dentroIlCodice.length === 0, dentroIlCodice.join(' · '));
   }
 
   await browser.close();
