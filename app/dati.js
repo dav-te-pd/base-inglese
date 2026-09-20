@@ -47,6 +47,43 @@ window.BI = window.BI || {};
 
   var CONFIG = window.APP_CONFIG;
 
+  // ⚠️ LA VERSIONE DEI FILE DI DATI, E NON SI SCRIVE DUE VOLTE. Passo 1.9,
+  // 2026-09-20.
+  //
+  // I tag di `index.html` portano `?v=` da giorni; i cinque `fetch` qui sotto
+  // no. Vuol dire che un browser puo' tenere in cache
+  // `inglese-it-gate.json` vecchio accanto a un `app/*.js` nuovo — **lo stesso
+  // caso misto che il `?v=` sui tag esiste per rendere impossibile**, e su un
+  // file di dati si vede ancora meno: non un errore, una frase sbagliata in un
+  // esercizio.
+  //
+  // ⚠️ E LA VERSIONE NON E' SCRITTA QUI: si LEGGE dall'indirizzo con cui il
+  // browser ha chiesto questo stesso file. `document.currentScript.src` vale
+  // `.../app/dati.js?v=20260920l` mentre questo blocco gira, quindi la `v` e'
+  // per costruzione quella giusta — non una copia da tenere allineata a mano,
+  // che sarebbe stata la quarta cosa da ricordarsi dopo i tag, `CLAUDE.md` e
+  // la CI. *Una copia che si puo' disallineare e' una copia che si
+  // disallinea.*
+  //
+  // Se il tag non porta versione (un test che carica il file a mano, un
+  // domani senza cache busting) la stringa resta vuota e i percorsi tornano
+  // nudi: si degrada a com'era ieri, non si rompe.
+  var VERSIONE = (function () {
+    try {
+      var src = document.currentScript && document.currentScript.src;
+      var m = src && src.match(/[?&]v=([^&]+)/);
+      return m ? m[1] : '';
+    } catch (e) { return ''; }
+  })();
+
+  // Il `?v=` attaccato a un percorso di dati. Sta in una funzione e non
+  // ripetuto cinque volte perche' i punti da cui si chiede un file crescono:
+  // il quinto e' nato oggi.
+  function conVersione(percorso) {
+    return VERSIONE ? percorso + '?v=' + VERSIONE : percorso;
+  }
+
+
   // ⚠️ L'UNICO PUNTO CHE SA DOVE STANNO I DATI DELL'EDIZIONE. Passo 1.11.
   //
   // I quattro percorsi qui sotto si RICAVANO da `CONFIG.edizione`, invece di
@@ -60,7 +97,7 @@ window.BI = window.BI || {};
   // server — questa funzione e' esattamente il pezzo che si sposta li'.
   function percorsoEdizione(nomeFile) {
     var ed = CONFIG.edizione;
-    return 'data/' + ed.lingua + '/' + ed.studente + '/' + nomeFile;
+    return conVersione('data/' + ed.lingua + '/' + ed.studente + '/' + nomeFile);
   }
 
 
@@ -317,6 +354,7 @@ window.BI = window.BI || {};
     return moduleInstructionsCache;
   }
 
+  BI.VERSIONE_FILE = VERSIONE;
   BI.caricaStrutturaCorso = caricaStrutturaCorso;
   BI.STRUTTURA_CORSO_FILE = STRUTTURA_CORSO_FILE;
   BI.loadEpisodeData = loadEpisodeData;

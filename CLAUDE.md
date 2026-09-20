@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920e**
+**Versione: 20260920f**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -64,6 +64,7 @@ affidabile.
 | `docs/decisioni-stato.md` | **Cosa è aperto adesso e in che ordine.** Il primo file da aprire, e il solo che serve per scegliere un passo. **Si svuota**: una riga eseguita se ne va in `correzioni.md`. |
 | `docs/decisioni-storico.md` | **Perché è così.** La catena dello spacchettamento passo per passo, i triage, le misure, il ragionamento dietro ogni scelta. **Si accumula**, ed è lungo apposta — si apre per rispondere a «perché», mai per cercare il prossimo passo. |
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
+| `docs/componenti-condivisi.md`, `docs/componenti-singoli.md` | **Il magazzino da cui si preleva, e la sua sala d'attesa.** Si guardano **prima** di scrivere un pezzo nuovo: se c'è già, si riusa; se sta fra i singoli, si **promuove** invece di riscriverlo. Quanto manca lo dice un comando, non una stima: `node tests/tools/censimento-pezzi.js`. |
 | `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
 | `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni-stato.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
@@ -182,8 +183,12 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
    (`tests/tools/versione-salita.js`). *La regola non ha un'eccezione: ha un
    caso in più in cui è stata applicata.*
 
-   **Resta scoperto, ed è registrato in `docs/decisioni-stato.md`:** i quattro
-   `fetch` dei file di dati in `app/dati.js` non portano versione.
+   ⚠️ **NON RESTA PIÙ SCOPERTO NIENTE, dal 2026-09-20 (passo 1.9).** Qui c'era
+   scritto che «i quattro `fetch` dei file di dati non portano versione»: adesso
+   sono cinque e la portano tutti. **E la versione non è scritta due volte:** si
+   legge da `document.currentScript.src`, cioè dall'indirizzo con cui il browser
+   ha chiesto `app/dati.js`. *Una copia che si può disallineare è una copia che
+   si disallinea.*
 
    **L'app carica i suoi contenuti da `data/{lingua}/` e non ne tiene nessuna copia dentro `index.html`.** Se un file non arriva — percorso sbagliato, rete che cade — il caricamento fallisce e lo studente vede la schermata d'errore (`showLoadError`, regola 35): un guasto si vede, non viene assorbito.
 

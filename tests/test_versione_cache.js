@@ -104,22 +104,65 @@ async function run() {
 
   // ── [B] L'APP PARTE LO STESSO ───────────────────────────────────────
   // ⚠️ Si GUIDA, non si trova: un `?v=` scritto male non darebbe nessun errore
-  // in questo file — darebbe un 404 su quattordici script e un'app morta.
+  // in questo file — darebbe un 404 su tutti i tag e un'app morta.
   {
     const browser = await launchBrowser();
     const page = await browser.newPage();
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     const mancanti = [];
-    page.on('response', function (r) { if (r.status() >= 400) mancanti.push(r.url() + ' -> ' + r.status()); });
+    const viste = [];
+    page.on('response', function (r) {
+      viste.push(r.url());
+      if (r.status() >= 400) mancanti.push(r.url() + ' -> ' + r.status());
+    });
     await bloccaFontEsterni(page);
     await page.goto(APP_URL);
     let vivo = true;
     try { await page.waitForSelector('#name-input', { timeout: 15000 }); }
     catch (e) { vivo = false; }
     log('[B] Con la versione sui tag l\'app arriva comunque al login', vivo);
-    log('[B] ...e nessuno dei quattordici file torna 404', mancanti.length === 0, mancanti.join(' | '));
+    log('[B] ...e nessun file servito al browser torna 404', mancanti.length === 0, mancanti.join(' | '));
     log('[B] Nessun errore JS', errori.length === 0, errori.join(' | '));
+
+    // ── I FILE DI DATI PORTANO LA STESSA VERSIONE DEI TAG (passo 1.9) ──
+    //
+    // ⚠️ ERANO SCOPERTI, ED ERA REGISTRATO: i tag di `index.html` hanno il
+    // `?v=` da giorni, i `fetch` dei file di dati no. Un browser poteva
+    // tenere `inglese-it-gate.json` vecchio accanto a un `app/*.js` nuovo —
+    // **lo stesso caso misto che il `?v=` esiste per rendere impossibile**, e
+    // su un file di dati si vede ancora meno: non un errore, una frase
+    // sbagliata dentro un esercizio.
+    //
+    // La versione attesa e' quella LETTA DAI TAG, non una scritta qui: cosi'
+    // questa riga non va aggiornata a ogni cambio di versione — che e'
+    // esattamente la copia da tenere allineata che il passo ha tolto.
+    const percorsiDati = await page.evaluate(function () {
+      return {
+        istruzioni: window.BI.MODULE_INSTRUCTIONS_FILE,
+        feedback: window.BI.FEEDBACK_MESSAGES_FILE,
+        tabelle: window.BI.PERSONALIZATION_TABLES_FILE,
+        struttura: window.BI.STRUTTURA_CORSO_FILE,
+        episodio: window.BI.episodeDataFile('gate')
+      };
+    });
+    const attesa = '?v=' + distinte[0];
+    const senza = Object.keys(percorsiDati).filter(function (k) {
+      return String(percorsiDati[k]).indexOf(attesa) === -1;
+    });
+    log('[B] Anche i file di DATI portano la versione, e la stessa dei tag',
+      senza.length === 0, senza.map(function (k) { return k + '=' + percorsiDati[k]; }).join(' | '));
+
+    // ⚠️ E si guarda anche la RICHIESTA VERA, non solo la stringa: un percorso
+    // costruito bene che poi nessuno usa sarebbe verde qui e falso in rete.
+    // `struttura-corso.json` e' l'unico dei cinque che l'app chiede SEMPRE,
+    // prima di qualunque schermata — gli altri quattro arrivano quando si
+    // apre qualcosa.
+    const richiesteDati = viste.filter(function (u) { return /\/data\/.*\.json/.test(u); });
+    log('[B] ...e la richiesta vera di struttura-corso.json ce l\'ha attaccata',
+      richiesteDati.some(function (u) { return u.indexOf('struttura-corso.json' + attesa) !== -1; }),
+      richiesteDati.join(' | ') || 'nessuna richiesta a data/');
+
     await browser.close();
   }
 

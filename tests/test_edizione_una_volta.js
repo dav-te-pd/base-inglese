@@ -100,6 +100,14 @@ async function run() {
     await page.goto(APP_URL);
     await page.waitForSelector('#name-input', { state: 'visible', timeout: 10000 });
 
+    // ⚠️ I PERCORSI PORTANO `?v=` DAL PASSO 1.9, e qui si confronta il
+    // percorso NUDO: che la versione ci sia lo verifica
+    // `tests/test_versione_cache.js`, che e' il file il cui mestiere e'
+    // quello. Confrontarla anche qui vorrebbe dire aggiornare due file a
+    // ogni cambio di versione — cioe' costruire la disallineabilita' che il
+    // passo 1.9 ha appena tolto.
+    const nudo = function (p) { return String(p).split('?')[0]; };
+
     const prima = await page.evaluate(function () {
       return {
         istruzioni: window.BI.MODULE_INSTRUCTIONS_FILE,
@@ -109,12 +117,12 @@ async function run() {
       };
     });
     log('[B] I tre file condivisi stanno nella cartella dell\'edizione',
-      prima.istruzioni === 'data/inglese/it/istruzioni-moduli.json' &&
-      prima.feedback === 'data/inglese/it/messaggi-feedback.json' &&
-      prima.tabelle === 'data/inglese/it/tabelle-personalizzazione.json',
+      nudo(prima.istruzioni) === 'data/inglese/it/istruzioni-moduli.json' &&
+      nudo(prima.feedback) === 'data/inglese/it/messaggi-feedback.json' &&
+      nudo(prima.tabelle) === 'data/inglese/it/tabelle-personalizzazione.json',
       JSON.stringify(prima));
     log('[B] Il file episodio porta la coppia anche nel NOME',
-      prima.episodio === 'data/inglese/it/inglese-it-gate.json', prima.episodio);
+      nudo(prima.episodio) === 'data/inglese/it/inglese-it-gate.json', prima.episodio);
 
     // ⚠️ IL GUASTO REALISTICO: si cambia edizione e si guarda chi la segue.
     // Con i quattro percorsi scritti a mano, qui non si muoveva NIENTE — e
@@ -143,16 +151,16 @@ async function run() {
       };
     });
     log('[B] Cambiata l\'edizione, la segue il file delle istruzioni',
-      dopo.istruzioni === 'data/francese/it/istruzioni-moduli.json', dopo.istruzioni);
+      nudo(dopo.istruzioni) === 'data/francese/it/istruzioni-moduli.json', dopo.istruzioni);
     log('[B] ...la segue il file dei messaggi di feedback',
-      dopo.feedback === 'data/francese/it/messaggi-feedback.json', dopo.feedback);
+      nudo(dopo.feedback) === 'data/francese/it/messaggi-feedback.json', dopo.feedback);
     log('[B] ...la seguono le tabelle di personalizzazione',
-      dopo.tabelle === 'data/francese/it/tabelle-personalizzazione.json', dopo.tabelle);
+      nudo(dopo.tabelle) === 'data/francese/it/tabelle-personalizzazione.json', dopo.tabelle);
     log('[B] ...e la segue il file episodio, cartella E prefisso insieme',
-      dopo.episodio === 'data/francese/it/francese-it-gate.json', dopo.episodio);
+      nudo(dopo.episodio) === 'data/francese/it/francese-it-gate.json', dopo.episodio);
     log('[B] I quattro si muovono INSIEME: nessuno resta all\'edizione vecchia',
       [dopo.istruzioni, dopo.feedback, dopo.tabelle, dopo.episodio]
-        .every(function (p) { return p.indexOf('data/francese/it/') === 0; }),
+        .every(function (p) { return nudo(p).indexOf('data/francese/it/') === 0; }),
       JSON.stringify(dopo));
 
     await page.evaluate(function () { localStorage.clear(); });
