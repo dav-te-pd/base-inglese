@@ -36,6 +36,7 @@
   'use strict';
 
   var episodeDataCache = BI.episodeDataCache;
+  var barraAzioniFinale = BI.barraAzioniFinale;
   var episodeGrade = BI.episodeGrade;
   var episodeGradeRequired = BI.episodeGradeRequired;
   var loadEpisodeData = BI.loadEpisodeData;
@@ -122,7 +123,7 @@
     // Nothing to explain on the completion screen — hide Spiegazione
     // there (CLAUDE.md rule 10, same as every other module's Schermata
     // Finale); Help stays available everywhere.
-    document.getElementById('repeat-aloud-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('repeat-aloud', name);
   }
   function openRepeatAloud(module) {
     // I listener di questo modulo, una volta sola.

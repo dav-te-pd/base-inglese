@@ -33,6 +33,7 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
+  var barraAzioniFinale = BI.barraAzioniFinale;
 
   /* ============================================================
      MODULES: FLASH CARD (Level A Eng-Ita / Level A Ita-Eng, more
@@ -121,7 +122,7 @@
     document.getElementById('fc-summary-screen').hidden = name !== 'summary';
     // Nothing to explain on the completion screen — hide the button there
     // (CLAUDE.md rule 10); Help alone stays, same as every other screen.
-    document.getElementById('flashcard-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('flashcard', name);
   }
 
   function fcShowChoice(show) {

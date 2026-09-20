@@ -66,6 +66,7 @@
   var renderIntroContent = BI.renderIntroContent;
   var introDismissPref = BI.introDismissPref;
   var lockModuleHeader = BI.lockModuleHeader;
+  var barraAzioniFinale = BI.barraAzioniFinale;
   var openHowItWorksOverlay = BI.openHowItWorksOverlay;
   var openHelpFor = BI.openHelpFor;
   var openAttemptPopup = BI.openAttemptPopup;
@@ -531,7 +532,7 @@
     // Nothing to explain on the completion screen — hide Spiegazione
     // there (CLAUDE.md rule 10); Help stays available everywhere, same
     // as this module's header always has.
-    document.getElementById('voice-coach-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('voice-coach', name);
   }
 
   function openVoiceCoach(module) {

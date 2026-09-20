@@ -605,6 +605,54 @@
   // real lock, kept for Voice Coach's RECORDING direction only (setVcState
   // below) — a genuinely different concern (the mic picking up the
   // model's own voice), not this audio-playback rule.
+  // ⚠️ NELLA SCHERMATA FINALE LA RIGA DELLE AZIONI SPARISCE INTERA — dal
+  // 2026-09-20. Prima spariva solo «Spiegazione», e restavano «← Mappa» e
+  // «Help».
+  //
+  // ⚠️ E NON E' UNA PULIZIA: «← Mappa» LI' BUTTAVA VIA L'ESERCIZIO.
+  //
+  // Misurato su Flash Card, sulla Schermata Finale con l'esito gia' a
+  // schermo: **dodici voci di mastery in sospeso, e dopo «← Mappa» zero.**
+  // Il modulo non veniva nemmeno segnato completato. *Lo studente legge
+  // «Tutte le carte ripassate!» col suo punteggio, tocca un pulsante che
+  // sembra «torna indietro», e perde tutto senza che niente glielo dica.*
+  //
+  // ⚠️ LA STRADA SCARTATA, e la scarta la REGOLA 17: far salvare «← Mappa»
+  // solo qui. Sarebbe lo stesso pulsante con due mestieri diversi in due
+  // schermate — *«se un pulsante ha bisogno di comportarsi diversamente a
+  // seconda del contesto, non e' piu' lo stesso pulsante»*. Togliere la riga
+  // lascia UNA sola uscita, «Ho finito, torna alla mappa», che salva: il
+  // gesto della regola 7 diventa l'unico possibile invece che il piu'
+  // probabile.
+  //
+  // E «Help» non serve: a esercizio finito non c'e' piu' niente da spiegare —
+  // la stessa ragione per cui la regola 10 toglieva gia' «Spiegazione».
+  //
+  // ⚠️ UNA FUNZIONE SOLA AL POSTO DI SEI RIGHE UGUALI. I sei moduli con una
+  // Schermata Finale avevano ognuno la propria copia di
+  // `document.getElementById('<prefisso>-watch-btn').hidden = name === 'summary'`.
+  // La condizione e' identica: cambia solo cosa si nasconde. Sei copie sono
+  // sei occasioni di dimenticarsene al settimo modulo.
+  function barraAzioniFinale(prefix, schermata) {
+    var watch = document.getElementById(prefix + '-watch-btn');
+    if (!watch) return;
+    var finale = schermata === 'summary';
+    // ⚠️ IL PULSANTE SI CONTINUA A TOCCARE, E NON E' RIDONDANTE CON LA RIGA.
+    //
+    // `#dialogo-watch-btn` nasce **`hidden` nel markup**, e la vecchia riga
+    // `watch.hidden = name === 'summary'` era **l'unica cosa che lo
+    // accendeva**. Togliendola per nascondere solo la riga, «Spiegazione» nel
+    // Dialogo restava invisibile *per sempre* — due asserzioni rosse in
+    // `test_batch5`, sulla schermata iniziale, cioe' lontano da dove avevo
+    // cambiato qualcosa. *Nascondere un contenitore non rimette a posto lo
+    // stato dei figli: sono due cose diverse, e una non copre l'altra.*
+    watch.hidden = finale;
+    // Se il markup cambiasse e la riga non ci fosse, resta nascosto almeno
+    // «Spiegazione» invece di non fare niente in silenzio.
+    var riga = watch.closest('.header-actions-row');
+    if (riga) riga.hidden = finale;
+  }
+
   function lockModuleHeader(prefix, locked) {
     var watchBtn = document.getElementById(prefix + '-watch-btn');
     if (watchBtn) watchBtn.disabled = locked;
@@ -1007,6 +1055,7 @@
   BI.moduleRulesLevel = moduleRulesLevel;
   BI.renderStars = renderStars;
   BI.renderRateButtons = renderRateButtons;
+  BI.barraAzioniFinale = barraAzioniFinale;
   BI.lockModuleHeader = lockModuleHeader;
   BI.moduleNameHtml = moduleNameHtml;
   BI.renderSpiegazioneTitle = renderSpiegazioneTitle;

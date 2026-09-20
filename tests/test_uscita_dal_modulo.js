@@ -188,6 +188,131 @@ async function run() {
     }
   }
 
+  // ── [C] DALLA SCHERMATA FINALE L'UNICA USCITA E' QUELLA CHE SALVA ────
+  //
+  // ⚠️ IL GUASTO MISURATO IL 2026-09-20, e non e' estetico: sulla Schermata
+  // Finale di Flash Card, con l'esito gia' a schermo, c'erano **dodici voci
+  // di mastery in sospeso** — e premendo «← Mappa» diventavano **zero**. Il
+  // modulo non veniva nemmeno segnato completato. *Lo studente legge «Tutte
+  // le carte ripassate!» col suo punteggio, tocca un pulsante che sembra
+  // «torna indietro», e perde tutto senza che niente glielo dica.*
+  //
+  // La correzione toglie la RIGA DELLE AZIONI intera da quella schermata, non
+  // solo «Spiegazione» come faceva la regola 10. La strada scartata — far
+  // salvare «← Mappa» solo li' — la scarta la **regola 17**: sarebbe lo stesso
+  // pulsante con due mestieri in due schermate.
+  //
+  // ⚠️ DUE ASSERZIONI, E LA SECONDA E' QUELLA CHE CONTA. «La riga e'
+  // nascosta» proverebbe solo che qualcosa e' sparito; quello che protegge lo
+  // studente e' che **l'uscita rimasta SCRIVE**: la mastery in sospeso finisce
+  // nel magazzino e il modulo si segna completato. Senza la seconda, si
+  // potrebbe togliere la riga e rompere il salvataggio restando verdi.
+  //
+  // IL CASO PIU' DIVERSO (regola 42): **Voice Coach**, l'unico dei sei che
+  // tocca quella stessa riga con un SECONDO meccanismo — `lockModuleHeader`,
+  // che la blocca mentre il microfono registra. Se nascondere la riga
+  // interferisse con quel blocco, si vedrebbe li'. Guidarlo fino alla
+  // Schermata Finale chiede un microfono finto, quindi qui se ne verifica il
+  // SORGENTE: usa la stessa funzione condivisa degli altri cinque, e la sua
+  // riga di blocco e' rimasta.
+  //
+  // LIMITE DICHIARATO: guida **Flash Card**. Gli altri cinque li copre la
+  // riga strutturale qui sotto, che verifica che nessuno si sia tenuto la
+  // propria copia della vecchia istruzione.
+  {
+    const page = await nuovaPagina(browser, 'UFinale', stepsBefore('flashcardAEngIta'));
+    await openModule(page, 'flashcardAEngIta');
+    // ⚠️ `nuovaPagina` spegne l'introduzione solo per la mappa e per
+    // Personalizza, quindi Flash Card si apre sulla SUA introduzione e la
+    // carta resta nascosta. Si chiude qui invece che allargare `nuovaPagina`:
+    // gli altri blocchi di questo file non aprono nessuna introduzione, e
+    // cambiarla per loro vorrebbe dire cambiare cio' che gia' misurano.
+    if (await page.isVisible('#fc-intro-start-btn').catch(function () { return false; })) {
+      await page.click('#fc-intro-start-btn');
+    }
+    await page.waitForSelector('#fc-card', { timeout: 15000 });
+    // Si risponde a tutte le carte fino alla Schermata Finale. Il ciclo ha un
+    // tetto e non un'attesa: se non ci arriva, l'asserzione dopo lo dice.
+    for (let i = 0; i < 60; i++) {
+      if (await page.isVisible('#fc-summary-screen').catch(function () { return false; })) break;
+      if (await page.evaluate(function () {
+        return document.getElementById('attempt-popup').classList.contains('is-open');
+      })) { await page.click('#attempt-popup .btn-primary').catch(function () {}); await page.waitForTimeout(200); continue; }
+      if (await page.isVisible('#fc-retry-continue-btn').catch(function () { return false; })) {
+        await page.click('#fc-retry-continue-btn'); await page.waitForTimeout(300); continue;
+      }
+      if (await page.isVisible('#fc-card').catch(function () { return false; })) {
+        await page.click('#fc-card').catch(function () {});
+        await page.waitForTimeout(120);
+        if (await page.isVisible('#fc-know-it-btn').catch(function () { return false; })) {
+          await page.click('#fc-know-it-btn'); await page.waitForTimeout(450); continue;
+        }
+      }
+      await page.waitForTimeout(200);
+    }
+    const suFinale = await page.evaluate(function () {
+      var el = document.getElementById('fc-summary-screen');
+      var riga = document.querySelector('#view-flashcard .header-actions-row');
+      var visibili = riga ? [].slice.call(riga.querySelectorAll('button'))
+        .filter(function (b) { return b.offsetParent !== null; }).length : -1;
+      return {
+        finale: !!el && !el.hidden,
+        pulsantiVisibiliInBarra: visibili,
+        sospesa: Object.keys(window.BI.masteryInSospeso()).length
+      };
+    });
+    log('[C] Flash Card arriva alla Schermata Finale con un esito da salvare',
+      suFinale.finale === true && suFinale.sospesa > 0, JSON.stringify(suFinale));
+    log('[C] ...e nella barra non c\'e\' piu\' NESSUN pulsante',
+      suFinale.pulsantiVisibiliInBarra === 0, JSON.stringify(suFinale));
+
+    await page.click('#fc-complete-btn');
+    await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
+    const dopoUscita = await page.evaluate(function () {
+      var m = JSON.parse(localStorage.getItem('baseinglese:mastery:gate:UFinale') || '{}');
+      var p = JSON.parse(localStorage.getItem('baseinglese:modules:gate:UFinale') || '{}');
+      return {
+        magazzino: Object.keys(m).length,
+        sospesa: Object.keys(window.BI.masteryInSospeso()).length,
+        completato: (p.completed || []).indexOf('flashcardAEngIta') !== -1
+      };
+    });
+    log('[C] L\'unica uscita rimasta SCRIVE la mastery nel magazzino',
+      dopoUscita.magazzino >= suFinale.sospesa && dopoUscita.sospesa === 0, JSON.stringify(dopoUscita));
+    log('[C] ...e segna il modulo completato', dopoUscita.completato === true, JSON.stringify(dopoUscita));
+    await page.close();
+  }
+
+  // ── [C] STRUTTURALE: nessun modulo si e' tenuto la propria copia ─────
+  {
+    const moduli = [
+      ['flashcard.js', 'flashcard'], ['dialogo.js', 'dialogo'], ['match.js', 'match'],
+      ['repeataloud.js', 'repeat-aloud'], ['speedmatch.js', 'speed-match'],
+      ['voice.js', 'voice-coach'], ['storycards.js', 'story-cards']
+    ];
+    const conProprie = moduli.filter(function (m) {
+      const src = fs.readFileSync(repoPath('app', m[0]), 'utf8');
+      return src.split('\n').some(function (r) {
+        return r.trim().indexOf('//') !== 0 &&
+          r.indexOf("'" + m[1] + "-watch-btn').hidden = name === 'summary'") !== -1;
+      });
+    });
+    log('[C] Nessuno dei sette moduli ha ancora la sua copia della vecchia riga',
+      conProprie.length === 0, conProprie.map(function (m) { return m[0]; }).join(', '));
+    const chiamano = moduli.filter(function (m) {
+      const src = fs.readFileSync(repoPath('app', m[0]), 'utf8');
+      return src.indexOf("barraAzioniFinale('" + m[1] + "'") !== -1;
+    });
+    log('[C] ...e tutti e sette chiamano la funzione condivisa',
+      chiamano.length === moduli.length, chiamano.length + ' su ' + moduli.length);
+    // Il caso piu' diverso, nominato invece che solo guardato: Voice Coach
+    // blocca la stessa riga durante la registrazione, e quel blocco deve
+    // essere rimasto.
+    const voice = fs.readFileSync(repoPath('app', 'voice.js'), 'utf8');
+    log('[C] Voice Coach blocca ancora la riga mentre registra (lockModuleHeader)',
+      /lockModuleHeader\('voice-coach', recording\)/.test(voice));
+  }
+
   await browser.close();
   console.log('\n=== USCITA DAL MODULO SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   if (failed) process.exit(1);

@@ -39,6 +39,7 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
+  var barraAzioniFinale = BI.barraAzioniFinale;
 
   var episodeGradeRequired = BI.episodeGradeRequired;
   var loadEpisodeData = BI.loadEpisodeData;
@@ -148,7 +149,7 @@
     // control, so this is purely a visibility fix). Spiegazione still
     // hides on summary alone (CLAUDE.md rule 10) — Help stays, same
     // convention as every other module.
-    document.getElementById('dialogo-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('dialogo', name);
     document.getElementById('dialogo-help-btn').hidden = false;
   }
 

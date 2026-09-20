@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920b**
+**Versione: 20260920c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -189,9 +189,49 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     - **riga 1** (`.header-badge-row`) — nome del modulo e sua categoria (Studio, Quiz, ...), testo non cliccabile;
     - **riga 2** (`.header-actions-row`) — "← Mappa" a sinistra, "Spiegazione" al centro, "Help" a destra.
 
-    Se uno dei tre pulsanti viene nascosto in una schermata (per esempio "Spiegazione" nella Schermata Finale, regola 10), gli altri restano esattamente dove sono: le posizioni sono fissate a colonna, non redistribuite.
+    Se uno dei tre pulsanti viene nascosto in una schermata, gli altri restano esattamente dove sono: le posizioni sono fissate a colonna, non redistribuite.
 
-10. **Nella Schermata Finale non va mostrata la barra "🎥 Guarda come si fa"** — a quel punto non c'è più nulla da spiegare. Riguarda i moduli che una Schermata Finale ce l'hanno, cioè le categorie **Studio, Studia il dialogo, Quiz e Verifica finale** (regola 17); Inizio e Fine non ne hanno una. Vale per ogni modulo, presente e futuro: chi costruisce una schermata finale la tiene priva della watch-bar, mostrando solo l'esito/il messaggio di completamento e le azioni di uscita (Help se previsto, "Ho finito, torna alla mappa").
+    ⚠️ **Nella Schermata Finale la riga non c'è affatto** — sparisce intera, non
+    un pulsante per volta (regola 10, riscritta il 2026-09-20). Questa riga
+    vale quindi per le schermate in cui la riga c'è.
+
+10. **NELLA SCHERMATA FINALE LA RIGA DELLE AZIONI SPARISCE INTERA — non un
+    pulsante per volta.** Niente "← Mappa", niente "Spiegazione", niente
+    "Help": resta solo l'esito e **"Ho finito, torna alla mappa"**.
+
+    Riguarda i moduli che una Schermata Finale ce l'hanno, cioè le categorie
+    **Studio, Studia il dialogo, Quiz e Verifica finale** (regola 17); Inizio e
+    Fine non ne hanno una. Vale per ogni modulo, presente e futuro — e non si
+    ottiene modulo per modulo: c'è **una funzione sola**, `barraAzioniFinale`,
+    e chi costruisce un modulo nuovo la chiama.
+
+    ⚠️ **RISCRITTA IL 2026-09-20, E NON PER PULIZIA: "← Mappa" LÌ BUTTAVA VIA
+    L'ESERCIZIO.**
+
+    Fino a quel giorno questa regola toglieva solo la watch-bar — *"a quel
+    punto non c'è più nulla da spiegare"* — e diceva di mostrare le azioni di
+    uscita, **"Help se previsto"** compreso. Quindi sulla Schermata Finale
+    restavano "← Mappa" e "Help".
+
+    > **Misurato su Flash Card, con l'esito già a schermo: dodici voci di
+    > mastery in sospeso, e dopo "← Mappa" ZERO. Il modulo non veniva nemmeno
+    > segnato completato.**
+
+    *Lo studente legge "Tutte le carte ripassate!" col suo punteggio, tocca un
+    pulsante che sembra "torna indietro", e perde tutto senza che niente glielo
+    dica.* Non è un caso limite: è il pulsante più a sinistra, quello che in
+    ogni altra schermata significa proprio «esci di qui».
+
+    ⚠️ **E LA STRADA SCARTATA LA SCARTA LA REGOLA 17**, non il gusto: far
+    salvare "← Mappa" *solo* sulla Schermata Finale sarebbe lo stesso pulsante
+    con due mestieri in due schermate — *"se un pulsante ha bisogno di
+    comportarsi diversamente a seconda del contesto, non è più lo stesso
+    pulsante"*. Togliere la riga lascia **una sola uscita**, e quella salva: il
+    gesto esplicito della regola 7 diventa l'unico possibile invece che il più
+    probabile.
+
+    "Help" se ne va per la stessa ragione per cui se ne andava "Spiegazione": a
+    esercizio finito non c'è più niente da spiegare.
 
 11. **Prima di costruire un nuovo elemento di interfaccia, verificare se esiste già un componente riusabile che serve allo scopo** (es. i pannelli/box/schermate già presenti nel progetto) ed estenderlo invece di duplicarlo. Se durante un lavoro noti duplicazioni già esistenti nel codice, segnalale nel riepilogo finale invece di correggerle silenziosamente — verranno affrontate in una revisione dedicata.
 

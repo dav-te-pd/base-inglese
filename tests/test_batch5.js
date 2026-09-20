@@ -221,7 +221,20 @@ async function run() {
     const watchHiddenOnSummary = await attendiNascosto(page, '#dialogo-watch-btn');
     const helpVisibleOnSummary = await page.isVisible('#dialogo-help-btn').catch(() => null);
     log('[Job5] dialogoAscoltaRipeti: Spiegazione hidden on Schermata Finale (rule 10)', watchHiddenOnSummary === true);
-    log('[Job5] dialogoAscoltaRipeti: Help still visible on Schermata Finale', helpVisibleOnSummary === true);
+    // ⚠️ ROSSA PER UNA DECISIONE, INVERTITA INVECE CHE TOLTA (⓪-undecies).
+    //
+    // Diceva «Help RESTA visibile sulla Schermata Finale», ed era la regola 10
+    // di allora: toglieva solo la watch-bar e lasciava «le azioni di uscita,
+    // Help se previsto». Il 2026-09-20 la regola 10 è stata riscritta, e non
+    // per pulizia: **misurato su Flash Card, «← Mappa» sulla Schermata Finale
+    // buttava via dodici voci di mastery in sospeso** e non segnava il modulo
+    // completato. La riga delle azioni sparisce intera, e con lei Help.
+    //
+    // *La riga non si toglie: si gira, e tiene il numero dalla parte giusta.
+    // Se qualcuno rimettesse la barra, questa asserzione se ne accorge come
+    // prima si accorgeva del contrario.*
+    log('[Job5] dialogoAscoltaRipeti: Help NON e\' piu\' visibile sulla Schermata Finale (regola 10 riscritta)',
+      helpVisibleOnSummary === false, String(helpVisibleOnSummary));
     log('[Job5] dialogoAscoltaRipeti summary: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

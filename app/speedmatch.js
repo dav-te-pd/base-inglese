@@ -47,6 +47,7 @@
   var uiText = BI.uiText;
   var DIRECTION_LABEL = BI.DIRECTION_LABEL;
   var lockModuleHeader = BI.lockModuleHeader;
+  var barraAzioniFinale = BI.barraAzioniFinale;
   var startTimerBar = BI.startTimerBar;
   var freezeTimerBar = BI.freezeTimerBar;
   var renderIntroContent = BI.renderIntroContent;
@@ -174,7 +175,7 @@
     // that happens specifically while the per-question timer bar runs
     // (srStartTimer locks, srDisableOptions releases) — that's the "azioni
     // che non tollerano interruzioni" exception, not a visibility one.
-    document.getElementById('speed-match-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('speed-match', name);
     document.getElementById('speed-match-help-btn').hidden = false;
   }
 

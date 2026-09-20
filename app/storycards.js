@@ -19,6 +19,7 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
+  var barraAzioniFinale = BI.barraAzioniFinale;
   var storyCardsRecordExplanationAnswer = BI.storyCardsRecordExplanationAnswer;
   var icon = BI.icon;
   var applyOutcomeSubtitle = BI.applyOutcomeSubtitle;
@@ -204,7 +205,7 @@
     // Nothing to explain on the completion screen — hide Spiegazione
     // there (CLAUDE.md rule 10, same as every other module's Schermata
     // Finale); Help stays available everywhere.
-    document.getElementById('story-cards-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('story-cards', name);
   }
 
   function openStoryCards(module) {

@@ -29,6 +29,7 @@
   'use strict';
 
   var CONFIG = window.APP_CONFIG;
+  var barraAzioniFinale = BI.barraAzioniFinale;
 
   var episodeGradeRequired = BI.episodeGradeRequired;
   var loadEpisodeData = BI.loadEpisodeData;
@@ -119,7 +120,7 @@
     // there); Help never hides. No timer in Match Practice, so neither is
     // ever disabled either (unlike Speed Match's srStartTimer/
     // srDisableOptions lock).
-    document.getElementById('match-watch-btn').hidden = name === 'summary';
+    barraAzioniFinale('match', name);
     document.getElementById('match-help-btn').hidden = false;
   }
 
