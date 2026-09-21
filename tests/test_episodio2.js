@@ -39,18 +39,25 @@ const DATI = 'data/inglese/it/inglese-it-aircraft-door.json';
 // NOME accanto, mai per posizione.
 function numeriAttesi() {
   const testo = fs.readFileSync(repoPath.apply(null, FONTE.split('/')), 'utf8');
-  const i = testo.indexOf('Numeri attesi');
-  if (i === -1) throw new Error('Riquadro "Numeri attesi" non trovato in ' + FONTE);
-  const blocco = testo.slice(i).split('\n').slice(0, 4)
-    .filter((r, n) => n === 0 || r.trim().startsWith('>'))
-    .join(' ').replace(/[>*]/g, ' ');
+  const i = testo.indexOf('Numeri attesi nel JSON');
+  if (i === -1) throw new Error('Riquadro "Numeri attesi nel JSON" non trovato in ' + FONTE);
+  // Il riquadro è un paragrafo markdown: si prende fino alla prima riga
+  // vuota, si ricuce (il testo va a capo dove capita) e si tolgono i
+  // marcatori. Prendere un numero fisso di righe leggerebbe anche il
+  // paragrafo successivo il giorno in cui questo si accorcia.
+  const blocco = testo.slice(i).split(/\n\s*\n/)[0]
+    .split('\n').join(' ')
+    .replace(/[>*]/g, ' ');
   const prendi = (etichetta, regex) => {
     const m = blocco.match(regex);
-    if (!m) throw new Error('Numero atteso non trovato in ' + FONTE + ': ' + etichetta);
+    // L'errore porta con sé IL TESTO LETTO: senza, un riquadro riscritto dà
+    // "numero non trovato" e non si sa se manchi il numero o il riquadro.
+    if (!m) throw new Error('Numero atteso non trovato in ' + FONTE + ': ' + etichetta +
+      '\n  riquadro letto: ' + blocco.trim());
     return parseInt(m[1], 10);
   };
   return {
-    A: prendi('grado A', /(\d+)\s+voci nel grado A/),
+    A: prendi('grado A', /(\d+)\s+voci in A/),
     B: prendi('grado B', /(\d+)\s+in B/),
     C: prendi('grado C', /(\d+)\s+in C/),
     D: prendi('grado D', /(\d+)\s+battute in D/),
