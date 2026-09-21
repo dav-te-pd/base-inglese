@@ -123,7 +123,9 @@
     "helpReminder": {
       "title": "Come funziona, in breve",
       "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
-    }
+    },
+    "pageTitle": "Mappa dell'episodio",
+    "pageSubtitle": "Completa i moduli in ordine per avanzare nella storia."
   },
   "repeatAloud": {
     "howItWorks": {

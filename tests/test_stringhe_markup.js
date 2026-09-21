@@ -25,15 +25,19 @@
 // Non è il caso più complicato — è quello a cui MANCA il passaggio che tutti
 // gli altri hanno (nessun modulo aperto prima). La [D] lo guida.
 //
-// LIMITE DICHIARATO, e non è una dimenticanza: **la vista MAPPA non è
-// coperta**, perché le sue stringhe non si sono spostate. `openEpisodeMap` è
-// sincrona e non aspetta i testi: spostarle vorrebbe dire farla aspettare,
-// cioè darle una schermata d'errore in più — una decisione sul comportamento,
-// non uno spostamento. È il passo 1.3b in docs/decisioni-stato.md, e finché
-// non è deciso quelle sei occorrenze restano nel markup di proposito.
+// ⚠️ E LA MAPPA È COPERTA DAL 2026-09-21 (passo 1.3b). Qui c'era scritto che
+// non lo era, «perché `openEpisodeMap` è sincrona e non aspetta i testi»:
+// adesso aspetta, con la sua schermata d'errore come ogni modulo. La `[F]`
+// guida **la strada fredda** — casa → mappa, senza aver aperto niente — che è
+// l'unico dei dieci punti di chiamata che può trovare la cache vuota.
+//
+// LIMITE DICHIARATO: restano nel markup le stringhe di **onboarding e home**
+// (devono funzionare quando niente funziona), quelle del **Pannello Admin**
+// (strumento, non studente) e quelle **sovrascritte a runtime** (segnaposto).
+// Nessuna delle tre è una dimenticanza, e nessuna è protetta da qui.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, fileEdizione } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, fileEdizione, globDati } = require('./test-env');
 const { openModule } = require('./map-driver');
 
 let passed = 0, failed = 0;
@@ -46,7 +50,9 @@ function log(nome, ok, extra) {
 // dei moduli. Non è l'elenco completo delle 54: è quello delle ripetute, cioè
 // quelle che una riscrittura per sbaglio rimetterebbe per prime.
 const SPARITE = ['Non lo so', 'Avanti →', 'Ripasso', 'Caricamento...',
-                 'Esci e riprendi dopo', 'Mostra pronuncia', 'Riprova ancora', 'Vai avanti →'];
+                 'Esci e riprendi dopo', 'Mostra pronuncia', 'Riprova ancora', 'Vai avanti →',
+                 // dal passo 1.3b: la mappa
+                 "Mappa dell'episodio", 'Completa i moduli in ordine per avanzare nella storia.'];
 
 // Le stesse, più quelle che vivevano SOLO nel JavaScript (passo 1.3c). Un
 // letterale che finisce in `textContent`/`innerHTML` è testo per lo studente
@@ -209,6 +215,45 @@ async function run() {
     });
     log('[E] Le stesse parole non sono scritte nemmeno dentro app/*.js',
       dentroIlCodice.length === 0, dentroIlCodice.join(' · '));
+  }
+
+  // ── [F] LA MAPPA A CACHE FREDDA — passo 1.3b ─────────────────────────
+  //
+  // ⚠️ La strada che nessun altro blocco fa: casa → mappa, **senza aver
+  // aperto un solo modulo**. È l'unico dei dieci punti che chiamano
+  // `openEpisodeMap` capace di trovare i testi non ancora arrivati — gli
+  // altri nove sono un «← Mappa» dentro un modulo, e lì ci sono per forza.
+  //
+  // Il ritardo di 800 ms non è prudenza: senza, la finestra fra «testi
+  // assenti» e «testi presenti» dura un millisecondo e il test osserverebbe
+  // sempre il dopo, cioè sarebbe vero per costruzione (regola 44).
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await page.route(globDati('istruzioni-moduli.json'), async function (route) {
+      await new Promise(function (x) { setTimeout(x, 800); });
+      await route.continue();
+    });
+    await apriMappa(page, 'MappaFredda');
+
+    const r = await page.evaluate(() => {
+      const vuoti = Array.from(document.querySelectorAll('#view-map [data-testo]'))
+        .filter(el => !el.textContent.trim())
+        .map(el => el.getAttribute('data-testo'));
+      return {
+        vuoti: vuoti,
+        titolo: (document.querySelector('#map-main-screen h1') || {}).textContent,
+        errore: !!document.querySelector('#view-error.is-active')
+      };
+    });
+    log('[F] La mappa non compare prima dei suoi testi', r.errore === false, 'schermata d\'errore');
+    log('[F] Nessun elemento della mappa resta vuoto', r.vuoti.length === 0, r.vuoti.join(' · '));
+    log('[F] Il titolo della mappa arriva dal file',
+      r.titolo === testi.mappaEpisodio.pageTitle, JSON.stringify(r.titolo));
+    log('[F] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
   }
 
   await browser.close();

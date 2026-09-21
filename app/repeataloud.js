@@ -187,6 +187,14 @@
     });
     currentRepeatAloudModule = module;
     document.getElementById('repeat-aloud-title').innerHTML = moduleNameHtml(module.label);
+    // ⚠️ IL BADGE ERA L'UNICO DEGLI OTTO SENZA id, quindi l'unico che nessuno
+    // riscriveva col nome vero: la parola «Repeat Aloud» restava quella incisa
+    // nel markup. Oggi coincide con `CONFIG.moduleLabels.repeatAloud.name`, e
+    // proprio per questo non si vedeva — *un difetto che si manifesta solo
+    // quando qualcuno cambia il nome in un posto e non nell'altro.* Trovato
+    // contando gli id, non leggendo (regola 42: chi manca di qualcosa che
+    // hanno tutti gli altri). Passo 1.3b, 2026-09-21.
+    document.getElementById('repeat-aloud-badge').textContent = module.label;
     document.getElementById('repeat-aloud-type-badge').textContent = moduleTypeLabel(module);
     document.getElementById('repeat-aloud-body').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     leaveModule('repeatAloud');

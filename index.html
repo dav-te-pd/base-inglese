@@ -40,17 +40,17 @@
      (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260920s"></script>
-<script src="app/spazio.js?v=20260920s"></script>
-<script src="app/magazzino.js?v=20260920s"></script>
-<script src="app/identita.js?v=20260920s"></script>
-<script src="app/avvio.js?v=20260920s"></script>
-<script src="app/progressi.js?v=20260920s"></script>
-<script src="app/audio.js?v=20260920s"></script>
-<script src="app/suoni.js?v=20260920s"></script>
-<script src="app/quiz-engine.js?v=20260920s"></script>
-<script src="app/dati.js?v=20260920s"></script>
-<script src="app/catalogo.js?v=20260920s"></script>
+<script src="app/config.js?v=20260921a"></script>
+<script src="app/spazio.js?v=20260921a"></script>
+<script src="app/magazzino.js?v=20260921a"></script>
+<script src="app/identita.js?v=20260921a"></script>
+<script src="app/avvio.js?v=20260921a"></script>
+<script src="app/progressi.js?v=20260921a"></script>
+<script src="app/audio.js?v=20260921a"></script>
+<script src="app/suoni.js?v=20260921a"></script>
+<script src="app/quiz-engine.js?v=20260921a"></script>
+<script src="app/dati.js?v=20260921a"></script>
+<script src="app/catalogo.js?v=20260921a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -72,18 +72,18 @@
 
      La `?v=` è la stessa dei tag `<script>` e per la stessa ragione: il perché
      sta scritto per esteso sopra i primi. -->
-<link rel="stylesheet" href="stile/base.css?v=20260920s">
-<link rel="stylesheet" href="stile/componenti.css?v=20260920s">
-<link rel="stylesheet" href="stile/condivisi.css?v=20260920s">
-<link rel="stylesheet" href="stile/guscio.css?v=20260920s">
-<link rel="stylesheet" href="stile/schermate.css?v=20260920s">
-<link rel="stylesheet" href="stile/repeataloud.css?v=20260920s">
-<link rel="stylesheet" href="stile/storycards.css?v=20260920s">
-<link rel="stylesheet" href="stile/voice.css?v=20260920s">
-<link rel="stylesheet" href="stile/match.css?v=20260920s">
-<link rel="stylesheet" href="stile/dialogo.css?v=20260920s">
-<link rel="stylesheet" href="stile/speedmatch.css?v=20260920s">
-<link rel="stylesheet" href="stile/flashcard.css?v=20260920s">
+<link rel="stylesheet" href="stile/base.css?v=20260921a">
+<link rel="stylesheet" href="stile/componenti.css?v=20260921a">
+<link rel="stylesheet" href="stile/condivisi.css?v=20260921a">
+<link rel="stylesheet" href="stile/guscio.css?v=20260921a">
+<link rel="stylesheet" href="stile/schermate.css?v=20260921a">
+<link rel="stylesheet" href="stile/repeataloud.css?v=20260921a">
+<link rel="stylesheet" href="stile/storycards.css?v=20260921a">
+<link rel="stylesheet" href="stile/voice.css?v=20260921a">
+<link rel="stylesheet" href="stile/match.css?v=20260921a">
+<link rel="stylesheet" href="stile/dialogo.css?v=20260921a">
+<link rel="stylesheet" href="stile/speedmatch.css?v=20260921a">
+<link rel="stylesheet" href="stile/flashcard.css?v=20260921a">
 </head>
 <body>
   <div class="app">
@@ -254,9 +254,9 @@
               <span class="badge" id="map-episode-badge">Episodio 1</span>
             </div>
             <div class="header-actions-row">
-              <button type="button" class="btn btn-secondary" id="map-back-home">← Home</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn">Spiegazione</button>
-              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn">Help</button>
+              <button type="button" class="btn btn-secondary" id="map-back-home" data-testo="condivisi.tornaAllaHome"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-watch-btn" data-testo="condivisi.spiegazione"></button>
+              <button type="button" class="btn btn-secondary btn-sm help-btn" id="map-help-btn" data-testo="condivisi.help"></button>
             </div>
           </div>
 
@@ -265,7 +265,7 @@
                same content afterward as a popup instead. -->
           <div id="map-intro-screen" class="module-screen" hidden>
             <header class="app-header">
-              <h1 id="map-intro-title">Spiegazione</h1>
+              <h1 id="map-intro-title" data-testo="condivisi.spiegazione"></h1>
             </header>
             <div class="overlay-text panel" id="map-intro-body"></div>
             <label class="ra-intro-checkbox">
@@ -278,8 +278,8 @@
           <!-- MAIN SCREEN -->
           <div id="map-main-screen" class="module-screen">
             <header class="app-header">
-              <h1>Mappa dell'episodio</h1>
-              <p style="opacity:0.7; font-size:0.92rem;">Completa i moduli in ordine per avanzare nella storia.</p>
+              <h1 data-testo="mappaEpisodio.pageTitle"></h1>
+              <p style="opacity:0.7; font-size:0.92rem;" data-testo="mappaEpisodio.pageSubtitle"></p>
             </header>
 
             <div class="module-list" id="module-list"></div>
@@ -294,7 +294,7 @@
         <div class="card-body">
           <div class="header-2row">
             <div class="header-badge-row">
-              <span class="badge">Repeat Aloud</span>
+              <span class="badge" id="repeat-aloud-badge">Repeat Aloud</span>
               <span class="module-row-type" id="repeat-aloud-type-badge"></span>
             </div>
             <div class="header-actions-row">
@@ -1061,19 +1061,19 @@
      *I due numeri che stavano qui — «nove strati», «tredici nodi» — erano
      diventati dieci e dodici senza che nessuno li toccasse. Il conto lo danno
      `grep -c 'src="app/' index.html` e `grep -c 'class="view"' index.html`.* -->
-<script src="app/orchestrazione.js?v=20260920s"></script>
-<script src="app/ui-condivisa.js?v=20260920s"></script>
-<script src="app/sessione.js?v=20260920s"></script>
-<script src="app/mappa.js?v=20260920s"></script>
-<script src="app/storycards.js?v=20260920s"></script>
-<script src="app/personalizza.js?v=20260920s"></script>
-<script src="app/repeataloud.js?v=20260920s"></script>
-<script src="app/flashcard.js?v=20260920s"></script>
-<script src="app/match.js?v=20260920s"></script>
-<script src="app/speedmatch.js?v=20260920s"></script>
-<script src="app/voice.js?v=20260920s"></script>
-<script src="app/dialogo.js?v=20260920s"></script>
-<script src="app/apertura.js?v=20260920s"></script>
+<script src="app/orchestrazione.js?v=20260921a"></script>
+<script src="app/ui-condivisa.js?v=20260921a"></script>
+<script src="app/sessione.js?v=20260921a"></script>
+<script src="app/mappa.js?v=20260921a"></script>
+<script src="app/storycards.js?v=20260921a"></script>
+<script src="app/personalizza.js?v=20260921a"></script>
+<script src="app/repeataloud.js?v=20260921a"></script>
+<script src="app/flashcard.js?v=20260921a"></script>
+<script src="app/match.js?v=20260921a"></script>
+<script src="app/speedmatch.js?v=20260921a"></script>
+<script src="app/voice.js?v=20260921a"></script>
+<script src="app/dialogo.js?v=20260921a"></script>
+<script src="app/apertura.js?v=20260921a"></script>
 
 <script>
 // ============================================================

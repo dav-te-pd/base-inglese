@@ -160,6 +160,11 @@ async function run() {
   //   NON e' gia' caricato: ci si arriva dalla home, non da
   //   openModuleFromMap. Sui moduli il giro A ha gia' reso la cache calda,
   //   quindi li' questa riga proverebbe molto meno.
+  //
+  //   ⚠️ DAL 2026-09-21 QUELLA GARANZIA E' STATA SOSTITUITA DA UNA PIU'
+  //   FORTE — vedi il blocco commentato piu' sotto: la mappa non si apre
+  //   affatto finche' i testi non ci sono. La riga qui sopra resta perche'
+  //   dice ancora perche' si guida la MAPPA e non un modulo.
   // ---------------------------------------------------------------
   const pagina3 = await browser.newPage();
   await bloccaFontEsterni(pagina3);
@@ -191,26 +196,35 @@ async function run() {
   // la rete di uno studente vero, non un numero di comodo — e dentro quella
   // finestra la garanzia del giro B o c'e' o non c'e'.
   await pagina3.route(globDati('istruzioni-moduli.json'), async function (route) {
-    await new Promise(function (r) { setTimeout(r, 400); });
+    await new Promise(function (r) { setTimeout(r, 800); });
     await route.continue();
   });
   await pagina3.click('#go-episode');
-  await pagina3.waitForSelector('#view-map.is-active', { timeout: 10000 });
 
-  // DENTRO la finestra: il pulsante e' spento e muto, e il corpo lo dice.
-  const durante = await pagina3.evaluate(() => {
-    const b = document.getElementById('map-intro-start-btn');
-    return {
-      spento: b.disabled,
-      testo: b.textContent,
-      corpo: document.getElementById('map-intro-body').innerText
-    };
-  });
-  log('[7] DURANTE l\'attesa il pulsante e\' SPENTO, non muto',
-    durante.spento === true, JSON.stringify(durante));
-  log('[7] ...e il corpo dice che sta caricando',
-    durante.corpo.indexOf('Caricamento') !== -1, JSON.stringify(durante.corpo.slice(0, 40)));
+  // ⚠️ LA GARANZIA E' CAMBIATA IL 2026-09-21, ED E' PIU' FORTE DI PRIMA —
+  // questo blocco l'ha seguita, non e' stato cancellato.
+  //
+  // Fino a ieri la mappa **compariva subito** e l'intro si riempiva dopo:
+  // quello che si poteva garantire era che il pulsante restasse SPENTO
+  // invece che muto, e questo blocco lo misurava. Col passo 1.3b la mappa
+  // ha le sue stringhe nel file come ogni modulo, quindi **non compare
+  // affatto** finche' i testi non ci sono: la finestra che il pulsante
+  // spento copriva non esiste piu'.
+  //
+  // Le due asserzioni di prima non avevano piu' niente da guardare. Al loro
+  // posto ci sono le due che dicono la garanzia nuova — *«non si vede una
+  // schermata a meta'»* e' piu' di *«il pulsante e' spento»*, e si misura
+  // dallo stesso punto, con la stessa rete rallentata.
+  const durante = await pagina3.evaluate(() => ({
+    vistaAttiva: (document.querySelector('.view.is-active') || {}).id || null,
+    mappaAttiva: !!document.querySelector('#view-map.is-active')
+  }));
+  log('[7] DURANTE l\'attesa la mappa NON compare a meta\'',
+    durante.mappaAttiva === false, JSON.stringify(durante));
+  log('[7] ...e si resta dove si era, senza schermata d\'errore',
+    durante.vistaAttiva === 'view-home', JSON.stringify(durante));
 
+  await pagina3.waitForSelector('#view-map.is-active', { timeout: 15000 });
   // e quando arriva, tutto si riempie insieme
   await pagina3.waitForFunction(() => {
     const b = document.getElementById('map-intro-start-btn');

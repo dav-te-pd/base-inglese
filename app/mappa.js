@@ -1052,6 +1052,29 @@
   }
 
   function openEpisodeMap() {
+    // ⚠️ LA MAPPA ASPETTA I SUOI TESTI, dal 2026-09-21 (passo 1.3b), e prima
+    // non lo faceva — era l'unica schermata con una chiave sua in
+    // `istruzioni-moduli.json` (`mappaEpisodio`) che partiva senza guardarla.
+    //
+    // Finche' le sue stringhe stavano scritte nel markup non si vedeva. Adesso
+    // arrivano dal file come quelle di ogni modulo, e una mappa disegnata
+    // prima del fetch mostrerebbe pulsanti senza scritta.
+    //
+    // ⚠️ LA GUARDIA COSTA SOLO DOVE SERVE, e i numeri lo dicono: dei dieci
+    // punti che aprono questa funzione, NOVE sono un «← Mappa» dentro un
+    // modulo — e li' i testi ci sono gia' per forza, perche' un modulo non si
+    // apre senza (openModuleFromMap). **Il solo che puo' arrivare a cache
+    // fredda e' il pulsante di casa.** Per gli altri nove
+    // `istruzioniInMemoria()` risponde subito e questa riga non fa niente.
+    //
+    // Se il file non arriva si va alla schermata d'errore, come per i moduli
+    // (regola 35): «Riprova» rifa' la stessa strada.
+    if (!BI.istruzioniInMemoria()) {
+      BI.loadModuleInstructions()
+        .then(function () { openEpisodeMap(); })
+        .catch(function () { showLoadError(function () { openEpisodeMap(); }); });
+      return;
+    }
     // Un episodio senza una sequenza valida non ha passi da mostrare: senza
     // questa riga la mappa si aprirebbe VUOTA, che e' il difetto silenzioso
     // di sempre — sembra funzionare e non lo dice. Il "Riprova" rifara' la

@@ -248,13 +248,22 @@
     document.getElementById('customize-warning-confirm-input').value = '';
     document.getElementById('customize-warning-confirm-btn').disabled = true;
     customizeWarningConfirmPhrase = '';
+    // ⚠️ NIENTE COPIE DI RIPIEGO DEL TESTO, dal 2026-09-21 (passo 1.3b).
+    //
+    // Qui c'erano `|| 'Attenzione'`, `|| 'Conferma'`, `|| 'Annulla'`. Le tre
+    // chiavi esistono tutte nel file, quindi quelle parole **non si vedevano
+    // mai** — e il giorno che si fossero viste avrebbero detto una cosa
+    // DIVERSA da quella scritta: il titolo vero e' «Stai per cancellare i tuoi
+    // progressi», non «Attenzione». *Una copia che si vede quasi mai e' una
+    // copia che diverge senza che nessuno se ne accorga* — e' la stessa
+    // correzione gia' fatta in questo file per il messaggio del duplicato.
     loadModuleInstructions().then(function (data) {
       var entry = (data.personalizzazione && data.personalizzazione.midEpisodeWarning) || {};
-      document.getElementById('customize-warning-title').textContent = entry.title || 'Attenzione';
+      document.getElementById('customize-warning-title').textContent = entry.title || '';
       document.getElementById('customize-warning-body').innerHTML = entry.body || '';
       document.getElementById('customize-warning-confirm-label').textContent = entry.confirmLabel || '';
-      document.getElementById('customize-warning-confirm-btn').textContent = entry.confirmButton || 'Conferma';
-      document.getElementById('customize-warning-cancel-btn').textContent = entry.cancelButton || 'Annulla';
+      document.getElementById('customize-warning-confirm-btn').textContent = entry.confirmButton || '';
+      document.getElementById('customize-warning-cancel-btn').textContent = entry.cancelButton || '';
       customizeWarningConfirmPhrase = (entry.confirmPhrase || '').trim().toLowerCase();
     }).catch(function () {});
   }
