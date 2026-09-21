@@ -93,6 +93,7 @@
   var saveModuleOutcome = BI.saveModuleOutcome;
   var showView = BI.showView;
   var uiText = BI.uiText;
+  var uiTextWith = BI.uiTextWith;
   var views = BI.views;
   var pulizie = BI.pulizie;
   var registraPulizia = BI.registraPulizia;
@@ -241,19 +242,37 @@
     }).catch(function () {});
   }
 
+  // ⚠️ LE DUE FRASI DELLA SCHERMATA INIZIALE VENGONO DAL FILE DEI TESTI, dal
+  // 2026-09-21. Prima erano incollate qui — `'Ciao, ' + name + '!'` e
+  // `'Inizia ' + nome` — cioè **testo che legge lo studente dentro il codice**,
+  // che la regola 8 vieta. *Non erano un residuo dimenticato: erano le uniche
+  // due frasi dell'app che portano un valore DENTRO, e per quelle
+  // `data-testo` non basta — serve un modello con il segnaposto.*
+  //
+  // ⚠️ E NON SI SVUOTA QUELLO CHE IL MARKUP GIÀ DICE. Se i testi non sono
+  // ancora arrivati, `uiTextWith` restituisce la stringa vuota: scriverla
+  // lascerebbe un saluto senza parole e un pulsante muto **peggio di prima**,
+  // quando il markup teneva "Ciao!" e "Inizia". Qui si scrive solo se c'è
+  // qualcosa da scrivere, e si riscrive quando i testi arrivano — la stessa
+  // forma che `showLoadError` usa già venti righe più su (regola 13).
+  function scriviTestiHome() {
+    var saluto = uiTextWith('condivisi.salutoHome', { nome: getUserName() });
+    var inizia = uiTextWith('condivisi.iniziaEpisodioNominato',
+      { episodio: BI.episodioCorrente() ? BI.episodioCorrente().nome : '' });
+    if (saluto.trim()) document.getElementById('home-greeting').textContent = saluto;
+    if (inizia.trim()) document.getElementById('go-episode').textContent = inizia;
+  }
+
   function goHome() {
-    var name = getUserName();
-    document.getElementById('home-greeting').textContent = 'Ciao, ' + name + '!';
-    // Il pulsante nomina l'episodio che si aprira' davvero, letto dalla stessa
-    // fonte degli altri tre punti che mostrano il badge (personalizzazione,
-    // mappa). Fino al 2026-09-09 la stringa "Inizia Episodio 1" era incollata
-    // nell'HTML e nessuno gliela riscriveva: sull'episodio 2 il pulsante diceva
-    // "Episodio 1" mentre la mappa, due tocchi dopo, diceva "Episodio 2".
-    //
-    // Nel markup resta il solo verbo, "Inizia": un testo statico che nomina un
-    // episodio e' vero al massimo per uno, mentre "Inizia" e' vero sempre —
-    // anche nel caso in cui questa riga non girasse.
-    document.getElementById('go-episode').textContent = 'Inizia ' + BI.episodioCorrente().nome;
+    scriviTestiHome();
+    // I testi possono non esserci ancora: quando arrivano si riscrive, ma solo
+    // se lo studente è ancora qui — altrimenti si scriverebbe su una schermata
+    // che ha già lasciato.
+    if (!istruzioniInMemoria()) {
+      loadModuleInstructions()
+        .then(function () { if (views.home.classList.contains('is-active')) scriviTestiHome(); })
+        .catch(function () {});
+    }
     leaveModule('home');
   }
 

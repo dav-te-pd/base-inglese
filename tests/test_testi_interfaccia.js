@@ -171,6 +171,30 @@ async function run() {
   const errori3 = [];
   pagina3.on('pageerror', e => errori3.push(String(e).slice(0, 200)));
   await pagina3.addInitScript(mockInit);
+
+  // ⚠️ IL CANCELLO SI INSTALLA PRIMA DI `goto`, E NON E' UN DETTAGLIO: E'
+  // QUELLO CHE TIENE VIVA LA FINESTRA CHE QUESTO BLOCCO DEVE OSSERVARE.
+  //
+  // Fino al 2026-09-21 il rallentamento si installava DOPO il caricamento,
+  // subito prima del click, e bastava: il fetch dei testi partiva all'apertura
+  // della mappa, quindi lo prendeva. **Poi `goHome` ha cominciato a chiedere i
+  // testi già sulla schermata iniziale** — perché il saluto e il nome
+  // dell'episodio adesso vengono dal file — e da allora, al momento del click,
+  // erano già in memoria: la mappa si apriva subito, **giustamente**, e le due
+  // asserzioni cadevano senza che niente fosse rotto.
+  //
+  // ⚠️ E IL CANCELLO NON E' UN TIMER: la richiesta resta ferma finche' il test
+  // non la libera. Prima c'erano 800 ms scelti come «la rete di uno studente
+  // vero»; un tempo, per quanto generoso, e' sempre una corsa contro la
+  // macchina (regola 19). Cosi' invece la finestra dura esattamente quanto
+  // serve, su qualunque macchina, e non si chiude mai da sola.
+  var apriIlCancello;
+  var cancelloTesti = new Promise(function (r) { apriIlCancello = r; });
+  await pagina3.route(globDati('istruzioni-moduli.json'), async function (route) {
+    await cancelloTesti;
+    await route.continue();
+  });
+
   await pagina3.goto(APP_URL);
   await pagina3.fill('#name-input', UTENTE + '3');
   await pagina3.click('#onboarding-form button[type=submit]');
@@ -182,23 +206,17 @@ async function run() {
     testoHome.indexOf('Inizia') !== -1 && testoHome.indexOf('Scegli il tema') !== -1,
     JSON.stringify(testoHome.slice(0, 50)));
 
-  // ⚠️ LA RETE SI RALLENTA DI PROPOSITO, e questa riga e' la correzione.
+  // ⚠️ LA FINESTRA NON SI OSSERVA CORRENDOLE CONTRO: SI RIPRODUCE.
   //
   // La prima versione di questo blocco apriva la mappa e guardava subito.
-  // MISURATO: il fetch del JSON parte all'apertura della mappa e ha gia'
-  // risolto al primo istante in cui Playwright riesce a leggere qualcosa —
-  // quindi le asserzioni erano VERE PER COSTRUZIONE (regola 44), e il test
-  // restava 19/19 anche togliendo il `disabled` dal codice. Se ne e'
-  // accorto solo il guasto iniettato (regola 32), non la rilettura.
+  // MISURATO: il fetch del JSON aveva gia' risolto al primo istante in cui
+  // Playwright riusciva a leggere qualcosa — quindi le asserzioni erano VERE
+  // PER COSTRUZIONE (regola 44), e il test restava 19/19 anche togliendo il
+  // `disabled` dal codice. Se ne e' accorto solo il guasto iniettato
+  // (regola 32), non la rilettura.
   //
-  // Una finestra che si chiude piu' in fretta di un round-trip non si
-  // osserva correndole contro: si RIPRODUCE. Quattrocento millisecondi sono
-  // la rete di uno studente vero, non un numero di comodo — e dentro quella
-  // finestra la garanzia del giro B o c'e' o non c'e'.
-  await pagina3.route(globDati('istruzioni-moduli.json'), async function (route) {
-    await new Promise(function (r) { setTimeout(r, 800); });
-    await route.continue();
-  });
+  // Adesso la finestra la tiene aperta il cancello installato prima di `goto`:
+  // i testi NON possono essere arrivati, su nessuna macchina.
   await pagina3.click('#go-episode');
 
   // ⚠️ LA GARANZIA E' CAMBIATA IL 2026-09-21, ED E' PIU' FORTE DI PRIMA —
@@ -224,6 +242,11 @@ async function run() {
   log('[7] ...e si resta dove si era, senza schermata d\'errore',
     durante.vistaAttiva === 'view-home', JSON.stringify(durante));
 
+  // Liberati i testi, la mappa arriva. **Questa riga e' anche la prova che le
+  // due asserzioni qui sopra non erano vere per il motivo sbagliato:** se la
+  // mappa non si aprisse nemmeno adesso, il blocco starebbe misurando un'app
+  // rotta invece di un'attesa.
+  apriIlCancello();
   await pagina3.waitForSelector('#view-map.is-active', { timeout: 15000 });
   // e quando arriva, tutto si riempie insieme
   await pagina3.waitForFunction(() => {

@@ -325,6 +325,8 @@
     "personalizzaSottotitolo": "Personalizza la tua storia o lascia così.",
     "repeatAloudSottotitolo": "Ascolta ogni parola o frase, ripetila ad alta voce.",
     "rispostaCorretta": "Risposta corretta: ",
-    "nascondiPronuncia": "Nascondi pronuncia"
+    "nascondiPronuncia": "Nascondi pronuncia",
+    "salutoHome": "Ciao, {nome}!",
+    "iniziaEpisodioNominato": "Inizia {episodio}"
   }
 }

@@ -207,3 +207,11 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `buildEpisodes(propri)` | Costruisce `EPISODES`: a ogni episodio mette id, percorso del file dati, i quindici descrittori dei moduli, e **due getter** — `nome` e `categoria`. | l'oggetto degli episodi → `EPISODES` | Che quello che dipende dall'edizione **non si congeli qui**. ⚠️ *Gira a tempo di parsing, quando `CONFIG.episodes` è ancora vuoto: leggere il nome subito dava sempre il ripiego.* |
 | `EPISODES.<id>.nome` | Il nome che legge lo studente («Al gate»), **letto a ogni accesso** da `CONFIG.episodes`. | — → stringa | Che il file di struttura sia arrivato. Se non c'è, torna **l'id** — e non è un caso: *un riquadro vuoto sembra un difetto grafico, un id sembra un dato che non è arrivato* (regola 37). |
 | `EPISODES.<id>.categoria` | `storia`, `grammatica` o `pronuncia`, stessa strada. | — → stringa o `null` | Come sopra; il ripiego è `null`, perché una categoria inventata sarebbe peggio di una mancante. |
+
+
+## `app/mappa.js` — la schermata iniziale
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `scriviTestiHome()` | Scrive il saluto e il pulsante della schermata iniziale leggendoli dal file dei testi, col nome dello studente e quello dell'episodio dentro. | — → niente | ⚠️ **Che il markup abbia già qualcosa di sensato da dire.** Non scrive se il testo è vuoto: i testi possono non essere ancora arrivati, e svuotare «Ciao!» e «Inizia» sarebbe peggio di lasciarli. |
+| `goHome()` | Porta alla schermata iniziale: scrive i testi, e **li riscrive quando arrivano** se lo studente è ancora lì. | — → niente | Che `views.home` dica se vale ancora la pena scrivere. *Senza quel controllo si scriverebbe su una schermata già lasciata — invisibile, ma è la forma da cui nascono i guasti di ordine.* |
