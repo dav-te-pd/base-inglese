@@ -14,6 +14,13 @@
 # tutte e otto le conversioni.** Un diff qui dentro durante il 21-quater e' un
 # errore, non un aggiornamento. **In otto giri non e' cambiato di una riga.**
 #
+# ⚠️ E IL 2026-09-21: 103 -> 104. Nasce `load-error-reset`, la TERZA uscita
+# della schermata d'errore — «Ripristina i valori di partenza». Non e' un
+# pulsante in piu' per simmetria: le due uscite che c'erano rifanno tutte e
+# due la stessa strada, e quando e' la CONFIGURAZIONE a essere sbagliata
+# rifanno tutte e due lo stesso muro. Aggiunto di proposito, e il baseline e'
+# stato riscritto nello stesso commit.
+#
 # Si riscrive solo quando qualcuno aggiunge o toglie un pulsante DI PROPOSITO:
 #   node tests/tools/scrivi-baseline-listener.js
 #
@@ -28,7 +35,7 @@
 # prima non distingue una pulizia da una perdita.*
 #
 # Ultimo aggiornamento: 2026-09-19 (passo A)
-# Totale: 103
+# Totale: 104
 condiviso attempt-popup-next|click 1
 condiviso attempt-popup-retry|click 1
 condiviso config-panel-backdrop|click 1
@@ -69,6 +76,7 @@ condiviso help-overlay-close|click 1
 condiviso howitworks-overlay-backdrop|click 1
 condiviso howitworks-overlay-close-btn|click 1
 condiviso load-error-back|click 1
+condiviso load-error-reset|click 1
 condiviso load-error-retry|click 1
 condiviso map-back-home|click 1
 condiviso map-help-btn|click 1

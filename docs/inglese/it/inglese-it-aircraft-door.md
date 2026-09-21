@@ -24,7 +24,7 @@
 > **Usa `sequence: 'narrativo-standard'`**, perché ha tutti e quattro i gradi — *è la ragione per
 > cui `breve-cd` non serviva più*.
 >
-> Convenzione: diventerà `docs/it/episodio-2.md`.
+> Convenzione: diventerà `docs/inglese/it/inglese-it-aircraft-door.md`.
 
 ---
 

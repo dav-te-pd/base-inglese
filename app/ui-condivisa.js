@@ -172,6 +172,13 @@
     body: '<p>Qualcosa non ha funzionato nel recupero dei dati. Controlla la connessione e riprova.</p>',
     retryLabel: 'Riprova',
     backLabel: 'Torna alla mappa',
+    // ⚠️ Anche questa e' una frase di ultima istanza, e per la ragione piu'
+    // forte delle altre: e' l'etichetta dell'uscita da un CARICAMENTO
+    // FALLITO. Se dipendesse dal file dei testi, nel caso in cui a non
+    // arrivare fosse proprio quello il pulsante sarebbe muto — cioe' la
+    // schermata resterebbe senza uscite esattamente nel caso che l'uscita
+    // giustifica. E' la regola 35 nella sua forma piu' letterale.
+    resetLabel: 'Ripristina i valori di partenza',
     // Per i punti NON bloccanti (Spiegazione, Help, l'intro di un modulo):
     // l'esercizio si puo' fare lo stesso, e il messaggio deve dirlo.
     inlineText: 'Non riusciamo a caricare questo testo. Puoi continuare lo stesso.'

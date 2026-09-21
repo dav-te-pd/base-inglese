@@ -13,7 +13,7 @@
 > 8 slot di personalizzazione. **Se i conti non tornano, fermarsi e segnalarlo.**
 >
 > **Materiale di partenza per Claude Code.** Da qui viene scritto
-> `data/it/a1-episodio1-inglese.json`, che è la fonte da cui l'app pesca. Questo file contiene
+> `data/inglese/it/inglese-it-gate.json`, che è la fonte da cui l'app pesca. Questo file contiene
 > anche le motivazioni; il JSON contiene solo i dati. **Code trascrive, non decide**
 > (regola 1.13).
 >
@@ -158,9 +158,13 @@ lista prima o poi divergono.*
 > grado A, che scenderà a 11.
 >
 > **Perché non ora:** `resolveSlotValue` restituisce **un solo campo per slot**, e le righe di
-> `places.departures` non hanno un secondo campo da leggere. Rappresentarlo oggi vorrebbe dire
-> aggiungere una colonna ad `APP_CONFIG`, che stiamo per smontare — lavoro buttato. **Dipende
-> da `data/it/tabelle-personalizzazione.json`, che non esiste ancora.**
+> `places.departures` non hanno un secondo campo da leggere. **Dipende da
+> `data/inglese/it/tabelle-personalizzazione.json`, che esiste dal 2026-09-15 ma ha ancora il
+> CONTENUTO vecchio** — il secondo campo per riga arriva col passo 1.8-bis.
+>
+> *Qui c'era scritto che il file «non esiste ancora» e che rappresentarlo avrebbe voluto dire
+> «aggiungere una colonna ad `APP_CONFIG`, che stiamo per smontare»: `APP_CONFIG` è stato
+> smontato il 2026-09-15, e da allora la ragione per non farlo non è più quella.*
 
 **Maiuscole:** in A e B minuscolo, tranne dove la lingua impone la maiuscola — qui solo `Italy`,
 che è un nome proprio.

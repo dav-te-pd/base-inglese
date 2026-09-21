@@ -4,7 +4,7 @@
 >
 > Vale per **tutto il corso**, non per un singolo episodio: il contenuto di un episodio sta in `docs/episodio-N.md`.
 >
-> **Le istruzioni stanno in questo file, non nel messaggio.** Il messaggio è sempre della forma *"aggiorna leggendo docs/it/struttura-corso.md"*.
+> **Le istruzioni stanno in questo file, non nel messaggio.** Il messaggio è sempre della forma *"aggiorna leggendo `docs/inglese/it/struttura-corso.md`"*.
 
 ---
 
@@ -200,4 +200,8 @@ del collaudo su profilo nuovo — non dopo.
 - **Si aggiunge un grado:** entra nella tabella dei gradi con il nome mostrato
 - **Si cambia l'ordine:** si riscrive la tabella dei 22 passaggi
 
-Poi una riga a Claude Code: *"aggiorna `APP_CONFIG` leggendo `docs/it/struttura-corso.md`"*.
+Poi una riga a Claude Code: *"aggiorna `data/inglese/it/struttura-corso.json` leggendo `docs/inglese/it/struttura-corso.md`"*.
+
+*Qui c'era scritto «aggiorna `APP_CONFIG`»: dal 2026-09-20 (passo 1.11b) la struttura del corso
+non sta più in `APP_CONFIG` ma nel file dell'edizione — i suoi valori tornano su `APP_CONFIG` a
+runtime, ma la FONTE da aggiornare è il JSON.*

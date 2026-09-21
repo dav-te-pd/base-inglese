@@ -193,6 +193,8 @@
     document.getElementById('load-error-body').innerHTML = t.body || r.body;
     document.getElementById('load-error-retry').textContent = t.retryLabel || r.retryLabel;
     document.getElementById('load-error-back').textContent = t.backLabel || r.backLabel;
+    var reset = document.getElementById('load-error-reset');
+    if (reset) reset.textContent = t.resetLabel || r.resetLabel;
   }
 
   // riprova: la funzione da rilanciare — di solito la riapertura del modulo
@@ -209,6 +211,25 @@
     // adesso, con quella frase, e si aggiorna se i testi arrivano: farla
     // aspettare un fetch significherebbe rischiare che non arrivi mai —
     // che e' il difetto che questa schermata esiste per chiudere.
+    // ⚠️ LA TERZA USCITA, DAL 2026-09-21: «Ripristina i valori di partenza».
+    //
+    // Compare **solo se ci sono override salvati**, perche' solo allora puo'
+    // servire a qualcosa: un pulsante che non puo' aiutare e' peggio di un
+    // pulsante che non c'e'.
+    //
+    // ⚠️ NASCE DA UN CASO VERO, non da una simmetria. Il 2026-09-21 chi guida
+    // il progetto ha cambiato `edizione` dal Pannello Admin per una prova:
+    // `struttura-corso.json` non e' piu' arrivato, l'app e' finita qui, e
+    // «Riprova» rifaceva la stessa strada fallendo allo stesso modo. **Le due
+    // uscite che c'erano portavano tutte e due nello stesso muro**, e l'unico
+    // modo di uscirne era cancellare i dati del sito dal menu del browser.
+    //
+    // Fa esattamente quello che fa il pulsante omonimo nel Pannello Admin —
+    // cancella la chiave e ricarica — e riusa quella riga invece di
+    // riscriverla (regola 13).
+    var resetBtn = document.getElementById('load-error-reset');
+    if (resetBtn) resetBtn.hidden = !BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return null; });
+
     var testi = istruzioniInMemoria();
     var inMemoria = testi && testi.erroreCaricamento;
     renderLoadErrorTexts(inMemoria);
@@ -377,6 +398,25 @@
     // si accende" ha un nome.
     hydrateIcons(document);
 
+    // ⚠️ LA PORTA `?config` STA QUI, PRIMA DEL FETCH, DAL 2026-09-21 — e il
+    // perche' e' un caso vero, non una simmetria.
+    //
+    // Stava in fondo ad `accendi()`, cioe' DENTRO il `.then` del file di
+    // struttura. Quando quel file non arriva — per esempio perche' un
+    // override del Pannello Admin punta a un'edizione che non esiste —
+    // `accendi()` non gira, e **la porta che serve a disfare quell'override
+    // non si apre.** L'attrezzo chiuso dentro la stanza che deve aprire.
+    //
+    // Qui gira sempre: il markup c'e' gia' (e' statico), e il pannello sa
+    // disegnarsi anche senza episodio (vedi `riquadroSenzaEpisodio`).
+    //
+    // La seconda porta serve ai telefoni, dove digitare «config» vorrebbe
+    // dire aprire la tastiera. Non e' scopribile per caso piu' della
+    // sequenza da tastiera: bisogna scriverlo nella barra degli indirizzi.
+    try {
+      if (new URLSearchParams(window.location.search).has('config')) openConfigPanel();
+    } catch (e) {}
+
     // ⚠️ DA QUI IN POI SI ASPETTA UN FILE. Passo 1.11b, 2026-09-20.
     //
     // `struttura-corso.json` porta le sequenze, i gradi, i loro nomi, le
@@ -439,20 +479,25 @@
       showView('onboarding');
       document.getElementById('name-input').focus();
     }
-    // La seconda porta del Pannello Admin: `?config` nell'indirizzo, per i
-    // telefoni, dove digitare «config» vorrebbe dire aprire la tastiera. Non
-    // e' scopribile per caso piu' della sequenza da tastiera — bisogna
-    // scriverlo nella barra degli indirizzi.
+
+    // ⚠️ SE IL PANNELLO E' GIA' APERTO, SI RIDISEGNA ADESSO — e questa riga
+    // e' la seconda meta' della porta spostata, non una rifinitura.
     //
-    // ⚠️ STA QUI, IN FONDO A `boot()`, E IL PERCHE' E' SCRITTO ACCANTO ALLA
-    // PORTA DA TASTIERA: prima era un `setTimeout(…, 0)` che si fidava di
-    // essere l'ultimo script della pagina, e col passo ① ha smesso di esserlo.
-    // Qui non c'e' niente da stimare — `boot()` E' il momento in cui l'app e'
-    // in piedi.
-    try {
-      if (new URLSearchParams(window.location.search).has('config')) openConfigPanel();
-    } catch (e) {}
-  
+    // `?config` gira PRIMA del fetch, apposta: e' l'unico modo perche' la
+    // porta esista anche quando l'app non parte. Ma sull'app SANA vuol dire
+    // che il pannello si apre prima che l'episodio ci sia — e i quattro
+    // report, che sono per episodio, mostravano la riga «nessun episodio
+    // aperto» **restando cosi' anche dopo**, su un'app perfettamente viva.
+    //
+    // ⚠️ Non l'ho vista rileggendo: l'ha trovata la suite. `test_config_estratto`
+    // apre il pannello proprio con `?config`, e la sua tabella e' passata da
+    // tre righe a zero. *Il difetto era esattamente quello che il passo voleva
+    // togliere — un pannello che dice «non c'e' niente» quando c'e' tutto —
+    // ricomparso dall'altra parte.*
+    //
+    // E' la stessa forma di `aggiungiGruppiMagazzino`, che ridisegna i due
+    // gruppi delle tabelle quando il magazzino arriva: qui arriva l'episodio.
+    if (configPanelOverlayEl.classList.contains('is-open')) openConfigPanel();
   }
 
   var configPanelOverlayEl = document.getElementById('config-panel-overlay');
@@ -463,9 +508,36 @@
   // part of renderConfigPanel's generic APP_CONFIG walk (this isn't a
   // tunable, see addAudioSecondsSent's own comment); re-rendered every
   // open so it always reflects whatever was just recorded.
+  // ⚠️ I QUATTRO RIQUADRI DI REPORT NON ESISTONO SENZA UN EPISODIO, E DAL
+  // 2026-09-21 LO DICONO INVECE DI FAR CADERE IL PANNELLO INTERO.
+  //
+  // Sono report per utente E per episodio: `loadAudioUsage(episodio, utente)`.
+  // Senza un episodio corrente non c'e' niente da mostrare — ma fino a oggi
+  // leggevano `BI.episodioCorrente().id` senza guardia, e quando l'episodio
+  // non c'era alzavano un `TypeError` che **portava giu' tutto il pannello**.
+  //
+  // ⚠️ E IL CASO NON E' TEORICO: e' il muro in cui e' finito chi guida il
+  // progetto il 2026-09-21. Una `edizione` sbagliata negli override fa
+  // fallire `struttura-corso.json`, `accendi()` non gira, `EPISODES` resta
+  // vuoto — e il Pannello Admin, che e' **l'unico strumento capace di
+  // annullare quell'override**, non si apriva. *L'attrezzo per riparare
+  // rotto dalla stessa cosa che deve riparare.*
+  //
+  // La forma e' quella della regola 35 letta per gli strumenti: **chi ripara
+  // non puo' dipendere da cio' che e' rotto.** Quindi i report spariscono e
+  // le manopole restano, invece di cadere insieme.
+  function riquadroSenzaEpisodio(el) {
+    if (BI.episodioCorrente()) return false;
+    el.innerHTML = '<p class="config-field-hint">Nessun episodio aperto: questo report si ' +
+      'costruisce per episodio, e adesso non ce n\'e\' uno. Le manopole qui sopra funzionano ' +
+      'lo stesso — se sei qui perche\' l\'app non parte, prova «Ripristina valori di partenza».</p>';
+    return true;
+  }
+
   function renderAudioUsagePanel() {
     var el = document.getElementById('config-audio-usage');
     if (!el) return;
+    if (riquadroSenzaEpisodio(el)) return;
     var usage = loadAudioUsage(BI.episodioCorrente().id, getUserName());
     var moduleIds = Object.keys(usage.byModule);
     var total = moduleIds.reduce(function (sum, id) { return sum + usage.byModule[id]; }, 0);
@@ -489,6 +561,7 @@
   function renderMasteryPanel() {
     var el = document.getElementById('config-mastery');
     if (!el) return;
+    if (riquadroSenzaEpisodio(el)) return;
     var mastery = loadMastery(BI.episodioCorrente().id, getUserName());
     var chiavi = Object.keys(mastery).sort();
     var perLivello = { rosso: 0, giallo: 0, verde: 0 };
@@ -513,6 +586,7 @@
   function renderNextLineSkipsPanel() {
     var el = document.getElementById('config-next-line-skips');
     if (!el) return;
+    if (riquadroSenzaEpisodio(el)) return;
     var usage = loadNextLineSkips(BI.episodioCorrente().id, getUserName());
     var moduleIds = Object.keys(usage.byModule);
     var total = moduleIds.reduce(function (sum, id) { return sum + usage.byModule[id]; }, 0);
@@ -1302,6 +1376,7 @@
   function renderStoryCardsExplanationStatsPanel() {
     var el = document.getElementById('config-story-cards-explanation-stats');
     if (!el) return;
+    if (riquadroSenzaEpisodio(el)) return;
     var stats = loadStoryCardsExplanationStats(BI.episodioCorrente().id, getUserName());
     var lineIds = Object.keys(stats.byLine);
     var rowsHtml = lineIds.map(function (id) {
@@ -1486,10 +1561,16 @@
 
 
 
-  document.getElementById('config-panel-reset-btn').addEventListener('click', function () {
+  // Il punto unico del ripristino: due pulsanti, una riga. Quello del pannello
+  // e quello della schermata d'errore fanno la stessa identica cosa, e la
+  // fanno con lo stesso codice (regola 13).
+  function ripristinaValoriDiPartenza() {
     BI.magCancella(CONFIG_OVERRIDES_KEY);
     location.reload();
-  });
+  }
+  document.getElementById('config-panel-reset-btn').addEventListener('click', ripristinaValoriDiPartenza);
+  var loadErrorResetEl = document.getElementById('load-error-reset');
+  if (loadErrorResetEl) loadErrorResetEl.addEventListener('click', ripristinaValoriDiPartenza);
 
   BI.openConfigPanel = openConfigPanel;
   BI.closeConfigPanel = closeConfigPanel;
