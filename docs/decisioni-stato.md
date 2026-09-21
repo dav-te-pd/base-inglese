@@ -421,7 +421,29 @@ registri **quali eventi del riconoscitore sono arrivati** nell'ultima
 registrazione, con il momento in cui sono arrivati. Stessa forma di
 `#config-audio-usage`. *Proposto, non costruito.*
 
-### ⚠️ LE PAROLE: «narrativo» e «Mappa» — aperto il 2026-09-21
+### ✅ LE PAROLE: «narrativo» e «Mappa» — CHIUSO il 2026-09-21, restano
+
+**Deciso da chi guida il progetto:** *«mappa e narrazione lasciamo così»*.
+
+⚠️ **E la ragione per cui si poteva decidere di NON fare niente è una misura,
+non una stima:** quello che legge lo studente sono **due valori in un file di
+dati** — `mappaEpisodio.pageTitle` e `condivisi.tornaAllaMappa` in
+`istruzioni-moduli.json`. *Cambiarli resta un gesto da un minuto, quando e se
+servirà: non si chiude nessuna porta lasciandoli.* E `narrativo-standard` è un
+id interno che nessuno studente legge.
+
+**Cosa aveva davvero ingarbugliato il giro, e vale come regola:**
+
+> **Si stava dando un nome a una cosa che non esiste.** La «lista degli
+> episodi» non aveva un nome perché non c'è: non c'è la schermata, non c'è il
+> dato, non c'è codice che lo legga. **Un nome scelto per una cosa che non
+> esiste si scopre sbagliato solo quando la cosa nasce.**
+
+*Misurato lo stesso giorno: l'app ha **dodici** schermate e **nessuna** elenca
+gli episodi. L'episodio non si sceglie — ce n'è uno solo, deciso da
+`CONFIG.episodioCorrente`, letto una volta all'avvio in `app/mappa.js`.*
+
+### ⚠️ (storico) LE PAROLE — la valutazione che ha portato alla decisione
 
 **Chiesto da chi guida il progetto**, e l'ordine in cui lo ha chiesto è la
 parte che conta: *«decidiamo prima cosa vede lo studente e poi nominiamo di
