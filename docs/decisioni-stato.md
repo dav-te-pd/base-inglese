@@ -376,6 +376,59 @@ si lascerebbe cambiare, e **non cambierebbe niente**: una manopola che non
 governa nulla è la regola 37 in forma di configurazione — *non somiglia a un
 errore, somiglia a un'impostazione.*
 
+### ⚠️ SU PAGES `speechstart` E `speechend` NON ARRIVANO — aperto il 2026-09-21
+
+**Segnalato da chi guida il progetto dopo il collaudo:** *«adesso funzionano
+solo il timer "tempo-massimo", "start" e "end" non funzionano»*.
+
+⚠️ **PRIMA DI TUTTO, LA COSA CHE TOGLIE L'URGENZA: NON È UNA REGRESSIONE, È
+UN NON-EFFETTO.** Letto il codice: se quei due eventi non arrivano,
+`vcHeardAnySpeech` torna a essere alzata **solo** da `onresult` (come prima
+del 2026-09-21) e `vcAfterSpeechTimeoutId` **non viene mai creato**.
+`vcHeardAnyText` è letta solo dentro quella callback, che non gira. **Il
+comportamento è identico a due giorni fa**: i due miglioramenti non fanno
+danno, semplicemente non hanno effetto.
+
+**LE DUE IPOTESI, e si distinguono con UN gesto e zero codice:**
+
+| | Ipotesi | Come si scarta |
+|---|---|---|
+| **a** | **È la cache**: il browser serve ancora la versione di prima | Aprire `config`, gruppo `voiceCoach`: **se c'è `afterSpeechTimeoutMs`, il codice nuovo c'è** — quella chiave non esiste nella versione vecchia |
+| **b** | **Chrome non emette quei due eventi** con `continuous = true` | Se la chiave c'è e gli eventi non arrivano lo stesso, resta questa |
+
+⚠️ **E SE FOSSE LA (b), IL CODICE NON SI TOCCA A INDOVINARE.** Il finto
+riconoscitore dei test **non può dire cosa fa Chrome davvero** — manda gli
+eventi perché glieli mandiamo noi. *Da qui la differenza fra «l'app non
+ascolta» e «il browser non parla» non è misurabile*, ed è esattamente la forma
+della regola 37: una diagnosi che non può sbagliarsi non è una diagnosi.
+
+**Serve una misura che vive sull'app vera**: un riquadro nel Pannello Admin che
+registri **quali eventi del riconoscitore sono arrivati** nell'ultima
+registrazione, con il momento in cui sono arrivati. Stessa forma di
+`#config-audio-usage`. *Proposto, non costruito.*
+
+### ⚠️ IL DOPPIO CONTROLLO DI `inglese-it-struttura-corso.md` — 2026-09-21
+
+*Chiesto da chi guida il progetto: «facciamo un double-check se per te è tutto
+corretto? se c'è qualcosa che reputi non corretto, segna qui in chat il punto e
+cosa cambieresti». I punti sono numerati `STRUTTURA-CORSO_0xx` nel file.*
+
+**Quello che TORNA, misurato e non letto:** uno script ha confrontato ogni
+valore del JSON con il file nuovo — 15 nomi di moduli, 2 sequenze, 2 episodi
+con la sequenza che chiedono, 2 lingue, 4 nomi dei gradi, 6 categorie:
+**33 controlli, 32 verdi.** Le tabelle sono giuste.
+
+**SEI PUNTI DA GUARDARE, in ordine di quanto pesano:**
+
+| | Punto | Cosa non torna | Cosa cambierei |
+|---|---|---|---|
+| **①** | **_017**, **_035**, **_037** | *«i passi delle sequenze si modificano dal Pannello Admin»* — **vero come gesto, falso come risultato**: il pannello scrive negli **override in `localStorage`**, cioè in quel browser soltanto. La modifica **non arriva mai al JSON**, nessun altro la vede, e sparisce svuotando i dati del sito — *com'è successo il 2026-09-19*. E **_037 è falso oggi**: il pannello **non sa creare** una sequenza, lo dice la sua stessa descrizione | Due strade: **(a)** scrivere qui che oggi la modifica è **temporanea e locale**, e che per renderla vera va riportata nel JSON; **(b)** fare il passo **1.14** — il pannello che esporta la sequenza — e allora la frase diventa vera |
+| **②** | **_010** | ⚠️ **«Perche' si dice cosi'» con gli apostrofi, ed è TESTO CHE LEGGE LO STUDENTE.** Nel JSON oggi è *«Perché si dice così»*. È l'**unico** sottotitolo con lettere accentate, quindi l'unico che se ne accorge | Rimettere gli accenti **in quella riga**. *Gli apostrofi nella prosa del file vanno benissimo — quella la leggiamo noi; la tabella dei sottotitoli no* |
+| **③** | **_026**, **_027**, **_028** | La **categoria dell'episodio** (narrativo, grammaticale, pronuncia) **non esiste**: oggi `episodes.gate` porta solo `{ sequence }` | È un **campo nuovo** da aggiungere a `episodes.<id>.categoria`. Non è un errore del file: è lavoro che il file chiede |
+| **④** | **_032** | Dice giusto **dove sta oggi** (`badge: 'Episodio 1'` in `app/catalogo.js`) — quindi **_031 è violato adesso**: lo studente legge esattamente «Episodio 1». ⚠️ **Ma «va nel file episodio» costa una cosa che non si vede:** la mappa disegna il badge **senza caricare il file episodio**, quindi il nome lì dentro la costringerebbe a un `fetch` che oggi non fa — e un caricamento fallito romperebbe la mappa | Metterlo in **`episodes.<id>.nome`** del file di struttura: **costa zero** (quel file arriva già prima di qualunque schermata) ed è già per edizione, quindi resta testo nella lingua dello studente |
+| **⑤** | **_001** | Dice `data/inglese/it/struttura-corso.json` **senza prefisso**, mentre **_014** e **_040** lo mettono. È incoerente **oggi**, e coerente **dopo** la rinomina decisa | Niente da cambiare a mano: lo sistema il passo della nomenclatura |
+| **⑥** | — | **Il file vecchio NON si può ancora togliere:** `tests/test_struttura_corso.js` legge `docs/inglese/it/struttura-corso.md` (`const DOC`). Cancellarlo adesso fa **rossa la suite** | La rinomina e l'aggiornamento del test vanno **nello stesso commit**, ed è il passo già deciso |
+
 ### ⚠️ IL TRIAGE DEI FUORI CATENA — chiesto il 2026-09-21
 
 > *«inerente ai punti F… possiamo farli ora così ce li togliamo per sempre e non
