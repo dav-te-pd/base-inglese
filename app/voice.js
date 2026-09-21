@@ -164,8 +164,23 @@
   // a pause), so checking it alone cut every recording at the timeout
   // regardless of whether the user was still actively speaking.
   var vcHeardAnySpeech = false;
+  var vcHeardAnyText = false;
   var vcTimeoutId = null; // hard cap on recording length (maxRecordingMsPerWord/MarginMs)
   var vcSilenceTimeoutId = null; // job 6b: shorter "no voice at all yet" timeout
+  // ⚠️ IL TERZO TIMER, 2026-09-21: si ferma N ms dopo che la VOCE SI FERMA.
+  // Gli altri due contano dal click; questo dalla fine della frase, ed è il
+  // solo che può accorciare una registrazione finita presto.
+  var vcAfterSpeechTimeoutId = null;
+  // ⚠️ DUE BANDIERE E NON UNA, E NON È PIGNOLERIA: rispondono a due domande
+  // diverse, e la stessa bandiera darebbe la risposta giusta a una e sbagliata
+  // all'altra.
+  //   · «ho sentito una VOCE?»   -> vcHeardAnySpeech, la alza `speechstart`.
+  //     La usa il taglio per silenzio: chi ha cominciato a parlare non va
+  //     tagliato, anche se il testo non è ancora arrivato.
+  //   · «sono arrivate PAROLE?»  -> vcHeardAnyText, la alza `onresult`.
+  //     La usa il terzo timer per decidere se la registrazione vale qualcosa:
+  //     un colpo di tosse alza la prima e NON la seconda, e senza la seconda
+  //     finirebbe offerta allo studente come se fosse una frase.
   var vcSilenceCutoff = false; // set right before stopping for silence — read once in vcRecognition.onend
   var vcTimerInterval = null;
   var vcRecordStartedAt = 0;
@@ -221,7 +236,41 @@
     // veniva tagliato MENTRE PARLAVA. E la difesa contro il microfono rotto
     // non cade — `vcEmptyRecognitionStreak` conta le registrazioni senza
     // parole, e una stanza rumorosa ne produce lo stesso.
-    vcRecognition.onspeechstart = function () { vcHeardAnySpeech = true; };
+    vcRecognition.onspeechstart = function () {
+      vcHeardAnySpeech = true;
+      // ⚠️ LA VOCE È RIPRESA: il conto «dopo che hai finito» si annulla.
+      // Senza questa riga una pausa in mezzo a una frase — prendere fiato,
+      // cercare la parola — verrebbe letta come «ha finito», e lo studente
+      // sarebbe tagliato a metà discorso. È il rischio principale del terzo
+      // timer, ed è qui che si chiude.
+      spegniTerzoTimer();
+    };
+
+    // ⚠️ IL TERZO TIMER PARTE QUI, E SOLO QUI: quando il riconoscitore dice
+    // che la voce si è fermata. Non dal click come gli altri due.
+    //
+    // A cosa serve: Chrome chiude la sessione da solo dopo una pausa
+    // prolungata — misurata dal di fuori, circa tre secondi — ma quel conto
+    // è dentro il suo motore e non è esposto da nessuna API, quindi non si
+    // può né leggere né cambiare. Questo timer arriva PRIMA: è l'unico modo
+    // di accorciare l'attesa di chi ha già finito di parlare.
+    //
+    // ⚠️ DEV'ESSERE PIÙ CORTO DI QUELLO DI CHROME O È INERTE. Con un valore
+    // pari o superiore arriverebbe quando la sessione è già chiusa, e non
+    // cambierebbe niente di misurabile.
+    vcRecognition.onspeechend = function () {
+      if (!vcListening) return;
+      spegniTerzoTimer();
+      vcAfterSpeechTimeoutId = setTimeout(function () {
+        if (!vcListening) return;
+        // ⚠️ SI È SENTITA UNA VOCE MA NON SONO ARRIVATE PAROLE: non era una
+        // frase. Si butta come faceva il taglio per silenzio, invece di
+        // offrire allo studente un invio vuoto — che è quello che
+        // succederebbe con la sola bandiera della voce.
+        if (!vcHeardAnyText) vcSilenceCutoff = true;
+        vcRecognition.stop();
+      }, CONFIG.voiceCoach.afterSpeechTimeoutMs);
+    };
 
     vcRecognition.onresult = function (event) {
       var finalText = '';
@@ -231,7 +280,10 @@
         }
         // Interim or final, any non-empty transcript means real speech
         // was heard — that's all the silence-timeout needs to know.
-        if (!vcHeardAnySpeech && event.results[i][0].transcript.trim()) vcHeardAnySpeech = true;
+        if (event.results[i][0].transcript.trim()) {
+          vcHeardAnySpeech = true;
+          vcHeardAnyText = true;
+        }
       }
       vcLatestTranscript = finalText.trim();
     };
@@ -288,9 +340,27 @@
     };
   }
 
+  // Il terzo timer si spegne da DUE posti — dalla pulizia generale e da
+  // `speechstart` quando la voce riprende — quindi ha la sua funzione invece
+  // di due `clearTimeout` copiati (regola 13).
+  function spegniTerzoTimer() {
+    if (vcAfterSpeechTimeoutId) { clearTimeout(vcAfterSpeechTimeoutId); vcAfterSpeechTimeoutId = null; }
+  }
+
+  // ⚠️ TRE TIMER, NON PIÙ DUE, E QUESTA FUNZIONE È IL PUNTO UNICO CHE LI
+  // SPEGNE. Il catalogo di ieri diceva che questa funzione «dà per scontato
+  // che non esista un terzo timer, e il giorno che nasce va toccata o
+  // resterebbe acceso»: è nato, ed è stata toccata.
+  //
+  // La chiamano quattro punti, e sono TUTTE le strade con cui una
+  // registrazione finisce: `onend`, `onerror`, `vcResetRecording` (si lascia
+  // il modulo) e l'inizio di una registrazione nuova. **Quindi qualunque dei
+  // tre scatti per primo, gli altri due si spengono con lui**: nessuno resta
+  // appeso a tenere viva una funzione.
   function clearVcTimeout() {
     if (vcTimeoutId) { clearTimeout(vcTimeoutId); vcTimeoutId = null; }
     if (vcSilenceTimeoutId) { clearTimeout(vcSilenceTimeoutId); vcSilenceTimeoutId = null; }
+    spegniTerzoTimer();
   }
 
   function startVcTimer() {
@@ -354,6 +424,7 @@
     vcListening = false;
     vcLatestTranscript = '';
     vcHeardAnySpeech = false;
+    vcHeardAnyText = false;
     vcSilenceCutoff = false;
     document.getElementById('vc-silence-warning').hidden = true;
     setVcState('idle');
@@ -614,6 +685,7 @@
       // it stops the model audio before this handler even runs.
       vcLatestTranscript = '';
       vcHeardAnySpeech = false;
+      vcHeardAnyText = false;
       document.getElementById('vc-silence-warning').hidden = true;
       var wordCount = tokenize(vcTargetText()).length;
       var maxMs = wordCount * CONFIG.voiceCoach.maxRecordingMsPerWord + CONFIG.voiceCoach.maxRecordingMarginMs;

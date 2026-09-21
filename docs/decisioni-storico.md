@@ -3539,6 +3539,93 @@ Voice Practice che nessuno mostra, già registrata. Le due cose hanno la stessa
 forma: un dato che esiste, è corretto, e non ha un posto dove farsi leggere.
 
 
+### ⚠️ CHI FERMA UNA REGISTRAZIONE — la tabella, con l'evento che fa partire ogni timer
+
+*Chiesta da chi guida il progetto il 2026-09-21, dopo il collaudo su Pages:
+«fammi una tabella riepilogativa e aggiungi le colonne di quale evento fa
+partire i timer, così poi lo salviamo nel nostro file per la nostra memoria».
+**Sta qui e non in `decisioni-stato.md` perché quello si svuota**: questa è una
+descrizione di come si comporta l'app, e resta vera finché non la si cambia.*
+
+**Cinque cose possono chiudere una registrazione. Tre sono timer nostri, una è
+un dito, una è il browser.**
+
+| | Chi ferma | Cosa lo fa PARTIRE | Quanto dura | Dove vive | In `config` |
+|---|---|---|---|---|---|
+| ① | **Il dito dello studente** | il click sul pulsante mentre registra | — | `vc-record-btn` | — |
+| ② | **Il taglio per silenzio** | ⚠️ **il CLICK su Registra** | `silenceTimeoutSeconds` = **3 s** | `vcSilenceTimeoutId` | ✅ `voiceCoach.silenceTimeoutSeconds` |
+| ③ | **Il tetto massimo** | ⚠️ **il CLICK su Registra** | `parole × maxRecordingMsPerWord + maxRecordingMarginMs` = `parole × 1000 + 3000` ms | `vcTimeoutId` | ✅ due chiavi |
+| ④ | **Il taglio dopo la frase** *(dal 2026-09-21)* | ⚠️ **l'evento `speechend`** — «la voce si è fermata» | `afterSpeechTimeoutMs` = **1200 ms** | `vcAfterSpeechTimeoutId` | ✅ `voiceCoach.afterSpeechTimeoutMs` |
+| ⑤ | **Il riconoscitore di Chrome** | una pausa prolungata | ~3 s (misurati dal di fuori) | ❌ dentro il browser | ❌ **non esposto da nessuna API** |
+
+**Cosa succede a ognuno quando scatta:**
+
+| | Cosa fa | La registrazione |
+|---|---|---|
+| ② | taglia **solo se non ha sentito nessuna voce** | **buttata**, con l'avviso di silenzio |
+| ③ | taglia sempre | **tenuta**, offerta Invia/Cancella |
+| ④ | taglia, **e se non sono arrivate parole la butta** | **tenuta** se c'erano parole, **buttata** se era solo un rumore |
+| ⑤ | chiude la sessione da solo | **tenuta** — arriva `onend` come per gli altri |
+
+⚠️ **PERCHÉ ④ È A 1200 ms E NON A 3000, ED È LA COSA PIÙ IMPORTANTE DELLA
+TABELLA: ⑤ ESISTE E NON SI PUÒ SPEGNERE.** Un valore pari o superiore a quello
+di Chrome arriverebbe a sessione già chiusa e **non cambierebbe niente di
+misurabile**. Il terzo timer serve solo finché è più corto del browser.
+
+⚠️ **E LA DOMANDA CHE VALE PIÙ DI TUTTE — «se ne scatta uno, gli altri
+restano appesi?» — HA UNA RISPOSTA MISURATA: NO.**
+
+> **`clearVcTimeout()` è il punto unico che li spegne tutti e tre**, e la
+> chiamano **quattro** posti, che sono **tutte** le strade con cui una
+> registrazione finisce:
+>
+> | Da dove | Quando |
+> |---|---|
+> | `vcRecognition.onend` | la registrazione è finita, **da qualunque dei cinque** |
+> | `vcRecognition.onerror` | il riconoscitore ha avuto un guasto |
+> | `vcResetRecording()` | si lascia il modulo a registrazione aperta |
+> | il gestore di Registra | **prima** di aprirne una nuova |
+>
+> **Qualunque dei tre scatti per primo chiama `stop()`, `stop()` porta a
+> `onend`, e `onend` li spegne tutti.** Nessuno resta acceso a tenere viva una
+> funzione. *E `vcListening` fa da seconda guardia: ogni callback esce subito
+> se la registrazione non è più in corso, quindi anche un timer che riuscisse
+> a scattare comunque non farebbe niente.*
+
+⚠️ **IL RIARMO DI ④, che non è un dettaglio ma la sua metà più importante:**
+`speechstart` lo **annulla**. Se la voce riprende — una pausa per prendere
+fiato, il tempo di cercare una parola — il conto riparte da zero. *Senza quella
+riga il terzo timer taglierebbe in mezzo a una frase, cioè rifarebbe dall'altro
+lato lo stesso danno che il passo prima aveva appena tolto.*
+
+⚠️ **E DUE BANDIERE, NON UNA, perché rispondono a due domande diverse:**
+`vcHeardAnySpeech` («ho sentito una **voce**?», la alza `speechstart`) decide
+②; `vcHeardAnyText` («sono arrivate **parole**?», la alza `onresult`) decide se
+④ tiene o butta. *Con una bandiera sola un colpo di tosse finirebbe offerto
+allo studente come se fosse una frase* — è la forma ⓪-decies: una cosa che
+risponde a due domande dà la risposta giusta a una e sbagliata all'altra.
+
+### ⚠️ E L'AUDIO NON CE L'ABBIAMO — quindi «tagliare i pezzi muti» oggi non è possibile
+
+*Domanda di chi guida il progetto, 2026-09-21, leggendo «la registrazione viene
+tenuta»: «ma allora quando lo studente clicca INVIA, non possiamo tagliare
+prima e dopo i pezzi muti?»*
+
+**«Tenuta» vuol dire che il TESTO viene tenuto, non l'audio.** La Web Speech API
+prende il microfono **da sé**, manda l'audio al servizio di riconoscimento e ci
+consegna **solo la trascrizione**: `vcLatestTranscript`, una stringa. *In tutta
+l'app non esiste un solo byte di audio della voce dello studente* — non c'è
+niente da tagliare, e nemmeno da spedire.
+
+**Quindi il taglio dei pezzi muti diventa possibile solo il giorno in cui
+l'audio passa dalle nostre mani** — cioè se si smettesse di usare il
+riconoscitore del browser per registrare noi e mandare a un servizio. È una
+scelta infrastrutturale, ed è registrata in
+`docs/scelte-strategiche-infrastrutturali.md`, ②.4.
+
+**Fino ad allora i tre timer sono l'unico modo di accorciare quello che si
+manda**, ed è esattamente il motivo per cui esistono.
+
 ### ⚠️ IL TAGLIO PER SILENZIO CONTA DAL CLICK, UNA VOLTA SOLA — e il nome dice un'altra cosa
 
 **Misurato il 2026-09-19** su una domanda precisa di chi guida il progetto:

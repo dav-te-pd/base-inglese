@@ -263,6 +263,21 @@
       // sentence actually being spoken, this one catches "nothing is
       // happening" much sooner.
       silenceTimeoutSeconds: 3,
+      // ⚠️ IL TERZO TIMER, 2026-09-21: quanti millisecondi si aspetta DOPO
+      // che la voce si è fermata prima di chiudere la registrazione. Gli altri
+      // due contano dal click, questo dalla fine della frase — ed è il solo
+      // che accorcia la registrazione di chi ha finito presto.
+      //
+      // ⚠️ 1200 E NON 3000, E IL MOTIVO NON È LA PRUDENZA: il riconoscitore
+      // di Chrome chiude la sessione DA SOLO dopo una pausa prolungata
+      // (misurata dal di fuori, circa tre secondi), e quel conto non è
+      // esposto da nessuna API del web. Un valore pari o superiore arriverebbe
+      // a sessione già chiusa e non cambierebbe niente di misurabile: questo
+      // timer serve solo finché è PIÙ CORTO di quello del browser.
+      //
+      // In millisecondi e non in secondi, a differenza di `silenceTimeoutSeconds`:
+      // è la manopola che si stringe a piccoli passi provando a voce.
+      afterSpeechTimeoutMs: 1200,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
       // documented in data/inglese/it/messaggi-feedback.json's percentageRule.
@@ -599,6 +614,7 @@
       'voiceCoach.maxRecordingMsPerWord': 'Millisecondi di tempo di registrazione concessi per ogni parola della frase da ripetere, in Voice Practice e Voice Check.',
       'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
       'voiceCoach.silenceTimeoutSeconds': 'Secondi senza rilevare voce dall\'avvio della registrazione dopo i quali si ferma da sola e NON viene inviata (compare un avviso).',
+      'voiceCoach.afterSpeechTimeoutMs': 'Millisecondi di silenzio DOPO che hai smesso di parlare, prima che la registrazione si chiuda da sola. Il conto riparte da zero se riprendi a parlare, quindi una pausa per prendere fiato non ti taglia. \u26a0\ufe0f Deve restare sotto i ~3000 ms: oltre, a chiudere la sessione arriva prima il riconoscitore del browser e questo valore non cambia pi\u00f9 niente.',
       'voiceCoach.starThresholds.oneStar': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere almeno una stella.',
       'voiceCoach.starThresholds.twoStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere due stelle.',
       'voiceCoach.starThresholds.threeStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere tre stelle, il massimo.',

@@ -114,7 +114,7 @@ const mockInit = () => {
     // e non lì: l'app costruisce il riconoscitore a TEMPO DI PARSING, cioè
     // prima che qualunque `evaluate` del test possa arrivarci. L'unico istante
     // in cui il finto si può far trovare è il proprio costruttore.
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this.onspeechstart = null; this.__attiva = false; window.__rec = this; }
+    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this.onspeechstart = null; this.onspeechend = null; this.__attiva = false; window.__rec = this; }
     start() {
       segna('rec-start');
       this.__attiva = true;
@@ -135,8 +135,37 @@ const mockInit = () => {
   }
   window.SpeechRecognition = FakeRecognition;
   window.webkitSpeechRecognition = FakeRecognition;
+
+  // L'aiutante vive nella pagina perché gli eventi vanno mandati DENTRO un
+  // solo giro sincrono (regola 19): mandarli da fuori, uno per `evaluate`,
+  // rimetterebbe in mezzo l'orologio della macchina.
+  window.__mandaSeAscoltato = function (nomi) {
+    var mancanti = [];
+    for (var i = 0; i < nomi.length; i++) {
+      var n = nomi[i];
+      if (typeof window.__rec[n] !== 'function') { mancanti.push(n); continue; }
+      window.__rec[n](n === 'onresult'
+        ? { results: [{ 0: { transcript: window.__testoFinto || 'hello' }, isFinal: true, length: 1 }] }
+        : {});
+    }
+    return mancanti;
+  };
 };
 
+// ⚠️ L'EVENTO SI MANDA SOLO SE L'APP LO ASCOLTA, E IL RESTO DEL FILE
+// CONTINUA A GUARDARE.
+//
+// Chiamare `window.__rec.onspeechend(...)` quando l'app non ha collegato quel
+// gestore alza un `TypeError` dentro l'`evaluate`, e l'eccezione porta via i
+// blocchi che vengono dopo: togliendo il terzo timer per falsificarlo, `[E]`
+// moriva e `[F]` non arrivava nemmeno a dire come era andato. **Una misura
+// che non misura, in forma di rosso** — dice che qualcosa è andato storto,
+// non cosa. È la stessa forma già corretta in `test_uscita_dal_muro.js` con
+// `pannelloAperto()`.
+//
+// Così invece il gestore mancante diventa **un'asserzione con un nome**, e i
+// blocchi dopo restano vivi. Verificato togliendo `onspeechend`: `[E]` dice
+// che l'app non ascolta l'evento, e `[F]` continua a guardare.
 // ⚠️ I PASSI PRIMA SI SEGNANO COMPLETATI, altrimenti lo Sblocco Sequenziale
 // tiene il pulsante spento e il test muore invece di fallire. `stepsBefore`
 // legge la sequenza vera: un riordino dei ventidue passi non rompe questo file.
@@ -394,6 +423,119 @@ async function run() {
       esito.offerta === true, JSON.stringify(esito));
 
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ── [E] CHI HA FINITO DI PARLARE NON ASPETTA IL TETTO ─────────────
+  //
+  // Il terzo timer: `afterSpeechTimeoutMs` dopo che la voce si ferma. Gli
+  // altri due contano dal click, questo dalla fine della frase — ed è il solo
+  // che può accorciare la registrazione di chi ha finito presto.
+  //
+  // ⚠️ IL TETTO È MESSO IRRAGGIUNGIBILE APPOSTA (60 s). Se restasse basso, a
+  // fermare la registrazione sarebbe LUI e questa riga sarebbe verde per il
+  // motivo sbagliato — la stessa trappola già evitata in `[C]`, al rovescio.
+  // Così l'unico che può fermarla è il terzo: o arriva, o il test aspetta
+  // invano. Sulla versione senza `onspeechend` aspetta invano.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await apriMappa(page, 'AudioE' + Date.now(), 'voicePractice');
+    await openModule(page, 'voicePractice');
+    await page.waitForSelector('#vc-record-btn', { timeout: 15000 });
+
+    const mancanti = await page.evaluate(function () {
+      window.APP_CONFIG.voiceCoach.afterSpeechTimeoutMs = 150;
+      window.APP_CONFIG.voiceCoach.silenceTimeoutSeconds = 60;
+      window.APP_CONFIG.voiceCoach.maxRecordingMsPerWord = 0;
+      window.APP_CONFIG.voiceCoach.maxRecordingMarginMs = 60000;
+      window.__audio.eventi.length = 0;
+      window.__testoFinto = 'hello there';
+      document.getElementById('vc-record-btn').click();
+      // La frase intera in un giro sincrono: comincia, dice qualcosa, finisce.
+      // ⚠️ Il testo va mandato DAVVERO (onresult), perché senza parole il
+      // terzo timer butta invece di tenere.
+      return window.__mandaSeAscoltato(['onspeechstart', 'onresult', 'onspeechend']);
+    });
+    log('[E] L\'app ascolta «la voce si è fermata» (onspeechend)',
+      mancanti.length === 0, 'gestori non collegati: ' + JSON.stringify(mancanti));
+
+    let fermata = true;
+    try {
+      await page.waitForFunction(function () {
+        return window.__audio.eventi.some(function (e) { return e.nome === 'rec-stop'; });
+      }, { timeout: 8000 });
+    } catch (e) { fermata = false; }
+    log('[E] Finito di parlare, la registrazione si chiude senza aspettare il tetto',
+      fermata, 'nessun rec-stop: il terzo timer non è partito');
+
+    await page.waitForFunction(function () {
+      var b = document.getElementById('vc-record-btn');
+      return b && !b.classList.contains('is-recording');
+    }, { timeout: 8000 }).catch(function () {});
+    const esito = await page.evaluate(function () {
+      return {
+        offerta: !document.getElementById('vc-confirm-area').hidden,
+        avvisoSilenzio: !document.getElementById('vc-silence-warning').hidden
+      };
+    });
+    log('[E] ...e la registrazione viene TENUTA, non buttata', esito.offerta === true, JSON.stringify(esito));
+    log('[E] Nessun errore JS', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ── [F] UNA PAUSA PER PRENDERE FIATO NON TAGLIA ────────────────
+  //
+  // ⚠️ È IL RISCHIO PRINCIPALE DEL TERZO TIMER, e senza questo blocco sarebbe
+  // il suo regalo avvelenato: un timer che parte alla prima pausa taglia in
+  // mezzo a una frase — cioè rifa' lo stesso danno che il passo prima aveva
+  // appena tolto, dall'altro lato.
+  //
+  // COME SI ASPETTA SENZA UN CRONOMETRO (regola 19). Non si dorme un tempo
+  // scelto a occhio per poi dire «non si è fermata»: si aspetta un effetto
+  // POSITIVO che esiste solo se è passato del tempo davvero — **il timer a
+  // schermo che arriva a `1s`** — e quel secondo è sei volte i 150 ms del
+  // terzo timer. Se il riarmo non funziona, la registrazione si chiude a 150
+  // ms, il timer a schermo si ferma a `0s` e l'attesa non arriva: allora
+  // l'asserzione legge il registro degli eventi e trova il `rec-stop` che non
+  // doveva esserci.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await apriMappa(page, 'AudioF' + Date.now(), 'voicePractice');
+    await openModule(page, 'voicePractice');
+    await page.waitForSelector('#vc-record-btn', { timeout: 15000 });
+
+    const mancantiF = await page.evaluate(function () {
+      window.APP_CONFIG.voiceCoach.afterSpeechTimeoutMs = 150;
+      window.APP_CONFIG.voiceCoach.silenceTimeoutSeconds = 60;
+      window.APP_CONFIG.voiceCoach.maxRecordingMsPerWord = 0;
+      window.APP_CONFIG.voiceCoach.maxRecordingMarginMs = 60000;
+      window.__audio.eventi.length = 0;
+      document.getElementById('vc-record-btn').click();
+      // pausa (onspeechend: il conto parte) e voce che riprende
+      // (onspeechstart: si annulla), tutto in un giro sincrono.
+      return window.__mandaSeAscoltato(['onspeechstart', 'onresult', 'onspeechend', 'onspeechstart']);
+    });
+    log('[F] L\'app ascolta i due eventi della voce',
+      mancantiF.length === 0, 'gestori non collegati: ' + JSON.stringify(mancantiF));
+
+    await page.waitForFunction(function () {
+      var t = document.getElementById('vc-record-timer');
+      return t && /^[1-9]\d*s$/.test(t.textContent.trim());
+    }, { timeout: 8000 }).catch(function () {});
+
+    const dopo = await page.evaluate(function () {
+      return {
+        fermata: window.__audio.eventi.some(function (e) { return e.nome === 'rec-stop'; }),
+        orologio: document.getElementById('vc-record-timer').textContent
+      };
+    });
+    log('[F] Se la voce riprende, il conto «dopo che hai finito» si annulla',
+      dopo.fermata === false, JSON.stringify(dopo));
+    log('[F] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
 
