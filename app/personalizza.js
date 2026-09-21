@@ -382,7 +382,7 @@
     document.getElementById('start-episode').addEventListener('click', startEpisodeFromCustomize);
     });
 
-    document.getElementById('customize-episode-badge').textContent = BI.episodioCorrente().badge;
+    document.getElementById('customize-episode-badge').textContent = BI.episodioCorrente().nome;
     document.getElementById('slot-grid').innerHTML = '<p class="module-status-text">Caricamento...</p>';
     document.getElementById('request-fields').innerHTML = '';
     renderCustomizePageText();

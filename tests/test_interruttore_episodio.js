@@ -32,7 +32,7 @@
 // dell'episodio, e un descrittore sbagliato su un solo modulo passerebbe.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
 
 const BASE = APP_URL;
 let passed = 0, failed = 0;
@@ -239,6 +239,49 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     log('[D] E LO DICE in console invece di far credere che sia l\'episodio scelto',
       consoleErrors.some(t => t.indexOf('episodio-che-non-esiste') !== -1),
       consoleErrors.join(' | '));
+    await page.close();
+  }
+
+  // ── [E] QUELLO CHE LEGGE LO STUDENTE È IL NOME, MAI «Episodio N» ─────
+  //
+  // È la regola `STRUTTURA-CORSO_031` messa in una riga: *«lo studente legge
+  // solo il NOME dell'episodio — mai l'id, mai il nome del file, mai «Episodio
+  // 1»»*. Fino al 2026-09-21 era violata **in ogni schermata**: il nome viveva
+  // come `badge: 'Episodio 1'` dentro `app/catalogo.js`.
+  //
+  // ⚠️ LE DUE ASSERZIONI SONO DIVERSE E SERVONO TUTTE E DUE. La prima dice
+  // che il nome giusto arriva; la seconda che quello sbagliato non c'è. *Un
+  // domani il nome potrebbe arrivare e restarci accanto l'id, o il badge
+  // potrebbe tornare a un valore scritto nel codice che «sembra» un nome: la
+  // prima non lo vedrebbe.*
+  //
+  // Il nome atteso si legge dal file di struttura, mai ricopiato qui: un nome
+  // ricopiato in un test invecchia al primo cambio di titolo.
+  {
+    const page = await browser.newPage();
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(BASE);
+    await attendiPrimaSchermata(page);
+    await page.fill('#name-input', 'NomeEp' + Date.now());
+    await page.click('#onboarding-form button[type=submit]');
+    await page.waitForSelector('#go-episode', { state: 'visible', timeout: 15000 });
+    await page.click('#go-episode');
+    await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
+
+    const atteso = strutturaCorso().episodes;
+    const visto = await page.evaluate(function () {
+      return {
+        badge: document.getElementById('map-episode-badge').textContent.trim(),
+        id: window.BI.episodioCorrente().id
+      };
+    });
+    log('[E] Il badge in mappa mostra il NOME dell\'episodio aperto',
+      visto.badge === atteso[visto.id].nome,
+      JSON.stringify(visto) + ' atteso: ' + atteso[visto.id].nome);
+    log('[E] ...e non \'Episodio N\', ne\' l\'id',
+      !/^Episodio\s*\d/i.test(visto.badge) && visto.badge !== visto.id, JSON.stringify(visto));
+    log('[E] Nessun errore JS', errors.length === 0, errors.join(' | '));
     await page.close();
   }
 

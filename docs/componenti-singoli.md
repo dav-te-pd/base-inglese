@@ -198,3 +198,12 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `prefissoEdizione(ed)` | Il prefisso `{lingua}-{studente}-` dell'edizione viva. | `{lingua,studente}` → `'inglese-it-'` | Che l'edizione si legga da `APP_CONFIG`, non da una costante scritta nel test. |
 | `fileEdizione(nome)` | Il percorso su disco di un file dell'edizione. | `'gate.json'` → `data/inglese/it/inglese-it-gate.json` | Come sopra: **nome nudo**. |
 | `globDati(nomeFile)` | Il glob con cui Playwright intercetta la richiesta di quel file. | `'gate.json'` → `**/inglese-it-gate.json*` | ⚠️ **Nome nudo, e qui sbagliarsi è peggio che altrove:** un glob che non corrisponde **non fallisce** — lascia passare la richiesta vera, e il test diventa verde o rosso per un'altra ragione (regola 37). È successo il 2026-09-21 su quattro punti. |
+
+
+## `app/catalogo.js` — il nome e la categoria di un episodio
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `buildEpisodes(propri)` | Costruisce `EPISODES`: a ogni episodio mette id, percorso del file dati, i quindici descrittori dei moduli, e **due getter** — `nome` e `categoria`. | l'oggetto degli episodi → `EPISODES` | Che quello che dipende dall'edizione **non si congeli qui**. ⚠️ *Gira a tempo di parsing, quando `CONFIG.episodes` è ancora vuoto: leggere il nome subito dava sempre il ripiego.* |
+| `EPISODES.<id>.nome` | Il nome che legge lo studente («Al gate»), **letto a ogni accesso** da `CONFIG.episodes`. | — → stringa | Che il file di struttura sia arrivato. Se non c'è, torna **l'id** — e non è un caso: *un riquadro vuoto sembra un difetto grafico, un id sembra un dato che non è arrivato* (regola 37). |
+| `EPISODES.<id>.categoria` | `storia`, `grammatica` o `pronuncia`, stessa strada. | — → stringa o `null` | Come sopra; il ripiego è `null`, perché una categoria inventata sarebbe peggio di una mancante. |

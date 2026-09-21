@@ -253,7 +253,7 @@
     // Nel markup resta il solo verbo, "Inizia": un testo statico che nomina un
     // episodio e' vero al massimo per uno, mentre "Inizia" e' vero sempre —
     // anche nel caso in cui questa riga non girasse.
-    document.getElementById('go-episode').textContent = 'Inizia ' + BI.episodioCorrente().badge;
+    document.getElementById('go-episode').textContent = 'Inizia ' + BI.episodioCorrente().nome;
     leaveModule('home');
   }
 
@@ -896,7 +896,7 @@
     var opzioni = Object.keys(BI.EPISODES).map(function (id) {
       var ep = BI.EPISODES[id];
       return '<option value="' + id + '"' + (id === CONFIG.episodioCorrente ? ' selected' : '') + '>' +
-        (ep.badge || id) + ' (' + id + ')</option>';
+        (ep.nome || id) + ' (' + id + ')</option>';
     }).join('');
     wrap.innerHTML =
       '<label class="config-field-label" for="cfg-episodioCorrente">episodioCorrente</label>' +
@@ -1159,7 +1159,7 @@
       return;
     }
     BI.migrateCustomizeSeenToModuleProgress(BI.episodioCorrente(), getUserName());
-    document.getElementById('map-episode-badge').textContent = BI.episodioCorrente().badge;
+    document.getElementById('map-episode-badge').textContent = BI.episodioCorrente().nome;
     renderModuleList();
     leaveModule('map');
     if (isIntroDismissed('mappaEpisodio', getUserName())) {

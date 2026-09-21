@@ -151,11 +151,57 @@
     return out;
   }
 
+  // ⚠️ IL NOME E LA CATEGORIA VENGONO DALL'EDIZIONE, NON DA QUI. Passo 2,
+  // 2026-09-21.
+  //
+  // Fino a oggi ogni episodio portava `badge: 'Episodio 1'` scritto in questo
+  // file, ed era **testo che legge lo studente dentro il codice** — cioè la
+  // regola 4 al contrario, e per giunta un testo che la fonte vieta
+  // esplicitamente: *«mai l'id, mai il nome del file, mai «Episodio 1»»*
+  // (STRUTTURA-CORSO_031).
+  //
+  // Adesso `nome` e `categoria` stanno in `episodes.<id>` del file di
+  // struttura dell'edizione, insieme alla sequenza che quell'episodio chiede.
+  //
+  // **Perché li' e non nel file episodio, che pure è contenuto:** la mappa
+  // disegna il badge **senza caricare il file episodio**. Metterlo dentro
+  // l'avrebbe costretta a un `fetch` che oggi non fa — e un caricamento
+  // fallito avrebbe rotto la mappa per un titolo. Il file di struttura arriva
+  // già prima di qualunque schermata ed è già per edizione: costa zero e resta
+  // testo nella lingua dello studente.
   function buildEpisodes(propri) {
     var out = {};
     Object.keys(propri).forEach(function (episodeId) {
       var episodio = { id: episodeId, dataFile: episodeDataFile(episodeId) };
       Object.keys(propri[episodeId]).forEach(function (k) { episodio[k] = propri[episodeId][k]; });
+      // ⚠️ NOME E CATEGORIA SI LEGGONO AL MOMENTO DELL'USO, NON QUI, E LA
+      // PRIMA VERSIONE SBAGLIAVA PROPRIO QUESTO.
+      //
+      // `EPISODES` nasce a **tempo di parsing**; `CONFIG.episodes` lo riempie
+      // `applicaStruttura` quando arriva `struttura-corso.json`, cioe' DOPO.
+      // Leggerli qui dava sempre il ripiego: il badge in mappa mostrava `gate`
+      // invece di «Al gate». *Il test l'ha visto subito perche' il ripiego e'
+      // l'id e non una stringa vuota — un riquadro vuoto sarebbe sembrato un
+      // difetto grafico, un id si legge come un dato che non e' arrivato.*
+      //
+      // Con i getter il valore e' sempre quello dell'edizione VIVA: se il
+      // Pannello Admin cambia edizione, il nome la segue senza che nessuno
+      // ricostruisca il catalogo. *Lo stesso motivo per cui `percorsoEdizione`
+      // costruisce il percorso ogni volta invece di congelarlo.*
+      Object.defineProperty(episodio, 'nome', {
+        enumerable: true,
+        get: function () {
+          var suo = (CONFIG.episodes || {})[episodeId] || {};
+          return suo.nome || episodeId;
+        }
+      });
+      Object.defineProperty(episodio, 'categoria', {
+        enumerable: true,
+        get: function () {
+          var suo = (CONFIG.episodes || {})[episodeId] || {};
+          return suo.categoria || null;
+        }
+      });
       episodio.modulesById = buildModulesById(episodeId);
       out[episodeId] = episodio;
     });
@@ -164,7 +210,6 @@
 
   var EPISODES = buildEpisodes({
     gate: {
-      badge: 'Episodio 1',
       // ⚠️ `segments` è CODICE MORTO, e resta qui solo perché toglierlo
       // cambierebbe questo oggetto: lo legge solo buildTargetTokens, cioè la
       // vista `pronunciation`, che non è raggiungibile da nessun punto
@@ -186,11 +231,9 @@
         { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
       ]
     },
-    // Episodio 2 — "Sulla porta dell'aereo"
-    // (docs/inglese/it/inglese-it-aircraft-door.md).
-    'aircraft-door': {
-      badge: 'Episodio 2'
-    }
+    // (docs/inglese/it/inglese-it-aircraft-door.md). Nome e categoria stanno
+    // nel file di struttura dell'edizione, non qui.
+    'aircraft-door': {}
   });
 
   // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,

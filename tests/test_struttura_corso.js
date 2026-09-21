@@ -188,18 +188,36 @@ async function run() {
     log('[Nomi] Nome e sottotitolo combaciano carattere per carattere', okValori);
   }
 
-  // ============ 4. Gli episodi e la sequenza che chiedono ============
+  // ============ 4. Gli episodi: nome, categoria e sequenza ============
   {
     const righe = tabellaSotto(doc, '## 7 — GLI EPISODI');
     const dalDoc = {};
-    righe.forEach(r => { dalDoc[r[0].replace(/`/g, '').trim()] = r[1].replace(/`/g, '').trim(); });
+    righe.forEach(r => {
+      dalDoc[r[0].replace(/`/g, '').trim()] = {
+        nome: r[1].trim(),
+        categoria: r[2].replace(/`/g, '').trim(),
+        sequence: r[3].replace(/`/g, '').trim()
+      };
+    });
     const daConfig = {};
-    Object.keys(config.episodes).forEach(k => { daConfig[k] = config.episodes[k].sequence; });
+    Object.keys(config.episodes).forEach(k => {
+      const e = config.episodes[k];
+      daConfig[k] = { nome: e.nome, categoria: e.categoria, sequence: e.sequence };
+    });
 
     console.log('[Episodi] documento: ' + JSON.stringify(dalDoc));
     const ok = JSON.stringify(dalDoc) === JSON.stringify(daConfig);
     if (!ok) diff('episodi', dalDoc, daConfig);
-    log('[Episodi] Ogni episodio dichiara nel documento la sequenza che chiede davvero', ok);
+    // ⚠️ IL NOME È TESTO CHE LEGGE LO STUDENTE, quindi si confronta carattere
+    // per carattere come i sottotitoli dei moduli: un apostrofo diverso fra
+    // documento e JSON è un apostrofo diverso a schermo.
+    log('[Episodi] Nome, categoria e sequenza combaciano col file di struttura', ok);
+
+    const categorie = Object.keys(daConfig).map(function (k) { return daConfig[k].categoria; });
+    const ammesse = ['storia', 'grammatica', 'pronuncia'];
+    const ignote = categorie.filter(function (c) { return ammesse.indexOf(c) === -1; });
+    if (ignote.length) console.log('    categorie non ammesse: ' + ignote.join(', '));
+    log('[Episodi] Ogni categoria è una delle tre dichiarate', ignote.length === 0, ignote.join(', '));
   }
 
   // ============ 5. Le due lingue del parlato ============

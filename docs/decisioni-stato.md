@@ -421,6 +421,46 @@ registri **quali eventi del riconoscitore sono arrivati** nell'ultima
 registrazione, con il momento in cui sono arrivati. Stessa forma di
 `#config-audio-usage`. *Proposto, non costruito.*
 
+### ✅ IL NOME E LA CATEGORIA DELL'EPISODIO — FATTO il 2026-09-21 (passo 2 dei sei)
+
+`episodes.<id>` porta adesso **`nome`** («Al gate») e **`categoria`**
+(`storia`, `grammatica`, `pronuncia`), e `badge: 'Episodio 1'` è sparito dal
+codice. **Sono getter**, quindi il nome segue l'edizione viva.
+
+⚠️ **E LA PAROLA «narrativo» E' USCITA DALLE CATEGORIE, NON DALLE SEQUENZE.**
+Chi guida il progetto: *«non usiamo narrativo, che è una parola che sta facendo
+confusione»* — e due giorni prima, sulle sequenze: *«mappa e narrazione lasciamo
+così»*. **Le due frasi non si contraddicono perché parlano di due cose diverse:**
+la **categoria** dice cosa contiene un episodio, la **sequenza** in che ordine si
+fanno i suoi moduli. Quindi `narrativo-standard` resta, e un episodio di
+`grammatica` può benissimo chiederla.
+
+### ❌ L'ORDINE DEI 22 PASSI NON SI PROTEGGE — deciso il 2026-09-21
+
+*Qui c'era una condizione aperta — «niente verifica più che i 22 passi vivi
+siano quelli voluti, da chiudere al primo riordino vero». **È stata chiusa come
+decisione, non come lavoro rimandato**, e va letta così: nessuna sessione
+futura deve costruire quel test.*
+
+**Le parole di chi guida il progetto:**
+
+> *«Quei principi sono solo "indicazioni". Servono a me per capire e ricordarmi
+> delle scelte e darne una motivazione. **Non devono essere bloccanti. Devo
+> poter riordinare liberamente.** Io non mi preoccuperei di test che proteggono
+> l'ordine: tanto lo scrivo io a mano, e al massimo farò delle prove. Se me ne
+> servono altre le faremo.»*
+
+⚠️ **E l'equivoco da cui è nata la proposta vale più della decisione:** i
+principi `_020.._025` del documento erano stati letti **come una specifica da
+far rispettare**, mentre sono **memoria delle scelte**. *Un documento scritto
+per ricordare perché si è deciso qualcosa non è un contratto da verificare — e
+trasformarlo in test avrebbe reso rosso proprio il gesto che deve restare
+libero.*
+
+**Misurato prima di decidere, e resta scritto perché è vero oggi:** cinque dei
+sei principi erano verificabili, e tutti e cinque passavano sui 22 passi veri.
+*Il fatto che si potesse fare non voleva dire che si dovesse.*
+
 ### ✅ LA NOMENCLATURA — FATTA il 2026-09-21 (passo 1 dei sei)
 
 **Tutti i file di un'edizione portano il prefisso `{lingua}-{studente}-`**, e

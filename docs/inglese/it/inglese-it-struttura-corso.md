@@ -191,7 +191,14 @@ prima con calma.**
 
 ## 7 — GLI EPISODI
 
-**STRUTTURA-CORSO_026** · Ogni episodio ha una **categoria** — narrativo, grammaticale, pronuncia.
+**STRUTTURA-CORSO_026** · Ogni episodio ha una **categoria**: **`storia`**, **`grammatica`**,
+**`pronuncia`**.
+
+*⚠️ Qui c'era scritto «narrativo, grammaticale, pronuncia». **«narrativo» è uscito il 2026-09-21**
+perché faceva confusione con il nome della sequenza dei moduli (`narrativo-standard`), che invece
+resta: sono due cose diverse — la categoria dice **cosa contiene un episodio**, la sequenza dice
+**in che ordine si fanno i suoi moduli**, e un episodio di `grammatica` può benissimo chiedere
+`narrativo-standard`.*
 
 **STRUTTURA-CORSO_027** · ⚠️ **La categoria non dice dove sta l'episodio: dice cosa contiene.** *Un
 grammaticale puo' stare all'inizio, in mezzo, o dopo il decimo — sta dove serve.*
@@ -202,10 +209,10 @@ la mappa — come studio e quiz per i moduli. *E a noi dice **quali moduli servo
 **STRUTTURA-CORSO_029** · ⚠️ **E' l'episodio che dichiara la sequenza, non la sequenza che elenca i
 suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere la stessa.*
 
-| Episodio | Sequenza |
-|---|---|
-| `gate` | `narrativo-standard` |
-| `aircraft-door` | `narrativo-standard` |
+| Episodio | Nome | Categoria | Sequenza |
+|---|---|---|---|
+| `gate` | Al gate | `storia` | `narrativo-standard` |
+| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
 
 **STRUTTURA-CORSO_030** · **Cosa vince, e non c'e' una quarta possibilita':**
 
@@ -220,8 +227,15 @@ suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere 
 porta dell'aereo».* **Mai l'id, mai il nome del file, mai «Episodio 1».**
 
 **STRUTTURA-CORSO_032** · Il badge in mappa **resta come meccanismo**, e mostra il nome
-dell'episodio. ⚠️ *Oggi il testo sta nel codice (`app/catalogo.js`): va nel file episodio, perche'
-e' contenuto.*
+dell'episodio.
+
+*⚠️ **FATTO il 2026-09-21.** Qui c'era scritto che il testo stava nel codice (`badge: 'Episodio
+1'` in `app/catalogo.js`) e che sarebbe andato **nel file episodio**. È finito invece in
+`episodes.<id>.nome`, **qui nel file di struttura**, e la ragione è misurata: la mappa disegna il
+badge **senza caricare il file episodio**, quindi metterlo lì l'avrebbe costretta a un `fetch` che
+non fa — e un caricamento fallito avrebbe rotto la mappa. Il file di struttura arriva già prima di
+qualunque schermata, ed è già per edizione: costa zero e resta testo nella lingua dello
+studente.*
 
 ---
 

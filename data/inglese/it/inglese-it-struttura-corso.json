@@ -211,9 +211,13 @@
   },
   "episodes": {
     "gate": {
+      "nome": "Al gate",
+      "categoria": "storia",
       "sequence": "narrativo-standard"
     },
     "aircraft-door": {
+      "nome": "Sulla porta dell'aereo",
+      "categoria": "storia",
       "sequence": "narrativo-standard"
     }
   },
