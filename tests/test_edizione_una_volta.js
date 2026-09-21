@@ -117,9 +117,9 @@ async function run() {
       };
     });
     log('[B] I tre file condivisi stanno nella cartella dell\'edizione',
-      nudo(prima.istruzioni) === 'data/inglese/it/istruzioni-moduli.json' &&
-      nudo(prima.feedback) === 'data/inglese/it/messaggi-feedback.json' &&
-      nudo(prima.tabelle) === 'data/inglese/it/tabelle-personalizzazione.json',
+      nudo(prima.istruzioni) === 'data/inglese/it/inglese-it-istruzioni-moduli.json' &&
+      nudo(prima.feedback) === 'data/inglese/it/inglese-it-messaggi-feedback.json' &&
+      nudo(prima.tabelle) === 'data/inglese/it/inglese-it-tabelle-personalizzazione.json',
       JSON.stringify(prima));
     log('[B] Il file episodio porta la coppia anche nel NOME',
       nudo(prima.episodio) === 'data/inglese/it/inglese-it-gate.json', prima.episodio);
@@ -151,13 +151,22 @@ async function run() {
       };
     });
     log('[B] Cambiata l\'edizione, la segue il file delle istruzioni',
-      nudo(dopo.istruzioni) === 'data/francese/it/istruzioni-moduli.json', dopo.istruzioni);
+      nudo(dopo.istruzioni) === 'data/francese/it/francese-it-istruzioni-moduli.json', dopo.istruzioni);
     log('[B] ...la segue il file dei messaggi di feedback',
-      nudo(dopo.feedback) === 'data/francese/it/messaggi-feedback.json', dopo.feedback);
+      nudo(dopo.feedback) === 'data/francese/it/francese-it-messaggi-feedback.json', dopo.feedback);
     log('[B] ...la seguono le tabelle di personalizzazione',
-      nudo(dopo.tabelle) === 'data/francese/it/tabelle-personalizzazione.json', dopo.tabelle);
+      nudo(dopo.tabelle) === 'data/francese/it/francese-it-tabelle-personalizzazione.json', dopo.tabelle);
     log('[B] ...e la segue il file episodio, cartella E prefisso insieme',
       nudo(dopo.episodio) === 'data/francese/it/francese-it-gate.json', dopo.episodio);
+    // ⚠️ DAL 2026-09-21 QUESTE QUATTRO RIGHE GUARDANO DUE COSE INSIEME, e
+    // prima ne guardavano una: la CARTELLA (`data/francese/it/`) **e il
+    // PREFISSO** (`francese-it-`). Fino a ieri i tre file condivisi non
+    // avevano prefisso, quindi copiando `inglese/it/` in `francese/it/` i
+    // nomi sarebbero stati gia' giusti per caso. Adesso no: se il prefisso
+    // restasse quello vecchio, il file esisterebbe con il nome sbagliato e
+    // **direbbe una bugia su quale corso contiene**. Questo e' il difetto che
+    // `test_nomenclatura_edizione.js` guarda sul disco e questo blocco guarda
+    // a runtime — due misure diverse sulla stessa decisione.
     log('[B] I quattro si muovono INSIEME: nessuno resta all\'edizione vecchia',
       [dopo.istruzioni, dopo.feedback, dopo.tabelle, dopo.episodio]
         .every(function (p) { return nudo(p).indexOf('data/francese/it/') === 0; }),

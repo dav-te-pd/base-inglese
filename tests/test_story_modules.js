@@ -32,7 +32,7 @@ const { loadGrade, loadEpisode } = require('./quiz-driver');
 // controllo da manutenere. È già successo: l'episodio è passato da 16 a 15
 // voci nel grado A e questo file è diventato rosso senza che niente fosse
 // rotto. Stessa forma di test_struttura_corso.js, che legge
-// docs/inglese/it/struttura-corso.md invece di ricopiarne le tabelle.
+// docs/inglese/it/inglese-it-struttura-corso.md invece di ricopiarne le tabelle.
 const FONTE = 'docs/inglese/it/inglese-it-gate.md';
 
 // Ogni numero si prende COL SUO NOME accanto, mai per posizione: se un giorno

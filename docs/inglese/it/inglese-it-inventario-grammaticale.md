@@ -23,10 +23,10 @@
 > nuovo per un cinese.* Un'edizione nuova non si ottiene traducendo questo file: si ottiene
 > riordinandolo.
 >
-> **Il file gemello: `docs/inglese/it/obiettivi-a1.md`.** L'inventario dice **cosa** bisogna insegnare,
+> **Il file gemello: `docs/inglese/it/inglese-it-obiettivi-a1.md`.** L'inventario dice **cosa** bisogna insegnare,
 > gli obiettivi dicono **dove** serve. *Il punto in cui i due si incrociano è l'episodio.*
 >
-> Convenzione: `docs/inglese/it/inventario-grammaticale.md`.
+> Convenzione: `docs/inglese/it/inglese-it-inventario-grammaticale.md`.
 
 ---
 
@@ -325,7 +325,7 @@ Non si coniugano e non si applicano a parole nuove — **si sanno o non si sanno
 
 > **Gli elenchi non stanno qui.** Le forme inglesi delle città, i paesi con le loro preposizioni,
 > i nomi con la doppia forma vivono in `APPLINGUE-riferimenti-lingua` e in
-> `docs/inglese/it/tabelle-personalizzazione.md`. **Qui c'è cosa si insegna, lì cosa si consulta** — e
+> `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`. **Qui c'è cosa si insegna, lì cosa si consulta** — e
 > il collegamento è un rimando, mai una copia.
 
 *Stanno qui perché **vanno decise prima** come tutto il resto dell'inventario, e perché ognuna
@@ -568,6 +568,6 @@ vera vive altrove.*
 | **Episodio: nomi propri e traduzioni** | scheda R.1 | ⚠️ **slittato**: al ritiro bagagli o in coda al controllo passaporti, dove si incontrano persone con nomi veri. *All'inizio era troppa roba, e la scheda non aveva niente su cui appoggiarsi* |
 | **Episodio trappola: l'articolo di troppo** | trappola 2.3 | dopo che `the` è stato usato qualche volta |
 
-*Queste scene sono registrate anche in `docs/inglese/it/obiettivi-a1.md`, accanto all'obiettivo che
+*Queste scene sono registrate anche in `docs/inglese/it/inglese-it-obiettivi-a1.md`, accanto all'obiettivo che
 coprono: il carrello e il ristorante sotto **ordinare al bar/ristorante**, il taxi sotto
 **mezzi pubblici in città**.*

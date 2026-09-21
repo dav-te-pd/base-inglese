@@ -1,5 +1,5 @@
 // PROTEGGE: che i testi dell'interfaccia arrivino DAVVERO da
-// data/inglese/it/istruzioni-moduli.json (regola 8), e non tornino di
+// data/inglese/it/inglese-it-istruzioni-moduli.json (regola 8), e non tornino di
 // nascosto nel codice — e che la riga che lo rende possibile non sparisca.
 //
 // COSA SI PERDE SENZA: il passo 18 ha spostato i testi scritti su richiesta
@@ -30,10 +30,10 @@
 // smettesse di CHIAMARLA, tornando a scrivere il testo nel codice, qui non si
 // vedrebbe.
 const fs = require('fs');
-const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, globDati } = require('./test-env');
+const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, fileEdizione, globDati } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
-const J = JSON.parse(fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
+const J = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }

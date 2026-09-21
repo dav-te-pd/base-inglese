@@ -95,9 +95,27 @@ window.BI = window.BI || {};
   // lettori sono tutti in questo file. Quando nascera' `app/fonte.js` (passo
   // 1.7) — l'unico strato che sapra' se i dati vengono da un file o dal
   // server — questa funzione e' esattamente il pezzo che si sposta li'.
+  // ⚠️ IL PREFISSO DELL'EDIZIONE SI SCRIVE QUI, E IN NESSUN ALTRO POSTO.
+  //
+  // Ogni file di un'edizione si chiama `{lingua}-{studente}-{nome}`, e quel
+  // prefisso non e' decorazione: **il file esce dal repository** — cartella
+  // Download, poi una chat — e li' il percorso si perde. `struttura-corso.json`
+  // da solo non dice di quale corso parla.
+  //
+  // ⚠️ E IL MOTIVO PER CUI STA IN QUESTA FUNZIONE E NON NEI NOMI: quando si
+  // copia `inglese/it/` per fare `francese/it/`, i nomi dei file restano
+  // `inglese-...` finche' qualcuno non li rinomina — e **un prefisso sbagliato
+  // e' peggio di un prefisso assente**: il secondo non dice niente, il primo
+  // dice una bugia. Costruendolo da `CONFIG.edizione`, il codice chiede sempre
+  // il nome giusto, e se il file non c'e' si vede subito (schermata d'errore)
+  // invece di leggere in silenzio quello dell'edizione sbagliata.
+  //
+  // La guardia che quei file esistano col nome giusto e'
+  // `tests/test_nomenclatura_edizione.js`.
   function percorsoEdizione(nomeFile) {
     var ed = CONFIG.edizione;
-    return conVersione('data/' + ed.lingua + '/' + ed.studente + '/' + nomeFile);
+    return conVersione('data/' + ed.lingua + '/' + ed.studente + '/' +
+      ed.lingua + '-' + ed.studente + '-' + nomeFile);
   }
 
 
@@ -178,7 +196,7 @@ window.BI = window.BI || {};
   // ⚠️ IL CONTENUTO E' QUELLO DI PRIMA, NON QUELLO DEL MAGAZZINO. Il file
   // porta le stesse sei destinazioni e gli stessi id di quando stava qui: e'
   // una conversione pura. Il contenuto vero di
-  // docs/inglese/it/tabelle-personalizzazione.md (undici destinazioni, id
+  // docs/inglese/it/inglese-it-tabelle-personalizzazione.md (undici destinazioni, id
   // "dest-cina", traducibilita' dichiarata per riga) arriva col passo che
   // porta anche il secondo campo per riga e le eta' in lettere. La differenza
   // e' scritta dentro il JSON, sotto "_nota".
@@ -261,9 +279,12 @@ window.BI = window.BI || {};
   // {lingua}-{studente}-{id}.json` — e qui non ha eccezioni: se un giorno un
   // episodio volesse un percorso suo, la regola 4 sarebbe da riaprire prima
   // di questa riga.
+  // ⚠️ IL PREFISSO NON SI SCRIVE PIU' QUI, dal 2026-09-21: lo mette
+  // `percorsoEdizione` per TUTTI i file dell'edizione, episodi compresi.
+  // *Prima questa funzione era l'unica che lo scriveva, e i quattro file
+  // condivisi ne restavano senza — due convenzioni nella stessa cartella.*
   function episodeDataFile(episodeId) {
-    var ed = CONFIG.edizione;
-    return percorsoEdizione(ed.lingua + '-' + ed.studente + '-' + episodeId + '.json');
+    return percorsoEdizione(episodeId + '.json');
   }
 
   var episodeDataCache = {};

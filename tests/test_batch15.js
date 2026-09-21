@@ -285,7 +285,7 @@ async function run() {
     const sawLastRetryText = retryScreens[retryScreens.length - 1].text;
     log('[Job4] First retry screen has a non-empty title', !!sawFirstRetryTitle && sawFirstRetryTitle.trim().length > 0);
     log('[Job4] First retry screen has a non-empty text', !!sawFirstRetryText && sawFirstRetryText.trim().length > 0);
-    const data = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()));
     log('[Job4] First retry title comes from retryIntroMessages.first.titles', data.retryIntroMessages.first.titles.indexOf(sawFirstRetryTitle) !== -1);
     log('[Job4] Second/last retry title comes from retryIntroMessages.last.titles (different pool)', !!sawLastRetryTitle && data.retryIntroMessages.last.titles.indexOf(sawLastRetryTitle) !== -1);
     log('[Job4] First and last retry texts are drawn from different pools', data.retryIntroMessages.first.bodies.indexOf(sawFirstRetryText) !== -1 && data.retryIntroMessages.last.bodies.indexOf(sawLastRetryText) !== -1);
@@ -436,7 +436,7 @@ async function run() {
     // schermata. I 150 ms che c'erano qui erano una scommessa.
     await attendiSottotitoloEsito(page, 'story-cards-summary-title-sub');
     const subtitle = await page.$eval('#story-cards-summary-title-sub', el => el.textContent).catch(() => null);
-    const data10 = await page.evaluate(() => fetch('data/inglese/it/messaggi-feedback.json').then(r => r.json()));
+    const data10 = await page.evaluate(() => fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
     await page.click('#story-cards-complete-btn');
     await page.waitForTimeout(150); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — la riga della mappa NON deve prendere nessuna classe outcome-*

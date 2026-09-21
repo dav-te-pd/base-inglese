@@ -63,7 +63,7 @@ async function run() {
       document.addEventListener('DOMContentLoaded', function () {
         window.__boot.tDom = performance.now();
         // e subito il fetch che il giro B farebbe al boot
-        fetch('data/inglese/it/istruzioni-moduli.json')
+        fetch('data/inglese/it/inglese-it-istruzioni-moduli.json')
           .then(function (r) { return r.json(); })
           .then(function () { window.__boot.tJson = performance.now(); })
           .catch(function () { window.__boot.tJson = -1; });

@@ -280,7 +280,7 @@
       afterSpeechTimeoutMs: 1200,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
-      // documented in data/inglese/it/messaggi-feedback.json's percentageRule.
+      // documented in data/inglese/it/inglese-it-messaggi-feedback.json's percentageRule.
       starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 },
       // Progressive mic-trouble detection: counts CONSECUTIVE recordings
       // where the recognizer heard no words at all — not a wrong word,
@@ -545,7 +545,7 @@
     //
     // Le tabelle di personalizzazione (people, places) sono uscite da
     // APP_CONFIG il 2026-09-15 e vivono in
-    // data/inglese/it/tabelle-personalizzazione.json, raggiunto dalla
+    // data/inglese/it/inglese-it-tabelle-personalizzazione.json, raggiunto dalla
     // costante PERSONALIZATION_TABLES_FILE. Sono CONTENUTO dell'edizione,
     // non parametri: un'edizione tedesca vuole nomi tedeschi, e un nome
     // proprio plausibile e' quello di chi studia (CLAUDE.md regola 4).

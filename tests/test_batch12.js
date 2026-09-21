@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
 const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -8,7 +8,7 @@ const BASE = APP_URL;
 
 // I testi dell'interfaccia, letti dal file come li legge l'app.
 function istruzioni() {
-  return JSON.parse(fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
+  return JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
 }
 
 const mockInit = () => {
@@ -317,7 +317,7 @@ async function run() {
     // three Dialogo modules now share "Studia il dialogo", Voice Practice/
     // Match Practice/Flash Card are "Studio", Speed Match/Voice Check are
     // "Quiz".
-    // L'etichetta e' "categoria · grado" (docs/inglese/it/struttura-corso.md): la
+    // L'etichetta e' "categoria · grado" (docs/inglese/it/inglese-it-struttura-corso.md): la
     // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
     // Il grado atteso viene dall'ordine, non riscritto qui.
     log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',

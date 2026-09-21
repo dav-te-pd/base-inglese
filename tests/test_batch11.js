@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -11,7 +11,7 @@ const BASE = APP_URL;
 // index.html, sparita insieme al fallback. Il file è la fonte, quindi è da lì
 // che si guarda, e per questa verifica il browser non serve.
 const MESSAGGI = JSON.parse(
-  fs.readFileSync(repoPath('data', 'inglese', 'it', 'messaggi-feedback.json'), 'utf8'));
+  fs.readFileSync(fileEdizione('messaggi-feedback.json'), 'utf8'));
 
 const mockInit = () => {
   window.__consoleWarnings = [];

@@ -340,7 +340,7 @@
   // outcome-* class on its own map row. 'almenoUnRosso' wins over
   // 'gialloNoRosso' if both are present; an episode with no graded
   // modules at all defaults to 'tuttiVerdi' (nothing to flag). Reads
-  // data/inglese/it/messaggi-feedback.json's episodeFinalMessages[caseKey] for the
+  // data/inglese/it/inglese-it-messaggi-feedback.json's episodeFinalMessages[caseKey] for the
   // actual text (compliment first, then an optional trailing tip) —
   // never write the copy here.
   function episodeFinalOutcomeCase(episode, userName) {

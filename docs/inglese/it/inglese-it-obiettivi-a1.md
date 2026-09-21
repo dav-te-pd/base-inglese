@@ -15,7 +15,7 @@
 > **Gli obiettivi vanno nei report**, in un'area loro: lo studente deve sapere **cosa saprà
 > fare**, non solo quali parole ha imparato.
 >
-> Convenzione: `docs/inglese/it/obiettivi-a1.md`.
+> Convenzione: `docs/inglese/it/inglese-it-obiettivi-a1.md`.
 
 ---
 

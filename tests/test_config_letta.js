@@ -208,7 +208,7 @@ async function run() {
   // Il magazzino si aggiunge quindi all'inventario, letto dal file. `_nota`
   // resta fuori: e' la spiegazione del file per chi lo apre, non un parametro
   // — stesso ruolo che configFieldDescriptions ha dentro APP_CONFIG.
-  const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/tabelle-personalizzazione.json'), 'utf8'));
+  const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-tabelle-personalizzazione.json'), 'utf8'));
   const tutti = percorsiFoglia(config).concat(
     percorsiFoglia({ people: magazzino.people, places: magazzino.places })
   );

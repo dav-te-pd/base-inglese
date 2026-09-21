@@ -159,7 +159,7 @@ lista prima o poi divergono.*
 >
 > **Perché non ora:** `resolveSlotValue` restituisce **un solo campo per slot**, e le righe di
 > `places.departures` non hanno un secondo campo da leggere. **Dipende da
-> `data/inglese/it/tabelle-personalizzazione.json`, che esiste dal 2026-09-15 ma ha ancora il
+> `data/inglese/it/inglese-it-tabelle-personalizzazione.json`, che esiste dal 2026-09-15 ma ha ancora il
 > CONTENUTO vecchio** — il secondo campo per riga arriva col passo 1.8-bis.
 >
 > *Qui c'era scritto che il file «non esiste ancora» e che rappresentarlo avrebbe voluto dire
@@ -326,7 +326,7 @@ rinomina degli slot a id, che tocca comunque quelle chiavi.*
 
 **Le destinazioni non compaiono:** questo episodio non le usa.
 
-⚠️ **Dipendenza:** gli id vivono in `data/inglese/it/tabelle-personalizzazione.json`.
+⚠️ **Dipendenza:** gli id vivono in `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.
 
 *Qui c'era scritto che quel file «non esiste ancora» e che «oggi le tabelle stanno in
 `APP_CONFIG`»: **esiste dal 2026-09-15**, e da allora le tabelle non stanno più in `APP_CONFIG`.
@@ -356,7 +356,7 @@ quando quel contenuto arriva** (passo 1.8-bis), non quando il file nasce.
    ⚠️ **Oggi l'app non lo fa.** Le età sono numeri semplici e `slotOptions` le normalizza
    rendendo `it` ed `en` identici, quindi la battuta d7 **in inglese dice `I'm 16 years old`**,
    con la cifra. La correzione arriva con il magazzino della personalizzazione, che porta
-   `en: sixteen` — vedi `docs/inglese/it/tabelle-personalizzazione.md`, *Cosa manca*, punto ③. **È una
+   `en: sixteen` — vedi `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`, *Cosa manca*, punto ③. **È una
    modifica che cambia cosa il riconoscimento vocale si aspetta di sentire**, quindi non deve
    arrivare nascosta dentro uno spostamento di dati: vuole un test suo.
 

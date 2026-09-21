@@ -60,7 +60,7 @@ const { loadGrade } = require('./quiz-driver');
 
 const PASSO = 'flashcardAEngIta'; // prima apparizione di Flash Card, grado A
 const PRIMA = stepsBefore(PASSO);
-const FILE_EPISODIO = globDati('inglese-it-gate.json');
+const FILE_EPISODIO = globDati('gate.json');
 
 // Serve una copia del file episodio col grado di Flash Card ridotto alla
 // PRIMA voce: un mazzo di una carta sola. Si intercetta la richiesta invece di

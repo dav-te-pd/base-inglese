@@ -9,7 +9,7 @@
 > **AGGIORNAMENTO 2026-09-21 — ① e ⑤ sono fatti, ② ③ ④ no.**
 >
 > **① (2026-09-15)** — le tabelle **non vivono più in `APP_CONFIG`**: sono in
-> `data/inglese/it/tabelle-personalizzazione.json`, caricate da un fetch. *Ma ci sono andate
+> `data/inglese/it/inglese-it-tabelle-personalizzazione.json`, caricate da un fetch. *Ma ci sono andate
 > **con il contenuto di prima**, non con questo:* sei destinazioni invece di undici, id `marco`
 > invece di `papa-marco`. Era una **conversione pura** — se fosse arrivato anche il contenuto
 > nuovo, un rosso avrebbe avuto due sospettati invece di uno.
@@ -299,7 +299,7 @@ scriverlo qui evita che fra un mese qualcuno tenti la strada corta.*
 
 ### Cosa comprende
 
-**① Il magazzino esce da `APP_CONFIG` e va in `data/inglese/it/tabelle-personalizzazione.json`.**
+**① Il magazzino esce da `APP_CONFIG` e va in `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.**
 
 **È più piccolo di quanto sembri: il magazzino è già dietro un punto unico** (1.240).
 `CONFIG.people` e `CONFIG.places` hanno **zero occorrenze TESTUALI** nel codice: nessuno li

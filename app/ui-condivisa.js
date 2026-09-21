@@ -1045,7 +1045,7 @@
   // above, or bodyText for Schermata Ripasso); this fills in the second,
   // picked at random each time the screen is actually shown (not once at
   // boot, when these two render functions run). Prose pools live in
-  // data/inglese/it/messaggi-feedback.json like every other feedback message —
+  // data/inglese/it/inglese-it-messaggi-feedback.json like every other feedback message —
   // reuses the SAME loadFeedbackMessages()/pickRandom() pair Voice
   // Coach's star messages and the safety-valve popup already use, not a
   // second mechanism for the same kind of thing.

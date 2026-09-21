@@ -190,8 +190,13 @@ function sorgenteChe(pezzo) {
 //
 // Quindi il glob lo costruisce questa funzione, una volta per tutte: `*` in
 // coda prende la query se c'e' e non da' fastidio se non c'e'.
+// ⚠️ ANCHE IL GLOB PORTA IL PREFISSO, e non e' simmetria per bellezza: senza,
+// `**/istruzioni-moduli.json*` NON corrisponde a
+// `inglese-it-istruzioni-moduli.json` — il glob vuole che il nome COMINCI
+// cosi'. Un'intercettazione che non intercetta non fallisce: lascia passare la
+// richiesta vera e il test diventa verde misurando un'altra cosa (regola 37).
 function globDati(nomeFile) {
-  return '**/' + nomeFile + '*';
+  return '**/' + prefissoEdizione(configApp().edizione) + nomeFile + '*';
 }
 
 // ⚠️ LA PRIMA SCHERMATA DELL'APP, ASPETTATA UNA VOLTA SOLA. Passo 1.11b,
@@ -246,9 +251,16 @@ function configApp() {
   return _configApp;
 }
 
+// ⚠️ IL PREFISSO LO METTE QUESTA FUNZIONE, come `percorsoEdizione` nell'app:
+// i test chiedono `fileEdizione('struttura-corso.json')` e ricevono
+// `data/inglese/it/inglese-it-struttura-corso.json`. *Scriverlo nei nomi, in
+// venti punti, vorrebbe dire venti posti da cambiare alla prossima edizione —
+// che e' esattamente il motivo per cui questo file esiste (regola 24).*
+function prefissoEdizione(ed) { return ed.lingua + '-' + ed.studente + '-'; }
+
 function fileEdizione(nome) {
   const ed = configApp().edizione;
-  return repoPath('data', ed.lingua, ed.studente, nome);
+  return repoPath('data', ed.lingua, ed.studente, prefissoEdizione(ed) + nome);
 }
 
 // La struttura del corso dell'edizione viva, gia' letta.

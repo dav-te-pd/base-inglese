@@ -39,7 +39,7 @@
 //
 // LIMITE DICHIARATO: questo file non verifica che il valore di `traducibile`
 // su ogni riga sia quello GIUSTO dal punto di vista didattico — quello è
-// contenuto, e la sua fonte è docs/inglese/it/tabelle-personalizzazione.md.
+// contenuto, e la sua fonte è docs/inglese/it/inglese-it-tabelle-personalizzazione.md.
 // Verifica che il meccanismo legga la riga.
 
 const fs = require('fs');
@@ -52,7 +52,7 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-const FILE_TABELLE = 'data/inglese/it/tabelle-personalizzazione.json';
+const FILE_TABELLE = 'data/inglese/it/inglese-it-tabelle-personalizzazione.json';
 
 const mockInit = () => {
   Object.defineProperty(window, 'speechSynthesis', { value: {

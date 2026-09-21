@@ -180,3 +180,21 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `vcHeardAnySpeech` / `vcHeardAnyText` | Due bandiere: **ho sentito una voce** (la alza `speechstart`) e **sono arrivate parole** (la alza `onresult`). | — | Che restino **due**. La prima decide il taglio per silenzio, la seconda se il terzo timer tiene o butta: *con una sola, un colpo di tosse finirebbe offerto allo studente come se fosse una frase.* |
 | `spegniTerzoTimer()` | Spegne il solo timer del «dopo che hai finito». | — → niente | Che abbia **due** chiamanti e non uno: la pulizia generale, e `speechstart` quando la voce riprende. È quella seconda chiamata a impedire il taglio in mezzo a una frase. |
 | `clearVcTimeout()` | Spegne **tutti e tre** i timer insieme. ⚠️ *Diceva «entrambi», ed era vero fino al 2026-09-21: il catalogo aveva scritto che «il giorno che nasce il terzo, questa funzione va toccata o resterebbe acceso». È nato, ed è stata toccata.* | — → niente | Che la chiamino **tutte** le strade con cui una registrazione finisce — e le chiamano tutte e quattro: `onend`, `onerror`, `vcResetRecording`, e l'inizio di una nuova. È questo che garantisce che **nessun timer resti appeso** quando un altro scatta per primo. |
+
+
+## `app/dati.js` — i percorsi dei file di un'edizione
+
+*Catalogati il 2026-09-21 spostando il prefisso dell'edizione in un punto solo.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `percorsoEdizione(nomeFile)` | **L'unico posto in cui nasce il percorso di un file dell'edizione**: cartella (`data/{L}/{S}/`), **prefisso** (`{L}-{S}-`) e versione per la cache, tutti e tre insieme. | `'struttura-corso.json'` → `data/inglese/it/inglese-it-struttura-corso.json?v=...` | Che il nome che gli passi sia **nudo**, senza prefisso. ⚠️ *Passarglielo già prefissato non dà errore: dà un percorso doppio che non esiste, e il `fetch` fallisce come un file mancante.* |
+| `episodeDataFile(episodeId)` | Il percorso del file di un episodio, ricavato dall'id. | `'gate'` → `data/inglese/it/inglese-it-gate.json?v=...` | Che il prefisso lo metta `percorsoEdizione`. *Fino al 2026-09-21 lo scriveva lui, ed era l'unico: i quattro file condivisi ne restavano senza.* |
+
+## `tests/test-env.js` — gli stessi percorsi, dal lato dei test
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `prefissoEdizione(ed)` | Il prefisso `{lingua}-{studente}-` dell'edizione viva. | `{lingua,studente}` → `'inglese-it-'` | Che l'edizione si legga da `APP_CONFIG`, non da una costante scritta nel test. |
+| `fileEdizione(nome)` | Il percorso su disco di un file dell'edizione. | `'gate.json'` → `data/inglese/it/inglese-it-gate.json` | Come sopra: **nome nudo**. |
+| `globDati(nomeFile)` | Il glob con cui Playwright intercetta la richiesta di quel file. | `'gate.json'` → `**/inglese-it-gate.json*` | ⚠️ **Nome nudo, e qui sbagliarsi è peggio che altrove:** un glob che non corrisponde **non fallisce** — lascia passare la richiesta vera, e il test diventa verde o rosso per un'altra ragione (regola 37). È successo il 2026-09-21 su quattro punti. |

@@ -102,7 +102,7 @@ function allSteps() {
 // funzionare senza che nessuno l'avesse toccata.
 //
 // Il magazzino (people, places) e' uscito da APP_CONFIG e vive in
-// data/inglese/it/tabelle-personalizzazione.json: qui c'era un parsing a
+// data/inglese/it/inglese-it-tabelle-personalizzazione.json: qui c'era un parsing a
 // espressioni regolari del sorgente dell'app, che da quel giorno non trova
 // piu' niente e torna `null` — cioe' i segnaposto restano non sostituiti e il
 // vocabolario atteso diventa "I am {{papa}}." contro "I am Marco." a schermo.
@@ -121,7 +121,7 @@ let magazzinoCache = null;
 function magazzino() {
   if (!magazzinoCache) {
     magazzinoCache = JSON.parse(fs.readFileSync(
-      repoPath('data', 'inglese', 'it', 'tabelle-personalizzazione.json'), 'utf8'));
+      fileEdizione('tabelle-personalizzazione.json'), 'utf8'));
   }
   return magazzinoCache;
 }

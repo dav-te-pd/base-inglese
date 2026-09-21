@@ -144,7 +144,7 @@ async function run() {
     // PERSONALIZATION_TABLES_FILE, quindi l'esca si legge dal FILE e non
     // dalla pagina. Leggerla da `window.APP_CONFIG.people` darebbe undefined
     // — cioe' un rosso che parla del posto sbagliato.
-    const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/tabelle-personalizzazione.json'), 'utf8'));
+    const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-tabelle-personalizzazione.json'), 'utf8'));
     const papaOpt = magazzino.people.papa.find(function (o) { return o.value === 'francesco'; });
     // ⚠️ E QUI C'ERANO DUE RIGHE MORTE, tolte il 2026-09-15.
     //

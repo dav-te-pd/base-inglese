@@ -32,7 +32,7 @@
 // è il caso comodo, quello che si ha già montato.
 //
 // LIMITE DICHIARATO: questo file NON verifica che il contenuto del magazzino
-// sia quello di `docs/inglese/it/tabelle-personalizzazione.md`. Oggi NON lo è,
+// sia quello di `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`. Oggi NON lo è,
 // ed è una scelta scritta (sei destinazioni invece di undici, id vecchi): il
 // passo che ha creato il file è una conversione pura. Il confronto col
 // magazzino vero è il test rovesciato ⑤ del markdown, e nasce col passo che
@@ -63,7 +63,7 @@ const mockInit = () => {
   window.SpeechSynthesisUtterance = function (t) { this.text = t; };
 };
 
-const FILE_TABELLE = 'data/inglese/it/tabelle-personalizzazione.json';
+const FILE_TABELLE = 'data/inglese/it/inglese-it-tabelle-personalizzazione.json';
 
 async function apriMappa(page, utente, episodio) {
   await page.addInitScript(function (d) {

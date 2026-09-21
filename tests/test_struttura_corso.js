@@ -1,30 +1,47 @@
-// PROTEGGE: che docs/inglese/it/struttura-corso.md e la struttura viva dicano la stessa cosa su
-// ordine dei passi, nomi dei gradi e categorie. Il markdown è la fonte
-// (CLAUDE.md regola 26) e APP_CONFIG l'esecuzione: se divergono, si legge un
-// documento che descrive un'app diversa da quella che gira — ed è il caso in
-// cui non se ne accorge nessuno, perché il documento resta plausibile.
+// PROTEGGE: che `docs/inglese/it/inglese-it-struttura-corso.md` e la struttura
+// viva dicano la stessa cosa. Il markdown e' la fonte (regola 26) e
+// `APP_CONFIG` l'esecuzione: se divergono, si legge un documento che descrive
+// un'app diversa da quella che gira — ed e' il caso in cui non se ne accorge
+// nessuno, perche' il documento resta plausibile.
 //
-// COSA CONFRONTA, e cosa no. Solo le TRE TABELLE TECNICHE: i 22 passaggi con
-// il loro grado, i quattro gradi con il nome mostrato, le sei categorie con
-// la loro etichetta. Sono tabelle con una riga per voce e un id in colonna:
-// si leggono senza interpretare niente.
+// COSA CONFRONTA — CINQUE tabelle, tutte con una riga per voce e un id in
+// colonna, quindi leggibili senza interpretare niente:
+//   1. i quattro gradi con il nome mostrato      -> CONFIG.grades/gradeNames
+//   2. le sei categorie con la loro etichetta    -> CONFIG.moduleTypes
+//   3. i quindici moduli con nome e sottotitolo  -> CONFIG.moduleLabels
+//   4. gli episodi con la sequenza che chiedono  -> CONFIG.episodes
+//   5. le due lingue del parlato                 -> CONFIG.speech
 //
-// La quarta tabella del documento — "Le regole di esito" — resta fuori di
-// proposito. Nomina i moduli con il nome mostrato allo studente ("Match
-// Practice", "Speed Match"), non con il loro id, e li raggruppa a prosa
-// ("Match Practice, Speed Match, Voice Practice, Voice Check, Test"): per
-// confrontarla servirebbe una mappa nome→id scritta a mano qui dentro, cioè
-// una terza fonte da tenere allineata alle altre due. In più contiene "Test",
-// un modulo che non esiste ancora, quindi il confronto fallirebbe subito e la
-// riparazione sarebbe inventare un'eccezione. Tre quarti del valore a un
-// quarto della fragilità.
+// ⚠️ **NON CONFRONTA PIU' I 22 PASSI, E NON E' UNA RINUNCIA: E' UNA DECISIONE
+// PRESA IL 2026-09-21, E VA SAPUTA.**
+//
+// Il documento nuovo NON elenca i passi delle sequenze, di proposito
+// (`STRUTTURA-CORSO_017`): *«due elenchi sugli stessi passi divergono al primo
+// riordino»*. Quindi la tabella che questo test confrontava **non esiste piu'**.
+//
+// ⚠️ **LIMITE DICHIARATO, ed e' il piu' importante di questo file: da oggi
+// NIENTE verifica che i 22 passi vivi siano quelli voluti.** Il file di
+// struttura resta l'unica fonte, e una riga cambiata per sbaglio dentro
+// `sequences` non fa rosso da nessuna parte. *Il documento porta i PRINCIPI
+// dell'ordine (_020.._025) invece dei passi, e un principio scritto in prosa
+// non si confronta con un programma.*
+//
+// **In cambio il file guarda tre tabelle in piu' di prima** — nomi dei moduli,
+// episodi, lingue del parlato. Il conto delle cose protette sale, **ma quella
+// che se n'e' andata non e' sostituita da nessuna di loro**, ed e' per questo
+// che sta scritta qui e non solo nel messaggio di un commit.
+//
+// La tabella «Le regole di esito» resta fuori di proposito: nomina i moduli
+// con il nome mostrato allo studente e li raggruppa a prosa, quindi per
+// confrontarla servirebbe una mappa nome->id scritta a mano qui dentro — cioe'
+// una terza fonte da tenere allineata alle altre due.
 //
 // Il markdown si legge come TESTO, non si esegue: una tabella cambiata a mano
 // deve poter far fallire il test.
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath } = require('./test-env');
 
-const DOC = 'docs/inglese/it/struttura-corso.md';
+const DOC = 'docs/inglese/it/inglese-it-struttura-corso.md';
 
 // Le righe di una tabella markdown sotto un'intestazione data. Si parte dal
 // titolo, si prende il primo blocco di righe che iniziano con "|", si buttano
@@ -95,7 +112,7 @@ async function run() {
 
   // ============ 1. I gradi ============
   {
-    const righe = tabellaSotto(doc, '## I gradi di difficoltà');
+    const righe = tabellaSotto(doc, '## 2 — I GRADI');
     const lettere = righe.map(r => r[0].trim());
     const nomi = {};
     righe.forEach(r => { nomi[r[0].trim()] = r[1].trim(); });
@@ -112,7 +129,7 @@ async function run() {
 
   // ============ 2. Le categorie ============
   {
-    const righe = tabellaSotto(doc, '## Le categorie dei moduli');
+    const righe = tabellaSotto(doc, '## 3 — LE CATEGORIE DEI MODULI');
     const etichette = {};
     righe.forEach(r => {
       const chiave = r[0].replace(/`/g, '').trim();
@@ -131,52 +148,78 @@ async function run() {
     log('[Categorie] Le etichette mostrate combaciano con CONFIG.moduleTypes', okEtichette);
   }
 
-  // ============ 3. L'ordine dei 22 passaggi ============
+  // ============ 3. I nomi dei moduli ============
   {
-    // ⚠️ IL NOME DELLA SEQUENZA È SCRITTO UNA VOLTA SOLA, e serve a due cose:
-    // trovare il titolo nel markdown e prendere la lista viva. Prima erano due
-    // stringhe scollegate — il titolo diceva "### Ordine attuale", che non
-    // nominava nessuna sequenza, e il confronto andava su 'narrativo-standard'
-    // senza che niente legasse i due.
+    const righe = tabellaSotto(doc, '## 4 — I NOMI DEI MODULI');
+    const dalDoc = {};
+    righe.forEach(r => {
+      dalDoc[r[0].replace(/`/g, '').trim()] = { name: r[1].trim(), subtitle: r[2].trim() };
+    });
+    console.log('[Nomi] documento: ' + Object.keys(dalDoc).length + ' moduli | APP_CONFIG: ' +
+      Object.keys(config.moduleLabels).length);
+    // ⚠️ QUI L'ORDINE NON SI CONFRONTA, E LA RIGA SOPRA LO FACEVA: era una
+    // pretesa sbagliata, e il primo giro l'ha fatta vedere. `moduleLabels` e'
+    // un elenco a CHIAVE — nessuno lo scorre, tutti ci cercano dentro per id —
+    // quindi «personalizzazione, meetTheStory, repeatAloud» e
+    // «personalizzazione, repeatAloud, meetTheStory» sono **lo stesso elenco**.
+    // *Il documento li mette nell'ordine in cui si incontrano, che per chi
+    // legge e' il piu' utile; il JSON in un altro. Nessuno dei due sbaglia.*
     //
-    // Ciò che si guadagna: se un giorno la sequenza confrontata cambia nome nel
-    // JSON, il titolo del documento deve cambiare con lei o il test si ferma. Con
-    // un titolo generico il markdown avrebbe potuto descrivere UN'ALTRA sequenza
-    // e il confronto sarebbe andato verde lo stesso.
-    const SEQUENZA_CONFRONTATA = 'narrativo-standard';
-    const righe = tabellaSotto(doc, '### `' + SEQUENZA_CONFRONTATA + '`');
-    const dalDoc = righe.map(r => ({ module: idModulo(r[1]), grade: grado(r[2]) }));
-    const sconosciute = righe.filter((r, i) => dalDoc[i].module === null);
-    sconosciute.forEach(r => console.log('    riga non riconosciuta: ' + r.join(' | ')));
-    log('[Ordine] Ogni riga del documento dichiara un id di modulo fra backtick',
-      sconosciute.length === 0);
+    // E' diverso da `moduleTypes` qui sopra, dove l'ordine **si** confronta:
+    // quelle sei categorie hanno una progressione (inizio, studio, ..., fine) e
+    // un ordine diverso vorrebbe dire una decisione diversa.
+    const chiaviDoc = Object.keys(dalDoc).slice().sort();
+    const chiaviConfig = Object.keys(config.moduleLabels).slice().sort();
+    const okChiavi = JSON.stringify(chiaviDoc) === JSON.stringify(chiaviConfig);
+    if (!okChiavi) diff('chiavi dei nomi', chiaviDoc, chiaviConfig);
+    log('[Nomi] Ci sono gli stessi moduli, non uno di piu e non uno di meno', okChiavi);
 
-    // La numerazione della prima colonna deve essere 1..N: una riga tolta a
-    // mano senza rinumerare è un errore da vedere subito.
-    const numeri = righe.map(r => Number(r[0].trim()));
-    const numerazioneOk = numeri.every((n, i) => n === i + 1);
-    if (!numerazioneOk) console.log('    numerazione: ' + numeri.join(', '));
-    log('[Ordine] La numerazione del documento è progressiva da 1', numerazioneOk);
-
-    const dalConfig = config.sequences[SEQUENZA_CONFRONTATA].map(p => ({ module: p.module, grade: p.grade || null }));
-
-    console.log('[Ordine] documento: ' + dalDoc.length + ' passi | APP_CONFIG: ' + dalConfig.length + ' passi');
-    log('[Ordine] Stesso numero di passi', dalDoc.length === dalConfig.length);
-
-    const primoDiverso = dalDoc.findIndex((p, i) =>
-      !dalConfig[i] || p.module !== dalConfig[i].module || p.grade !== dalConfig[i].grade);
-    if (primoDiverso !== -1) {
-      console.log('    primo passo diverso: numero ' + (primoDiverso + 1));
-      diff('passo ' + (primoDiverso + 1), dalDoc[primoDiverso], dalConfig[primoDiverso]);
-    }
-    log('[Ordine] Ogni passo combacia: stesso modulo, stesso grado, stessa posizione',
-      primoDiverso === -1);
-
-    // Un grado dichiarato nel documento deve essere uno dei gradi esistenti.
-    const gradiIgnoti = dalDoc.filter(p => p.grade !== null && config.grades.indexOf(p.grade) === -1);
-    gradiIgnoti.forEach(p => console.log('    grado sconosciuto: ' + p.module + ' -> ' + p.grade));
-    log('[Ordine] Ogni grado citato nell\'ordine esiste in CONFIG.grades', gradiIgnoti.length === 0);
+    const perChiave = function (o) {
+      const out = {};
+      Object.keys(o).slice().sort().forEach(function (k) { out[k] = o[k]; });
+      return out;
+    };
+    const okValori = JSON.stringify(perChiave(dalDoc)) === JSON.stringify(perChiave(config.moduleLabels));
+    if (!okValori) diff('nomi e sottotitoli', perChiave(dalDoc), perChiave(config.moduleLabels));
+    // ⚠️ QUESTA RIGA GUARDA GLI ACCENTI, e non e' pignoleria: il 2026-09-21 il
+    // documento portava «Perche' si dice cosi'» con gli apostrofi, ed e' testo
+    // che legge lo STUDENTE. Era l'unico sottotitolo con lettere accentate,
+    // quindi l'unico su cui la differenza si vedeva — e nessuno la guardava.
+    log('[Nomi] Nome e sottotitolo combaciano carattere per carattere', okValori);
   }
+
+  // ============ 4. Gli episodi e la sequenza che chiedono ============
+  {
+    const righe = tabellaSotto(doc, '## 7 — GLI EPISODI');
+    const dalDoc = {};
+    righe.forEach(r => { dalDoc[r[0].replace(/`/g, '').trim()] = r[1].replace(/`/g, '').trim(); });
+    const daConfig = {};
+    Object.keys(config.episodes).forEach(k => { daConfig[k] = config.episodes[k].sequence; });
+
+    console.log('[Episodi] documento: ' + JSON.stringify(dalDoc));
+    const ok = JSON.stringify(dalDoc) === JSON.stringify(daConfig);
+    if (!ok) diff('episodi', dalDoc, daConfig);
+    log('[Episodi] Ogni episodio dichiara nel documento la sequenza che chiede davvero', ok);
+  }
+
+  // ============ 5. Le due lingue del parlato ============
+  {
+    const righe = tabellaSotto(doc, '## 8 — LE LINGUE DEL PARLATO');
+    const dalDoc = {};
+    righe.forEach(r => {
+      dalDoc[r[0].replace(/`/g, '').replace('speech.', '').trim()] = r[1].replace(/`/g, '').trim();
+    });
+    console.log('[Parlato] documento: ' + JSON.stringify(dalDoc));
+    const ok = dalDoc.synthesisLang === config.speech.synthesisLang &&
+               dalDoc.recognitionLang === config.speech.recognitionLang;
+    if (!ok) diff('lingue del parlato', dalDoc, config.speech);
+    // ⚠️ DUE, E SI GUARDANO SEPARATE: parlare e ascoltare sono due cose, e oggi
+    // hanno lo STESSO valore — quindi un confronto che le confondesse sarebbe
+    // verde lo stesso. Il giorno di un'edizione con voce britannica e
+    // riconoscimento americano si vedrebbe; qui intanto si scrive.
+    log('[Parlato] Le due lingue combaciano con CONFIG.speech', ok);
+  }
+
 
   const falliti = risultati.filter(r => !r).length;
   console.log('');

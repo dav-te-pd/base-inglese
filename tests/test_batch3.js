@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -11,7 +11,7 @@ const BASE = APP_URL;
 // fonte (CLAUDE.md regola 8), quindi è da lì che si guarda — e per queste
 // verifiche non serve nemmeno aprire il browser.
 const ISTRUZIONI = JSON.parse(
-  fs.readFileSync(repoPath('data', 'inglese', 'it', 'istruzioni-moduli.json'), 'utf8'));
+  fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
 
 const mockInit = () => {
   class FakeUtterance { constructor(text) { this.text = text; } }

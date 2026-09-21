@@ -3,7 +3,7 @@
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 >
 > **Cos'è.** L'ordine in cui gli episodi si incontrano, con i raggruppamenti che li contengono.
-> **È la fonte**: la chiave `episodes` di `data/inglese/it/struttura-corso.json` porta gli stessi
+> **È la fonte**: la chiave `episodes` di `data/inglese/it/inglese-it-struttura-corso.json` porta gli stessi
 > id, aggiornati a mano leggendo questo file — lo stesso rapporto che la regola 26 ha già
 > stabilito fra `struttura-corso.md` e il suo JSON gemello.
 >
@@ -26,7 +26,7 @@
 > intestazioni **dentro** questa sequenza, non una seconda lista: due liste sugli stessi id
 > divergono.
 >
-> Convenzione: `docs/inglese/it/sequenza-episodi.md`.
+> Convenzione: `docs/inglese/it/inglese-it-sequenza-episodi.md`.
 
 ---
 

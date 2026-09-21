@@ -421,6 +421,31 @@ registri **quali eventi del riconoscitore sono arrivati** nell'ultima
 registrazione, con il momento in cui sono arrivati. Stessa forma di
 `#config-audio-usage`. *Proposto, non costruito.*
 
+### ✅ LA NOMENCLATURA — FATTA il 2026-09-21 (passo 1 dei sei)
+
+**Tutti i file di un'edizione portano il prefisso `{lingua}-{studente}-`**, e
+il prefisso **non sta nei nomi**: lo costruisce `percorsoEdizione` da
+`CONFIG.edizione`. *Quindi per un'edizione nuova non c'è nessuna lista da
+allineare a mano — il codice chiede sempre il nome giusto.*
+
+**La guardia è `tests/test_nomenclatura_edizione.js`**, e serve a un giorno
+preciso: quando `docs/inglese/it/` verrà copiata in `francese/it/`, i nomi
+resteranno `inglese-...` finché qualcuno non li rinomina. *Un prefisso
+sbagliato è peggio di uno assente.*
+
+⚠️ **E RESTA UN BUCO APERTO DA QUESTO STESSO PASSO, scritto qui perché non si
+scopra da solo: NIENTE VERIFICA PIÙ CHE I 22 PASSI VIVI SIANO QUELLI VOLUTI.**
+
+Il documento nuovo non elenca i passi delle sequenze, di proposito
+(`STRUTTURA-CORSO_017`), quindi `test_struttura_corso.js` non ha più quella
+tabella da confrontare e l'ha persa. In cambio ne guarda tre nuove — nomi dei
+moduli, episodi, lingue del parlato — **ma nessuna di loro sostituisce quella.**
+
+**Condizione per chiuderlo:** quando le sequenze diventeranno più di una vera
+(oggi ce n'è una sola più una sonda), o al primo riordino fatto sul serio.
+*Una riga cambiata per sbaglio dentro `sequences` oggi non fa rosso da nessuna
+parte.*
+
 ### ✅ LE PAROLE: «narrativo» e «Mappa» — CHIUSO il 2026-09-21, restano
 
 **Deciso da chi guida il progetto:** *«mappa e narrazione lasciamo così»*.
@@ -500,8 +525,8 @@ con la sequenza che chiedono, 2 lingue, 4 nomi dei gradi, 6 categorie:
 | **②** | **_010** | ⚠️ **«Perche' si dice cosi'» con gli apostrofi, ed è TESTO CHE LEGGE LO STUDENTE.** Nel JSON oggi è *«Perché si dice così»*. È l'**unico** sottotitolo con lettere accentate, quindi l'unico che se ne accorge | Rimettere gli accenti **in quella riga**. *Gli apostrofi nella prosa del file vanno benissimo — quella la leggiamo noi; la tabella dei sottotitoli no* |
 | **③** | **_026**, **_027**, **_028** | La **categoria dell'episodio** (narrativo, grammaticale, pronuncia) **non esiste**: oggi `episodes.gate` porta solo `{ sequence }` | È un **campo nuovo** da aggiungere a `episodes.<id>.categoria`. Non è un errore del file: è lavoro che il file chiede |
 | **④** | **_032** | Dice giusto **dove sta oggi** (`badge: 'Episodio 1'` in `app/catalogo.js`) — quindi **_031 è violato adesso**: lo studente legge esattamente «Episodio 1». ⚠️ **Ma «va nel file episodio» costa una cosa che non si vede:** la mappa disegna il badge **senza caricare il file episodio**, quindi il nome lì dentro la costringerebbe a un `fetch` che oggi non fa — e un caricamento fallito romperebbe la mappa | Metterlo in **`episodes.<id>.nome`** del file di struttura: **costa zero** (quel file arriva già prima di qualunque schermata) ed è già per edizione, quindi resta testo nella lingua dello studente |
-| **⑤** | **_001** | Dice `data/inglese/it/struttura-corso.json` **senza prefisso**, mentre **_014** e **_040** lo mettono. È incoerente **oggi**, e coerente **dopo** la rinomina decisa | Niente da cambiare a mano: lo sistema il passo della nomenclatura |
-| **⑥** | — | **Il file vecchio NON si può ancora togliere:** `tests/test_struttura_corso.js` legge `docs/inglese/it/struttura-corso.md` (`const DOC`). Cancellarlo adesso fa **rossa la suite** | La rinomina e l'aggiornamento del test vanno **nello stesso commit**, ed è il passo già deciso |
+| **⑤** | **_001** | Dice `data/inglese/it/inglese-it-struttura-corso.json` **senza prefisso**, mentre **_014** e **_040** lo mettono. È incoerente **oggi**, e coerente **dopo** la rinomina decisa | Niente da cambiare a mano: lo sistema il passo della nomenclatura |
+| **⑥** | — | **Il file vecchio NON si può ancora togliere:** `tests/test_struttura_corso.js` legge `docs/inglese/it/inglese-it-struttura-corso.md` (`const DOC`). Cancellarlo adesso fa **rossa la suite** | La rinomina e l'aggiornamento del test vanno **nello stesso commit**, ed è il passo già deciso |
 
 ### ⚠️ IL TRIAGE DEI FUORI CATENA — chiesto il 2026-09-21
 
@@ -528,7 +553,7 @@ nello stesso file che F.6 aveva corretto, e **tre righe sopra** quella corretta:
 
 | File | Riga | Cosa dice | Perché è falsa |
 |---|---|---|---|
-| `struttura-corso.md` | 3 | *«Da qui vengono aggiornate le voci di `APP_CONFIG`»* | dal 2026-09-20 la fonte da aggiornare è `data/inglese/it/struttura-corso.json` |
+| `struttura-corso.md` | 3 | *«Da qui vengono aggiornate le voci di `APP_CONFIG`»* | dal 2026-09-20 la fonte da aggiornare è `data/inglese/it/inglese-it-struttura-corso.json` |
 | `struttura-corso.md` | 13 | *«Ogni sezione corrisponde a una voce di `APP_CONFIG`»* | idem |
 | `struttura-corso.md` | 5 | *«il contenuto di un episodio sta in `docs/episodio-N.md`»* | è la nomenclatura che la **regola 4 vieta**, tolta al passo 6: oggi è `docs/inglese/it/inglese-it-gate.md` |
 | `struttura-corso.md` | 55–57 | *«L'ordine è uno solo per tutto il corso… un episodio può sovrascriverlo, ma è l'eccezione»* | oggi **ogni** episodio dichiara la propria `sequence`, **sempre**, e non esiste nessun default implicito |
@@ -772,7 +797,7 @@ in un file) e 1.11 (la struttura per edizione).
 **Cosa e' vero oggi, in una riga:** gli id sono `gate` e `aircraft-door` (nel
 codice **e** dentro i JSON), i file dati stanno in
 `data/inglese/it/inglese-it-{id}.json`, le tabelle esistono in
-`data/inglese/it/tabelle-personalizzazione.json`, la sola sequenza e'
+`data/inglese/it/inglese-it-tabelle-personalizzazione.json`, la sola sequenza e'
 `narrativo-standard` con 22 passi, e i numeri attesi dei due episodi **tornano
 tutti**.
 
@@ -806,7 +831,7 @@ Non si deducono guardando il codice.
 5. **Ogni commit scrive la propria riga** in `correzioni.md` o qui (regola 43).
 6. **Un file sotto `docs/{lingua}/` non si tocca di iniziativa** (regola 33).
 7. ⚠️ **I NOMI FRANCESI NON VANNO NELLE COLONNE `fr` DI
-   `data/inglese/it/tabelle-personalizzazione.json`.** Quel file porta `fr`,
+   `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.** Quel file porta `fr`,
    `es`, `de` vuote — la forma «una riga, cinque lingue» — e finche' il passo
    1.8 non le toglie, **sono li' e sembrano il posto giusto**. Non lo sono: i
    nomi francesi vanno in `data/francese/it/tabelle-personalizzazione.json`,

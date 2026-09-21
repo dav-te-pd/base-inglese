@@ -155,7 +155,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await page.route(globDati('inglese-it-gate.json'), async (route) => {
+    await page.route(globDati('gate.json'), async (route) => {
       const res = await route.fetch();
       const json = await res.json();
       // Nel grado che Voice Check legge DAVVERO (la lettera della sua coppia

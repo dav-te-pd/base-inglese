@@ -1,6 +1,6 @@
 # Struttura del corso — inglese per italiani
 
-> **Fonte per `data/inglese/it/struttura-corso.json`.** *Claude Code trascrive, non decide.*
+> **Fonte per `data/inglese/it/inglese-it-struttura-corso.json`.** *Claude Code trascrive, non decide.*
 >
 > **Le istruzioni stanno qui, non nel messaggio.** Il messaggio e' sempre:
 > *«aggiorna leggendo `docs/inglese/it/inglese-it-struttura-corso.md`»*.
@@ -11,7 +11,7 @@
 
 ## 1 — IL FILE DI STRUTTURA
 
-**STRUTTURA-CORSO_001** · La struttura del corso vive in **`data/inglese/it/struttura-corso.json`**,
+**STRUTTURA-CORSO_001** · La struttura del corso vive in **`data/inglese/it/inglese-it-struttura-corso.json`**,
 un file per edizione. *Una decisione presa per l'inglese non governa il francese.*
 
 **STRUTTURA-CORSO_002** · Il JSON ha **sette chiavi**, e ogni sezione di questo file ne riempie una:
@@ -134,7 +134,7 @@ escono giuste** — con `lastAttempt` conterebbe sempre quasi 100%.
 compare piu' volte con gradi diversi riusando un solo descrittore.*
 
 **STRUTTURA-CORSO_017** · ⚠️ **I passi delle sequenze stanno solo nel JSON, e si modificano
-LI'.** Precisamente: `data/inglese/it/struttura-corso.json`, chiave **`sequences`**, una voce per
+LI'.** Precisamente: `data/inglese/it/inglese-it-struttura-corso.json`, chiave **`sequences`**, una voce per
 nome di sequenza, ognuna una lista di coppie `{ "module": "...", "grade": "..." }` nell'ordine in
 cui si incontrano. *Qui non vanno elencati: due elenchi sugli stessi passi divergono al primo
 riordino, e questo file perderebbe in silenzio.*
