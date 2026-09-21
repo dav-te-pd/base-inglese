@@ -315,8 +315,10 @@ secondo.
 
 ### Quando arriverà un episodio che non è una storia
 
-**Il catalogo avrà episodi `grammatica` e `pronuncia`, con meno moduli e forse
-senza grado D** (`REGISTRO-EPISODI_022`). Il tabellone è costruito per quel
+⚠️ **NON È «forse»: è un fatto dichiarato da chi guida il progetto il
+2026-09-21 — «sicuramente gli episodi grammaticali non avranno il grado D».**
+Il catalogo avrà episodi `grammatica` e `pronuncia` (`REGISTRO-EPISODI_022`),
+con meno moduli e **senza dialogo**. Il tabellone è costruito per quel
 giorno: **le `U` valgono lo stesso** — le conte, le skill, gli id, i nomi dei
 gradi non dipendono dalla categoria — **e le `C` si spengono da sole**, perché
 la loro condizione guarda cosa l'episodio *ha*, non cosa *è*.
@@ -326,6 +328,25 @@ salta il controllo del dialogo» legherebbe un test a un'etichetta che chi
 scrive gli episodi può cambiare in qualunque momento, per ragioni didattiche
 che col test non c'entrano. *La condizione giusta è «se ha un grado D»: la
 guarda nel file, e non può sbagliarsi.*
+
+### ⚠️ IL TEST TRASVERSALE SI SCRIVE AL QUINTO EPISODIO, NON PRIMA
+
+**Deciso il 2026-09-21 da chi guida il progetto**, ed è una decisione presa
+guardando questo tabellone: *«gli episodi li creiamo manualmente, non
+sovraccarichiamo ora»*. **La ragione tecnica che la regge:** un test
+trasversale scritto oggi sarebbe la generalizzazione di **un** caso — i due
+episodi che esistono sono tutti e due `storia`, tutti e due
+`narrativo-standard`, tutti e due con le quattro tabelle. *E la regola 42 dice
+che una riga condivisa va provata sul caso più diverso, che qui non esiste.*
+
+**Cosa costa aspettare, e non è zero:** le caselle ❌ restano scoperte, e ogni
+episodio nuovo nasce con la propria copia dei controlli.
+
+⚠️ **Al quinto episodio si torna qui e si guarda la tabella, non la memoria:
+se le colonne si somigliano il test trasversale si scrive; se non si
+somigliano, la differenza è vera — e il tabellone l'ha già spiegata.** *È il
+solo modo di prendere quella decisione su un fatto invece che su
+un'impressione.*
 
 ### ⚠️ Il tabellone si aggiorna quando nasce un episodio
 
