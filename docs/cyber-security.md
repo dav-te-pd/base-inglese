@@ -126,11 +126,82 @@ delle ragioni per cui va fatto.
 Stanno in `decisioni-stato.md` e si ripetono qui perché sono il passaggio che apre
 tutto questo:
 
-1. **La CI su 4 CPU** — se il runner ne ha 4, la suite costa la metà.
+1. ~~**La CI su 4 CPU**~~ — ✅ **FATTA il 2026-09-21.** Il runner ne ha
+   **quattro**, misurate e stampate nel log (`CPU misurate: 4`). La corsa è
+   passata da ~600 s a **369 s**: non la metà, il 38% in meno — il resto è
+   installazione di Chromium, che la parallelizzazione non tocca.
 2. **Repository privato + Supabase**, insieme: il privato chiude la prima delle
    due minacce (il codice), Supabase la seconda (il contenuto servito in
    chiaro). ⚠️ **Sono due minacce diverse e il repository privato NON tocca la
    seconda** — il sito resta pubblico, e i suoi file si scaricano lo stesso.
+
+---
+
+## ⚠️ «AL PRIVATO NESSUNO SCARICA PIÙ E NON SI VEDE PIÙ?» — la risposta è NO, e per metà
+
+**Domanda di chi guida il progetto, 2026-09-21.** La risposta sta già scritta
+qui sopra in una riga, e merita la sua sezione perché è **la decisione su cui si
+costruisce tutta la tappa ③**: se si crede che il privato basti, Supabase
+diventa facoltativo — e non lo è.
+
+**Le due cose che il repository privato fa, e le due che non fa:**
+
+| | Repository privato |
+|---|---|
+| Il **codice sorgente** su github.com | ✅ **chiuso** — lo vedono solo i collaboratori invitati |
+| La **storia dei commit** (anche i file già cancellati) | ✅ **chiusa** |
+| I **file dei contenuti** mentre lo studente usa l'app | ❌ **aperti come oggi** |
+| Il **sito pubblicato** | ❌ **resta pubblico** |
+
+⚠️ **E LA RAGIONE NON È UN'IMPOSTAZIONE SBAGLIATA: È COME FUNZIONA UN BROWSER.**
+
+> **Tutto quello che il browser scarica per far funzionare l'app, lo scarica
+> anche chi guarda.** `inglese-it-gate.json` arriva sul computer dello studente
+> perché *deve* arrivarci: senza, l'episodio non si vede. Chiunque apra gli
+> strumenti per sviluppatori (F12 → Rete) vede quella richiesta e salva il file
+> con un click. Il repository non c'entra: il file non viene da lì, viene dal
+> sito.
+
+**E due cose da sapere su GitHub Pages in particolare**, perché sono il punto in
+cui «privato» inganna di più:
+
+- **Pages su un repository privato richiede un piano a pagamento** (Pro, Team o
+  Enterprise). Sul piano gratuito, rendere privato il repository **spegne il
+  sito**.
+- **Anche pagando, il sito pubblicato resta PUBBLICO.** Le «pagine private»,
+  cioè visibili solo a chi è autenticato, esistono **solo su Enterprise
+  Cloud**. Quindi su Pro o Team si ottiene: codice chiuso, sito aperto.
+
+**Quindi la difesa vera è una sola, ed è quella già in piano:** *non mandare al
+browser quello che a quella schermata non serve.* È la stessa frase di chi guida
+il progetto — *«più le logiche stanno sul server meglio è, e mandiamo al browser
+i pacchetti più piccoli possibili»* — ed è il motivo per cui Supabase non è
+un'alternativa al repository privato: **è l'altra metà.**
+
+⚠️ **E resta vera la riga più importante dell'analisi B:** *la domanda giusta non
+è «si può impedire» — non si può. È «quanto lavoro costa a chi copia», e se
+costa più che rifarlo da capo.*
+
+---
+
+## I minuti della CI — quando il repository sarà privato
+
+**Oggi non costano niente:** su un repository **pubblico** i minuti di GitHub
+Actions sono **gratuiti e illimitati**. I 3000 al mese contano **solo per i
+repository privati** — cioè scatteranno esattamente quando si chiude il
+repository, non prima.
+
+**Il conto, con i numeri di oggi** (GitHub fattura arrotondando al minuto
+intero per ogni job, e Linux ha moltiplicatore 1×):
+
+| | minuti a corsa | corse al mese nei 3000 | corse al giorno |
+|---|---|---|---|
+| prima (N=2, ~600 s) | 10 | 300 | ~10 |
+| **adesso (N=4, 357–369 s)** | **6** | **500** | **~16** |
+
+*Sedici push su `main` al giorno, tutti i giorni, prima di toccare il tetto.*
+**Ci si sta dentro**, e l'accorpamento dei passi (regola 45) è un margine in
+più, non la condizione per starci.
 
 ---
 

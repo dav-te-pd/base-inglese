@@ -3,14 +3,24 @@
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 >
 > **Cos'è.** L'ordine in cui gli episodi si incontrano, con i raggruppamenti che li contengono.
-> **È la fonte**: `CONFIG.episodes` porta gli stessi id, aggiornati a mano leggendo questo file —
-> lo stesso rapporto che la regola 26 ha già stabilito fra `struttura-corso.md` e `APP_CONFIG`.
+> **È la fonte**: la chiave `episodes` di `data/inglese/it/struttura-corso.json` porta gli stessi
+> id, aggiornati a mano leggendo questo file — lo stesso rapporto che la regola 26 ha già
+> stabilito fra `struttura-corso.md` e il suo JSON gemello.
 >
-> **Non esiste un `sequenza-episodi.json`**, ed è una scelta: l'elenco degli episodi serve
-> **durante** l'avvio, prima che qualunque file sia scaricato. Farlo arrivare da un file
-> renderebbe asincrona la costruzione di `EPISODES`, che è più grosso di tutto il resto della
-> fase 1-bis. *E quando Supabase servirà i contenuti a richiesta, l'elenco arriverà dal server:
-> costruire adesso un JSON che Supabase sostituisce è lavoro che si butta due volte.*
+> ⚠️ **QUI C'ERA SCRITTO CHE UN FILE NON SERVIVA, E LA RAGIONE NON C'È PIÙ.**
+>
+> *La frase diceva: «Non esiste un `sequenza-episodi.json`, ed è una scelta: l'elenco degli
+> episodi serve **durante** l'avvio, prima che qualunque file sia scaricato. Farlo arrivare da
+> un file renderebbe asincrona la costruzione di `EPISODES`.»*
+>
+> **Dal passo 1.11b (2026-09-20) `struttura-corso.json` arriva PRIMA di qualunque schermata, e
+> porta già `episodes`.** La costruzione di `EPISODES` è già asincrona, e l'elenco degli episodi
+> viene già da un file. Quindi il motivo per cui il JSON non esisteva non è più un motivo: la
+> domanda aperta non è più «un file sì o no», è **«l'ORDINE degli episodi è un dato, o resta
+> l'ordine in cui le chiavi sono scritte?»** — ed è il passo 1.13.
+>
+> *Resta vera l'altra metà, e va tenuta: quando Supabase servirà i contenuti a richiesta,
+> l'elenco arriverà dal server.*
 >
 > **Spostare un episodio è spostare una riga qui**, e nient'altro cambia. I raggruppamenti sono
 > intestazioni **dentro** questa sequenza, non una seconda lista: due liste sugli stessi id

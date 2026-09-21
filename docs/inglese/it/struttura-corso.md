@@ -1,8 +1,12 @@
 # Struttura del corso
 
-> **Materiale di partenza per Claude Code.** Da qui vengono aggiornate le voci di `APP_CONFIG` che riguardano la struttura del corso: ordine dei moduli, nomi dei gradi, categorie.
+> **Materiale di partenza per Claude Code.** Da qui viene aggiornato **`data/inglese/it/struttura-corso.json`**, il file di struttura di questa edizione: sequenze dei moduli, nomi dei gradi, categorie, nomi dei moduli, elenco degli episodi, lingue del parlato.
 >
-> Vale per **tutto il corso**, non per un singolo episodio: il contenuto di un episodio sta in `docs/episodio-N.md`.
+> ⚠️ *Qui c'era scritto «le voci di `APP_CONFIG`», ed è stato vero fino al 2026-09-20 (passo 1.11b). Da allora la struttura del corso **non vive più in un valore globale unico**: vive in un file dell'edizione. I suoi valori tornano su `APP_CONFIG` a runtime — quindi il codice che li legge non è cambiato — ma **la fonte da aggiornare è il JSON**, e una decisione presa per l'inglese non governa più il francese in silenzio.*
+>
+> Vale per **tutto il corso di questa edizione**, non per un singolo episodio: il contenuto di un episodio sta in `docs/inglese/it/inglese-it-{id}.md` — oggi `inglese-it-gate.md` e `inglese-it-aircraft-door.md`.
+>
+> ⚠️ *Qui c'era scritto `docs/episodio-N.md`, cioè **la nomenclatura che la regola 4 vieta**: il numero è una posizione, e le posizioni si spostano. L'id no.*
 >
 > **Le istruzioni stanno in questo file, non nel messaggio.** Il messaggio è sempre della forma *"aggiorna leggendo `docs/inglese/it/struttura-corso.md`"*.
 
@@ -10,7 +14,21 @@
 
 ## Come si legge questo file
 
-Ogni sezione corrisponde a una voce di `APP_CONFIG`. Quando una sezione cambia, va riportata nella voce corrispondente — **senza decidere nulla**: qui c'è già tutto.
+Ogni sezione corrisponde a una **chiave di `data/inglese/it/struttura-corso.json`**. Quando una sezione cambia, va riportata nella chiave corrispondente — **senza decidere nulla**: qui c'è già tutto.
+
+**Le sette chiavi, e la sezione che le riempie:**
+
+| Chiave del JSON | La sezione che la scrive |
+|---|---|
+| `grades` | I gradi di difficoltà |
+| `gradeNames` | I gradi di difficoltà |
+| `moduleTypes` | Le categorie dei moduli |
+| `moduleLabels` | I nomi dei moduli |
+| `sequences` | Le sequenze dei moduli |
+| `episodes` | Gli episodi e la loro sequenza |
+| `speech` | Le lingue del parlato |
+
+⚠️ **L'app carica questo file PRIMA di disegnare qualunque schermata.** Se non arriva, non si vede una mappa a metà: si vede la schermata d'errore.
 
 ---
 
@@ -31,7 +49,7 @@ La **lettera** è l'identificativo tecnico: si usa nel codice, nei dati e nel Pa
 
 **Come si mostra:** accanto alla categoria, separato da un punto medio — *"Studio · Parole"*, *"Quiz · Frasi"*, *"Studio · Dialogo"*.
 
-**In `APP_CONFIG`:** `grades: ['A','B','C','D']` per il giro del Pannello Admin, più i nomi mostrati in una voce dedicata.
+**Nel file di struttura:** `grades: ['A','B','C','D']` per il giro del Pannello Admin, e `gradeNames` per i nomi mostrati.
 
 ---
 
@@ -52,13 +70,26 @@ Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verrà valutato:
 
 ---
 
-## L'ordine dei moduli — globale
+## Le sequenze dei moduli
 
-**L'ordine è uno solo per tutto il corso**, non per episodio: con venti episodi, un ordine per episodio significherebbe riordinarli venti volte. Un episodio può sovrascriverlo, ma è l'eccezione.
+**Una sequenza è una lista ordinata di coppie `{ module, grade }`**: la coppia dice quale modulo, e su quale grado lavora. Ogni sequenza ha un nome, e le sequenze stanno tutte insieme sotto `sequences` nel file di struttura.
 
-**Il grado sta nella posizione, non nel modulo.** Ogni voce è una coppia `{ module, grade }`. Così lo stesso modulo compare più volte con gradi diversi riusando un solo descrittore.
+**Il grado sta nella posizione, non nel modulo.** Così lo stesso modulo compare più volte con gradi diversi riusando un solo descrittore — Flash Card sul grado A e sul grado B è **una** riga di codice, non due.
 
-### Ordine attuale — 22 passaggi
+⚠️ **QUI C'ERA SCRITTO «L'ordine è uno solo per tutto il corso… un episodio può sovrascriverlo, ma è l'eccezione». NON È PIÙ VERO, E NON È UN DETTAGLIO.**
+
+*Non esiste più un ordine di default che qualcuno eredita in silenzio: `moduleOrderDefault` è stato tolto il 2026-09-08, perché un episodio corto avrebbe preso i ventidue passi narrativi senza che nessuno l'avesse deciso.* **Oggi ogni episodio dichiara la propria sequenza, sempre — anche il primo.**
+
+### Le sequenze che esistono
+
+| Nome | Passi | A cosa serve |
+|---|---|---|
+| `narrativo-standard` | 22 | La sequenza del corso: la tabella qui sotto |
+| `prova-corta` | 5 | ⚠️ **Una SONDA, non contenuto.** Esiste solo per provare i due selettori del Pannello Admin: cinque passi contro ventidue, così la mappa si accorcia sotto gli occhi e «ha funzionato» si distingue da «sto guardando la versione vecchia». **Nessun episodio la dichiara**, quindi è inerte finché qualcuno non la sceglie dal pannello. Si toglie quando arrivano le sequenze vere |
+
+**Un'eccezione non si dichiara come «narrativo-standard meno Flash Card»: chi fa eccezione scrive la sua sequenza per intero.** Una sottrazione si legge solo tenendo aperti due documenti, e quando la base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
+
+### `narrativo-standard` — 22 passaggi
 
 | # | Modulo | Grado |
 |---|---|---|
@@ -96,6 +127,73 @@ Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verrà valutato:
 **Match prima di Flash Card:** Match verifica il riconoscimento, Flash Card è autovalutazione. Prima la misura, poi la dichiarazione.
 
 **I quiz in fondo:** un quiz è la versione sotto pressione di qualcosa già fatto con calma. Ogni direzione presente in Speed Match deve essere stata esercitata prima in Match Practice.
+
+---
+
+## Gli episodi e la loro sequenza
+
+Sotto `episodes`, una chiave per episodio, con dentro il nome della sequenza che quell'episodio chiede.
+
+| Episodio | Sequenza |
+|---|---|
+| `gate` | `narrativo-standard` |
+| `aircraft-door` | `narrativo-standard` |
+
+⚠️ **LA DIREZIONE È QUESTA, E NON L'INVERSA: è l'EPISODIO che dichiara la sequenza, non la sequenza che elenca i suoi episodi.**
+
+*Una sequenza non sa niente di chi la usa, e due episodi possono chiedere la stessa. Fosse il contrario, un episodio potrebbe comparire in due liste e nessuno se ne accorgerebbe.*
+
+**Cosa vince, e non c'è una quarta possibilità:**
+
+| L'episodio dichiara | Vale |
+|---|---|
+| solo `sequence` | quella sequenza |
+| solo `moduleOrder` (l'ordine scritto per intero) | quell'ordine |
+| **tutte e due** | **errore** — si dice, non si sceglie |
+| **niente** | **errore** — nessun default implicito |
+
+*Il caso «tutte e due» è l'unico che si potrebbe risolvere zitti scegliendone una, ed è per questo che non lo si fa: chi ha scritto entrambe crede che valga quella che sta guardando, e ha il 50% di probabilità di sbagliarsi per sempre.*
+
+⚠️ **Questa tabella riguarda l'ordine dei MODULI DENTRO un episodio. L'ordine in cui gli EPISODI si incontrano è un'altra cosa, e oggi non è un dato**: è l'ordine in cui le chiavi sono scritte qui dentro, e nessuna riga di codice lo dichiara. La sua fonte è `docs/inglese/it/sequenza-episodi.md`.
+
+---
+
+## Le lingue del parlato
+
+Due lingue, e sono due perché rispondono a due domande diverse.
+
+| Chiave | Valore | Cosa decide |
+|---|---|---|
+| `speech.synthesisLang` | `en-US` | In che lingua l'app **parla** — la voce sintetica che legge le battute |
+| `speech.recognitionLang` | `en-US` | In che lingua l'app **ascolta** — il riconoscimento del microfono in Voice Practice e Voice Check |
+
+**Sono della lingua che si impara, non di chi studia**, e per questo stanno nel file dell'edizione: un corso di francese per italiani le vuole tutte e due `fr-FR`.
+
+---
+
+## I nomi dei moduli
+
+Quello che lo studente legge sulla mappa e in testa al modulo. Due campi per ognuno — **nome** e **sottotitolo** — perché sono due cose separate e vanno modificabili separatamente.
+
+| Chiave | Nome | Sottotitolo |
+|---|---|---|
+| `personalizzazione` | Your Story | Personalizza la tua storia |
+| `meetTheStory` | Meet the Story | Ascolta la storia |
+| `repeatAloud` | Repeat Aloud | Ripeti ad alta voce |
+| `whyWeSayIt` | Why We Say It | Perché si dice così |
+| `matchEngIta` | Match Practice en→it | Abbina le traduzioni |
+| `matchItaEng` | Match Practice it→en | Abbina le traduzioni |
+| `flashcardAEngIta` | Flash Card en→it | Ripassa quello che hai imparato |
+| `flashcardAItaEng` | Flash Card it→en | Ripassa quello che hai imparato |
+| `voicePractice` | Voice Practice | Allena la pronuncia |
+| `dialogoAscoltaRipeti` | Dialogue: Listen & Repeat | Ascolta e ripeti |
+| `dialogoRipetiATempo` | Dialogue: Repeat in Time | Ripeti a tempo |
+| `dialogoContinuo` | Dialogue: Real Dialogue | Il dialogo vero |
+| `speedMatchEngIta` | Speed Match en→it | Traduci a tempo |
+| `speedMatchItaEng` | Speed Match it→en | Traduci a tempo |
+| `voiceCoach` | Voice Check | Metti alla prova la pronuncia |
+
+**I nomi dei moduli restano in inglese, i sottotitoli in italiano**, ed è una scelta: il nome è l'etichetta del modulo, il sottotitolo dice cosa ci si fa. *Sono qui, nel file dell'edizione, perché un'edizione tedesca vuole i suoi sottotitoli.*
 
 ---
 
@@ -196,9 +294,12 @@ del collaudo su profilo nuovo — non dopo.
 
 ## Da aggiornare quando
 
-- **Si aggiunge un modulo:** entra nell'ordine con il suo grado, nella categoria giusta, con la sua regola di esito
+- **Si aggiunge un modulo:** entra in `narrativo-standard` con il suo grado, nella categoria giusta, con la sua regola di esito — **e con il suo nome e sottotitolo** nella tabella dei nomi dei moduli
 - **Si aggiunge un grado:** entra nella tabella dei gradi con il nome mostrato
-- **Si cambia l'ordine:** si riscrive la tabella dei 22 passaggi
+- **Si cambia l'ordine:** si riscrive la tabella dei 22 passaggi di `narrativo-standard`
+- **Si aggiunge una sequenza:** entra nella tabella delle sequenze **scritta per intero**, mai come sottrazione da un'altra
+- **Si aggiunge un episodio:** entra nella tabella degli episodi con la sequenza che chiede — e nella sequenza degli episodi, che è un altro file
+- **Si cambia la lingua parlata:** si cambiano le due voci di `speech`, e sono due
 
 Poi una riga a Claude Code: *"aggiorna `data/inglese/it/struttura-corso.json` leggendo `docs/inglese/it/struttura-corso.md`"*.
 

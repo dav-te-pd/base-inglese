@@ -220,7 +220,7 @@ rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
 | **F.2** | **I 17 finti sintetizzatori senza `speaking`** nei test. Un mock che finisce all'istante nasconde proprio i difetti che dipendono da un ordine di eventi asincrono (regola 19) | quando si tocca una famiglia di test che li usa |
 | **F.3** | **Il giro di design sulla mastery**, tre voci: ① i **due colori** che si chiamano tutti e due «colore», e niente nell'interfaccia dice quale si sta guardando · ② la **media di Voice Practice** che nessuno mostra · ③ **report VERDE e mappa ROSSA**, tutti e due corretti, e allo studente sembrano contraddirsi | ⚠️ **LA CONDIZIONE C'ERA, ED È STATA PERSA NEL TRAVASO DEL 2026-09-21.** Sta in `decisioni-storico.md`, scritta il 2026-09-19: *«quando il report sarà visibile allo studente, e non prima»*. Qui era diventata un trattino — e un trattino si legge come «nessuna condizione», cioè l'opposto |
 | **F.4** | Le varianti di **`bootAsUser` / `mockInit`** nei test: la stessa finzione scritta in più modi | ⚠️ **sarebbe un `map-driver` per il boot** — stessa forma della deduplicazione già fatta per l'apertura dei moduli |
-| **F.5** | **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun chiamante** | quando nasce il Modulo Finale |
+| **F.5** | **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun chiamante** | ✅ **DECISO il 2026-09-21: si cancellano.** Il disegno resta in `decisioni-storico.md` e si riscrive quando nascerà il Modulo Finale. *Codice che nessuno chiama è una bugia su cosa fa l'app* |
 | ~~**F.6**~~ | ✅ **CHIUSA il 2026-09-21**, autorizzata: i dieci percorsi scaduti nei cinque file di contenuto, più le due frasi false in sostanza (`a1-episodio1-inglese.json`, cioè la nomenclatura che la regola 4 vieta; e *«aggiorna `APP_CONFIG` leggendo…»*, quando dal 2026-09-20 la fonte è `struttura-corso.json`) | — |
 
 *Perché F.6 pesa più di un refuso: quei file sono la **fonte** da cui si scrive
@@ -262,8 +262,19 @@ nello stesso file che F.6 aveva corretto, e **tre righe sopra** quella corretta:
 cercarla — in fondo al file — e ha lasciato la stessa frase in testa. Una
 verifica per sottrazione fatta su un punto invece che su tutte le forme.*
 
-⚠️ **NON CORRETTE: sono sotto `docs/{lingua}/`, quindi regola 33 — si chiede
-prima.** Chiamate **F.6-bis** finché non arriva la risposta.
+✅ **F.6-bis CHIUSA il 2026-09-21**, autorizzata in chat: le cinque frasi sono
+corrette, e `struttura-corso.md` ha adesso anche le **quattro sezioni che gli
+mancavano** — sequenze, episodi, lingue del parlato, nomi dei moduli. *Sette
+chiavi nel JSON, sette sezioni che le scrivono.* Verificato per copertura: **33
+controlli fra markdown e JSON, 33 verdi.**
+
+⚠️ **E UNA COSA CHE LA CORREZIONE HA FATTO VEDERE, da tenere per il passo 1.13:**
+`sequenza-episodi.md` esiste dal 2026-09-09 e porta già l'ordine — A1.1 con cinque
+episodi (`benvenuto`, `numeri`, `verb-to-be`, `gate`, `aircraft-door`) e i loro
+raggruppamenti. **Quindi 1.13 non parte da zero: parte da quel file**, e la frase
+che diceva «un JSON non serve» è proprio quella che il passo 1.11b aveva reso
+falsa. *La domanda aperta non è più «un file sì o no»: è **«l'ordine degli episodi
+è un dato, o resta l'ordine in cui le chiavi sono scritte?»***
 
 ### ⚠️ QUANDO NASCERÀ IL PANNELLO ADMIN VERO, `config` VA CHIUSO A TUTTI — 2026-09-21
 
