@@ -121,7 +121,7 @@ window.BI = window.BI || {};
   // due cambiamenti in un rosso solo.
   var STRUTTURA_CORSO_FILE = percorsoEdizione('struttura-corso.json');
 
-  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'sequences', 'episodes'];
+  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels', 'sequences', 'episodes'];
 
   var strutturaPromise = null;
 

@@ -496,41 +496,25 @@
     // scelta da fare. Essendo nel descrittore, e non in una tabella
     // indicizzata per id del passo, vale identica a ogni apparizione del
     // modulo nell'ordine. ----
-    // ---- Module display names — the ONE place a module's name/subtitle
-    // is written. Keyed by module id (same keys as EPISODES.gate.
-    // modulesById), read by the Object.keys(EPISODES).forEach computed-
-    // modules block (near moduleProgressKey) which attaches them onto
-    // every module object as .label/.subtitle — every existing reader of
-    // module.label (map, Spiegazione title, module headers) already picks
-    // this up unchanged. "name" is shown wherever a module's name appears
-    // at all; "subtitle" only on the map, in small/secondary text under
-    // the name. A trailing "en→it"/"it→en" in name is part of the name
-    // (styled smaller by moduleNameHtml, see near renderSpiegazioneTitle)
-    // — never a second label — and means "see English, answer Italian"
-    // (or the reverse). ----
-    moduleLabels: {
-      personalizzazione: { name: 'Your Story', subtitle: 'Personalizza la tua storia' },
-      repeatAloud: { name: 'Repeat Aloud', subtitle: 'Ripeti ad alta voce' },
-      // I due moduli nati dallo stesso componente (CONFIG.story.profiles):
-      // "Speak Easy" non descriveva piu' nessuno dei due.
-      meetTheStory: { name: 'Meet the Story', subtitle: 'Ascolta la storia' },
-      whyWeSayIt: { name: 'Why We Say It', subtitle: 'Perché si dice così' },
-      // Voice Practice/Voice Check (job: sdoppiare Voice Coach) — two map
-      // modules, one shared component (see the JS "MODULE: VOICE COACH"
-      // comment); voiceCoach is the SAME id the single module used to
-      // have, now meaning specifically its evaluated half.
-      voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
-      voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
-      matchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
-      matchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
-      speedMatchEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
-      speedMatchItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
-      flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
-      flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
-      dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
-      dialogoRipetiATempo: { name: 'Dialogue: Repeat in Time', subtitle: 'Ripeti a tempo' },
-      dialogoContinuo: { name: 'Dialogue: Real Dialogue', subtitle: 'Il dialogo vero' }
-    },
+    // ⚠️ `moduleLabels` E' USCITA DI QUI IL 2026-09-21 (passo 1.3d), e sta in
+    // `data/{lingua}/{studente}/struttura-corso.json` come le altre cinque
+    // chiavi della struttura del corso.
+    //
+    // Erano **trenta testi che lo studente legge** — i nomi di tutti e quindici
+    // i moduli piu' i loro sottotitoli: «Ripeti ad alta voce», «Metti alla
+    // prova la pronuncia», «Abbina le traduzioni». Stavano nel CODICE, che e'
+    // uno solo per tutte le edizioni: un corso di francese avrebbe letto questi.
+    //
+    // ⚠️ E NON LE AVEVA VISTE IL CENSIMENTO DEL PASSO 1.3c, che pure cercava
+    // proprio le stringhe per lo studente: quello guardava **dove una stringa
+    // arriva allo schermo** (`textContent`/`innerHTML`), e queste non compaiono
+    // mai accanto a un `textContent` — sono valori di configurazione, letti per
+    // chiave. *Una misura giusta puo' avere un punto cieco, e il punto cieco
+    // non somiglia a un buco: somiglia a un elenco completo.*
+    //
+    // I valori tornano su `APP_CONFIG` come le altre cinque, quindi
+    // `CONFIG.moduleLabels[id]` si scrive come ieri: e' cambiato da dove
+    // vengono, non dove si trovano a runtime.
     // ---- selectable color themes ----
     themes: {
       defaultTheme: 'viaggio',

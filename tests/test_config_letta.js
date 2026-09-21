@@ -176,10 +176,11 @@ async function run() {
   await page.goto(APP_URL);
   // ⚠️ SI ASPETTA, E NON PER EVITARE UN ROSSO — PER EVITARE UN VERDE.
   //
-  // Dal passo 1.11b sei chiavi di `APP_CONFIG` (`grades`, `gradeNames`,
-  // `moduleTypes`, `sequences`, `episodes`, le due lingue di `speech`)
-  // arrivano da `struttura-corso.json`. Leggere la configurazione appena
-  // caricata la pagina non darebbe un errore: darebbe un oggetto **con sei
+  // Dal passo 1.11b **sette** chiavi di `APP_CONFIG` (`grades`, `gradeNames`,
+  // `moduleTypes`, `moduleLabels`, `sequences`, `episodes`, le due lingue di
+  // `speech`) arrivano da `struttura-corso.json` — `moduleLabels` e' l'ultima
+  // arrivata, col passo 1.3d del 2026-09-21. Leggere la configurazione appena
+  // caricata la pagina non darebbe un errore: darebbe un oggetto **con sette
   // chiavi in meno**, e questo file — che verifica «ogni chiave di
   // APP_CONFIG e' nominata da qualcuno» — smetterebbe di guardarle
   // **restando verde**.

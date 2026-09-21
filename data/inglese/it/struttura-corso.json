@@ -35,6 +35,68 @@
       "label": "Fine"
     }
   },
+  "moduleLabels": {
+    "personalizzazione": {
+      "name": "Your Story",
+      "subtitle": "Personalizza la tua storia"
+    },
+    "repeatAloud": {
+      "name": "Repeat Aloud",
+      "subtitle": "Ripeti ad alta voce"
+    },
+    "meetTheStory": {
+      "name": "Meet the Story",
+      "subtitle": "Ascolta la storia"
+    },
+    "whyWeSayIt": {
+      "name": "Why We Say It",
+      "subtitle": "Perché si dice così"
+    },
+    "voicePractice": {
+      "name": "Voice Practice",
+      "subtitle": "Allena la pronuncia"
+    },
+    "voiceCoach": {
+      "name": "Voice Check",
+      "subtitle": "Metti alla prova la pronuncia"
+    },
+    "matchEngIta": {
+      "name": "Match Practice en→it",
+      "subtitle": "Abbina le traduzioni"
+    },
+    "matchItaEng": {
+      "name": "Match Practice it→en",
+      "subtitle": "Abbina le traduzioni"
+    },
+    "speedMatchEngIta": {
+      "name": "Speed Match en→it",
+      "subtitle": "Traduci a tempo"
+    },
+    "speedMatchItaEng": {
+      "name": "Speed Match it→en",
+      "subtitle": "Traduci a tempo"
+    },
+    "flashcardAEngIta": {
+      "name": "Flash Card en→it",
+      "subtitle": "Ripassa quello che hai imparato"
+    },
+    "flashcardAItaEng": {
+      "name": "Flash Card it→en",
+      "subtitle": "Ripassa quello che hai imparato"
+    },
+    "dialogoAscoltaRipeti": {
+      "name": "Dialogue: Listen & Repeat",
+      "subtitle": "Ascolta e ripeti"
+    },
+    "dialogoRipetiATempo": {
+      "name": "Dialogue: Repeat in Time",
+      "subtitle": "Ripeti a tempo"
+    },
+    "dialogoContinuo": {
+      "name": "Dialogue: Real Dialogue",
+      "subtitle": "Il dialogo vero"
+    }
+  },
   "sequences": {
     "narrativo-standard": [
       {
