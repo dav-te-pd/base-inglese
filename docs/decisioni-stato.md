@@ -216,7 +216,7 @@ rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
 
 | | Cosa | Condizione |
 |---|---|---|
-| **F.1** | **Il taglio per silenzio del microfono.** Il difetto vero non è il nome: `vcSilenceTimeoutId` parte **al click** e non viene **mai riarmato**, quindi la regola è «entro tre secondi dal click devi essere già stato riconosciuto». Chi aspetta due secondi e poi parla viene tagliato **mentre parla**. Rivisto **tre volte**, mai corretto | la condizione scritta è *«al passo 26 — il lavoro sul microfono non si apre in mezzo allo spacchettamento»*. ⚠️ **La strada ② (rinominare) è già chiusa** da chi guida il progetto: *«qualunque nome gli diamo, quel confine resta un bug agli occhi di chi lo usa»*. **Resta la ①: riarmare il timer** |
+| **F.1** | **Il taglio per silenzio del microfono.** ⚠️ **RI-MISURATO IL 2026-09-21, e la diagnosi di ieri era SBAGLIATA** — vedi il controllo qui sotto. La regola è giusta e il conteggio parte dove deve: il difetto è **dove si decide di aver sentito** | ✅ **CONTROLLO FATTO, correzione non ancora eseguita.** La strada ② (rinominare) resta chiusa da chi guida il progetto |
 | **F.2** | **I 17 finti sintetizzatori senza `speaking`** nei test. Un mock che finisce all'istante nasconde proprio i difetti che dipendono da un ordine di eventi asincrono (regola 19) | quando si tocca una famiglia di test che li usa |
 | **F.3** | **Il giro di design sulla mastery**, tre voci: ① i **due colori** che si chiamano tutti e due «colore», e niente nell'interfaccia dice quale si sta guardando · ② la **media di Voice Practice** che nessuno mostra · ③ **report VERDE e mappa ROSSA**, tutti e due corretti, e allo studente sembrano contraddirsi | ⚠️ **LA CONDIZIONE C'ERA, ED È STATA PERSA NEL TRAVASO DEL 2026-09-21.** Sta in `decisioni-storico.md`, scritta il 2026-09-19: *«quando il report sarà visibile allo studente, e non prima»*. Qui era diventata un trattino — e un trattino si legge come «nessuna condizione», cioè l'opposto |
 | **F.4** | Le varianti di **`bootAsUser` / `mockInit`** nei test: la stessa finzione scritta in più modi | ⚠️ **sarebbe un `map-driver` per il boot** — stessa forma della deduplicazione già fatta per l'apertura dei moduli |
@@ -226,6 +226,96 @@ rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
 *Perché F.6 pesa più di un refuso: quei file sono la **fonte** da cui si scrive
 il contenuto, e un percorso sbagliato dentro una fonte manda chi la usa a
 cercare un file che non c'è — o, peggio, a crearne uno nel posto sbagliato.*
+
+### ⚠️ F.1 — IL CONTROLLO A CODICE FERMO, 2026-09-21
+
+*Chiesto da chi guida il progetto — «**prima di fare modifiche propongo un bel
+controllo**» — e fatto **senza toccare una riga** di `app/voice.js` (regola 34).*
+
+⚠️ **PRIMA DI TUTTO: LA MIA PROPOSTA DEL GIORNO PRIMA ERA SBAGLIATA, E VA
+SCRITTO.** Avevo proposto di **riarmare il timer a ogni risultato**, cioè di
+trasformare la regola da «N secondi dal click» a «N secondi di silenzio».
+**È esattamente il contrario di quello che serve**, e chi guida il progetto
+l'ha fermata prima che diventasse codice:
+
+> *«la regola dovrebbe essere "3 secondi dal click se non sento nulla" … se lo
+> studente non dice nulla ma non clicca, non deve partire il conteggio.»*
+
+**E aveva ragione su tutti e due i punti. Misurato:**
+
+| Quello che si temeva | Misura | Esito |
+|---|---|---|
+| «forse il conteggio parte prima del click» | `vcSilenceTimeoutId = setTimeout(…)` sta **dentro** il gestore del click di `vc-record-btn` (riga 614) | ✅ **parte al click, mai prima** |
+| «forse la regola è scritta male» | alla scadenza taglia **solo** `if (vcListening && !vcHeardAnySpeech)` | ✅ **la regola è giusta**: se hai parlato, non taglia |
+
+**QUINDI IL DIFETTO NON È NÉ LA REGOLA NÉ IL MOMENTO IN CUI PARTE. È *DOVE SI
+DECIDE DI AVER SENTITO*.**
+
+`vcHeardAnySpeech` diventa vero in **un punto solo**: dentro `onresult`
+(riga 212), cioè **quando il riconoscitore ha già prodotto del testo** — anche
+provvisorio. Ma fra «la persona ha cominciato a parlare» e «Chrome consegna il
+primo pezzo di trascrizione» passa un tempo **suo**, non nostro.
+
+⚠️ **E LA WEB SPEECH API HA TRE EVENTI MOLTO PIÙ PRECOCI CHE IL CODICE NON USA.**
+Cercati in `app/voice.js`: `onaudiostart`, `onsoundstart`, `onspeechstart` —
+**zero occorrenze, nessuno dei tre è collegato**. `speechstart` è l'evento che
+dice *«sto sentendo una voce»*, e arriva **prima** del primo `onresult`.
+
+**Il sintomo si spiega tutto da qui, senza bisogno di un secondo numero:**
+
+| tempo | cosa succede | `vcHeardAnySpeech` |
+|---|---|---|
+| 0,0 s | click su Registra, il timer parte | `false` |
+| 2,5 s | **cominci a parlare** | `false` — *nessuno lo sa ancora* |
+| ~2,6 s | il riconoscitore rileva voce (`speechstart`) | `false` — **l'evento non è collegato** |
+| **3,0 s** | **il timeout scatta, e taglia** | `false` |
+| ~3,2 s | sarebbe arrivato il primo `onresult` | — *troppo tardi* |
+
+**La correzione che ne discende è piccola e NON tocca la regola:** far diventare
+vero `vcHeardAnySpeech` anche su `speechstart`. La regola resta *«3 secondi dal
+click se non sento nulla»* — cambia solo che **«sento nulla» viene misurato
+quando il microfono sente**, invece che quando il riconoscitore finisce di
+trascrivere.
+
+⚠️ **IL PREZZO VA DICHIARATO PRIMA, NON DOPO: un colpo di tosse, una porta che
+sbatte, la TV nell'altra stanza — per `speechstart` sono voce.** Quindi il
+taglio non scatterebbe più in una stanza rumorosa, e la registrazione
+andrebbe fino al tetto massimo. *La difesa contro il microfono rotto (la
+striscia `vcEmptyRecognitionStreak`) non cade — quella conta le
+registrazioni senza parole, e una stanza rumorosa ne produce lo stesso — ma
+il taglio corto sì.* **È la scelta vera di questo passo, e non la prendo da
+solo.**
+
+### ⚠️ LE DUE MANOPOLE CHIESTE: UNA C'È GIÀ, L'ALTRA NON ESISTE — 2026-09-21
+
+Chi guida il progetto ha chiesto **due valori separati e modificabili da
+`config`**, e tenerli separati è giusto. **Ma solo uno dei due corrisponde a
+qualcosa che il codice fa.**
+
+| Quello che è stato chiesto | Cosa esiste oggi |
+|---|---|
+| ① «il valore di distacco **se non sente** [nulla]» | ✅ **`CONFIG.voiceCoach.silenceTimeoutSeconds: 3`** — c'è già, ed è già nel Pannello Admin con la sua descrizione |
+| ② «il valore di distacco **quando uno finisce la frase** e adesso, dopo 3 sec, la ferma» | ❌ **NON ESISTE, e non è un parametro mancante: è un comportamento mancante** |
+
+**Cosa ferma davvero la registrazione quando hai finito di parlare, oggi:** il
+**tetto massimo**, cioè `numeroParole × maxRecordingMsPerWord +
+maxRecordingMarginMs` = `parole × 1000 + 3000` ms, **contato dal click**.
+
+⚠️ **Quel `3000` è `maxRecordingMarginMs`, e ASSOMIGLIA ai «3 secondi dopo che
+hai finito» senza esserlo:** è un margine sul tetto **totale**, non un conto che
+parte dalla fine della frase. Su una frase di due parole il tetto è 5 s dal
+click, qualunque cosa tu faccia dentro.
+
+**Un vero «si ferma N secondi dopo che smetti di parlare» andrebbe costruito**, e
+vorrebbe l'evento `speechend` più un terzo timer che si riarma. *È la cosa che
+farebbe scendere davvero l'audio spedito — che è il costo che preoccupa —
+perché oggi chi finisce presto paga il tetto intero.*
+
+⚠️ **E PER QUESTO LA MANOPOLA ② NON È STATA AGGIUNTA IN QUESTO GIRO.** Una chiave
+in `config` per un comportamento che non c'è comparirebbe nel Pannello Admin,
+si lascerebbe cambiare, e **non cambierebbe niente**: una manopola che non
+governa nulla è la regola 37 in forma di configurazione — *non somiglia a un
+errore, somiglia a un'impostazione.*
 
 ### ⚠️ IL TRIAGE DEI FUORI CATENA — chiesto il 2026-09-21
 
