@@ -1,9 +1,11 @@
+**Versione: 20260921c**
+
 # Struttura del corso — inglese per italiani
 
 > **Fonte per `data/inglese/it/inglese-it-struttura-corso.json`.** *Claude Code trascrive, non decide.*
 >
-> **Le istruzioni stanno qui, non nel messaggio.** Il messaggio e' sempre:
-> *«aggiorna leggendo `docs/inglese/it/inglese-it-struttura-corso.md`»*.
+> **Le istruzioni stanno qui, non nel messaggio.** Il messaggio è sempre:
+> *«aggiorna leggendo l'ultima versione di `inglese-it-struttura-corso` in `docs/inglese/it/`»*.
 >
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 
@@ -26,14 +28,14 @@ un file per edizione. *Una decisione presa per l'inglese non governa il francese
 | `speech` | 8 — Le lingue del parlato |
 
 **STRUTTURA-CORSO_003** · ⚠️ **L'app carica questo JSON prima di disegnare qualunque schermata.** Se
-non arriva, si vede la schermata d'errore — non una mappa a meta'.
+non arriva, si vede la schermata d'errore — non una mappa a metà.
 
 ---
 
 ## 2 — I GRADI
 
-**STRUTTURA-CORSO_004** · Quattro gradi. La **lettera** e' l'identificativo tecnico (codice, dati,
-Pannello Admin). Il **nome** e' quello che vede lo studente.
+**STRUTTURA-CORSO_004** · Quattro gradi. La **lettera** è l'identificativo tecnico (codice, dati,
+Pannello Admin). Il **nome** è quello che vede lo studente.
 
 | Lettera | Nome mostrato | Cosa contiene |
 |---|---|---|
@@ -45,18 +47,18 @@ Pannello Admin). Il **nome** e' quello che vede lo studente.
 **STRUTTURA-CORSO_005** · Il nome si mostra accanto alla categoria, separato da un punto medio:
 *«Studio · Parole»*, *«Quiz · Frasi»*.
 
-**STRUTTURA-CORSO_006** · *Perche' il nome serve:* **la lettera non dice niente a chi usa l'app** —
+**STRUTTURA-CORSO_006** · *Perché il nome serve:* **la lettera non dice niente a chi usa l'app** —
 senza, gli esercizi sembrano ripetersi senza motivo.
 
 ---
 
 ## 3 — LE CATEGORIE DEI MODULI
 
-**STRUTTURA-CORSO_007** · Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verra'
+**STRUTTURA-CORSO_007** · Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verrà
 valutato: **tutti i moduli registrano il risultato, sempre**.
 
-**STRUTTURA-CORSO_008** · **La differenza fra studio e quiz non e' la valutazione: e' la
-pressione.** Nello studio si va al proprio ritmo, nel quiz c'e' il tempo o l'avanzamento
+**STRUTTURA-CORSO_008** · **La differenza fra studio e quiz non è la valutazione: è la
+pressione.** Nello studio si va al proprio ritmo, nel quiz c'è il tempo o l'avanzamento
 automatico.
 
 | Chiave | Etichetta | Moduli |
@@ -75,7 +77,7 @@ automatico.
 **STRUTTURA-CORSO_009** · Ogni modulo ha **nome** e **sottotitolo**, modificabili separatamente.
 
 **STRUTTURA-CORSO_010** · **I nomi restano in inglese, i sottotitoli nella lingua dello studente.**
-*Il nome e' l'etichetta del modulo; il sottotitolo dice cosa ci si fa — e un'edizione tedesca
+*Il nome è l'etichetta del modulo; il sottotitolo dice cosa ci si fa — e un'edizione tedesca
 vuole i suoi.*
 
 | Chiave | Nome | Sottotitolo |
@@ -100,7 +102,7 @@ vuole i suoi.*
 
 ## 5 — LE REGOLE DI ESITO
 
-**STRUTTURA-CORSO_011** · Un modulo produce un tipo di dato diverso a seconda di com'e' fatto, **e
+**STRUTTURA-CORSO_011** · Un modulo produce un tipo di dato diverso a seconda di com'è fatto, **e
 la regola discende dal dato**.
 
 | Regola | Dato prodotto | Moduli |
@@ -110,10 +112,10 @@ la regola discende dal dato**.
 | `selfScoreRules` | % di autovalutazioni | Flash Card, Why We Say It |
 | `moduleRules` | % di risposte verificate | Match Practice, Speed Match, Voice Practice, Voice Check, Test |
 
-**STRUTTURA-CORSO_012** · **Quale tentativo conta:** `lastAttempt` dove si puo' ritentare (Voice
-Practice), `firstAttempt` dove non si puo'.
+**STRUTTURA-CORSO_012** · **Quale tentativo conta:** `lastAttempt` dove si può ritentare (Voice
+Practice), `firstAttempt` dove non si può.
 
-**STRUTTURA-CORSO_013** · *La ragione:* **il giro di ripasso ripropone le voci sbagliate finche' non
+**STRUTTURA-CORSO_013** · *La ragione:* **il giro di ripasso ripropone le voci sbagliate finchè non
 escono giuste** — con `lastAttempt` conterebbe sempre quasi 100%.
 
 ---
@@ -127,11 +129,11 @@ escono giuste** — con `lastAttempt` conterebbe sempre quasi 100%.
 | **sequenza dei moduli** | i moduli dentro un episodio | `sequences` in questo JSON |
 | **sequenza degli episodi** | gli episodi dentro un'edizione | `inglese-it-sequenza-episodi.md` |
 
-**STRUTTURA-CORSO_015** · Una sequenza dei moduli e' **una lista ordinata di coppie
+**STRUTTURA-CORSO_015** · Una sequenza dei moduli è **una lista ordinata di coppie
 `{ module, grade }`** — quale modulo, e su quale grado lavora.
 
 **STRUTTURA-CORSO_016** · **Il grado sta nella posizione, non nel modulo.** *Lo stesso modulo
-compare piu' volte con gradi diversi riusando un solo descrittore.*
+compare più volte con gradi diversi riusando un solo descrittore.*
 
 **STRUTTURA-CORSO_017** · ⚠️ **I passi delle sequenze stanno solo nel JSON, e si modificano
 LI'.** Precisamente: `data/inglese/it/inglese-it-struttura-corso.json`, chiave **`sequences`**, una voce per
@@ -150,8 +152,8 @@ crearne una nuova il pannello non lo sa fare affatto.
 talmente tante volte che è uno spreco creare la possibilità di modifica dal pannello; è molto più
 facile passare dal file»*.
 
-**STRUTTURA-CORSO_018** · **Una sequenza si puo' cambiare quando serve** — aggiungere un modulo,
-toglierlo, riordinarlo. *L'uniformita' aiuta lo studio, ma non e' un vincolo.*
+**STRUTTURA-CORSO_018** · **Una sequenza si può cambiare quando serve** — aggiungere un modulo,
+toglierlo, riordinarlo. *L'uniformità aiuta lo studio, ma non è un vincolo.*
 
 **STRUTTURA-CORSO_019** · ⚠️ **Un'eccezione si scrive per intero, mai come sottrazione da un'altra
 sequenza.** *«narrativo-standard meno Flash Card» si legge solo tenendo aperti due documenti — e
@@ -166,8 +168,8 @@ quando la base cambia, l'eccezione cambia senza che nessuno l'abbia toccata.*
 
 ### Come si costruisce una sequenza — i principi dell'ordine
 
-*Ogni principio dice cosa deve essere vero; la riga «oggi» dice dove lo e'. **Se un esempio diventa
-falso, e' il principio che viene violato.***
+*Ogni principio dice cosa deve essere vero; la riga «oggi» dice dove lo è. **Se un esempio diventa
+falso, è il principio che viene violato.***
 
 **STRUTTURA-CORSO_020** · **Il primo contatto con la storia viene prima di lavorarci sopra.**
 → *oggi: Meet the Story, subito dopo Your Story*
@@ -192,16 +194,11 @@ prima con calma.**
 ## 7 — GLI EPISODI
 
 **STRUTTURA-CORSO_026** · Ogni episodio ha una **categoria**: **`storia`**, **`grammatica`**,
-**`pronuncia`**.
-
-*⚠️ Qui c'era scritto «narrativo, grammaticale, pronuncia». **«narrativo» è uscito il 2026-09-21**
-perché faceva confusione con il nome della sequenza dei moduli (`narrativo-standard`), che invece
-resta: sono due cose diverse — la categoria dice **cosa contiene un episodio**, la sequenza dice
-**in che ordine si fanno i suoi moduli**, e un episodio di `grammatica` può benissimo chiedere
-`narrativo-standard`.*
+**`pronuncia`**. *La categoria dice **cosa contiene** l'episodio; la sequenza dice **in che ordine si
+fanno i suoi moduli** — e un episodio di `grammatica` può chiedere `narrativo-standard`.*
 
 **STRUTTURA-CORSO_027** · ⚠️ **La categoria non dice dove sta l'episodio: dice cosa contiene.** *Un
-grammaticale puo' stare all'inizio, in mezzo, o dopo il decimo — sta dove serve.*
+grammaticale può stare all'inizio, in mezzo, o dopo il decimo — sta dove serve.*
 
 **STRUTTURA-CORSO_028** · *A cosa serve la categoria:* **lo studente sa cosa lo aspetta** guardando
 la mappa — come studio e quiz per i moduli. *E a noi dice **quali moduli servono** per scriverlo.*
@@ -214,7 +211,7 @@ suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere 
 | `gate` | Al gate | `storia` | `narrativo-standard` |
 | `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
 
-**STRUTTURA-CORSO_030** · **Cosa vince, e non c'e' una quarta possibilita':**
+**STRUTTURA-CORSO_030** · **Cosa vince, e non c'è una quarta possibilità:**
 
 | L'episodio dichiara | Vale |
 |---|---|
@@ -226,29 +223,22 @@ suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere 
 **STRUTTURA-CORSO_031** · ⚠️ **Lo studente legge solo il NOME dell'episodio** — *«Al gate», «Sulla
 porta dell'aereo».* **Mai l'id, mai il nome del file, mai «Episodio 1».**
 
-**STRUTTURA-CORSO_032** · Il badge in mappa **resta come meccanismo**, e mostra il nome
-dell'episodio.
-
-*⚠️ **FATTO il 2026-09-21.** Qui c'era scritto che il testo stava nel codice (`badge: 'Episodio
-1'` in `app/catalogo.js`) e che sarebbe andato **nel file episodio**. È finito invece in
-`episodes.<id>.nome`, **qui nel file di struttura**, e la ragione è misurata: la mappa disegna il
-badge **senza caricare il file episodio**, quindi metterlo lì l'avrebbe costretta a un `fetch` che
-non fa — e un caricamento fallito avrebbe rotto la mappa. Il file di struttura arriva già prima di
-qualunque schermata, ed è già per edizione: costa zero e resta testo nella lingua dello
-studente.*
+**STRUTTURA-CORSO_032** · Il badge in mappa mostra il **nome dell'episodio**, e il nome vive **qui**, in
+`episodes.<id>.nome` — ⚠️ *non nel file episodio: la mappa disegna il badge **senza caricare il file
+episodio**, e questo file arriva prima di qualunque schermata.*
 
 ---
 
 ## 8 — LE LINGUE DEL PARLATO
 
-**STRUTTURA-CORSO_033** · Due lingue, perche' rispondono a due domande diverse:
+**STRUTTURA-CORSO_033** · Due lingue, perché rispondono a due domande diverse:
 
 | Chiave | Valore | Cosa decide |
 |---|---|---|
 | `speech.synthesisLang` | `en-US` | in che lingua l'app **parla** |
 | `speech.recognitionLang` | `en-US` | in che lingua l'app **ascolta** |
 
-**STRUTTURA-CORSO_034** · Il valore e' **il codice di una voce**: lingua + paese — `en-US`
+**STRUTTURA-CORSO_034** · Il valore è **il codice di una voce**: lingua + paese — `en-US`
 inglese americano, `en-GB` britannico, `fr-FR` francese di Francia. *Decide **con che voce l'app
 legge le frasi** e **in che lingua riconosce lo studente mentre parla**.* **E' sempre la lingua che
 si impara** — la lingua dello studente serve alle traduzioni, non alla voce.
