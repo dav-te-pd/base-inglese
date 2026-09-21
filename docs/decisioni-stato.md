@@ -208,14 +208,27 @@ si tocca Why We Say It o la schermata Personalizza**, non prima — e chiunque
 **aggiunga una chiave per episodio** deve passare di qui, perché l'elenco a
 mano non lo dirà da solo.
 
+### ⚠️ I FUORI CATENA — mai chiusi, adesso numerati — 2026-09-21
+
+*Erano un elenco puntato in fondo a una sezione, cioè un posto dove una cosa
+non viene presa. **Un elenco senza numeri non si prende**: si legge e si
+rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
+
+| | Cosa | Condizione |
+|---|---|---|
+| **F.1** | **Il taglio per silenzio del microfono** — rivisto **tre volte**, mai corretto | ⚠️ **la più vecchia della lista.** Va presa o dichiarata morta: tre revisioni senza una correzione sono il segno che la decisione non è mai stata presa, non che il lavoro è difficile |
+| **F.2** | **I 17 finti sintetizzatori senza `speaking`** nei test. Un mock che finisce all'istante nasconde proprio i difetti che dipendono da un ordine di eventi asincrono (regola 19) | quando si tocca una famiglia di test che li usa |
+| **F.3** | **Il giro di design sulla mastery**, tre voci | — |
+| **F.4** | Le varianti di **`bootAsUser` / `mockInit`** nei test: la stessa finzione scritta in più modi | ⚠️ **sarebbe un `map-driver` per il boot** — stessa forma della deduplicazione già fatta per l'apertura dei moduli |
+| **F.5** | **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun chiamante** | quando nasce il Modulo Finale |
+| **F.6** | ⚠️ **NUOVA, 2026-09-21 — DIECI PERCORSI SCADUTI nei file di contenuto.** La rinomina del 2026-09-09 (`docs/it/` → `docs/inglese/it/`, `data/it/` → `data/inglese/it/`) ha lasciato indietro i **documenti**: `inventario-grammaticale.md` 4, `inglese-it-gate.md` 2, `inglese-it-aircraft-door.md` 2, `struttura-corso.md` 2, `obiettivi-a1.md` 1. ⚠️ **E due non sono solo percorsi:** `inglese-it-gate.md` cita `a1-episodio1-inglese.json`, cioè **la nomenclatura che la regola 4 vieta** (il livello nel nome, il numero al posto dell'id); `struttura-corso.md` dice *«aggiorna `APP_CONFIG` leggendo…»*, e dal 2026-09-20 non è più `APP_CONFIG` ma `struttura-corso.json` | **sono file di CONTENUTO (regola 33): serve l'autorizzazione.** Due sono già state corrette il 2026-09-21, autorizzate una per una |
+
+*Perché F.6 pesa più di un refuso: quei file sono la **fonte** da cui si scrive
+il contenuto, e un percorso sbagliato dentro una fonte manda chi la usa a
+cercare un file che non c'è — o, peggio, a crearne uno nel posto sbagliato.*
+
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
-- il **taglio per silenzio** del microfono (rivisto tre volte, mai corretto);
-- i **17 finti sintetizzatori** senza `speaking` nei test;
-- il **giro di design sulla mastery**, tre voci;
-- le varianti di **`bootAsUser` / `mockInit`** nei test;
-- **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun
-  chiamante**. Si decide quando nasce il Modulo Finale;
 - ~~le quattro chiavi globali~~ — **deciso il 2026-09-20**, e sono **cinque**,
   non quattro: vedi i passi **1.11–1.14** qui sopra e il blocco qui sotto.
 

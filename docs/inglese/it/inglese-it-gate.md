@@ -322,9 +322,15 @@ rinomina degli slot a id, che tocca comunque quelle chiavi.*
 
 **Le destinazioni non compaiono:** questo episodio non le usa.
 
-⚠️ **Dipendenza:** gli id vivono in `data/it/tabelle-personalizzazione.json`, che **non esiste
-ancora** — oggi le tabelle stanno in `APP_CONFIG`. Questo elenco è scrivibile solo dopo che il
-magazzino è stato creato.
+⚠️ **Dipendenza:** gli id vivono in `data/inglese/it/tabelle-personalizzazione.json`.
+
+*Qui c'era scritto che quel file «non esiste ancora» e che «oggi le tabelle stanno in
+`APP_CONFIG`»: **esiste dal 2026-09-15**, e da allora le tabelle non stanno più in `APP_CONFIG`.
+Il percorso era anche sbagliato — `data/it/` è la forma di prima del 2026-09-09.*
+
+⚠️ **Quello che manca davvero è un'altra cosa: il file ha ancora il CONTENUTO VECCHIO** — id
+`marco` invece di `papa-marco`, sei destinazioni invece di undici. **Questo elenco si scrive
+quando quel contenuto arriva** (passo 1.8-bis), non quando il file nasce.
 
 ---
 
@@ -346,7 +352,7 @@ magazzino è stato creato.
    ⚠️ **Oggi l'app non lo fa.** Le età sono numeri semplici e `slotOptions` le normalizza
    rendendo `it` ed `en` identici, quindi la battuta d7 **in inglese dice `I'm 16 years old`**,
    con la cifra. La correzione arriva con il magazzino della personalizzazione, che porta
-   `en: sixteen` — vedi `docs/it/tabelle-personalizzazione.md`, *Cosa manca*, punto ③. **È una
+   `en: sixteen` — vedi `docs/inglese/it/tabelle-personalizzazione.md`, *Cosa manca*, punto ③. **È una
    modifica che cambia cosa il riconoscimento vocale si aspetta di sentire**, quindi non deve
    arrivare nascosta dentro uno spostamento di dati: vuole un test suo.
 
