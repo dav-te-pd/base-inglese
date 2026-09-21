@@ -243,6 +243,135 @@ hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima
 
 ---
 
+## GLI EPISODI — IL TABELLONE
+
+**Perché esiste, ed è un fatto misurato il 2026-09-21, non un timore:** i due
+episodi erano protetti **in modo diverso, e nessuno l'aveva deciso**. Tre
+controlli esistevano solo per `gate`, due solo per `aircraft-door`, e la
+differenza non era scritta da nessuna parte — quindi non era una scelta, era
+quello che succede quando la stessa cosa viene scritta due volte in due
+momenti diversi.
+
+⚠️ **E il motivo scritto per cui NON erano uniformi era SCADUTO.** In testa a
+`test_episodio2.js` c'era: *«qui non si può: i due markdown hanno una forma
+diversa — il grado A dell'episodio 2 è una lista in prosa, il vocabolario sta
+in una sezione a parte e il dialogo in un'altra ancora»*. Era vero quando fu
+scritto. **Non lo è più da quando `REGISTRO-EPISODI_004` ha dichiarato le
+tredici sezioni uguali per ogni episodio:** le tabelle dei due file hanno oggi
+le stesse intestazioni e le stesse colonne. *È la regola 32 vista da dentro —
+un limite dichiarato dice dove non guardi, non impedisce di fidarsene.*
+
+### Due famiglie, e hanno rischi OPPOSTI
+
+**Questa è la distinzione che decide tutto il resto, e va letta prima del
+tabellone.**
+
+| | Test di **FILE** | Test di **COMPORTAMENTO** |
+|---|---|---|
+| Cosa fa | legge il markdown e il JSON, li confronta | apre il browser e pilota l'app |
+| Quanto costa per episodio | **millisecondi** | **secondi o minuti** |
+| Se MANCA a un episodio | ⚠️ **area scoperta**: quell'episodio può essere sbagliato e nessuno lo sa | quasi niente — protegge i **moduli**, e i moduli sono gli stessi |
+| Se c'è su TUTTI | giusto, e costa nulla | ⚠️ **ridondanza che moltiplica la suite** per il numero di episodi |
+| **La regola** | **TRASVERSALE: ogni episodio, sempre, senza eccezioni** | **UNO SOLO, scelto e dichiarato qui** |
+
+> **I due rischi sono opposti, quindi le due regole sono opposte.** Un test di
+> file che salta un episodio lascia un buco; un test di comportamento che li
+> prende tutti paga venti volte la stessa protezione.
+
+*Con venti episodi: i test di file restano nell'ordine del secondo; pilotare
+ventidue moduli su venti episodi moltiplicherebbe per venti la parte lenta
+della suite — e proverebbe ogni volta la stessa cosa, perché il modulo non
+cambia con l'episodio.*
+
+### Il tabellone — chi verifica cosa, oggi
+
+**`U` = universale**, vale per ogni episodio · **`C` = condizionato**, e la
+condizione è scritta.
+
+| Cosa si verifica | `gate` | `aircraft-door` | U/C |
+|---|---|---|---|
+| le conte di A, B, C, D dichiarate combaciano col JSON | ✅ | ✅ | **U** |
+| la conta delle skill dichiarata combacia | ✅ | ✅ | **U** |
+| la conta degli slot dichiarata combacia | ✅ | ✅ | **U** |
+| ogni skill ha `title` e `body` separati (regola 25) | ✅ | ✅ | **U** |
+| `whatYouLearn` è **sempre una lista** | ✅ | ❌ | **U** |
+| nessun id ripetuto nel file | ❌ | ✅ | **U** |
+| ogni frase del grado C viene da una battuta che esiste | ❌ | ✅ | **C** — solo se l'episodio ha un grado D |
+| i nomi dei gradi sono quelli mostrati allo studente | ✅ | ❌ | **U** |
+| **il JSON coincide col markdown carattere per carattere** | ✅ | ❌ | **C** — solo se il markdown porta le quattro tabelle dei gradi |
+| i segnaposto della fonte e del JSON si corrispondono | ✅ | ❌ | **C** — solo se l'episodio ha segnaposto |
+| chi parla in ogni battuta corrisponde allo stesso ruolo | ✅ | ❌ | **C** — solo se l'episodio ha un grado D |
+| **pilotare i moduli nel browser** | ✅ 81 asserzioni | ❌ | ⚠️ **UNO SOLO: `gate`** |
+
+**Le sei `U` con una ❌ sono aree scoperte, non scelte.** Le quattro `C` sono
+scelte, e adesso hanno la loro condizione scritta accanto.
+
+⚠️ **`gate` è l'episodio pilotato nel browser, e non per caso: è il più
+ricco** — otto slot di personalizzazione contro uno, e tutte e quattro le
+tabelle. *Un episodio più povero proverebbe meno cose allo stesso prezzo.*
+Se un giorno nascerà un episodio che porta una forma che `gate` non ha, il
+pilotato diventa quello, **e questa riga cambia** — non se ne aggiunge un
+secondo.
+
+### Quando arriverà un episodio che non è una storia
+
+**Il catalogo avrà episodi `grammatica` e `pronuncia`, con meno moduli e forse
+senza grado D** (`REGISTRO-EPISODI_022`). Il tabellone è costruito per quel
+giorno: **le `U` valgono lo stesso** — le conte, le skill, gli id, i nomi dei
+gradi non dipendono dalla categoria — **e le `C` si spengono da sole**, perché
+la loro condizione guarda cosa l'episodio *ha*, non cosa *è*.
+
+⚠️ **La condizione non è mai la CATEGORIA.** «Se è un episodio di grammatica,
+salta il controllo del dialogo» legherebbe un test a un'etichetta che chi
+scrive gli episodi può cambiare in qualunque momento, per ragioni didattiche
+che col test non c'entrano. *La condizione giusta è «se ha un grado D»: la
+guarda nel file, e non può sbagliarsi.*
+
+### ⚠️ Il tabellone si aggiorna quando nasce un episodio
+
+È la riga che manca alla checklist di `inglese-it-registro-episodi`, sezione 6,
+e sta qui e non lì perché quello è un file di contenuto e questo parla di test.
+**Un episodio nuovo non aggiunge un file di test: aggiunge una colonna a questa
+tabella, e le `U` devono essere tutte ✅ prima che l'episodio sia finito.**
+
+---
+
+## LE ANCORE DI TESTO CHE UN TEST AFFERRA
+
+**Tre markdown di `docs/inglese/it/` sono letti da un test.** Tutti gli altri
+file di `docs/` — inventario grammaticale, obiettivi, sequenza degli episodi,
+tabelle di personalizzazione — **non sono letti da nessuno**: si possono
+riscrivere da capo senza toccare la suite.
+
+⚠️ **Nei tre che sono letti, un test cerca una STRINGA e legge la tabella che
+la segue.** Riscrivere quella stringa non rompe niente in modo rumoroso: fa
+**sparire** delle asserzioni. *È successo il 2026-09-21 — 99 asserzioni ferme
+su due file perché un riquadro era passato da citazione a paragrafo, e si è
+visto solo perché il contatore delle asserzioni lo ha detto.*
+
+| File | Ancore portanti | Chi le afferra |
+|---|---|---|
+| `inglese-it-gate.md` | `Numeri attesi nel JSON` · `### Grado A` · `### Grado B` · `### Grado C` · `### Grado D` | `test_story_modules.js` |
+| `inglese-it-aircraft-door.md` | `Numeri attesi nel JSON` | `test_episodio2.js` |
+| `inglese-it-struttura-corso.md` | `## 2 — I GRADI` · `## 3 — LE CATEGORIE DEI MODULI` · `## 4 — I NOMI DEI MODULI` · `## 7 — GLI EPISODI` · `## 8 — LE LINGUE DEL PARLATO` | `test_struttura_corso.js` |
+
+**Il testo DOPO l'ancora è libero**, perché il confronto è per prefisso:
+`### Grado D — nove battute` funziona, e «nove battute» si può cambiare senza
+toccare niente.
+
+**Quello che NON è un'ancora, ed è bene saperlo:** la **prima riga** di un file
+— cioè la riga di versione — **non è letta da nessun test**. Si può aggiungere
+a qualunque file di `docs/` senza rischio.
+
+⚠️ **E `test_nomenclatura_edizione.js` tocca `docs/` in un altro modo ancora:**
+verifica che ogni episodio dichiarato in `struttura-corso.json` abbia il suo
+`.md` **e** il suo `.json`, e guarda **l'esistenza del file, mai il
+contenuto**. *Gli interessa il nome — ed è la ragione meccanica per cui la
+versione sta nel nome del file in chat e mai nel repository
+(`REGISTRO-EPISODI_006`).*
+
+---
+
 ## I buchi
 
 Comportamenti importanti che **nessun test copre**. Elencati anche quando
@@ -341,9 +470,15 @@ sembrano ovvi: il § 4.1 era ovvio.
     delle regole di esito:** nomina i moduli con il nome mostrato e non con
     l'id, li raggruppa a prosa, e include "Test", che non esiste — servirebbe
     una mappa nome→id scritta a mano, cioè una terza fonte da allineare.
-22. **Nessun test conta le voci dell'episodio contro `docs/inglese/it/inglese-it-gate.md`.**
-    `test_story_modules.js` conta le skill contro il *file dati*, cioè contro
-    la copia, non contro il markdown che dichiara i numeri attesi.
+22. **~~Nessun test conta le voci dell'episodio contro `docs/inglese/it/inglese-it-gate.md`.~~**
+    ✅ **CHIUSO, e la riga era scaduta da tempo senza che nessuno se ne
+    accorgesse.** Il blocco `[dati]` di `test_story_modules.js` prende i numeri
+    **dal markdown** (`numeriAttesiDallaFonte`) e li confronta col JSON: le
+    conte di A, B, C, D, le skill e gli slot. ⚠️ **Resta aperto l'altro lato,
+    ed è nel tabellone qui sopra:** `aircraft-door` non ha il confronto
+    carattere per carattere che `gate` ha. *Un buco che si chiude a metà e
+    resta scritto intero si legge come un buco intero — cioè come lavoro da
+    fare che è già fatto.*
 
 ### G — Non coperto, e va bene così
 
