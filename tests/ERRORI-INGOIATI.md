@@ -82,7 +82,7 @@ detto:
 ```
 
 **Verde, con un episodio a cui mancava un modulo.** Perché gli id vengono
-dalla **sequenza**, non da `modulesById`: `resolveEpisodeOrder` fa
+dalla **sequenza**, non da `modulesById`: `resolveModuleOrder` fa
 `Object.assign` su un descrittore assente e la riga **resta in mappa**, stesso
 id, stesso posto. L'asserzione nominava l'invariante e non la toccava.
 

@@ -107,7 +107,7 @@ cosa che non è in nessuna lista è una cosa che non si fa.*
 |---|---|---|
 | **1.13** | **Le sequenze di EPISODI.** Stesso identico sistema dei moduli, un livello sopra: `episodeSequences` nel file di struttura, l'**edizione** dichiara quale usa, e il Pannello Admin le sceglie e le riordina con gli stessi due menu. ⚠️ **Lo studente non sceglie mai** — è chi guida il progetto che organizza. **Oggi l'ordine degli episodi non è un dato:** è l'ordine in cui sono scritte le chiavi dentro `episodes`, e nessuna riga di codice lo dichiara | **dopo la tappa ①**, e **prima di 1.12**: senza, il collaudo delle cinque edizioni prova metà cosa |
 | ~~**1.14**~~ | ~~Creare e cancellare una sequenza dal Pannello Admin~~ | ❌ **NON SI FARÀ — deciso il 2026-09-21 da chi guida il progetto**, e la ragione è sua: *«queste cose si modificano talmente tante volte che è uno spreco di risorse creare la possibilità di modifica dal pannello admin; è molto più facile passare dal file»*. ⚠️ **Il pannello resta quello che è: un posto dove PROVARE una sequenza prima di deciderla**, con le modifiche che vivono in `localStorage` e spariscono. La decisione è scritta anche in `inglese-it-struttura-corso.md` (_017-bis), perché è lì che qualcuno andrà a cercarla |
-| **1.15** | **`resolveEpisodeOrder` ha il nome della cosa sbagliata**: dice «l'ordine degli episodi», restituisce l'ordine dei **moduli di un** episodio. 5 occorrenze | **rimandata di proposito** il 2026-09-20 da chi guida il progetto: *«non rinominiamo più, le rinomine le rivedremo più avanti»* |
+| ~~**1.15**~~ | ~~`resolveEpisodeOrder` ha il nome della cosa sbagliata~~ | ✅ **FATTA il 2026-09-21: `resolveEpisodeOrder` → `resolveModuleOrder`.** Diceva «l'ordine degli episodi» e restituiva l'ordine dei **moduli di un** episodio. ⚠️ **Rimandata il 2026-09-20 e ripresa oggi per una ragione precisa, non per cambio di idea:** il passo 1.13 sta per far nascere l'ordine VERO degli episodi. *Finché quella cosa non esisteva, il nome era solo brutto; dal giorno in cui esiste, punta a quella sbagliata.* Sei forme cercate, **zero occorrenze nel codice** — le tre rimaste sono nei registri storici, dove il nome vecchio è ancora il fatto vero |
 | **1.16** | **`wipeEpisodeProgress` cancella tre chiavi per episodio su sette**, con l'elenco scritto a mano. Due delle quattro superstiti sono conti e non progresso; `storyCardsDeclarations` invece regge lo Sblocco Sequenziale, quindi dopo un wipe il modulo si ri-blocca in mappa **ma riapre le card già dichiarate** | quando si tocca Why We Say It o la schermata Personalizza |
 
 ⚠️ **UNA COSA CHE IL PASSO 1.11 HA APERTO, e va decisa prima di Supabase:
@@ -168,7 +168,7 @@ momento.
 | ~~①~~ | ✅ **CHIUSA il 2026-09-20.** L'override **si fonde** invece di sostituire: le chiavi del foglietto vincono una per una, quelle nuove del file restano. `persistConfigSection` continua a salvare l'oggetto intero, e adesso va bene così |
 | ~~②~~ | ✅ **CHIUSA il 2026-09-20.** È un **menu** con i nomi che esistono, e **ricarica**. Un nome che non esiste resta nell'elenco dichiarandosi, invece di far cambiare la sequenza in silenzio al primo salvataggio |
 | ③ | **Il Pannello Admin non sa creare né cancellare una sequenza.** Riordina, cambia grado, accende e spegne: il magazzino si riempie solo a mano nel file |
-| ④ | **`resolveEpisodeOrder` ha il nome della cosa sbagliata**: dice «l'ordine degli episodi», restituisce l'ordine dei **moduli di un** episodio. 5 occorrenze. È la prova che l'ambiguità della parola «sequenza» non è solo nella chat |
+| ④ | ~~**`resolveEpisodeOrder` ha il nome della cosa sbagliata**~~ — ✅ **rinominata in `resolveModuleOrder` il 2026-09-21** (riga 1.15). *Resta qui perché era la prova che l'ambiguità della parola «sequenza» non stava solo nella chat: stava in un nome del codice* |
 
 ⚠️ **DUE SU QUATTRO CHIUSE IL 2026-09-20**, col passo dei selettori — cioè
 esattamente la condizione che era scritta qui. Le due che restano (③ e ④) non
@@ -704,7 +704,7 @@ globali: **era quello il disallineamento.**
 **⚠️ E LA DIREZIONE È L'OPPOSTA DI COME SI RACCONTA FACILMENTE: non è la
 sequenza che dichiara i suoi episodi.** È l'**episodio** che dichiara la sua
 sequenza, per nome — `CONFIG.episodes.gate = { sequence: 'narrativo-standard' }`,
-letto da `resolveEpisodeOrder` (`app/catalogo.js:269`). Una sequenza non sa
+letto da `resolveModuleOrder` (`app/catalogo.js:269`). Una sequenza non sa
 niente degli episodi che la usano, e due episodi possono chiedere la stessa.
 **Nel file di edizione il posto che dice «quali episodi ci sono» esisterà
 davvero** — ed è l'edizione, non la sequenza.

@@ -10,7 +10,7 @@
 //
 // Qui c'era scritto «CHIEDE A index.html TRE COSE SOLE», ed era il punto del
 // passo che ha creato questo file: il CATALOGO (`EPISODES`,
-// `MODULE_DESCRIPTORS`, `resolveEpisodeOrder`, `moduleStepId`,
+// `MODULE_DESCRIPTORS`, `resolveModuleOrder`, `moduleStepId`,
 // `applyEpisodeDialogue`) e i due dello STATO DI SESSIONE
 // (`episodioCorrente()`, `masteryInSospeso()`). Nove funzioni qui dentro
 // nominavano `currentEpisode`, ed era il motivo per cui questo strato non

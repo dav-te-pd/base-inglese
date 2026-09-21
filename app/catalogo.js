@@ -3,7 +3,7 @@
 //
 // Chi sono gli episodi, quali passi hanno, in che ordine, e con quale grado
 // ciascuno. `MODULE_DESCRIPTORS`, `EPISODES`, `buildEpisodes`,
-// `buildModulesById`, `moduleStepId`, `resolveEpisodeOrder`.
+// `buildModulesById`, `moduleStepId`, `resolveModuleOrder`.
 //
 // ⚠️ ED È PIÙ SEPARABILE DI QUANTO AVESSI DICHIARATO NELLA VALUTAZIONE.
 //
@@ -300,7 +300,16 @@
   // un episodio sta guardando il codice e i dati. Mandarlo a cercare il
   // messaggio in un terzo file rende piu' difficile proprio la cosa che quel
   // messaggio serve a risolvere.
-  function resolveEpisodeOrder(episodeId) {
+  // ⚠️ SI CHIAMAVA `resolveEpisodeOrder` FINO AL 2026-09-21, e il nome
+  // diceva la cosa sbagliata: «l'ordine degli episodi», mentre restituisce
+  // l'ordine dei **moduli di UN** episodio.
+  //
+  // La rinomina era stata rimandata di proposito, e ripresa oggi per una
+  // ragione precisa: il passo 1.13 fa nascere l'ordine VERO degli episodi.
+  // *Finche' quella cosa non esisteva il nome era solo brutto; dal giorno in
+  // cui esiste, punta a quella sbagliata — e chi legge `resolveEpisodeOrder`
+  // cercando l'ordine degli episodi trova questa funzione e si ferma qui.*
+  function resolveModuleOrder(episodeId) {
     var ep = (CONFIG.episodes && CONFIG.episodes[episodeId]) || {};
     var haOrdine = Array.isArray(ep.moduleOrder);
     var haSequenza = typeof ep.sequence === 'string' && ep.sequence.length > 0;
@@ -347,7 +356,7 @@
   function costruisciPassi() {
     Object.keys(EPISODES).forEach(function (episodeId) {
       var episode = EPISODES[episodeId];
-      var risolto = resolveEpisodeOrder(episodeId);
+      var risolto = resolveModuleOrder(episodeId);
       var order = risolto.order;
       // L'errore viaggia con l'episodio: chi apre la mappa lo trova (vedi
       // openEpisodeMap) invece di trovare una mappa vuota senza spiegazione.
@@ -406,6 +415,6 @@
   BI.MODULE_DESCRIPTORS = MODULE_DESCRIPTORS;
   BI.EPISODES = EPISODES;
   BI.moduleStepId = moduleStepId;
-  BI.resolveEpisodeOrder = resolveEpisodeOrder;
+  BI.resolveModuleOrder = resolveModuleOrder;
   BI.costruisciPassi = costruisciPassi;
 })(window.BI);

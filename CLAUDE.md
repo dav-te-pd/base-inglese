@@ -144,7 +144,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
      | **tutte e due** | **errore** — si dice, non si sceglie |
      | **niente** | **errore** — nessun default implicito |
 
-     Il caso "tutte e due" è l'unico che si potrebbe risolvere zitti scegliendone una, ed è per questo che non lo si fa: chi ha scritto entrambe crede che valga quella che sta guardando, e ha il 50% di probabilità di sbagliarsi per sempre. L'errore non alza un'eccezione — `resolveEpisodeOrder` gira al caricamento e un `throw` lì lascerebbe una pagina bianca — ma viaggia con l'episodio e diventa la schermata d'errore all'apertura della mappa.
+     Il caso "tutte e due" è l'unico che si potrebbe risolvere zitti scegliendone una, ed è per questo che non lo si fa: chi ha scritto entrambe crede che valga quella che sta guardando, e ha il 50% di probabilità di sbagliarsi per sempre. L'errore non alza un'eccezione — `resolveModuleOrder` gira al caricamento e un `throw` lì lascerebbe una pagina bianca — ma viaggia con l'episodio e diventa la schermata d'errore all'apertura della mappa.
 
      **Un'eccezione non si dichiara come "narrativo-standard meno Flash Card": chi fa eccezione scrive la sua sequenza per intero.** Una sottrazione si legge solo tenendo aperti due documenti, e quando la base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
 

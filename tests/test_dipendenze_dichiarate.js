@@ -121,7 +121,7 @@ nodi.forEach(function (n) {
   // numero e' salito di tre invece che restare due, il progetto si e' fermato.**
   // ⚠️ DA 2 A 3 CON app/mappa.js, ed e' il numero da tenere d'occhio. La
   // ragione: mappa chiede a index.html il CATALOGO (EPISODES,
-  // MODULE_DESCRIPTORS, resolveEpisodeOrder) e i due dello stato di sessione.
+  // MODULE_DESCRIPTORS, resolveModuleOrder) e i due dello stato di sessione.
   // **Tutti e tre spariscono insieme, quando esce il catalogo** — che e'
   // l'unica cosa grossa rimasta senza un nome nel piano.
   //

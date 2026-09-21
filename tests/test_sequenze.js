@@ -98,7 +98,7 @@ async function run() {
   // ⚠️ E NON basta confrontare gli ID dei passi: quelli vengono dalla
   // SEQUENZA, non da modulesById. Togliendo un descrittore a un episodio la
   // riga resta in mappa — con lo stesso id, allo stesso posto — solo priva di
-  // `type`, perché resolveEpisodeOrder fa Object.assign su un descrittore che
+  // `type`, perché resolveModuleOrder fa Object.assign su un descrittore che
   // non c'è. La prima versione di questa asserzione guardava gli id e
   // dichiarava verde un episodio con un modulo mancante: verificato
   // iniettando il guasto, che è il motivo per cui quel passaggio esiste.
