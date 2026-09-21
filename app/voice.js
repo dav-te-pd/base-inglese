@@ -201,6 +201,28 @@
     // record — SpeechRecognition's own "started" event can fire late
     // enough (real, measurable delay) to make the lock feel unresponsive.
 
+    // ⚠️ QUESTO EVENTO DICE «STO SENTENDO UNA VOCE», E ARRIVA PRIMA DEL
+    // PRIMO `onresult`. Senza di lui il taglio per silenzio tagliava GENTE CHE
+    // STAVA PARLANDO, e il confine era misurabile: chi cominciava dopo il
+    // secondo 2 veniva fermato al terzo.
+    //
+    // Il motivo non era la regola — la regola è giusta e resta quella: «entro
+    // `silenceTimeoutSeconds` dal click devi essere già stato sentito». Era
+    // DOVE si decideva di aver sentito: `vcHeardAnySpeech` diventava vero solo
+    // dentro `onresult`, cioè quando il riconoscitore aveva già prodotto del
+    // testo. Fra «la persona parla» e «il primo interim arriva» passa un tempo
+    // del motore di riconoscimento, non nostro: chi cominciava tardi lo pagava
+    // tutto.
+    //
+    // ⚠️ IL PREZZO, DICHIARATO E ACCETTATO: per `speechstart` una tosse, una
+    // porta che sbatte o la TV nell'altra stanza SONO voce. In una stanza
+    // rumorosa il taglio corto non scatta più e la registrazione arriva al
+    // tetto massimo. È il male minore: oggi, in quella stanza, lo studente
+    // veniva tagliato MENTRE PARLAVA. E la difesa contro il microfono rotto
+    // non cade — `vcEmptyRecognitionStreak` conta le registrazioni senza
+    // parole, e una stanza rumorosa ne produce lo stesso.
+    vcRecognition.onspeechstart = function () { vcHeardAnySpeech = true; };
+
     vcRecognition.onresult = function (event) {
       var finalText = '';
       for (var i = 0; i < event.results.length; i++) {

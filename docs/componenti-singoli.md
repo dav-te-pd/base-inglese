@@ -155,3 +155,25 @@ sotto `tests/` scrivevano la forma della chiave a mano. Adesso si raggiungono da
 ## `app/repeataloud.js`
 
 *(da catalogare — `node tests/tools/censimento-pezzi.js` dice quanti)*
+
+## `app/voice.js` — la regione del microfono
+
+*Catalogata il 2026-09-21 collegando `speechstart` (regola 46: si catalogano i
+pezzi dei file che il passo ha dovuto **capire**, e questa regione è stata letta
+riga per riga — il resto di `app/voice.js` no, e infatti non è qui).*
+
+⚠️ **La terza colonna è quella che ha trovato qualcosa**, e non è un modo di
+dire: scrivere *«cosa dà per scontato»* su `vcSilenceTimeoutId` è il momento in
+cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito» e
+«aver trascritto» siano lo stesso istante.
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `vcRecognition` | L'**unico** riconoscitore vocale dell'app, condiviso da Voice Practice e Voice Check. | — (istanza unica) | Che nasca a **tempo di parsing** e che i suoi gestori siano assegnati una volta sola: nessuno lo ricostruisce al click. |
+| `vcRecognition.onspeechstart` | Alza `vcHeardAnySpeech` appena il riconoscitore **sente una voce**, senza aspettare il testo. | evento → niente | Che una tosse o un rumore contino come voce. **È il prezzo dichiarato**: il male minore rispetto a tagliare chi parla. |
+| `vcRecognition.onresult` | Accumula il testo **definitivo** in `vcLatestTranscript`; alza `vcHeardAnySpeech` su qualunque trascrizione non vuota, anche provvisoria. | evento → niente | Che solo `isFinal` conti per il punteggio, e che l'interim serva **solo** a sapere che si è sentito. |
+| `vcRecognition.onend` | Il punto unico in cui la registrazione finisce: azzera i timer, e sceglie fra **buttare** (taglio per silenzio) e **offrire** (Invia/Cancella). | — → niente | Che `vcSilenceCutoff` sia stato alzato **prima** di `stop()` da chi ha deciso di buttare. È una bandiera, e si legge una volta sola. |
+| `vcSilenceTimeoutId` | Il taglio corto: **`silenceTimeoutSeconds` dal click**, e taglia solo se non si è sentito niente. | — | ⚠️ Che `vcHeardAnySpeech` sappia la verità **in quell'istante**. Fino al 2026-09-21 dava per scontato che «sentito» e «trascritto» fossero lo stesso momento, e non lo sono: il primo interim di Chrome arriva con un ritardo suo. |
+| `vcTimeoutId` | Il tetto massimo: `parole × maxRecordingMsPerWord + maxRecordingMarginMs`, **dal click**. | — | Che il conto parta dal click e non dalla fine della frase. *Non è «N secondi dopo che hai finito»*, ed è la manopola che oggi **non** esiste. |
+| `setVcState(state)` | Cambia stato e **tutto il DOM che ne dipende** in un punto solo: pulsante, icona, didascalia, timer, area di conferma, risultato, e il blocco dell'intestazione. | `'idle'\|'recording'\|'pending'\|'result'` → niente | Che i quattro stati siano esaustivi: ogni elemento si accende o si spegne per confronto con uno di loro, quindi uno stato nuovo li spegnerebbe tutti in silenzio. |
+| `clearVcTimeout()` | Spegne **entrambi** i timer insieme. | — → niente | Che non esista un terzo timer da spegnere. *Il giorno che nasce quello «dopo che hai finito», questa funzione va toccata o resterà acceso.* |

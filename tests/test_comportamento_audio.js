@@ -34,11 +34,20 @@
 //   Practice. Gli altri quattro moduli che usano il Blocco Ascolto passano
 //   dalla stessa `speakListenBlock`, ma questo file non li guida: se un
 //   giorno uno di loro si scrivesse il proprio gestore, qui non si vedrebbe.
-// ② Dei tre sintomi visti su Pages ne guida DUE — «non si ferma al click»
-//   [B] e «va oltre i tre secondi» [C]. Il terzo, «spesso il microfono non
-//   sente», qui non è riproducibile: il riconoscimento è finto, e un finto
-//   sente sempre. Resta scoperto, ed è scritto qui invece di lasciarlo
-//   scoprire a chi si fida del verde (regola 32).
+// ② Dei tre sintomi visti su Pages ne guida TUTTI E TRE, dal 2026-09-21.
+//   «non si ferma al click» [B], «va oltre i tre secondi» [C], e «spesso il
+//   microfono non sente» [D].
+//
+//   ⚠️ QUI C'ERA SCRITTO CHE IL TERZO ERA SCOPERTO, e la motivazione era
+//   sbagliata: *«il riconoscimento è finto, e un finto sente sempre»*. È vero
+//   che un finto sente sempre — ma il guasto non era che l'app non sentisse:
+//   era che **non sapeva di stare sentendo**, perché guardava solo `onresult`
+//   e non `speechstart`. Quello un finto lo riproduce benissimo: basta che
+//   mandi l'evento giusto e nient'altro.
+//
+//   *Un limite dichiarato bene dice dove non guardi. Questo diceva anche
+//   perché, e il perché era falso — cioè chiudeva la porta a chi avesse
+//   provato.*
 
 const { launchBrowser, APP_URL, bloccaFontEsterni } = require('./test-env');
 const { openModule } = require('./map-driver');
@@ -101,7 +110,11 @@ const mockInit = () => {
   window.SpeechSynthesisUtterance = FakeUtterance;
 
   class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this.__attiva = false; }
+    // ⚠️ `onspeechstart` E `window.__rec` SERVONO AL BLOCCO [D], e vanno qui
+    // e non lì: l'app costruisce il riconoscitore a TEMPO DI PARSING, cioè
+    // prima che qualunque `evaluate` del test possa arrivarci. L'unico istante
+    // in cui il finto si può far trovare è il proprio costruttore.
+    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this.onspeechstart = null; this.__attiva = false; window.__rec = this; }
     start() {
       segna('rec-start');
       this.__attiva = true;
@@ -291,6 +304,96 @@ async function run() {
     log('[C] ...e lo studente vede l\'avviso di silenzio', avvisoVisibile);
 
     log('[C] Nessun errore JS', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ── [D] CHI COMINCIA A PARLARE TARDI NON VIENE TAGLIATO ───────────
+  //
+  // È il terzo sintomo di Pages, quello che il limite in testa a questo file
+  // dichiarava SCOPERTO: «spesso il microfono non sente». Adesso è coperto, e
+  // il limite è stato riscritto.
+  //
+  // COSA SI PERDE SENZA QUESTO BLOCCO, e non è un'ipotesi: è stato riprodotto
+  // a mano due volte da chi guida il progetto, con lo stesso confine —
+  // partendo prima del secondo 2 sente, fra il 2 e il 3 no.
+  //
+  // ⚠️ IL PUNTO DI TUTTO IL BLOCCO: `speechstart` arriva SENZA `onresult`.
+  // Il riconoscitore dice «sto sentendo una voce» molto prima di consegnare
+  // il primo pezzo di trascrizione, e prima della correzione l'app guardava
+  // solo il secondo. Qui il finto manda `speechstart` e NIENTE altro: se
+  // l'app non lo ascolta, per lei è ancora silenzio e taglia.
+  //
+  // COME SI DISTINGUONO LE DUE VERSIONI SENZA UN CRONOMETRO (regola 19).
+  // Non si misura QUANDO si ferma la registrazione — quello dipenderebbe
+  // dalla macchina. Si guarda QUALE DELLE DUE STRADE ha preso:
+  //
+  //   · versione vecchia → taglio per silenzio a 0,15 s → la registrazione
+  //     viene BUTTATA: avviso di silenzio a schermo, stato `idle`, niente da
+  //     inviare;
+  //   · versione nuova   → il taglio non scatta → ferma il TETTO a 1,5 s →
+  //     la registrazione è TENUTA: compare l'area Invia/Cancella.
+  //
+  // Le due strade portano a due DOM diversi, e la differenza non ha niente a
+  // che fare con quanto è veloce il container.
+  //
+  // ⚠️ E L'ISTANTE IN CUI ARRIVA LA VOCE NON DIPENDE DALLA MACCHINA: click
+  // e `speechstart` stanno nella STESSA chiamata sincrona. Mandandolo con un
+  // `evaluate` a parte, su un container lento il taglio a 0,15 s potrebbe
+  // arrivare prima — e il test diventerebbe una corsa invece di una misura.
+  //
+  // ⚠️ L'APPRODO NON È QUELLO CHE LE ASSERZIONI LEGGONO (regola 44). Si
+  // aspetta che il pulsante smetta di essere `is-recording`, che è l'effetto
+  // COMUNE alle due strade — vero in entrambe, quindi non dice quale è stata
+  // presa. Le due asserzioni leggono ciò che DIFFERISCE, e l'attesa non lo
+  // tocca.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await apriMappa(page, 'AudioD' + Date.now(), 'voicePractice');
+    await openModule(page, 'voicePractice');
+    await page.waitForSelector('#vc-record-btn', { timeout: 15000 });
+
+    const partito = await page.evaluate(function () {
+      window.APP_CONFIG.voiceCoach.silenceTimeoutSeconds = 0.15;
+      // Il tetto NON dipende dal numero di parole: così la seconda strada
+      // finisce sempre a 1,5 s, qualunque frase abbia davanti.
+      window.APP_CONFIG.voiceCoach.maxRecordingMsPerWord = 0;
+      window.APP_CONFIG.voiceCoach.maxRecordingMarginMs = 1500;
+      window.__audio.eventi.length = 0;
+      document.getElementById('vc-record-btn').click();
+      // La voce comincia DOPO il click e PRIMA che il taglio scatti — nello
+      // stesso giro sincrono, così l'istante è fissato dal codice e non
+      // dall'orologio.
+      if (!window.__rec || !window.__rec.onspeechstart) return false;
+      window.__rec.onspeechstart({});
+      return true;
+    });
+    log('[D] Il finto sa dire «sto sentendo una voce», e l\'app lo ascolta',
+      partito === true,
+      partito === false ? 'onspeechstart non è collegato: l\'app non ascolta l\'evento' : '');
+
+    let finita = true;
+    try {
+      await page.waitForFunction(function () {
+        var b = document.getElementById('vc-record-btn');
+        return b && !b.classList.contains('is-recording');
+      }, { timeout: 10000 });
+    } catch (e) { finita = false; }
+    log('[D] La registrazione finisce (da una delle due strade)', finita);
+
+    const esito = await page.evaluate(function () {
+      return {
+        offerta: !document.getElementById('vc-confirm-area').hidden,
+        avvisoSilenzio: !document.getElementById('vc-silence-warning').hidden
+      };
+    });
+    log('[D] Chi comincia a parlare tardi NON viene tagliato per silenzio',
+      esito.avvisoSilenzio === false, JSON.stringify(esito));
+    log('[D] ...e la sua registrazione viene TENUTA, non buttata',
+      esito.offerta === true, JSON.stringify(esito));
+
+    log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
 
