@@ -216,9 +216,9 @@ rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
 
 | | Cosa | Condizione |
 |---|---|---|
-| **F.1** | **Il taglio per silenzio del microfono** — rivisto **tre volte**, mai corretto | ⚠️ **la più vecchia della lista.** Va presa o dichiarata morta: tre revisioni senza una correzione sono il segno che la decisione non è mai stata presa, non che il lavoro è difficile |
+| **F.1** | **Il taglio per silenzio del microfono.** Il difetto vero non è il nome: `vcSilenceTimeoutId` parte **al click** e non viene **mai riarmato**, quindi la regola è «entro tre secondi dal click devi essere già stato riconosciuto». Chi aspetta due secondi e poi parla viene tagliato **mentre parla**. Rivisto **tre volte**, mai corretto | la condizione scritta è *«al passo 26 — il lavoro sul microfono non si apre in mezzo allo spacchettamento»*. ⚠️ **La strada ② (rinominare) è già chiusa** da chi guida il progetto: *«qualunque nome gli diamo, quel confine resta un bug agli occhi di chi lo usa»*. **Resta la ①: riarmare il timer** |
 | **F.2** | **I 17 finti sintetizzatori senza `speaking`** nei test. Un mock che finisce all'istante nasconde proprio i difetti che dipendono da un ordine di eventi asincrono (regola 19) | quando si tocca una famiglia di test che li usa |
-| **F.3** | **Il giro di design sulla mastery**, tre voci | — |
+| **F.3** | **Il giro di design sulla mastery**, tre voci: ① i **due colori** che si chiamano tutti e due «colore», e niente nell'interfaccia dice quale si sta guardando · ② la **media di Voice Practice** che nessuno mostra · ③ **report VERDE e mappa ROSSA**, tutti e due corretti, e allo studente sembrano contraddirsi | ⚠️ **LA CONDIZIONE C'ERA, ED È STATA PERSA NEL TRAVASO DEL 2026-09-21.** Sta in `decisioni-storico.md`, scritta il 2026-09-19: *«quando il report sarà visibile allo studente, e non prima»*. Qui era diventata un trattino — e un trattino si legge come «nessuna condizione», cioè l'opposto |
 | **F.4** | Le varianti di **`bootAsUser` / `mockInit`** nei test: la stessa finzione scritta in più modi | ⚠️ **sarebbe un `map-driver` per il boot** — stessa forma della deduplicazione già fatta per l'apertura dei moduli |
 | **F.5** | **`episodeFinalOutcomeCase`** e **`buildTargetTokens`**: nel codice, **nessun chiamante** | quando nasce il Modulo Finale |
 | ~~**F.6**~~ | ✅ **CHIUSA il 2026-09-21**, autorizzata: i dieci percorsi scaduti nei cinque file di contenuto, più le due frasi false in sostanza (`a1-episodio1-inglese.json`, cioè la nomenclatura che la regola 4 vieta; e *«aggiorna `APP_CONFIG` leggendo…»*, quando dal 2026-09-20 la fonte è `struttura-corso.json`) | — |
@@ -226,6 +226,86 @@ rimanda.* Da oggi hanno un numero e una condizione, come tutto il resto.
 *Perché F.6 pesa più di un refuso: quei file sono la **fonte** da cui si scrive
 il contenuto, e un percorso sbagliato dentro una fonte manda chi la usa a
 cercare un file che non c'è — o, peggio, a crearne uno nel posto sbagliato.*
+
+### ⚠️ IL TRIAGE DEI FUORI CATENA — chiesto il 2026-09-21
+
+> *«inerente ai punti F… possiamo farli ora così ce li togliamo per sempre e non
+> stiamo continuamente a ritrovarli? se sì, decidi quali fare e quali non si
+> può, ma mettiamoli comunque in cronologia nel file decisioni sennò tornano
+> sempre.»*
+
+**La risposta non è «sì» né «no»: tre si possono fare adesso, due no, e le due
+che non si possono NON sono rimandate per prudenza — sono rimandate perché
+farle adesso significherebbe decidere senza il dato che serve.**
+
+| | Si può adesso? | Perché |
+|---|---|---|
+| **F.1** taglio per silenzio | **SÌ** | La correzione è **una sola e già individuata** — riarmare il timer — e vive in `app/voice.js`. La sua condizione («al passo 26») diceva *non in mezzo allo spacchettamento*: lo spacchettamento è finito. ⚠️ **Ed è già protetta**: `test_comportamento_audio.js` [C] guida il taglio per silenzio e l'ha già visto fallire |
+| **F.2** i 17 finti sintetizzatori | **SÌ, ma DA SOLA** | ⚠️ **Questo passo è fatto per diventare rosso, e il rosso è il guadagno** (regola 19): dare `speaking` vero e una fine asincrona ai 17 finti fa emergere difetti che oggi nessuno vede. Accorparla con qualunque altra cosa vorrebbe dire non sapere chi ha rotto cosa |
+| **F.3** design mastery | **NO** | Per la sua **condizione scritta**: *«quando il report sarà visibile allo studente, e non prima»*. Oggi il report non lo vede nessuno, quindi scegliere fra «uniformare» e «spiegare» significa scegliere al buio. **Non è pigrizia: è che il dato manca** |
+| **F.4** `bootAsUser`/`mockInit` | **SÌ** | Tocca **solo i test**, e ha una forma già collaudata in questo progetto: la stessa deduplicazione fatta per l'apertura dei moduli. Nessun rischio per l'app |
+| **F.5** due funzioni senza chiamante | **DA DECIDERE, non da fare** | Non è un lavoro, è una scelta: **cancellarle** (il disegno resta in `decisioni-storico.md` e si riscrive quando nasce il Modulo Finale) oppure **dichiararle parcheggiate** con la condizione. *Finché restano lì senza etichetta, ogni giro le ritrova e ogni giro le rimanda* |
+
+⚠️ **E LA COSA CHE IL TRIAGE HA TROVATO, che non era una delle F: F.6 NON HA
+CHIUSO TUTTO.** Cercando dove vivessero le frasi false, ne restano **cinque**
+nello stesso file che F.6 aveva corretto, e **tre righe sopra** quella corretta:
+
+| File | Riga | Cosa dice | Perché è falsa |
+|---|---|---|---|
+| `struttura-corso.md` | 3 | *«Da qui vengono aggiornate le voci di `APP_CONFIG`»* | dal 2026-09-20 la fonte da aggiornare è `data/inglese/it/struttura-corso.json` |
+| `struttura-corso.md` | 13 | *«Ogni sezione corrisponde a una voce di `APP_CONFIG`»* | idem |
+| `struttura-corso.md` | 5 | *«il contenuto di un episodio sta in `docs/episodio-N.md`»* | è la nomenclatura che la **regola 4 vieta**, tolta al passo 6: oggi è `docs/inglese/it/inglese-it-gate.md` |
+| `struttura-corso.md` | 55–57 | *«L'ordine è uno solo per tutto il corso… un episodio può sovrascriverlo, ma è l'eccezione»* | oggi **ogni** episodio dichiara la propria `sequence`, **sempre**, e non esiste nessun default implicito |
+| `sequenza-episodi.md` | 9–12 | *«Non esiste un `sequenza-episodi.json`, ed è una scelta: l'elenco serve **durante** l'avvio, prima che qualunque file sia scaricato»* | dal passo 1.11b `struttura-corso.json` arriva **prima di qualunque schermata**, e **porta già `episodes`**. La ragione per cui il file non esisteva non c'è più |
+
+*È la forma della **regola 41**: F.6 ha corretto la frase dov'è andata a
+cercarla — in fondo al file — e ha lasciato la stessa frase in testa. Una
+verifica per sottrazione fatta su un punto invece che su tutte le forme.*
+
+⚠️ **NON CORRETTE: sono sotto `docs/{lingua}/`, quindi regola 33 — si chiede
+prima.** Chiamate **F.6-bis** finché non arriva la risposta.
+
+### ⚠️ QUANDO NASCERÀ IL PANNELLO ADMIN VERO, `config` VA CHIUSO A TUTTI — 2026-09-21
+
+**Detto da chi guida il progetto**, e registrato qui perché è una decisione che
+cambia due cose già costruite:
+
+> *«Quando ci sarà il pannello admin, sarà da togliere la possibilità di
+> scrivere `config` da parte di nessuno, specialmente dell'utilizzatore.
+> Quindi, a quel momento, sarà da verificare se sospendere la funzione del
+> nuovo tasto visibile.»*
+
+**Le due cose che ne dipendono, e vanno guardate INSIEME quel giorno:**
+
+1. **le due porte del pannello** — la sequenza `config` da tastiera e `?config`
+   nell'indirizzo: oggi le può aprire chiunque abbia l'app;
+2. **la terza uscita sulla schermata d'errore** («Ripristina i valori di
+   partenza», nata il 2026-09-21): ⚠️ **serve a disfare un danno che solo il
+   pannello sa fare.** Chiuso il pannello allo studente, quel pulsante non ha
+   più una causa da riparare — e un pulsante che cancella dati senza una causa
+   è esattamente il *«pulsante che non può aiutare»* che la sua stessa guardia
+   evita oggi (compare **solo** se ci sono override salvati).
+
+*Quindi non sono due decisioni: è una sola. Chiudere le porte senza guardare il
+pulsante lascerebbe in piedi l'uscita di emergenza di una stanza murata.*
+
+**Condizione:** al pannello Admin vero, tappa ③ (messa in sicurezza).
+
+### La misura delle CPU della CI — chiusa il 2026-09-21
+
+Il `2` inciso nello script è diventato `nproc`, con tetto a 8. **Il runner di
+`ubuntu-latest` ha QUATTRO CPU** — misurate, non dedotte: il log della corsa
+stampa `--- 76 file, 4 in parallelo (CPU misurate: 4) ---`.
+
+| | prima (N=2) | adesso (N=4) |
+|---|---|---|
+| corsa intera | ~600 s | **369 s** |
+| solo il passo «Lancia la suite» | — | **319 s** |
+
+**Deciso: si resta a 4, non si prova 8.** Il runner *ha* 4 CPU: chiederne 8 non
+aggiunge macchina, aggiunge contesa — e i timeout scatterebbero per contesa
+invece che per difetto, cioè un rosso che non sa spiegarsi. *Il tetto a 8 nello
+script serve alla macchina di domani, non a forzare quella di oggi.*
 
 **Fuori catena, da chiudere in questa tappa o dichiarare rimandati:**
 
