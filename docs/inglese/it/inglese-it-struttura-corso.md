@@ -83,7 +83,7 @@ vuole i suoi.*
 | `personalizzazione` | Your Story | Personalizza la tua storia |
 | `meetTheStory` | Meet the Story | Ascolta la storia |
 | `repeatAloud` | Repeat Aloud | Ripeti ad alta voce |
-| `whyWeSayIt` | Why We Say It | Perche' si dice cosi' |
+| `whyWeSayIt` | Why We Say It | Perché si dice così |
 | `matchEngIta` | Match Practice en→it | Abbina le traduzioni |
 | `matchItaEng` | Match Practice it→en | Abbina le traduzioni |
 | `flashcardAEngIta` | Flash Card en→it | Ripassa quello che hai imparato |
@@ -133,9 +133,22 @@ escono giuste** — con `lastAttempt` conterebbe sempre quasi 100%.
 **STRUTTURA-CORSO_016** · **Il grado sta nella posizione, non nel modulo.** *Lo stesso modulo
 compare piu' volte con gradi diversi riusando un solo descrittore.*
 
-**STRUTTURA-CORSO_017** · ⚠️ **I passi delle sequenze stanno solo nel JSON, e si modificano dal
-Pannello Admin.** *Qui non vanno elencati: due elenchi sugli stessi passi divergono al primo
+**STRUTTURA-CORSO_017** · ⚠️ **I passi delle sequenze stanno solo nel JSON, e si modificano
+LI'.** Precisamente: `data/inglese/it/struttura-corso.json`, chiave **`sequences`**, una voce per
+nome di sequenza, ognuna una lista di coppie `{ "module": "...", "grade": "..." }` nell'ordine in
+cui si incontrano. *Qui non vanno elencati: due elenchi sugli stessi passi divergono al primo
 riordino, e questo file perderebbe in silenzio.*
+
+**STRUTTURA-CORSO_017-bis** · ⚠️ **IL PANNELLO ADMIN NON È IL POSTO DOVE SI MODIFICANO, E VA
+SAPUTO PRIMA DI PROVARCI.** Il pannello sa riordinare i passi, cambiare grado e accendere o
+spegnere un modulo — **ma scrive in `localStorage`, cioè in quel browser soltanto.** La modifica
+non arriva mai al JSON, non la vede nessun altro, e **sparisce svuotando i dati del sito**. E
+crearne una nuova il pannello non lo sa fare affatto.
+
+*Serve a **provare** una sequenza diversa prima di deciderla, non a deciderla.* **Deciso il
+2026-09-21 che non si farà il lavoro per renderlo definitivo:** *«queste cose si modificano
+talmente tante volte che è uno spreco creare la possibilità di modifica dal pannello; è molto più
+facile passare dal file»*.
 
 **STRUTTURA-CORSO_018** · **Una sequenza si puo' cambiare quando serve** — aggiungere un modulo,
 toglierlo, riordinarlo. *L'uniformita' aiuta lo studio, ma non e' un vincolo.*
@@ -231,12 +244,12 @@ si impara** — la lingua dello studente serve alle traduzioni, non alla voce.
 ## 9 — DA AGGIORNARE QUANDO
 
 **STRUTTURA-CORSO_035** · **Si aggiunge un modulo** → categoria, regola di esito, nome e
-sottotitolo qui; **la sua posizione nelle sequenze dal Pannello Admin**.
+sottotitolo qui; **la sua posizione nelle sequenze dentro `sequences`**, nel JSON.
 
 **STRUTTURA-CORSO_036** · **Si aggiunge un grado** → nella tabella dei gradi col nome mostrato.
 
-**STRUTTURA-CORSO_037** · **Si aggiunge una sequenza** → dal Pannello Admin, **scritta per
-intero**; qui solo la riga nella tabella «Le sequenze che esistono».
+**STRUTTURA-CORSO_037** · **Si aggiunge una sequenza** → una chiave nuova dentro `sequences`,
+nel JSON, **scritta per intero**; qui solo la riga nella tabella «Le sequenze che esistono».
 
 **STRUTTURA-CORSO_038** · **Si aggiunge un episodio** → nella tabella degli episodi con la sequenza
 che chiede, e nella sequenza degli episodi.

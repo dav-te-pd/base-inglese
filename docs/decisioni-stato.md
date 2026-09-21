@@ -106,7 +106,7 @@ cosa che non è in nessuna lista è una cosa che non si fa.*
 | | Cosa | Condizione |
 |---|---|---|
 | **1.13** | **Le sequenze di EPISODI.** Stesso identico sistema dei moduli, un livello sopra: `episodeSequences` nel file di struttura, l'**edizione** dichiara quale usa, e il Pannello Admin le sceglie e le riordina con gli stessi due menu. ⚠️ **Lo studente non sceglie mai** — è chi guida il progetto che organizza. **Oggi l'ordine degli episodi non è un dato:** è l'ordine in cui sono scritte le chiavi dentro `episodes`, e nessuna riga di codice lo dichiara | **dopo la tappa ①**, e **prima di 1.12**: senza, il collaudo delle cinque edizioni prova metà cosa |
-| **1.14** | **Creare e cancellare una sequenza dal Pannello Admin.** Oggi si riordina, si cambia grado, si accende e si spegne — il magazzino si riempie solo a mano nel file | quando le sequenze dovranno **memorizzarsi** senza aprire il file |
+| ~~**1.14**~~ | ~~Creare e cancellare una sequenza dal Pannello Admin~~ | ❌ **NON SI FARÀ — deciso il 2026-09-21 da chi guida il progetto**, e la ragione è sua: *«queste cose si modificano talmente tante volte che è uno spreco di risorse creare la possibilità di modifica dal pannello admin; è molto più facile passare dal file»*. ⚠️ **Il pannello resta quello che è: un posto dove PROVARE una sequenza prima di deciderla**, con le modifiche che vivono in `localStorage` e spariscono. La decisione è scritta anche in `inglese-it-struttura-corso.md` (_017-bis), perché è lì che qualcuno andrà a cercarla |
 | **1.15** | **`resolveEpisodeOrder` ha il nome della cosa sbagliata**: dice «l'ordine degli episodi», restituisce l'ordine dei **moduli di un** episodio. 5 occorrenze | **rimandata di proposito** il 2026-09-20 da chi guida il progetto: *«non rinominiamo più, le rinomine le rivedremo più avanti»* |
 | **1.16** | **`wipeEpisodeProgress` cancella tre chiavi per episodio su sette**, con l'elenco scritto a mano. Due delle quattro superstiti sono conti e non progresso; `storyCardsDeclarations` invece regge lo Sblocco Sequenziale, quindi dopo un wipe il modulo si ri-blocca in mappa **ma riapre le card già dichiarate** | quando si tocca Why We Say It o la schermata Personalizza |
 
@@ -378,6 +378,20 @@ errore, somiglia a un'impostazione.*
 
 ### ⚠️ SU PAGES `speechstart` E `speechend` NON ARRIVANO — aperto il 2026-09-21
 
+⚠️ **MISURATO IL 2026-09-21: `afterSpeechTimeoutMs` C'È NEL PANNELLO E GLI
+EVENTI NON ARRIVANO LO STESSO.** L'ipotesi (a), la cache, è **scartata**: il
+codice nuovo è sull'app vera. **Resta la (b): Chrome non emette
+`speechstart`/`speechend`** in questa configurazione.
+
+**PARCHEGGIATA, su decisione di chi guida il progetto** — *«lasciamo così per
+il momento e poi vedremo»*. **Condizione per riprenderla:** quando si tornerà
+sul microfono, o quando servirà davvero accorciare l'audio spedito (cioè se il
+riconoscimento smetterà di essere gratuito — vedi
+`scelte-strategiche-infrastrutturali.md`, ②.4).
+
+*Costo di lasciarla lì: zero. Il comportamento è identico a prima del
+2026-09-21, e i due gestori inerti non fanno danno.*
+
 **Segnalato da chi guida il progetto dopo il collaudo:** *«adesso funzionano
 solo il timer "tempo-massimo", "start" e "end" non funzionano»*.
 
@@ -406,6 +420,44 @@ della regola 37: una diagnosi che non può sbagliarsi non è una diagnosi.
 registri **quali eventi del riconoscitore sono arrivati** nell'ultima
 registrazione, con il momento in cui sono arrivati. Stessa forma di
 `#config-audio-usage`. *Proposto, non costruito.*
+
+### ⚠️ LE PAROLE: «narrativo» e «Mappa» — aperto il 2026-09-21
+
+**Chiesto da chi guida il progetto**, e l'ordine in cui lo ha chiesto è la
+parte che conta: *«decidiamo prima cosa vede lo studente e poi nominiamo di
+conseguenza»*.
+
+**Le tre cose da nominare, e sono legate:**
+
+| | Cosa | Oggi si chiama | Problema |
+|---|---|---|---|
+| ① | l'ordine dei **moduli dentro un episodio** | `sequences`, e quella che esiste è `narrativo-standard` | «narrativo» fa confusione |
+| ② | l'ordine degli **episodi dentro un'edizione** | `sequenza-episodi.md` | nessuno dei due nomi dice qual è quale |
+| ③ | la **schermata che lo studente vede** con i passi dell'episodio | **«Mappa dell'episodio»**, e il pulsante **«← Mappa»** | *«non vuol dire più nulla»* |
+
+**E le CATEGORIE degli episodi sono tre, dette da chi guida il progetto:
+`storia`, `grammatica`, `pronuncia`.** «narrativo» esce.
+
+**QUANTO COSTA, misurato e non stimato — ed è la parte che decide:**
+
+| Cosa si cambia | Quanto costa |
+|---|---|
+| **③ la parola che legge lo studente** | ✅ **DUE VALORI IN UN FILE DI DATI.** `mappaEpisodio.pageTitle` («Mappa dell'episodio») e `condivisi.tornaAllaMappa` («← Mappa») in `istruzioni-moduli.json`. **Zero righe di codice**, zero rischio |
+| **① il nome `narrativo-standard`** | 78 occorrenze di «narrativ» in **19 file**, quasi tutte prosa. ⚠️ **Ma in `test_struttura_corso.js` è UNA riga sola**, perché il 2026-09-21 il nome è diventato la costante `SEQUENZA_CONFRONTATA` |
+| **gli id interni (`sequences`, i nomi delle funzioni)** | è una **rinomina**, quindi regola 41 per intero |
+
+⚠️ **QUINDI SI POSSONO FARE SEPARATAMENTE, ED È LA COSA PIÙ UTILE DA SAPERE:**
+quello che vede lo studente si cambia **oggi, in due valori**, senza toccare
+una riga di codice. *Le rinomine interne sono un'altra decisione, e possono
+aspettare.*
+
+⚠️ **E UNA COLLISIONE DA SEGNALARE PRIMA DI SCEGLIERE:** `percorsoEdizione`
+**esiste già**, in `app/dati.js`, e **non è una sequenza**: è la funzione che
+costruisce il percorso su disco di un file dell'edizione
+(`data/inglese/it/...`). Usare quel nome per l'ordine degli episodi
+significherebbe avere due cose diverse con lo stesso nome — la forma
+⓪-decies. *Se si sceglie quella parola, quella funzione va rinominata nello
+stesso passo (`fileDellEdizione` direbbe quello che fa).*
 
 ### ⚠️ IL DOPPIO CONTROLLO DI `inglese-it-struttura-corso.md` — 2026-09-21
 
