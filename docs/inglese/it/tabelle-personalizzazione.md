@@ -2,21 +2,31 @@
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
 >
-> ⚠️ **NON ANCORA TRASCRIVIBILE.** Questo file descrive il magazzino **come sarà**, e parte del
-> disegno qui sotto **non è ancora rappresentabile nel codice** — vedi *Cosa manca* in fondo.
-> Il file serve a decidere adesso e ad avere la fonte pronta.
+> ⚠️ **TRASCRIVIBILE A METÀ.** La forma delle righe c'è (id, `it`, `en`, `traducibile`); non
+> c'è ancora il **secondo campo per riga** che la tabella dei luoghi di partenza vuole, e le
+> età nel codice sono ancora numeri nudi. Vedi *Cosa manca* in fondo.
 >
-> **AGGIORNAMENTO 2026-09-15 — il punto ① di *Cosa manca* è fatto, gli altri no.** Le tabelle
-> **non vivono più in `APP_CONFIG`**: sono in `data/inglese/it/tabelle-personalizzazione.json`,
-> caricate da un fetch. *Ma ci sono andate **con il contenuto di prima**, non con questo* — sei
-> destinazioni invece di undici, id `marco` invece di `papa-marco`, traducibilità dedotta dalla
-> tabella invece che dichiarata per riga. Era una **conversione pura**: se fosse arrivato anche
-> il contenuto nuovo, un rosso avrebbe avuto due sospettati invece di uno.
+> **AGGIORNAMENTO 2026-09-21 — ① e ⑤ sono fatti, ② ③ ④ no.**
 >
-> **Quindi questo file resta la fonte e resta davanti al codice.** Quello che manca sono ② ③ ⑤,
-> e la loro ragione di stare insieme **non è più** «servirebbe una colonna in `APP_CONFIG`» —
-> quel vincolo l'ha sciolto ① — ma che **③ cambia cosa Voice Practice si aspetta di sentire**, e
-> vuole un test suo.
+> **① (2026-09-15)** — le tabelle **non vivono più in `APP_CONFIG`**: sono in
+> `data/inglese/it/tabelle-personalizzazione.json`, caricate da un fetch. *Ma ci sono andate
+> **con il contenuto di prima**, non con questo:* sei destinazioni invece di undici, id `marco`
+> invece di `papa-marco`. Era una **conversione pura** — se fosse arrivato anche il contenuto
+> nuovo, un rosso avrebbe avuto due sospettati invece di uno.
+>
+> **⑤ e la traducibilità (2026-09-20, passo 1.8 A)** — la colonna `traducibile` **esiste
+> davvero**, dichiarata riga per riga; le colonne vuote `fr`/`es`/`de` sono sparite (erano 147
+> stringhe vuote senza un lettore). Ed esiste il **test rovesciato** nella forma che oggi è
+> possibile: *ogni tabella che un episodio nomina esiste, e ogni valore predefinito esiste
+> dentro di essa*. `tests/test_traducibilita_per_riga.js`.
+>
+> **Quindi questo file resta la fonte e resta davanti al codice, ma di meno.** Quello che manca
+> sono **②** (il secondo campo per riga: il paese accoppiato alla città), **③** (le età in
+> lettere) e **④** (la migrazione dei valori già salvati, che ② e ③ rendono obbligatoria).
+>
+> ⚠️ **E ④ non è una rifinitura:** cambiando `marco` in `papa-marco`, chi ha già personalizzato
+> si ritrova le scelte **riportate alla prima opzione** — `resolveSlotValue` ricade in silenzio,
+> senza errore e senza un rosso.
 >
 > **Cos'è.** Il **magazzino** dei valori di personalizzazione. Contiene più di quello che si
 > usa: un episodio **elenca gli id che vuole**, uno per uno, e solo quelli compaiono
@@ -43,10 +53,16 @@
 | `en` | la forma nella lingua studiata |
 | `traducibile` | **sì / no, dichiarato per riga** |
 
-**`traducibile` si dichiara, non si deduce.** Oggi il codice capisce che un nome di persona non
-si traduce perché la sua tabella si chiama `people.papa`: il prefisso è il segnale. **Senza
-tabelle non c'è prefisso**, e senza una colonna esplicita i nomi ricomincerebbero a tradursi —
-*Francesco → Francis*.
+**`traducibile` si dichiara, non si deduce — e dal 2026-09-20 è così anche nel codice.**
+
+*Fino a quel giorno la risposta la dava il contenitore:* un nome di persona non si traduceva
+perché la sua tabella si chiamava `people.papa`, e il prefisso era il segnale. Funzionava, e
+teneva **solo finché le famiglie restavano due**: un cognome che si traduce, o una città che
+NON si traduce, non avevano modo di esistere se non spostando la riga in un'altra tabella — cioè
+cambiando a quale slot appartiene, per una ragione che con quello slot non c'entra niente.
+
+**Ora lo legge `resolveSlotValue` dalla riga.** Una riga che non lo dichiara vale «si traduce»:
+è il caso delle età finché restano numeri nudi.
 
 **E non si deduce nemmeno dal prefisso dell'id:** `papa-marco` che comincia per `papa-` è una
 convenzione, e le convenzioni sui nomi si rompono al primo id scritto storto (regola 1.9).
@@ -299,13 +315,15 @@ tabelle passano da una funzione sola.*
 > *Il conteggio era esatto: era il conteggio di un'altra domanda. Chi si fidasse della frase
 > vecchia salterebbe l'unico lettore sincrono che esiste.*
 
-| Dove | Cosa cambia |
-|---|---|
-| `resolveSlotTable` | la radice: il file caricato invece di `CONFIG` |
-| `buildSlotFields` — `isPersonName: slot.table.indexOf('people.') === 0` | sostituita dal campo `traducibile` della riga |
-| `resolveSlotValue` — `return field.isPersonName ? picked.it : picked[lang]` | legge il campo dichiarato invece di dedurlo |
+✅ **FATTO il 2026-09-15 (la radice) e il 2026-09-20 (la traducibilità).** La tabella qui
+sotto resta perché dice **cos'è cambiato**, non cosa resta da fare:
 
-Più un quarto loader accanto ai tre esistenti. **Mezza giornata, non giorni.**
+| Dove | Cosa è cambiato |
+|---|---|
+| `resolveSlotTable` | la radice è il file caricato, non più `CONFIG` |
+| `buildSlotFields` | `isPersonName` **non esiste più**: la traducibilità non si deduce dal nome della tabella |
+| `resolveSlotValue` | legge `traducibile` **dalla riga** |
+| `slotOptions` | non aggiunge più `fr`/`es`/`de`: erano 147 stringhe vuote senza lettori |
 
 **② Il secondo campo per riga**, per il paese accoppiato alla città.
 
@@ -315,11 +333,12 @@ slot. Basta ammettere che una voce nomini anche un campo — `paese: { slot: 'pa
 
 **③ Le età smettono di essere numeri e diventano parole (1.242).**
 
-⚠️ **Oggi l'app dice `I'm 16 years old`, con la cifra.** `slotOptions` normalizza le età così:
+⚠️ **Oggi l'app dice `I'm 16 years old`, con la cifra** — e continua a dirlo. `slotOptions`
+normalizza le età così:
 
 ```js
 var s = String(item);
-return { value: s, it: s, en: s, ... };
+return { value: s, it: s, en: s };
 ```
 
 **`it` ed `en` diventano identici.** Il magazzino, che porta `en: sixteen`, la farebbe diventare
@@ -339,11 +358,18 @@ boot.
 personalizzato si ritrova tutte le scelte riportate ai default, senza avviso e senza che nessun
 test lo veda.*
 
-**⑤ Il test rovesciato.**
+**⑤ Il test rovesciato.** ✅ **FATTO il 2026-09-20, nella forma che oggi è possibile.**
 
 Non *"ogni riga del magazzino è usata"* — falso per costruzione, il magazzino è più grande della
-vetrina — ma **"ogni id elencato da un episodio esiste nel magazzino"**. *Stessa forma di
-`test_config_letta.js`, che già cerca per nome-foglia: si copia quello.*
+vetrina — ma il suo rovescio: **ogni cosa che un episodio NOMINA deve esistere**.
+
+⚠️ **Oggi un episodio nomina una TABELLA e un valore predefinito, non gli id uno per uno**, e il
+test guarda quelli (9 su 9 passano). *Il giorno in cui l'episodio elencherà gli id — cioè quando
+② ③ ④ saranno fatti — è quella riga che si allarga, non un test nuovo.*
+
+**Perché conta:** `resolveSlotValue` su un id che non esiste **ricade in silenzio sulla prima
+opzione**. Non alza, non avvisa, non lascia un rosso: la personalizzazione di qualcuno diventa
+un'altra e basta. *È anche il motivo per cui ④ non è rimandabile.*
 
 ### E una cosa da chiudere insieme
 
