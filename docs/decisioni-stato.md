@@ -286,6 +286,65 @@ registrazioni senza parole, e una stanza rumorosa ne produce lo stesso — ma
 il taglio corto sì.* **È la scelta vera di questo passo, e non la prendo da
 solo.**
 
+### ⚠️ IL CENSIMENTO DI CHI PUÒ FERMARE UNA REGISTRAZIONE — 2026-09-21
+
+*Chiesto da chi guida il progetto: «**bisogna trovare anche le righe di codice
+per le regole, così siamo sicuri che modifichiamo dopo che abbiamo capito**».
+Fatto cercando, non ricordando: ogni `setTimeout`, ogni `.stop()`, ogni
+`.abort()` di `app/voice.js`, e `speechend`/`soundend`/`audioend` in tutto il
+repository.*
+
+| | Chi ferma | Riga | Quando | In `config`? |
+|---|---|---|---|---|
+| ① | **il dito dello studente** | 584 | click sul pulsante mentre registra | — |
+| ② | **il taglio per silenzio** | 614–619 | `silenceTimeoutSeconds` dal **click**, e **solo se non ha sentito niente** | ✅ `silenceTimeoutSeconds` |
+| ③ | **il tetto massimo** | 608–610 | `parole × maxRecordingMsPerWord + maxRecordingMarginMs` dal **click** | ✅ due chiavi |
+| ④ | **l'abort** quando si lascia il modulo | 330 | `stopAllModuleActivity` | — |
+| ⑤ | **❌ NIENTE che conti «N secondi dopo che smetti di parlare»** | — | — | — |
+
+**I comandi, con quello che hanno trovato — zero compreso (regola 41):**
+
+| Cercato | Dove | Trovato |
+|---|---|---|
+| `setTimeout\|setInterval` | `app/voice.js` | **2 timer** (② e ③) + 1 `setInterval` che aggiorna solo la scritta «0s, 1s, 2s» |
+| `speechend\|soundend\|audioend` | **tutto il repository** | **0** |
+| `.stop()\|.abort()` | `app/voice.js` | **4**, tutti nella tabella qui sopra |
+
+⚠️ **E LE DUE OSSERVAZIONI DI CHI GUIDA IL PROGETTO SONO ENTRAMBE VERE. UNA
+CONFERMA IL CODICE, L'ALTRA DICE CHE IL CODICE NON C'ENTRA.**
+
+> *«se parlo senza fermarmi si ferma ad esempio a 15 sec, mentre se parlo e poi
+> mi fermo dopo circa 3 sec si ferma»*
+
+- **I 15 secondi sono ③, e il conto torna esatto:** una frase di **dodici**
+  parole dà `12 × 1000 + 3000 = 15000 ms`. *È la formula, misurata dal di
+  fuori senza conoscerla.*
+- **I «circa 3 secondi dopo che smetti» NON SONO NOSTRI.** Nel nostro codice non
+  esiste niente che li produca — la riga ⑤ è vuota, e non per una ricerca
+  saltata: i tre comandi qui sopra sono stati eseguiti e hanno dato 2, 0 e 4.
+  **È il riconoscitore del browser che chiude la sessione da solo** quando
+  sente una pausa prolungata, e `onend` arriva **senza che nessuno abbia
+  chiamato `stop()`**.
+
+**Perché `continuous = true` (riga 191) non lo impedisce:** quel flag tiene
+aperta la sessione **attraverso più risultati**, non attraverso il silenzio. La
+chiusura per pausa è dentro il motore di Chrome, **non è esposta da nessuna API
+del web e quindi non è configurabile.**
+
+⚠️ **E QUESTO CAMBIA IL DISEGNO DEI «TRE TIMER», quindi va deciso prima di
+scrivere:** il terzo timer chiesto — *«quello dopo che ho finito di parlare»* —
+**non nasce in un posto vuoto: nasce accanto a uno che c'è già e non si può
+spegnere.** Metterlo a 3 secondi lo farebbe arrivare **insieme** a quello di
+Chrome, cioè non cambierebbe niente di misurabile. *Serve più CORTO di quello
+di Chrome, o non serve affatto* — ed è esattamente la manopola che fa scendere
+l'audio spedito, che è il costo che preoccupa.
+
+**Quello che serve per costruirlo, e che oggi non è collegato:** l'evento
+`speechend`. **Gli stessi tre eventi mancanti della riga F.1**: `speechstart`
+serve a non tagliare chi ha cominciato tardi, `speechend` a tagliare chi ha
+già finito. *Sono due facce dello stesso buco — il codice non sa quando la
+voce comincia né quando finisce, sa solo quando arriva il testo.*
+
 ### ⚠️ LE DUE MANOPOLE CHIESTE: UNA C'È GIÀ, L'ALTRA NON ESISTE — 2026-09-21
 
 Chi guida il progetto ha chiesto **due valori separati e modificabili da

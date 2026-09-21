@@ -137,6 +137,11 @@ tutto questo:
 
 ---
 
+> ⚠️ **Il vicino di questo file, dal 2026-09-21: `docs/scelte-strategiche-infrastrutturali.md`.**
+> La divisione è questa: **qui** cosa si può portare via e cosa si rompe; **lì** cosa si compra,
+> dove si mette e con quale metodo di lavoro. *La risposta qui sotto è citata lì come vincolo, e
+> non ricopiata: una copia diverge.*
+
 ## ⚠️ «AL PRIVATO NESSUNO SCARICA PIÙ E NON SI VEDE PIÙ?» — la risposta è NO, e per metà
 
 **Domanda di chi guida il progetto, 2026-09-21.** La risposta sta già scritta
