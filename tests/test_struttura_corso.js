@@ -133,7 +133,18 @@ async function run() {
 
   // ============ 3. L'ordine dei 22 passaggi ============
   {
-    const righe = tabellaSotto(doc, '### Ordine attuale');
+    // ⚠️ IL NOME DELLA SEQUENZA È SCRITTO UNA VOLTA SOLA, e serve a due cose:
+    // trovare il titolo nel markdown e prendere la lista viva. Prima erano due
+    // stringhe scollegate — il titolo diceva "### Ordine attuale", che non
+    // nominava nessuna sequenza, e il confronto andava su 'narrativo-standard'
+    // senza che niente legasse i due.
+    //
+    // Ciò che si guadagna: se un giorno la sequenza confrontata cambia nome nel
+    // JSON, il titolo del documento deve cambiare con lei o il test si ferma. Con
+    // un titolo generico il markdown avrebbe potuto descrivere UN'ALTRA sequenza
+    // e il confronto sarebbe andato verde lo stesso.
+    const SEQUENZA_CONFRONTATA = 'narrativo-standard';
+    const righe = tabellaSotto(doc, '### `' + SEQUENZA_CONFRONTATA + '`');
     const dalDoc = righe.map(r => ({ module: idModulo(r[1]), grade: grado(r[2]) }));
     const sconosciute = righe.filter((r, i) => dalDoc[i].module === null);
     sconosciute.forEach(r => console.log('    riga non riconosciuta: ' + r.join(' | ')));
@@ -147,7 +158,7 @@ async function run() {
     if (!numerazioneOk) console.log('    numerazione: ' + numeri.join(', '));
     log('[Ordine] La numerazione del documento è progressiva da 1', numerazioneOk);
 
-    const dalConfig = config.sequences['narrativo-standard'].map(p => ({ module: p.module, grade: p.grade || null }));
+    const dalConfig = config.sequences[SEQUENZA_CONFRONTATA].map(p => ({ module: p.module, grade: p.grade || null }));
 
     console.log('[Ordine] documento: ' + dalDoc.length + ' passi | APP_CONFIG: ' + dalConfig.length + ' passi');
     log('[Ordine] Stesso numero di passi', dalDoc.length === dalConfig.length);
