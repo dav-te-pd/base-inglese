@@ -484,11 +484,20 @@
   // da se', chiederebbe `EPISODES` all'insu' e il conto salirebbe invece di
   // scendere. *Chi riceve puo' stare ovunque; chi va a prendere deve stare
   // dove sono le cose.*
+  // ⚠️ L'ORDINE DEGLI EPISODI SI RISOLVE QUI, E L'ERRORE SI DICE UNA VOLTA
+  // SOLA. `resolveEpisodeOrder` non alza eccezioni — l'avvio non si puo'
+  // fermare, o resta una pagina bianca (vedi la sua nota in catalogo.js).
+  var ordineEpisodi = BI.resolveEpisodeOrder();
+  if (ordineEpisodi.errore) console.error('[base-inglese] ' + ordineEpisodi.errore);
+
   var episodioIniziale = EPISODES[CONFIG.episodioCorrente];
   if (!episodioIniziale) {
+    // Il ripiego e' il PRIMO DEL CORSO, non la prima chiave scritta nel file:
+    // prima di 1.13 dipendeva da un ordine che nessuno aveva dichiarato.
     console.error('[base-inglese] CONFIG.episodioCorrente vale "' + CONFIG.episodioCorrente +
-      '", che non e\' un episodio dichiarato: si apre il primo (' + Object.keys(EPISODES)[0] + ').');
-    episodioIniziale = EPISODES[Object.keys(EPISODES)[0]];
+      '", che non e\' un episodio dichiarato: si apre il primo del corso (' +
+      ordineEpisodi.order[0] + ').');
+    episodioIniziale = EPISODES[ordineEpisodi.order[0]];
   }
   BI.impostaEpisodioCorrente(episodioIniziale);
 
@@ -912,7 +921,11 @@
   function renderEpisodeSwitchField() {
     var wrap = document.createElement('div');
     wrap.className = 'config-field';
-    var opzioni = Object.keys(BI.EPISODES).map(function (id) {
+    // ⚠️ NELL'ORDINE DEL CORSO, non in quello in cui le chiavi sono
+    // scritte nel file (passo 1.13). Era l'unico posto dell'app che
+    // MOSTRAVA un ordine degli episodi, e lo mostrava senza che nessuno
+    // l'avesse deciso.
+    var opzioni = BI.episodiInOrdine().map(function (id) {
       var ep = BI.EPISODES[id];
       return '<option value="' + id + '"' + (id === CONFIG.episodioCorrente ? ' selected' : '') + '>' +
         (ep.nome || id) + ' (' + id + ')</option>';

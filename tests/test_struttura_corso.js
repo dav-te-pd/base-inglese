@@ -218,6 +218,37 @@ async function run() {
     const ignote = categorie.filter(function (c) { return ammesse.indexOf(c) === -1; });
     if (ignote.length) console.log('    categorie non ammesse: ' + ignote.join(', '));
     log('[Episodi] Ogni categoria è una delle tre dichiarate', ignote.length === 0, ignote.join(', '));
+
+    // ── L'ORDINE, dal passo 1.13 ────────────────────────────────────────
+    //
+    // ⚠️ PERCHE' SI CONFRONTA CON L'ORDINE DELLE RIGHE DELLA TABELLA, e non
+    // con un elenco scritto a parte nel markdown: cosi' il markdown resta la
+    // fonte (regola 26) SENZA che qualcuno debba ricopiare la lista in una
+    // seconda sezione. Una seconda copia si disallinea; l'ordine delle righe
+    // no, perche' e' la stessa cosa guardata una volta sola.
+    //
+    // COSA SI PERDE SENZA QUESTA ASSERZIONE: riordinare gli episodi nel JSON
+    // e non nel documento (o viceversa) non romperebbe niente — l'app
+    // funzionerebbe, con un ordine che la sua fonte non dichiara.
+    const nomeSeq = config.episodeSequence;
+    const seq = (config.episodeSequences || {})[nomeSeq];
+    log('[Ordine] Il corso dichiara una sequenza di episodi che esiste',
+      typeof nomeSeq === 'string' && Array.isArray(seq), nomeSeq + ' -> ' + JSON.stringify(seq));
+
+    const ordineDoc = righe.map(r => r[0].replace(/`/g, '').trim());
+    console.log('[Ordine] documento: ' + JSON.stringify(ordineDoc) +
+      ' | episodeSequences.' + nomeSeq + ': ' + JSON.stringify(seq));
+    log('[Ordine] L\'ordine del JSON e quello della tabella del documento combaciano',
+      JSON.stringify(ordineDoc) === JSON.stringify(seq));
+
+    // L'episodio d'ingresso e' un dato dell'EDIZIONE dal passo 1.13, non piu'
+    // un valore globale di app/config.js: `gate` non esiste in un corso
+    // francese. Qui si verifica che ci sia e che nomini un episodio vero —
+    // che e' meno ovvio di come suona, perche' un id sbagliato non ferma
+    // l'app: ripiega sul primo del corso e lo dice in console.
+    log('[Ordine] L\'episodio d\'ingresso e\' dichiarato dall\'edizione e nomina un episodio vero',
+      typeof config.episodioCorrente === 'string' && !!config.episodes[config.episodioCorrente],
+      String(config.episodioCorrente));
   }
 
   // ============ 5. Le due lingue del parlato ============

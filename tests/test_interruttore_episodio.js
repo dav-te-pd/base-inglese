@@ -47,9 +47,17 @@ function primaBattuta(file) {
   return dati.levels.D.items[0].english;
 }
 
-async function apri(page, utente) {
+// `override` e' facoltativo: quando c'e', si scrive nel magazzino DOPO il
+// clear e PRIMA del reload, cosi' l'app parte gia' con quel valore invece di
+// riceverlo a schermata aperta. E' la stessa strada del Pannello Admin —
+// `applyConfigOverrides` rimette gli override sopra il file di struttura —
+// quindi il test prova il meccanismo vero, non una scorciatoia sua.
+async function apri(page, utente, override) {
   await page.goto(BASE);
-  await page.evaluate(() => localStorage.clear());
+  await page.evaluate((ov) => {
+    localStorage.clear();
+    if (ov) localStorage.setItem('baseinglese:configOverrides', JSON.stringify(ov));
+  }, override || null);
   await page.reload();
   await page.waitForSelector('#name-input', { state: 'visible' });
   await page.fill('#name-input', utente);
@@ -144,6 +152,81 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     log('[A] Il menu parte sull\'episodio corrente, non su una voce a caso',
       stato.selezionato === stato.corrente, stato.selezionato + ' vs ' + stato.corrente);
     log('[A] Nessun errore JS', errors.length === 0, errors.join(' | '));
+    await page.close();
+  }
+
+  // ============ [O] L'ordine degli episodi e' un dato del corso (passo 1.13) ============
+  //
+  // COSA SI PERDE SENZA QUESTO BLOCCO. Prima di 1.13 l'ordine degli episodi
+  // era l'ordine in cui le chiavi stavano scritte dentro `episodes`: nessuna
+  // riga lo dichiarava, e riordinarlo voleva dire riordinare un oggetto JSON
+  // sperando che qualcuno lo notasse. Adesso lo dichiara `episodeSequences`,
+  // e questo blocco verifica che sia DAVVERO quello a decidere — non che sia
+  // giusto oggi, che lo era anche prima.
+  //
+  // ⚠️ COME, e non nel modo ovvio: l'ordine del file e quello delle chiavi
+  // OGGI COINCIDONO, quindi confrontare il menu con l'ordine del file sarebbe
+  // vero con tutt'e due le forme (regola 44 — vera per costruzione). Si
+  // ROVESCIA la sequenza negli override e si guarda se il menu la segue: la
+  // forma vecchia non si muoveva, questa si muove.
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await apri(page, 'InterruttoreO', { episodeSequences: { 'corso-inglese-a1': ['aircraft-door', 'gate'] } });
+    await apriPannello(page);
+    const rovesciato = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('#cfg-episodioCorrente option')).map(o => o.value));
+    console.log('    menu con la sequenza rovesciata: ' + rovesciato.join(', '));
+    log('[O] Il menu segue l\'ordine dichiarato dal corso, non quello delle chiavi',
+      rovesciato.join(',') === 'aircraft-door,gate', rovesciato.join(','));
+    log('[O] Nessun errore JS', errors.length === 0, errors.join(' | '));
+    await page.close();
+  }
+
+  // ============ [P] I due casi asimmetrici: chi manca e chi avanza ============
+  //
+  // Sono le due strade che `resolveEpisodeOrder` tratta in modo DIVERSO, ed e'
+  // il caso piu' diverso nel senso della regola 42: non il piu' complicato, ma
+  // quello a cui manca qualcosa.
+  //
+  //   - un id ELENCATO che non esiste  -> si toglie, e si dice
+  //   - un episodio che ESISTE e non e' elencato -> finisce IN CODA, e si dice
+  //
+  // La seconda e' la meno ovvia e la piu' importante: l'alternativa sarebbe
+  // farlo sparire, cioe' un episodio scritto e invisibile senza niente che lo
+  // dica — un guasto muto (regola 37).
+  //
+  // ⚠️ LIMITE DICHIARATO, misurato falsificando (regola 32): rimettendo la
+  // forma vecchia (`Object.keys(EPISODES)`) **due di queste tre asserzioni
+  // restano verdi**, e non per caso — con due soli episodi il menu di allora
+  // e l'ordine di adesso danno la stessa lista. L'unica che DISTINGUE e' la
+  // terza, «le due cose si dicono»: la forma vecchia non aveva niente da
+  // dire, perche' non filtrava. *Le prime due valgono come dichiarazione del
+  // comportamento scelto — la coda invece della sparizione — non come
+  // misura: lo diventeranno al terzo episodio, quando le due liste potranno
+  // finalmente essere diverse.*
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    const avvisi = [];
+    page.on('console', m => { if (m.type() === 'error') avvisi.push(m.text()); });
+    // 'non-esiste' e' elencato e non c'e'; 'aircraft-door' c'e' e non e' elencato.
+    await apri(page, 'InterruttoreP', { episodeSequences: { 'corso-inglese-a1': ['non-esiste', 'gate'] } });
+    await apriPannello(page);
+    const menu = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('#cfg-episodioCorrente option')).map(o => o.value));
+    console.log('    menu: ' + menu.join(', ') + ' | avvisi: ' + avvisi.length);
+    log('[P] L\'id elencato che non esiste non compare nel menu',
+      menu.indexOf('non-esiste') === -1, menu.join(','));
+    log('[P] L\'episodio non elencato NON sparisce: resta, in coda',
+      menu.join(',') === 'gate,aircraft-door', menu.join(','));
+    log('[P] E le due cose si DICONO, invece di succedere in silenzio',
+      avvisi.some(t => t.indexOf('non esistono') !== -1) &&
+      avvisi.some(t => t.indexOf('finiscono in coda') !== -1),
+      avvisi.join(' | '));
+    log('[P] Nessun errore JS', errors.length === 0, errors.join(' | '));
     await page.close();
   }
 

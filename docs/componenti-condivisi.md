@@ -107,3 +107,16 @@ non le sa scrivere.
 | `isIntroDismissed` | Se lo studente ha spuntato «non mostrare più» sull'intro di un tipo di modulo. **Dieci file la chiamano.** | `(kind, userName)` → booleano | ⚠️ Che esista un **secondo nome storico** per Repeat Aloud (`repeatAloudIntroDismissed`), letto se il primo manca: chi lo togliesse rifarebbe comparire l'intro a chi l'aveva già chiusa. |
 | `setIntroDismissed` | Scrive quella spunta. **Dieci file la chiamano.** | `(kind, userName, dismissed)` → niente | Scrive `'1'`/`'0'` come stringa, non il booleano. La coppia con `isIntroDismissed` va tenuta: sono lo stesso formato da due lati. |
 | `saveHelpRequest` | Accoda una richiesta di aiuto scritta dallo studente. | `(userName, entry)` → niente | Che la lista cresca e **non venga mai svuotata dall'app**: è un registro, non una coda. Nessuna schermata la mostra ancora. |
+
+## `app/catalogo.js` — l'ordine delle cose
+
+*Scritta col passo 1.13 (2026-09-22), che ha letto questa parte del file riga
+per riga (regola 46). Il resto di `catalogo.js` non e' ancora catalogato: si
+cataloga quando un passo lo legge, non prima.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `resolveModuleOrder(episodeId)` | risolve l'ordine dei **moduli di un episodio**: la sequenza che l'episodio dichiara, oppure il suo `moduleOrder` scritto per intero | `episodeId` → `{ order, errore }` | che `CONFIG.episodes` e `CONFIG.sequences` siano gia' arrivati dal file di struttura. **L'errore non e' un'eccezione: viaggia con l'episodio** e diventa la schermata d'errore quando si apre la mappa |
+| `resolveEpisodeOrder()` | il gemello un livello sopra: risolve l'ordine degli **episodi del corso**, da `episodeSequence` + `episodeSequences` | *niente* → `{ order, errore }` | che `EPISODES` sia gia' costruito. ⚠️ **Non alza mai e non lascia mai a mani vuote:** un id elencato che non esiste lo toglie, un episodio che esiste e non e' elencato lo mette **in coda**, e senza sequenza ripiega su `Object.keys(EPISODES)` — perche' l'ordine serve PRIMA di qualunque schermata, e fermarsi lascerebbe una pagina bianca. **Chi chiama deve stampare `errore`**: la funzione non lo fa da sé |
+| `episodiInOrdine()` | la sola lista, per chi deve solo elencarli | *niente* → array di id | che a `errore` pensi qualcun altro. **Da' per scontato di essere chiamato da un punto che NON e' l'avvio** — all'avvio si usa `resolveEpisodeOrder()` e si stampa l'errore una volta sola, invece di ripeterlo a ogni apertura del pannello |
+

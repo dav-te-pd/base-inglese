@@ -458,7 +458,15 @@
     // del corso nascerà lì, con il suo disegno. Questo interruttore serve a
     // RAGGIUNGERE un episodio per provarlo, e non deve diventare per
     // sbaglio il modo in cui gli studenti ne cambiano.
-    episodioCorrente: 'gate',
+    // ⚠️ IL VALORE NON E' PIU' QUI, DAL 2026-09-22 (passo 1.13): sta in
+    // `episodioCorrente` di `struttura-corso.json`, cioe' nell'EDIZIONE.
+    // `gate` non esiste in un corso francese, quindi un valore globale
+    // avrebbe fatto governare il francese da una scelta presa per l'inglese
+    // — l'ultimo superstite della famiglia che il passo 1.11 aveva ripulito.
+    // La chiave resta nominata qui solo da questo commento e dalla sua voce
+    // in configFieldDescriptions: il Pannello Admin continua a mostrarla e a
+    // scriverne l'override, perche' `applicaStruttura` rimette gli override
+    // SOPRA il file (vedi `app/dati.js`).
     // ---- Module Rules — which of three systems colors a module's map
     // badge, keyed by module id. Read this instead of the code to know
     // how a module gets judged:

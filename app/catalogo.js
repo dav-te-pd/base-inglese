@@ -330,6 +330,70 @@
     return { order: seq, errore: null };
   }
 
+  // ── L'ORDINE DEGLI EPISODI DI UN CORSO ──────────────────────────────────
+  //
+  // Il gemello di `resolveModuleOrder`, un livello sopra: la' i MODULI di un
+  // episodio, qui gli EPISODI di un corso. Il nome era stato LIBERATO il
+  // 2026-09-21 apposta per questa funzione (vedi la nota sopra), e la
+  // simmetria non e' estetica — e' la ragione per cui questa forma e' stata
+  // scelta invece di una lista semplice: *un ordine ha un nome, e qualcosa
+  // dichiara quale nome usa* vale ai due livelli, quindi e' UN concetto
+  // invece di due.
+  //
+  // ⚠️ MA C'E' UNA DIFFERENZA, E NON E' UNA DIMENTICANZA: qui NON esiste
+  // l'equivalente di `moduleOrder`, cioe' l'ordine scritto per intero che
+  // scavalca la sequenza. Quello esiste perche' il Pannello Admin lo scrive
+  // quando riordini i moduli a mano; per gli episodi il pannello non
+  // riordina (decisione del 2026-09-21: «e' molto piu' facile passare dal
+  // file»), quindi la scappatoia non avrebbe nessun utente. *Un meccanismo
+  // senza utenti e' `moduleOrderDefault`, tolto apposta il 2026-09-08.*
+  //
+  // ⚠️ E L'ERRORE NON FERMA L'AVVIO. `resolveModuleOrder` puo' far viaggiare
+  // il suo errore con l'episodio, che diventa la schermata d'errore quando si
+  // apre la mappa. Qui no: l'ordine serve PRIMA di qualunque schermata, e un
+  // errore che ferma tutto lascerebbe una pagina bianca. Quindi si dice in
+  // console e si ripiega sull'ordine in cui le chiavi stanno scritte in
+  // `episodes` — che e' esattamente quello che l'app faceva prima di questo
+  // passo, cioe' il ripiego non peggiora niente rispetto a ieri.
+  function resolveEpisodeOrder() {
+    var esistenti = Object.keys(EPISODES);
+    var nome = CONFIG.episodeSequence;
+    if (typeof nome !== 'string' || !nome) {
+      return { order: esistenti, errore: 'Il corso non dichiara nessun episodeSequence. ' +
+        'Si apre l\'ordine in cui gli episodi sono scritti in "episodes", che nessuno ha deciso.' };
+    }
+    var seq = CONFIG.episodeSequences && CONFIG.episodeSequences[nome];
+    if (!Array.isArray(seq)) {
+      return { order: esistenti, errore: 'Il corso chiede la sequenza di episodi "' + nome +
+        '", che non esiste in CONFIG.episodeSequences.' };
+    }
+    // Un id elencato che non esiste NON e' fatale: lo si toglie e lo si dice.
+    // *Un ordine che nomina un episodio non ancora scritto e' il caso normale
+    // mentre si costruisce il corso, non un guasto.*
+    var ignoti = seq.filter(function (id) { return !EPISODES[id]; });
+    var validi = seq.filter(function (id) { return !!EPISODES[id]; });
+    // E un episodio che ESISTE ma che la sequenza non nomina resta
+    // raggiungibile in coda, invece di sparire in silenzio: il contrario
+    // sarebbe un episodio scritto e invisibile, senza niente che lo dica.
+    var fuoriSequenza = esistenti.filter(function (id) { return seq.indexOf(id) === -1; });
+    var errore = null;
+    if (ignoti.length) {
+      errore = 'La sequenza di episodi "' + nome + '" nomina episodi che non esistono: ' +
+        ignoti.join(', ') + '.';
+    }
+    if (fuoriSequenza.length) {
+      errore = (errore ? errore + ' ' : '') + 'Questi episodi esistono ma la sequenza "' + nome +
+        '" non li nomina, quindi finiscono in coda: ' + fuoriSequenza.join(', ') + '.';
+    }
+    return { order: validi.concat(fuoriSequenza), errore: errore };
+  }
+
+  // L'ordine, gia' risolto, per chi deve solo elencarli. L'errore lo dice
+  // `resolveEpisodeOrder` a chi lo chiama; qui si vuole solo la lista.
+  function episodiInOrdine() {
+    return resolveEpisodeOrder().order;
+  }
+
   // ⚠️ I PASSI DI OGNI EPISODIO SI COSTRUISCONO ALL'ACCENSIONE, NON A TEMPO
   // DI PARSING. Passo 1.11a, 2026-09-20.
   //
@@ -416,5 +480,7 @@
   BI.EPISODES = EPISODES;
   BI.moduleStepId = moduleStepId;
   BI.resolveModuleOrder = resolveModuleOrder;
+  BI.resolveEpisodeOrder = resolveEpisodeOrder;
+  BI.episodiInOrdine = episodiInOrdine;
   BI.costruisciPassi = costruisciPassi;
 })(window.BI);

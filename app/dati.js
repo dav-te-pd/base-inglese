@@ -139,7 +139,13 @@ window.BI = window.BI || {};
   // due cambiamenti in un rosso solo.
   var STRUTTURA_CORSO_FILE = percorsoEdizione('struttura-corso.json');
 
-  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels', 'sequences', 'episodes'];
+  // ⚠️ `episodeSequences`, `episodeSequence` e `episodioCorrente` sono
+  // entrate il 2026-09-22 (passo 1.13): l'ORDINE degli episodi e quale
+  // episodio apre l'app appartengono al corso, non all'app. Prima
+  // `episodioCorrente` stava in `app/config.js` ed era l'ultimo valore
+  // globale della famiglia che il passo 1.11 aveva portato nell'edizione.
+  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels',
+    'sequences', 'episodes', 'episodeSequences', 'episodeSequence', 'episodioCorrente'];
 
   var strutturaPromise = null;
 
