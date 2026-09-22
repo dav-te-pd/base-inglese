@@ -6,6 +6,21 @@ name: Suite di regressione
 on:
   push:
     branches: [main]
+    # ⚠️ L'UNICA CARTELLA ESCLUSA, E L'UNICA CHE PUÒ ESSERLO SENZA MARCIRE.
+    # `nuovi/` è la sala d'attesa dei file che chi guida il progetto carica per
+    # farli guardare prima di sostituire quelli veri (vedi `nuovi/LEGGIMI.md`).
+    # Un `paths-ignore` invecchia in silenzio il giorno in cui qualcuno legge la
+    # cartella che esclude — cioè diventa una misura che non misura (regola 37).
+    # Questa, per definizione, non la legge né l'app né un test: misurato il
+    # 2026-09-22, i `readdirSync` della suite guardano solo `app/` e `tests/`, e
+    # `test_nomenclatura_edizione.js` solo `data/` e `docs/`. Se un giorno
+    # qualcuno la leggesse, vorrebbe dire che i file sono stati promossi e non
+    # sono più lì.
+    # ⚠️ E NON È UN BUCO: GitHub salta il workflow solo quando TUTTI i file
+    # cambiati cadono nel filtro. Un push che mescola `nuovi/` e codice fa
+    # partire la suite lo stesso.
+    paths-ignore:
+      - 'nuovi/**'
 
 jobs:
   regressione:

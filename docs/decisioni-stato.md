@@ -819,6 +819,36 @@ Condizione: quando nasce il caricamento a richiesta.
 
 ---
 
+# ✅ `nuovi/` — LA CARTELLA DI APPOGGIO — decisa e fatta il 2026-09-22
+
+**Chiesto:** *«Voglio mettere i file nuovi in un posto solo per farteli leggere.
+Non cancelliamo gli altri finché non siamo sicuri che vadano bene.»*
+
+**Fatto:** cartella `nuovi/` alla radice, con il suo `LEGGIMI.md` che spiega da
+solo cosa è e cosa non si fa (una sessione futura trova la cartella, non questa
+riga). `.github/workflows/regressione.yml` ha `paths-ignore: ['nuovi/**']`.
+
+**Le tre misure che hanno deciso, e nessuna è un'opinione:**
+
+| Domanda | Misura, 2026-09-22 |
+|---|---|
+| Perché non sotto `docs/` | `test_nomenclatura_edizione.js` scandisce `data/` e `docs/` e pretende **esattamente quattro pezzi** di percorso. `docs/nuovi/x.md` **non lo vede** (scende di due livelli e lì trova un file); `docs/inglese/it-nuovo/x.md` è **rosso**. *La prima non è una buona notizia: è una cartella che un test guarda **quasi**.* |
+| Perché alla radice si può | **Nessun test scandisce altre radici**: i `readdirSync` della suite guardano solo `app/` e `tests/`. La cartella è invisibile alla suite **per costruzione**, non per una configurazione da ricordarsi. |
+| Perché il `paths-ignore` non marcisce | Un filtro che esclude una cartella **letta da qualcuno** è una misura che non misura (regola 37). Questa non la legge né l'app né un test — **il giorno in cui qualcuno la leggesse, i file non sarebbero più lì**. È l'unico caso in cui quel filtro è sicuro per definizione, e per questo non se ne aggiungono altri. |
+
+⚠️ **E il guardiano della versione non ci inciampa:** `tests/tools/versione-salita.js`
+guarda solo `index.html`, `app/*.js` e `stile/*.css`. Un push di soli file
+d'appoggio non chiede di alzare la versione, e **non la salta nemmeno al push
+successivo** — il `github.event.before` di quello punterebbe a un commit che
+codice non ne ha cambiato.
+
+**I nomi dentro `nuovi/` possono essere versionati**, su richiesta di chi carica
+(*«sennò non ci capisco più nulla»*): nessun test li guarda, quindi la regola 4
+lì non si applica — e **non vanno «sistemati» da una sessione futura che li
+trova.** La convenzione torna a valere nell'istante della promozione.
+
+---
+
 # ⚠️ I SEI FILE DI CONTENUTO: COSA E' FALSO OGGI — misurato il 2026-09-20
 
 **Misurato su richiesta, e NON corretto di proposito** (regola 33: quei file
@@ -891,6 +921,14 @@ Non si deducono guardando il codice.
    fa quello che dice. Le altre righe false dello stesso file dicono soltanto
    cose non piu' vere. **Vale per tutti e sei i file**, e decide l'ordine in cui
    si riscrivono.
+9. ⚠️ **DA `nuovi/` NON SI PROMUOVE NIENTE DI INIZIATIVA.** Quello che sta lì è
+   contenuto di chi guida il progetto, esattamente come `docs/{lingua}/` — solo
+   che la **regola 33 nomina quella cartella e non questa**, quindi il divieto
+   sta qui e in `nuovi/LEGGIMI.md`. Si legge, si confrontano le differenze col
+   file vero, si riportano, **e si aspetta l'ok**. *Il rischio non è teorico: una
+   sessione futura trova lì dentro un file «ovviamente più nuovo» di quello vero
+   e lo copia sopra — e i nomi versionati che quella cartella ammette lo fanno
+   sembrare pure ragionevole.*
 
 ---
 
