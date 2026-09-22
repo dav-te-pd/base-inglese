@@ -65,7 +65,16 @@ const ALL_BEFORE_VP = stepsBefore('voicePractice');
 async function run() {
   const browser = await launchBrowser();
   const results = [];
-  const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+  // Il terzo parametro e' il DETTAGLIO, e si stampa solo quando la riga e'
+  // rossa — stessa forma di tests/test_batch19.js: un rosso che non dice in
+  // quale dei suoi stati sia costringe chi lo trova a riprodurre invece di
+  // leggere, e sulla CI riprodurre non si puo'. Sulla riga verde non compare,
+  // cosi' il log resta quello di sempre e il contatore delle asserzioni conta
+  // comunque il prefisso, che non cambia.
+  const log = (msg, ok, dettaglio) => {
+    results.push({ msg, ok });
+    console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg + (!ok && dettaglio ? '  -> ' + dettaglio : ''));
+  };
 
   // ============ JOB 6a: silence-cutoff + max-duration params live in APP_CONFIG and the config panel ============
   {
@@ -157,10 +166,28 @@ async function run() {
     // silenzio SAREBBE scattato, per verificare che non sia scattato. Un non-evento non
     // si aspetta: il tempo e' la misura.
     await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto
-    const warningVisible = await page.evaluate(() => !document.getElementById('vc-silence-warning').hidden);
-    log('[6b] Recognized speech before the timeout: no silence warning (false-discard guard)', !warningVisible);
-    const confirmAreaVisible = await page.evaluate(() => !document.getElementById('vc-confirm-area').hidden);
-    log('[6b] Normal pending/confirm flow reached instead', confirmAreaVisible);
+    // ⚠️ LO STATO SI LEGGE TUTTO INSIEME, E SI STAMPA QUANDO UNA DELLE DUE
+    // RIGHE E' ROSSA — aggiunto il 2026-09-22 dopo un rosso di CI che non si
+    // poteva diagnosticare: sul runner questa riga e' caduta con l'avviso di
+    // silenzio ASSENTE *e* l'area di conferma CHIUSA, cioe' in uno stato che
+    // non e' nessuno dei due previsti, e dal log non si capiva quale.
+    //
+    // ⚠️ E LA CAUSA NON E' IL TETTO DI 500 ms: misurata il 2026-09-22, la
+    // catena "stop -> area di conferma visibile" ci mette 11-15 ms in locale
+    // su cinque giri, cioe' un margine di 485 ms. Il runner dovrebbe essere
+    // trentatre volte piu' lento. *Per questo qui si aggiunge la DIAGNOSI e
+    // non una correzione: sistemare un rosso che non si capisce e' fare una
+    // misura che non misura (regola 37).*
+    const stato6b = await page.evaluate(() => ({
+      avviso: !document.getElementById('vc-silence-warning').hidden,
+      conferma: !document.getElementById('vc-confirm-area').hidden,
+      registrando: document.getElementById('vc-record-btn').classList.contains('is-recording'),
+      pulsanteNascosto: document.getElementById('vc-record-btn').hidden
+    }));
+    const dettaglio6b = JSON.stringify(stato6b);
+    log('[6b] Recognized speech before the timeout: no silence warning (false-discard guard)',
+      !stato6b.avviso, dettaglio6b);
+    log('[6b] Normal pending/confirm flow reached instead', stato6b.conferma, dettaglio6b);
     log('[6b] No JS errors', errors.length === 0);
     await page.close();
   }
