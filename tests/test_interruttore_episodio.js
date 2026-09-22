@@ -32,7 +32,7 @@
 // dell'episodio, e un descrittore sbagliato su un solo modulo passerebbe.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, strutturaCorso, attendiPrimaSchermata , fileEdizione } = require('./test-env');
 
 const BASE = APP_URL;
 let passed = 0, failed = 0;
@@ -42,8 +42,17 @@ function log(name, ok, extra) {
 }
 
 // La prima battuta inglese del grado D di un episodio, letta dal suo file.
-function primaBattuta(file) {
-  const dati = JSON.parse(fs.readFileSync(repoPath.apply(null, file.split('/')), 'utf8'));
+//
+// ⚠️ SI PARTE DALL'ID, NON DAL PERCORSO — passo 1.19, 2026-09-22. Prima i due
+// percorsi erano incollati (`...inglese-it-aircraft-door.json` e
+// `...-gate.json`), cioe' il test sapeva QUALE episodio fosse il secondo. Con
+// l'ordine diventato un dato (passo 1.13), scambiare le due righe della
+// sequenza faceva andare rossi [B] e [C] su un'app che funzionava benissimo:
+// *non e' un difetto dell'app, e' il test che dava per scontato che `gate`
+// fosse il primo.* Il nome del file si costruisce come lo costruisce l'app —
+// `fileEdizione` di test-env.js, il gemello di `percorsoEdizione` (regola 24).
+function primaBattuta(episodeId) {
+  const dati = JSON.parse(fs.readFileSync(fileEdizione(episodeId + '.json'), 'utf8'));
   return dati.levels.D.items[0].english;
 }
 
@@ -237,8 +246,10 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     page.on('pageerror', e => errors.push(e.message));
     await apri(page, 'InterruttoreB');
     await apriPannello(page);
-    const secondo = await page.evaluate(() =>
-      Array.from(document.querySelectorAll('#cfg-episodioCorrente option')).map(o => o.value)[1]);
+    const idsB = await page.evaluate(() =>
+      Array.from(document.querySelectorAll('#cfg-episodioCorrente option')).map(o => o.value));
+    const primo = idsB[0];
+    const secondo = idsB[1];
     const ripartita = await scegliEpisodio(page, secondo);
     log('[B] Scegliere un episodio fa ripartire la pagina', ripartita,
       'la scelta e\' rimasta solo in memoria: senza ricarica la mappa resta quella di prima');
@@ -266,12 +277,15 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
       log('[B] Il pulsante di casa e il badge in mappa nominano lo stesso episodio',
         !!badgeMappa && pulsanteCasa.indexOf(badgeMappa) !== -1,
         'pulsante: "' + pulsanteCasa + '"  |  mappa: "' + badgeMappa + '"');
-      const attesa2 = primaBattuta('data/inglese/it/inglese-it-aircraft-door.json');
-      const attesa1 = primaBattuta('data/inglese/it/inglese-it-gate.json');
+      // I due attesi si ricavano dagli ID del menu — `secondo` e `primo` —
+      // invece di nominare due file: cosi' riordinare la sequenza degli
+      // episodi non tocca questo test, che di quell'ordine non parla.
+      const attesaScelto = primaBattuta(secondo);
+      const attesaPrimo = primaBattuta(primo);
       log('[B] Meet the Story mostra la prima battuta del file dell\'episodio scelto',
-        battute.indexOf(attesa2) !== -1, 'cercata: ' + attesa2);
-      log('[B] E NON quella dell\'episodio 1: il contenuto e\' cambiato davvero',
-        battute.indexOf(attesa1) === -1, 'trovata anche: ' + attesa1);
+        battute.indexOf(attesaScelto) !== -1, 'cercata: ' + attesaScelto + ' (' + secondo + ')');
+      log('[B] E NON quella del primo: il contenuto e\' cambiato davvero',
+        battute.indexOf(attesaPrimo) === -1, 'trovata anche: ' + attesaPrimo + ' (' + primo + ')');
     }
     log('[B] Nessun errore JS', errors.length === 0, errors.join(' | '));
     await page.close();
@@ -296,7 +310,7 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     if (andata && ritorno) {
       const battute = await battuteDiMeetTheStory(page, ids[0], 'InterruttoreC');
       log('[C] Tornando al primo episodio torna il contenuto del primo',
-        battute.indexOf(primaBattuta('data/inglese/it/inglese-it-gate.json')) !== -1);
+        battute.indexOf(primaBattuta(ids[0])) !== -1, 'primo del corso: ' + ids[0]);
     }
     log('[C] Nessun errore JS', errors.length === 0, errors.join(' | '));
     await page.close();

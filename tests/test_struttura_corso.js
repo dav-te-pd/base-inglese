@@ -206,12 +206,27 @@ async function run() {
     });
 
     console.log('[Episodi] documento: ' + JSON.stringify(dalDoc));
-    const ok = JSON.stringify(dalDoc) === JSON.stringify(daConfig);
+    // ⚠️ SI CONFRONTA CHIAVE PER CHIAVE, NON CON `JSON.stringify` DEI DUE
+    // OGGETTI — passo 1.19, 2026-09-22. `stringify` di un oggetto dipende
+    // dall'ORDINE DELLE CHIAVI, quindi questa riga misurava anche l'ordine di
+    // `episodes` senza dichiararlo: scambiare due righe faceva rosso qui,
+    // dove si parla di NOMI e CATEGORIE e l'ordine non c'entra.
+    //
+    // ⚠️ E NON E' UN CONTROLLO IN MENO: l'ordine ha la sua riga, [Ordine] qui
+    // sotto, che lo confronta con `episodeSequences` — cioe' con il posto in
+    // cui il passo 1.13 ha deciso che l'ordine vive. *Prima era misurato due
+    // volte, una delle quali per sbaglio e nel posto sbagliato.*
+    const chiaviDoc = Object.keys(dalDoc).slice().sort();
+    const chiaviConfig = Object.keys(daConfig).slice().sort();
+    const stessiId = JSON.stringify(chiaviDoc) === JSON.stringify(chiaviConfig);
+    const ok = stessiId && chiaviDoc.every(function (id) {
+      return JSON.stringify(dalDoc[id]) === JSON.stringify(daConfig[id]);
+    });
     if (!ok) diff('episodi', dalDoc, daConfig);
     // ⚠️ IL NOME È TESTO CHE LEGGE LO STUDENTE, quindi si confronta carattere
     // per carattere come i sottotitoli dei moduli: un apostrofo diverso fra
     // documento e JSON è un apostrofo diverso a schermo.
-    log('[Episodi] Nome, categoria e sequenza combaciano col file di struttura', ok);
+    log('[Episodi] Ci sono gli stessi episodi, e nome/categoria/sequenza combaciano — qualunque sia l\'ordine', ok);
 
     const categorie = Object.keys(daConfig).map(function (k) { return daConfig[k].categoria; });
     const ammesse = ['storia', 'grammatica', 'pronuncia'];

@@ -211,8 +211,8 @@
   },
   "episodeSequences": {
     "corso-inglese-a1": [
-      "gate",
-      "aircraft-door"
+      "aircraft-door",
+      "gate"
     ]
   },
   "episodeSequence": "corso-inglese-a1",
