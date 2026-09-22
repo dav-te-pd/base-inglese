@@ -115,6 +115,18 @@
     "noRuleHint": "Qui non c'è niente di nuovo: è solo la storia.",
     "lockedHint": "Prima le regole qui sopra"
   },
+  "listaEpisodi": {
+    "howItWorks": {
+      "title": "I tuoi episodi",
+      "body": "<p>Questa è la lista degli episodi del corso, nell'ordine in cui si fanno.</p><p>Puoi aprire l'episodio attuale, o tornare su uno che hai già finito. Il successivo si sblocca quando hai completato <b>l'ultimo passaggio</b> di quello che stai facendo.</p>"
+    },
+    "helpReminder": {
+      "title": "Come funziona, in breve",
+      "body": "<p>Apri l'episodio attuale, o uno già finito per rivederlo. Il successivo arriva quando chiudi l'ultimo passaggio di questo.</p>"
+    },
+    "pageTitle": "I tuoi episodi",
+    "pageSubtitle": "Completa un episodio per sbloccare il successivo."
+  },
   "mappaEpisodio": {
     "howItWorks": {
       "title": "Mappa dell'episodio",
@@ -327,6 +339,7 @@
     "rispostaCorretta": "Risposta corretta: ",
     "nascondiPronuncia": "Nascondi pronuncia",
     "salutoHome": "Ciao, {nome}!",
-    "iniziaEpisodioNominato": "Inizia {episodio}"
+    "iniziaEpisodioNominato": "Inizia {episodio}",
+    "tuoiEpisodi": "I tuoi episodi"
   }
 }

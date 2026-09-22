@@ -1,41 +1,41 @@
-# I listener dell'app, uno per riga: <famiglia> <id>|<tipo>.
 #
-# NON E' UNA STATISTICA: e' la difesa contro un listener che SPARISCE.
 #
-# ⚠️ E nasce da un buco trovato falsificando, il 2026-09-16. La prima forma
-# del test derivava l'elenco atteso dal SORGENTE — cioe' dallo stesso file
-# che stava controllando. Togliendo la riga di un listener, quel listener
-# spariva anche dalle ATTESE, e il test restava verde: si misurava contro se
-# stesso. E' la stessa forma dell'asserzione vera per costruzione (regola 44),
-# spostata dall'asserzione all'ELENCO su cui gira.
 #
-# Il passo 21-quater SPOSTA i listener dentro l'open del proprio modulo, non
-# ne aggiunge e non ne toglie: **queste righe devono restare identiche per
-# tutte e otto le conversioni.** Un diff qui dentro durante il 21-quater e' un
-# errore, non un aggiornamento. **In otto giri non e' cambiato di una riga.**
 #
-# ⚠️ E IL 2026-09-21: 103 -> 104. Nasce `load-error-reset`, la TERZA uscita
-# della schermata d'errore — «Ripristina i valori di partenza». Non e' un
-# pulsante in piu' per simmetria: le due uscite che c'erano rifanno tutte e
-# due la stessa strada, e quando e' la CONFIGURAZIONE a essere sbagliata
-# rifanno tutte e due lo stesso muro. Aggiunto di proposito, e il baseline e'
-# stato riscritto nello stesso commit.
 #
-# Si riscrive solo quando qualcuno aggiunge o toglie un pulsante DI PROPOSITO:
+#
+#
+#
 #   node tests/tools/scrivi-baseline-listener.js
-#
-# ⚠️ E IL 2026-09-19 E' SUCCESSO PER LA PRIMA VOLTA, 107 -> 103. Il passo A ha
-# tolto `view-pronunciation`, la schermata che nessun punto dell'app poteva
-# aprire, e con lei i suoi QUATTRO listener: `back-home`, `edit-custom`,
-# `mic-btn`, `speak-btn`. **Non e' una regressione ed era previsto, scritto
-# prima di lanciare:** quattro, esattamente quattro, e nessun altro.
-#
 # *Il valore di questo file sta tutto qui: il giorno in cui cambia, il numero
-# atteso era gia' stato scritto. Un baseline che cala senza un numero scritto
-# prima non distingue una pulizia da una perdita.*
-#
-# Ultimo aggiornamento: 2026-09-19 (passo A)
+# I listener dell'app, uno per riga: <famiglia> <id>|<tipo>.
+# Il passo 21-quater SPOSTA i listener dentro l'open del proprio modulo, non
+# NON E' UNA STATISTICA: e' la difesa contro un listener che SPARISCE.
+# Si riscrive solo quando qualcuno aggiunge o toglie un pulsante DI PROPOSITO:
 # Totale: 104
+# Ultimo aggiornamento: 2026-09-19 (passo A)
+# `mic-btn`, `speak-btn`. **Non e' una regressione ed era previsto, scritto
+# aprire, e con lei i suoi QUATTRO listener: `back-home`, `edit-custom`,
+# atteso era gia' stato scritto. Un baseline che cala senza un numero scritto
+# che stava controllando. Togliendo la riga di un listener, quel listener
+# del test derivava l'elenco atteso dal SORGENTE — cioe' dallo stesso file
+# della schermata d'errore — «Ripristina i valori di partenza». Non e' un
+# due la stessa strada, e quando e' la CONFIGURAZIONE a essere sbagliata
+# errore, non un aggiornamento. **In otto giri non e' cambiato di una riga.**
+# ne aggiunge e non ne toglie: **queste righe devono restare identiche per
+# prima di lanciare:** quattro, esattamente quattro, e nessun altro.
+# prima non distingue una pulizia da una perdita.*
+# pulsante in piu' per simmetria: le due uscite che c'erano rifanno tutte e
+# rifanno tutte e due lo stesso muro. Aggiunto di proposito, e il baseline e'
+# spariva anche dalle ATTESE, e il test restava verde: si misurava contro se
+# spostata dall'asserzione all'ELENCO su cui gira.
+# stato riscritto nello stesso commit.
+# stesso. E' la stessa forma dell'asserzione vera per costruzione (regola 44),
+# tolto `view-pronunciation`, la schermata che nessun punto dell'app poteva
+# tutte e otto le conversioni.** Un diff qui dentro durante il 21-quater e' un
+# ⚠️ E IL 2026-09-19 E' SUCCESSO PER LA PRIMA VOLTA, 107 -> 103. Il passo A ha
+# ⚠️ E IL 2026-09-21: 103 -> 104. Nasce `load-error-reset`, la TERZA uscita
+# ⚠️ E nasce da un buco trovato falsificando, il 2026-09-16. La prima forma
 condiviso attempt-popup-next|click 1
 condiviso attempt-popup-retry|click 1
 condiviso config-panel-backdrop|click 1
@@ -43,13 +43,24 @@ condiviso config-panel-body|change 1
 condiviso config-panel-body|click 1
 condiviso config-panel-close-btn|click 1
 condiviso config-panel-reset-btn|click 1
-personalizza customize-back-home|click 1
-personalizza customize-help-btn|click 1
-personalizza customize-intro-start-btn|click 1
-personalizza customize-warning-cancel-btn|click 1
-personalizza customize-warning-confirm-btn|click 1
-personalizza customize-warning-confirm-input|input 1
-personalizza customize-watch-btn|click 1
+condiviso go-episode|click 1
+condiviso help-overlay-backdrop|click 1
+condiviso help-overlay-body|click 1
+condiviso help-overlay-body|submit 1
+condiviso help-overlay-close|click 1
+condiviso howitworks-overlay-backdrop|click 1
+condiviso howitworks-overlay-close-btn|click 1
+condiviso load-error-back|click 1
+condiviso load-error-reset|click 1
+condiviso load-error-retry|click 1
+condiviso map-back-home|click 1
+condiviso map-help-btn|click 1
+condiviso map-intro-start-btn|click 1
+condiviso map-watch-btn|click 1
+condiviso module-list|click 1
+condiviso onboarding-form|submit 1
+condiviso switch-user|click 1
+condiviso theme-picker|click 1
 dialogo dg-choice-row|click 1
 dialogo dg-complete-btn|click 2
 dialogo dg-list|click 1
@@ -68,25 +79,14 @@ flashcard fc-retry-continue-btn|click 1
 flashcard flashcard-back-map|click 1
 flashcard flashcard-help-btn|click 1
 flashcard flashcard-watch-btn|click 1
-condiviso go-episode|click 1
-condiviso help-overlay-backdrop|click 1
-condiviso help-overlay-body|click 1
-condiviso help-overlay-body|submit 1
-condiviso help-overlay-close|click 1
-condiviso howitworks-overlay-backdrop|click 1
-condiviso howitworks-overlay-close-btn|click 1
-condiviso load-error-back|click 1
-condiviso load-error-reset|click 1
-condiviso load-error-retry|click 1
-condiviso map-back-home|click 1
-condiviso map-help-btn|click 1
-condiviso map-intro-start-btn|click 1
-condiviso map-watch-btn|click 1
+mappa episode-list|click 1
+mappa episodes-back-home|click 1
+mappa episodes-help-btn|click 1
+mappa episodes-watch-btn|click 1
+mappa go-episodes-list|click 1
 match match-back-map|click 1
 match match-help-btn|click 1
 match match-watch-btn|click 1
-condiviso module-list|click 1
-condiviso onboarding-form|submit 1
 match qm-advance-btn|click 1
 match qm-complete-btn|click 2
 match qm-dontknow-btn|click 1
@@ -94,6 +94,19 @@ match qm-options|click 1
 match qm-prompt-audio|click 1
 match qm-retry-continue-btn|click 1
 match qm-start-btn|click 1
+personalizza customize-back-home|click 1
+personalizza customize-help-btn|click 1
+personalizza customize-intro-start-btn|click 1
+personalizza customize-warning-cancel-btn|click 1
+personalizza customize-warning-confirm-btn|click 1
+personalizza customize-warning-confirm-input|input 1
+personalizza customize-watch-btn|click 1
+personalizza request-fields|click 1
+personalizza request-fields|keydown 1
+personalizza slot-grid|change 1
+personalizza slot-grid|click 1
+personalizza slot-grid|input 1
+personalizza start-episode|click 1
 repeatAloud repeat-aloud-back-map|click 1
 repeatAloud repeat-aloud-body|click 1
 repeatAloud repeat-aloud-complete-btn|click 2
@@ -101,11 +114,6 @@ repeatAloud repeat-aloud-complete|click 1
 repeatAloud repeat-aloud-help-btn|click 1
 repeatAloud repeat-aloud-intro-start-btn|click 1
 repeatAloud repeat-aloud-watch-btn|click 1
-personalizza request-fields|click 1
-personalizza request-fields|keydown 1
-personalizza slot-grid|change 1
-personalizza slot-grid|click 1
-personalizza slot-grid|input 1
 speedMatch speed-match-back-map|click 1
 speedMatch speed-match-help-btn|click 1
 speedMatch speed-match-watch-btn|click 1
@@ -115,7 +123,6 @@ speedMatch sr-dontknow-btn|click 1
 speedMatch sr-options|click 1
 speedMatch sr-ready-btn|click 1
 speedMatch sr-retry-continue-btn|click 1
-personalizza start-episode|click 1
 storyCards story-cards-back-map|click 1
 storyCards story-cards-body|click 1
 storyCards story-cards-complete-btn|click 2
@@ -124,8 +131,6 @@ storyCards story-cards-help-btn|click 1
 storyCards story-cards-intro-start-btn|click 1
 storyCards story-cards-resume-later|click 1
 storyCards story-cards-watch-btn|click 1
-condiviso switch-user|click 1
-condiviso theme-picker|click 1
 voice vc-audio-controls|click 1
 voice vc-cancel-btn|click 1
 voice vc-mic-notice-actions|click 1

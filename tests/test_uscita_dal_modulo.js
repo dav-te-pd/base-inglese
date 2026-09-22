@@ -150,8 +150,13 @@ async function run() {
     // lei. **Rosso da seguire:** l'invariante è «ogni punto che lascia un
     // modulo passa di qui», e un punto in meno non lo indebolisce — era il
     // punto di una schermata che nessuno poteva aprire.
-    log('[A] E i punti che lasciano un modulo passano da leaveModule: sono 11',
-      quante === 11, String(quante));
+    // ⚠️ DODICI dal passo 1.13-bis (2026-09-22): il dodicesimo e'
+    // `leaveModule('episodes')`, la lista degli episodi. *Il numero e' scritto
+    // qui apposta e non contato dal sorgente: contarlo lo renderebbe vero per
+    // costruzione, e questa riga esiste proprio perche' un punto nuovo che
+    // NON passa da leaveModule si faccia notare.*
+    log('[A] E i punti che lasciano un modulo passano da leaveModule: sono 12',
+      quante === 12, String(quante));
   }
 
   // ── [B] USCENDO DA UN MODULO, LA PULIZIA AVVIENE ─────────────────────

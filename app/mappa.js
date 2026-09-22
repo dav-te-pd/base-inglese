@@ -392,7 +392,52 @@
   // nessuna rete — nessun test apriva la mappa da `#go-episode` con un
   // profilo nuovo.*
   // ============================================================
+  // ⚠️ IL PULSANTE DI CASA RESTA COM'ERA, e il passo 1.13-bis AGGIUNGE
+  // accanto un secondo pulsante per la lista degli episodi. La regola 1 dice
+  // che le modifiche sono additive per default, e qui c'e' una ragione in
+  // piu': **quel pulsante NOMINA un episodio** — «Inizia ‹Al gate›» — quindi
+  // mandarlo a una lista contraddirebbe la sua stessa scritta.
+  //
+  // ⚠️ E LA MISURA HA CONFERMATO LA REGOLA invece di limitarsi a
+  // ricordarla: cambiargli destinazione faceva passare **102 punti in 57
+  // file** di test attraverso una schermata in piu' — tutti quelli che da
+  // casa vanno alla mappa. *Non e' il costo a decidere, e' il fatto che un
+  // pulsante che dice «Inizia Al gate» deve iniziare «Al gate».*
+  //
+  // Lo studente ha cosi' tutte e due le strade: **continua da dove eri** e
+  // **guarda tutti gli episodi**. La catena resta in un punto solo — queste
+  // due righe — come chiesto: una schermata sa disegnarsi, non sa chi viene
+  // dopo.
   document.getElementById('go-episode').addEventListener('click', openEpisodeMap);
+  document.getElementById('go-episodes-list').addEventListener('click', openEpisodes);
+
+  // La riga di un episodio apre LA SUA mappa. Non ricarica la pagina — a
+  // differenza dell'interruttore del Pannello Admin, che ricarica perche'
+  // cambia una scelta di configurazione: qui i passi di TUTTI gli episodi
+  // sono gia' costruiti (`costruisciPassi` gira al boot su ognuno), quindi
+  // basta dire qual e' quello corrente.
+  //
+  // Il listener sta sul contenitore e non sulle righe: le righe si
+  // ridisegnano a ogni apertura, e un listener per riga sarebbe un listener
+  // in piu' a ogni giro.
+  document.getElementById('episode-list').addEventListener('click', function (e) {
+    var riga = e.target.closest && e.target.closest('[data-episode]');
+    if (!riga || riga.disabled) return;
+    var ep = EPISODES[riga.getAttribute('data-episode')];
+    if (!ep) return;
+    BI.impostaEpisodioCorrente(ep);
+    openEpisodeMap();
+  });
+
+  document.getElementById('episodes-watch-btn').addEventListener('click', function () {
+    openHowItWorksOverlay(EPISODES_PSEUDO_MODULE, { dismissPref: introDismissPref('listaEpisodi') });
+  });
+
+  document.getElementById('episodes-help-btn').addEventListener('click', function () {
+    openHelpFor(EPISODES_PSEUDO_MODULE);
+  });
+
+  document.getElementById('episodes-back-home').addEventListener('click', goHome);
 
   document.getElementById('map-watch-btn').addEventListener('click', function () {
     openHowItWorksOverlay(MAP_PSEUDO_MODULE, { dismissPref: introDismissPref('mappaEpisodio') });
@@ -1152,6 +1197,103 @@
     document.getElementById('module-list').innerHTML = html;
   }
 
+  // ══ LA LISTA DEGLI EPISODI, e lo SBLOCCO PER COMPLETAMENTO ═════════════
+  //
+  // Passo 1.13-bis, 2026-09-22. Un livello sopra la mappa: la mappa elenca i
+  // MODULI di un episodio, questa elenca gli EPISODI del corso — nell'ordine
+  // che `resolveEpisodeOrder` risolve (passo 1.13), non in quello delle
+  // chiavi del file.
+  //
+  // ⚠️ LA TERZA VARIANTE DELLO SBLOCCO SEQUENZIALE (regola 30), e le altre
+  // due restano dove sono: per ASCOLTO (Ripeti a Tempo) e per DICHIARAZIONE
+  // (Why We Say It). Questa e' per COMPLETAMENTO.
+  //
+  // ⚠️ E DECIDE L'ULTIMA POSIZIONE, NON UN MODULO. Chi guida il progetto:
+  // *«non deve essere collegato ad un modulo lo sblocco dell'episodio
+  // successivo, ma all'ultima posizione»*. La ragione e' misurabile e non
+  // estetica: gli episodi di `grammatica` avranno MENO MODULI e nessun grado
+  // D, quindi legare lo sblocco a un modulo per nome romperebbe ogni episodio
+  // che quel modulo non ce l'ha. *L'ultima posizione esiste in ogni sequenza,
+  // qualunque cosa contenga.*
+  //
+  // ⚠️ E NEMMENO UN CONTEGGIO: «tutti i moduli fatti» sembra equivalente e
+  // non lo e'. Aggiungere un passo in mezzo a una sequenza, con il conteggio,
+  // ri-bloccherebbe di colpo tutti gli episodi che erano finiti; con l'ultima
+  // posizione, un passo aggiunto PRIMA dell'ultimo non tocca niente.
+  function episodeStatus(episodeId, primoIncompleto) {
+    var ep = EPISODES[episodeId];
+    var passi = (ep && ep.modules) || [];
+    // Un episodio senza passi non e' «finito»: e' rotto (orderError), e lo
+    // dice la mappa quando lo si apre. Qui non lo si dichiara completato per
+    // sbaglio solo perche' non ha un ultimo passo da controllare.
+    if (!passi.length) return episodeId === primoIncompleto ? 'current' : 'locked';
+    return episodeId === primoIncompleto ? 'current'
+      : (episodiCompletati[episodeId] ? 'completed' : 'locked');
+  }
+
+  // Il calcolo si fa UNA VOLTA per disegno, non una per riga: leggere il
+  // progresso di ogni episodio dentro `episodeStatus` significherebbe
+  // rileggere il magazzino tante volte quante sono le righe.
+  var episodiCompletati = {};
+  function calcolaStatoEpisodi() {
+    var ordine = BI.resolveEpisodeOrder().order;
+    var utente = getUserName();
+    episodiCompletati = {};
+    var primoIncompleto = null;
+    ordine.forEach(function (id) {
+      var passi = (EPISODES[id] && EPISODES[id].modules) || [];
+      var ultimo = passi.length ? passi[passi.length - 1].id : null;
+      var fatto = false;
+      if (ultimo) {
+        fatto = loadModuleProgress(id, utente).completed.indexOf(ultimo) !== -1;
+      }
+      episodiCompletati[id] = fatto;
+      if (!fatto && primoIncompleto === null) primoIncompleto = id;
+    });
+    // Corso finito: nessun incompleto. L'ultimo resta apribile (e' completato,
+    // quindi cliccabile) invece di lasciare una lista tutta spenta.
+    return { ordine: ordine, primoIncompleto: primoIncompleto };
+  }
+
+  function renderEpisodeList() {
+    var st = calcolaStatoEpisodi();
+    var html = st.ordine.map(function (id) {
+      var stato = episodeStatus(id, st.primoIncompleto);
+      var ep = EPISODES[id];
+      var cliccabile = stato !== 'locked';
+      var categoria = ep && ep.categoria;
+      var catHtml = categoria ? '<span class="module-row-type">' + categoria + '</span>' : '';
+      return '<button type="button" class="module-row ' + stato + '" data-episode="' + id + '"' +
+        (cliccabile ? '' : ' disabled') + '>' +
+        '<span class="module-row-label"><span class="module-status-icon">' + icon(STATUS_ICON[stato]) + '</span>' +
+        '<span class="module-row-label-text"><span class="module-row-title">' + (ep ? ep.nome : id) + '</span>' +
+        catHtml + '</span></span>' +
+        '<span class="module-state-badge">' + STATUS_LABEL[stato] + '</span>' +
+        '</button>';
+    }).join('');
+    document.getElementById('episode-list').innerHTML = html;
+  }
+
+  // Pseudo-modulo come MAP_PSEUDO_MODULE: la lista degli episodi non e' un
+  // modulo, ma ha una schermata sua e quindi i suoi due testi (regola 8), e
+  // la macchina condivisa di Help/Spiegazione chiede solo `.kind` e `.id`.
+  var EPISODES_PSEUDO_MODULE = { id: 'listaEpisodi', kind: 'listaEpisodi', label: 'I tuoi episodi' };
+
+  function openEpisodes() {
+    // Stessa guardia della mappa (passo 1.3b): i testi prima di disegnare,
+    // altrimenti la schermata compare senza titolo. Qui pesa davvero, perche'
+    // questa e' la PRIMA schermata dopo casa: ci si arriva a cache fredda.
+    if (!BI.istruzioniInMemoria()) {
+      BI.loadModuleInstructions()
+        .then(function () { openEpisodes(); })
+        .catch(function () { showLoadError(function () { openEpisodes(); }); });
+      return;
+    }
+    document.getElementById('episodes-badge').textContent = uiText('listaEpisodi.pageTitle');
+    renderEpisodeList();
+    leaveModule('episodes');
+  }
+
   function mapShowScreen(name) {
     document.getElementById('map-intro-screen').hidden = name !== 'intro';
     document.getElementById('map-main-screen').hidden = name !== 'main';
@@ -1619,6 +1761,8 @@
   BI.withGradeName = withGradeName;
   BI.stepLabel = stepLabel;
   BI.MAP_PSEUDO_MODULE = MAP_PSEUDO_MODULE;
+  BI.openEpisodes = openEpisodes;
+  BI.episodeStatus = episodeStatus;
   BI.clearPendingMastery = clearPendingMastery;
   BI.commitPendingMastery = commitPendingMastery;
   BI.renderLoadErrorTexts = renderLoadErrorTexts;

@@ -56,6 +56,10 @@
     onboarding: document.getElementById('view-onboarding'),
     home: document.getElementById('view-home'),
     customize: document.getElementById('view-customize'),
+    // La lista degli EPISODI sta prima della mappa dei MODULI, come nel
+    // giro dello studente: casa -> episodi -> mappa -> modulo (passo
+    // 1.13-bis, 2026-09-22).
+    episodes: document.getElementById('view-episodes'),
     map: document.getElementById('view-map'),
     repeatAloud: document.getElementById('view-repeat-aloud'),
     storyCards: document.getElementById('view-story-cards'),

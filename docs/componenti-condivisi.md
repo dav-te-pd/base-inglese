@@ -121,3 +121,15 @@ cataloga quando un passo lo legge, non prima.*
 | `resolveEpisodeOrder()` | il gemello un livello sopra: risolve l'ordine degli **episodi del corso**, da `episodeSequence` + `episodeSequences` | *niente* → `{ order, errore }` | che `EPISODES` sia gia' costruito. ⚠️ **Non alza mai e non lascia mai a mani vuote:** un id elencato che non esiste lo toglie, un episodio che esiste e non e' elencato lo mette **in coda**, e senza sequenza ripiega su `Object.keys(EPISODES)` — perche' l'ordine serve PRIMA di qualunque schermata, e fermarsi lascerebbe una pagina bianca. **Chi chiama deve stampare `errore`**: la funzione non lo fa da sé |
 | `episodiInOrdine()` | la sola lista, per chi deve solo elencarli | *niente* → array di id | che a `errore` pensi qualcun altro. **Da' per scontato di essere chiamato da un punto che NON e' l'avvio** — all'avvio si usa `resolveEpisodeOrder()` e si stampa l'errore una volta sola, invece di ripeterlo a ogni apertura del pannello |
 
+## `app/mappa.js` — le due liste
+
+*Scritta col passo 1.13-bis (2026-09-22). Il resto di `mappa.js` non è ancora
+catalogato: si cataloga quando un passo lo legge (regola 46).*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `moduleStatus(episode, progress, moduleId)` | lo stato di un passo dentro un episodio | → `'completed'` \| `'current'` \| `'locked'` | che `progress.completed` ci sia. **Lo stato è DERIVATO**, non salvato: «l'attuale è il primo non completato» — quindi un passo che non si chiude mai blocca tutti quelli dopo, e non lo dice nessuno |
+| `episodeStatus(episodeId, primoIncompleto)` | il gemello un livello sopra: lo stato di un EPISODIO dentro il corso | `id` + l'id del primo incompleto → stessi tre valori | ⚠️ **che `calcolaStatoEpisodi()` sia già girato**: legge `episodiCompletati`, che quella riempie. Chiamarlo da solo risponde su dati vecchi. ⚠️ **E un episodio SENZA PASSI non è «finito», è rotto** (`orderError`): resta `locked` o `current`, mai `completed` |
+| `calcolaStatoEpisodi()` | legge il progresso di **ogni** episodio una volta sola e dice qual è il primo incompleto | *niente* → `{ ordine, primoIncompleto }` | che `EPISODES` sia costruito e l'utente sia noto. **Il conto si fa una volta per disegno, non una per riga:** dentro `episodeStatus` significherebbe rileggere il magazzino tante volte quante sono le righe. `primoIncompleto` è `null` a corso finito |
+| `openEpisodes()` | apre la lista degli episodi | *niente* → *niente* | ⚠️ **che i testi possano non esserci**: è la **prima** schermata dopo casa, quindi ci si arriva a cache fredda — chiede `loadModuleInstructions()` e ripassa da sé, o va alla schermata d'errore (regola 35). *La mappa ha la stessa guardia e lì costa solo su un punto su dieci; qui su tutti.* |
+

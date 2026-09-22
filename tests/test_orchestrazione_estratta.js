@@ -70,13 +70,14 @@ async function run() {
     const idCostruiti = righe.filter(function (r) {
       return /getElementById\(\s*(?:['"][^'"]*['"]\s*\+|\w+\s*\+|`)/.test(r);
     });
-    log('[B] I dodici id sono letterali, nessuno costruito', idCostruiti.length === 0, idCostruiti.join(' | '));
+    log('[B] I tredici id sono letterali, nessuno costruito', idCostruiti.length === 0, idCostruiti.join(' | '));
 
     const vistePrese = righe.filter(function (r) { return /getElementById\('view-/.test(r); });
     // ⚠️ 13 -> 12 il 2026-09-19 (passo A): `view-pronunciation` e' uscita,
     // e la sua riga in `views` con lei. **Rosso da SEGUIRE, non da correggere**:
     // l'invariante non e' «tredici», e' «l'elenco e' quello che credo».
-    log('[B] Le viste prese sono dodici', vistePrese.length === 12, String(vistePrese.length));
+    // ⚠️ TREDICI dal passo 1.13-bis: `view-episodes`, la lista degli episodi.
+    log('[B] Le viste prese sono tredici', vistePrese.length === 13, String(vistePrese.length));
   }
 
   // ── [C] GUIDANDO L'APP ──────────────────────────────────────────────
@@ -117,8 +118,8 @@ async function run() {
     // fermo si e' presentato**, ed e' stato preso guidando l'app; qui il conto
     // scende di uno e `nulle` resta vuoto, che e' la prova che la riga e' stata
     // tolta e non lasciata a `null`.
-    log('[C] BI.views porta dodici nodi VERI, nessuno null',
-      !!nodi && nodi.quante === 12 && nodi.nulle.length === 0, JSON.stringify(nodi));
+    log('[C] BI.views porta tredici nodi VERI, nessuno null',
+      !!nodi && nodi.quante === 13 && nodi.nulle.length === 0, JSON.stringify(nodi));
 
     // Una sola vista accesa alla volta: l'invariante di showView, letto
     // dall'app vera invece che dal codice.
