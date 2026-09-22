@@ -83,8 +83,41 @@ window.BI = window.BI || {};
   var scriviMagazzino = BI.magScriviJson;
   var cancellaMagazzino = BI.magCancella;
 
+  // ── L'EDIZIONE DENTRO LA CHIAVE ─────────────────────────────────────────
+  //
+  // Un'edizione nasce COPIANDO la cartella di un'altra (regola 4), quindi due
+  // edizioni possono portare lo STESSO id di episodio: un `gate` francese e
+  // un `gate` inglese sono la stessa parola. Senza l'edizione nella chiave
+  // scrivevano nello stesso posto, e lo studente che avesse finito `gate` in
+  // inglese avrebbe trovato il `gate` francese gia' mezzo fatto.
+  //
+  // ⚠️ E NON DAVA NESSUN ERRORE, che e' la forma peggiore (regola 37): non
+  // somigliava a un guasto, somigliava a un progresso.
+  //
+  // Si legge da `CONFIG.edizione` A OGNI CHIAMATA invece di copiarlo in una
+  // costante: il Pannello Admin puo' cambiare l'edizione, e una copia che si
+  // puo' disallineare e' una copia che si disallinea — stessa ragione per cui
+  // `percorsoEdizione` in `app/dati.js` ricostruisce il percorso ogni volta.
+  //
+  // ⚠️ DUE CHIAVI NON LO PORTANO, E NON E' UNA DIMENTICANZA:
+  // `introDismissedKey` e `legacyRaIntroDismissedKey` dicono «ho gia' visto
+  // come funziona questo modulo». *Sapere come si usa Flash Card non e' una
+  // cosa del corso d'inglese: e' una cosa che lo studente ha imparato.*
+  // Rimettergli davanti la spiegazione perche' ha cambiato corso sarebbe un
+  // passo indietro, non una separazione.
+  //
+  // ⚠️ E `helpRequestsKey` INVECE SI', benche' non porti l'episodio: le sue
+  // VOCI lo portano dentro (`{episodeId, moduleId, ...}`), quindi due
+  // edizioni mescolerebbero le richieste senza poterle distinguere.
+  var CONFIG = window.APP_CONFIG;
+
+  function prefissoMagazzino() {
+    var ed = CONFIG.edizione;
+    return 'baseinglese:' + ed.lingua + '-' + ed.studente + ':';
+  }
+
   function helpRequestsKey(userName) {
-    return 'baseinglese:helpRequests:' + userName;
+    return prefissoMagazzino() + 'helpRequests:' + userName;
   }
 
   function loadHelpRequests(userName) {
@@ -100,7 +133,7 @@ window.BI = window.BI || {};
   }
 
   function masteryStorageKey(episodeId, userName) {
-    return 'baseinglese:mastery:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'mastery:' + episodeId + ':' + userName;
   }
 
   function loadMastery(episodeId, userName) {
@@ -112,7 +145,7 @@ window.BI = window.BI || {};
   }
 
   function moduleProgressKey(episodeId, userName) {
-    return 'baseinglese:modules:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'modules:' + episodeId + ':' + userName;
   }
 
   function loadModuleProgress(episodeId, userName) {
@@ -129,7 +162,7 @@ window.BI = window.BI || {};
   }
 
   function moduleOutcomeKey(episodeId, userName) {
-    return 'baseinglese:moduleOutcome:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'moduleOutcome:' + episodeId + ':' + userName;
   }
 
   function loadModuleOutcomes(episodeId, userName) {
@@ -146,7 +179,7 @@ window.BI = window.BI || {};
   }
 
   function audioUsageKey(episodeId, userName) {
-    return 'baseinglese:audioSecondsSent:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'audioSecondsSent:' + episodeId + ':' + userName;
   }
 
   function loadAudioUsage(episodeId, userName) {
@@ -168,7 +201,7 @@ window.BI = window.BI || {};
   // outcome): a module used often means dialogo.pausaBase/pausaPerParola
   // are running too long for real speech.
   function nextLineSkipsKey(episodeId, userName) {
-    return 'baseinglese:nextLineSkips:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'nextLineSkips:' + episodeId + ':' + userName;
   }
 
   function loadNextLineSkips(episodeId, userName) {
@@ -193,7 +226,7 @@ window.BI = window.BI || {};
   var STORY_CARDS_STATS_VERSIONE = 2;
 
   function storyCardsExplanationStatsKey(episodeId, userName) {
-    return 'baseinglese:storyCardsExplanationStats:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'storyCardsExplanationStats:' + episodeId + ':' + userName;
   }
 
   function vuotoStoryCardsExplanationStats() {
@@ -228,7 +261,7 @@ window.BI = window.BI || {};
   }
 
   function customValuesKey(episodeId, userName) {
-    return 'baseinglese:' + episodeId + ':custom:' + userName;
+    return prefissoMagazzino() + episodeId + ':custom:' + userName;
   }
 
   function loadCustomValues(episode, userName) {
@@ -251,7 +284,7 @@ window.BI = window.BI || {};
   // Personalizza relocking every module in front of progress they
   // already made. Nothing writes this key anymore.
   function customizeSeenKey(episodeId, userName) {
-    return 'baseinglese:' + episodeId + ':customizeSeen:' + userName;
+    return prefissoMagazzino() + episodeId + ':customizeSeen:' + userName;
   }
 
   function isCustomizeSeen(episodeId, userName) {
@@ -304,7 +337,7 @@ window.BI = window.BI || {};
   }
 
   function storyCardsDeclarationsKey(episodeId, userName) {
-    return 'baseinglese:storyCardsDeclarations:' + episodeId + ':' + userName;
+    return prefissoMagazzino() + 'storyCardsDeclarations:' + episodeId + ':' + userName;
   }
 
   function loadStoryCardsDeclarations(episodeId, userName) {
@@ -358,6 +391,7 @@ window.BI = window.BI || {};
   BI.isIntroDismissed = isIntroDismissed;
   BI.setIntroDismissed = setIntroDismissed;
   BI.storyCardsDeclarationsKey = storyCardsDeclarationsKey;
+  BI.prefissoMagazzino = prefissoMagazzino;
   BI.loadStoryCardsDeclarations = loadStoryCardsDeclarations;
   BI.saveStoryCardsDeclarations = saveStoryCardsDeclarations;
   BI.STORY_CARDS_STATS_VERSIONE = STORY_CARDS_STATS_VERSIONE;

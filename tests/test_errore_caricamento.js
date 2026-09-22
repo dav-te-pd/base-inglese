@@ -78,7 +78,7 @@ async function finoAllaMappa(page, utente) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
 
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:gate:' + arg.utente,
+    localStorage.setItem(BI.moduleProgressKey('gate', arg.utente),
       JSON.stringify({ completed: arg.prima }));
     ['mappaEpisodio', 'personalizzazione', 'matchEngIta'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + arg.utente, '1');

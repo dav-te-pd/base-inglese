@@ -107,6 +107,7 @@ non le sa scrivere.
 | `isIntroDismissed` | Se lo studente ha spuntato «non mostrare più» sull'intro di un tipo di modulo. **Dieci file la chiamano.** | `(kind, userName)` → booleano | ⚠️ Che esista un **secondo nome storico** per Repeat Aloud (`repeatAloudIntroDismissed`), letto se il primo manca: chi lo togliesse rifarebbe comparire l'intro a chi l'aveva già chiusa. |
 | `setIntroDismissed` | Scrive quella spunta. **Dieci file la chiamano.** | `(kind, userName, dismissed)` → niente | Scrive `'1'`/`'0'` come stringa, non il booleano. La coppia con `isIntroDismissed` va tenuta: sono lo stesso formato da due lati. |
 | `saveHelpRequest` | Accoda una richiesta di aiuto scritta dallo studente. | `(userName, entry)` → niente | Che la lista cresca e **non venga mai svuotata dall'app**: è un registro, non una coda. Nessuna schermata la mostra ancora. |
+| `prefissoMagazzino()` | costruisce la prima parte di ogni chiave del magazzino che riguarda il percorso di uno studente: `baseinglese:{lingua}-{studente}:` | *niente* → stringa | che `CONFIG.edizione` sia gia' in memoria — lo e', `app/config.js` e' il primo tag. ⚠️ **Lo legge A OGNI CHIAMATA**, non lo copia in una costante: il Pannello Admin puo' cambiare l'edizione, e una copia che si puo' disallineare si disallinea. ⚠️ **Due chiavi NON lo usano, di proposito** — `introDismissedKey` e `legacyRaIntroDismissedKey`: dicono «ho gia' visto come funziona questo modulo», e sapere come si usa Flash Card non e' una cosa del corso d'inglese |
 
 ## `app/catalogo.js` — l'ordine delle cose
 

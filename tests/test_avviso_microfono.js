@@ -98,7 +98,7 @@ async function apriModulo(page, utente, moduleId) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(({ utente, completed, moduleId }) => {
-    localStorage.setItem('baseinglese:modules:gate:' + utente, JSON.stringify({ completed }));
+    localStorage.setItem(BI.moduleProgressKey('gate', utente), JSON.stringify({ completed }));
     ['mappaEpisodio', 'personalizzazione', 'voicePractice', 'voiceCoach', moduleId]
       .forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + utente, '1'));
   }, { utente, completed: stepsBefore(moduleId), moduleId });
@@ -295,7 +295,7 @@ async function run() {
       // vera per il motivo sbagliato — misurato: con la condizione tolta dal
       // codice, quella versione restava verde. Questa diventa rossa.
       const colori = await page.evaluate((utente) =>
-        localStorage.getItem('baseinglese:mastery:gate:' + utente), 'AvvisoVuoto' + modulo.id);
+        localStorage.getItem(BI.masteryStorageKey('gate', utente)), 'AvvisoVuoto' + modulo.id);
       log('[B] ' + modulo.nome + ': registrazioni senza nessuna parola non scrivono nessun colore',
           colori === null || Object.keys(JSON.parse(colori)).length === 0);
 

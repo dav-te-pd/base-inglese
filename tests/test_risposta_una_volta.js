@@ -91,7 +91,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(100);
   await page.evaluate(function (d) {
     if (d.completedModules) {
-      localStorage.setItem('baseinglese:modules:gate:' + d.userName, JSON.stringify({ completed: d.completedModules }));
+      localStorage.setItem(BI.moduleProgressKey('gate', d.userName), JSON.stringify({ completed: d.completedModules }));
     }
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt',
      'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta',

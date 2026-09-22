@@ -28,7 +28,7 @@
 // studente veda qualcosa. Non si verifica il testo dell'errore — quello è
 // coperto da test_errore_caricamento.js, che protegge la schermata in sé.
 
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, chiaveMagazzino } = require('./test-env');
 
 const BASE = APP_URL;
 
@@ -59,8 +59,8 @@ async function apriConOrdine(page, utente, ordine, extra) {
 function statoDopo(page, utente, stepId) {
   return page.evaluate(({ utente, stepId }) => {
     const vis = el => !!el && el.getClientRects().length > 0;
-    const prog = JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + utente) || '{}');
-    const esiti = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + utente) || '{}');
+    const prog = JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', utente)) || '{}');
+    const esiti = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', utente)) || '{}');
     return {
       completati: prog.completed || [],
       completato: (prog.completed || []).indexOf(stepId) !== -1,
@@ -126,7 +126,7 @@ async function run() {
     // la migrazione non deve scriverne il completamento.
     await apriConOrdine(page, 'CortoMigra',
       [{ module: 'repeatAloud', grade: 'A' }, { module: 'matchEngIta', grade: 'A' }],
-      [['baseinglese:gate:customizeSeen:{u}', '1']]);
+      [[chiaveMagazzino('gate:customizeSeen:{u}'), '1']]);
     const s = await statoDopo(page, 'CortoMigra', 'personalizzazione');
     log('[C] La migrazione non scrive un passo che l\'episodio non dichiara',
         s.completato === false);

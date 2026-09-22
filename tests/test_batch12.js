@@ -88,7 +88,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, kinds }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
     // flashcardAEngIta/flashcardAItaEng share ONE kind, 'flashcard'
     // (intro-dismiss is keyed by kind, not module id) — not in ALL_MODULES.
     kinds.concat(['mappaEpisodio', 'flashcard']).forEach(k => {
@@ -397,7 +397,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}');
       var row = document.querySelector('[data-module="voicePractice"]');
       return { level: outcomes.voicePractice && outcomes.voicePractice.level, rowClass: row ? row.className : null };
     }, 'T12Practice');
@@ -409,7 +409,7 @@ async function run() {
     log('[Job5] Voice Practice NOW writes a moduleOutcome (ModuleRules, LastAttemptRule)', state.level === 'verde');
     log('[Job5] Map row carries outcome-verde', state.rowClass && state.rowClass.indexOf('outcome-verde') !== -1);
 
-    const mastery = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}'), 'T12Practice');
+    const mastery = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.masteryStorageKey('gate', u)) || '{}'), 'T12Practice');
     const masteryKeys = Object.keys(mastery).filter(k => k.indexOf('voicepractice:') === 0);
     log('[Job5] Voice Practice fed the per-word mastery store (voicepractice: unit ids present)', masteryKeys.length > 0);
 
@@ -472,7 +472,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}');
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level };
     }, 'T12Check');
     log('[Job5] Voice Check STILL uses ModuleRules (all-wrong -> rosso, unchanged from before the split)', state.level === 'rosso');
@@ -492,7 +492,7 @@ async function run() {
     // Un'asserzione che guardasse solo "ci sono delle chiavi" sarebbe verde in
     // tutti e due i casi, cioe' non proverebbe la decisione ma solo che
     // qualcuno scrive.
-    const colori = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}'), 'T12Check');
+    const colori = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.masteryStorageKey('gate', u)) || '{}'), 'T12Check');
     const chiaviCheck = Object.keys(colori).filter(k => k.indexOf('voicecheck:') === 0);
     log('[C.1] Voice Check scrive i colori delle voci', chiaviCheck.length > 0, Object.keys(colori).join(', '));
     log('[C.1] ...in voci SUE: nessuna finisce dentro quelle di Voice Practice',
@@ -543,12 +543,12 @@ async function run() {
     await openModule(page, 'voiceCoach');
     await page.waitForTimeout(300); // ATTESA-LEGITTIMA: la guardia serve all'asserzione NEGATIVA qui sotto — «rispondere non scrive». Un non-evento non si aspetta: allungare il tempo rafforza la prova, uno stato da attendere non esiste
     await vcCompleteLineRight(page);
-    const primaDiUscire = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
+    const primaDiUscire = await page.evaluate((u) => localStorage.getItem(BI.masteryStorageKey('gate', u)), 'T12CheckMappa');
     log('[C.1] Rispondere non scrive: il colore aspetta il pulsante come in ogni altro modulo',
       primaDiUscire === null || Object.keys(JSON.parse(primaDiUscire)).length === 0, String(primaDiUscire));
     await page.click('#voice-coach-back-map');
     await page.waitForTimeout(250); // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che una scrittura NON sia rimasta — uscire dalla mappa non deve lasciare una voce di mastery. Un non-evento non si aspetta: il tempo E' la misura
-    const dopoMappa = await page.evaluate((u) => localStorage.getItem('baseinglese:mastery:gate:' + u), 'T12CheckMappa');
+    const dopoMappa = await page.evaluate((u) => localStorage.getItem(BI.masteryStorageKey('gate', u)), 'T12CheckMappa');
     log('[C.1] Uscendo da "← Mappa" non resta nessuna voce di Voice Check',
       dopoMappa === null || Object.keys(JSON.parse(dopoMappa)).length === 0, String(dopoMappa));
     log('[C.1] No JS errors', errors.length === 0);

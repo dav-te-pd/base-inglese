@@ -97,7 +97,7 @@ async function boot(page, utente, passo) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(({ utente, prima }) => {
-    localStorage.setItem('baseinglese:modules:gate:' + utente, JSON.stringify({ completed: prima }));
+    localStorage.setItem(BI.moduleProgressKey('gate', utente), JSON.stringify({ completed: prima }));
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach',
      'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard',
      'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'
@@ -121,13 +121,13 @@ async function tornaAllaMappa(page, bottone) {
 function leggiTutto(page, utente) {
   return page.evaluate((u) => {
     const j = (k) => { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } };
-    const progress = j('baseinglese:modules:gate:' + u) || { completed: [] };
+    const progress = j(BI.moduleProgressKey('gate', u)) || { completed: [] };
     return {
-      mastery: Object.keys(j('baseinglese:mastery:gate:' + u) || {}),
-      esiti: j('baseinglese:moduleOutcome:gate:' + u) || {},
+      mastery: Object.keys(j(BI.masteryStorageKey('gate', u)) || {}),
+      esiti: j(BI.moduleOutcomeKey('gate', u)) || {},
       completati: progress.completed || [],
-      dichiarazioni: Object.keys(j('baseinglese:storyCardsDeclarations:gate:' + u) || {}),
-      conteggi: Object.keys((j('baseinglese:storyCardsExplanationStats:gate:' + u) || {}).byLine || {})
+      dichiarazioni: Object.keys(j(BI.storyCardsDeclarationsKey('gate', u)) || {}),
+      conteggi: Object.keys((j(BI.storyCardsExplanationStatsKey('gate', u)) || {}).byLine || {})
     };
   }, utente);
 }

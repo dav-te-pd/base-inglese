@@ -79,7 +79,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');

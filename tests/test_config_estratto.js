@@ -218,7 +218,7 @@ async function run() {
     await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
     const scritto = await page.evaluate(function () {
       try {
-        localStorage.setItem('baseinglese:storyCardsExplanationStats:gate:ConfigRisposto',
+        localStorage.setItem(BI.storyCardsExplanationStatsKey('gate', 'ConfigRisposto'),
           JSON.stringify({ versione: window.BI.STORY_CARDS_STATS_VERSIONE,
             byLine: { 'L1': { corrente: 'chiara', cambi: 0 } } }));
         return true;

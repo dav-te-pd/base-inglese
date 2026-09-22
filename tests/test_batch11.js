@@ -83,7 +83,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
     ['mappaEpisodio','personalizzazione','repeatAloud','meetTheStory', 'whyWeSayIt','voiceCoach','voicePractice','matchEngIta','matchItaEng','speedMatchEngIta','speedMatchItaEng','flashcard','dialogoAscoltaRipeti','dialogoRipetiATempo','dialogoContinuo'].forEach(k => {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
     });
@@ -241,7 +241,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -268,7 +268,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -297,7 +297,7 @@ async function run() {
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
     const state = await page.evaluate((u) => {
-      var outcomes = JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}');
+      var outcomes = JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}');
       var row = document.querySelector('[data-module="voiceCoach"]');
       var badge = row ? row.querySelector('.module-state-badge').textContent : null;
       return { level: outcomes.voiceCoach && outcomes.voiceCoach.level, pct: outcomes.voiceCoach && outcomes.voiceCoach.pct, rowClass: row ? row.className : null, badge: badge };
@@ -326,7 +326,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
-    const afterFirst = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterFirst = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}').voiceCoach.level, 'T11Redo');
     log('[Redo] First attempt (all correct) is verde', afterFirst === 'verde');
 
     // Redo, now all wrong -> should DOWNGRADE to rosso (a re-attempt going
@@ -337,7 +337,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
-    const afterSecond = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterSecond = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterSecond = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Second attempt (all wrong) REPLACES verde with rosso (downgrade honored)', afterSecond === 'rosso' && rowAfterSecond.indexOf('outcome-rosso') !== -1 && rowAfterSecond.indexOf('outcome-verde') === -1);
 
@@ -348,7 +348,7 @@ async function run() {
     await page.waitForTimeout(200);
     await page.click('#voice-coach-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
-    const afterThird = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}').voiceCoach.level, 'T11Redo');
+    const afterThird = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}').voiceCoach.level, 'T11Redo');
     const rowAfterThird = await page.evaluate(() => document.querySelector('[data-module="voiceCoach"]').className);
     log('[Redo] Third attempt (all correct again) REPLACES rosso with verde (upgrade honored)', afterThird === 'verde' && rowAfterThird.indexOf('outcome-verde') !== -1 && rowAfterThird.indexOf('outcome-rosso') === -1);
     log('[Redo] No JS errors', errors.length === 0);
@@ -383,11 +383,11 @@ async function run() {
     // e poi uscire da "← Mappa" non deve lasciare un colore che nessuno ha
     // confermato — e' il difetto che la ③ ha chiuso, e questa riga in piu' e'
     // il segno che qui si misura il gesto, non piu' la risposta.
-    const primaDelPulsante = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
+    const primaDelPulsante = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}'), 'T11Final');
     log('[Modulo Finale prep] L\'autovalutazione da sola NON scrive l\'esito: aspetta il pulsante', !primaDelPulsante.dialogoAscoltaRipeti);
     await page.click('#dg-complete-btn');
     await attendiClasse(page, '#view-map', 'is-active'); // approdo: l'ULTIMO effetto del gesto (la mappa), non la scrittura che l'asserzione legge — criterio in testa a tests/attese.js
-    const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}'), 'T11Final');
+    const outcomes = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}'), 'T11Final');
     log('[Modulo Finale prep] Dialogo (selfAssessment) writes the same { level } shape ModuleRules writes', outcomes.dialogoAscoltaRipeti && outcomes.dialogoAscoltaRipeti.level === 'verde');
     log('[Modulo Finale prep] No JS errors', errors.length === 0);
     await page.close();

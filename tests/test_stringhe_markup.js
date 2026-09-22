@@ -77,7 +77,7 @@ async function apriMappa(page, utente) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
   await page.evaluate(function (u) {
-    localStorage.setItem('baseinglese:gate:customizeSeen:' + u, '1');
+    localStorage.setItem(BI.customizeSeenKey('gate', u), '1');
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
   }, utente);
   await page.click('#go-episode');

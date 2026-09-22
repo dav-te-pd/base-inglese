@@ -126,7 +126,7 @@ async function preparaEApri(page, utente, semina, promotionStreak, grado) {
   await page.waitForSelector('#go-episode', { state: 'visible' });
 
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:gate:' + arg.utente,
+    localStorage.setItem(BI.moduleProgressKey('gate', arg.utente),
       JSON.stringify({ completed: arg.prima }));
     localStorage.setItem('baseinglese:configOverrides',
       JSON.stringify({ mastery: { promotionStreak: arg.streak } }));
@@ -145,9 +145,9 @@ async function preparaEApri(page, utente, semina, promotionStreak, grado) {
     const store = {};
     (arg.ids || []).forEach(function (id) { store[id] = arg.semina; });
     if (arg.semina) {
-      localStorage.setItem('baseinglese:mastery:gate:' + arg.utente, JSON.stringify(store));
+      localStorage.setItem(BI.masteryStorageKey('gate', arg.utente), JSON.stringify(store));
     } else {
-      localStorage.removeItem('baseinglese:mastery:gate:' + arg.utente);
+      localStorage.removeItem(BI.masteryStorageKey('gate', arg.utente));
     }
     return store;
   }, { utente: utente, semina: semina.stato, ids: semina.unitIds });
@@ -200,14 +200,14 @@ async function rispondiECompleta(page, utente, risposte) {
   }
   await page.click('#fc-complete-btn');
   await page.waitForFunction(function (u) {
-    const raw = localStorage.getItem('baseinglese:mastery:gate:' + u);
+    const raw = localStorage.getItem(BI.masteryStorageKey('gate', u));
     return !!raw && Object.keys(JSON.parse(raw)).length > 0;
   }, utente, { timeout: 15000 });
 }
 
 function leggiScala(page, utente) {
   return page.evaluate(function (u) {
-    return JSON.parse(localStorage.getItem('baseinglese:mastery:gate:' + u) || '{}');
+    return JSON.parse(localStorage.getItem(BI.masteryStorageKey('gate', u)) || '{}');
   }, utente);
 }
 

@@ -35,7 +35,7 @@
 // test_mastery_al_gesto) e non si duplica qui.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, configApp } = require('./test-env');
 const { verificaStruttura, posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
@@ -102,14 +102,25 @@ async function run() {
     if (apertaLaMappa) log('[C] La mappa si apre e disegna i suoi passi', passi > 0, String(passi));
 
     // I costruttori delle chiavi sono raggiungibili da fuori: e' la meta' del
-    // valore dell'estrazione, e prima del 2026-09-17 non lo erano — per
-    // questo 197 punti sotto tests/ scrivono la chiave a mano.
+    // valore dell'estrazione, e prima del 2026-09-17 non lo erano.
+    // ⚠️ *Qui c'era scritto «per questo 197 punti sotto tests/ scrivono la
+    // chiave a mano»: il passo 1.17 (2026-09-22) li ha convertiti, e quella
+    // frase l'ha resa falsa questo stesso commit.*
+    //
+    // ⚠️ E L'ATTESO SI RICOSTRUISCE QUI, A MANO, NON CHIEDENDOLO A `BI`:
+    // questa riga esiste per verificare che il costruttore dell'app dia la
+    // chiave giusta, e confrontarlo con se' stesso la renderebbe vera per
+    // costruzione (regola 44). L'edizione pero' NON si incolla — si legge
+    // dalla config, come fa `globDati` — altrimenti sarebbe l'unico punto
+    // rimasto in tutta la suite a sapere che l'edizione e' `inglese-it`.
+    const ed = configApp().edizione;
+    const attesa = 'baseinglese:' + ed.lingua + '-' + ed.studente + ':modules:gate:ProgressiEstratti';
     const chiave = await page.evaluate(function () {
       return !!(window.BI && typeof window.BI.moduleProgressKey === 'function') &&
         window.BI.moduleProgressKey('gate', 'ProgressiEstratti');
     }).catch(function (e) { return 'non leggibile: ' + String(e).split('\n')[0]; });
-    log('[C] I costruttori delle chiavi si raggiungono da BI',
-      chiave === 'baseinglese:modules:gate:ProgressiEstratti', String(chiave));
+    log('[C] I costruttori delle chiavi si raggiungono da BI, e portano l\'edizione',
+      chiave === attesa, String(chiave) + '  vs atteso  ' + attesa);
 
     log('[C] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();

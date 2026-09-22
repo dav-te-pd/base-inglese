@@ -61,8 +61,8 @@ async function run() {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#view-home.is-active', { timeout: 10000 });
   await page.evaluate(({ utente, fatti }) => {
-    localStorage.setItem('baseinglese:gate:customizeSeen:' + utente, '1');
-    localStorage.setItem('baseinglese:modules:gate:' + utente, JSON.stringify({ completed: fatti }));
+    localStorage.setItem(BI.customizeSeenKey('gate', utente), '1');
+    localStorage.setItem(BI.moduleProgressKey('gate', utente), JSON.stringify({ completed: fatti }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + utente, '1');
   }, { utente: UTENTE, fatti: stepsBefore('voiceCoach') });
   await page.click('#go-episode');

@@ -122,7 +122,7 @@ async function run() {
     await page.click('#onboarding-form button[type=submit]');
     await page.waitForSelector('#go-episode', { state: 'visible' });
     await page.evaluate((p) => {
-      localStorage.setItem('baseinglese:modules:gate:ModuloPronto', JSON.stringify({ completed: p }));
+      localStorage.setItem(BI.moduleProgressKey('gate', 'ModuloPronto'), JSON.stringify({ completed: p }));
       ['mappaEpisodio', 'personalizzazione', 'voicePractice', 'voiceCoach']
         .forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':ModuloPronto', '1'));
     }, stepsBefore('voiceCoach'));

@@ -1,4 +1,4 @@
-const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, chiaveMagazzino } = require('./test-env');
 const { attendiAbilitato, attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore, stepIds } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -72,7 +72,7 @@ async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules, extraStorage }) => {
-    if (completedModules) localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
+    if (completedModules) localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
@@ -131,7 +131,7 @@ async function run() {
     // «non guardano niente» a «sono l'unica cosa fra il test e una corsa»
     // senza che nessuno toccasse il test.
     await attendiClasse(page, '#view-map', 'is-active');
-    const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T6NewUser');
+    const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', u)) || '{}').completed, 'T6NewUser');
     log('[6a] Completing Personalizzazione marks it via markModuleCompleted', completed && completed.indexOf('personalizzazione') !== -1);
     // Il passo che si sblocca è quello SUCCESSIVO nell'ordine, qualunque
     // sia: prenderlo dall'ordine vero invece di nominarlo qui significa che
@@ -168,7 +168,7 @@ async function run() {
     await page.click('#customize-warning-confirm-btn');
     const mainNowVisible = await attendiVisibile(page, '#customize-main-screen');
     log('[6b] Confirming switches to the main edit screen', mainNowVisible);
-    const progressAfter = await page.evaluate((u) => localStorage.getItem('baseinglese:modules:gate:' + u), 'T6Started');
+    const progressAfter = await page.evaluate((u) => localStorage.getItem(BI.moduleProgressKey('gate', u)), 'T6Started');
     log('[6b] Confirming wipes moduleProgress from localStorage', progressAfter === null);
     log('[6] No JS errors on warning flow', errors.length === 0);
     await page.close();
@@ -195,7 +195,7 @@ async function run() {
     await attendiClasse(page2, '#view-map', 'is-active');
     const onMap = await page2.evaluate(() => !document.getElementById('view-map').classList.contains('is-active') ? false : true);
     log('[6b] Cancel on the warning screen returns to the map', onMap);
-    const progressStillThere = await page2.evaluate((u) => localStorage.getItem('baseinglese:modules:gate:' + u) !== null, 'T6Cancel');
+    const progressStillThere = await page2.evaluate((u) => localStorage.getItem(BI.moduleProgressKey('gate', u)) !== null, 'T6Cancel');
     log('[6b] Cancel does NOT wipe progress', progressStillThere);
     log('[6] No JS errors', errors.length === 0);
     await page2.close();
@@ -210,9 +210,9 @@ async function run() {
     // Progresso di un utente vecchio: due passi qualsiasi gia' fatti, presi
     // dall'ordine invece che nominati qui.
     await bootAsUser(page, 'T6Migrate', stepIds().slice(1, 3), {
-      'baseinglese:gate:customizeSeen:T6Migrate': '1'
+      [chiaveMagazzino('gate:customizeSeen:T6Migrate')]: '1'
     });
-    const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'T6Migrate');
+    const completed = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', u)) || '{}').completed, 'T6Migrate');
     log('[6a] Migration: old customizeSeen user gets personalizzazione auto-completed', completed && completed.indexOf('personalizzazione') !== -1);
     const repeatAloudRow = await page.$eval('[data-module="repeatAloud"]', el => el.className);
     log('[6a] Migration: repeatAloud still shows completed (existing progress untouched)', repeatAloudRow.indexOf('completed') !== -1);

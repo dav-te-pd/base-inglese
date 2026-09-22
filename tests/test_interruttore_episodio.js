@@ -124,7 +124,7 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     Array.from(document.querySelectorAll('#module-list .module-row')).map(r => r.getAttribute('data-module')));
   const indice = passi.indexOf('meetTheStory');
   if (indice === -1) throw new Error('meetTheStory non e\' nella mappa di ' + episodeId + ': ' + passi.join(','));
-  await page.evaluate(a => localStorage.setItem('baseinglese:modules:' + a.ep + ':' + a.u,
+  await page.evaluate(a => localStorage.setItem(BI.moduleProgressKey(a.ep, a.u),
     JSON.stringify({ completed: a.c })), { ep: episodeId, u: utente, c: passi.slice(0, indice) });
   await page.reload();
   await page.waitForSelector('#go-episode', { state: 'visible' });

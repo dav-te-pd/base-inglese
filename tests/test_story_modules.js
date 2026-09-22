@@ -261,7 +261,7 @@ async function bootAsUser(page, userName, moduleId) {
   await page.waitForSelector('#go-episode');
   const completed = stepsBefore(moduleId);
   await page.evaluate(({ userName, completed }) => {
-    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed }));
+    localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed }));
     ['mappaEpisodio', 'meetTheStory', 'whyWeSayIt'].forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1'));
   }, { userName, completed });
   await page.click('#go-episode');
@@ -474,7 +474,7 @@ async function run() {
     // Si legge il magazzino, non il pannello: il difetto sta in cosa viene
     // SCRITTO, e un pannello che mostra bene un dato sbagliato passerebbe.
     const vociStat = () => page.evaluate((u) => {
-      const raw = localStorage.getItem('baseinglese:storyCardsExplanationStats:gate:' + u);
+      const raw = localStorage.getItem(BI.storyCardsExplanationStatsKey('gate', u));
       const parsed = raw ? JSON.parse(raw) : null;
       return parsed && parsed.byLine ? { versione: parsed.versione, voce: parsed.byLine['d-1-s1'] } : null;
     }, 'Story_Why');
@@ -561,7 +561,7 @@ async function run() {
 
     // Un nome scelto e ben riconoscibile: se riaffiorasse come etichetta si
     // vedrebbe subito, e non si confonderebbe con nessuna parola del dialogo.
-    await page.evaluate(() => localStorage.setItem('baseinglese:gate:custom:Story_Etichette',
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Etichette'),
       JSON.stringify({ papa: 'giancarlo', mamma: 'nicoletta' })));
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
@@ -649,7 +649,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
-    await page.evaluate(() => localStorage.setItem('baseinglese:gate:custom:Story_Lingue', JSON.stringify({ partenza: 'torino' })));
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'torino' })));
     await page.reload();
     await page.waitForSelector('#go-episode');
     await page.click('#go-episode');
@@ -685,7 +685,7 @@ async function run() {
     await page.locator('#story-cards-resume-later').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const completato = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:modules:gate:Story_Uscite')).completed.indexOf('whyWeSayIt') !== -1);
+      JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', 'Story_Uscite'))).completed.indexOf('whyWeSayIt') !== -1);
     log('[C] "Esci e riprendi dopo" NON completa il modulo', completato === false);
 
     await openStory(page, 'whyWeSayIt');
@@ -715,7 +715,7 @@ async function run() {
     await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const primoEsito = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:Story_Ripasso')).whyWeSayIt);
+      JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', 'Story_Ripasso'))).whyWeSayIt);
     log('[D] Tutte chiare -> 100% -> verde', !!primoEsito && primoEsito.pct === 100 && primoEsito.level === 'verde');
 
     await openStory(page, 'whyWeSayIt');
@@ -739,7 +739,7 @@ async function run() {
     await page.locator('#story-cards-complete-btn').click();
     await page.waitForFunction(() => document.querySelectorAll('#module-list [data-module]').length > 0);
     const secondoEsito = await page.evaluate(() =>
-      JSON.parse(localStorage.getItem('baseinglese:moduleOutcome:gate:Story_Ripasso')).whyWeSayIt);
+      JSON.parse(localStorage.getItem(BI.moduleOutcomeKey('gate', 'Story_Ripasso'))).whyWeSayIt);
     log('[D] Il ripasso riscrive l\'esito con la nuova percentuale', secondoEsito.pct === Math.round(((attesi.skill - 1) / attesi.skill) * 100));
     log('[D] Nessun errore JS', errors.length === 0);
     await page.close();

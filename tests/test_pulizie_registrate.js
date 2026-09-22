@@ -90,9 +90,9 @@ async function apriDialogo(page, utente) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
   await page.evaluate(function (d) {
-    localStorage.setItem('baseinglese:gate:customizeSeen:' + d.u, '1');
+    localStorage.setItem(BI.customizeSeenKey('gate', d.u), '1');
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + d.u, '1');
-    localStorage.setItem('baseinglese:modules:gate:' + d.u, JSON.stringify({ completed: d.f }));
+    localStorage.setItem(BI.moduleProgressKey('gate', d.u), JSON.stringify({ completed: d.f }));
   }, { u: utente, f: stepsBefore('dialogoRipetiATempo') });
   await page.click('#go-episode');
   await page.waitForSelector('#view-map.is-active', { timeout: 15000 });

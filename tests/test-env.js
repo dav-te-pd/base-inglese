@@ -256,6 +256,22 @@ function configApp() {
 // `data/inglese/it/inglese-it-struttura-corso.json`. *Scriverlo nei nomi, in
 // venti punti, vorrebbe dire venti posti da cambiare alla prossima edizione —
 // che e' esattamente il motivo per cui questo file esiste (regola 24).*
+// ⚠️ IL GEMELLO LATO TEST DI `prefissoMagazzino` (app/progressi.js), nato col
+// passo 1.17 il 2026-09-22. Serve ai semi costruiti in NODE — un oggetto
+// `{chiave: valore}` passato a `bootAsUser` — dove `BI` non esiste: nel
+// browser un test chiede la chiave all'app (`BI.moduleProgressKey(...)`),
+// qui non puo'.
+//
+// ⚠️ E NON E' UNA COPIA CHE SI PUO' DISALLINEARE, perche' l'edizione la
+// legge da `configApp()`, cioe' dallo stesso `app/config.js` che la legge
+// l'app. *Quello che resta duplicato e' la FORMA — «prefisso + due punti» —
+// e se cambiasse, `test_progressi_estratto` [C] diventerebbe rosso: e' la
+// riga che confronta la chiave dell'app con una ricostruita qui a mano.*
+function chiaveMagazzino(resto) {
+  const ed = configApp().edizione;
+  return 'baseinglese:' + ed.lingua + '-' + ed.studente + ':' + resto;
+}
+
 function prefissoEdizione(ed) { return ed.lingua + '-' + ed.studente + '-'; }
 
 function fileEdizione(nome) {
@@ -268,4 +284,4 @@ function strutturaCorso() {
   return JSON.parse(require('fs').readFileSync(fileEdizione('struttura-corso.json'), 'utf8'));
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, strutturaCorso, attendiPrimaSchermata, globDati };
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, globDati };

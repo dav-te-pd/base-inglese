@@ -208,8 +208,8 @@ suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere 
 
 | Episodio | Nome | Categoria | Sequenza |
 |---|---|---|---|
-| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
 | `gate` | Al gate | `storia` | `narrativo-standard` |
+| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
 
 **STRUTTURA-CORSO_030** · **Cosa vince, e non c'è una quarta possibilità:**
 

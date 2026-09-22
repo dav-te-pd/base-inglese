@@ -105,7 +105,7 @@ async function apriPasso(page, passo) {
   }
   await page.waitForSelector('#go-episode');
   await page.evaluate(function (a) {
-    localStorage.setItem('baseinglese:modules:gate:' + a.utente, JSON.stringify({ completed: a.prima }));
+    localStorage.setItem(BI.moduleProgressKey('gate', a.utente), JSON.stringify({ completed: a.prima }));
     a.kinds.forEach(function (k) { localStorage.setItem('baseinglese:introDismissed:' + k + ':' + a.utente, '1'); });
   }, {
     utente: UTENTE,

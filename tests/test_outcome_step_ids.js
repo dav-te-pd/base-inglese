@@ -224,7 +224,7 @@ async function bootSeeded(page, userName, completed) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(function (arg) {
-    localStorage.setItem('baseinglese:modules:gate:' + arg.userName,
+    localStorage.setItem(BI.moduleProgressKey('gate', arg.userName),
       JSON.stringify({ completed: arg.completed }));
   }, { userName: userName, completed: completed });
   await page.click('#go-episode');
@@ -266,7 +266,7 @@ async function run() {
     const r4 = await readRow(page, passo4);
     const r9 = await readRow(page, passo9);
     const salvati = await page.evaluate(function (u) {
-      return localStorage.getItem('baseinglese:moduleOutcome:gate:' + u) || '{}';
+      return localStorage.getItem(BI.moduleOutcomeKey('gate', u)) || '{}';
     }, USER);
     const esiti = JSON.parse(salvati);
 
@@ -382,9 +382,9 @@ async function run() {
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bootFresh(page);
     const atteso = await page.evaluate(function (utente) {
-      localStorage.setItem('baseinglese:audioSecondsSent:gate:' + utente,
+      localStorage.setItem(BI.audioUsageKey('gate', utente),
         JSON.stringify({ byModule: { 'voicePractice': 12.5, 'voicePractice-2': 7.5 } }));
-      localStorage.setItem('baseinglese:nextLineSkips:gate:' + utente,
+      localStorage.setItem(BI.nextLineSkipsKey('gate', utente),
         JSON.stringify({ byModule: { 'dialogoRipetiATempo': 3 } }));
       // I nomi attesi si LEGGONO dalla configurazione, non si ricopiano qui.
       return {

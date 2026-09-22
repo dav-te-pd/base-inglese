@@ -70,7 +70,7 @@ async function bootAsUser(page, userName, completedModules) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForTimeout(100);
   await page.evaluate(({ userName, completedModules }) => {
-    localStorage.setItem('baseinglese:modules:gate:' + userName, JSON.stringify({ completed: completedModules }));
+    localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
     localStorage.setItem('baseinglese:introDismissed:voiceCoach:' + userName, '1');
   }, { userName, completedModules });
@@ -170,7 +170,7 @@ async function run() {
   const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
   log('[4d] Traguardo sound played on Voice Coach\'s Schermata Finale', traguardoTones.length >= 3);
 
-  const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
+  const completedBeforeClick = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', u)) || '{}').completed, 'VCTester');
   log('[4d] Module NOT marked completed until the explicit button is clicked', completedBeforeClick.indexOf('voiceCoach') === -1);
   await page.click('#voice-coach-complete-btn');
   // ⚠️ DIFETTO TROVATO, e non e' una conseguenza della conversione: l'etichetta
@@ -183,7 +183,7 @@ async function run() {
   // criterio in testa a tests/attese.js).
   const tornatoSullaMappa = await attendiClasse(page, '#view-map', 'is-active');
   log('[4d] Clicking it returns to the map', tornatoSullaMappa);
-  const completedAfterClick = await page.evaluate((u) => JSON.parse(localStorage.getItem('baseinglese:modules:gate:' + u) || '{}').completed, 'VCTester');
+  const completedAfterClick = await page.evaluate((u) => JSON.parse(localStorage.getItem(BI.moduleProgressKey('gate', u)) || '{}').completed, 'VCTester');
   log('[4d] Clicking it marks voiceCoach completed', completedAfterClick.indexOf('voiceCoach') !== -1);
 
   log('No JS errors across the whole Voice Coach flow', errors.length === 0);

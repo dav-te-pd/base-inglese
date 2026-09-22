@@ -178,7 +178,7 @@ async function apriMappa(page, utente, moduleId) {
   await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
   const completed = stepsBefore(moduleId);
   await page.evaluate(function (d) {
-    localStorage.setItem('baseinglese:modules:gate:' + d.u, JSON.stringify({ completed: d.c }));
+    localStorage.setItem(BI.moduleProgressKey('gate', d.u), JSON.stringify({ completed: d.c }));
     ['mappaEpisodio', 'meetTheStory', 'whyWeSayIt', 'voicePractice'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + d.u, '1');
     });

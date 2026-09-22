@@ -612,7 +612,19 @@ che, di suo, nascondeva le regressioni.
 ## File di servizio
 
 - `test-env.js` — Playwright, indirizzo dell'app e percorsi, condivisi da
-  tutti i file di test. Porta anche due ricerche condivise: `righeDiCodiceDi`
+  tutti i file di test.
+
+  ⚠️ **E dal passo 1.17 (2026-09-22) anche `chiaveMagazzino(resto)`, il
+  gemello lato test di `prefissoMagazzino` dell'app.** Serve ai semi costruiti
+  in **Node** — un oggetto `{chiave: valore}` passato a `bootAsUser` — dove
+  `BI` non esiste: *nel browser un test chiede la chiave all'app
+  (`BI.moduleProgressKey(...)`), in Node non può.* L'edizione la legge da
+  `configApp()`, quindi non è una copia che si può disallineare; quello che
+  resta duplicato è la **forma**, e se cambiasse `test_progressi_estratto`
+  `[C]` diventerebbe rosso — è la riga che confronta la chiave dell'app con
+  una ricostruita a mano.
+
+  Porta anche due ricerche condivise: `righeDiCodiceDi`
   (che toglie i commenti prima di contare) e, dal 2026-09-19, **`sorgenteChe`**
   — il sorgente che contiene un pezzo, cercato in `index.html` e in ogni file
   di `app/`, con un **`throw`** se non c'è da nessuna parte.
