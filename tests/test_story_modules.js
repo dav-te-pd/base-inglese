@@ -140,6 +140,32 @@ function creaMappa(nome) {
 
 function confrontaTestoConLaFonte(log) {
   const md = fs.readFileSync(repoPath.apply(null, FONTE.split('/')), 'utf8');
+
+  // ⚠️ OGNI MARCATORE DEVE COMPARIRE UNA VOLTA SOLA, E QUESTA RIGA E' UN
+  // COMANDO AL POSTO DI UN'ATTENZIONE.
+  //
+  // `tabellaSotto` e il riquadro dei numeri usano `indexOf`, cioe' la PRIMA
+  // occorrenza. Basta che il testo del file citi un marcatore mentre lo
+  // spiega, e il lettore legge la tabella sbagliata — **senza esplodere**:
+  // trova una tabella, la confronta, e dice una differenza che non c'entra
+  // niente con quella vera.
+  //
+  // Misurato tre volte in due giorni, l'ultima **scrivendo la frase che
+  // spiega questa trappola**: la suite ha detto «grado A: la tabella ha 4
+  // righe, il json 12 voci», e le 4 righe erano la tabella della
+  // spiegazione. *Una frase che raccomanda attenzione l'ho gia' scritta e
+  // gia' violata; questo elenco o passa o non passa.*
+  {
+    const marcatori = ['### Grado A', '### Grado B', '### Grado C', '### Grado D',
+      '## 5 — LE SKILL', '## 6 — PERSONAGGI ED ETICHETTE', '## 7 — GLI SLOT',
+      'Numeri attesi nel JSON'];
+    const doppi = marcatori
+      .map(m => ({ m, n: md.split(m).length - 1 }))
+      .filter(x => x.n !== 1);
+    log('[Fonte] Ogni marcatore che un test cerca compare UNA volta sola in ' + FONTE,
+      doppi.length === 0,
+      doppi.map(x => '"' + x.m + '" ' + x.n + ' volte').join(' | '));
+  }
   const voci = g => loadGrade(g);
   const segna = creaMappa('segnaposto');
   const differenze = [];

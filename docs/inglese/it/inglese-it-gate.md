@@ -27,7 +27,14 @@ rossa proprio su quella riga:
 
 **Quindi per QUESTO episodio l'ordine delle colonne è un'interfaccia**, non una
 scelta di impaginazione: spostarne una fa rosso. I titoli delle sezioni no —
-quelli il blocco li cerca come `### Grado A`, senza il numero di sezione.
+quelli il blocco li cerca per il loro titolo di terzo livello (`###` piu'
+«Grado» piu' la lettera), senza il numero di sezione.
+
+⚠️ **E QUEL TITOLO QUI NON E' SCRITTO PER INTERO, ED E' LA TERZA VOLTA IN DUE
+GIORNI CHE SERVE:** il blocco cerca la **prima** occorrenza nel file, quindi una
+citazione in questa sezione gli farebbe leggere **la tabella qui sopra** come
+tabella del grado A. *E' successo: la suite ha detto «la tabella ha 4 righe, il
+json 12 voci» — scrivendo la frase che spiega proprio questa trappola.*
 
 ⚠️ **E l'asimmetria va saputa: `aircraft-door` NON ha questo controllo.**
 `tests/test_episodio2.js` legge solo il suo riquadro dei numeri. **`gate` è
