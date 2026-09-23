@@ -891,6 +891,64 @@ tutti**.
   `generalRule` e `ageOptions`, `aircraft-door` no. Puo' essere giusto (uno ha
   le eta', l'altro no), ma nessuno l'ha dichiarato.
 
+# ⚠️ QUATTORDICI COSE MISURATE SUI FILE DI CONTENUTO — 2026-09-23
+
+**Misurate su richiesta, a codice fermo, confrontando gli otto file caricati in
+`nuovi/` con il codice e con i JSON.** Sta qui e non in chat perche' **la chat
+non sopravvive al container** (regola 43). Le correzioni ai file di contenuto
+**non sono state fatte**: sono di chi guida il progetto (regola 33), e le cinque
+frasi sono state consegnate come proposta.
+
+## Le tre frasi FALSE che vivono nei file di contenuto
+
+| | Dove | Cosa dice | Cosa e' vero, e chi lo prova | Condizione |
+|---|---|---|---|---|
+| ① | **GATE_038**, **AIRCRAFT-DOOR_036**, **REGISTRO-EPISODI_004 riga 9** | *«Claude Code trascrive `dialogueSpeakerLabels`»* | **Quel nome non esiste da nessuna parte.** La chiave e' `speakerLabels` — `app/apertura.js:100`, `app/ui-condivisa.js:918`. L'unica occorrenza in tutto il repository e' un commento in `tests/test_story_modules.js:532` che dice che e' **uscito il 2026-09-09** | quando arrivano i file corretti |
+| ② | **STRUTTURA-CORSO_002** | *«Il JSON ha sette chiavi»* | **Ne ha dodici.** Le tre non descritte da nessuna sezione sono `episodeSequences`, `episodeSequence`, `episodioCorrente` — entrate col passo 1.13 | idem |
+| ③ | **STRUTTURA-CORSO_014** | *«sequenza degli episodi → dove vive → `inglese-it-sequenza-episodi.md`»* | **Vive in `inglese-it-struttura-corso.json`**, chiavi `episodeSequences`/`episodeSequence`, letta da `resolveEpisodeOrder()` (`app/catalogo.js`). E il markdown-fonte con cui il test la confronta e' la **tabella della sezione 7 di `inglese-it-struttura-corso.md`** | idem |
+
+## Le due frasi FALSE su cosa fa il codice
+
+| | Dove | Cosa dice | Cosa fa davvero |
+|---|---|---|---|
+| ④ | **TABELLE_025** | *«colonne `fr` `es` `de` vuote»* | **Non esistono piu'** (49 righe su 49). **Ne segue che la voce ⑦ della sezione 9 e' gia' fatta** |
+| ⑤ | **TABELLE_025 ④** | *«senza la migrazione, chi ha personalizzato torna ai valori predefiniti in silenzio»* | ⚠️ **No: ripiega sulla PRIMA RIGA della tabella.** `loadCustomValues` (`app/progressi.js:267`) **tiene** un valore salvato che non esiste piu' fra le opzioni; `resolveSlotValue` (`app/ui-condivisa.js:560`) fa `var picked = match \|\| opts[0]`. Per sette slot su nove la prima riga coincide col predefinito e non si vedrebbe. **Per i due delle eta' no:** `figliaEta` predefinito `16` → si vedrebbe **`12`**; `figlioEta` predefinito `8` → si vedrebbe **`4`**. *Da guardare il giorno della migrazione degli id, non prima* |
+
+## I cinque DATI che vivono solo nel JSON, senza nessuna fonte markdown
+
+**Sono il rovescio della regola 26: non un markdown che descrive male il JSON,
+ma contenuto che nel markdown non c'e' proprio.** *Il file DATI vuoto creato il
+2026-09-23 ha una sezione per ognuno.*
+
+| | Cosa | Dove vive oggi | Chi lo legge |
+|---|---|---|---|
+| ⑥ | **`generalRule`** — *«La "e" finale in inglese non si legge quasi mai.»* | `inglese-it-gate.json` | Repeat Aloud (`app/repeataloud.js:95`). Facoltativa: `aircraft-door` non ce l'ha |
+| ⑦ | **le `label` degli slot** — *«Nome del papa' / utente»* | `personalizationTablesUsed[].label` nei due file episodio | la schermata Personalizza |
+| ⑧ | **`ageOptions`** — le eta' `12–17` e `4–11` | `inglese-it-gate.json` | raggiunta solo perche' uno slot dice `episode.ageOptions.figlia` |
+| ⑨ | **i `default` degli slot** | `personalizationTablesUsed[].default` | il markdown li segna `(pred.)` **accanto a un id della tabella** — ma il predefinito e' una proprieta' dello SLOT, non della tabella: due episodi possono pescare dalla stessa tabella con predefiniti diversi |
+| ⑩ | **i 22 passi di `narrativo-standard`** | `sequences` in `struttura-corso.json` | nessun markdown. ⚠️ **E' una decisione dichiarata** (STRUTTURA-CORSO_017: *«si modificano li'»*), non una dimenticanza — resta qui perche' e' l'unica di questa famiglia che e' stata scelta apposta |
+
+## Le quattro cose trovate e non chieste
+
+| | Cosa | Misura | Condizione |
+|---|---|---|---|
+| ⑪ | **Il `_nota` dentro `inglese-it-tabelle-personalizzazione.json` dichiara «le due differenze» col markdown, e ce ne sono almeno sei** | `places.departures` **3** contro **8** · `people.papa` **8** contro **10** · `people.figlio` **8** contro **11** · `people.cognome` **8** contro **9** · **il default di `cognome`**: `rossi` nel JSON, `cognome-costa` nel markdown · e dice *«il magazzino ne ha UNDICI [destinazioni]»* mentre il markdown nuovo ne ha **tre** | col passo delle tabelle |
+| ⑫ | **Tre chiavi di un file episodio che nessuno legge** | `episodeTitle` (**doppione** di `episodes.<id>.nome`), `language`, `level`. Piu' `difficulty` dentro ogni skill | quando si riscrive un file episodio |
+| ⑬ | **Due campi che la regola 4 chiede e che nessuno legge**: `grammarCategory` (gradi A e B) e `fromLine` (grado C) | zero letture in `app/`. *Non e' un difetto: e' una decisione sulla regola 4, e la prende chi guida il progetto* | alla prossima revisione della regola 4 |
+| ⑭ | **`GATE_040` e `TABELLE_024` mandano a `rinomine` 004 per un DATO, e quel file non e' nel repository** | ⚠️ **La regola 28 distingue:** *«APPLINGUE-metodo-didattico»* e *«regola master»* sono **rimandi al metodo** e sono ammessi — si perde il perche', non il come. **`rinomine` no**: ci si va per sapere QUALI chiavi rinominare, cioe' per un dato, e senza quel file il lavoro non si puo' fare | quando si scrive il passo delle rinomine |
+
+## E una duplicazione, che non e' una di queste quattordici
+
+⚠️ **Due markdown dichiarano l'ordine degli episodi:** la sezione 7 di
+`inglese-it-struttura-corso.md` (che `tests/test_struttura_corso.js` confronta
+col JSON) e le sezioni 3–4 di `inglese-it-sequenza-episodi.md` (che non legge
+nessuno). *Due elenchi sulla stessa cosa divergono al primo riordino — che e'
+testualmente l'argomento di STRUTTURA-CORSO_017 contro il duplicare i passi.*
+**Condizione: la decide la strada DATI/RAGIONI** (la domanda 4 e' sospesa in
+attesa di quella).
+
+---
+
 # ⚠️ I DIVIETI — si leggono PRIMA di prendere un passo
 
 Non si deducono guardando il codice.
@@ -906,14 +964,20 @@ Non si deducono guardando il codice.
    (regola 23), e si vede **fallire apposta** prima di fidarsene (regola 32).
 5. **Ogni commit scrive la propria riga** in `correzioni.md` o qui (regola 43).
 6. **Un file sotto `docs/{lingua}/` non si tocca di iniziativa** (regola 33).
-7. ⚠️ **I NOMI FRANCESI NON VANNO NELLE COLONNE `fr` DI
-   `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.** Quel file porta `fr`,
-   `es`, `de` vuote — la forma «una riga, cinque lingue» — e finche' il passo
-   1.8 non le toglie, **sono li' e sembrano il posto giusto**. Non lo sono: i
-   nomi francesi vanno in `data/francese/it/tabelle-personalizzazione.json`,
-   il file di quell'edizione. *Il rischio non e' che quelle colonne restino:
-   e' che qualcuno ci scriva dentro prima che il passo arrivi, e allora
-   toglierle diventa una migrazione invece di una cancellazione.*
+7. ⚠️ **I NOMI FRANCESI VANNO NELL'EDIZIONE FRANCESE**, cioe' in
+   `data/francese/it/tabelle-personalizzazione.json`, mai in
+   `data/inglese/it/inglese-it-tabelle-personalizzazione.json`. *Un'edizione
+   non e' una traduzione: le due tabelle sono contenuti diversi, non due
+   colonne della stessa riga.*
+
+   ⚠️ **RISCRITTO IL 2026-09-23, E LA VERSIONE PRECEDENTE ERA UNA GUARDIA A
+   VUOTO.** Diceva *«quel file porta `fr`, `es`, `de` vuote … e finche' il
+   passo 1.8 non le toglie, sono li' e sembrano il posto giusto»*. **Il passo
+   1.8 le ha tolte il 2026-09-20**: misurato, **49 righe su 49** hanno la forma
+   `{value, it, en, traducibile}` e zero hanno quelle colonne. *Il divieto
+   proteggeva da un errore diventato impossibile — una misura che non misura
+   (regola 37) — in cima all'elenco che si legge PRIMA di prendere un passo.
+   La sostanza resta vera; e' la ragione che era scaduta.*
 8. ⚠️ **In un file di contenuto si cercano prima le ISTRUZIONI false, poi i
    fatti falsi.** Un fatto sbagliato confonde chi legge; **un'istruzione
    sbagliata viene ESEGUITA.** Il caso: `inglese-it-gate.md` dice *«finche' non

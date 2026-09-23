@@ -74,3 +74,19 @@ file «ovviamente più nuovo» di quello vero **non lo copia sopra**.
    stesso commit.
 
 *Se questa cartella contiene solo questo LEGGIMI, non c'è niente in attesa.*
+
+---
+
+## I file `-VUOTO`
+
+**Non sono in attesa di essere promossi: sono il MODELLO.** Portano le sezioni
+coi titoli esatti, le tabelle, le colonne e **una riga di esempio** — niente
+contenuto vero, apposta: riempirli leggendo i JSON di oggi ci restituirebbe il
+contenuto vecchio dentro una forma nuova.
+
+Dentro ognuno, in testa, ci sono due cose che non stanno da nessun'altra parte:
+**quanto è rigido il parser** di quel file (cosa cerca, come, e cosa lo rompe) e
+**cosa NON serve più** di quello che ci stava dentro prima.
+
+⚠️ **Restano qui anche dopo che i file veri sono stati promossi.** Un modello si
+riapre ogni volta che nasce un episodio nuovo.
