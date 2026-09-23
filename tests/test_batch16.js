@@ -103,10 +103,11 @@ async function run() {
     await bootAsUser(page, 'T16Job1', ALL_BEFORE_DG);
     await openModule(page, 'personalizzazione');
     await page.waitForTimeout(200);
-    // Pick "francesco" for papa (whose en column is "Francis") via the select.
+    // Pick "papa-francesco" for papa (whose en column is "Francis") via the select.
+    // ⚠️ L'id porta il prefisso della tabella dal 2026-09-23.
     const hasSelect = await page.evaluate(() => !!document.querySelector('select[data-slot="papa"]'));
     if (hasSelect) {
-      await page.selectOption('select[data-slot="papa"]', 'francesco').catch(() => {});
+      await page.selectOption('select[data-slot="papa"]', 'papa-francesco').catch(() => {});
     }
     await page.waitForTimeout(150);
     await page.click('#customize-back-home');
@@ -145,7 +146,7 @@ async function run() {
     // dalla pagina. Leggerla da `window.APP_CONFIG.people` darebbe undefined
     // — cioe' un rosso che parla del posto sbagliato.
     const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-tabelle-personalizzazione.json'), 'utf8'));
-    const papaOpt = magazzino.people.papa.find(function (o) { return o.value === 'francesco'; });
+    const papaOpt = magazzino.people.papa.find(function (o) { return o.value === 'papa-francesco'; });
     // ⚠️ E QUI C'ERANO DUE RIGHE MORTE, tolte il 2026-09-15.
     //
     // Cercavano `cfg.places.partenza`. La tabella si chiama `departures`:
@@ -156,7 +157,7 @@ async function run() {
     // famiglia della misura che non misura (CLAUDE.md regola 37) dentro un
     // test. Se un giorno serve un'asserzione sui luoghi, il nome giusto e'
     // `magazzino.places.departures`.
-    log('[Job1b] people.papa.francesco really has a different EN value (regression bait present)', papaOpt && papaOpt.it !== papaOpt.en);
+    log('[Job1b] people.papa.papa-francesco really has a different EN value (regression bait present)', papaOpt && papaOpt.it !== papaOpt.en);
     log('[Job1b] No JS errors', errors.length === 0);
     await page.close();
   }

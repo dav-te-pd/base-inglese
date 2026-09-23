@@ -15,10 +15,24 @@ le note di scrittura, gli esclusi di proposito — stanno nei file RAGIONI.
 
 ### ① QUANTO È RIGIDO IL PARSER — misurato su `tests/test_story_modules.js` e `tests/test_episodio2.js`, 2026-09-23
 
-⚠️ **DI TUTTO QUESTO FILE, UN TEST LEGGE UNA COSA SOLA: il riquadro dei numeri
-attesi.** Titoli, numeri di sezione, ordine delle sezioni, nomi delle colonne:
-**niente di tutto questo è un'interfaccia.** Si possono cambiare senza rompere
-niente — l'unico lettore delle tabelle sono io.
+⚠️ **DI QUESTO FILE UN TEST LEGGE DUE COSE, E LA SECONDA NON E' QUELLA CHE
+AVEVO SCRITTO.** Qui c'era *«un test legge una cosa sola: il riquadro dei numeri
+attesi»*, e **era falso** — misurato il 2026-09-23, dopo che la suite e' andata
+rossa proprio su quella riga:
+
+| Cosa legge un test | Chi |
+|---|---|
+| il **riquadro dei numeri attesi** | `tests/test_story_modules.js` |
+| ⚠️ **le tabelle dei gradi A, B, C, D e la sezione 5 delle skill**, confrontate col JSON **cella per cella** | `tests/test_story_modules.js`, blocco `[Fonte]` |
+
+**Quindi per QUESTO episodio l'ordine delle colonne è un'interfaccia**, non una
+scelta di impaginazione: spostarne una fa rosso. I titoli delle sezioni no —
+quelli il blocco li cerca come `### Grado A`, senza il numero di sezione.
+
+⚠️ **E l'asimmetria va saputa: `aircraft-door` NON ha questo controllo.**
+`tests/test_episodio2.js` legge solo il suo riquadro dei numeri. **`gate` è
+l'unico episodio in cui l'accordo fra markdown e JSON è verificato da una
+macchina** — negli altri è verificato da chi trascrive.
 
 **Il riquadro invece è rigido, e in un modo che va saputo prima di scriverlo:**
 

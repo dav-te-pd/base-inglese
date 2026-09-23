@@ -164,13 +164,18 @@ async function run() {
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
 
+    // ⚠️ GLI ID PORTANO IL PREFISSO DELLA TABELLA DAL 2026-09-23
+    // (`torino` -> `orig-torino`), e questa riga li scrive a mano. Con l'id
+    // vecchio il test NON moriva: `resolveSlotValue` non trova la riga e
+    // ripiega su `opts[0]` — quindi «Torino» tornava «Mondovì», e
+    // l'asserzione accusava la TRADUCIBILITA' mentre il guasto era l'id.
     // Una riga di `places` — che la regola vecchia traduceva SEMPRE — che
     // dichiara di non tradursi. È l'unico modo di far divergere le due forme:
     // sul contenuto vero danno la stessa risposta su tutte le righe.
     await page.route(globDati('tabelle-personalizzazione.json'), async function (route) {
       const vero = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8'));
       vero.places.departures = vero.places.departures.map(function (r) {
-        return r.value === 'torino' ? Object.assign({}, r, { traducibile: false }) : r;
+        return r.value === 'orig-torino' ? Object.assign({}, r, { traducibile: false }) : r;
       });
       await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(vero) });
     });
@@ -181,11 +186,11 @@ async function run() {
       const ep = window.BI.episodioCorrente();
       return {
         // il toponimo che dichiara di NON tradursi
-        torino: window.BI.resolveSlotValue(ep, 'partenza', 'torino', 'en'),
+        torino: window.BI.resolveSlotValue(ep, 'partenza', 'orig-torino', 'en'),
         // un toponimo qualunque che non lo dichiara: si traduce come sempre
-        mondovi: window.BI.resolveSlotValue(ep, 'partenza', 'mondovi', 'en'),
+        mondovi: window.BI.resolveSlotValue(ep, 'partenza', 'orig-mondovi', 'en'),
         // un nome proprio: non si traduce, come sempre
-        papa: window.BI.resolveSlotValue(ep, 'papa', 'marco', 'en')
+        papa: window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'en')
       };
     });
 

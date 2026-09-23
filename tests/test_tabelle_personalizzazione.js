@@ -143,10 +143,33 @@ async function run() {
 
     const dati = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8'));
     log('[A] Il file esiste e porta le due radici', !!dati.people && !!dati.places);
-    // Il file dice a chi lo apre che il contenuto NON è quello del magazzino:
-    // senza, fra un mese qualcuno lo confronta col markdown e crede a una perdita.
-    log('[A] ...e dichiara che il contenuto è quello di prima, non quello del magazzino',
-      !!dati._nota && /magazzino/i.test(JSON.stringify(dati._nota)));
+    // ⚠️ QUESTA RIGA E' STATA SEGUITA, NON TOLTA (divieto 3), E LA DIFFERENZA
+    // CONTA. Fino al 2026-09-22 il file portava un `_nota` che diceva «il
+    // contenuto qui dentro NON è quello del magazzino»: serviva perché chi lo
+    // confrontava col markdown non credesse a una perdita. **Il 2026-09-23 la
+    // divergenza è finita** — il markdown è diventato la fonte e il JSON nasce
+    // da lì — quindi quella nota descriveva un mondo che non c'è più, e un
+    // `_nota` che mente è peggio di nessun `_nota`.
+    //
+    // L'invariante non è cambiato: *chi apre questo file deve poter sapere da
+    // dove viene il suo contenuto*. È cambiata la risposta, e adesso si
+    // verifica al contrario — che ogni id porti il prefisso della sua tabella,
+    // che è il segno visibile che il file viene dal magazzino e non dal
+    // contenuto vecchio.
+    const senzaPrefisso = [];
+    Object.keys(dati.people || {}).forEach(function (t) {
+      (dati.people[t] || []).forEach(function (r) {
+        if (String(r.value).indexOf(t + '-') !== 0) senzaPrefisso.push('people.' + t + ' -> ' + r.value);
+      });
+    });
+    const PREFISSO_LUOGHI = { departures: 'orig-', destinations: 'dest-' };
+    Object.keys(dati.places || {}).forEach(function (t) {
+      (dati.places[t] || []).forEach(function (r) {
+        if (String(r.value).indexOf(PREFISSO_LUOGHI[t]) !== 0) senzaPrefisso.push('places.' + t + ' -> ' + r.value);
+      });
+    });
+    log('[A] ...e ogni id porta il prefisso della sua tabella, cioè viene dal magazzino',
+      senzaPrefisso.length === 0, senzaPrefisso.join(', '));
   }
 
   const browser = await launchBrowser();

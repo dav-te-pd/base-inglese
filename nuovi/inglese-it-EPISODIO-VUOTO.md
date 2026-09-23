@@ -15,10 +15,16 @@ le note di scrittura, gli esclusi di proposito — stanno nei file RAGIONI.
 
 ### ① QUANTO È RIGIDO IL PARSER — misurato su `tests/test_story_modules.js` e `tests/test_episodio2.js`, 2026-09-23
 
-⚠️ **DI TUTTO QUESTO FILE, UN TEST LEGGE UNA COSA SOLA: il riquadro dei numeri
-attesi.** Titoli, numeri di sezione, ordine delle sezioni, nomi delle colonne:
-**niente di tutto questo è un'interfaccia.** Si possono cambiare senza rompere
-niente — l'unico lettore delle tabelle sono io.
+⚠️ **DI QUESTO FILE UN TEST LEGGE UNA COSA SOLA: il riquadro dei numeri
+attesi** (`tests/test_episodio2.js`). Titoli, numeri di sezione, ordine delle
+sezioni e nomi delle colonne **non sono un'interfaccia**: si possono cambiare
+senza rompere niente.
+
+⚠️ **MA NON VALE PER TUTTI GLI EPISODI, e la differenza e' stata misurata il
+2026-09-23:** di `gate`, `tests/test_story_modules.js` legge **anche le tabelle
+dei gradi**, confrontandole col JSON cella per cella. **Li' l'ordine delle
+colonne e' un'interfaccia; qui no.** *Chi cambia la forma di questo modello
+cambia tutti e due: il primo se ne accorge, il secondo no.*
 
 **Il riquadro invece è rigido, e in un modo che va saputo prima di scriverlo:**
 

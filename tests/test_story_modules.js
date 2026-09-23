@@ -159,7 +159,20 @@ function confrontaTestoConLaFonte(log) {
     a.chiavi.forEach((k, i) => segna.aggiungi(k, b.chiavi[i], dove));
   };
 
-  // ── Gradi A e B: quattro colonne, nessun segnaposto, confronto secco ──
+  // ⚠️ LE COLONNE SONO CAMBIATE IL 2026-09-23, E IL BLOCCO E' STATO SEGUITO,
+  // NON TOLTO (divieto 3). Il markdown ha preso la forma DATI: ogni tabella
+  // porta l'`id` come prima colonna, il grado D porta il `ruolo`, e il conto
+  // delle skill non sta piu' in una colonna del grado D ma nella sezione 5.
+  // L'invariante non e' cambiato — *il testo del json coincide con le tabelle
+  // della fonte* — e' cambiato dove stanno le colonne.
+  //
+  // ⚠️ E IL BLOCCO ADESSO PUO' CONTROLLARE UNA COSA IN PIU', che prima era
+  // impossibile: **che l'id del markdown sia quello del json**. Prima la
+  // tabella non lo portava, quindi le righe si accoppiavano per POSIZIONE e
+  // basta: una riga spostata nel markdown e non nel json passava inosservata
+  // finche' i due testi restavano uguali.
+
+  // ── Gradi A e B: id, testo, pronuncia, categoria ──
   [['A', '### Grado A'], ['B', '### Grado B']].forEach(([grado, titolo]) => {
     const t = tabellaSotto(md, titolo);
     const items = voci(grado);
@@ -170,14 +183,24 @@ function confrontaTestoConLaFonte(log) {
     t.righe.forEach((riga, i) => {
       const it = items[i];
       const dove = 'grado ' + grado + ' riga ' + (i + 1) + ' (' + it.id + ')';
-      confronta(dove + ' inglese', riga[0], it.english);
-      confronta(dove + ' italiano', riga[1], it.italian);
-      confronta(dove + ' pronuncia', riga[2], it.pronunciationTip);
-      confronta(dove + ' categoria', riga[3], it.grammarCategory);
+      confronta(dove + ' id', riga[0], it.id);
+      confronta(dove + ' inglese', riga[1], it.english);
+      confronta(dove + ' italiano', riga[2], it.italian);
+      confronta(dove + ' pronuncia', riga[3], it.pronunciationTip);
+      confronta(dove + ' categoria', riga[4], it.grammarCategory);
     });
   });
 
-  // ── Grado D: chi parla, il testo, e quante skill porta ogni battuta ──
+  // ── Le skill: quante ne porta ogni battuta, contate dalla sezione 5 ──
+  // Due righe con la stessa battuta sono due skill della stessa battuta: e'
+  // la forma che il file DATI dichiara, e il totale e' gia' controllato dal
+  // riquadro dei numeri attesi. Qui conta che stiano sulla battuta GIUSTA.
+  const skillPerBattuta = {};
+  tabellaSotto(md, '## 5 — LE SKILL').righe.forEach(r => {
+    skillPerBattuta[r[0]] = (skillPerBattuta[r[0]] || 0) + 1;
+  });
+
+  // ── Grado D: id, chi parla, il ruolo, il testo ──
   const tD = tabellaSotto(md, '### Grado D');
   const battuteMd = tD.righe;
   const battuteJson = voci('D');
@@ -188,18 +211,22 @@ function confrontaTestoConLaFonte(log) {
     battuteMd.forEach((riga, i) => {
       const it = battuteJson[i];
       const dove = 'grado D ' + riga[0] + ' (' + it.id + ')';
+      confronta(dove + ' id', riga[0], it.id);
       chi.aggiungi(riga[1], it.speaker, dove);
-      confrontaConSegnaposto(dove + ' inglese', riga[2], it.english);
-      confrontaConSegnaposto(dove + ' italiano', riga[3], it.italian);
-      // "1, 2" sono due skill, "—" nessuna. Il totale è già controllato dai
-      // numeri attesi: qui conta che stiano sulla battuta GIUSTA.
-      const attese = riga[4] === '—' ? 0 : riga[4].split(',').filter(x => x.trim()).length;
+      // Il ruolo decide da che parte sta la bolla: e' un dato, non una nota.
+      confronta(dove + ' ruolo', riga[2], it.ruolo);
+      confrontaConSegnaposto(dove + ' inglese', riga[3], it.english);
+      confrontaConSegnaposto(dove + ' italiano', riga[4], it.italian);
+      const attese = skillPerBattuta[riga[0]] || 0;
       const trovate = (it.whatYouLearn || []).length;
-      if (attese !== trovate) differenze.push(dove + ': la fonte le dà ' + attese + ' skill, il json ' + trovate);
+      if (attese !== trovate) differenze.push(dove + ': la fonte le da\' ' + attese + ' skill, il json ' + trovate);
     });
   }
 
-  // ── Grado C: le righe "= dN" non si ricopiano, si risolvono ──
+  // ── Grado C: id, testo, e da quale battuta viene ──
+  // ⚠️ LA SCORCIATOIA «= dN» NON C'E' PIU': il file DATI scrive la frase per
+  // intero anche quando e' identica alla battuta. Una riga che rimandava
+  // altrove si leggeva solo tenendo due tabelle sotto gli occhi.
   const tC = tabellaSotto(md, '### Grado C');
   const frasiJson = voci('C');
   if (tC.righe.length !== frasiJson.length) {
@@ -208,18 +235,10 @@ function confrontaTestoConLaFonte(log) {
     tC.righe.forEach((riga, i) => {
       const it = frasiJson[i];
       const dove = 'grado C ' + riga[0] + ' (' + it.id + ')';
-      const da = riga[3];                               // "d4"
-      let ing = riga[1], ita = riga[2];
-      const uguale = /^=\s*(d\d+)$/.exec(ing.trim());
-      if (uguale) {
-        const origine = battuteMd.find(r => r[0] === uguale[1]);
-        if (!origine) { differenze.push(dove + ': "' + ing + '" rimanda a una battuta che non esiste'); return; }
-        ing = origine[2]; ita = origine[3];
-      }
-      confrontaConSegnaposto(dove + ' inglese', ing, it.english);
-      confrontaConSegnaposto(dove + ' italiano', ita, it.italian);
-      // "d4" nella colonna "Da" è la battuta d-4 del json.
-      confronta(dove + ' fromLine', da.replace(/^d/, 'd-'), it.fromLine);
+      confronta(dove + ' id', riga[0], it.id);
+      confrontaConSegnaposto(dove + ' inglese', riga[1], it.english);
+      confrontaConSegnaposto(dove + ' italiano', riga[2], it.italian);
+      confronta(dove + ' fromLine', riga[3], it.fromLine);
     });
   }
 
