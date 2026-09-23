@@ -926,7 +926,7 @@ ma contenuto che nel markdown non c'e' proprio.** *Il file DATI vuoto creato il
 | ⑦ | **le `label` degli slot** — *«Nome del papa' / utente»* | `personalizationTablesUsed[].label` nei due file episodio | la schermata Personalizza |
 | ⑧ | **`ageOptions`** — le eta' `12–17` e `4–11` | `inglese-it-gate.json` | raggiunta solo perche' uno slot dice `episode.ageOptions.figlia` |
 | ⑨ | **i `default` degli slot** | `personalizationTablesUsed[].default` | il markdown li segna `(pred.)` **accanto a un id della tabella** — ma il predefinito e' una proprieta' dello SLOT, non della tabella: due episodi possono pescare dalla stessa tabella con predefiniti diversi |
-| ⑩ | **i 22 passi di `narrativo-standard`** | `sequences` in `struttura-corso.json` | nessun markdown. ⚠️ **E' una decisione dichiarata** (STRUTTURA-CORSO_017: *«si modificano li'»*), non una dimenticanza — resta qui perche' e' l'unica di questa famiglia che e' stata scelta apposta |
+| ⑩ | **i 22 passi di `narrativo-standard`** | `sequences` in `struttura-corso.json` | ✅ **CHIUSA IL 2026-09-23: nasce la sezione 5 del file DATI.** Era l'unica di questa famiglia scelta apposta (STRUTTURA-CORSO_017: *«si modificano li'»*) — vedi la riga qui sotto per cosa ha fatto cambiare idea |
 
 ## Le quattro cose trovate e non chieste
 
@@ -946,6 +946,67 @@ nessuno). *Due elenchi sulla stessa cosa divergono al primo riordino — che e'
 testualmente l'argomento di STRUTTURA-CORSO_017 contro il duplicare i passi.*
 **Condizione: la decide la strada DATI/RAGIONI** (la domanda 4 e' sospesa in
 attesa di quella).
+
+---
+
+## ⚠️ LA 017 E' CAMBIATA, E LA MISURA CHE L'HA CAMBIATA — 2026-09-23
+
+**STRUTTURA-CORSO_017 diceva: «i passi delle sequenze stanno solo nel JSON e si
+modificano LI'».** Dal 2026-09-23 non piu': nasce `## 5 — LE SEQUENZE DEI
+MODULI` nel file DATI, e i 22 passi hanno una fonte markdown come ogni altro
+dato dell'edizione.
+
+**Sta scritto qui, e non solo nel file, perche' senza fra un mese sembra che ci
+siamo dimenticati della 017.**
+
+**La 017 aveva DUE ragioni. Una regge, l'altra e' caduta misurandola:**
+
+| La ragione | Oggi |
+|---|---|
+| *«due elenchi sugli stessi passi divergono al primo riordino»* | **regge** — ed e' il motivo per cui questa sezione ha bisogno di un'asserzione, non di una promessa (vedi la condizione qui sotto) |
+| *«il Pannello Admin ci scrive dentro»* | ⚠️ **CADUTA.** Misurato il 2026-09-22: il pannello scrive in `localStorage`, chiave `baseinglese:configOverrides` (`app/avvio.js:46`) — **quel browser soltanto**. Non arriva mai al JSON, non lo vede nessun altro, sparisce svuotando i dati del sito |
+
+**Ne segue il fatto che ha deciso: l'unico scrittore di quel JSON e' Claude
+Code, come per ogni altro dato — e i 22 passi restavano l'ULTIMO dato senza
+fonte markdown.** *Riordinarli voleva dire far modificare il JSON a mano:
+l'unico posto del progetto dove una decisione si prendeva senza passare da un
+documento.*
+
+⚠️ **LA 017 NON ERA SBAGLIATA: era vera finche' la sua seconda ragione lo era.**
+*E' la forma della famiglia ⓪-quinquies — una frase giusta smette di essere vera
+quando cambia il mondo intorno, non il ragionamento che l'ha scritta.*
+
+⚠️ **CONDIZIONE APERTA: oggi NESSUN TEST legge quella sezione.** Finche' non ce
+n'e' uno, markdown e JSON possono divergere in silenzio — che e' esattamente il
+buco che il blocco `[Ordine]` ha chiuso per gli episodi. **Una fonte senza
+asserzione e' una fonte decorativa.** Condizione: il primo passo di codice utile.
+
+⚠️ **E il pezzo c'e' gia' a meta': `tests/test_struttura_corso.js` DEFINISCE
+`idModulo()` e `grado()` — e non li chiama nessuno.** Trovato il 2026-09-23
+cercando cosa servirebbe: sono due funzioni morte, e sono esattamente le due che
+servono per leggere una tabella di passi. *Il residuo di un lettore della
+sezione 6 che non e' mai stato scritto, o che e' stato tolto.*
+
+---
+
+## ⚠️ UN MODELLO CHE NON E' STATO PASSATO DAL PARSER E' UN MODELLO CHE SEMBRA GIUSTO — 2026-09-23
+
+**Da tenere oltre questo passo.** Scrivendo i tre file DATI vuoti il parser e'
+stato letto riga per riga **prima** di scriverli, e due trappole sono passate
+lo stesso. Le ha trovate **passare i modelli attraverso il parser vero**,
+riscritto e fatto girare sul file appena scritto:
+
+| La trappola | Cosa sarebbe successo |
+|---|---|
+| Nel modello dell'episodio, la stringa marcatore citata **anche nella spiegazione** | `indexOf` prende la **prima** occorrenza → il parser leggeva la tabella della spiegazione, e i sei numeri uscivano come `N` **senza che niente si lamentasse** |
+| Nel modello della struttura, i cinque titoli scritti per intero in una tabella di spiegazione | il parser leggeva **quella tabella** come tabella dei gradi |
+
+**E' la stessa cosa della falsificazione** (regola 32): vedere un test fallire
+apposta prova che sa morire; passare un modello dal parser prova che sa essere
+letto. **Nessuna delle due si ottiene rileggendo.**
+
+*Nei due modelli la difesa adesso e' un comando, non una raccomandazione:
+`grep -c` sulla stringa marcatore e sui cinque titoli deve dare **1**.*
 
 ---
 

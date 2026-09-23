@@ -40,10 +40,14 @@ resto di questa tabella, senza lamentarsi. *La prova è ripetibile:
 Un trattino normale `-` non viene trovato, e il test non dice «trattino
 sbagliato»: dice «Titolo non trovato».
 
-⚠️ **RINUMERARE UNA SEZIONE ROMPE IL TEST.** È il motivo per cui **qui il 5 e il
-6 non esistono**: le due sezioni che li portavano sono passate in RAGIONI, e
-chiudere il buco tirando indietro il 7 farebbe fallire tre asserzioni. *Il buco
-non è un difetto: è il segno visibile che quei numeri sono un'interfaccia.*
+⚠️ **RINUMERARE UNA SEZIONE ROMPE IL TEST.** È il motivo per cui **qui il 6 non
+esiste**: la sezione che lo portava è passata in RAGIONI, e chiudere il buco
+tirando indietro il 7 farebbe fallire tre asserzioni. *Il buco non è un difetto:
+è il segno visibile che quei numeri sono un'interfaccia.*
+
+⚠️ **E il 5 non è cercato da nessuno:** la sezione dei passi non la legge il
+parser — è un dato che trascrivo io. Il suo numero è libero, e sta lì perché è
+il posto dove un lettore lo cerca.
 
 **Prende la PRIMA tabella dopo il titolo, e ignora tutto quello che c'è in
 mezzo.** Righe di prosa, avvisi, sottotitoli: saltati, purché non comincino con
@@ -128,6 +132,45 @@ mostrato** → valore di `gradeNames`. La terza colonna non viene letta.*
 | Id | Nome | Sottotitolo |
 |---|---|---|
 | `esempioModulo` | Nome Del Modulo | Sottotitolo in italiano |
+
+---
+
+## 5 — LE SEQUENZE DEI MODULI
+
+*Una sequenza è una lista ordinata di coppie `{ module, grade }` → `sequences`
+nel JSON, una chiave per nome. **Il modulo** è un id della sezione 4. **Il grado**
+è una lettera della sezione 2, oppure `—` quando il passo non ne ha uno (Your
+Story). L'ordine delle righe è l'ordine dei passi; la colonna `#` è per chi
+legge, non un dato.*
+
+⚠️ **NESSUN TEST LEGGE ANCORA QUESTA SEZIONE.** Finché non ce n'è uno, il
+markdown e il JSON possono divergere in silenzio — che è esattamente il buco che
+`[Ordine]` ha chiuso per gli episodi.
+
+### ⚠️ PERCHÉ QUESTA SEZIONE ESISTE, VISTO CHE IL 2026-09-21 ERA STATO DECISO IL CONTRARIO
+
+**La decisione di allora (STRUTTURA-CORSO_017) era: «i passi stanno solo nel
+JSON e si modificano lì».** Aveva due ragioni, e **una è caduta misurandola**:
+
+| La ragione | Cosa è successo |
+|---|---|
+| *«due elenchi sugli stessi passi divergono al primo riordino»* | **regge ancora** — ed è il motivo per cui questa sezione ha bisogno di un test, non di una promessa |
+| *«il Pannello Admin ci scrive dentro»* | ⚠️ **caduta il 2026-09-22.** Misurato: il pannello scrive in `localStorage`, chiave `baseinglese:configOverrides` — **quel browser soltanto**. Non arriva mai al JSON, non lo vede nessun altro, sparisce svuotando i dati del sito |
+
+**Quindi oggi l'unico scrittore di quel JSON sono io, come per ogni altro dato
+dell'edizione — e i 22 passi restavano l'ULTIMO dato senza fonte markdown.**
+*Riordinarli voleva dire farmi modificare il JSON a mano: l'unico posto del
+progetto dove una decisione si prendeva senza passare da un documento.*
+
+**Deciso il 2026-09-23. La 017 non è stata sbagliata: era vera finché la sua
+seconda ragione lo era.**
+
+### `nome-della-sequenza`
+
+| # | modulo | grado |
+|---|---|---|
+| 1 | `esempioModulo` | — |
+| 2 | `unAltroModulo` | X |
 
 ---
 
