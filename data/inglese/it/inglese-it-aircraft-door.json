@@ -1,108 +1,105 @@
 {
-  "level": "A1",
   "episodeId": "aircraft-door",
-  "episodeTitle": "Sulla porta dell'aereo",
-  "language": "inglese",
-  "personalizationTablesUsed": [
-    {
-      "key": "destinazione",
-      "label": "Destinazione",
-      "type": "select",
-      "table": "places.destinations",
-      "default": "cina"
-    }
-  ],
   "speakerLabels": {
-    "hostess": "Hostess alla porta",
+    "hostess-porta": "Hostess alla porta",
     "papa": "Papà",
     "tutti": "Tutti"
   },
   "placeholderMap": {
     "destinazione": "destinazione"
   },
+  "personalizationTablesUsed": [
+    {
+      "key": "destinazione",
+      "label": "Destinazione del viaggio",
+      "type": "select",
+      "table": "places.destinations",
+      "default": "dest-pechino"
+    }
+  ],
   "levels": {
     "A": {
       "label": "Parole",
       "items": [
         {
-          "id": "a-morning",
+          "id": "a-1",
           "english": "morning",
           "italian": "mattina",
           "pronunciationTip": "MOR-ning",
           "grammarCategory": "sostantivo"
         },
         {
-          "id": "a-welcome",
+          "id": "a-2",
           "english": "welcome",
           "italian": "benvenuto",
           "pronunciationTip": "UEL-com — la \"e\" finale non si legge",
           "grammarCategory": "espressione di accoglienza"
         },
         {
-          "id": "a-tickets",
+          "id": "a-3",
           "english": "tickets",
           "italian": "biglietti",
           "pronunciationTip": "TI-chets — la \"ck\" è una \"c\" dura sola",
           "grammarCategory": "sostantivo plurale"
         },
         {
-          "id": "a-here",
+          "id": "a-4",
           "english": "here",
           "italian": "qui",
           "pronunciationTip": "hia — la \"h\" è un soffio, la \"e\" finale muta",
           "grammarCategory": "avverbio di luogo"
         },
         {
-          "id": "a-they",
+          "id": "a-5",
           "english": "they",
           "italian": "loro",
           "pronunciationTip": "dei — la \"th\" è la lingua fra i denti",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-she",
+          "id": "a-6",
           "english": "she",
           "italian": "lei",
           "pronunciationTip": "scii — lunga",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-he",
+          "id": "a-7",
           "english": "he",
           "italian": "lui",
           "pronunciationTip": "hii — con il soffio davanti",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-wife",
+          "id": "a-8",
           "english": "wife",
           "italian": "moglie",
           "pronunciationTip": "uaif — la \"e\" finale non si legge",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-daughter",
+          "id": "a-9",
           "english": "daughter",
           "italian": "figlia",
           "pronunciationTip": "DO-ter — <strong>la \"gh\" non si legge affatto</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-son",
+          "id": "a-10",
           "english": "son",
           "italian": "figlio",
           "pronunciationTip": "san — <strong>non \"son\" come in italiano</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-enjoy",
+          "id": "a-11",
           "english": "enjoy",
           "italian": "godersi",
           "pronunciationTip": "en-GIOI",
           "grammarCategory": "verbo"
         },
         {
-          "id": "a-flight",
+          "id": "a-12",
           "english": "flight",
           "italian": "volo",
           "pronunciationTip": "flait — <strong>la \"gh\" muta, come in daughter</strong>",
@@ -114,42 +111,42 @@
       "label": "Espressioni",
       "items": [
         {
-          "id": "b-good-morning",
+          "id": "b-1",
           "english": "good morning",
           "italian": "buongiorno",
           "pronunciationTip": "gud MOR-ning",
           "grammarCategory": "saluto"
         },
         {
-          "id": "b-welcome-aboard",
+          "id": "b-2",
           "english": "welcome aboard",
           "italian": "benvenuti a bordo",
           "pronunciationTip": "UEL-com a-BORD",
           "grammarCategory": "formula di accoglienza"
         },
         {
-          "id": "b-here-they-are",
+          "id": "b-3",
           "english": "here they are",
           "italian": "eccoli",
           "pronunciationTip": "hia dei ar",
           "grammarCategory": "espressione"
         },
         {
-          "id": "b-thank-you",
+          "id": "b-4",
           "english": "thank you",
           "italian": "grazie",
           "pronunciationTip": "THENK iu — la \"th\" fra i denti",
           "grammarCategory": "formula di cortesia"
         },
         {
-          "id": "b-this-way-please",
+          "id": "b-5",
           "english": "this way, please",
           "italian": "da questa parte, prego",
           "pronunciationTip": "dis UEI pliiz",
           "grammarCategory": "indicazione di direzione"
         },
         {
-          "id": "b-enjoy-your-flight",
+          "id": "b-6",
           "english": "enjoy your flight",
           "italian": "buon volo",
           "pronunciationTip": "en-GIOI ior flait",
@@ -197,33 +194,30 @@
       "items": [
         {
           "id": "d-1",
-          "speaker": "hostess",
-          "ruolo": "esterno",
+          "speaker": "hostess-porta",
+          "ruolo": "staff",
           "english": "Good morning! Welcome aboard.",
           "italian": "Buongiorno! Benvenuti a bordo.",
           "whatYouLearn": [
             {
               "title": "Buongiorno",
-              "difficulty": "facile",
               "body": "\"Good morning\" si usa fino a mezzogiorno, poi diventa \"good afternoon\", e dalla sera \"good evening\".<br>È più formale di \"Hello\" e \"Hi\": lo senti da chi lavora — l'hostess, il receptionist, il cameriere.<br>Con un amico dici \"Hi\". Con chi ti sta servendo, \"Good morning\"."
             },
             {
               "title": "Welcome",
-              "difficulty": "facile",
               "body": "Vuol dire \"benvenuto\", e si usa quando qualcuno arriva in un posto.<br>\"Aboard\" significa \"a bordo\": vale per aerei, navi, treni.<br>Lo sentirai spesso: \"Welcome to London\", \"Welcome to our hotel\". <strong>La formula è sempre \"welcome to\" più il posto</strong> — tranne \"aboard\", che va da solo."
             }
           ]
         },
         {
           "id": "d-2",
-          "speaker": "hostess",
-          "ruolo": "esterno",
+          "speaker": "hostess-porta",
+          "ruolo": "staff",
           "english": "Your tickets, please.",
           "italian": "I biglietti, per favore.",
           "whatYouLearn": [
             {
               "title": "Please",
-              "difficulty": "facile",
               "body": "\"Please\" vuol dire \"per favore\", e si mette <strong>alla fine</strong> della richiesta: \"Your tickets, please\", \"Coffee, please\".<br>In italiano lo diciamo spesso all'inizio — \"per favore, i biglietti\" — in inglese quasi sempre in fondo.<br>È la parola che rende gentile qualsiasi richiesta. Senza, \"your tickets\" suona come un ordine."
             }
           ]
@@ -237,7 +231,6 @@
           "whatYouLearn": [
             {
               "title": "Eccoli",
-              "difficulty": "facile",
               "body": "Si dice quando dai qualcosa a qualcuno, o quando la cosa che cercavi salta fuori.<br>Se è una cosa sola: \"Here it is\". Se sono più d'una: \"Here they are\".<br>I biglietti sono quattro, quindi \"they\"."
             }
           ]
@@ -251,7 +244,6 @@
           "whatYouLearn": [
             {
               "title": "He is, she is",
-              "difficulty": "facile",
               "body": "Conosci già \"I am\" e \"we are\". Quando parli di <strong>un'altra persona</strong> il verbo diventa \"is\": \"he is\" per un uomo, \"she is\" per una donna.<br>Anche qui il pronome non si può saltare: non esiste dire \"is my wife\".<br>E nota \"my\": vuol dire \"mio, mia\". Ne esistono altri — li vedrai poi."
             }
           ]
@@ -265,29 +257,27 @@
           "whatYouLearn": [
             {
               "title": "La famiglia",
-              "difficulty": "facile",
               "body": "\"Wife\" è la moglie, \"daughter\" la figlia, \"son\" il figlio.<br>Attenzione a \"son\": si dice <strong>san</strong>, non \"son\" come lo leggeresti in italiano.<br>Il papà dice queste tre parole perché è lui che parla. <strong>La mamma direbbe \"husband\" per il marito, e i figli direbbero \"mother\" e \"father\"</strong> — le imparerai quando toccherà a loro."
             }
           ]
         },
         {
           "id": "d-6",
-          "speaker": "hostess",
-          "ruolo": "esterno",
+          "speaker": "hostess-porta",
+          "ruolo": "staff",
           "english": "Thank you.",
           "italian": "Grazie."
         },
         {
           "id": "d-7",
-          "speaker": "hostess",
-          "ruolo": "esterno",
+          "speaker": "hostess-porta",
+          "ruolo": "staff",
           "english": "{{destinazione}}? This way, please.",
           "italian": "{{destinazione}}? Da questa parte, prego.",
           "whatYouLearn": [
             {
               "title": "Indicare la direzione",
-              "difficulty": "facile",
-              "body": "\"This way\" vuol dire \"da questa parte\", ed è il modo normale di indicare dove andare.<br>Nota che non c'è nessuna preposizione: non si dice \"in this way\" né \"to this way\". <strong>Due parole e basta.</strong><br>E attenzione a \"please\": qui <strong>non è \"per favore\"</strong>. L'hostess non ti sta chiedendo niente, ti sta invitando — in italiano diventa <strong>\"prego\"</strong>.<br><strong>Stessa parola, due significati</strong>, e li hai visti tutti e due in questo dialogo: \"your tickets, please\" era una richiesta, \"this way, please\" è un invito. Ne ha ancora due, e li vedrai."
+              "body": "\"This way\" vuol dire \"da questa parte\", ed è il modo normale di indicare dove andare.<br>Nota che non c'è nessuna preposizione: non si dice \"in this way\" né \"to this way\". <strong>Due parole e basta.</strong><br>E attenzione a \"please\": qui <strong>non è \"per favore\"</strong>. L'hostess non ti sta chiedendo niente, ti sta invitando — in italiano diventa <strong>\"prego\"</strong>.<br><strong>Stessa parola, due significati</strong>, e li hai visti tutti e due in questo dialogo."
             }
           ]
         },
@@ -300,14 +290,13 @@
         },
         {
           "id": "d-9",
-          "speaker": "hostess",
-          "ruolo": "esterno",
+          "speaker": "hostess-porta",
+          "ruolo": "staff",
           "english": "Enjoy your flight!",
           "italian": "Buon volo!",
           "whatYouLearn": [
             {
               "title": "Qui il dialogo finisce",
-              "difficulty": "facile",
               "body": "\"Enjoy your flight\" vuol dire \"buon volo\", e la sentirai in mille versioni: \"enjoy your meal\", \"enjoy your stay\", \"enjoy your day\".<br><strong>Una cosa importante: qui la conversazione è finita.</strong> In italiano risponderemmo — \"grazie, altrettanto\" — ma in inglese questa formula <strong>chiude da sé</strong>. Chi la riceve sorride e passa.<br>Non è maleducazione: è che la frase è già un saluto."
             }
           ]

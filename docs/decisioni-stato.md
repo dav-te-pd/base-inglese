@@ -917,15 +917,19 @@ frasi sono state consegnate come proposta.
 ## I cinque DATI che vivono solo nel JSON, senza nessuna fonte markdown
 
 **Sono il rovescio della regola 26: non un markdown che descrive male il JSON,
-ma contenuto che nel markdown non c'e' proprio.** *Il file DATI vuoto creato il
+ma contenuto che nel markdown non c'e' proprio.**
+
+✅ **TUTTI E CINQUE CHIUSI IL 2026-09-23:** i quattro col segno di spunta hanno
+la loro sezione nei file DATI trascritti; il quinto (i 22 passi) era gia' stato
+chiuso il giorno prima. *Il file DATI vuoto creato il
 2026-09-23 ha una sezione per ognuno.*
 
 | | Cosa | Dove vive oggi | Chi lo legge |
 |---|---|---|---|
-| ⑥ | **`generalRule`** — *«La "e" finale in inglese non si legge quasi mai.»* | `inglese-it-gate.json` | Repeat Aloud (`app/repeataloud.js:95`). Facoltativa: `aircraft-door` non ce l'ha |
-| ⑦ | **le `label` degli slot** — *«Nome del papa' / utente»* | `personalizationTablesUsed[].label` nei due file episodio | la schermata Personalizza |
-| ⑧ | **`ageOptions`** — le eta' `12–17` e `4–11` | `inglese-it-gate.json` | raggiunta solo perche' uno slot dice `episode.ageOptions.figlia` |
-| ⑨ | **i `default` degli slot** | `personalizationTablesUsed[].default` | il markdown li segna `(pred.)` **accanto a un id della tabella** — ma il predefinito e' una proprieta' dello SLOT, non della tabella: due episodi possono pescare dalla stessa tabella con predefiniti diversi |
+| ⑥ ✅ | **`generalRule`** — *«La "e" finale in inglese non si legge quasi mai.»* | `inglese-it-gate.json` | Repeat Aloud (`app/repeataloud.js:95`). Facoltativa: `aircraft-door` non ce l'ha |
+| ⑦ ✅ | **le `label` degli slot** — *«Nome del papa' / utente»* | `personalizationTablesUsed[].label` nei due file episodio | la schermata Personalizza |
+| ⑧ ✅ | **`ageOptions`** — le eta' `12–17` e `4–11` | `inglese-it-gate.json` | raggiunta solo perche' uno slot dice `episode.ageOptions.figlia` |
+| ⑨ ✅ | **i `default` degli slot** | `personalizationTablesUsed[].default` | il markdown li segna `(pred.)` **accanto a un id della tabella** — ma il predefinito e' una proprieta' dello SLOT, non della tabella: due episodi possono pescare dalla stessa tabella con predefiniti diversi |
 | ⑩ | **i 22 passi di `narrativo-standard`** | `sequences` in `struttura-corso.json` | ✅ **CHIUSA IL 2026-09-23: nasce la sezione 5 del file DATI.** Era l'unica di questa famiglia scelta apposta (STRUTTURA-CORSO_017: *«si modificano li'»*) — vedi la riga qui sotto per cosa ha fatto cambiare idea |
 
 ## Le quattro cose trovate e non chieste
@@ -1007,6 +1011,89 @@ letto. **Nessuna delle due si ottiene rileggendo.**
 
 *Nei due modelli la difesa adesso e' un comando, non una raccomandazione:
 `grep -c` sulla stringa marcatore e sui cinque titoli deve dare **1**.*
+
+---
+
+# ⚠️ GLI ID DELLE VOCI SONO DIVENTATI POSIZIONALI, E LA COLPA E' DEL MIO MODELLO — aperto il 2026-09-23
+
+> **`a-hello` → `a-1` · `b-i-am` → `b-1`**
+
+**Nessuno l'ha chiesto.** La riga di esempio del modello `-VUOTO` che ho scritto
+il 2026-09-23 diceva `| `a-1` | parola | … |`, e il file pieno ha seguito il
+modello. **L'ho introdotto io, in un file di contenuto, senza dirlo.**
+
+**Perche' e' un problema, e non e' un'opinione — e' la stessa cosa che la regola
+4 dice degli episodi:**
+
+> *«Il livello NON sta nel nome… L'id invece non cambia mai: `gate`,
+> `aircraft-door` — descrittivo, in inglese, congelato. Metterlo nel nome, o in
+> una cartella, congelerebbe una posizione — lo stesso errore di `episode1`.»*
+
+**E la misura che lo rende concreto: `app/sessione.js:253`**
+
+```js
+var unitId = params.unitPrefix + ':' + params.item.id + ':' + params.direction;
+```
+
+**L'id della voce E' la chiave della mastery.** Ne discendono due cose, e la
+seconda e' peggio della prima:
+
+| | Cosa succede |
+|---|---|
+| **oggi** | ogni voce salvata dei gradi A e B resta orfana. *Accettabile: siamo in costruzione, e lo ha detto chi guida il progetto* |
+| **domani** | ⚠️ **inserire una parola in mezzo al grado A rinumera tutte quelle dopo** — e `match:a-5:en-it`, che era «where», diventa la parola nuova. **Nessun errore, nessun rosso: il colore di una voce passa a un'altra voce.** E' la famiglia della misura che non misura |
+
+**I gradi C e D non c'entrano:** li' `c-1`, `d-1` sono gia' posizionali oggi, e
+per una battuta la posizione **e'** la sua identita'.
+
+**Condizione: la decisione e' di chi guida il progetto, ed e' due righe di
+markdown** — la colonna `id` dei gradi A e B dei due episodi. *Il JSON e' gia'
+scritto con gli id posizionali: se si torna ai descrittivi, e' una rigenerazione
+e una suite, non un lavoro.*
+
+---
+
+# ⚠️ IL DIFETTO CHE VIVE DENTRO UN'OPZIONE CHE NESSUNO PROVA — aperto il 2026-09-23
+
+**Il caso che l'ha scritto:** `places.departures` doveva guadagnare
+`orig-lugano` e `orig-nizza`, e la battuta `d-4` di `gate` scrive **`Italy` a
+mano**. Due opzioni su otto avrebbero prodotto **«I am from Lugano, Italy»**.
+
+> ⚠️ **E nessun test sceglie Lugano, quindi la suite sarebbe rimasta VERDE.**
+
+**Vale oltre questo caso, ed e' la ragione per cui sta qui e non fra le
+correzioni: ogni volta che si aggiunge un valore a una tabella, quel valore non
+e' provato da nessuno.** Le prove guidano il **predefinito** — e' quello che
+l'app pesca da sola — quindi la nona riga di una tabella e' esattamente tanto
+coperta quanto una riga scritta a caso.
+
+**Condizione: al prossimo giro delle tabelle serve una guardia che provi OGNI
+opzione, non quella predefinita.** *Forma probabile: per ogni riga di ogni
+tabella, montare la frase e verificare che non resti nessun segnaposto e che il
+testo non contraddica la riga — e' meno di quanto sembri, perche' i valori sono
+una cinquantina e la verifica e' sul testo prodotto, non sull'app.*
+
+*Intanto le due righe NON sono state trascritte, col perche' scritto accanto nel
+file DATI: senza quella riga, al prossimo giro qualcuno le rimette.*
+
+---
+
+# ⚠️ UN ROSSO CHE MANDA A GUARDARE NEL POSTO SBAGLIATO — 2026-09-23
+
+**Da tenere oltre il caso.** `test_story_modules.js` leggeva la chiave del
+personaggio esterno scritta a mano: `(fonte.speakerLabels || {}).guide`.
+Rinominata la chiave in `hostess-gate`, quella riga **non sarebbe morta**:
+`esterno` sarebbe diventato `''`, e l'asserzione avrebbe stampato
+
+> *«L'etichetta del personaggio esterno porta il contorno, non il solo
+> mestiere» — etichetta: ""*
+
+**cioe' avrebbe accusato il CONTORNO mentre il guasto era il NOME.**
+
+*E' la stessa forma del rosso muto del passo 21-bis: il test cade, e quello che
+dice non e' quello che e' successo — quindi si va a cercare dove il guasto non
+e'.* **La difesa e' la stessa di sempre: agganciarsi al dato che definisce la
+cosa (`ruolo`), non al nome che ha oggi.**
 
 ---
 

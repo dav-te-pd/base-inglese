@@ -562,7 +562,7 @@ async function run() {
     // Un nome scelto e ben riconoscibile: se riaffiorasse come etichetta si
     // vedrebbe subito, e non si confonderebbe con nessuna parola del dialogo.
     await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Etichette'),
-      JSON.stringify({ papa: 'giancarlo', mamma: 'nicoletta' })));
+      JSON.stringify({ papa: 'papa-giancarlo', mamma: 'mamma-nicoletta' })));
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
     await page.click('#go-episode');
@@ -591,7 +591,19 @@ async function run() {
     log('[B0] ...e il nome scelto c\'è, dentro le battute', dentro.indexOf('Giancarlo') !== -1);
     // La prova ②: il contorno c'è. Si guarda che l'etichetta del personaggio
     // esterno sia più di una parola sola, senza ricopiarla.
-    const esterno = (fonte.speakerLabels || {}).guide || '';
+    //
+    // ⚠️ IL PERSONAGGIO ESTERNO SI PRENDE DAL `ruolo`, NON DA UN NOME.
+    // Qui c'era `(fonte.speakerLabels || {}).guide`, cioè la chiave scritta a
+    // mano. Il 2026-09-23 quella chiave è diventata `hostess-gate` — e la riga
+    // non sarebbe morta: `esterno` sarebbe stato `''`, e l'asserzione avrebbe
+    // detto «l'etichetta non porta il contorno» stampando `etichetta: ""`.
+    // **Un rosso che manda a guardare nel posto sbagliato**: accusa il
+    // contorno mentre il guasto è il nome. Il `ruolo` è il dato che definisce
+    // quel personaggio; il nome è come si chiama oggi.
+    const speakerEsterno = (loadGrade('D').find(l => l.ruolo !== 'famiglia') || {}).speaker;
+    const esterno = (fonte.speakerLabels || {})[speakerEsterno] || '';
+    log('[B0] Il dialogo ha un personaggio non-famiglia, e ha la sua etichetta',
+      !!speakerEsterno && !!esterno, 'speaker: ' + speakerEsterno + ' | etichetta: "' + esterno + '"');
     log('[B0] L\'etichetta del personaggio esterno porta il contorno, non il solo mestiere',
       esterno.trim().split(/\s+/).length > 1, 'etichetta: "' + esterno + '"');
     log('[B0] Nessun errore JS', errors.length === 0, errors.join(' | '));
@@ -649,7 +661,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
-    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'torino' })));
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'orig-torino' })));
     await page.reload();
     await page.waitForSelector('#go-episode');
     await page.click('#go-episode');

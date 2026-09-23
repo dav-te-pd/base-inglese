@@ -1,89 +1,85 @@
-# Tabelle di personalizzazione — edizione italiana
+**Versione: 20260923a**
 
-> ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
->
-> ⚠️ **TRASCRIVIBILE A METÀ.** La forma delle righe c'è (id, `it`, `en`, `traducibile`); non
-> c'è ancora il **secondo campo per riga** che la tabella dei luoghi di partenza vuole, e le
-> età nel codice sono ancora numeri nudi. Vedi *Cosa manca* in fondo.
->
-> **AGGIORNAMENTO 2026-09-21 — ① e ⑤ sono fatti, ② ③ ④ no.**
->
-> **① (2026-09-15)** — le tabelle **non vivono più in `APP_CONFIG`**: sono in
-> `data/inglese/it/inglese-it-tabelle-personalizzazione.json`, caricate da un fetch. *Ma ci sono andate
-> **con il contenuto di prima**, non con questo:* sei destinazioni invece di undici, id `marco`
-> invece di `papa-marco`. Era una **conversione pura** — se fosse arrivato anche il contenuto
-> nuovo, un rosso avrebbe avuto due sospettati invece di uno.
->
-> **⑤ e la traducibilità (2026-09-20, passo 1.8 A)** — la colonna `traducibile` **esiste
-> davvero**, dichiarata riga per riga; le colonne vuote `fr`/`es`/`de` sono sparite (erano 147
-> stringhe vuote senza un lettore). Ed esiste il **test rovesciato** nella forma che oggi è
-> possibile: *ogni tabella che un episodio nomina esiste, e ogni valore predefinito esiste
-> dentro di essa*. `tests/test_traducibilita_per_riga.js`.
->
-> **Quindi questo file resta la fonte e resta davanti al codice, ma di meno.** Quello che manca
-> sono **②** (il secondo campo per riga: il paese accoppiato alla città), **③** (le età in
-> lettere) e **④** (la migrazione dei valori già salvati, che ② e ③ rendono obbligatoria).
->
-> ⚠️ **E ④ non è una rifinitura:** cambiando `marco` in `papa-marco`, chi ha già personalizzato
-> si ritrova le scelte **riportate alla prima opzione** — `resolveSlotValue` ricade in silenzio,
-> senza errore e senza un rosso.
->
-> **Cos'è.** Il **magazzino** dei valori di personalizzazione. Contiene più di quello che si
-> usa: un episodio **elenca gli id che vuole**, uno per uno, e solo quelli compaiono
-> (regola 5.7). *Le tabelle sono il magazzino, l'episodio è la vetrina.*
->
-> **Vale per tutti gli episodi dell'edizione italiana**, presenti e futuri. Non sta dentro un
-> episodio perché una parola qui ha fino a dieci forme — cinque lingue per cinque — e
-> riscriverle in ogni episodio le farebbe divergere alla terza copia. *E perché il carry-over
-> funzioni (5.2), "Rossi" scelto in un episodio deve venire dalla **stessa riga** di quello
-> successivo.*
->
-> **Un'edizione nuova non si ottiene traducendo questo file:** un francese non si chiama "Marco
-> tradotto", si chiama Pierre. Si copia la struttura e si sostituiscono i contenuti
-> (regola 1.112).
+# Tabelle di personalizzazione — inglese per italiani
 
 ---
 
-## COM'È FATTA UNA RIGA
+## 1 — COME SI LEGGE QUESTO FILE
 
-| Campo | Cosa contiene |
+**Questo è un file DATI: tutto quello che c'è dentro finisce in
+`data/inglese/it/inglese-it-tabelle-personalizzazione.json`.** I criteri con cui
+un nome o una città sono stati scelti stanno nei file RAGIONI.
+
+### ① QUANTO È RIGIDO IL PARSER — misurato il 2026-09-23
+
+⚠️ **NESSUN PARSER. Zero test e zero codice leggono questo file: lo leggo solo
+io.** *Misurato: nessun test lo apre per nome, e i soli markdown letti da un
+test sono `inglese-it-struttura-corso.md`, `inglese-it-gate.md` e
+`inglese-it-aircraft-door.md`.*
+
+**Quindi titoli, numeri e nomi delle colonne qui sono liberi.** Li scrivo lo
+stesso nella stessa grammatica degli altri due — **una tabella per tabella, le
+colonne sempre nello stesso ordine** — perché il giorno in cui un test lo
+leggerà non ci sia niente da riscrivere. *Una forma decisa quando non serve
+costa zero; decisa quando serve costa una migrazione.*
+
+### ② DUE COSE DA SAPERE
+
+⚠️ **Il predefinito NON è una proprietà della tabella: è una proprietà dello SLOT**, e vive nella
+sezione 7 del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti
+diversi.*
+
+⚠️ **E una cosa che oggi sta qui e non può ancora arrivare al JSON: le età in
+parole, e la riga con città + paese.** Le prime vogliono che le età escano dal
+file episodio ed entrino qui, **più un modo di usare solo un pezzo di una
+tabella, che oggi non esiste**; la seconda vuole che una riga possa portare
+**due valori** invece di uno, e oggi il codice ne restituisce **uno solo**.
+*Sono due passi di codice: finché non ci sono, questo file porta la forma a
+quattro colonne.*
+
+---
+
+## 2 — LE TABELLE CHE ESISTONO
+
+*Il **nome** è quello che una riga di slot scrive nella colonna «tabella» del
+file episodio. Le tabelle interne a un episodio — oggi le età — **non stanno
+qui**: stanno nella sezione 8 di quell'episodio.*
+
+| Nome | Cosa contiene |
 |---|---|
-| `id` | descrittivo, unico dentro l'edizione, **congelato** |
-| `it` | la forma nella lingua dello studente — **è quella che entra nel dialogo** |
-| `en` | la forma nella lingua studiata |
-| `traducibile` | **sì / no, dichiarato per riga** |
-
-**`traducibile` si dichiara, non si deduce — e dal 2026-09-20 è così anche nel codice.**
-
-*Fino a quel giorno la risposta la dava il contenitore:* un nome di persona non si traduceva
-perché la sua tabella si chiamava `people.papa`, e il prefisso era il segnale. Funzionava, e
-teneva **solo finché le famiglie restavano due**: un cognome che si traduce, o una città che
-NON si traduce, non avevano modo di esistere se non spostando la riga in un'altra tabella — cioè
-cambiando a quale slot appartiene, per una ragione che con quello slot non c'entra niente.
-
-**Ora lo legge `resolveSlotValue` dalla riga.** Una riga che non lo dichiara vale «si traduce»:
-è il caso delle età finché restano numeri nudi.
-
-**E non si deduce nemmeno dal prefisso dell'id:** `papa-marco` che comincia per `papa-` è una
-convenzione, e le convenzioni sui nomi si rompono al primo id scritto storto (regola 1.9).
-
-**Niente colonna pronuncia, per ora.** `pronunciationTip` sta sulla voce del grado, non sulla
-riga di personalizzazione: una pronuncia messa qui **non avrebbe nessun lettore**, e sarebbe un
-campo morto — esattamente ciò che T1 esiste per prevenire. *Decisione a fine A1, insieme a chi
-la mostra.*
-
-**L'ordine delle righe è quello in cui sono scritte.** Nessun codice ordina: `eta-4 … eta-17`
-in ordine alfabetico darebbe 10, 11, 12, 4, 5.
+| `people.papa` | i nomi del padre |
+| `people.mamma` | i nomi della madre |
+| `people.figlia` | i nomi della figlia |
+| `people.figlio` | i nomi del figlio |
+| `people.cognome` | i cognomi della famiglia |
+| `places.departures` | le città di partenza |
+| `places.destinations` | le città di destinazione |
 
 ---
 
-## NOMI — papà
+## 3 — LE RIGHE
 
-*Non traducibili. La colonna inglese esiste solo perché sia già pronta se un giorno servisse.*
+**Ogni tabella ha le stesse quattro colonne, sempre nello stesso ordine:**
+
+| Colonna | Va in | Cosa vuol dire |
+|---|---|---|
+| **id** | `value` | l'identificativo salvato nei progressi dello studente. ⚠️ **Cambiarlo è una migrazione**, non una correzione |
+| **it** | `it` | come si legge in italiano |
+| **en** | `en` | come si legge in inglese |
+| **traducibile** | `traducibile` | `sì` → nel dialogo inglese si usa la colonna **en** · `no` → si usa la **it** anche in inglese |
+
+⚠️ **`traducibile` è una proprietà della RIGA, non della tabella.** *Fino al
+2026-09-20 si deduceva dal nome della tabella — «sta in `people.`, quindi non si
+traduce» — e un cognome traducibile o una città che non si traduce non avevano
+modo di esistere.*
+
+⚠️ **L'assenza vale «sì».** Una riga che non lo dichiara si traduce.
+
+### `people.papa`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `papa-marco` **(pred.)** | Marco | Mark | no |
+| `papa-marco` | Marco | Mark | no |
 | `papa-giancarlo` | Giancarlo | Giancarlo | no |
 | `papa-francesco` | Francesco | Francis | no |
 | `papa-andrea` | Andrea | Andrew | no |
@@ -94,14 +90,11 @@ in ordine alfabetico darebbe 10, 11, 12, 4, 5.
 | `papa-claudio` | Claudio | Claude | no |
 | `papa-federico` | Federico | Frederick | no |
 
-*`Giancarlo` non ha un equivalente inglese corrente: la colonna riporta sé stesso. **Una
-colonna non può avere buchi**, e un nome senza equivalente ha sé stesso come equivalente.*
-
-## NOMI — mamma
+### `people.mamma`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `mamma-giulia` **(pred.)** | Giulia | Julia | no |
+| `mamma-giulia` | Giulia | Julia | no |
 | `mamma-anna` | Anna | Ann | no |
 | `mamma-chiara` | Chiara | Clare | no |
 | `mamma-nicoletta` | Nicoletta | Nicole | no |
@@ -110,11 +103,11 @@ colonna non può avere buchi**, e un nome senza equivalente ha sé stesso come e
 | `mamma-silvia` | Silvia | Sylvia | no |
 | `mamma-francesca` | Francesca | Frances | no |
 
-## NOMI — figlia
+### `people.figlia`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `figlia-emma` **(pred.)** | Emma | Emma | no |
+| `figlia-emma` | Emma | Emma | no |
 | `figlia-sofia` | Sofia | Sophie | no |
 | `figlia-alice` | Alice | Alice | no |
 | `figlia-giorgia` | Giorgia | Georgia | no |
@@ -123,11 +116,11 @@ colonna non può avere buchi**, e un nome senza equivalente ha sé stesso come e
 | `figlia-chiara` | Chiara | Clare | no |
 | `figlia-beatrice` | Beatrice | Beatrice | no |
 
-## NOMI — figlio
+### `people.figlio`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `figlio-tommaso` **(pred.)** | Tommaso | Thomas | no |
+| `figlio-tommaso` | Tommaso | Thomas | no |
 | `figlio-leo` | Leo | Leo | no |
 | `figlio-marco` | Marco | Mark | no |
 | `figlio-giorgio` | Giorgio | George | no |
@@ -139,16 +132,11 @@ colonna non può avere buchi**, e un nome senza equivalente ha sé stesso come e
 | `figlio-federico` | Federico | Frederick | no |
 | `figlio-paolo` | Paolo | Paul | no |
 
-*`Chiara` compare fra mamme e figlie, `Marco` fra papà e figli, e va bene: sono tabelle diverse
-con id diversi. Le quattro tabelle non hanno lo stesso numero di righe, e non devono averlo.*
-
-## COGNOMI
-
-*Non si traducono: colonna identica per costruzione.*
+### `people.cognome`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `cognome-costa` **(pred.)** | Costa | Costa | no |
+| `cognome-costa` | Costa | Costa | no |
 | `cognome-rossi` | Rossi | Rossi | no |
 | `cognome-bianchi` | Bianchi | Bianchi | no |
 | `cognome-ferrari` | Ferrari | Ferrari | no |
@@ -158,223 +146,43 @@ con id diversi. Le quattro tabelle non hanno lo stesso numero di righe, e non de
 | `cognome-barberis` | Barberis | Barberis | no |
 | `cognome-ambruosi` | Ambruosi | Ambruosi | no |
 
-*`Ferrari` e `Ferrario` si somigliano molto. Nei quiz non è un problema — i cognomi non si
-insegnano — ma se un giorno la pronuncia degli slot venisse valutata, il riconoscimento vocale
-farebbe fatica a distinguerli.*
-
-## ETÀ
-
-*Una tabella sola. I due slot ne elencano intervalli diversi: è la regola 5.7 in azione — il
-magazzino è più grande della vetrina.*
+### `places.departures`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `eta-4` | 4 | four | **sì** |
-| `eta-5` | 5 | five | sì |
-| `eta-6` | 6 | six | sì |
-| `eta-7` | 7 | seven | sì |
-| `eta-8` **(pred. figlio)** | 8 | eight | sì |
-| `eta-9` | 9 | nine | sì |
-| `eta-10` | 10 | ten | sì |
-| `eta-11` | 11 | eleven | sì |
-| `eta-12` | 12 | twelve | sì |
-| `eta-13` | 13 | thirteen | sì |
-| `eta-14` | 14 | fourteen | sì |
-| `eta-15` | 15 | fifteen | sì |
-| `eta-16` **(pred. figlia)** | 16 | sixteen | sì |
-| `eta-17` | 17 | seventeen | sì |
+| `orig-mondovi` | Mondovì | Mondovì | sì |
+| `orig-torino` | Torino | Turin | sì |
+| `orig-milano` | Milano | Milan | sì |
+| `orig-roma` | Roma | Rome | sì |
+| `orig-napoli` | Napoli | Naples | sì |
+| `orig-palermo` | Palermo | Palermo | sì |
 
-**Le due colonne servono a due usi diversi, non sono una duplicazione:**
+⚠️ **MANCANO `orig-lugano` E `orig-nizza`, E NON SONO STATE DIMENTICATE: ASPETTANO
+LA RIGA CITTÀ+PAESE.**
 
-- la **cifra** è quello che lo studente vede nella schermata di personalizzazione — scegliere
-  `16` da un elenco è più veloce che leggere `sixteen`
-- la **parola** è quella che entra nel dialogo e che Voice Practice ascolta
+*Il motivo per cui devono esistere è scritto qui sopra e resta vero:* **«ci sono
+più italofoni fuori dall'Italia di quanti se ne pensi: uno studente di Lugano non
+deve dichiarare un paese che non è il suo»** *(TABELLE_018).*
 
-*Un numero si scrive in lettere quando è la parola che stiamo insegnando: `sixteen` è una voce
-di vocabolario, non una quantità. Se il dialogo mostrasse `I'm 16`, lo studente non leggerebbe
-mai la parola che sta studiando.*
+⚠️ **E il motivo per cui oggi non possono entrare è misurato, non prudenziale:**
+la battuta `d-4` di `gate` scrive **`Italy` a mano** — `I am from {{partenza}},
+Italy.` — perché una riga a quattro colonne porta **un valore solo**, e il paese
+non ha modo di arrivare alla frase. Con Lugano lo studente leggerebbe **«I am
+from Lugano, Italy»**, e in italiano **«Vengo da Lugano, in Italia»**: due frasi
+false su otto opzioni.
 
-⚠️ **Oggi l'app fa il contrario:** le età sono numeri semplici, `slotOptions` le normalizza con
-`it` ed `en` identici, e la battuta d7 in inglese dice **`I'm 16 years old`**. La colonna `en`
-di questa tabella lo corregge — ma **cambia cosa il riconoscimento vocale si aspetta di
-sentire**, quindi non deve arrivare nascosta dentro uno spostamento di dati. Vedi *Cosa manca*,
-punto ③.
+⚠️ **E nessun test le vedrebbe:** nessuno sceglie Lugano, quindi la suite
+resterebbe verde. *È il difetto che vive dentro un'opzione che nessuno prova.*
 
-## LUOGHI DI PARTENZA — città e paese accoppiati
+**Entrano insieme alla riga a cinque colonne** (città it · città en · paese it ·
+paese en), che è un passo di codice: `resolveSlotValue` oggi restituisce una
+stringa sola. **Quel giorno `Italy` esce anche dal grado A di `gate`**, e il
+grado scende da 12 a 11.
 
-⚠️ **Questa tabella ha due valori per riga, e oggi non è rappresentabile.** Vedi *Cosa manca*.
-
-| id | città it | città en | paese it | paese en | traducibile |
-|---|---|---|---|---|---|
-| `orig-mondovi` **(pred.)** | Mondovì | Mondovì | Italia | Italy | **sì** |
-| `orig-torino` | Torino | Turin | Italia | Italy | sì |
-| `orig-milano` | Milano | Milan | Italia | Italy | sì |
-| `orig-roma` | Roma | Rome | Italia | Italy | sì |
-| `orig-napoli` | Napoli | Naples | Italia | Italy | sì |
-| `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
-| `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
-| `orig-nizza` | Nizza | Nice | Francia | France | sì |
-
-**Città e paese sono una riga sola, mai due slot indipendenti.** Sceglierli separatamente
-permetterebbe *"Torino, Francia"* (regola 2.7, il fruttivendolo).
-
-*Lugano e Nizza ci sono perché ci sono più italofoni fuori dall'Italia di quanti se ne pensi, e
-uno studente di Lugano non deve dichiarare un paese che non è il suo.*
-
-**Tutti i paesi vogliono "in":** in Italia, in Svizzera, in Francia. La frase risultante è
-`I am from Turin, Italy`.
-
-## DESTINAZIONI
+### `places.destinations`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `dest-cina` **(pred.)** | Cina | China | **sì** |
-| `dest-giappone` | Giappone | Japan | sì |
-| `dest-irlanda` | Irlanda | Ireland | sì |
-| `dest-india` | India | India | sì |
-| `dest-australia` | Australia | Australia | sì |
-| `dest-grecia` | Grecia | Greece | sì |
-| `dest-norvegia` | Norvegia | Norway | sì |
-| `dest-croazia` | Croazia | Croatia | sì |
-| `dest-turchia` | Turchia | Turkey | sì |
-| `dest-scozia` | Scozia | Scotland | sì |
-| `dest-thailandia` | Thailandia | Thailand | sì |
-
-**Tre criteri, tutti obbligatori:**
-
-1. **In italiano vogliono "in"** — nome femminile singolare. *Fuori gli Stati Uniti (**negli**)
-   e Londra (**a**)*
-2. **In inglese non vogliono l'articolo.** *Fuori `the Netherlands`, `the USA`, `the UK` — ed è
-   per questo che c'è la **Scozia** e non il Regno Unito*
-3. ⚠️ **Sono mete che si raccontano.** *Un viaggio in Cina o in Thailandia è una storia; la
-   Spagna e la Germania sono il weekend.* **L'episodio 1 promette un viaggio incredibile, e la
-   destinazione deve essere all'altezza della promessa**
-
-> **Il terzo criterio è quello che esclude Spagna e Germania**, e va scritto perché **i primi
-> due le ammetterebbero**: `in Spagna` / `to Spain` e `in Germania` / `to Germany` passano tutti
-> e due.
->
-> *Senza questa riga, chi rifà la tabella vede due criteri che le ammettono, non le trova nella
-> lista, e **non sa se è una decisione o una dimenticanza**.*
-
-**La Francia esce per un motivo diverso: è un paese di origine.** **Origine e destinazione non
-coincidono mai** (regola 1.73), e il conflitto si elimina all'origine — togliendo la
-sovrapposizione dal magazzino — **non con una regola applicata a runtime**. *Una famiglia
-francese che parte per la Francia produce frasi corrette e una storia che non sta in piedi.*
-
-> ⚠️ **Oggi `APP_CONFIG.places.destinations` ne ha sei** — Cina, Giappone, Spagna, Francia,
-> Germania, Irlanda — **e sono la tabella vecchia**. *Le due divergono finché il magazzino non
-> viene trascritto, che è bloccato dal secondo campo per riga.* **Non dare per attuale quella
-> nel codice.**
-
-### In magazzino, non ancora in nessuna vetrina
-
-*Restano qui per l'episodio che spiegherà le preposizioni diverse — vedi le regole in sospeso
-dell'inventario grammaticale.*
-
-| id | it | en | preposizione italiana |
-|---|---|---|---|
-| `dest-stati-uniti` | Stati Uniti | United States | ne**gli** Stati Uniti |
-| `dest-londra` | Londra | London | **a** Londra |
-| `dest-paesi-bassi` | Paesi Bassi | Netherlands | ne**i** Paesi Bassi |
-
-*Il vincolo tecnico diventa contenuto didattico: restringere adesso non è rinunciare, è
-rimandare. Quando arriverà la scheda di distinzione, i dati sono già pronti.*
-
----
-
-## COSA MANCA PERCHÉ QUESTO FILE SIA TRASCRIVIBILE
-
-> **È un lavoro solo, non tre**, e va fatto tutto insieme. *Misurato da Claude Code sul codice,
-> non dedotto.*
-
-### Perché non si può spezzare (1.241)
-
-**Il secondo campo per riga ha bisogno di una riga che **abbia** un secondo campo, e oggi le
-righe stanno in `APP_CONFIG`.** Farlo da solo vorrebbe dire aggiungere la colonna paese ad
-`APP_CONFIG` — cioè il lavoro buttato già scartato una volta.
-
-*Presentarlo come due cose separate suggerirebbe che si possano fare in ordine. Non si può, e
-scriverlo qui evita che fra un mese qualcuno tenti la strada corta.*
-
-### Cosa comprende
-
-**① Il magazzino esce da `APP_CONFIG` e va in `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.**
-
-**È più piccolo di quanto sembri: il magazzino è già dietro un punto unico** (1.240).
-`CONFIG.people` e `CONFIG.places` hanno **zero occorrenze TESTUALI** nel codice: nessuno li
-scrive per nome, i valori passano tutti da `resolveSlotTable`. *Gli slot sono ovunque, le
-tabelle passano da una funzione sola.*
-
-> ⚠️ **Zero occorrenze non vuol dire zero lettori, e la riga qui sopra diceva l'una per
-> l'altra.** Misurato il 2026-09-15 **guidando l'app**, non contando le stringhe: il **Pannello
-> Admin** li raggiunge con `Object.keys(window.APP_CONFIG)` e `applyConfigOverrides` (l'IIFE in
-> cima a `index.html`) li scrive per chiave. Nessuno dei due li nomina, tutti e due li toccano —
-> e il primo lo fa **in modo sincrono e prima del login**, con `?config`.
->
-> *Il conteggio era esatto: era il conteggio di un'altra domanda. Chi si fidasse della frase
-> vecchia salterebbe l'unico lettore sincrono che esiste.*
-
-✅ **FATTO il 2026-09-15 (la radice) e il 2026-09-20 (la traducibilità).** La tabella qui
-sotto resta perché dice **cos'è cambiato**, non cosa resta da fare:
-
-| Dove | Cosa è cambiato |
-|---|---|
-| `resolveSlotTable` | la radice è il file caricato, non più `CONFIG` |
-| `buildSlotFields` | `isPersonName` **non esiste più**: la traducibilità non si deduce dal nome della tabella |
-| `resolveSlotValue` | legge `traducibile` **dalla riga** |
-| `slotOptions` | non aggiunge più `fr`/`es`/`de`: erano 147 stringhe vuote senza lettori |
-
-**② Il secondo campo per riga**, per il paese accoppiato alla città.
-
-Dentro il lavoro unico è **minuscolo**: `dialoguePlaceholderMap` mappa già segnaposto → chiave
-slot. Basta ammettere che una voce nomini anche un campo — `paese: { slot: 'partenza', campo:
-'paese' }` — e `resolveSlotValue` legge quello. *Una funzione e la forma di una mappa.*
-
-**③ Le età smettono di essere numeri e diventano parole (1.242).**
-
-⚠️ **Oggi l'app dice `I'm 16 years old`, con la cifra** — e continua a dirlo. `slotOptions`
-normalizza le età così:
-
-```js
-var s = String(item);
-return { value: s, it: s, en: s };
-```
-
-**`it` ed `en` diventano identici.** Il magazzino, che porta `en: sixteen`, la farebbe diventare
-`I'm sixteen years old` — che è il comportamento giusto e quello che la nota 3 dell'episodio
-descrive. *Ma finché questo lavoro non è fatto, quella nota descrive una cosa che l'app non fa.*
-
-**Cambia cosa il riconoscimento vocale si aspetta di sentire, quindi vuole un test suo.** E non
-va lasciata arrivare nascosta dentro uno spostamento di dati.
-
-**④ La migrazione dei valori salvati.**
-
-**Tocca un namespace solo** (1.243): `baseinglese:<episodio>:custom:<utente>`. Una tabella di
-corrispondenza `marco → papa-marco`, `mondovi → orig-mondovi`, `16 → eta-16`, letta una volta al
-boot.
-
-*Senza, `var picked = match || opts[0]` **ricade in silenzio sulla prima opzione**: chi ha
-personalizzato si ritrova tutte le scelte riportate ai default, senza avviso e senza che nessun
-test lo veda.*
-
-**⑤ Il test rovesciato.** ✅ **FATTO il 2026-09-20, nella forma che oggi è possibile.**
-
-Non *"ogni riga del magazzino è usata"* — falso per costruzione, il magazzino è più grande della
-vetrina — ma il suo rovescio: **ogni cosa che un episodio NOMINA deve esistere**.
-
-⚠️ **Oggi un episodio nomina una TABELLA e un valore predefinito, non gli id uno per uno**, e il
-test guarda quelli (9 su 9 passano). *Il giorno in cui l'episodio elencherà gli id — cioè quando
-② ③ ④ saranno fatti — è quella riga che si allarga, non un test nuovo.*
-
-**Perché conta:** `resolveSlotValue` su un id che non esiste **ricade in silenzio sulla prima
-opzione**. Non alza, non avvisa, non lascia un rosso: la personalizzazione di qualcuno diventa
-un'altra e basta. *È anche il motivo per cui ④ non è rimandabile.*
-
-### E una cosa da chiudere insieme
-
-**I segnaposto del markdown e le chiavi del JSON non coincidono:** il markdown scrive
-`{figlia}`, `{etàFiglia}`, `{papà}`, il JSON usa `figliaNome`, `figliaEta`, `papa`. Oggi sono
-notazione leggibile contro chiavi vere, ma **è una traduzione mentale a ogni lettura, e prima o
-poi qualcuno la sbaglia.** Va allineato in questo stesso lavoro, che tocca comunque quelle
-chiavi e comporta comunque una migrazione.
+| `dest-pechino` | Pechino | Beijing | sì |
+| `dest-shanghai` | Shanghai | Shanghai | sì |
+| `dest-hong-kong` | Hong Kong | Hong Kong | sì |
