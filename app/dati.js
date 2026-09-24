@@ -245,6 +245,44 @@ window.BI = window.BI || {};
     return personalizationTablesPromise;
   }
 
+  // ⚠️ LE MIGRAZIONI DEGLI ID — passo 1.8-bis (4).
+  //
+  // Un id salvato nei progressi di qualcuno non e' un dettaglio interno:
+  // e' la sua personalizzazione. Quando un id cambia (e' gia' successo —
+  // `marco` -> `papa-marco`, `mondovi` -> `orig-mondovi`), il valore salvato
+  // smette di corrispondere a qualunque riga e la scelta sparisce **senza un
+  // errore e senza un rosso**. Questo file e' la traduzione dal vecchio al
+  // nuovo, ed e' APPEND-ONLY: una riga qui non invecchia mai, perche' un
+  // profilo vecchio puo' arrivare in qualunque momento.
+  //
+  // ⚠️ CHIAVIZZATO PER SLOT, NON PER TABELLA, e la ragione e' il passo
+  // successivo: al passo (3) le eta' passano da `episode.ageOptions.figlia` a
+  // `ages.anni`, cioe' la TABELLA cambia nome mentre lo SLOT (`figliaEta`)
+  // resta quello. Una mappa appoggiata al nome della tabella si romperebbe
+  // esattamente sul caso per cui serve.
+  var MIGRAZIONI_FILE = percorsoEdizione('migrazioni-personalizzazione.json');
+
+  var migrazioniPromise = null;
+
+  // Stesso schema di `loadPersonalizationTables`, **rifiuto compreso**, e non
+  // e' copia-incolla distratto: un file di migrazioni che non arriva non si
+  // rimpiazza con una mappa vuota. Una mappa vuota vorrebbe dire «nessun id
+  // e' mai cambiato», cioe' esattamente la bugia che questo passo esiste per
+  // togliere: le personalizzazioni verrebbero riportate al predefinito **in
+  // silenzio**, che e' il guasto di partenza travestito da normalita'.
+  // Meglio la schermata d'errore, che si vede.
+  function loadPersonalizationMigrations() {
+    if (migrazioniPromise) return migrazioniPromise;
+    migrazioniPromise = fetch(MIGRAZIONI_FILE)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .catch(function () {
+        migrazioniPromise = null;
+        throw new Error('no personalization migrations available');
+      })
+      .then(function (data) { return (data && data.slot) || {}; });
+    return migrazioniPromise;
+  }
+
   function loadModuleInstructions() {
     if (moduleInstructionsCache) return Promise.resolve(moduleInstructionsCache);
     return fetch(MODULE_INSTRUCTIONS_FILE)
@@ -407,10 +445,12 @@ window.BI = window.BI || {};
   BI.loadModuleInstructions = loadModuleInstructions;
   BI.loadFeedbackMessages = loadFeedbackMessages;
   BI.loadPersonalizationTables = loadPersonalizationTables;
+  BI.loadPersonalizationMigrations = loadPersonalizationMigrations;
   BI.episodeDataFile = episodeDataFile;
   BI.episodeDataCache = episodeDataCache;
   BI.MODULE_INSTRUCTIONS_FILE = MODULE_INSTRUCTIONS_FILE;
   BI.FEEDBACK_MESSAGES_FILE = FEEDBACK_MESSAGES_FILE;
   BI.PERSONALIZATION_TABLES_FILE = PERSONALIZATION_TABLES_FILE;
+  BI.MIGRAZIONI_FILE = MIGRAZIONI_FILE;
   BI.istruzioniInMemoria = istruzioniInMemoria;
 })(window.BI);

@@ -557,7 +557,26 @@
     if (field && field.type === 'select') {
       var opts = slotOptions(field);
       var match = opts.find(function (o) { return o.value === rawValue; });
-      var picked = match || opts[0];
+      // ⚠️ IL RIPIEGO E' IL PREDEFINITO DELLO SLOT, NON LA PRIMA RIGA — passo
+      // 1.8-bis (4), e qui c'era `match || opts[0]`.
+      //
+      // Misurato: la differenza non e' teorica. Per `figliaEta` il predefinito
+      // e' `16` e la prima riga e' `12`; per `figlioEta`, `8` contro `4`. Un
+      // valore salvato che non corrisponde piu' a nessun id — un id rinominato
+      // che nessuna migrazione copre, una riga uscita dal magazzino —
+      // diventava **la prima opzione**: un numero che nessuno ha scelto e che
+      // nessun documento dichiara, senza errore e senza rosso.
+      //
+      // Il predefinito invece e' una scelta scritta, che vive accanto allo
+      // slot nel file dell'episodio. Sbagliare in modo dichiarato e' meglio
+      // che sbagliare in modo arbitrario.
+      //
+      // `opts[0]` resta come ultima spiaggia per il caso in cui il predefinito
+      // stesso non esista fra le opzioni — che e' un difetto dei dati, e ha
+      // gia' la sua guardia in `tests/test_traducibilita_per_riga.js` [A2].
+      var picked = match ||
+        opts.find(function (o) { return o.value === field.def; }) ||
+        opts[0];
       if (!picked) return rawValue;
       // Un nome proprio non si traduce in nessuna lingua: un viaggiatore
       // italiano all'estero si presenta come "Francesco", non "Francis" — e la

@@ -1,0 +1,63 @@
+{
+  "_LEGGIMI": "APPEND-ONLY. Da questo file si AGGIUNGE, non si toglie: ogni riga e' una scelta che qualcuno ha salvato e che senza quella riga sparisce in silenzio. Una riga vecchia non e' obsoleta - e' l'unico modo di leggere un profilo vecchio. La guardia e' tests/BASELINE-MIGRAZIONI.txt: elenca gli id gia' coperti, e un'asserzione verifica che ognuno sia ancora qui.",
+  "_COSA_E": "La mappa da id SALVATO a id di oggi. Chiavizzata per CHIAVE DI SLOT (papa, partenza, figliaEta) e non per nome di tabella: lo slot conserva il suo nome anche quando la tabella sotto cambia - cosa che succede al passo 1.8-bis (3), dove le eta' passano da episode.ageOptions.figlia a ages.anni.",
+  "_PERCHE_NON_PIATTA": "Una mappa piatta vecchio->nuovo darebbe la sostituzione sbagliata sul primo id ripetuto, e ce n'e' gia' uno: 'marco' e' esistito in people.papa (-> papa-marco) E in people.figlio (-> figlio-marco).",
+  "_DESTINAZIONE_NON_C_E": "Lo slot 'destinazione' non ha righe qui, e non e' una dimenticanza: le sue opzioni sono passate da PAESI (cina, giappone, spagna, francia, germania, irlanda) a CITTA' (dest-pechino, dest-shanghai, dest-hong-kong). Non e' una rinomina, e' un contenuto diverso: 'cina' non ha un successore. Un profilo che la portava cade sul predefinito dello slot - che e' il ripiego corretto, ed e' l'altra meta' di questo passo.",
+  "slot": {
+    "papa": {
+      "marco": "papa-marco",
+      "giancarlo": "papa-giancarlo",
+      "francesco": "papa-francesco",
+      "andrea": "papa-andrea",
+      "luca": "papa-luca",
+      "paolo": "papa-paolo",
+      "stefano": "papa-stefano",
+      "davide": "papa-davide"
+    },
+    "mamma": {
+      "giulia": "mamma-giulia",
+      "anna": "mamma-anna",
+      "chiara": "mamma-chiara",
+      "nicoletta": "mamma-nicoletta",
+      "laura": "mamma-laura",
+      "elena": "mamma-elena",
+      "silvia": "mamma-silvia",
+      "francesca": "mamma-francesca"
+    },
+    "figliaNome": {
+      "emma": "figlia-emma",
+      "sofia": "figlia-sofia",
+      "alice": "figlia-alice",
+      "giorgia": "figlia-giorgia",
+      "martina": "figlia-martina",
+      "sara": "figlia-sara",
+      "chiara": "figlia-chiara",
+      "beatrice": "figlia-beatrice"
+    },
+    "figlioNome": {
+      "tommaso": "figlio-tommaso",
+      "leo": "figlio-leo",
+      "marco": "figlio-marco",
+      "giorgio": "figlio-giorgio",
+      "matteo": "figlio-matteo",
+      "lorenzo": "figlio-lorenzo",
+      "simone": "figlio-simone",
+      "filippo": "figlio-filippo"
+    },
+    "cognome": {
+      "rossi": "cognome-rossi",
+      "bianchi": "cognome-bianchi",
+      "ferrari": "cognome-ferrari",
+      "russo": "cognome-russo",
+      "costa": "cognome-costa",
+      "marino": "cognome-marino",
+      "barberis": "cognome-barberis",
+      "ambruosi": "cognome-ambruosi"
+    },
+    "partenza": {
+      "mondovi": "orig-mondovi",
+      "torino": "orig-torino",
+      "milano": "orig-milano"
+    }
+  }
+}

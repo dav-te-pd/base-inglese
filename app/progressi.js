@@ -264,13 +264,40 @@ window.BI = window.BI || {};
     return prefissoMagazzino() + episodeId + ':custom:' + userName;
   }
 
-  function loadCustomValues(episode, userName) {
+  // ⚠️ `migrazioni` E' UN PARAMETRO E NON UN VALORE GLOBALE, DI PROPOSITO —
+  // passo 1.8-bis (4).
+  //
+  // La mappa arriva da un fetch, e questa funzione e' sincrona. Prenderla da
+  // una variabile condivisa vorrebbe dire dare per scontato che qualcuno
+  // l'abbia gia' aspettata: vero oggi in tutti e due i punti di chiamata, e
+  // invisibile il giorno in cui nasce il terzo. Passandola, la dipendenza si
+  // legge dalla firma — e chi non ce l'ha non puo' fingere di averla.
+  //
+  // Senza mappa (`undefined`) la funzione si comporta come prima: e' il caso
+  // dei test che la chiamano per altro, non un ripiego silenzioso in
+  // produzione — i due chiamanti veri la passano sempre, dentro il `.then`
+  // che l'ha aspettata.
+  function loadCustomValues(episode, userName, migrazioni) {
     var stored = leggiMagazzino(customValuesKey(episode.id, userName), function () { return {}; });
     var values = {};
     episode.slotFields.forEach(function (f) {
-      values[f.key] = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
+      var raw = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
+      values[f.key] = idMigrato(migrazioni, f.key, raw);
     });
     return values;
+  }
+
+  // Traduce un id salvato nel suo id di oggi, se qualcuno l'ha rinominato.
+  //
+  // Un id che la mappa non conosce esce com'e' entrato: **puo' essere valido**
+  // (la stragrande maggioranza lo e') e non tocca a questa funzione decidere
+  // che non lo sia. Chi non trova piu' la riga e' `resolveSlotValue`, e da li'
+  // si cade sul predefinito dello slot — l'altra meta' di questo passo.
+  function idMigrato(migrazioni, slotKey, raw) {
+    if (!migrazioni) return raw;
+    var perSlot = migrazioni[slotKey];
+    if (!perSlot) return raw;
+    return Object.prototype.hasOwnProperty.call(perSlot, raw) ? perSlot[raw] : raw;
   }
 
   function saveCustomValues(episode, userName, values) {
@@ -382,6 +409,7 @@ window.BI = window.BI || {};
   BI.storyCardsRecordExplanationAnswer = storyCardsRecordExplanationAnswer;
   BI.customValuesKey = customValuesKey;
   BI.loadCustomValues = loadCustomValues;
+  BI.idMigrato = idMigrato;
   BI.saveCustomValues = saveCustomValues;
   BI.customizeSeenKey = customizeSeenKey;
   BI.isCustomizeSeen = isCustomizeSeen;

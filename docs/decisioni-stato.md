@@ -58,8 +58,9 @@ si prende, non adesso.**
 
 ## Aspettano CONTENUTO (episodi nuovi da scrivere)
 
-⚠️ **1.8-bis NON ASPETTA PIÙ NIENTE, DAL 2026-09-24: contenuto deciso, meccanismi
-decisi, ordine deciso — `④ → ② → ③`.**
+⚠️ **1.8-bis: ④ È FATTO. RESTANO ② E ③**, contenuto e meccanismi già decisi —
+`② la riga città+paese`, poi `③ le età`. **Sono due passi di CODICE: mai
+insieme** (regola 45).
 Il contenuto di ② e ③ è deciso e scritto in
 `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`, **sezione 4** — una
 sezione che il trascrittore non legge, così le righe stanno ferme dove saranno
@@ -70,7 +71,7 @@ sono presi, e dicono cosa manca: il codice, non le parole.*
 |---|---|---|
 | **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano. ✅ **Contenuto deciso (§4.1): otto righe a sei colonne**, le sei italiane Italia/Italy, Lugano→Svizzera/Switzerland, Nizza→Francia/France. `places.destinations` **non** prende la colonna ✅ **Meccanismo deciso: colonne paese sue + segnaposto `{{partenza.paese:en}}`**, non il valore composto — «Turin» è una voce del grado A e dentro «Lugano, Svizzera» non esisterebbe più | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
 | **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. ✅ **Contenuto deciso (§4.2): `ages.anni`, quattordici righe `eta-4`…`eta-17`, `it` = la CIFRA e `en` = la parola** — due colonne, non tre, perché la tendina di Personalizza legge `o.it` e la battuta legge `picked[lang]` (misurato, non supposto). Resta **il SOTTOINSIEME**, che nel codice non esiste: `resolveSlotTable` torna la tabella intera. ✅ **Meccanismo deciso: lo slot ELENCA gli id**, non un intervallo — un intervallo dà per scontato che la tabella sia ordinata e numerica, e quando smetterà di esserlo **non darà un errore: darà l'insieme sbagliato** | vuole un test suo sul riconoscimento vocale |
-| **1.8-bis ④** | **PRIMO, e sono DUE METÀ DI UN DIFETTO SOLO, nello stesso passo.** ⓐ **la mappa** vecchio→nuovo id, che restituisce **la scelta vera** dello studente · ⓑ **il ripiego**, `var picked = match || opts[0]` in `resolveSlotValue` → deve cadere sul **predefinito dello slot**, non sulla prima riga. ✅ **Deciso il 2026-09-24 che ⓑ sta dentro ④ e non è un passo suo** | ⚠️ **ha già un debito in produzione**: la rinomina degli id (`marco`→`papa-marco`, `mondovi`→`orig-mondovi`) è già pubblicata, quindi chi aveva personalizzato **ha già perso le scelte, in silenzio**. E senza ⓑ il prossimo id che cambia rifà lo stesso danno |
+| ~~**1.8-bis ④**~~ | ✅ **FATTO il 2026-09-24.** La mappa (43 righe, 6 slot, chiavizzata per slot) + il ripiego sul predefinito, nello stesso commit. **Falsificate separatamente: [M3] cade da sola rimettendo `opts[0]`, [M1] da sola togliendo la mappa.** Guardia append-only in `tests/BASELINE-MIGRAZIONI.txt`. ⚠️ **Il caso che distingue ⓑ è uno solo ed è misurato:** su nove slot il predefinito coincide con la prima riga **su sette** — divergono solo le due età, che sono anche la riga nuda (regola 42). *Restava:* **DUE METÀ DI UN DIFETTO SOLO, nello stesso passo.** ⓐ **la mappa** vecchio→nuovo id, che restituisce **la scelta vera** dello studente · ⓑ **il ripiego**, `var picked = match || opts[0]` in `resolveSlotValue` → deve cadere sul **predefinito dello slot**, non sulla prima riga. ✅ **Deciso il 2026-09-24 che ⓑ sta dentro ④ e non è un passo suo** | ⚠️ **ha già un debito in produzione**: la rinomina degli id (`marco`→`papa-marco`, `mondovi`→`orig-mondovi`) è già pubblicata, quindi chi aveva personalizzato **ha già perso le scelte, in silenzio**. E senza ⓑ il prossimo id che cambia rifà lo stesso danno |
 ⚠️ **UNA COSA CHE ④ RENDE FALSA, E VA CORRETTA NELLO STESSO COMMIT (regola 33):**
 la ragione per cui esiste il blocco `[A2]` di `test_traducibilita_per_riga.js` è
 scritta citando il ripiego di oggi — *«`resolveSlotValue` su un id che non esiste

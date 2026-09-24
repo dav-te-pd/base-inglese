@@ -1,6 +1,13 @@
 // PROTEGGE: che sia la RIGA del magazzino a dire se il suo valore si traduce,
 // e non il nome della tabella che la contiene.
 //
+// PROTEGGE ANCHE, dal 2026-09-24 (passo 1.8-bis ④): che una personalizzazione
+// gia' salvata non sparisca quando un id viene rinominato — ne' in silenzio
+// ([M1], la mappa delle migrazioni), ne' finendo su un valore che nessuno ha
+// scelto ([M3], il ripiego sul predefinito invece che sulla prima riga). E che
+// la mappa resti append-only ([M2]): una riga tolta da li' non rompe niente
+// qui e rompe il profilo di chi l'aveva scelta, la prossima volta che lo apre.
+//
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-20 la risposta si deduceva
 // dal contenitore: `buildSlotFields` guardava `slot.table.indexOf('people.')`
 // e ne ricavava `isPersonName`. Era esatto, e teneva solo finché le famiglie
@@ -65,15 +72,21 @@ const mockInit = () => {
 
 // Arriva fino alla mappa di `gate` — l'unico episodio che usa sia una tabella
 // di persone sia una di luoghi sia una tabella interna: serve tutte e tre.
-async function apriMappa(page, utente) {
+// `seme` — dal passo 1.8-bis (4): i valori di personalizzazione gia' salvati
+// prima che l'app li legga. Va scritto QUI e non dopo: `loadCustomValues` gira
+// dentro l'apertura di Personalizza, e un seme che arriva dopo non lo vede.
+async function apriMappa(page, utente, seme) {
   await page.addInitScript(mockInit);
   await page.goto(APP_URL);
   await page.fill('#name-input', utente);
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
-  await page.evaluate(function (u) {
-    localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + u, '1');
-  }, utente);
+  await page.evaluate(function (a) {
+    localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + a.u, '1');
+    if (a.seme) {
+      localStorage.setItem(window.BI.customValuesKey('gate', a.u), JSON.stringify(a.seme));
+    }
+  }, { u: utente, seme: seme || null });
   await page.click('#go-episode');
   await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
   // ⚠️ SERVE APRIRE PERSONALIZZA, e non è un giro in più per comodità:
@@ -124,9 +137,18 @@ async function run() {
   // tabella e un valore predefinito; il giorno che nominerà gli id uno per
   // uno (regola 5.7 del markdown) questa è la riga che si allarga.
   //
-  // Perché conta: `resolveSlotValue` su un id che non esiste **ricade in
-  // silenzio sulla PRIMA opzione**. Non alza, non avvisa, non lascia un
-  // rosso: la personalizzazione di qualcuno diventa un'altra e basta.
+  // Perché conta, ⚠️ E LA RAGIONE È CAMBIATA IL 2026-09-24 (passo 1.8-bis ④).
+  //
+  // Qui c'era scritto: «`resolveSlotValue` su un id che non esiste ricade in
+  // silenzio sulla PRIMA opzione». **Non è più vero**: da quel passo ricade
+  // sul **predefinito dello slot**, e `opts[0]` resta solo come ultima
+  // spiaggia. *Una motivazione falsa in testa a un blocco si legge come una
+  // verifica già fatta, quindi va corretta e non lasciata invecchiare.*
+  //
+  // Il blocco protegge **di più** di prima, non di meno: adesso è proprio lui
+  // a difendere l'ultima spiaggia. Se un predefinito non esiste dentro la sua
+  // tabella, il ripiego nuovo non trova niente e si torna a `opts[0]`, cioè al
+  // comportamento silenzioso di ieri — e questa è la riga che lo vede.
   {
     const tabelle = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8'));
     const episodi = fs.readdirSync(repoPath('data/inglese/it'))
@@ -231,6 +253,124 @@ async function run() {
     log('[C] ...e si risolve lo stesso, nella lingua chiesta',
       esito.en === '14' && esito.it === '14', JSON.stringify(esito));
     log('[C] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  // ── [M] LE MIGRAZIONI E IL RIPIEGO — passo 1.8-bis ④ ─────────────────
+  //
+  // Due metà di un difetto solo, e ognuna ha la sua asserzione **perché il
+  // rosso deve dire quale**: [M1] nomina un id VECCHIO, [M3] un id che non è
+  // MAI esistito.
+  {
+    const mappa = JSON.parse(fs.readFileSync(
+      repoPath('data/inglese/it/inglese-it-migrazioni-personalizzazione.json'), 'utf8'));
+
+    // ── [M2] LA GUARDIA APPEND-ONLY ────────────────────────────────────
+    //
+    // Una riga tolta da qui non rompe niente e non lascia un rosso: rompe il
+    // profilo di chi aveva scelto quel valore, la prossima volta che lo apre.
+    // È il difetto che non si annuncia (regola 37), quindi la difesa è un
+    // elenco esterno e non una raccomandazione.
+    const baseline = fs.readFileSync(repoPath('tests/BASELINE-MIGRAZIONI.txt'), 'utf8')
+      .split('\n').map(function (r) { return r.trim(); })
+      .filter(function (r) { return r && r[0] !== '#'; });
+
+    const spariti = baseline.filter(function (riga) {
+      const parti = riga.split(/\s+/);
+      const perSlot = mappa.slot[parti[0]];
+      return !perSlot || !Object.prototype.hasOwnProperty.call(perSlot, parti[1]);
+    });
+
+    log('[M2] Il baseline delle migrazioni non è vuoto', baseline.length > 0, String(baseline.length));
+    log('[M2] Nessun id coperto è sparito dalla mappa (append-only)',
+      spariti.length === 0, spariti.join(', '));
+
+    // Il rovescio: ogni id NUOVO che la mappa promette deve esistere davvero
+    // nel magazzino di oggi. Senza, la migrazione tradurrebbe un id morto in
+    // un altro id morto — e il ripiego di [M3] coprirebbe il buco in silenzio.
+    const tabelle = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8'));
+    const tuttiId = [];
+    ['people', 'places'].forEach(function (fam) {
+      Object.keys(tabelle[fam] || {}).forEach(function (k) {
+        (tabelle[fam][k] || []).forEach(function (r) { tuttiId.push(r.value); });
+      });
+    });
+    const arrivoMorto = [];
+    Object.keys(mappa.slot).forEach(function (s) {
+      Object.keys(mappa.slot[s]).forEach(function (v) {
+        if (tuttiId.indexOf(mappa.slot[s][v]) === -1) arrivoMorto.push(s + ': ' + v + ' → ' + mappa.slot[s][v]);
+      });
+    });
+    log('[M2] Ogni id di arrivo esiste nel magazzino di oggi',
+      arrivoMorto.length === 0, arrivoMorto.join(', '));
+  }
+
+  // ── [M1] ⓐ UN PROFILO SALVATO COL NOME VECCHIO TORNA QUELLO GIUSTO ───
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+
+    // Gli id di PRIMA del 2026-09-23, quelli che un profilo vero porta ancora.
+    // `luca` e `torino` non sono i predefiniti: se la migrazione non gira, il
+    // valore non corrisponde a niente e si finisce sul predefinito — cioè
+    // `papa-marco` e `orig-mondovi`, che è proprio il danno da misurare.
+    await apriMappa(page, 'TradMigra', { papa: 'luca', partenza: 'torino', cognome: 'ferrari' });
+
+    const esito = await page.evaluate(function () {
+      const v = window.BI.valoriCorrenti();
+      return { papa: v.papa, partenza: v.partenza, cognome: v.cognome };
+    });
+
+    log('[M1] Un nome salvato con l\'id vecchio torna il suo, non il predefinito',
+      esito.papa === 'papa-luca', JSON.stringify(esito));
+    log('[M1] ...e vale anche per una città', esito.partenza === 'orig-torino', JSON.stringify(esito));
+    log('[M1] ...e per un cognome', esito.cognome === 'cognome-ferrari', JSON.stringify(esito));
+    log('[M1] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  // ── [M3] ⓑ UN ID CHE NON È MAI ESISTITO CADE SUL PREDEFINITO ─────────
+  //
+  // ⚠️ SI MISURA SU UN'ETÀ, E NON PER COMODITÀ: È L'UNICO POSTO DOVE SI VEDE.
+  //
+  // Misurato sui nove slot dei due episodi: il predefinito coincide con la
+  // prima riga **su sette**. `papa` → `papa-marco` è sia def sia `opts[0]`;
+  // idem `partenza`, `cognome`, `destinazione`. Su quei sette le due forme
+  // danno la stessa risposta, cioè sarebbero vere per costruzione (regola 44).
+  //
+  // Gli unici due che divergono sono `figliaEta` (def `16`, prima riga `12`) e
+  // `figlioEta` (def `8`, prima riga `4`) — **e sono anche il caso più diverso
+  // della regola 42: la riga NUDA**, l'unica opzione dell'app a cui manca la
+  // riga intera invece di un campo. Il caso che distingue e il caso più
+  // diverso sono lo stesso, e non è una fortuna: le età sono l'unica famiglia
+  // che non passa dal magazzino condiviso.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await apriMappa(page, 'TradRipiego');
+
+    const esito = await page.evaluate(function () {
+      const ep = window.BI.episodioCorrente();
+      const campo = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
+      return {
+        sconosciuto: window.BI.resolveSlotValue(ep, 'figliaEta', 'non-esiste-piu', 'it'),
+        def: campo.def,
+        prima: campo.options[0],
+        figlio: window.BI.resolveSlotValue(ep, 'figlioEta', 'non-esiste-piu', 'it')
+      };
+    });
+
+    log('[M3] Il caso distingue davvero: predefinito e prima riga sono diversi',
+      esito.def !== esito.prima, JSON.stringify(esito));
+    log('[M3] Un id sconosciuto cade sul PREDEFINITO dello slot, non sulla prima riga',
+      esito.sconosciuto === esito.def, JSON.stringify(esito));
+    log('[M3] ...e vale anche per il secondo slot che diverge',
+      esito.figlio === '8', JSON.stringify(esito));
+    log('[M3] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }
 

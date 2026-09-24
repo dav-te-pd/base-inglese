@@ -358,9 +358,13 @@
     Promise.all([
       ensureEpisodeSlotFields(BI.episodioCorrente()),
       module.dataFile ? loadEpisodeData(module) : Promise.resolve(null),
-      loadModuleInstructions()
-    ]).then(function () {
-      BI.impostaValoriCorrenti(loadCustomValues(BI.episodioCorrente(), getUserName()));
+      loadModuleInstructions(),
+      // La quarta voce, dal passo 1.8-bis (4): la mappa che traduce un id
+      // salvato vecchio nel suo id di oggi. Sta qui e non dentro
+      // `loadCustomValues` perche' quella e' sincrona — vedi la sua firma.
+      BI.loadPersonalizationMigrations()
+    ]).then(function (r) {
+      BI.impostaValoriCorrenti(loadCustomValues(BI.episodioCorrente(), getUserName(), r[3]));
       return openModuleByKind(module);
     }).catch(function () {
       // Senza questo il tocco sulla riga non produceva NIENTE: nessuna

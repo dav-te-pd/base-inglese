@@ -394,8 +394,13 @@
       BI.renderIntroContent('personalizzazione', 'customize-intro-title', 'customize-intro-body', personalizzazioneModule().label, 'customize-intro-start-btn', 'customize-intro-dont-show-text');
       customizeShowScreen('intro');
     }
-    BI.ensureEpisodeSlotFields(BI.episodioCorrente()).then(function () {
-      BI.impostaValoriCorrenti(loadCustomValues(BI.episodioCorrente(), getUserName()));
+    Promise.all([
+      BI.ensureEpisodeSlotFields(BI.episodioCorrente()),
+      // Come in `openModuleFromMap`: la mappa delle migrazioni arriva da un
+      // fetch e `loadCustomValues` e' sincrona, quindi si aspetta qui.
+      BI.loadPersonalizationMigrations()
+    ]).then(function (r) {
+      BI.impostaValoriCorrenti(loadCustomValues(BI.episodioCorrente(), getUserName(), r[1]));
       renderSlotGrid();
       renderRequestBox();
     }).catch(function () {

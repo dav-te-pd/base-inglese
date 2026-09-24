@@ -1,0 +1,57 @@
+# Gli id di personalizzazione gia' coperti da una migrazione.
+#
+# Non e' una statistica: e' la guardia append-only di
+# data/inglese/it/inglese-it-migrazioni-personalizzazione.json.
+#
+# Ogni riga e' "chiave-di-slot id-vecchio". L'asserzione [M2] di
+# tests/test_traducibilita_per_riga.js verifica che ognuna sia ANCORA una
+# chiave della mappa. Il numero puo' SALIRE (un id nuovo rinominato) e non
+# deve CALARE: una riga tolta da qui e' una personalizzazione che sparisce
+# in silenzio dal profilo di chi l'aveva scelta.
+#
+# Quando sale di proposito si aggiungono le righe nuove a mano, in fondo.
+# Non si rigenera: un file che si rigenera da solo non e' una guardia, e'
+# una fotografia di quello che c'e' adesso.
+cognome ambruosi
+cognome barberis
+cognome bianchi
+cognome costa
+cognome ferrari
+cognome marino
+cognome rossi
+cognome russo
+figliaNome alice
+figliaNome beatrice
+figliaNome chiara
+figliaNome emma
+figliaNome giorgia
+figliaNome martina
+figliaNome sara
+figliaNome sofia
+figlioNome filippo
+figlioNome giorgio
+figlioNome leo
+figlioNome lorenzo
+figlioNome marco
+figlioNome matteo
+figlioNome simone
+figlioNome tommaso
+mamma anna
+mamma chiara
+mamma elena
+mamma francesca
+mamma giulia
+mamma laura
+mamma nicoletta
+mamma silvia
+papa andrea
+papa davide
+papa francesco
+papa giancarlo
+papa luca
+papa marco
+papa paolo
+papa stefano
+partenza milano
+partenza mondovi
+partenza torino
