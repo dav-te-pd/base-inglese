@@ -137,7 +137,6 @@ function slotValues(episodePath) {
   const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'inglese', 'it', 'inglese-it-gate.json'])), 'utf8'));
   const values = {};
   (episode.personalizationTablesUsed || []).forEach(slot => {
-    const isPerson = slot.table.indexOf('people.') === 0;
     if (slot.table.indexOf('episode.ageOptions.') === 0) {
       values[slot.key] = { it: String(slot.default), en: String(slot.default) };
       return;
@@ -146,7 +145,26 @@ function slotValues(episodePath) {
     const rows = readTable(section, name) || [];
     const picked = rows.find(r => r.value === slot.default) || rows[0];
     if (!picked) return;
-    values[slot.key] = { it: picked.it, en: isPerson ? picked.it : picked.en };
+    // ⚠️ LO DICE LA RIGA, NON IL NOME DELLA TABELLA — allineato il 2026-09-24.
+    //
+    // Qui c'era `isPerson = slot.table.indexOf('people.') === 0`: la deduzione
+    // che il passo 1.8 ha tolto dall'APP il 2026-09-20, sostituendola con
+    // `traducibile` dichiarato per riga. Era rimasta qui, e **dava la stessa
+    // risposta su tutte le righe di oggi** — quindi non produceva nessun rosso.
+    //
+    // ⚠️ Ed e' precisamente per questo che andava chiusa: il giorno in cui una
+    // riga smentisce la deduzione — un cognome che si traduce, una citta' che
+    // non si traduce, le due forme che il passo 1.8 esiste per rendere
+    // possibili — **non ci sarebbe stato un rosso ad avvisare: ci sarebbe
+    // stata una riga tradotta male** dentro il vocabolario atteso.
+    //
+    // Leggere `picked.traducibile` non rompe l'indipendenza dall'app: si legge
+    // il DATO, non una funzione dell'app. Un atteso che chiedesse all'app di
+    // confermare se stessa sarebbe vero per costruzione (regola 44).
+    values[slot.key] = {
+      it: picked.it,
+      en: picked.traducibile === false ? picked.it : picked.en
+    };
     // ⚠️ I SOTTO-CAMPI DELLA RIGA — passo 1.8-bis ②, 2026-09-24.
     //
     // Una riga puo' portare piu' di un valore: una citta' di partenza porta
@@ -155,8 +173,8 @@ function slotValues(episodePath) {
     // mentre l'app mostra «I am from Mondovi, Italy», e il driver del quiz non
     // ritrova piu' la domanda: e' esattamente il rosso del 2026-09-24.
     //
-    // Il sotto-campo si copia per intero, senza applicargli `isPerson`: un
-    // paese e' un toponimo e si traduce sempre.
+    // Il sotto-campo si copia per intero, senza chiedergli la traducibilita':
+    // un paese e' un toponimo e si traduce sempre.
     Object.keys(picked).forEach(function (k) {
       if (picked[k] && typeof picked[k] === 'object' && picked[k].it !== undefined) {
         values[slot.key][k] = { it: picked[k].it, en: picked[k].en };
