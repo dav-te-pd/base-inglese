@@ -149,6 +149,42 @@ function main(argv) {
   const totale = Object.keys(conteggi).reduce((s, f) => s + conteggi[f], 0);
 
   if (scrivi) {
+    // ⚠️ SI RIFIUTA SE ANCHE UN SOLO FILE NON HA IL SUO RISULTATO — 2026-09-24.
+    //
+    // Qui `mancanti` veniva IGNORATO: i file senza `.result.txt` sparivano dal
+    // conteggio e il baseline si riscriveva con quelli rimasti. Il ramo di
+    // lettura, dieci righe piu' sotto, li nomina da sempre («SENZA RISULTATO»);
+    // il ramo di scrittura no.
+    //
+    // ⚠️ E il caso peggiore NON e' il baseline a meta': e' il baseline VUOTO.
+    // Lanciando il comando dalla radice invece che da `tests/` — i percorsi si
+    // compongono da dentro `tests/`, quindi `tests/test_x.js` diventa
+    // `tests/tests/test_x.result.txt` — NESSUN file viene trovato, e lo
+    // strumento scriveva «0 asserzioni in 0 file» **stampando un successo**.
+    // Succeso il 2026-09-24: 79 righe cancellate, ripristinate da git.
+    //
+    // *E' la forma della regola 37 dentro lo strumento che quella regola
+    // difende: la guardia contro «un verde che prova meno di ieri» si lasciava
+    // azzerare senza dire niente. Un baseline vuoto non fallisce mai — accetta
+    // qualunque numero futuro, compreso zero.*
+    //
+    // Rifiutare e' l'unica risposta giusta: un baseline si riscrive **dopo una
+    // corsa completa**, e se un risultato manca quella corsa completa non c'e'
+    // stata. Il numero che verrebbe scritto sarebbe piu' basso del vero, cioe'
+    // un tetto abbassato in silenzio.
+    if (mancanti.length) {
+      console.error('NON SCRIVO IL BASELINE: ' + mancanti.length + ' file su ' +
+        files.length + ' non hanno il loro .result.txt.');
+      console.error('Senza: ' + mancanti.slice(0, 5).join(', ') +
+        (mancanti.length > 5 ? ', … (+' + (mancanti.length - 5) + ')' : ''));
+      console.error('');
+      console.error('Un baseline scritto da una corsa parziale abbassa il tetto');
+      console.error('in silenzio, ed e\' esattamente cio\' contro cui esiste.');
+      console.error('');
+      console.error('Il caso piu\' comune: il comando va lanciato DA tests/, con i');
+      console.error('nomi nudi — `cd tests && node tools/conta-asserzioni.js --scrivi test_*.js`');
+      return 2;
+    }
     scriviBaseline(conteggi, totale);
     console.log('Baseline scritto: ' + totale + ' asserzioni in ' +
       Object.keys(conteggi).length + ' file -> ' + BASELINE);

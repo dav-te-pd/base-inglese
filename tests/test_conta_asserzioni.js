@@ -19,6 +19,15 @@
 // fallire). Un contatore che confonde il terzo con il primo e' peggio di
 // nessun contatore.
 //
+// PROTEGGE ANCHE, dal 2026-09-24: che `--scrivi` si RIFIUTI quando anche un
+// solo file non ha il suo `.result.txt` — blocco [F]. Il ramo di lettura li
+// segnalava da sempre ([E]); quello di scrittura li ignorava e riscriveva il
+// baseline con quelli rimasti. Lanciato dalla cartella sbagliata non ne
+// trovava nessuno e scriveva «0 asserzioni in 0 file» stampando un successo:
+// un baseline vuoto che da li' in poi accetta qualunque numero, zero compreso.
+// E' la guardia contro «un verde che prova meno di ieri» che si lasciava
+// azzerare in silenzio.
+//
 // LIMITE DICHIARATO: non si prova che il conteggio sia GIUSTO su ogni file
 // vero della suite — si prova che sappia contare le forme che i test usano e
 // che reagisca ai cali. Se un file futuro stampasse le asserzioni in una
@@ -119,6 +128,36 @@ function esegui(args, env) {
       /SENZA RISULTATO \(non eseguiti\): zz_finto_a\.js/.test(r.out), r.out);
     log('[E] ...e non viene scambiato per un calo di tutte le sue asserzioni',
       !/zz_finto_a\.js: 0 invece di/.test(r.out));
+
+    // ---- [F] --scrivi SI RIFIUTA SU UNA CORSA PARZIALE ----
+    //
+    // ⚠️ IL CASO VERO, 2026-09-24: `--scrivi` ignorava i file senza risultato
+    // e riscriveva il baseline con quelli rimasti. Lanciato dalla cartella
+    // sbagliata non ne trovava NESSUNO, e scriveva «0 asserzioni in 0 file»
+    // **stampando un successo**: 79 righe cancellate, e un baseline vuoto
+    // che da li' in poi non avrebbe piu' fallito su nessun calo.
+    //
+    // *Il ramo di lettura li nominava da sempre — e' il blocco [E] qui sopra.
+    // Era il ramo di SCRITTURA a non guardarli, cioe' l'unico dei due che puo'
+    // fare danno permanente.*
+    //
+    // Qui `fileA` e' gia' stato cancellato dal blocco [E]: lo stato e'
+    // esattamente quello di una corsa incompleta.
+    const primaDelRifiuto = fs.readFileSync(baseline, 'utf8');
+    r = await esegui(['--scrivi', A, B], env);
+    log('[F] --scrivi su una corsa parziale FALLISCE invece di scrivere',
+      r.code === 2, 'codice ' + r.code);
+    log('[F] ...e NON tocca il baseline che c\'era',
+      fs.readFileSync(baseline, 'utf8') === primaDelRifiuto);
+    log('[F] ...e nomina il file che manca', new RegExp(A).test(r.out), r.out);
+
+    // Il caso che ha fatto il danno: NESSUN file ha il risultato. Vale la pena
+    // di una riga sua perche' e' l'unico che produce un baseline **vuoto**, e
+    // un baseline vuoto non fallisce piu' su niente — accetta anche zero.
+    r = await esegui(['--scrivi', A], env);
+    log('[F] Zero file con risultato non scrive un baseline vuoto',
+      r.code === 2 && fs.readFileSync(baseline, 'utf8') === primaDelRifiuto,
+      'codice ' + r.code);
   } finally {
     pulisci();
     try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
