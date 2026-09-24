@@ -106,7 +106,24 @@ async function run() {
     await bootAsUser(page, 'T17Job1a', ALL_BEFORE_DG.concat(['dialogoAscoltaRipeti']));
     await openModule(page, 'dialogoRipetiATempo');
     var dgStart = await page.isVisible('#dg-start-btn').catch(() => false);
-    if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
+    // ⚠️ SI ASPETTA CHE LE BOLLE ESISTANO, NON 100 MILLISECONDI — e questa e'
+    // la corsa VERA, trovata rimisurando: la prima correzione di queste due
+    // asserzioni aveva tolto la corsa contro la FINE DELL'AUDIO, e loro sono
+    // cadute lo stesso, in due giri di stress su tre. *Avevo corretto la
+    // corsa sbagliata.*
+    //
+    // Il messaggio lo diceva: `attiva: false` con `durante` costruito su
+    // `document.querySelector('.dg-bubble')` **null** — cioe' non era l'audio
+    // finito troppo presto, era la LISTA DELLE BOLLE non ancora disegnata.
+    // Tre righe piu' sotto, la stessa null faceva morire il file intero con un
+    // TypeError.
+    //
+    // L'attesa e' legittima per la regola 44: le due asserzioni leggono
+    // `is-active` e `disabled`, non «esiste una bolla».
+    if (dgStart) {
+      await page.click('#dg-start-btn');
+      await page.waitForSelector('.dg-bubble', { timeout: 15000 });
+    }
     // ⚠️ IL TOCCO E LE DUE LETTURE IN UNA CHIAMATA SOLA — regola 19, e qui la
     // ragione e' MISURATA: queste due asserzioni sono cadute in DUE giri di
     // stress su tre (`tests/tools/stress.sh`, 20 processi su 4 CPU).
