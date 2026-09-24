@@ -68,8 +68,32 @@ tratto, ed è giusto — il tratto dice **a che punto sei**, non **cosa sei**.*
 **EDIZIONE-TRATTI_009** · ⚠️ **APERTO — la stagione è A1, e A1.1 e A1.2 sono tratti dentro la stagione.**
 *Come si chiamano per lo studente, se si vedono, è da decidere col tabellone degli episodi.*
 
-**EDIZIONE_006** · ⚠️ **APERTO — la stagione è A1, e A1.1 e A1.2 sono tratti dentro la stagione.**
-*Come si chiamano per lo studente, e se si vedono, è da decidere col tabellone.*
+### A1.1 — l'apertura, le fondamenta, l'inizio del viaggio
+
+**EDIZIONE_013** · **L'ordine è quello delle righe.** *Nessun numero: gli episodi si spostano, e il
+riferimento stabile è l'id.* **Spostare un episodio è spostare una riga.**
+
+| # | Episodio | Tipo | Stato |
+|---|---|---|---|
+| **0** | **`benvenuto`** | ⭐ **apertura del corso** | **da creare — solo lo spazio** |
+| 1 | `numeri` | `grammatica` · apre | scheda 3.5 fatta, **episodio da scrivere** |
+| 2 | `verb-to-be` | `grammatica` · apre | scheda 3.3 fatta, **episodio da scrivere** |
+| 3 | `gate` | `storia` | ✅ **scritto e trascritto** |
+| 4 | `aircraft-door` | `storia` | ✅ **scritto e trascritto** |
+
+**EDIZIONE_014** · ⚠️ **QUESTA TABELLA NON È LA FONTE PER L'APP, E VA SAPUTO PRIMA DI SPOSTARCI UNA
+RIGA.** *L'ordine che l'app legge è quello della tabella della sezione 7 di
+`inglese-it-struttura-corso`, ed è l'unico che un test confronta col JSON. Qui ci sono anche gli
+episodi che **non esistono ancora**, che là non possono stare.* **Quando `numeri` e `verb-to-be`
+verranno scritti, la riga va spostata in tutte e due.**
+
+### A1.2 — in volo, e il primo personaggio che tornerà
+
+| # | Episodio | Tipo | Stato |
+|---|---|---|---|
+| 5 | `seat` — il posto | `storia` | bozza |
+| 6 | `seat-neighbour` — il vicino di posto | `storia` | bozza |
+| 7 | `before-takeoff` — prima del decollo | `storia` | bozza |
 
 ### La progressione dello scambio
 
