@@ -136,32 +136,73 @@ async function run() {
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');
     await page.waitForTimeout(150);
+    await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
+    await page.waitForTimeout(40); // audio ends, bar starts (fast config)
+    const tonesBeforeBarEnds = await page.evaluate(() => window.__playedTones.length);
+    // d1 = 10 words -> pausaBase(200) + 10*pausaPerParola(10) = 300ms bar.
+    await page.waitForFunction(() => window.__playedTones && window.__playedTones.length > 0, { timeout: 3000 });
+    const tones = await page.evaluate(() => window.__playedTones);
+    console.log('    DEBUG tones:', JSON.stringify(tones));
+    const countdown = await page.evaluate(() => window.APP_CONFIG.sound.events.countdown);
+    const countdownTones = tones.filter(t => t.freq === countdown.freq);
+    log('Countdown tone (660Hz) plays exactly once when the bar ends', countdownTones.length === 1);
+    // ⚠️ IL CONFRONTO NON PUO' LEGGERE LA FONTE, E IL MOTIVO E' UN DIFETTO
+    // DELL'APP, non del test: `sound.events.corretto` NON HA una chiave
+    // `volume`. Il suo volume viene dal default di `sfxPlayTone`
+    // (index.html: `volume === undefined ? 0.15 : volume`), cioe' da un numero
+    // SCRITTO FISSO NEL CODICE — che la regola 3 vieta. Finche' quel default
+    // non entra in APP_CONFIG, qui non c'e' niente da leggere.
+    //
+    // L'etichetta vecchia diceva «piu' basso di Corretto/Sbagliato default
+    // (0.15)» ed era falsa due volte: `sbagliato.volume` e' 0.22, non 0.15, e
+    // 0.15 non compare in CONFIG da nessuna parte.
+    const DEFAULT_SFX_PLAY_TONE = 0.15; // non e' una copia di CONFIG: e' il default scritto in sfxPlayTone, e non e' leggibile da fuori
+    log('Il volume del countdown (' + countdown.volume + ') e\' piu\' basso del default di sfxPlayTone (' + DEFAULT_SFX_PLAY_TONE + ')',
+      countdownTones.length === 1 && countdownTones[0].volume === countdown.volume && countdown.volume < DEFAULT_SFX_PLAY_TONE);
+    log('No ticking during the bar itself (nothing played before it finished)', tonesBeforeBarEnds === 0);
+    log('No JS errors', errors.length === 0);
+    await page.close();
+  }
+
+  // ============ Regression: mod1 (Ascolta e Ripeti) still works after dgLockAll/dgPlayLine unification ============
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errors = [];
+    page.on('pageerror', e => errors.push(e.message));
+    await page.addInitScript(mockInit);
+    await bootAsUser(page, 'Mod1Regression', stepsBefore('dialogoAscoltaRipeti'));
+    await openModule(page, 'dialogoAscoltaRipeti');
+    await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
+    await page.click('#dg-start-btn');
+    const watchVisible = await attendiVisibile(page, '#dialogo-watch-btn');
+    const helpVisible = await attendiVisibile(page, '#dialogo-help-btn');
+    log('[Regression] Mod1 still shows full header (Mappa/Spiegazione/Help)', watchVisible && helpVisible);
+    const toolbarVisible = await page.evaluate(() => !document.getElementById('dg-toolbar').hidden);
+    const toggleExists = await page.evaluate(() => !!document.getElementById('dg-translations-toggle'));
+    log('[Regression] Mod1 still shows the translations toggle', toolbarVisible && toggleExists);
     // ⚠️ IL CLICK E LA LETTURA STANNO NELLA STESSA CHIAMATA SINCRONA, ED E'
     // LA REGOLA 19 ALLA LETTERA — «legge lo stato interno dentro un'unica
     // chiamata sincrona invece di correre contro un timer».
     //
-    // ⚠️ PERCHE' LA FORMA PRECEDENTE CADEVA, E LA CAUSA E' MISURATA, NON
-    // DEDOTTA: `is-active` vive **quanto l'audio, cioe' 25 ms**, perche' il
-    // codice la mette quando l'audio parte e la toglie su `onend`.
-    // `attendiVisibile` sonda a intervalli: sotto carico — ventuno file in
-    // parallelo, o il runner della CI — un giro di sonda salta l'intera
-    // finestra, e l'asserzione cade senza che niente sia rotto. **Misurato
-    // 1 giro su 10.**
-    //
-    // ⚠️ E IL RIPIEGO OVVIO — allungare l'audio finto — E' STATO SCARTATO:
-    // sarebbe un numero scelto al posto di un altro numero scelto, e le due
-    // attese qui sotto andrebbero rialzate insieme. Letta nello stesso tick
-    // del click, **la finestra non esiste**: non c'e' piu' niente da mancare.
+    // Qui c'era un click e poi un'attesa su `.is-active`. L'attesa non e'
+    // sbagliata in se': e' che non serve piu'. `is-active` la mette il codice
+    // **dentro** il click — sincronamente — quindi leggerla nello stesso tick
+    // toglie del tutto la dimensione tempo da questa asserzione.
     //
     // ⚠️ E L'ASSERZIONE E' PIU' FORTE DI PRIMA, non uguale: legge `is-active`
     // **e** `speaking` nello stesso istante — cioe' proprio «alza la bolla
     // CHE STA PARLANDO», che e' quello che l'etichetta ha sempre promesso.
     // *Ed e' possibile solo dal 2026-09-24 (passo F.2a): prima il finto non
-    // dichiarava `speaking`, e la seconda meta' sarebbe stata `undefined` —
-    // vera per costruzione al contrario.*
+    // dichiarava `speaking`, e quella meta' sarebbe stata `undefined` — vera
+    // per costruzione al contrario.*
     //
-    // Sonda che lo misura: click sincrono, cinque giri su cinque con
-    // `is-active` e `speaking` entrambi veri nello stesso tick.
+    // ⚠️ E LA RAGIONE PER CUI SI E' GUARDATA QUESTA RIGA NON E' CONFERMATA:
+    // il 2026-09-24 l'asserzione e' caduta una volta, nel giro con ventuno
+    // file in parallelo. **Due diagnosi scritte e due smontate dalla misura**
+    // (prima del click `speaking` e' `false`, e a finestra 1 ms la forma
+    // vecchia resta verde). *La causa resta ignota, e sta scritto cosi'
+    // invece che con una terza storia: questa riscrittura regge da sola, per
+    // la regola 19, non come correzione di un rosso che nessuno ha spiegato.*
     const alzata = await page.evaluate((id) => {
       var b = document.querySelector('.dg-bubble[data-line-id="' + id + '"]');
       b.click();
