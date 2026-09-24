@@ -33,7 +33,7 @@ servono, raggruppati per domanda.
 
 | Strumento | A cosa risponde |
 |---|---|
-| `trascrivi.js` | *i quattro JSON dell'edizione da `docs/inglese/it/`.* Si ferma invece di scrivere se i conti dichiarati non tornano o se una riga ha le colonne sbagliate. Con `--controlla` dice solo cosa cambierebbe |
+| `trascrivi.js` | *i JSON di **ogni edizione** da `docs/{lingua}/{studente}/`.* ⚠️ **Le edizioni le SCOPRE, non le elenca** (dal 2026-09-24): è un'edizione ogni cartella `docs/{lingua}/{studente}/` che contiene il suo `{lingua}-{studente}-struttura-corso.md` — *la cartella è il criterio, non i nomi (regola 4), e un elenco dentro uno strumento smette di essere vero al primo contenuto nuovo.* **Zero edizioni trovate è un ERRORE con uscita 1**, non un successo silenzioso. Si ferma invece di scrivere se i conti dichiarati non tornano o se una riga ha le colonne sbagliate, **e legge tutte le edizioni prima di scriverne una**. Con `--controlla` dice solo cosa cambierebbe |
 
 ## ④ Guardare l'app
 

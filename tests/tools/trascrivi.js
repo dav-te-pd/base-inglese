@@ -22,10 +22,47 @@ const fs = require('fs');
 const path = require('path');
 
 const RADICE = path.resolve(__dirname, '..', '..');
-const ED = { lingua: 'inglese', studente: 'it' };
-const pref = ED.lingua + '-' + ED.studente + '-';
-const doc = (n) => path.join(RADICE, 'docs', ED.lingua, ED.studente, pref + n + '.md');
-const dati = (n) => path.join(RADICE, 'data', ED.lingua, ED.studente, pref + n + '.json');
+// ⚠️ LE EDIZIONI SI SCOPRONO, NON SI ELENCANO — dal 2026-09-24.
+//
+// Qui c'era `const ED = { lingua: 'inglese', studente: 'it' };`: una riga
+// sola, e faceva di questo strumento uno strumento per UNA edizione. *Chi
+// avesse scritto `docs/spagnolo/it/` lo avrebbe scritto e nessuno lo avrebbe
+// letto — senza nessun errore, perche' lo strumento non sapeva nemmeno di
+// doverlo cercare.* E' il primo ostacolo del passo 1.12, la catena di
+// validazione delle edizioni.
+//
+// ⚠️ E NON C'E' UN ELENCO DI EDIZIONI DA TENERE AGGIORNATO, per la stessa
+// ragione della regola 4: **la cartella e' il criterio, non i nomi**. Un
+// elenco dentro uno strumento smette di essere vero al primo contenuto nuovo,
+// e nessuno se ne accorge.
+//
+// **Cosa rende una cartella un'edizione: che ci sia il suo
+// `{lingua}-{studente}-struttura-corso.md`.** Non la presenza della cartella —
+// una cartella vuota, o mezza scritta, non e' un'edizione — e non un elenco.
+// *E' la stessa cosa che l'app chiede per disegnare qualunque schermata: senza
+// struttura del corso non c'e' nessun corso.*
+function edizioni() {
+  const base = path.join(RADICE, 'docs');
+  const trovate = [];
+  fs.readdirSync(base, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .forEach((lingua) => {
+      const dirLingua = path.join(base, lingua.name);
+      fs.readdirSync(dirLingua, { withFileTypes: true })
+        .filter((d) => d.isDirectory())
+        .forEach((studente) => {
+          const pref = lingua.name + '-' + studente.name + '-';
+          const struttura = path.join(dirLingua, studente.name, pref + 'struttura-corso.md');
+          if (fs.existsSync(struttura)) {
+            trovate.push({ lingua: lingua.name, studente: studente.name, pref: pref });
+          }
+        });
+    });
+  return trovate;
+}
+
+const doc = (ed, n) => path.join(RADICE, 'docs', ed.lingua, ed.studente, ed.pref + n + '.md');
+const dati = (ed, n) => path.join(RADICE, 'data', ed.lingua, ed.studente, ed.pref + n + '.json');
 
 // ── la lettura delle tabelle, la stessa forma del parser dei test ────────
 // Si parte dal titolo, si prende il primo blocco di righe che iniziano con
@@ -84,8 +121,8 @@ function colonne(righe, quante, dove) {
 }
 
 // ── struttura del corso ──────────────────────────────────────────────────
-function struttura() {
-  const t = fs.readFileSync(doc('struttura-corso'), 'utf8');
+function struttura(ed) {
+  const t = fs.readFileSync(doc(ed, 'struttura-corso'), 'utf8');
 
   const gradi = colonne(tabellaSotto(t, '## 2 — I GRADI', true), 3, 'gradi');
   const grades = gradi.map((r) => r[0].trim());
@@ -126,8 +163,8 @@ function struttura() {
 }
 
 // ── tabelle di personalizzazione ─────────────────────────────────────────
-function tabelle() {
-  const t = fs.readFileSync(doc('tabelle-personalizzazione'), 'utf8');
+function tabelle(ed) {
+  const t = fs.readFileSync(doc(ed, 'tabelle-personalizzazione'), 'utf8');
   const indice = colonne(tabellaSotto(t, '## 2 — LE TABELLE CHE ESISTONO', true), 2, 'indice tabelle');
   const out = {};
   indice.forEach((r) => {
@@ -176,8 +213,8 @@ function tabelle() {
 }
 
 // ── un episodio ──────────────────────────────────────────────────────────
-function episodio(id, gradeNames) {
-  const t = fs.readFileSync(doc(id), 'utf8');
+function episodio(ed, id, gradeNames) {
+  const t = fs.readFileSync(doc(ed, id), 'utf8');
   const fuori = {};
 
   fuori.episodeId = id;
@@ -298,48 +335,59 @@ function scrivi(percorso, oggetto, controlla) {
 
 function main() {
   const controlla = process.argv.indexOf('--controlla') !== -1;
-  const s = struttura();
-  const strutturaJson = {
-    speech: s.speech,
-    grades: s.grades,
-    gradeNames: s.gradeNames,
-    moduleTypes: s.moduleTypes,
-    moduleLabels: s.moduleLabels,
-    sequences: s.sequences,
+
+  const trovate = edizioni();
+  // ⚠️ ZERO EDIZIONI NON E' UN SUCCESSO SILENZIOSO. Senza questa riga lo
+  // strumento stamperebbe niente e uscirebbe con 0: «tutto a posto» e «non ho
+  // trovato niente da fare» si leggerebbero uguali (regola 37).
+  if (!trovate.length) {
+    console.error('Nessuna edizione trovata sotto docs/.');
+    console.error('Un\'edizione e\' una cartella docs/{lingua}/{studente}/ che');
+    console.error('contiene il suo {lingua}-{studente}-struttura-corso.md.');
+    process.exit(1);
+  }
+
+  // ⚠️ PRIMA SI LEGGE TUTTO, POI SI SCRIVE TUTTO — e dal 2026-09-24 vale
+  // ANCHE FRA EDIZIONI, non solo dentro una. *Un errore nel secondo corso non
+  // deve lasciare il primo riscritto e il secondo no: sarebbe di nuovo lo
+  // stato intermedio che nessuno dichiara, solo un piano piu' in la'.*
+  const daScrivere = [];
+  trovate.forEach((ed) => {
+    daScrivere.push([null, null, null, null, ed.lingua + '/' + ed.studente]);
+    const s = struttura(ed);
     // Il nome della sequenza degli episodi non e' nel markdown: e' uno solo
     // per edizione, e il markdown ne porta l'ORDINE (sezione 7). Qui si
-    // assembla: la lista viene da li', il nome e l'ingresso sono dell'edizione.
-    episodeSequences: { 'corso-inglese-a1': s.ordine },
-    episodeSequence: 'corso-inglese-a1',
-    episodioCorrente: s.ordine[0],
-    episodes: s.episodes
-  };
-  // ⚠️ PRIMA SI LEGGE TUTTO, POI SI SCRIVE TUTTO — 2026-09-24.
-  //
-  // Qui si leggeva e scriveva un file per volta. Un errore a meta' — un conto
-  // che non torna, una tabella con le colonne sbagliate — fermava lo strumento
-  // **dopo** aver gia' riscritto i file precedenti: sul disco restavano meta'
-  // JSON nuovi e meta' vecchi, **e niente lo diceva**.
-  //
-  // Visto succedere lo stesso giorno: la corsa si e' fermata su
-  // `aircraft-door.md` e intanto `tabelle` e `gate` erano gia' aggiornati.
-  //
-  // *Non e' grave — la fonte resta il markdown e basta rilanciare — ma e' la
-  // forma che questo progetto insegue: un guasto che lascia uno stato
-  // intermedio senza dichiararlo (regola 37). Qui costa cinque righe.*
-  const daScrivere = [
-    ['struttura del corso:', dati('struttura-corso'), strutturaJson, null],
-    ['tabelle di personalizzazione:', dati('tabelle-personalizzazione'), tabelle(), null]
-  ];
-  Object.keys(s.episodes).forEach((id) => {
-    const e = episodio(id, s.gradeNames);
-    daScrivere.push([null, dati(id), e.json, '   ' + id + ': ' + JSON.stringify(e.conti)]);
+    // assembla dall'edizione: la lista viene da li', il nome e l'ingresso
+    // sono suoi. *Resta fisso il solo `a1`, perche' oggi ogni edizione ha un
+    // corso solo — il giorno in cui ne avra' due, quel pezzo verra' dal
+    // markdown come tutto il resto.*
+    const nomeSequenza = 'corso-' + ed.lingua + '-a1';
+    const strutturaJson = {
+      speech: s.speech,
+      grades: s.grades,
+      gradeNames: s.gradeNames,
+      moduleTypes: s.moduleTypes,
+      moduleLabels: s.moduleLabels,
+      sequences: s.sequences,
+      episodeSequences: {},
+      episodeSequence: nomeSequenza,
+      episodioCorrente: s.ordine[0],
+      episodes: s.episodes
+    };
+    strutturaJson.episodeSequences[nomeSequenza] = s.ordine;
+    daScrivere.push(['struttura del corso:', dati(ed, 'struttura-corso'), strutturaJson, null]);
+    daScrivere.push(['tabelle di personalizzazione:', dati(ed, 'tabelle-personalizzazione'), tabelle(ed), null]);
+    Object.keys(s.episodes).forEach((id) => {
+      const e = episodio(ed, id, s.gradeNames);
+      daScrivere.push([null, dati(ed, id), e.json, '   ' + id + ': ' + JSON.stringify(e.conti)]);
+    });
   });
 
   // Da qui in giu' non si legge piu' niente: se si e' arrivati, tutti i
-  // markdown sono validi e tutti i conti tornano.
+  // markdown di tutte le edizioni sono validi e tutti i conti tornano.
   let sezioneEpisodi = false;
   daScrivere.forEach((r) => {
+    if (r[4]) { console.log('\n=== ' + r[4] + ' ==='); sezioneEpisodi = false; return; }
     if (r[0]) console.log(r[0]);
     else if (!sezioneEpisodi) { console.log('episodi:'); sezioneEpisodi = true; }
     if (r[3]) console.log(r[3]);
