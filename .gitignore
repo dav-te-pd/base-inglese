@@ -18,3 +18,8 @@ tests/output/
 # si vede — ed e' per questo che la riga sta qui invece che nella memoria.
 suite.log
 server.log
+
+# Prodotti da tests/tools/stress.sh (2026-09-24): un log per giro, e i giri
+# sono tanti per costruzione. Stessa ragione di suite.log qui sopra — un file
+# di lavoro che entra nel repository non fa danno e non si vede.
+tests/stress-giro*.log
