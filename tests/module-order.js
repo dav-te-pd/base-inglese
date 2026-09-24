@@ -147,16 +147,44 @@ function slotValues(episodePath) {
     const picked = rows.find(r => r.value === slot.default) || rows[0];
     if (!picked) return;
     values[slot.key] = { it: picked.it, en: isPerson ? picked.it : picked.en };
+    // ⚠️ I SOTTO-CAMPI DELLA RIGA — passo 1.8-bis ②, 2026-09-24.
+    //
+    // Una riga puo' portare piu' di un valore: una citta' di partenza porta
+    // anche il suo paese, e la battuta li vuole tutti e due. Senza questa
+    // riga il vocabolario atteso resta «I am from Mondovi, {{partenza.paese:en}}»
+    // mentre l'app mostra «I am from Mondovi, Italy», e il driver del quiz non
+    // ritrova piu' la domanda: e' esattamente il rosso del 2026-09-24.
+    //
+    // Il sotto-campo si copia per intero, senza applicargli `isPerson`: un
+    // paese e' un toponimo e si traduce sempre.
+    Object.keys(picked).forEach(function (k) {
+      if (picked[k] && typeof picked[k] === 'object' && picked[k].it !== undefined) {
+        values[slot.key][k] = { it: picked[k].it, en: picked[k].en };
+      }
+    });
   });
   return values;
 }
 
 // Il testo di una voce come lo mostra l'app: stessa sostituzione di
 // fillTemplate(), sui valori predefiniti.
+// ⚠️ LA REGEX CONOSCE IL PUNTO DAL 2026-09-24 (passo 1.8-bis ②), come quella
+// di `fillTemplate`: `{{chiave}}` e `{{chiave.campo}}`. `\w` non contiene il
+// punto, quindi prima `{{partenza.paese:en}}` restava intero nel testo atteso
+// e il confronto col testo vero non tornava mai.
+//
+// Un campo che la riga non ha torna la riga, non `undefined` — la stessa
+// scelta di `resolveSlotValue`, e per la stessa ragione: le tabelle non sono
+// tutte uguali.
 function itemText(item, lang, values) {
   const v = values || slotValues();
   const raw = lang === 'en' ? item.english : item.italian;
-  return String(raw).replace(/\{\{(\w+)\}\}/g, (whole, key) => (v[key] ? v[key][lang] : whole));
+  return String(raw).replace(/\{\{(\w+)(?:\.(\w+))?(?::(\w+))?\}\}/g, (whole, key, campo, forcedLang) => {
+    const box = v[key];
+    if (!box) return whole;
+    const parte = (campo && box[campo]) ? box[campo] : box;
+    return parte[forcedLang || lang];
+  });
 }
 
 module.exports = { readOrder, stepIds, stepsBefore, gradeOf, allSteps, slotValues, itemText };
