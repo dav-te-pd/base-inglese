@@ -141,13 +141,23 @@ function costruisci(opzioni) {
   // *Non e' «il mock semplifica»: e' che l'app girava con quattro
   // comportamenti condivisi spenti, e nessun rosso lo diceva.*
   //
-  // ⚠️ E QUI `cancel()` NON MANDA `onend`, di proposito. Il browser vero lo
-  // manda, **in modo asincrono** — e l'app ci ha costruito sopra l'EPOCA
-  // (`nuovaEpoca`/`epocaCorrente` in `app/audio.js`), che esiste per
-  // sopravvivere a un `onend` che arriva dopo che lo studente ha lasciato il
-  // modulo. Renderlo onesto e' il passo **F.2b**, e va da solo: mescolarlo qui
-  // darebbe un rosso che puo' venire da due cause, cioe' non una misura.
-  // Stessa ragione per `paused`, che resta finto (**F.2c**).
+  // ⚠️ E `cancel()` MANDA `onend`, IN MODO ASINCRONO, DAL PASSO F.2b
+  // (2026-09-24) — com'e' in un motore vero, e **non e' un dettaglio**:
+  // `app/audio.js` ci ha costruito sopra l'EPOCA (`nuovaEpoca` /
+  // `epocaCorrente`), che esiste **solo** per sopravvivere a un `onend` che
+  // arriva DOPO che lo studente ha lasciato il modulo. *Con un `cancel()` che
+  // non manda niente, quella protezione non veniva esercitata da nessuno di
+  // questi file: c'era, e nessun test poteva dire se funzionava.*
+  //
+  // ⚠️ LA FORMA NON E' STATA INVENTATA QUI: e' quella che
+  // `test_dialogo_extra.js` si era scritta a mano (`mockConCancelVero`) per i
+  // suoi due test sull'audio interrotto, ed e' stata portata dentro
+  // **identica**. *Quel duplicato scritto a mano era F.2b in un file solo.*
+  //
+  // La guardia sul `_corrente` dentro `_finisci` e' la parte che conta: una
+  // chiusura in ritardo non deve spegnere l'audio partito dopo di lei.
+  //
+  // `paused` resta finto: e' **F.2c**, e va da solo.
   const nucleo = `
     (function () {
       function FakeUtterance(text) {
@@ -161,17 +171,22 @@ function costruisci(opzioni) {
           this.speaking = true;
           this._corrente = utter;
           if (utter.onstart) utter.onstart();
-          utter._timer = setTimeout(function () {
-            if (self._corrente === utter) { self.speaking = false; self._corrente = null; }
-            if (utter.onend) utter.onend();
-          }, ${o.fineVoceMs});
+          utter._timer = setTimeout(function () { self._finisci(utter); }, ${o.fineVoceMs});
         },
-        cancel: function () {
-          var u = this._corrente;
-          if (!u) return;
+        // Chiude UNA utterance, una volta sola: la guardia su _corrente e'
+        // quello che impedisce a una chiusura in ritardo di spegnere l'audio
+        // che e' partito dopo. (Niente apici inversi qui dentro: questo testo
+        // vive in un template literal, e un apice inverso lo chiuderebbe.)
+        _finisci: function (utter) {
+          if (this._corrente !== utter) return;
+          clearTimeout(utter._timer);
           this.speaking = false;
           this._corrente = null;
-          clearTimeout(u._timer);
+          if (utter.onend) utter.onend();
+        },
+        cancel: function () {
+          var self = this, u = this._corrente;
+          if (u) setTimeout(function () { self._finisci(u); }, 0);
         },
         pause: function () {}, resume: function () {},
         getVoices: function () { return [{ name: ${JSON.stringify(o.nomeVoce)}, lang: 'en-US' }]; },

@@ -57,33 +57,18 @@ async function bootAsUser(page, userName, completedModules) {
   await page.waitForTimeout(150);
 }
 
-// Un mock in cui cancel() FA quello che fa un motore vero: chiude
-// l'utterance in corso e ne chiama onend, in modo asincrono (CLAUDE.md
-// regola 19 — un mock che finisce all'istante nasconde proprio i bug che
-// dipendono dall'ordine degli eventi). Serve ai due test qui sotto, dove
-// tutto il punto è cosa succede quando l'audio viene interrotto.
-const mockConCancelVero = () => {
-  class FakeUtterance { constructor(text) { this.text = text; } }
-  const fakeSynth = {
-    speaking: false, _current: null, _t: null,
-    speak(utter) {
-      this.speaking = true; this._current = utter;
-      if (utter.onstart) utter.onstart();
-      this._t = setTimeout(() => this._finish(utter), 400);
-    },
-    _finish(utter) {
-      if (this._current !== utter) return;
-      clearTimeout(this._t);
-      this.speaking = false; this._current = null;
-      if (utter.onend) utter.onend();
-    },
-    cancel() { const u = this._current; if (u) setTimeout(() => this._finish(u), 0); },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+// ⚠️ QUESTO MOCK NON VIVE PIU' QUI: E' DIVENTATO IL NUCLEO CONDIVISO.
+//
+// Fino al 2026-09-24 questo file si scriveva a mano un finto in cui `cancel()`
+// fa quello che fa un motore vero — chiude l'utterance in corso e ne chiama
+// `onend`, **in modo asincrono** (regola 19). Serviva ai due test qui sotto,
+// dove tutto il punto e' cosa succede quando l'audio viene interrotto.
+//
+// **Era il passo F.2b scritto in un file solo.** Col passo F.2b quella forma e'
+// entrata in `tests/mock-browser.js` **identica**, e qui resta solo il tempo
+// suo: 400 ms invece dei 25 del resto del file, perche' questi due test hanno
+// bisogno di interrompere un audio *mentre* sta suonando.
+const mockConCancelVero = mockBrowser({ fineVoceMs: 400 });
 
 async function run() {
   const browser = await launchBrowser();
