@@ -119,18 +119,36 @@ async function run() {
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
     const engToIta = {}; vocab.forEach(v => { engToIta[v.english] = v.italian; });
+    let uscitoSenzaRisposta = null;
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
       if (summaryVisible) break;
       const quizVisible = await page.isVisible('#qm-quiz-screen').catch(() => false);
       if (!quizVisible) { await page.waitForTimeout(150); continue; }
+      // ⚠️ SI ASPETTA CHE LA DOMANDA SIA DISEGNATA PRIMA DI LEGGERLA, e il
+      // motivo e' misurato: sotto stress (`tests/tools/stress.sh`) il
+      // Traguardo non suonava in DUE giri su tre. Non perche' il suono fosse
+      // rotto — perche' **il quiz non arrivava in fondo**: con le opzioni non
+      // ancora disegnate `findIndex` torna `-1`, e il `break` qui sotto usciva
+      // dal ciclo.
+      //
+      // ⚠️ E QUEL `break` ERA MUTO, che e' la parte peggiore: «non ho trovato
+      // la risposta» e «la domanda non c'e' ancora» uscivano dalla stessa
+      // porta, e il test moriva su un'asserzione sul SUONO — cioe' lontano dal
+      // punto in cui aveva perso la strada (regola 37).
+      const domandaPronta = await page.waitForFunction(() => {
+        var p = document.getElementById('qm-prompt');
+        return !!p && p.textContent.trim() !== '' &&
+          document.querySelectorAll('#qm-options .sr-option').length > 0;
+      }, { timeout: 15000 }).then(function () { return true; }, function () { return false; });
       const idx = await page.evaluate((engToIta) => {
         var prompt = document.getElementById('qm-prompt').textContent.trim();
         var correct = engToIta[prompt];
         var btns = Array.from(document.querySelectorAll('#qm-options .sr-option'));
         return btns.findIndex(b => b.textContent.trim() === correct);
       }, engToIta);
-      if (idx === -1) break;
+      // Adesso l'uscita PARLA: se capita, si sa quale dei due casi era.
+      if (idx === -1) { uscitoSenzaRisposta = 'giro ' + i + ', domanda pronta: ' + domandaPronta; break; }
       await page.click('.sr-option[data-qm-index="' + idx + '"]');
       await page.waitForTimeout(650);
     }
@@ -138,7 +156,8 @@ async function run() {
     const tones = await page.evaluate(() => window.__playedTones);
     const noteTraguardo = await page.evaluate(() => window.APP_CONFIG.sound.events.traguardo.notes);
     const traguardoTones = tones.filter(t => noteTraguardo.includes(t.freq));
-    log('[Job1] Traguardo (3 ascending notes) played at least once', traguardoTones.length >= 3);
+    log('[Job1] Traguardo (3 ascending notes) played at least once', traguardoTones.length >= 3,
+      'toni traguardo: ' + traguardoTones.length + (uscitoSenzaRisposta ? ' | il quiz NON e\' arrivato in fondo: ' + uscitoSenzaRisposta : ''));
     log('[Job1] Every Traguardo note fired with qm-summary-screen ALREADY visible', traguardoTones.every(t => t.qmSummaryHidden === false));
     log('[Job1] No JS errors', errors.length === 0);
     await page.close();

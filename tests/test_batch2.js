@@ -73,6 +73,15 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T6NewUser', []);
+    // ⚠️ SI ASPETTA CHE LA MAPPA SIA DISEGNATA, e non e' prudenza: sotto
+    // stress (`tests/tools/stress.sh`) questa riga e' caduta in DUE giri su
+    // tre, perche' `[data-module]` non esisteva ancora e `order` era vuoto.
+    // *Un `order[0] === 'personalizzazione'` su un elenco vuoto non dice «il
+    // primo e' sbagliato»: dice che non c'e' ancora nessun elenco.*
+    //
+    // L'attesa e' legittima per la regola 44: l'asserzione legge QUALE sia il
+    // primo, non CHE ce ne sia uno.
+    await page.waitForSelector('[data-module]', { timeout: 15000 });
     const order = await page.evaluate(() => Array.from(document.querySelectorAll('[data-module]')).map(el => el.getAttribute('data-module')));
     log('[6a] Personalizzazione is the first module in the map', order[0] === 'personalizzazione');
     const firstRowDisabled = await page.$eval('[data-module="personalizzazione"]', el => el.disabled);

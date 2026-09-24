@@ -70,6 +70,20 @@ async function bootAsUser(page, userName, completedModules) {
 // bisogno di interrompere un audio *mentre* sta suonando.
 const mockConCancelVero = mockBrowser({ fineVoceMs: 400 });
 
+// ⚠️ L'AUDIO LUNGO DEL BLOCCO [Tocco], E IL NUMERO E' LA CONDIZIONE, NON UN
+// TETTO. Quel blocco verifica una cosa che deve accadere **mentre l'audio
+// suona**: un tocco a vuoto NON lo interrompe (regola 16, l'eccezione dei
+// profili col countdown). Se l'audio finisce da solo prima della lettura,
+// l'asserzione diventa *«prima o poi ha smesso»* — vera sempre, o falsa per
+// il motivo sbagliato. **E' la regola 44 alla lettera.**
+//
+// Misurato: con 400 ms quelle due righe cadono in DUE giri di stress su tre
+// (`tests/tools/stress.sh`). *Non e' un'attesa da alzare: e' la finestra
+// dentro cui il gesto ha senso, e 400 ms non e' una voce umana — e' la parte
+// finta.* Tre secondi coprono la misura con margine, e non rallentano nulla:
+// il blocco legge a +120 ms e poi interrompe l'audio da se'.
+const mockAudioLungo = mockBrowser({ fineVoceMs: 3000 });
+
 async function run() {
   const browser = await launchBrowser();
   const results = [];
@@ -327,7 +341,7 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
-    await page.addInitScript(mockConCancelVero);
+    await page.addInitScript(mockAudioLungo);
     await bootAsUser(page, 'TapTester', stepsBefore('dialogoRipetiATempo'));
     await openModule(page, 'dialogoRipetiATempo');
     await page.click('#dg-start-btn');
