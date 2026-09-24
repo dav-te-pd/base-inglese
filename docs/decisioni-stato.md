@@ -58,11 +58,18 @@ si prende, non adesso.**
 
 ## Aspettano CONTENUTO (episodi nuovi da scrivere)
 
+⚠️ **1.8-bis NON ASPETTA PIÙ IL CONTENUTO, DAL 2026-09-24: aspetta il CODICE.**
+Il contenuto di ② e ③ è deciso e scritto in
+`docs/inglese/it/inglese-it-tabelle-personalizzazione.md`, **sezione 4** — una
+sezione che il trascrittore non legge, così le righe stanno ferme dove saranno
+usate invece che in una chat. *Le tre righe restano qui finché i tre passi non
+sono presi, e dicono cosa manca: il codice, non le parole.*
+
 | | Cosa | Cosa sblocca |
 |---|---|---|
-| **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
-| **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. Vuole che le età escano dal file episodio ed entrino nel magazzino, **più un modo di usare un SOTTOINSIEME di una tabella, che oggi non esiste** | vuole un test suo sul riconoscimento vocale |
-| **1.8-bis ④** | **la migrazione dei valori salvati** | ⚠️ obbligatoria se si fa ② o ③ |
+| **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano. ✅ **Contenuto deciso (§4.1): otto righe a sei colonne**, le sei italiane Italia/Italy, Lugano→Svizzera/Switzerland, Nizza→Francia/France. `places.destinations` **non** prende la colonna | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
+| **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. ✅ **Contenuto deciso (§4.2): `ages.anni`, quattordici righe `eta-4`…`eta-17`, `it` = la CIFRA e `en` = la parola** — due colonne, non tre, perché la tendina di Personalizza legge `o.it` e la battuta legge `picked[lang]` (misurato, non supposto). Resta **il SOTTOINSIEME**, che nel codice non esiste: `resolveSlotTable` torna la tabella intera | vuole un test suo sul riconoscimento vocale |
+| **1.8-bis ④** | **la migrazione dei valori salvati** | ⚠️ obbligatoria se si fa ② o ③ — **e ha già un debito**: la rinomina degli id (`marco`→`papa-marco`, `mondovi`→`orig-mondovi`) **è già in produzione**, quindi chi aveva personalizzato ha già perso le scelte. Il meccanismo del silenzio è `var picked = match || opts[0]` in `resolveSlotValue`: un id sconosciuto ripiega sulla **prima riga**, non su `f.def` |
 | **F.7** · **1.20** | il test trasversale sugli episodi · il pannello degli episodi | **alla revisione di design di fine episodio 5** — tutt'e due aspettano un catalogo vero invece di due episodi |
 
 ## Aspettano di essere PRESI (nessuna dipendenza)

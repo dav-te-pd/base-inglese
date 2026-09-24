@@ -1,4 +1,4 @@
-**Versione: 20260923a**
+**Versione: 20260924a**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -29,13 +29,17 @@ costa zero; decisa quando serve costa una migrazione.*
 sezione 7 del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti
 diversi.*
 
-⚠️ **E una cosa che oggi sta qui e non può ancora arrivare al JSON: le età in
-parole, e la riga con città + paese.** Le prime vogliono che le età escano dal
-file episodio ed entrino qui, **più un modo di usare solo un pezzo di una
-tabella, che oggi non esiste**; la seconda vuole che una riga possa portare
-**due valori** invece di uno, e oggi il codice ne restituisce **uno solo**.
-*Sono due passi di codice: finché non ci sono, questo file porta la forma a
-quattro colonne.*
+⚠️ **E due cose sono DECISE ma non ancora trascrivibili: la riga città + paese,
+e le età in parole.** Il contenuto — quale paese per ogni città, quali età, con
+quali colonne — **è scelto e sta nella sezione 4**, in una forma che il
+trascrittore non legge. *Finché i due passi di codice non ci sono, le tabelle
+della sezione 3 restano a quattro colonne.*
+
+⚠️ **E non è un rinvio per pigrizia: il trascrittore le RIFIUTEREBBE.**
+`tests/tools/trascrivi.js` chiede a ogni tabella della sezione 3 **esattamente
+quattro colonne** e si ferma con l'errore che le nomina. *Scriverle nella
+sezione 3 oggi non produrrebbe un JSON sbagliato: produrrebbe un JSON non
+scritto affatto.*
 
 ---
 
@@ -174,10 +178,12 @@ false su otto opzioni.
 ⚠️ **E nessun test le vedrebbe:** nessuno sceglie Lugano, quindi la suite
 resterebbe verde. *È il difetto che vive dentro un'opzione che nessuno prova.*
 
-**Entrano insieme alla riga a cinque colonne** (città it · città en · paese it ·
-paese en), che è un passo di codice: `resolveSlotValue` oggi restituisce una
-stringa sola. **Quel giorno `Italy` esce anche dal grado A di `gate`**, e il
-grado scende da 12 a 11.
+**Entrano insieme alla riga a sei colonne** (id · città it · città en · paese it ·
+paese en · traducibile), che è un passo di codice: `resolveSlotValue` oggi
+restituisce una stringa sola. **Quel giorno `Italy` esce anche dal grado A di
+`gate`**, e il grado scende da 12 a 11.
+
+**Il paese di ognuna delle otto è già scelto: sta nella sezione 4.**
 
 ### `places.destinations`
 
@@ -186,3 +192,139 @@ grado scende da 12 a 11.
 | `dest-pechino` | Pechino | Beijing | sì |
 | `dest-shanghai` | Shanghai | Shanghai | sì |
 | `dest-hong-kong` | Hong Kong | Hong Kong | sì |
+
+---
+
+## 4 — DECISO, NON ANCORA TRASCRIVIBILE
+
+⚠️ **QUESTA SEZIONE NON FINISCE NEL JSON, E NON È UNA BOZZA.** Quello che c'è
+qui è **contenuto scelto**, fermo solo perché il codice che lo legge non esiste
+ancora. Quando il passo di codice arriva, queste righe si spostano nella
+sezione 3 **senza ridecidere niente**.
+
+*Sta in una sezione sua e non fra le tabelle vere per una ragione misurata:
+`trascrivi.js` legge le tabelle della sezione 3 per **posizione delle colonne**
+e ne pretende **quattro**. Una riga a sei colonne lassù non darebbe un dato
+sbagliato — fermerebbe la trascrizione di tutto il file. Qui sotto non la
+guarda nessuno.*
+
+---
+
+### ④.1 — IL PAESE DELLE PARTENZE *(aspetta il passo ② — la riga a sei colonne)*
+
+**Confermato il 2026-09-24.** Le sei italiane portano Italia/Italy; le due che
+oggi mancano dalla sezione 3 portano il proprio, ed è tutto il motivo per cui
+esistono.
+
+| id | città it | città en | paese it | paese en | traducibile |
+|---|---|---|---|---|---|
+| `orig-mondovi` | Mondovì | Mondovì | Italia | Italy | sì |
+| `orig-torino` | Torino | Turin | Italia | Italy | sì |
+| `orig-milano` | Milano | Milan | Italia | Italy | sì |
+| `orig-roma` | Roma | Rome | Italia | Italy | sì |
+| `orig-napoli` | Napoli | Naples | Italia | Italy | sì |
+| `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
+| `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
+| `orig-nizza` | Nizza | Nice | Francia | France | sì |
+
+⚠️ **`places.destinations` NON prende la colonna paese.** Nessuna battuta dice
+il paese di destinazione: darebbero due colonne che non legge nessuno, che è
+esattamente quello che il passo 1.8 ha appena tolto (`fr`, `es`, `de` — 147
+stringhe vuote, zero lettori).
+
+---
+
+### ④.2 — LE ETÀ *(aspetta il passo ③ — le età nel magazzino, e il sottoinsieme)*
+
+Oggi le età **non sono qui**: sono valori nudi nella sezione 8 di
+`inglese-it-gate.md`, e il codice li trasforma in `{value, it, en}` tutti e tre
+uguali. È il motivo per cui si legge `I'm 16 years old`.
+
+**Nome della tabella: `ages.anni`.** ⚠️ *Da confermare — è l'unico dato di questa
+sezione che ho scelto io e non tu.*
+
+⚠️ **DUE COLONNE, NON TRE — E LA CIFRA RESTA IN `it`. Deciso il 2026-09-24, e la
+ragione va letta prima di «uniformare»:**
+
+> **Le due colonne servono due mestieri diversi, e la stessa riga è usata da due
+> parti dell'app.**
+>
+> - **`it` = `16`** è quello che lo studente **SCEGLIE** in Personalizza:
+>   scorrere 12·13·14 è più veloce che leggere dodici·tredici·quattordici.
+> - **`en` = `sixteen`** è quello che si **SENTE e si PRONUNCIA** nella battuta,
+>   e che Voice Practice deve riconoscere.
+>
+> **Non è un'incoerenza: è la stessa riga letta da due mestieri.**
+
+✅ **E la terza colonna NON serve — verificato nel codice il 2026-09-24, non
+supposto:**
+
+| Chi legge | Cosa chiama | Cosa esce |
+|---|---|---|
+| la tendina di Personalizza | `app/personalizza.js` — costruisce l'`<option>` con **`o.it`** | `16` ✅ |
+| la battuta italiana «Ho {{figliaEta}} anni» | `resolveSlotValue(..., 'it')` → `picked.it` | `Ho 16 anni` ✅ |
+| la battuta inglese «I'm {{figliaEta}} years old» | `resolveSlotValue(..., 'en')` → `picked.en` | `I'm sixteen years old` ✅ |
+
+⚠️ **CONDIZIONE, E SE SALTA NON SI VEDE: `traducibile` DEVE VALERE `sì` SU OGNI
+RIGA.** Con `no`, `resolveSlotValue` restituisce **`it` anche in inglese** — e
+si tornerebbe a `I'm 16 years old` senza nessun errore e senza nessun rosso.
+*L'assenza vale `sì` (sezione 3), ma qui la colonna è scritta lo stesso: un
+valore che se sbagliato non fa rumore non si lascia all'impostazione
+predefinita.*
+
+| id | it | en | traducibile |
+|---|---|---|---|
+| `eta-4` | 4 | four | sì |
+| `eta-5` | 5 | five | sì |
+| `eta-6` | 6 | six | sì |
+| `eta-7` | 7 | seven | sì |
+| `eta-8` | 8 | eight | sì |
+| `eta-9` | 9 | nine | sì |
+| `eta-10` | 10 | ten | sì |
+| `eta-11` | 11 | eleven | sì |
+| `eta-12` | 12 | twelve | sì |
+| `eta-13` | 13 | thirteen | sì |
+| `eta-14` | 14 | fourteen | sì |
+| `eta-15` | 15 | fifteen | sì |
+| `eta-16` | 16 | sixteen | sì |
+| `eta-17` | 17 | seventeen | sì |
+
+**Quattordici righe, una tabella sola.** I due slot ne prendono un pezzo —
+**confermato il 2026-09-24**:
+
+| slot | righe | predefinito |
+|---|---|---|
+| `figliaEta` | da `eta-12` a `eta-17` (6) | `eta-16` |
+| `figlioEta` | da `eta-4` a `eta-11` (8) | `eta-8` |
+
+⚠️ **Il sottoinsieme è la parte che oggi NON ESISTE nel codice:**
+`resolveSlotTable` restituisce **la tabella intera**, e non c'è modo di dire
+«solo queste righe». È metà del passo ③.
+
+---
+
+### ④.3 — LA COSA CHE IL PASSO ③ ROMPEREBBE IN SILENZIO
+
+⚠️ **NON È NELLE TABELLE: È IN UNA SKILL DI `gate`, E VA CORRETTA NELLO STESSO
+PASSO.** *Trovata il 2026-09-24 contando i segnaposto dentro i corpi delle
+skill: sette in tutto, cinque senza suffisso di lingua.*
+
+La skill di `d-8` cita la battuta inglese così:
+
+> La figlia dice "I'm `{{figliaEta}}` **years old**". Il figlio dice solo "I'm
+> `{{figlioEta}}`".
+
+**Senza `:en`.** Una skill è prosa italiana, quindi la lingua della chiamata è
+`it`: oggi non si vede niente perché per un valore nudo `it` ed `en` **coincidono**.
+**Il giorno in cui divergono, la spiegazione dirà `I'm 16 years old` mentre la
+battuta sopra dice `I'm sixteen`** — due frasi inglesi diverse sulla stessa
+schermata, e nessun test le confronta.
+
+**La correzione esiste già e si legge due skill più sopra:** `d-4` scrive
+`{{partenza:en}}` proprio per questo. I due segnaposto di `d-8` diventano
+`{{figliaEta:en}}` e `{{figlioEta:en}}`.
+
+*Gli altri tre senza suffisso — `{{partenza}}` in `d-4`, `{{papa}}` e
+`{{figliaNome}}` in `d-7` — **restano come sono**: il primo è la metà italiana
+della frase (giusto così), gli altri due sono nomi propri, `traducibile: no`,
+quindi `it` ed `en` non divergeranno mai.*
