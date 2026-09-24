@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-24
-# Totale: 1728
+# Totale: 1732
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -92,7 +92,7 @@ test_new_features.js 31
 test_nomenclatura_edizione.js 7
 test_orchestrazione_estratta.js 16
 test_outcome_step_ids.js 21
-test_progressi_estratto.js 11
+test_progressi_estratto.js 15
 test_pulizie_registrate.js 30
 test_quiz_engine_estratto.js 15
 test_report_mastery.js 8
