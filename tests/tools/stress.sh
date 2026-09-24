@@ -44,9 +44,19 @@ for g in $(seq 1 "$GIRI"); do
   echo "--- giro $g/$GIRI -> $LOG"
   SUITE_PARALLELE="$PAR" bash run_full_regression.sh > "$LOG" 2>&1
   # Le righe rosse le scrivono i file, non questo script: si leggono da li'.
-  grep -h '^FAIL' ./*.result.txt 2>/dev/null | sed "s/^FAIL *- */giro$g|/" >> "$CENSIMENTO"
-  # Un file che non arriva in fondo NON lascia righe FAIL: si vede dal log.
-  grep -h 'Timeout\|Error:' "$LOG" 2>/dev/null | head -3 | sed "s/^/giro$g|MORTO: /" >> "$CENSIMENTO"
+  # ⚠️ IL TRATTINO NON E' PIGNOLERIA: i file scrivono in fondo anche una riga
+  # `FAILURES:`, e un `grep '^FAIL'` la prende — producendo nel censimento una
+  # voce che non e' un'asserzione. *Trovato usando lo strumento la prima
+  # volta: una riga «3 FAILURES:» in cima al conto, cioe' il difetto della
+  # regola 37 dentro l'attrezzo fatto per misurarlo.*
+  grep -h '^FAIL - ' ./*.result.txt 2>/dev/null | sed "s/^FAIL *- */giro$g|/" >> "$CENSIMENTO"
+
+  # ⚠️ E I FILE CHE MUOIONO VANNO NOMINATI, non contati: un file che non
+  # arriva in fondo NON lascia righe FAIL, e la prima stesura ne raccoglieva
+  # solo il messaggio (`name: 'TimeoutError'`) — che non dice DOVE. Il nome lo
+  # scrive la suite: `FILE FAILED: <file>`.
+  grep -h '^FILE FAILED:' "$LOG" 2>/dev/null \
+    | sed "s/^FILE FAILED: */giro$g|MORTO O ROSSO: /" >> "$CENSIMENTO"
   echo "    cadute: $(grep -c "^giro$g|" "$CENSIMENTO" || echo 0)"
 done
 
