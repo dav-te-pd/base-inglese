@@ -134,12 +134,31 @@ async function run() {
   await pagina2.click('#go-episode');
   await pagina2.waitForSelector('#view-map.is-active', { timeout: 10000 });
   await openModule(pagina2, 'personalizzazione');
+  // ⚠️ SI ASPETTA CHE UNA DELLE DUE VISTE ARRIVI, POI SI GUARDA QUALE — e le
+  // due cose sono diverse, per la regola 44: l'attesa e' sulla DISGIUNZIONE
+  // («e' successo qualcosa»), l'asserzione sulla DISCRIMINAZIONE («e'
+  // successa quella giusta»). Aspettare `#view-customize.is-active` la
+  // renderebbe vera per costruzione; aspettare «una delle due» no.
+  //
+  // ⚠️ E la ragione e' misurata, non prudenziale: questa riga e' caduta in
+  // DUE giri di stress su tre (`tests/tools/stress.sh`) con
+  // `{"personalizza":false,"errore":false}` — cioe' **nessuna delle due**:
+  // il modulo non aveva ancora finito di aprirsi quando qualcuno l'ha letto.
+  // *Un esito che non e' ne' il successo ne' il fallimento previsto e' il
+  // segno che si sta leggendo troppo presto, non che il codice e' rotto.*
+  // ⚠️ L'ATTESA NON INGOIA NIENTE: il rifiuto diventa un VALORE
+  // (`.then(si, no)`), invece di un `.catch` vuoto — cosi' non entra nel
+  // censimento di `ERRORI-INGOIATI.md`, e soprattutto il motivo della caduta
+  // finisce nel messaggio dell'asserzione invece di sparire.
+  const arrivata = await pagina2.waitForSelector(
+    '#view-customize.is-active, #view-load-error.is-active',
+    { timeout: 10000 }).then(() => true, () => false);
   const aperta = await pagina2.evaluate(() => ({
     personalizza: !!document.querySelector('#view-customize.is-active'),
     errore: !!document.querySelector('#view-load-error.is-active')
   }));
   log('[5] Personalizza (l\'unico senza dataFile) si apre lo stesso',
-    aperta.personalizza && !aperta.errore, JSON.stringify(aperta));
+    aperta.personalizza && !aperta.errore, JSON.stringify(aperta) + ' | una delle due viste e\' arrivata entro il tetto: ' + arrivata);
   log('[5] ...e non finisce sulla schermata d\'errore', !aperta.errore);
   log('[5] Nessun errore JS su Personalizza', errori2.length === 0, errori2.join(' | '));
   await pagina2.close();

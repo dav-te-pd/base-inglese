@@ -107,12 +107,25 @@ async function run() {
     await openModule(page, 'dialogoRipetiATempo');
     var dgStart = await page.isVisible('#dg-start-btn').catch(() => false);
     if (dgStart) { await page.click('#dg-start-btn'); await page.waitForTimeout(100); }
-    const firstBubble = await page.$('.dg-bubble');
-    if (firstBubble) { await firstBubble.click(); }
-    const isActiveDuringAudio = await attendiClasse(page, '.dg-bubble', 'is-active');
-    log('[Job1a] First bubble is is-active while its audio plays', isActiveDuringAudio);
-    const watchLocked = await page.evaluate(() => document.getElementById('dialogo-watch-btn').disabled);
-    log('[Job1a] Spiegazione still locks here (countdown profile, unchanged)', watchLocked === true);
+    // ⚠️ IL TOCCO E LE DUE LETTURE IN UNA CHIAMATA SOLA — regola 19, e qui la
+    // ragione e' MISURATA: queste due asserzioni sono cadute in DUE giri di
+    // stress su tre (`tests/tools/stress.sh`, 20 processi su 4 CPU).
+    //
+    // Prima il tocco stava in una chiamata, `is-active` in una seconda e
+    // `disabled` in una terza. **Tutte e due le cose che si leggono esistono
+    // solo MENTRE l'audio suona**: sotto contesa l'audio finisce prima che la
+    // seconda chiamata arrivi, e l'asserzione cade senza che niente sia rotto.
+    // Lette dentro il tocco, la finestra non esiste.
+    const durante = await page.evaluate(() => {
+      var b = document.querySelector('.dg-bubble');
+      if (b) b.click();
+      return {
+        attiva: !!b && b.classList.contains('is-active'),
+        spiegazioneBloccata: document.getElementById('dialogo-watch-btn').disabled
+      };
+    });
+    log('[Job1a] First bubble is is-active while its audio plays', durante.attiva);
+    log('[Job1a] Spiegazione still locks here (countdown profile, unchanged)', durante.spiegazioneBloccata === true);
     // Re-tap the SAME (active) bubble mid-audio -> must still be a no-op.
     await page.evaluate(() => document.querySelector('.dg-bubble').click());
     await page.waitForTimeout(700); // ATTESA-LEGITTIMA: qui il TEMPO E' LA COSA MISURATA. Si ritocca la stessa bolla mentre parla e si verifica che NON nasca un secondo countdown: e' un non-evento, e la finestra deve coprire l'audio (500 ms) piu' il timer. Aspettare uno stato significherebbe aspettare il duplicato che non deve arrivare
