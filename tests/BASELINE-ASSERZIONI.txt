@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-09-24
-# Totale: 1724
+# Totale: 1728
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -81,7 +81,7 @@ test_errore_caricamento.js 13
 test_hidden_guard.js 5
 test_identita_estratta.js 14
 test_interruttore_episodio.js 24
-test_lista_episodi.js 14
+test_lista_episodi.js 18
 test_listener_una_volta.js 28
 test_magazzino.js 8
 test_mastery_al_gesto.js 26
