@@ -187,17 +187,37 @@ async function run() {
     const toggleExists = await page.evaluate(() => !!document.getElementById('dg-translations-toggle'));
     log('[Regression] Mod1 still shows the translations toggle', toolbarVisible && toggleExists);
     await page.click('.dg-bubble[data-line-id="' + D1 + '"]');
-    await page.waitForTimeout(10); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — nel profilo a tocco libero le ALTRE bolle NON devono bloccarsi
-    const midAudio = await page.evaluate(([id1, id2]) => {
-      var b1 = document.querySelector('.dg-bubble[data-line-id="' + id1 + '"]');
-      var b2 = document.querySelector('.dg-bubble[data-line-id="' + id2 + '"]');
-      return { b1Active: b1.classList.contains('is-active'), b2Locked: b2.classList.contains('is-locked') };
-    }, [D1, D2]);
+    // ⚠️ L'ASSERZIONE SI SPEZZA IN DUE, E NON E' PULIZIA: ERA UNA CORSA.
+    //
+    // Qui c'era UNA riga che leggeva `b1Active && !b2Locked` dopo 10 ms
+    // fissi. Ma `is-active` lo mette il codice quando l'audio PARTE: dieci
+    // millisecondi dopo il click e' una corsa, e il 2026-09-24 l'ha persa —
+    // rossa in locale su un albero in cui il Dialogo non era stato toccato.
+    // *Non e' un flake: e' un'asserzione che legge uno stato prodotto in modo
+    // asincrono senza aspettarlo* (regola 19).
+    //
+    // ⚠️ E NON BASTAVA AGGIUNGERE L'ATTESA: l'asserzione leggeva ENTRAMBI gli
+    // effetti, quindi aspettare `is-active` l'avrebbe resa vera per
+    // costruzione sulla sua prima meta' (regola 44). Quando l'asserzione legge
+    // tutti gli effetti del gesto non resta niente su cui aspettare: **si
+    // spezza**, e l'attesa diventa la prima delle due, dichiarata per quello
+    // che e'.
+    const alzata = await attendiVisibile(page,
+      '.dg-bubble[data-line-id="' + D1 + '"].is-active');
+    log('[Regression] Mod1 alza la bolla che sta parlando', !!alzata);
+
+    // ⚠️ LA SECONDA META' RESTA A TEMPO, E QUI IL TEMPO E' LA MISURA: si
+    // verifica che una cosa NON accada, e un non-evento non si aspetta.
+    // Adesso pero' il tempo parte da un istante NOTO — l'audio e' gia' partito
+    // — invece che dal click.
+    await page.waitForTimeout(10); // ATTESA-LEGITTIMA: verifica che una cosa NON accada — nel profilo a tocco libero le ALTRE bolle NON devono bloccarsi
+    const b2Locked = await page.evaluate((id2) =>
+      document.querySelector('.dg-bubble[data-line-id="' + id2 + '"]').classList.contains('is-locked'), D2);
     // Correction (5th collaudo): Ascolta e Ripeti has no countdown to
     // desync, and its own instructions promise free tapping in any order
     // — dgLockAll no longer locks OTHER bubbles for this profile (only
-    // Ripeti a Tempo/Continuo still do). b1 still lifts (is-active).
-    log('[Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile)', midAudio.b1Active && !midAudio.b2Locked);
+    // Ripeti a Tempo/Continuo still do).
+    log('[Regression] Mod1 lifts the playing bubble but no longer locks others (free-tap profile)', !b2Locked);
     // ATTESA-LEGITTIMA: meta' di quello che si verifica qui e' una cosa che NON deve
     // esserci — la bolla non piu' attiva e senza barra del countdown (profilo
     // countdown:false). L'assenza di due classi non si aspetta: si da' il tempo perche'

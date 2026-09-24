@@ -236,6 +236,8 @@ codice. Stanno qui perché `decisioni-stato.md` deve svuotarsi.*
 
 ## Dialogue (Repeat in Time, Real Dialogue)
 
+| 2026-09-24 | **Un'asserzione di `test_dialogo_extra.js` era una CORSA, e il 2026-09-24 l'ha persa — in locale, su un albero in cui il Dialogo non era stato toccato.** La riga leggeva `b1Active && !b2Locked` **dieci millisecondi dopo il click**: ma `is-active` lo mette il codice quando l'**audio parte**, quindi quei dieci millisecondi erano una corsa fra il click e l'avvio dell'audio. ⚠️ **Non e' un flake e non si rilancia:** e' esattamente la famiglia della regola 19 — *un'asserzione che legge uno stato prodotto in modo asincrono senza aspettarlo* — e in locale si vince quasi sempre, il che la rende peggio, non meglio. ⚠️ **E aggiungere l'attesa non bastava:** l'asserzione leggeva ENTRAMBI gli effetti del gesto, quindi aspettare `is-active` l'avrebbe resa **vera per costruzione** sulla sua prima meta' (regola 44). **Quando non resta niente su cui aspettare, l'asserzione si SPEZZA:** la prima meta' aspetta la classe ed e' un'asserzione sua (*«alza la bolla che sta parlando»*), la seconda resta a tempo — li' il tempo E' la misura, perche' verifica un non-evento — **ma parte da un istante noto invece che dal click**. Falsificata: 24/25 con un selettore che non puo' comparire. **+1 asserzione.** | titolo: `L'asserzione del Dialogo era una corsa: si spezza` |
+
 | Data | Cosa | Commit |
 |---|---|---|
 | 2026-09-04 | L'area sensibile per passare alla battuta successiva mentre scorre la barra è **tutta la bolla**, non la sola barra del tempo. Vale per entrambi i profili. Il pulsante "Prossima frase" resta. | `b3f9a4a` |
