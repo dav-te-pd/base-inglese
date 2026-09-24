@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260920i**
+**Versione: 20260924a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -65,7 +65,8 @@ affidabile.
 | `docs/decisioni-storico.md` | **Perché è così.** La catena dello spacchettamento passo per passo, i triage, le misure, il ragionamento dietro ogni scelta. **Si accumula**, ed è lungo apposta — si apre per rispondere a «perché», mai per cercare il prossimo passo. |
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
 | `docs/componenti-condivisi.md`, `docs/componenti-singoli.md` | **Il magazzino da cui si preleva, e la sua sala d'attesa.** Si guardano **prima** di scrivere un pezzo nuovo: se c'è già, si riusa; se sta fra i singoli, si **promuove** invece di riscriverlo. **Ci si SCRIVE dentro quando un passo di codice tocca un file** (regola 46). Quanto manca lo dice un comando, non una stima: `node tests/tools/censimento-pezzi.js`. |
-| `docs/validazione.md`, `docs/censimento-moduli.md` | Documenti di lavoro sul codice, non legati a un'edizione. |
+| `docs/archivio/` | ⚠️ **FOTOGRAFIE DATATE, NON DESCRIVONO L'APP DI OGGI, E NON SI AGGIORNANO.** Ognuna porta in testa quando è stata scattata, a cosa si riferiva e **cosa guardare invece**. Ci sono finiti il 2026-09-24 `validazione.md` (una lettura di `index.html` da 11.000 righe), `censimento-moduli.md` (che diceva «14 moduli» quando sono 15), `collaudo-sei-moduli.md` e `valutazione-catalogo.md` (due verbali di attività chiuse). *Correggere un file qui dentro vorrebbe dire falsificare una fotografia: si archivia, non si aggiorna.* |
+| `tests/tools/README.md` | **I ventisei strumenti, raggruppati per domanda** — le guardie, le attese, il trascrittore, le misure. *Fino al 2026-09-24 ne descriveva tre e si chiamava «Strumenti di verifica visiva»: era vero ad agosto.* |
 | `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni-stato.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/scelte-strategiche-infrastrutturali.md` | **Dove vive il codice, dove vivono i dati, chi serve le pagine, quanto costa.** Le scelte che non riguardano *questa* app ma **il modo in cui le app vengono costruite, pubblicate e protette** — e ne faremo varie, non solo questa. ⚠️ **È un file suo per la stessa ragione di `cyber-security.md`: `decisioni-stato.md` **si svuota**, una scelta infrastrutturale **resta vera per anni** e si rilegge ogni volta che nasce un'app nuova.* |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
@@ -96,7 +97,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      **Un'edizione non è una traduzione.** La griglia grammaticale appartiene alla COPPIA di lingue, non alla lingua che si impara: *"I have ten years"* è una trappola italiana e non tedesca, quindi un'edizione tedesca non è `docs/inglese/it/` tradotto — è un contenuto suo. Le edizioni future nascono **copiando la cartella e sostituendo i contenuti**, e **una correzione fatta in `it/` NON deve arrivare nelle altre**: se una cosa va corretta ovunque, va corretta ovunque a mano, di proposito.
 
-     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/validazione.md`, `docs/correzioni.md`, `docs/decisioni-stato.md`, `docs/decisioni-storico.md`, `docs/cyber-security.md`, `docs/censimento-moduli.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
+     Quello che descrive il **codice** e non un'edizione resta fuori dalle cartelle per lingua: `docs/correzioni.md`, `docs/decisioni-stato.md`, `docs/decisioni-storico.md`, `docs/cyber-security.md`, `docs/scelte-strategiche-infrastrutturali.md`, `docs/componenti-*.md`. **Sotto `docs/{lingua}/` sta TUTTO ciò che produce contenuto per lo studente** — le fonti degli episodi, la struttura del corso con i nomi dei gradi come li legge lui, le tabelle di personalizzazione, gli inventari e gli obiettivi.
 
      **La regola nomina la cartella, non i file che ci stanno dentro**, ed è una correzione del 2026-09-08: prima elencava due file mentre ce n'erano sei. Un elenco dentro una regola invecchia a ogni file nuovo — e qui invecchiava in silenzio proprio dove la regola 33 va a leggere per sapere cosa proteggere.
 

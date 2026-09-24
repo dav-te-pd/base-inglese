@@ -16,7 +16,7 @@
 // attesa ricopierebbe l'implementazione invece di difendere il comportamento.
 //
 // Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
-// docs/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
+// docs/archivio/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
 // apparizione in poi è 'matchEngIta-2', invece che con l'id del MODULO),
 // e per quel motivo stava fuori dalla suite: un test che asserisce un difetto
 // diventa rosso proprio quando il difetto viene corretto. Corretto il difetto

@@ -1,3 +1,17 @@
+> # ⚠️ ARCHIVIO — FOTOGRAFIA DATATA, NON DESCRIVE L'APP DI OGGI
+>
+> | | |
+> |---|---|
+> | **Quando** | 2026-09-09 |
+> | **Cos'era** | una tabella dei moduli **ricavata leggendo `index.html`** |
+> | **Perche' e' in archivio** | dice **«14 moduli»** e ne elenca 14: oggi sono **15**, e quello che manca e' `meetTheStory`. La colonna «File di test» cita batch che nel frattempo sono cambiati. |
+> | **Cosa guardare invece** | `data/inglese/it/inglese-it-struttura-corso.json` (`moduleLabels`, `moduleTypes`) per l'elenco vero, `tests/README.md` per chi protegge cosa |
+>
+> *Archiviato il 2026-09-24. Non si aggiorna: un file in `docs/archivio/` e' un
+> fatto storico, e correggerlo vorrebbe dire falsificare una fotografia.*
+
+---
+
 # Censimento dei 14 moduli
 
 Fotografia dello stato attuale dei moduli, ricavata leggendo `index.html`, in formato markdown per restare nella documentazione di progetto. Ordine: come compaiono in mappa (la sequenza dell'episodio, `CONFIG.sequences`).

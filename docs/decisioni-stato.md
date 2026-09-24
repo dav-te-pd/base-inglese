@@ -735,7 +735,7 @@ cammino di caricamento nuovo, non uno spostamento.
 **Uno solo, e va fatto quando la tappa ① è chiusa, non prima.**
 
 L'app dall'inizio alla fine, su profilo nuovo, su Pages. ⚠️ **Gli otto punti di
-`docs/collaudo-sei-moduli.md` ne sono una METÀ:** coprono i sei moduli, non gli
+`docs/archivio/collaudo-sei-moduli.md` ne sono una METÀ:** coprono i sei moduli, non gli
 strati — e gli strati sono quello che si è mosso.
 
 *Perché qui e non prima: in due giorni l'app ha cambiato forma tre volte e ha

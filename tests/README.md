@@ -100,7 +100,7 @@ confronta i due badge in mappa: a parità di risposte devono essere identici, e
 tutti e due devono avere un esito salvato.
 
 **Era fuori dalla suite** finché asseriva che il difetto del § 4.1 di
-`docs/validazione.md` esistesse ancora: un test che asserisce un difetto
+`docs/archivio/validazione.md` esistesse ancora: un test che asserisce un difetto
 diventa rosso proprio quando il difetto viene corretto, e un rosso che vuol
 dire "risolto" è peggio di nessun test. Corretto il difetto (vedi
 `docs/correzioni.md`), il file è stato rovesciato ed è entrato nella suite —
@@ -153,7 +153,7 @@ volta.
 Non è un indice: è la domanda **"cosa si romperebbe se questo file
 sparisse?"**, una riga per file. Serve a vedere i buchi, non a documentare.
 
-Il test che è mancato al § 4.1 di `docs/validazione.md` sarebbe stato *"l'esito
+Il test che è mancato al § 4.1 di `docs/archivio/validazione.md` (allora `docs/validazione.md`) sarebbe stato *"l'esito
 di un passo viene salvato"*. Nessuno l'aveva scritto, e 583 asserzioni verdi non
 hanno visto niente. Questa tabella esiste perché il prossimo buco si veda prima.
 

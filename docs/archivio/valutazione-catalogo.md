@@ -1,3 +1,17 @@
+> # ⚠️ ARCHIVIO — FOTOGRAFIA DATATA, NON DESCRIVE L'APP DI OGGI
+>
+> | | |
+> |---|---|
+> | **Quando** | 2026-09-19 |
+> | **Cos'era** | una valutazione a codice fermo sul commit `e567182`, con `index.html` a 2105 righe |
+> | **Perche' e' in archivio** | **le sue proposte sono state eseguite** (passi C1, C2, A, B), quindi descrive un `index.html` che non esiste piu' |
+> | **Cosa guardare invece** | `docs/decisioni-storico.md` per come e' finita |
+>
+> *Archiviato il 2026-09-24. Non si aggiorna: un file in `docs/archivio/` e' un
+> fatto storico, e correggerlo vorrebbe dire falsificare una fotografia.*
+
+---
+
 # Valutazione: il catalogo e lo stato di sessione
 
 **2026-09-19, a codice fermo.** Niente è stato modificato per scriverla —

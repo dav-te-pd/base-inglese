@@ -1,3 +1,17 @@
+> # ⚠️ ARCHIVIO — FOTOGRAFIA DATATA, NON DESCRIVE L'APP DI OGGI
+>
+> | | |
+> |---|---|
+> | **Quando** | 2026-09-05 → 2026-09-12 |
+> | **Cos'era** | una lettura riga per riga di `index.html` **quando era un file solo da ~11.000 righe** |
+> | **Perche' e' in archivio** | oggi `index.html` ne ha ~1.000 e il resto vive in 23 file sotto `app/` e 12 sotto `stile/`. **Meta' di quello che questo file descrive sta altrove, e i numeri di riga non puntano piu' a niente.** |
+> | **Cosa guardare invece** | `docs/componenti-condivisi.md` + `docs/componenti-singoli.md` per i pezzi, `node tests/tools/censimento-pezzi.js` per quanto manca |
+>
+> *Archiviato il 2026-09-24. Non si aggiorna: un file in `docs/archivio/` e' un
+> fatto storico, e correggerlo vorrebbe dire falsificare una fotografia.*
+
+---
+
 # Validazione — cosa fa davvero l'app oggi
 
 > **Cos'è questo file.** Una lettura del codice di `index.html` fatta senza fidarsi

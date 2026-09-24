@@ -1,3 +1,17 @@
+> # ⚠️ ARCHIVIO — FOTOGRAFIA DATATA, NON DESCRIVE L'APP DI OGGI
+>
+> | | |
+> |---|---|
+> | **Quando** | 2026-09-19 |
+> | **Cos'era** | il collaudo a mano dopo l'uscita dei sei moduli da `index.html` |
+> | **Perche' e' in archivio** | **e' il verbale di un'attivita' chiusa quel giorno**, non una procedura da rifare |
+> | **Cosa guardare invece** | niente: quello che ha trovato e' diventato correzioni in `docs/correzioni.md` |
+>
+> *Archiviato il 2026-09-24. Non si aggiorna: un file in `docs/archivio/` e' un
+> fatto storico, e correggerlo vorrebbe dire falsificare una fotografia.*
+
+---
+
 # Collaudo dopo l'uscita dei sei moduli
 
 **2026-09-19.** In una giornata i sei moduli sono usciti da `index.html` in sei

@@ -32,12 +32,17 @@ cartella — `python3 -m http.server 8955` fa lo stesso lavoro.
 ## Com'è strutturato
 
 ```
-index.html      tutta l'applicazione: HTML, CSS e JS in un unico file,
-                nessuna dipendenza esterna oltre ai Google Fonts
+index.html      il markup e UNA riga di JavaScript: window.BI.boot()
+app/            un file per strato o per modulo, caricati da tag <script>
+stile/          i fogli di stile, uno per area
+                nessun passo di build, nessuna dipendenza esterna
+                oltre ai Google Fonts
 data/{lingua}/  i contenuti dell'edizione, letti a runtime (mai nel codice)
 docs/{lingua}/  i sorgenti markdown di quell'edizione (episodi, struttura)
-docs/           quello che descrive il codice: censimento, validazione,
-                registro delle correzioni, screenshot storici
+docs/           quello che descrive il codice e governa il lavoro:
+                decisioni, correzioni, catalogo dei pezzi, sicurezza
+docs/archivio/  fotografie datate — NON descrivono l'app di oggi
+                e non si aggiornano (ognuna lo dice in testa)
 tests/          la suite di regressione Playwright
 CLAUDE.md       le regole permanenti del progetto — da leggere prima di
                 metterci mano
