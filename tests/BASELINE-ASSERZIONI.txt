@@ -35,8 +35,8 @@
 # e' l'unica persona a cui serve.*
 # ##########################################################################
 #
-# Ultimo aggiornamento: 2026-09-22
-# Totale: 1686
+# Ultimo aggiornamento: 2026-09-24
+# Totale: 1694
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -72,7 +72,7 @@ test_config_letta.js 4
 test_conta_asserzioni.js 12
 test_conta_attese.js 16
 test_dati_estratto.js 16
-test_dialogo_extra.js 24
+test_dialogo_extra.js 25
 test_dipendenze_dichiarate.js 56
 test_edizione_una_volta.js 12
 test_episodi_corti.js 9
@@ -103,9 +103,9 @@ test_selettori_sequenza.js 23
 test_sequenze.js 14
 test_spazio_nomi.js 15
 test_stile_estratto.js 16
-test_story_modules.js 93
+test_story_modules.js 95
 test_stringhe_markup.js 15
-test_struttura_corso.js 12
+test_struttura_corso.js 17
 test_suoni_estratto.js 13
 test_tabelle_personalizzazione.js 25
 test_testi_interfaccia.js 21
