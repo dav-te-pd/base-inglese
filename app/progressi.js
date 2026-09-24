@@ -323,10 +323,53 @@ window.BI = window.BI || {};
   // cleared, so the map re-locks everything after Personalizza and the
   // user redoes the episode. customValues (the personalization itself)
   // is deliberately left untouched — that's what they're about to edit.
+  // ⚠️ LE CHIAVI PER EPISODIO, IN UN POSTO SOLO — passo 1.16, 2026-09-24.
+  //
+  // Qui `wipeEpisodeProgress` elencava A MANO le tre chiavi da cancellare.
+  // **Erano tre su SETTE quando l'elenco fu scritto, e sono diventate tre su
+  // NOVE senza che nessuno se ne accorgesse**: le due chiavi nate dopo non
+  // sono mai entrate, e la riga che le contava, in `decisioni-stato.md`,
+  // continuava a dire «sette».
+  //
+  // ⚠️ E LA CORREZIONE NON E' AGGIUNGERE LE DUE MANCANTI: *una lista di nove
+  // che era di sette, e a cui nessuno ha badato, tornera' incompleta alla
+  // decima.* Quello che cambia e' che **la lista ha una guardia**:
+  // `test_progressi_estratto.js` legge questo file, trova ogni
+  // `function xxxKey(episodeId, userName)` e pretende che compaia qui sotto.
+  // **Una chiave nuova non dichiarata fa diventare rossa la suite**, e chi la
+  // scrive deve decidere se il wipe la tocca invece di dimenticarsene.
+  //
+  // ⚠️ IL COMPORTAMENTO NON CAMBIA DI UNA VIRGOLA: si azzerano le stesse tre
+  // di ieri. *Quello che cambia e' che adesso le altre sei portano scritto
+  // PERCHE' sopravvivono, invece di sopravvivere per assenza.*
+  var CHIAVI_EPISODIO = [
+    { nome: 'modules', chiave: moduleProgressKey, azzera: true,
+      perche: 'i moduli completati: e\' esattamente il progresso che la ripersonalizzazione invalida' },
+    { nome: 'outcome', chiave: moduleOutcomeKey, azzera: true,
+      perche: 'gli esiti dei moduli, per la stessa ragione' },
+    { nome: 'mastery', chiave: masteryStorageKey, azzera: true,
+      perche: 'le voci imparate: erano su un testo che adesso e\' un altro' },
+    { nome: 'audioUsage', chiave: audioUsageKey, azzera: false,
+      perche: 'e\' un CONTO, non progresso — quanto audio e\' stato speso. Azzerarlo perderebbe una misura per un motivo che non la riguarda' },
+    { nome: 'nextLineSkips', chiave: nextLineSkipsKey, azzera: false,
+      perche: 'idem: quante volte si e\' saltata l\'attesa' },
+    { nome: 'storyCardsExplanationStats', chiave: storyCardsExplanationStatsKey, azzera: false,
+      perche: '⚠️ DOMANDA APERTA, non una scelta: sono risposte dello studente, quindi somigliano a progresso. Vedi 1.16 in decisioni-stato.md' },
+    { nome: 'storyCardsDeclarations', chiave: storyCardsDeclarationsKey, azzera: false,
+      perche: '⚠️ DOMANDA APERTA, ed e\' la piu\' visibile: regge lo Sblocco Sequenziale di Why We Say It, quindi dopo un wipe il modulo si ri-blocca in mappa MA RIAPRE le card gia\' dichiarate' },
+    { nome: 'custom', chiave: customValuesKey, azzera: false,
+      perche: 'e\' la personalizzazione stessa: e\' quello che lo studente sta per cambiare, cancellarla sarebbe assurdo' },
+    { nome: 'customizeSeen', chiave: customizeSeenKey, azzera: false,
+      perche: 'superstite in sola lettura del vecchio flag: nessuno la scrive piu\'' }
+  ];
+
+  // La conseguenza di aver confermato l'avviso di meta' episodio: ogni pezzo
+  // di progresso che dipende dalla personalizzazione se ne va. Chi resta e
+  // perche' sta nella tabella qui sopra, una riga per chiave.
   function wipeEpisodeProgress(episode, userName) {
-    cancellaMagazzino(moduleProgressKey(episode.id, userName));
-    cancellaMagazzino(moduleOutcomeKey(episode.id, userName));
-    cancellaMagazzino(masteryStorageKey(episode.id, userName));
+    CHIAVI_EPISODIO.forEach(function (voce) {
+      if (voce.azzera) cancellaMagazzino(voce.chiave(episode.id, userName));
+    });
   }
 
   // ---- Shared full-screen module intro (Story Cards, Voice Coach, Speed
@@ -414,6 +457,7 @@ window.BI = window.BI || {};
   BI.customizeSeenKey = customizeSeenKey;
   BI.isCustomizeSeen = isCustomizeSeen;
   BI.wipeEpisodeProgress = wipeEpisodeProgress;
+  BI.CHIAVI_EPISODIO = CHIAVI_EPISODIO;
   BI.introDismissedKey = introDismissedKey;
   BI.legacyRaIntroDismissedKey = legacyRaIntroDismissedKey;
   BI.isIntroDismissed = isIntroDismissed;

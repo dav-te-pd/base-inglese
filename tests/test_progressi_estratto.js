@@ -1,6 +1,12 @@
 // PROTEGGE: che il magazzino dei progressi dello studente arrivi, e arrivi
 // PRIMA di chi lo usa.
 //
+// PROTEGGE ANCHE, dal 2026-09-24 (passo 1.16): che OGNI chiave per episodio
+// sia dichiarata in `CHIAVI_EPISODIO` — blocco [D]. L'elenco delle chiavi che
+// la ripersonalizzazione cancella era scritto a mano, ed era passato da «tre
+// su sette» a «tre su nove» senza che nessuno se ne accorgesse. Adesso una
+// chiave nuova non dichiarata fa diventare rossa la suite.
+//
 // COSA SI PERDE SENZA QUESTO FILE. Il 2026-09-17 trentotto funzioni sono
 // uscite in `app/progressi.js`, caricato con un `<script src>` bloccante.
 // Finche' stavano in linea, essere caricate prima del codice che le chiama
@@ -125,6 +131,63 @@ async function run() {
     log('[C] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
+  // ── [D] LA GUARDIA DELLE CHIAVI PER EPISODIO — passo 1.16 ────────────
+  //
+  // ⚠️ QUESTA E' LA RIGA CHE DIVENTA ROSSA QUANDO NASCE UNA CHIAVE NUOVA, ed
+  // e' tutto il passo 1.16.
+  //
+  // `wipeEpisodeProgress` elencava a mano le chiavi da cancellare. Erano tre
+  // su SETTE quando l'elenco fu scritto, e sono diventate tre su NOVE senza
+  // che nessuno se ne accorgesse: le due nate dopo non sono mai entrate, e
+  // **la riga che le contava, in `decisioni-stato.md`, continuava a dire
+  // «sette»**.
+  //
+  // *La correzione non era aggiungere le due mancanti — una lista di nove che
+  // era di sette tornera' incompleta alla decima — ma togliere l'occasione di
+  // dimenticarsene. Qui si legge il sorgente, si trova OGNI costruttore di
+  // chiave per episodio, e si pretende che sia dichiarato in `CHIAVI_EPISODIO`.*
+  //
+  // ⚠️ E NON DICE SE IL WIPE DEBBA CANCELLARLA: quello e' contenuto, e resta
+  // una decisione. Dice che **qualcuno ha dovuto scegliere**, invece di non
+  // essersene accorto.
+  {
+    // ⚠️ I COMMENTI SI TOLGONO PRIMA DI CERCARE, e non e' pulizia: la prima
+    // stesura di questa guardia ha trovato `xxxKey` — cioe' **l'esempio
+    // dentro il commento che spiega la guardia stessa**. *Un test che legge un
+    // sorgente e non toglie i commenti non misura il codice: misura anche
+    // quello che qualcuno ha scritto per spiegarlo, e un rosso cosi' accusa
+    // una funzione che non esiste.*
+    const senzaCommenti = fs.readFileSync(repoPath('app/progressi.js'), 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*\/\/.*$/gm, '');
+    const sorgente = senzaCommenti;
+    const costruttori = (sorgente.match(/function\s+(\w+Key)\(episodeId, userName\)/g) || [])
+      .map(function (r) { return r.replace(/function\s+/, '').replace(/\(.*/, ''); });
+
+    // Il registro si legge dalla stessa fonte: `chiave: nomeFunzione`.
+    const dichiarate = (sorgente.match(/chiave:\s*(\w+Key)/g) || [])
+      .map(function (r) { return r.replace(/chiave:\s*/, ''); });
+
+    const scoperte = costruttori.filter(function (n) { return dichiarate.indexOf(n) === -1; });
+
+    log('[D] Ci sono chiavi per episodio da controllare', costruttori.length > 0, String(costruttori.length));
+    log('[D] OGNI chiave per episodio e\' dichiarata in CHIAVI_EPISODIO',
+      scoperte.length === 0, 'scoperte: ' + scoperte.join(', '));
+    log('[D] ...e il registro non dichiara chiavi che non esistono',
+      dichiarate.filter(function (n) { return costruttori.indexOf(n) === -1; }).length === 0,
+      dichiarate.join(', '));
+
+    // ⚠️ E il wipe non torna a elencarle a mano: deve passare dal registro.
+    // *Senza questa riga, aggiungere le chiavi al registro e poi cancellarne
+    // tre scritte a mano sarebbe verde — il registro diventerebbe un elenco
+    // che non governa niente, cioe' una misura che non misura.*
+    const corpoWipe = sorgente.slice(
+      sorgente.indexOf('function wipeEpisodeProgress('),
+      sorgente.indexOf('\n  }', sorgente.indexOf('function wipeEpisodeProgress(')));
+    log('[D] Il wipe passa dal registro invece di elencare le chiavi',
+      /CHIAVI_EPISODIO/.test(corpoWipe) && !/Key\(episode\.id/.test(corpoWipe), corpoWipe);
+  }
+
   await browser.close();
 
   console.log('');
