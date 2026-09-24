@@ -237,13 +237,29 @@ async function run() {
     log('[D] Il pannello si apre anche con una risposta gia\' data', aperto,
       'non si e\' aperto: ' + (errori[0] || 'nessun errore in pagina'));
 
+    // ⚠️ L'APPRODO E' «IL RIQUADRO HA LASCIATO LO STATO SENZA-EPISODIO», NON
+    // «CI SONO TRE RIGHE» (regola 44): aspettare le righe renderebbe vera per
+    // costruzione proprio l'asserzione che le conta.
+    //
+    // ⚠️ E LA RAGIONE E' MISURATA, non prudenziale: sotto stress
+    // (`tests/tools/stress.sh`, 20 processi su 4 CPU) questa riga e' caduta
+    // in DUE giri su tre con `-> 0`. Zero non e' «la riga manca»: e'
+    // `riquadroSenzaEpisodio`, che esce SUBITO stampando un
+    // `<p class="config-field-hint">` finche' la struttura del corso non e'
+    // arrivata. *Il test contava le righe di un riquadro che stava ancora
+    // dicendo «non c'e' nessun episodio».*
+    const senzaEpisodioVia = aperto ? await page.waitForFunction(function () {
+      var el = document.getElementById('config-story-cards-explanation-stats');
+      return !!el && !el.querySelector('.config-field-hint');
+    }, { timeout: 15000 }).then(function () { return true; }, function () { return false; }) : false;
     const righe = aperto ? await page.evaluate(function () {
       var el = document.getElementById('config-story-cards-explanation-stats');
       return el ? el.querySelectorAll('.config-audio-usage-row').length : -1;
     }) : -1;
     // Tre righe: quella della battuta piu' i due totali. Si chiede «almeno la
     // riga della battuta c'e'», perche' i due totali ci sono anche a vuoto.
-    log('[D] ...e la tabella disegna la riga di quella battuta', righe >= 3, String(righe));
+    log('[D] ...e la tabella disegna la riga di quella battuta', righe >= 3,
+      String(righe) + ' | il riquadro ha lasciato lo stato senza-episodio: ' + senzaEpisodioVia);
     log('[D] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }

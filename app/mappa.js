@@ -1103,7 +1103,17 @@
         if (titolo && gruppo.open) aperti[titolo.textContent] = true;
       });
     configPanelBodyEl.innerHTML = '';
-    Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
+    // ⚠️ IN ORDINE ALFABETICO, dal 2026-09-24, e la ragione e' di chi usa il
+    // pannello: l'ordine di prima era quello in cui le chiavi erano finite
+    // dentro `APP_CONFIG` — cioe' nessun ordine, e uno che CAMBIA quando si
+    // aggiunge un parametro. Cercare un gruppo in un elenco che si riordina da
+    // solo vuol dire rileggerlo tutto ogni volta.
+    //
+    // ⚠️ I due gruppi del magazzino restano in coda finche' non c'e' un
+    // ridisegno: `aggiungiGruppiMagazzino` li APPENDE (e deve, per non
+    // azzerare i <details> aperti). Si ordinano al primo ridisegno, perche'
+    // da li' in poi stanno in `APP_CONFIG` come tutti gli altri.
+    Object.keys(window.APP_CONFIG).sort().forEach(function (sectionKey) {
       // Meta-documentation about the panel's own fields, not itself a
       // tunable parameter — never shown as its own editable group.
       if (sectionKey === 'configFieldDescriptions') return;
