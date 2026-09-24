@@ -135,8 +135,30 @@ async function run() {
     // che accusa il codice invece della ricerca. `sorgenteChe` le cerca dove
     // sono e alza se non ci sono da nessuna parte.
     const slotJs = sorgenteChe('function resolveSlotTable(').testo;
+    // ⚠️ SEGUITA, NON ALLENTATA — 2026-09-24 (passo 1.8-bis ③).
+    //
+    // Qui la regex chiudeva la parentesi: `(tableRef, episodeData, tables)`.
+    // Il passo ③ ha aggiunto un quarto argomento (`righe`, il sottoinsieme di
+    // una tabella) e la riga è diventata rossa **senza che l'invariante fosse
+    // cambiato di una virgola**: il magazzino arriva ancora come argomento, e
+    // non da `CONFIG`.
+    //
+    // ⚠️ E LA CORREZIONE NON È TOGLIERE LA PARENTESI E BASTA: così la riga
+    // direbbe solo «i primi tre si chiamano così», che è una forma, non un
+    // invariante. **Si guadagna aggiungendo quello che la riga voleva dire
+    // davvero: dentro quella funzione `CONFIG` non si nomina.** *Una firma
+    // cambia a ogni argomento nuovo; «non legge CONFIG» no.*
+    // ⚠️ IL CORPO, NON IL FILE: `sorgenteChe` torna il SORGENTE INTERO, e la
+    // prima stesura di questa riga cercava `CONFIG.` in tutto `apertura.js` —
+    // che lo nomina altrove per mestiere. Era rossa accusando la funzione
+    // giusta per una ricerca nel posto sbagliato: la forma della regola 37,
+    // dentro l'asserzione che la doveva difendere. *Vista fallire, e per
+    // questo corretta invece che creduta.*
+    const iniziaQui = slotJs.indexOf('function resolveSlotTable(');
+    const corpoSlotTable = slotJs.slice(iniziaQui, slotJs.indexOf('\n  }', iniziaQui));
     log('[A] resolveSlotTable riceve il magazzino invece di prenderselo da CONFIG',
-      /function resolveSlotTable\(tableRef, episodeData, tables\)/.test(slotJs));
+      /function resolveSlotTable\(tableRef, episodeData, tables\b/.test(corpoSlotTable) &&
+      !/\bCONFIG\./.test(corpoSlotTable), corpoSlotTable.slice(0, 90));
     log('[A] ensureEpisodeSlotFields aspetta ANCHE il magazzino, non solo l\'episodio',
       /loadPersonalizationTables\(\)[\s\S]{0,80}\]\)\.then/.test(
         sorgenteChe('function ensureEpisodeSlotFields(').testo));
