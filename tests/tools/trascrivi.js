@@ -132,17 +132,45 @@ function tabelle() {
   const out = {};
   indice.forEach((r) => {
     const nome = nb(r[0]);
-    const righe = colonne(tabellaSotto(t, '### `' + nome + '`', true), 4, nome);
+    // ⚠️ QUATTRO COLONNE O SEI, E NIENT'ALTRO — passo 1.8-bis (2), 2026-09-24.
+    //
+    // Quattro: id | it | en | traducibile.
+    // Sei:     id | it | en | paese it | paese en | traducibile.
+    //
+    // Il numero NON e' una costante unica perche' le tabelle non sono tutte
+    // uguali: `places.departures` porta il paese — senza, la battuta di `gate`
+    // direbbe «I am from Lugano, Italy» — e `places.destinations` non lo porta,
+    // perche' nessuna battuta dice il paese di destinazione.
+    //
+    // ⚠️ E si guarda la PRIMA riga, non l'intestazione: `tabellaSotto` butta
+    // l'intestazione, quindi qui arriva gia' solo il contenuto. Un numero
+    // diverso da 4 o 6 si ferma **nominando la tabella**, invece di leggere le
+    // colonne spostate di una posizione e scrivere un JSON plausibile e falso.
+    const grezze = tabellaSotto(t, '### `' + nome + '`', true);
+    const quante = grezze.length ? grezze[0].length : 4;
+    if (quante !== 4 && quante !== 6) {
+      throw new Error(nome + ': ' + quante + ' colonne. Le tabelle di ' +
+        'personalizzazione ne vogliono 4 (id|it|en|traducibile) o 6 ' +
+        '(id|it|en|paese it|paese en|traducibile).');
+    }
+    const righe = colonne(grezze, quante, nome);
     const [gruppo, chiave] = nome.split('.');
     out[gruppo] = out[gruppo] || {};
-    out[gruppo][chiave] = righe.map((x) => ({
-      value: nb(x[0]),
-      it: x[1].trim(),
-      en: x[2].trim(),
-      // L'assenza vale «si traduce»: si scrive solo il `false`, come il file
-      // di oggi. Un `traducibile: true` ovunque sarebbe rumore.
-      traducibile: !/^(no|false)$/i.test(x[3].trim())
-    }));
+    out[gruppo][chiave] = righe.map((x) => {
+      const riga = {
+        value: nb(x[0]),
+        it: x[1].trim(),
+        en: x[2].trim(),
+        // L'assenza vale «si traduce»: si scrive solo il `false`, come il file
+        // di oggi. Un `traducibile: true` ovunque sarebbe rumore.
+        traducibile: !/^(no|false)$/i.test(x[quante - 1].trim())
+      };
+      // Il sotto-campo ha la STESSA forma della riga — `it` ed `en` — cosi'
+      // `resolveSlotValue` non impara niente di nuovo: legge `picked[campo]`
+      // dove prima leggeva `picked`.
+      if (quante === 6) riga.paese = { it: x[3].trim(), en: x[4].trim() };
+      return riga;
+    });
   });
   return out;
 }

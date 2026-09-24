@@ -137,13 +137,6 @@
           "grammarCategory": "avverbio interrogativo"
         },
         {
-          "id": "a-italy",
-          "english": "Italy",
-          "italian": "Italia",
-          "pronunciationTip": "I-ta-li — accento sulla prima",
-          "grammarCategory": "nome di paese"
-        },
-        {
           "id": "a-from",
           "english": "from",
           "italian": "da / di",
@@ -258,8 +251,8 @@
         },
         {
           "id": "c-3",
-          "english": "I am from {{partenza}}, Italy.",
-          "italian": "Vengo da {{partenza}}, in Italia.",
+          "english": "I am from {{partenza}}, {{partenza.paese:en}}.",
+          "italian": "Vengo da {{partenza}}, in {{partenza.paese}}.",
           "fromLine": "d-4"
         },
         {
@@ -344,8 +337,8 @@
           "id": "d-4",
           "speaker": "papa",
           "ruolo": "famiglia",
-          "english": "I am from {{partenza}}, Italy.",
-          "italian": "Vengo da {{partenza}}, in Italia.",
+          "english": "I am from {{partenza}}, {{partenza.paese:en}}.",
+          "italian": "Vengo da {{partenza}}, in {{partenza.paese}}.",
           "whatYouLearn": [
             {
               "title": "Dire da dove vieni",

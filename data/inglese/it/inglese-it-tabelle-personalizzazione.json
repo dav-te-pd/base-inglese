@@ -293,37 +293,81 @@
         "value": "orig-mondovi",
         "it": "Mondovì",
         "en": "Mondovì",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
       },
       {
         "value": "orig-torino",
         "it": "Torino",
         "en": "Turin",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
       },
       {
         "value": "orig-milano",
         "it": "Milano",
         "en": "Milan",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
       },
       {
         "value": "orig-roma",
         "it": "Roma",
         "en": "Rome",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
       },
       {
         "value": "orig-napoli",
         "it": "Napoli",
         "en": "Naples",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
       },
       {
         "value": "orig-palermo",
         "it": "Palermo",
         "en": "Palermo",
-        "traducibile": true
+        "traducibile": true,
+        "paese": {
+          "it": "Italia",
+          "en": "Italy"
+        }
+      },
+      {
+        "value": "orig-lugano",
+        "it": "Lugano",
+        "en": "Lugano",
+        "traducibile": true,
+        "paese": {
+          "it": "Svizzera",
+          "en": "Switzerland"
+        }
+      },
+      {
+        "value": "orig-nizza",
+        "it": "Nizza",
+        "en": "Nice",
+        "traducibile": true,
+        "paese": {
+          "it": "Francia",
+          "en": "France"
+        }
       }
     ],
     "destinations": [

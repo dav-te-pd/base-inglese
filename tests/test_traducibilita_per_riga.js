@@ -374,6 +374,86 @@ async function run() {
     await page.close();
   }
 
+  // ── [P] IL PAESE SULLA STESSA RIGA — passo 1.8-bis ② ─────────────────
+  //
+  // Una riga del magazzino porta piu' di un valore: una citta' di partenza
+  // porta anche il suo paese, e la battuta li vuole tutti e due. Prima `Italy`
+  // era scritto A MANO nella battuta, quindi con Lugano lo studente avrebbe
+  // letto «I am from Lugano, Italy» — due frasi false su otto opzioni, e
+  // **nessun test le avrebbe viste**, perche' nessuno sceglie Lugano.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    // Il seme E' la prova: `orig-lugano` e' proprio l'opzione che prima non
+    // poteva esistere.
+    await apriMappa(page, 'TradPaese', { partenza: 'orig-lugano' });
+
+    const esito = await page.evaluate(async function () {
+      const ep = window.BI.episodioCorrente();
+      const v = window.BI.valoriCorrenti();
+      // La battuta si prende dal file dell'episodio, non incollata qui: il
+      // testo e' contenuto e cambia con lui (regola 4). Se domani `d-4` dicesse
+      // un'altra cosa, questo test la segue invece di misurare una copia.
+      const dati = await window.BI.loadEpisodeData({ dataFile: window.BI.episodeDataFile(ep.id) });
+      const d4 = dati.levels.D.items.find(function (i) { return i.id === 'd-4'; });
+      return {
+        en: window.BI.fillTemplate(d4.english, ep, v, 'en'),
+        it: window.BI.fillTemplate(d4.italian, ep, v, 'it'),
+        // Il caso in cui il campo NON esiste sulla riga: deve tornare la riga,
+        // non `undefined` a schermo.
+        //
+        // ⚠️ IL `try` NON E' PRUDENZA, E NON INGOIA NIENTE: senza il ritorno
+        // alla riga questa chiamata **alza** (`picked['paese']` e' undefined,
+        // e leggergli `.it` esplode), e un'eccezione qui dentro uccide il FILE
+        // INTERO — niente SUMMARY, niente riga rossa, nessun nome. Catturandola
+        // e restituendola come stringa, il rosso arriva sull'asserzione giusta
+        // e **dice quale caso e' caduto**. L'errore non sparisce: diventa il
+        // valore che l'asserzione confronta.
+        papaConCampo: (function () {
+          try { return window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'en', 'paese'); }
+          catch (e) { return 'ALZA: ' + e.message; }
+        })(),
+        etaConCampo: (function () {
+          try { return window.BI.resolveSlotValue(ep, 'figliaEta', '14', 'en', 'paese'); }
+          catch (e) { return 'ALZA: ' + e.message; }
+        })()
+      };
+    });
+
+    // ⚠️ QUESTA E' LA RIGA CHE DISTINGUE LE DUE VERSIONI, e non perche' il
+    // testo cambia: con la regex vecchia (`\w` non contiene il punto)
+    // `{{partenza.paese:en}}` non veniva nemmeno RICONOSCIUTO e restava a
+    // schermo come testo. Il guasto nomina se stesso.
+    log('[P] La battuta inglese porta il paese della riga scelta',
+      esito.en === 'I am from Lugano, Switzerland.', esito.en);
+    log('[P] ...e quella italiana il suo',
+      esito.it === 'Vengo da Lugano, in Svizzera.', esito.it);
+    log('[P] Nessun segnaposto resta a schermo',
+      esito.en.indexOf('{{') === -1 && esito.it.indexOf('{{') === -1,
+      esito.en + ' | ' + esito.it);
+
+    // ⚠️ IL CASO PIU' DIVERSO (regola 42): una riga SENZA quel campo.
+    //
+    // Le tabelle non sono tutte uguali — `places.departures` porta il paese,
+    // `people.papa` no, e `places.destinations` non lo prendera' mai perche'
+    // nessuna battuta dice il paese di destinazione. Un'implementazione che
+    // desse per scontato `picked[campo]` lascerebbe `undefined` a schermo:
+    // **un buco non si vede nei test e si vede allo studente.**
+    //
+    // I due casi qui sotto sono diversi fra loro, ed e' voluto: `papa` e' una
+    // riga vera a cui manca una colonna; l'eta' e' una riga che **non esiste
+    // affatto** nel magazzino — e' un numero nudo che `slotOptions` trasforma
+    // in oggetto. E' l'unica famiglia dell'app a cui manca la riga intera.
+    log('[P] Un campo che la riga non ha torna la riga, non «undefined»',
+      esito.papaConCampo === 'Marco', esito.papaConCampo);
+    log('[P] ...e vale anche per una riga NUDA, che nel magazzino non c\'e\'',
+      esito.etaConCampo === '14', esito.etaConCampo);
+    log('[P] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
   await browser.close();
   console.log('\n=== TRADUCIBILITA PER RIGA SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   if (failed > 0) process.exit(1);

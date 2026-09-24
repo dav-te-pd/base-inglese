@@ -552,7 +552,18 @@
   // as typed for any free-text slot. Used both for the exercise phrase
   // (English) and for dialogue lines (either language) and speaker tags
   // (Italian) in Story Cards.
-  function resolveSlotValue(episode, key, rawValue, lang) {
+  // ⚠️ `campo` — passo 1.8-bis (2), 2026-09-24: quale PEZZO della riga si
+  // vuole. Senza, la riga stessa (la citta'); con `'paese'`, il suo sotto-campo.
+  //
+  // Il sotto-campo ha la STESSA forma della riga — `it` ed `en` — quindi la
+  // funzione non impara niente di nuovo: cambia solo su cosa guarda.
+  //
+  // ⚠️ E UN CAMPO CHE NON C'E' NON DA' `undefined` A SCHERMO: si torna alla
+  // riga. Serve perche' le tabelle non sono tutte uguali — `places.departures`
+  // porta il paese, `places.destinations` no — e un `{{destinazione.paese}}`
+  // scritto per sbaglio deve dare la citta', non un buco. *Un buco a schermo
+  // non si vede nei test e si vede allo studente.*
+  function resolveSlotValue(episode, key, rawValue, lang, campo) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {
       var opts = slotOptions(field);
@@ -598,7 +609,8 @@
       // a un episodio (le eta') sono valori nudi e non dichiarano niente. Per
       // loro `it` ed `en` coincidono, quindi il ramo e' indifferente — ma il
       // default va scelto, e questo e' quello che non cambia niente oggi.
-      return picked.traducibile === false ? picked.it : picked[lang];
+      var parte = (campo && picked[campo]) ? picked[campo] : picked;
+      return picked.traducibile === false ? parte.it : parte[lang];
     }
     return rawValue;
   }
@@ -617,15 +629,28 @@
   // "vengo da {{partenza}}" deve dare "Turin" nella citazione e "Torino"
   // nella spiegazione. Senza suffisso vale la lingua della chiamata,
   // come prima: nessun testo esistente cambia comportamento.
+  // ⚠️ LA REGEX HA IMPARATO IL PUNTO — passo 1.8-bis (2), 2026-09-24.
+  //
+  // `\w` NON contiene il punto, quindi prima `{{partenza.paese:en}}` non veniva
+  // nemmeno RICONOSCIUTO: restava a schermo come testo, davanti allo studente.
+  // Adesso la forma e' `{{chiave}}`, `{{chiave:lingua}}`, `{{chiave.campo}}` e
+  // `{{chiave.campo:lingua}}` — il pezzo prima del punto e' quello che cerca in
+  // `placeholderMap`, quello dopo e' il campo della riga.
+  //
+  // Serve perche' una riga del magazzino porta piu' di un valore: una citta' di
+  // partenza porta anche il suo paese, e la battuta li vuole tutti e due —
+  // «I am from {{partenza}}, {{partenza.paese:en}}.» Senza, `Italy` restava
+  // scritto a mano nella battuta, e uno studente di Lugano leggeva «I am from
+  // Lugano, Italy».
   function fillTemplate(text, episode, values, lang) {
-    return text.replace(/\{\{(\w+)(?::(\w+))?\}\}/g, function (match, varName, forcedLang) {
+    return text.replace(/\{\{(\w+)(?:\.(\w+))?(?::(\w+))?\}\}/g, function (match, varName, campo, forcedLang) {
       var slotKey = episode.placeholderMap && episode.placeholderMap[varName];
       if (!slotKey) {
         console.warn('fillTemplate: placeholder "' + varName + '" has no placeholderMap entry in episode "' + episode.id + '"');
         return match;
       }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
-      return resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang);
+      return resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang, campo);
     });
   }
 

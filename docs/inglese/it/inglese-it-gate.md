@@ -70,7 +70,7 @@ dentro il paragrafo è libero, le parole no.
 
 ## 2 — I NUMERI ATTESI
 
-**Numeri attesi nel JSON:** 12 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
+**Numeri attesi nel JSON:** 11 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
 
 *Il paragrafo qui sopra è il solo pezzo del file che un test legge. La riga
 vuota che segue lo chiude: non metterne una dentro.*
@@ -107,7 +107,7 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 | `d-1` | `hostess-gate` | `staff` | Hello! Nice to meet you. | Ciao! Piacere di conoscervi. |
 | `d-2` | `papa` | `famiglia` | Hello! I am {{papa}}. | Ciao! Sono {{papa}}. |
 | `d-3` | `hostess-gate` | `staff` | Where are you from, {{papa}}? | Di dove sei, {{papa}}? |
-| `d-4` | `papa` | `famiglia` | I am from {{partenza}}, Italy. | Vengo da {{partenza}}, in Italia. |
+| `d-4` | `papa` | `famiglia` | I am from {{partenza}}, {{partenza.paese:en}}. | Vengo da {{partenza}}, in {{partenza.paese}}. |
 | `d-5` | `hostess-gate` | `staff` | And you? | E tu? |
 | `d-6` | `mamma` | `famiglia` | Hello! I am {{mamma}}. | Ciao! Sono {{mamma}}. |
 | `d-7` | `figlia` | `famiglia` | Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old. | Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni. |
@@ -123,7 +123,7 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 |---|---|---|---|
 | `c-1` | I am {{papa}}. | Sono {{papa}}. | `d-2` |
 | `c-2` | Where are you from? | Di dove sei? | `d-3` |
-| `c-3` | I am from {{partenza}}, Italy. | Vengo da {{partenza}}, in Italia. | `d-4` |
+| `c-3` | I am from {{partenza}}, {{partenza.paese:en}}. | Vengo da {{partenza}}, in {{partenza.paese}}. | `d-4` |
 | `c-4` | I am {{mamma}}. | Sono {{mamma}}. | `d-6` |
 | `c-5` | I'm {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` |
 | `c-6` | I'm {{figliaEta}} years old. | Ho {{figliaEta}} anni. | `d-7` |
@@ -158,7 +158,6 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 | `a-nice` | nice | bello / piacevole | nais | aggettivo |
 | `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
 | `a-where` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
-| `a-italy` | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
 | `a-from` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
 | `a-and` | and | e | and — la "d" finale si sente appena | congiunzione |
 | `a-years` | years | anni | i-ars — parte con un suono di "i" | sostantivo |

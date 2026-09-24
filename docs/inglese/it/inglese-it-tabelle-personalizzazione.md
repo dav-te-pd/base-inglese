@@ -1,4 +1,4 @@
-**Versione: 20260924b**
+**Versione: 20260924c**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -152,38 +152,57 @@ modo di esistere.*
 
 ### `places.departures`
 
-| id | it | en | traducibile |
-|---|---|---|---|
-| `orig-mondovi` | Mondovì | Mondovì | sì |
-| `orig-torino` | Torino | Turin | sì |
-| `orig-milano` | Milano | Milan | sì |
-| `orig-roma` | Roma | Rome | sì |
-| `orig-napoli` | Napoli | Naples | sì |
-| `orig-palermo` | Palermo | Palermo | sì |
+| id | it | en | paese it | paese en | traducibile |
+|---|---|---|---|---|---|
+| `orig-mondovi` | Mondovì | Mondovì | Italia | Italy | sì |
+| `orig-torino` | Torino | Turin | Italia | Italy | sì |
+| `orig-milano` | Milano | Milan | Italia | Italy | sì |
+| `orig-roma` | Roma | Rome | Italia | Italy | sì |
+| `orig-napoli` | Napoli | Naples | Italia | Italy | sì |
+| `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
+| `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
+| `orig-nizza` | Nizza | Nice | Francia | France | sì |
 
-⚠️ **MANCANO `orig-lugano` E `orig-nizza`, E NON SONO STATE DIMENTICATE: ASPETTANO
-LA RIGA CITTÀ+PAESE.**
+⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, E LE ALTRE RESTANO A QUATTRO.**
+`trascrivi.js` le accetta tutt'e due e **rifiuta ogni altro numero nominando la
+tabella**: le quattro colonne diventano `value`/`it`/`en`/`traducibile`, le sei
+aggiungono `paese: { it, en }`.
 
-*Il motivo per cui devono esistere è scritto qui sopra e resta vero:* **«ci sono
-più italofoni fuori dall'Italia di quanti se ne pensi: uno studente di Lugano non
-deve dichiarare un paese che non è il suo»** *(TABELLE_018).*
+⚠️ **`places.destinations` NON prende la colonna paese**, ed è una scelta:
+nessuna battuta dice il paese di destinazione. Darebbero due colonne che non
+legge nessuno — esattamente quello che il passo 1.8 ha appena tolto (`fr`, `es`,
+`de`: 147 stringhe vuote, zero lettori).
 
-⚠️ **E il motivo per cui oggi non possono entrare è misurato, non prudenziale:**
-la battuta `d-4` di `gate` scrive **`Italy` a mano** — `I am from {{partenza}},
-Italy.` — perché una riga a quattro colonne porta **un valore solo**, e il paese
-non ha modo di arrivare alla frase. Con Lugano lo studente leggerebbe **«I am
-from Lugano, Italy»**, e in italiano **«Vengo da Lugano, in Italia»**: due frasi
-false su otto opzioni.
+⚠️ **`orig-lugano` E `orig-nizza` SONO ENTRATE IL 2026-09-24, COL PASSO ②.**
 
-⚠️ **E nessun test le vedrebbe:** nessuno sceglie Lugano, quindi la suite
-resterebbe verde. *È il difetto che vive dentro un'opzione che nessuno prova.*
+*Il motivo per cui devono esistere:* **«ci sono più italofoni fuori dall'Italia di
+quanti se ne pensi: uno studente di Lugano non deve dichiarare un paese che non è
+il suo»** *(TABELLE_018).*
 
-**Entrano insieme alla riga a sei colonne** (id · città it · città en · paese it ·
-paese en · traducibile), che è un passo di codice: `resolveSlotValue` oggi
-restituisce una stringa sola. **Quel giorno `Italy` esce anche dal grado A di
-`gate`**, e il grado scende da 12 a 11.
+⚠️ **E il motivo per cui NON potevano entrare prima era misurato, non
+prudenziale:** la battuta `d-4` di `gate` scriveva **`Italy` a mano** — `I am from
+{{partenza}}, Italy.` — perché una riga a quattro colonne porta **un valore
+solo**, e il paese non aveva modo di arrivare alla frase. Con Lugano lo studente
+avrebbe letto **«I am from Lugano, Italy»**, e in italiano **«Vengo da Lugano, in
+Italia»**: due frasi false su otto opzioni.
 
-**Il paese di ognuna delle otto è già scelto: sta nella sezione 4.**
+⚠️ **E nessun test le avrebbe viste:** nessuno sceglie Lugano, quindi la suite
+sarebbe restata verde. *È il difetto che vive dentro un'opzione che nessuno
+prova, ed è il motivo per cui le due righe hanno aspettato invece di entrare.*
+
+**Adesso il paese arriva alla frase con un segnaposto suo:**
+`I am from {{partenza}}, {{partenza.paese:en}}.` ⚠️ **E la strada più corta è
+stata scartata:** far portare alla colonna `it` il valore già composto — «Lugano,
+Svizzera» — **chiude una porta.** *La città DA SOLA serve: «Turin» era una voce
+del grado A, una parola che si impara. Dentro una cella composta quella voce non
+esiste più.*
+
+⚠️ **E `Italy` È USCITO DAL GRADO A DI `gate` LO STESSO GIORNO** — il grado è
+sceso da 12 a 11. *Non è una perdita ma uno spostamento:* una parola che solo una
+parte degli studenti incontra nella storia non è una parola dell'episodio, e
+**`Italy` torna come voce quando ci sarà l'episodio dei nomi propri** (R.1, parte
+3.6 di `inglese-it-edizione.md`) — lì i toponimi sono il contenuto, non un
+contorno.
 
 ### `places.destinations`
 
@@ -210,37 +229,12 @@ guarda nessuno.*
 
 ---
 
-### ④.1 — IL PAESE DELLE PARTENZE *(aspetta il passo ② — la riga a sei colonne)*
+### ④.1 — IL PAESE DELLE PARTENZE — ✅ **FATTO IL 2026-09-24 (passo ②)**
 
-**Confermato il 2026-09-24.** Le sei italiane portano Italia/Italy; le due che
-oggi mancano dalla sezione 3 portano il proprio, ed è tutto il motivo per cui
-esistono.
-
-| id | città it | città en | paese it | paese en | traducibile |
-|---|---|---|---|---|---|
-| `orig-mondovi` | Mondovì | Mondovì | Italia | Italy | sì |
-| `orig-torino` | Torino | Turin | Italia | Italy | sì |
-| `orig-milano` | Milano | Milan | Italia | Italy | sì |
-| `orig-roma` | Roma | Rome | Italia | Italy | sì |
-| `orig-napoli` | Napoli | Naples | Italia | Italy | sì |
-| `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
-| `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
-| `orig-nizza` | Nizza | Nice | Francia | France | sì |
-
-✅ **COME IL PAESE ARRIVA ALLA FRASE — deciso il 2026-09-24: colonne sue, e un
-segnaposto suo.** La battuta scriverà `I am from {{partenza}},
-{{partenza.paese:en}}.`
-
-⚠️ **E la strada scartata va scritta, perché era la più corta:** far portare
-alla colonna `it` il valore già composto — «Lugano, Svizzera» — **chiude una
-porta.** *La città DA SOLA serve: «Turin» è una voce del grado A, una parola che
-si impara. Dentro una cella composta quella voce non esiste più.* E il paese è
-un dato suo, che un giorno vorremo da solo: «Where are you from?» → «Italy».
-
-⚠️ **`places.destinations` NON prende la colonna paese.** Nessuna battuta dice
-il paese di destinazione: darebbero due colonne che non legge nessuno, che è
-esattamente quello che il passo 1.8 ha appena tolto (`fr`, `es`, `de` — 147
-stringhe vuote, zero lettori).
+Le otto righe col paese **sono salite nella sezione 3**, dove sono diventate un
+dato vero. *Questa riga resta al posto della tabella per una ragione sola: dice
+che la sezione 4 si SVUOTA quando un passo arriva, invece di accumulare copie di
+quello che ormai vive altrove.*
 
 ---
 
