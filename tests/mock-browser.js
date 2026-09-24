@@ -122,20 +122,58 @@ function corpoRiconoscimento(o) {
 function costruisci(opzioni) {
   const o = Object.assign({}, PREDEFINITI, opzioni || {});
 
-  // ⚠️ Il nucleo e' scritto SENZA `speaking`, perche' diciassette file di oggi
-  // non ce l'hanno e questo passo non cambia comportamento. Chi ce l'ha lo
-  // tiene suo finche' non arriva F.2.
+  // ⚠️ IL NUCLEO DICHIARA `speaking`, DAL 2026-09-24 (passo F.2a), E QUESTO
+  // PASSO **CAMBIA COMPORTAMENTO DI PROPOSITO**: e' l'unico di F.4/F.2 che lo
+  // fa, e il rosso che ne nasce e' il guadagno (regola 19).
+  //
+  // ⚠️ `speaking` NON GATE UNA COSA, NE GATE QUATTRO. Misurato leggendo
+  // `app/audio.js` e `app/flashcard.js`:
+  //
+  //   app/audio.js:253  `if (!staParlando()) return;`  → il BLOCCO ASCOLTO
+  //                     (regola 16) non gira mai, in nessuno di quei file
+  //   app/audio.js:144  `fermaLaVoce()` → `synth.cancel()` **non viene mai
+  //                     chiamato**: «ritoccare il pulsante che sta parlando lo
+  //                     ferma» e' un comportamento che i test non provavano
+  //   app/audio.js:148  `pausaLaVoce()` → `pause()` mai chiamato
+  //   app/flashcard.js:228  il ramo di `fcFlip` che ferma l'audio girando la
+  //                     carta non veniva mai preso
+  //
+  // *Non e' «il mock semplifica»: e' che l'app girava con quattro
+  // comportamenti condivisi spenti, e nessun rosso lo diceva.*
+  //
+  // ⚠️ E QUI `cancel()` NON MANDA `onend`, di proposito. Il browser vero lo
+  // manda, **in modo asincrono** — e l'app ci ha costruito sopra l'EPOCA
+  // (`nuovaEpoca`/`epocaCorrente` in `app/audio.js`), che esiste per
+  // sopravvivere a un `onend` che arriva dopo che lo studente ha lasciato il
+  // modulo. Renderlo onesto e' il passo **F.2b**, e va da solo: mescolarlo qui
+  // darebbe un rosso che puo' venire da due cause, cioe' non una misura.
+  // Stessa ragione per `paused`, che resta finto (**F.2c**).
   const nucleo = `
     (function () {
       function FakeUtterance(text) {
         this.text = text; this.onstart = null; this.onend = null; this.onerror = null;
       }
       var fakeSynth = {
+        speaking: false,
+        _corrente: null,
         speak: function (utter) {
+          var self = this;
+          this.speaking = true;
+          this._corrente = utter;
           if (utter.onstart) utter.onstart();
-          setTimeout(function () { if (utter.onend) utter.onend(); }, ${o.fineVoceMs});
+          utter._timer = setTimeout(function () {
+            if (self._corrente === utter) { self.speaking = false; self._corrente = null; }
+            if (utter.onend) utter.onend();
+          }, ${o.fineVoceMs});
         },
-        cancel: function () {}, pause: function () {}, resume: function () {},
+        cancel: function () {
+          var u = this._corrente;
+          if (!u) return;
+          this.speaking = false;
+          this._corrente = null;
+          clearTimeout(u._timer);
+        },
+        pause: function () {}, resume: function () {},
         getVoices: function () { return [{ name: ${JSON.stringify(o.nomeVoce)}, lang: 'en-US' }]; },
         onvoiceschanged: null
       };
