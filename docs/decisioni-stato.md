@@ -58,7 +58,8 @@ si prende, non adesso.**
 
 ## Aspettano CONTENUTO (episodi nuovi da scrivere)
 
-⚠️ **1.8-bis NON ASPETTA PIÙ IL CONTENUTO, DAL 2026-09-24: aspetta il CODICE.**
+⚠️ **1.8-bis NON ASPETTA PIÙ NIENTE, DAL 2026-09-24: contenuto deciso, meccanismi
+decisi, ordine deciso — `④ → ② → ③`.**
 Il contenuto di ② e ③ è deciso e scritto in
 `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`, **sezione 4** — una
 sezione che il trascrittore non legge, così le righe stanno ferme dove saranno
@@ -67,9 +68,18 @@ sono presi, e dicono cosa manca: il codice, non le parole.*
 
 | | Cosa | Cosa sblocca |
 |---|---|---|
-| **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano. ✅ **Contenuto deciso (§4.1): otto righe a sei colonne**, le sei italiane Italia/Italy, Lugano→Svizzera/Switzerland, Nizza→Francia/France. `places.destinations` **non** prende la colonna | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
-| **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. ✅ **Contenuto deciso (§4.2): `ages.anni`, quattordici righe `eta-4`…`eta-17`, `it` = la CIFRA e `en` = la parola** — due colonne, non tre, perché la tendina di Personalizza legge `o.it` e la battuta legge `picked[lang]` (misurato, non supposto). Resta **il SOTTOINSIEME**, che nel codice non esiste: `resolveSlotTable` torna la tabella intera | vuole un test suo sul riconoscimento vocale |
-| **1.8-bis ④** | **la migrazione dei valori salvati** | ⚠️ obbligatoria se si fa ② o ③ — **e ha già un debito**: la rinomina degli id (`marco`→`papa-marco`, `mondovi`→`orig-mondovi`) **è già in produzione**, quindi chi aveva personalizzato ha già perso le scelte. Il meccanismo del silenzio è `var picked = match || opts[0]` in `resolveSlotValue`: un id sconosciuto ripiega sulla **prima riga**, non su `f.def` |
+| **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano. ✅ **Contenuto deciso (§4.1): otto righe a sei colonne**, le sei italiane Italia/Italy, Lugano→Svizzera/Switzerland, Nizza→Francia/France. `places.destinations` **non** prende la colonna ✅ **Meccanismo deciso: colonne paese sue + segnaposto `{{partenza.paese:en}}`**, non il valore composto — «Turin» è una voce del grado A e dentro «Lugano, Svizzera» non esisterebbe più | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
+| **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. ✅ **Contenuto deciso (§4.2): `ages.anni`, quattordici righe `eta-4`…`eta-17`, `it` = la CIFRA e `en` = la parola** — due colonne, non tre, perché la tendina di Personalizza legge `o.it` e la battuta legge `picked[lang]` (misurato, non supposto). Resta **il SOTTOINSIEME**, che nel codice non esiste: `resolveSlotTable` torna la tabella intera. ✅ **Meccanismo deciso: lo slot ELENCA gli id**, non un intervallo — un intervallo dà per scontato che la tabella sia ordinata e numerica, e quando smetterà di esserlo **non darà un errore: darà l'insieme sbagliato** | vuole un test suo sul riconoscimento vocale |
+| **1.8-bis ④** | **PRIMO, e sono DUE METÀ DI UN DIFETTO SOLO, nello stesso passo.** ⓐ **la mappa** vecchio→nuovo id, che restituisce **la scelta vera** dello studente · ⓑ **il ripiego**, `var picked = match || opts[0]` in `resolveSlotValue` → deve cadere sul **predefinito dello slot**, non sulla prima riga. ✅ **Deciso il 2026-09-24 che ⓑ sta dentro ④ e non è un passo suo** | ⚠️ **ha già un debito in produzione**: la rinomina degli id (`marco`→`papa-marco`, `mondovi`→`orig-mondovi`) è già pubblicata, quindi chi aveva personalizzato **ha già perso le scelte, in silenzio**. E senza ⓑ il prossimo id che cambia rifà lo stesso danno |
+⚠️ **UNA COSA CHE ④ RENDE FALSA, E VA CORRETTA NELLO STESSO COMMIT (regola 33):**
+la ragione per cui esiste il blocco `[A2]` di `test_traducibilita_per_riga.js` è
+scritta citando il ripiego di oggi — *«`resolveSlotValue` su un id che non esiste
+ricade in silenzio sulla PRIMA opzione»* — e la stessa frase sta nella riga di
+`tests/README.md`. **Con ⓑ quella frase smette di essere vera in due punti.** *Il
+blocco resta utile — «ogni cosa che un episodio nomina deve esistere» vale
+comunque — ma la sua motivazione cambia, e una motivazione falsa si legge come
+una verifica già fatta.*
+
 | **F.7** · **1.20** | il test trasversale sugli episodi · il pannello degli episodi | **alla revisione di design di fine episodio 5** — tutt'e due aspettano un catalogo vero invece di due episodi |
 
 ## Aspettano di essere PRESI (nessuna dipendenza)

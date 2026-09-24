@@ -1,4 +1,4 @@
-**Versione: 20260924a**
+**Versione: 20260924b**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -227,6 +227,16 @@ esistono.
 | `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
 | `orig-nizza` | Nizza | Nice | Francia | France | sì |
 
+✅ **COME IL PAESE ARRIVA ALLA FRASE — deciso il 2026-09-24: colonne sue, e un
+segnaposto suo.** La battuta scriverà `I am from {{partenza}},
+{{partenza.paese:en}}.`
+
+⚠️ **E la strada scartata va scritta, perché era la più corta:** far portare
+alla colonna `it` il valore già composto — «Lugano, Svizzera» — **chiude una
+porta.** *La città DA SOLA serve: «Turin» è una voce del grado A, una parola che
+si impara. Dentro una cella composta quella voce non esiste più.* E il paese è
+un dato suo, che un giorno vorremo da solo: «Where are you from?» → «Italy».
+
 ⚠️ **`places.destinations` NON prende la colonna paese.** Nessuna battuta dice
 il paese di destinazione: darebbero due colonne che non legge nessuno, che è
 esattamente quello che il passo 1.8 ha appena tolto (`fr`, `es`, `de` — 147
@@ -240,8 +250,8 @@ Oggi le età **non sono qui**: sono valori nudi nella sezione 8 di
 `inglese-it-gate.md`, e il codice li trasforma in `{value, it, en}` tutti e tre
 uguali. È il motivo per cui si legge `I'm 16 years old`.
 
-**Nome della tabella: `ages.anni`.** ⚠️ *Da confermare — è l'unico dato di questa
-sezione che ho scelto io e non tu.*
+**Nome della tabella: `ages.anni`** — ✅ **confermato il 2026-09-24.** Segue la
+forma delle altre: radice inglese, foglia italiana, come `people.papa`.
 
 ⚠️ **DUE COLONNE, NON TRE — E LA CIFRA RESTA IN `it`. Deciso il 2026-09-24, e la
 ragione va letta prima di «uniformare»:**
@@ -300,6 +310,16 @@ predefinita.*
 ⚠️ **Il sottoinsieme è la parte che oggi NON ESISTE nel codice:**
 `resolveSlotTable` restituisce **la tabella intera**, e non c'è modo di dire
 «solo queste righe». È metà del passo ③.
+
+✅ **COME SI DICHIARA — deciso il 2026-09-24: lo slot ELENCA gli id.** Non un
+intervallo `da`/`a`.
+
+⚠️ **E la ragione non è lo stile:** un intervallo dà per scontato che la tabella
+sia **ordinata e numerica**, cosa vera oggi per le età e **per nient'altro**.
+*Quando smetterà di essere vera non darà un errore: darà l'insieme sbagliato.*
+**È la stessa forma di «otto casi su nove» — abbastanza da sembrare giusta, e
+rotta su quello che non si guarda.** Gli elenchi lunghi sono un costo di
+scrittura; un'ipotesi implicita è un costo di diagnosi.
 
 ---
 
