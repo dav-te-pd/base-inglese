@@ -201,12 +201,14 @@ bolla.*
 ## 7 — GLI SLOT
 
 *Due cose insieme, e vanno in due posti del JSON: le colonne **chiave** →
-`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e cinque →
-una voce di `personalizationTablesUsed`.*
+`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e sei →
+una voce di `personalizationTablesUsed`.* ⚠️ *La colonna **righe** è nata il
+2026-09-24: un punto `·` vuol dire «tutta la tabella», ed è il caso di questo
+episodio.*
 
-| chiave | etichetta | tipo | tabella | predefinito |
-|---|---|---|---|---|
-| `destinazione` | Destinazione del viaggio | `select` | `places.destinations` | `dest-pechino` |
+| chiave | etichetta | tipo | tabella | righe | predefinito |
+|---|---|---|---|---|---|
+| `destinazione` | Destinazione del viaggio | `select` | `places.destinations` | · | `dest-pechino` |
 
 ⚠️ **L'«etichetta» non ha nessuna fonte oggi**, e la schermata Personalizza la
 mostra: sta qui perché smetta di vivere solo nel JSON.

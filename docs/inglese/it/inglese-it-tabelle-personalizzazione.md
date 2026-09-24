@@ -1,4 +1,4 @@
-**Versione: 20260924c**
+**Versione: 20260924d**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -46,8 +46,16 @@ scritto affatto.*
 ## 2 — LE TABELLE CHE ESISTONO
 
 *Il **nome** è quello che una riga di slot scrive nella colonna «tabella» del
-file episodio. Le tabelle interne a un episodio — oggi le età — **non stanno
-qui**: stanno nella sezione 8 di quell'episodio.*
+file episodio.*
+
+⚠️ **LE ETÀ SONO ENTRATE QUI IL 2026-09-24 (passo 1.8-bis ③), e prima stavano
+nella sezione 8 di `gate`** come valori nudi. *Il codice li trasformava in
+`{value, it, en}` tutti e tre uguali, ed è il motivo per cui si leggeva
+`I'm 16 years old` invece di `I'm sixteen`.* **Una tabella interna a un episodio
+resta possibile** — la forma `episode.<qualcosa>` c'è ancora — ma oggi non la
+usa nessuno: *una tabella che ha senso solo dentro una storia non deve finire
+nel magazzino di tutti, e una che serve a tutti non deve restare dentro una
+storia.*
 
 | Nome | Cosa contiene |
 |---|---|
@@ -58,6 +66,7 @@ qui**: stanno nella sezione 8 di quell'episodio.*
 | `people.cognome` | i cognomi della famiglia |
 | `places.departures` | le città di partenza |
 | `places.destinations` | le città di destinazione |
+| `ages.anni` | le età, da 4 a 17 |
 
 ---
 
@@ -212,6 +221,48 @@ contorno.
 | `dest-shanghai` | Shanghai | Shanghai | sì |
 | `dest-hong-kong` | Hong Kong | Hong Kong | sì |
 
+### `ages.anni`
+
+⚠️ **DUE COLONNE, E LA CIFRA RESTA IN `it`. Deciso il 2026-09-24, e la ragione
+va letta prima di «uniformare»:**
+
+> **Le due colonne servono due mestieri diversi, e la stessa riga è usata da due
+> parti dell'app.**
+>
+> - **`it` = `16`** è quello che lo studente **SCEGLIE** in Personalizza:
+>   scorrere 12·13·14 è più veloce che leggere dodici·tredici·quattordici.
+> - **`en` = `sixteen`** è quello che si **SENTE e si PRONUNCIA** nella battuta,
+>   e che Voice Practice deve riconoscere.
+>
+> **Non è un'incoerenza: è la stessa riga letta da due mestieri.**
+
+⚠️ **`traducibile` VALE `sì` SU OGNI RIGA, ED È SCRITTO ANCHE SE L'ASSENZA LO
+VARREBBE.** Con `no`, `resolveSlotValue` restituisce **`it` anche in inglese** —
+si tornerebbe a `I'm 16 years old` **senza nessun errore e senza nessun rosso**.
+*Un valore che se sbagliato non fa rumore non si lascia all'impostazione
+predefinita.*
+
+**Quattordici righe, una tabella sola: i due slot ne prendono un pezzo** con la
+colonna «righe» della sezione 7 del file episodio — la figlia `eta-12`…`eta-17`,
+il figlio `eta-4`…`eta-11`.
+
+| id | it | en | traducibile |
+|---|---|---|---|
+| `eta-4` | 4 | four | sì |
+| `eta-5` | 5 | five | sì |
+| `eta-6` | 6 | six | sì |
+| `eta-7` | 7 | seven | sì |
+| `eta-8` | 8 | eight | sì |
+| `eta-9` | 9 | nine | sì |
+| `eta-10` | 10 | ten | sì |
+| `eta-11` | 11 | eleven | sì |
+| `eta-12` | 12 | twelve | sì |
+| `eta-13` | 13 | thirteen | sì |
+| `eta-14` | 14 | fourteen | sì |
+| `eta-15` | 15 | fifteen | sì |
+| `eta-16` | 16 | sixteen | sì |
+| `eta-17` | 17 | seventeen | sì |
+
 ---
 
 ## 4 — DECISO, NON ANCORA TRASCRIVIBILE
@@ -238,107 +289,26 @@ quello che ormai vive altrove.*
 
 ---
 
-### ④.2 — LE ETÀ *(aspetta il passo ③ — le età nel magazzino, e il sottoinsieme)*
+### ④.2 — LE ETÀ — ✅ **FATTO IL 2026-09-24 (passo ③)**
 
-Oggi le età **non sono qui**: sono valori nudi nella sezione 8 di
-`inglese-it-gate.md`, e il codice li trasforma in `{value, it, en}` tutti e tre
-uguali. È il motivo per cui si legge `I'm 16 years old`.
-
-**Nome della tabella: `ages.anni`** — ✅ **confermato il 2026-09-24.** Segue la
-forma delle altre: radice inglese, foglia italiana, come `people.papa`.
-
-⚠️ **DUE COLONNE, NON TRE — E LA CIFRA RESTA IN `it`. Deciso il 2026-09-24, e la
-ragione va letta prima di «uniformare»:**
-
-> **Le due colonne servono due mestieri diversi, e la stessa riga è usata da due
-> parti dell'app.**
->
-> - **`it` = `16`** è quello che lo studente **SCEGLIE** in Personalizza:
->   scorrere 12·13·14 è più veloce che leggere dodici·tredici·quattordici.
-> - **`en` = `sixteen`** è quello che si **SENTE e si PRONUNCIA** nella battuta,
->   e che Voice Practice deve riconoscere.
->
-> **Non è un'incoerenza: è la stessa riga letta da due mestieri.**
-
-✅ **E la terza colonna NON serve — verificato nel codice il 2026-09-24, non
-supposto:**
-
-| Chi legge | Cosa chiama | Cosa esce |
-|---|---|---|
-| la tendina di Personalizza | `app/personalizza.js` — costruisce l'`<option>` con **`o.it`** | `16` ✅ |
-| la battuta italiana «Ho {{figliaEta}} anni» | `resolveSlotValue(..., 'it')` → `picked.it` | `Ho 16 anni` ✅ |
-| la battuta inglese «I'm {{figliaEta}} years old» | `resolveSlotValue(..., 'en')` → `picked.en` | `I'm sixteen years old` ✅ |
-
-⚠️ **CONDIZIONE, E SE SALTA NON SI VEDE: `traducibile` DEVE VALERE `sì` SU OGNI
-RIGA.** Con `no`, `resolveSlotValue` restituisce **`it` anche in inglese** — e
-si tornerebbe a `I'm 16 years old` senza nessun errore e senza nessun rosso.
-*L'assenza vale `sì` (sezione 3), ma qui la colonna è scritta lo stesso: un
-valore che se sbagliato non fa rumore non si lascia all'impostazione
-predefinita.*
-
-| id | it | en | traducibile |
-|---|---|---|---|
-| `eta-4` | 4 | four | sì |
-| `eta-5` | 5 | five | sì |
-| `eta-6` | 6 | six | sì |
-| `eta-7` | 7 | seven | sì |
-| `eta-8` | 8 | eight | sì |
-| `eta-9` | 9 | nine | sì |
-| `eta-10` | 10 | ten | sì |
-| `eta-11` | 11 | eleven | sì |
-| `eta-12` | 12 | twelve | sì |
-| `eta-13` | 13 | thirteen | sì |
-| `eta-14` | 14 | fourteen | sì |
-| `eta-15` | 15 | fifteen | sì |
-| `eta-16` | 16 | sixteen | sì |
-| `eta-17` | 17 | seventeen | sì |
-
-**Quattordici righe, una tabella sola.** I due slot ne prendono un pezzo —
-**confermato il 2026-09-24**:
-
-| slot | righe | predefinito |
-|---|---|---|
-| `figliaEta` | da `eta-12` a `eta-17` (6) | `eta-16` |
-| `figlioEta` | da `eta-4` a `eta-11` (8) | `eta-8` |
-
-⚠️ **Il sottoinsieme è la parte che oggi NON ESISTE nel codice:**
-`resolveSlotTable` restituisce **la tabella intera**, e non c'è modo di dire
-«solo queste righe». È metà del passo ③.
-
-✅ **COME SI DICHIARA — deciso il 2026-09-24: lo slot ELENCA gli id.** Non un
-intervallo `da`/`a`.
-
-⚠️ **E la ragione non è lo stile:** un intervallo dà per scontato che la tabella
-sia **ordinata e numerica**, cosa vera oggi per le età e **per nient'altro**.
-*Quando smetterà di essere vera non darà un errore: darà l'insieme sbagliato.*
-**È la stessa forma di «otto casi su nove» — abbastanza da sembrare giusta, e
-rotta su quello che non si guarda.** Gli elenchi lunghi sono un costo di
-scrittura; un'ipotesi implicita è un costo di diagnosi.
+`ages.anni` **è salita nella sezione 3**, e gli slot di `gate` ne prendono un
+pezzo con la colonna «righe». *Questa riga resta al posto della tabella per la
+stessa ragione della ④.1: la sezione 4 si **svuota** quando un passo arriva,
+invece di accumulare copie di quello che ormai vive altrove.*
 
 ---
 
-### ④.3 — LA COSA CHE IL PASSO ③ ROMPEREBBE IN SILENZIO
+### ④.3 — LA SKILL DI `d-8` — ✅ **FATTA IL 2026-09-24 (passo ③)**
 
-⚠️ **NON È NELLE TABELLE: È IN UNA SKILL DI `gate`, E VA CORRETTA NELLO STESSO
-PASSO.** *Trovata il 2026-09-24 contando i segnaposto dentro i corpi delle
-skill: sette in tutto, cinque senza suffisso di lingua.*
+Citava la battuta inglese con `{{figliaEta}}` e `{{figlioEta}}` **senza `:en`**:
+il giorno in cui `it` ed `en` divergono, la spiegazione avrebbe detto
+`I'm 16 years old` mentre la battuta sopra dice `I'm sixteen`.
 
-La skill di `d-8` cita la battuta inglese così:
+⚠️ **E il sondaggio ha trovato che non era un caso isolato: era la FORMA.** Dei
+sette segnaposto nelle skill di `gate`, **cinque non dichiaravano la lingua, e
+quattro di quei cinque stavano dentro una citazione.** Due sarebbero diventati
+falsi con questo passo; due no — sono nomi propri, che non divergono mai — *ma
+sono la stessa scrittura, e «non fa danno» non è «è giusto».*
 
-> La figlia dice "I'm `{{figliaEta}}` **years old**". Il figlio dice solo "I'm
-> `{{figlioEta}}`".
-
-**Senza `:en`.** Una skill è prosa italiana, quindi la lingua della chiamata è
-`it`: oggi non si vede niente perché per un valore nudo `it` ed `en` **coincidono**.
-**Il giorno in cui divergono, la spiegazione dirà `I'm 16 years old` mentre la
-battuta sopra dice `I'm sixteen`** — due frasi inglesi diverse sulla stessa
-schermata, e nessun test le confronta.
-
-**La correzione esiste già e si legge due skill più sopra:** `d-4` scrive
-`{{partenza:en}}` proprio per questo. I due segnaposto di `d-8` diventano
-`{{figliaEta:en}}` e `{{figlioEta:en}}`.
-
-*Gli altri tre senza suffisso — `{{partenza}}` in `d-4`, `{{papa}}` e
-`{{figliaNome}}` in `d-7` — **restano come sono**: il primo è la metà italiana
-della frase (giusto così), gli altri due sono nomi propri, `traducibile: no`,
-quindi `it` ed `en` non divergeranno mai.*
+**Adesso la regola è una e meccanica: dentro una citazione, un segnaposto
+dichiara sempre la sua lingua.** Fuori, nella prosa italiana, può tacere.

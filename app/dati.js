@@ -234,11 +234,28 @@ window.BI = window.BI || {};
         throw new Error('no personalization tables available');
       })
       .then(function (data) {
-        var tabelle = { people: data.people || {}, places: data.places || {} };
-        var overrides = {};
-        overrides = BI.magLeggiJson(BI.CONFIG_OVERRIDES_KEY, function () { return {}; });
-        ['people', 'places'].forEach(function (k) {
-          if (overrides[k]) tabelle[k] = overrides[k];
+        // ⚠️ LE FAMIGLIE SI LEGGONO DAL FILE, NON DA UN ELENCO SCRITTO QUI —
+        // corretto il 2026-09-24 (passo 1.8-bis (3)).
+        //
+        // Qui c'era `{ people: data.people, places: data.places }` e un
+        // `['people','places'].forEach` per gli override: **due elenchi a mano
+        // della stessa cosa**. Il giorno in cui il magazzino ha preso una
+        // famiglia nuova — `ages`, le eta' — questa riga l'ha **scartata in
+        // silenzio**: niente errore, niente rosso, e gli slot delle eta' sono
+        // usciti con ZERO opzioni.
+        //
+        // *E' la stessa forma dell'elenco di chiavi scritto a mano in
+        // `wipeEpisodeProgress` (S.1/S.2 in `decisioni-stato.md`): una lista
+        // che non cresce col mondo che descrive non da' un errore quando resta
+        // indietro — da' un risultato incompleto che somiglia a un risultato.*
+        //
+        // Le chiavi che cominciano con `_` restano fuori: sono le note che il
+        // file porta per chi lo legge, non tabelle.
+        var overrides = BI.magLeggiJson(BI.CONFIG_OVERRIDES_KEY, function () { return {}; });
+        var tabelle = {};
+        Object.keys(data || {}).forEach(function (k) {
+          if (k.charAt(0) === '_') return;
+          tabelle[k] = overrides[k] || data[k] || {};
         });
         return tabelle;
       });

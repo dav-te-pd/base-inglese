@@ -114,7 +114,28 @@
   // prefixed "episode.", a table declared inside this same episode's own
   // data file instead (values that only make sense for this one story,
   // like a plausible age range — never shared with other episodes).
-  function resolveSlotTable(tableRef, episodeData, tables) {
+  // ⚠️ `righe` — passo 1.8-bis (3), 2026-09-24: un pezzo della tabella invece
+  // della tabella intera.
+  //
+  // Serve perche' le eta' sono USCITE dal file dell'episodio e sono entrate nel
+  // magazzino condiviso: `ages.anni` ha quattordici righe, e la figlia ne vede
+  // sei (12-17), il figlio otto (4-11). Prima le due liste erano due tabelle
+  // separate dentro `gate`, quindi il problema non esisteva — e nemmeno la
+  // parola in inglese, perche' un valore nudo ha `it` ed `en` uguali.
+  //
+  // ⚠️ ASSENTE VUOL DIRE «TUTTA LA TABELLA», E LO DICE L'ASSENZA. Sette slot su
+  // otto non dichiarano niente: dare loro una lista vuota obbligherebbe questa
+  // funzione a distinguere «vuota perche' le voglio tutte» da «vuota perche'
+  // non ne voglio nessuna» — la distinzione che non si deve indovinare.
+  //
+  // ⚠️ E L'ORDINE E' QUELLO DELL'ELENCO, non quello della tabella: chi scrive
+  // lo slot decide in che ordine lo studente scorre le opzioni. Oggi i due
+  // elenchi seguono la tabella, quindi non si vede — ed e' proprio per questo
+  // che va scritto qui invece che dedotto dal comportamento di oggi.
+  //
+  // Un id elencato che nella tabella non c'e' semplicemente non compare: e' un
+  // errore dei dati, e ha la sua guardia in `test_traducibilita_per_riga` [A2].
+  function resolveSlotTable(tableRef, episodeData, tables, righe) {
     var isEpisodeLocal = tableRef.indexOf('episode.') === 0;
     // La radice condivisa non e' piu' CONFIG: e' il magazzino che arriva da
     // PERSONALIZATION_TABLES_FILE, quindi questa funzione ha bisogno che
@@ -125,7 +146,13 @@
     var path = (isEpisodeLocal ? tableRef.slice('episode.'.length) : tableRef).split('.');
     var val = root;
     for (var i = 0; i < path.length && val; i++) { val = val[path[i]]; }
-    return val || [];
+    var tutte = val || [];
+    if (!righe || !righe.length) return tutte;
+    return righe.map(function (id) {
+      return tutte.find(function (r) {
+        return (r && typeof r === 'object' ? r.value : String(r)) === id;
+      });
+    }).filter(Boolean);
   }
 
   // Builds the slotFields array a loaded episode.data.personalizationTablesUsed
@@ -140,7 +167,7 @@
         key: slot.key,
         label: slot.label,
         type: slot.type,
-        options: resolveSlotTable(slot.table, episodeData, tables),
+        options: resolveSlotTable(slot.table, episodeData, tables, slot.rows),
         def: slot.default,
         group: slot.group,
         narrow: slot.narrow

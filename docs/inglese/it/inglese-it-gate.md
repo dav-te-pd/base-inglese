@@ -190,10 +190,10 @@ nessuno**.
 | `d-1` | 1 | Hello e Hi | Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>"Hello" è un po' più educato, "Hi" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".<br>È come in italiano — "Buongiorno" a chi non conosci, "Ciao" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, "Hello" va bene sempre, con chiunque. |
 | `d-1` | 2 | Nice to meet you | Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!". |
 | `d-3` | 1 | Chiedere da dove viene qualcuno | "Where are you from?" vuol dire "di dove sei?".<br>"Where" significa "dove". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra. |
-| `d-4` | 1 | Dire da dove vieni | "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".<br>"From" significa "da". La userai tantissimo. |
+| `d-4` | 1 | Dire da dove vieni | "I am from {{partenza:en}}" vuol dire "vengo da {{partenza:it}}".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".<br>"From" significa "da". La userai tantissimo. |
 | `d-5` | 1 | And you? | Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente. |
-| `d-7` | 1 | I am e I'm | Il papà dice "I am {{papa}}", la figlia dice "I'm {{figliaNome}}". Sono la stessa cosa: "I'm" è solo la forma corta.<br>Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> "I'm from Turin" è uguale a "I am from Turin".<br>Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. <strong>In inglese non si può:</strong> "I" ci deve essere sempre. Non esiste dire "am Marco". |
-| `d-8` | 1 | Dire quanti anni hai | La figlia dice "I'm {{figliaEta}} <strong>years old</strong>". Il figlio dice solo "I'm {{figlioEta}}".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".<br>Ricordatelo, perché è la differenza più grande con l'italiano. |
+| `d-7` | 1 | I am e I'm | Il papà dice "I am {{papa:en}}", la figlia dice "I'm {{figliaNome:en}}". Sono la stessa cosa: "I'm" è solo la forma corta.<br>Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> "I'm from Turin" è uguale a "I am from Turin".<br>Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. <strong>In inglese non si può:</strong> "I" ci deve essere sempre. Non esiste dire "am Marco". |
+| `d-8` | 1 | Dire quanti anni hai | La figlia dice "I'm {{figliaEta:en}} <strong>years old</strong>". Il figlio dice solo "I'm {{figlioEta:en}}".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".<br>Ricordatelo, perché è la differenza più grande con l'italiano. |
 | `d-9` | 1 | We are | "We are" vuol dire "noi siamo".<br>Conosci già "I am" — io sono. Quando si parla in più di uno diventa "we are": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola "family", al contrario dell'italiano. |
 
 ---
@@ -221,19 +221,19 @@ bolla.*
 ## 7 — GLI SLOT
 
 *Due cose insieme, e vanno in due posti del JSON: le colonne **chiave** →
-`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e cinque →
+`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e sei →
 una voce di `personalizationTablesUsed`.*
 
-| chiave | etichetta | tipo | tabella | predefinito |
-|---|---|---|---|---|
-| `papa` | Nome del papà / utente | `select` | `people.papa` | `papa-marco` |
-| `mamma` | Nome della mamma | `select` | `people.mamma` | `mamma-giulia` |
-| `figliaNome` | Nome della figlia | `select` | `people.figlia` | `figlia-emma` |
-| `figliaEta` | Età della figlia | `select` | `episode.ageOptions.figlia` | `16` |
-| `figlioNome` | Nome del figlio | `select` | `people.figlio` | `figlio-tommaso` |
-| `figlioEta` | Età del figlio | `select` | `episode.ageOptions.figlio` | `8` |
-| `cognome` | Cognome della famiglia | `select` | `people.cognome` | `cognome-costa` |
-| `partenza` | Città di partenza | `select` | `places.departures` | `orig-mondovi` |
+| chiave | etichetta | tipo | tabella | righe | predefinito |
+|---|---|---|---|---|---|
+| `papa` | Nome del papà / utente | `select` | `people.papa` | · | `papa-marco` |
+| `mamma` | Nome della mamma | `select` | `people.mamma` | · | `mamma-giulia` |
+| `figliaNome` | Nome della figlia | `select` | `people.figlia` | · | `figlia-emma` |
+| `figliaEta` | Età della figlia | `select` | `ages.anni` | `eta-12` · `eta-13` · `eta-14` · `eta-15` · `eta-16` · `eta-17` | `eta-16` |
+| `figlioNome` | Nome del figlio | `select` | `people.figlio` | · | `figlio-tommaso` |
+| `figlioEta` | Età del figlio | `select` | `ages.anni` | `eta-4` · `eta-5` · `eta-6` · `eta-7` · `eta-8` · `eta-9` · `eta-10` · `eta-11` | `eta-8` |
+| `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-costa` |
+| `partenza` | Città di partenza | `select` | `places.departures` | · | `orig-mondovi` |
 
 ⚠️ **L'«etichetta» non ha nessuna fonte oggi**, e la schermata Personalizza la
 mostra: sta qui perché smetta di vivere solo nel JSON.
@@ -244,16 +244,27 @@ personaggio come gli altri. *Tolto per sbaglio il 2026-09-23 e rimesso lo stesso
 giorno.*
 
 **La «tabella» è un riferimento a `inglese-it-tabelle-personalizzazione`**, con
-due forme sole:
+due forme:
 
 | Forma | Vuol dire |
 |---|---|
-| `people.papa`, `places.departures`, … | una tabella del magazzino condiviso |
-| `episode.<qualcosa>` | una tabella dichiarata **dentro questo stesso file episodio** — oggi le età |
+| `people.papa`, `places.departures`, `ages.anni`, … | una tabella del magazzino condiviso |
+| `episode.<qualcosa>` | una tabella dichiarata **dentro questo stesso file episodio** — ⚠️ **oggi NESSUNO la usa**, e la forma resta perché un episodio futuro può averne bisogno |
 
-⚠️ **Il «predefinito» è un id di quella tabella, e va scelto con attenzione:**
-se un valore salvato non si trova più fra le opzioni, il codice **non ripiega
-sul predefinito — ripiega sulla PRIMA RIGA della tabella.**
+⚠️ **LA COLONNA «RIGHE» È NATA IL 2026-09-24 (passo 1.8-bis ③), e serve a una
+cosa sola: prendere un PEZZO di una tabella condivisa.** Un punto `·` vuol dire
+«tutta la tabella». *Le età sono l'unico caso di oggi: stanno nel magazzino
+insieme a tutte le altre, e la figlia ne vede sei, il figlio otto.*
+
+⚠️ **E si ELENCANO gli id, non si dichiara un intervallo.** *Un intervallo
+darebbe per scontato che la tabella sia ordinata e numerica — vero oggi per le
+età e per nient'altro — e quando smetterà di esserlo **non darà un errore: darà
+l'insieme sbagliato.***
+
+**Il «predefinito» è un id di quella tabella.** ⚠️ *Qui c'era scritto che un
+valore salvato fuori elenco «ripiega sulla PRIMA RIGA e non sul predefinito»:
+**era vero fino al 2026-09-24**, e il passo 1.8-bis ④ l'ha corretto — adesso
+ripiega proprio sul predefinito, e la prima riga è solo l'ultima spiaggia.*
 
 ---
 
@@ -263,16 +274,17 @@ sul predefinito — ripiega sulla PRIMA RIGA della tabella.**
 condiviso. Finiscono in una chiave di primo livello del JSON, e l'unico modo di
 raggiungerle è che uno slot della sezione 7 dica `episode.<nome>.<gruppo>`.*
 
-⚠️ **Oggi è il caso delle età di `gate`** (`ageOptions.figlia`,
-`ageOptions.figlio`), **e nemmeno quelle hanno una fonte markdown.** Questa
-sezione esiste per quello.
+⚠️ **OGGI QUESTA SEZIONE È VUOTA, E NON È UNA DIMENTICANZA.**
 
-⚠️ **Una riga «nuda» vale per tutte e due le lingue.** Il codice la trasforma in
-`{value, it, en}` **tutti e tre uguali** — che è il motivo per cui oggi si legge
-`I'm 16 years old` e non `I'm sixteen`. **Per avere una parola in inglese serve
-un altro passo**, non una riga scritta diversa qui.
+Fino al 2026-09-24 ci stavano le età di `gate` (`ageOptions.figlia`,
+`ageOptions.figlio`), come valori **nudi**: il codice li trasformava in
+`{value, it, en}` tutti e tre uguali, ed è il motivo per cui si leggeva
+`I'm 16 years old` invece di `I'm sixteen`.
 
-| nome | gruppo | valori, in ordine |
-|---|---|---|
-| `ageOptions` | `figlia` | `12` · `13` · `14` · `15` · `16` · `17` |
-| `ageOptions` | `figlio` | `4` · `5` · `6` · `7` · `8` · `9` · `10` · `11` |
+**Il passo 1.8-bis ③ le ha portate nel magazzino condiviso** (`ages.anni`, dove
+`it` è la cifra ed `en` la parola) **e ha dato agli slot la colonna «righe»**,
+così la figlia ne vede sei e il figlio otto pur pescando dalla stessa tabella.
+
+*La sezione resta perché la forma `episode.<qualcosa>` esiste ancora e un
+episodio futuro può averne bisogno: una tabella che ha senso solo dentro una
+storia non deve finire nel magazzino di tutti.*

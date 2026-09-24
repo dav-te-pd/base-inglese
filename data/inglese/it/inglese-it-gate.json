@@ -1,26 +1,6 @@
 {
   "episodeId": "gate",
   "generalRule": "La \"e\" finale in inglese non si legge quasi mai.",
-  "ageOptions": {
-    "figlia": [
-      "12",
-      "13",
-      "14",
-      "15",
-      "16",
-      "17"
-    ],
-    "figlio": [
-      "4",
-      "5",
-      "6",
-      "7",
-      "8",
-      "9",
-      "10",
-      "11"
-    ]
-  },
   "speakerLabels": {
     "hostess-gate": "Hostess al gate",
     "papa": "Papà",
@@ -65,8 +45,16 @@
       "key": "figliaEta",
       "label": "Età della figlia",
       "type": "select",
-      "table": "episode.ageOptions.figlia",
-      "default": "16"
+      "table": "ages.anni",
+      "default": "eta-16",
+      "rows": [
+        "eta-12",
+        "eta-13",
+        "eta-14",
+        "eta-15",
+        "eta-16",
+        "eta-17"
+      ]
     },
     {
       "key": "figlioNome",
@@ -79,8 +67,18 @@
       "key": "figlioEta",
       "label": "Età del figlio",
       "type": "select",
-      "table": "episode.ageOptions.figlio",
-      "default": "8"
+      "table": "ages.anni",
+      "default": "eta-8",
+      "rows": [
+        "eta-4",
+        "eta-5",
+        "eta-6",
+        "eta-7",
+        "eta-8",
+        "eta-9",
+        "eta-10",
+        "eta-11"
+      ]
     },
     {
       "key": "cognome",
@@ -342,7 +340,7 @@
           "whatYouLearn": [
             {
               "title": "Dire da dove vieni",
-              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza:it}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
             }
           ]
         },
@@ -375,7 +373,7 @@
           "whatYouLearn": [
             {
               "title": "I am e I'm",
-              "body": "Il papà dice \"I am {{papa}}\", la figlia dice \"I'm {{figliaNome}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
+              "body": "Il papà dice \"I am {{papa:en}}\", la figlia dice \"I'm {{figliaNome:en}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
             }
           ]
         },
@@ -388,7 +386,7 @@
           "whatYouLearn": [
             {
               "title": "Dire quanti anni hai",
-              "body": "La figlia dice \"I'm {{figliaEta}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+              "body": "La figlia dice \"I'm {{figliaEta:en}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta:en}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
             }
           ]
         },

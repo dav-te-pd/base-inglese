@@ -58,6 +58,25 @@
       "mondovi": "orig-mondovi",
       "torino": "orig-torino",
       "milano": "orig-milano"
+    },
+    "figliaEta": {
+      "12": "eta-12",
+      "13": "eta-13",
+      "14": "eta-14",
+      "15": "eta-15",
+      "16": "eta-16",
+      "17": "eta-17"
+    },
+    "figlioEta": {
+      "4": "eta-4",
+      "5": "eta-5",
+      "6": "eta-6",
+      "7": "eta-7",
+      "8": "eta-8",
+      "9": "eta-9",
+      "10": "eta-10",
+      "11": "eta-11"
     }
-  }
+  },
+  "_ETA": "Le eta' erano valori NUDI dentro il file di gate (12, 13, ...) e dal 2026-09-24 sono righe di ages.anni (eta-12, eta-13, ...). Chi aveva gia' scelto l'eta' dei figli porta ancora il numero: senza queste righe si ritroverebbe il predefinito, cioe' 16 e 8, al posto della sua scelta - e in silenzio."
 }

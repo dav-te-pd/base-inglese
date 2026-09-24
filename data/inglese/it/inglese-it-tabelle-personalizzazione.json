@@ -390,5 +390,93 @@
         "traducibile": true
       }
     ]
+  },
+  "ages": {
+    "anni": [
+      {
+        "value": "eta-4",
+        "it": "4",
+        "en": "four",
+        "traducibile": true
+      },
+      {
+        "value": "eta-5",
+        "it": "5",
+        "en": "five",
+        "traducibile": true
+      },
+      {
+        "value": "eta-6",
+        "it": "6",
+        "en": "six",
+        "traducibile": true
+      },
+      {
+        "value": "eta-7",
+        "it": "7",
+        "en": "seven",
+        "traducibile": true
+      },
+      {
+        "value": "eta-8",
+        "it": "8",
+        "en": "eight",
+        "traducibile": true
+      },
+      {
+        "value": "eta-9",
+        "it": "9",
+        "en": "nine",
+        "traducibile": true
+      },
+      {
+        "value": "eta-10",
+        "it": "10",
+        "en": "ten",
+        "traducibile": true
+      },
+      {
+        "value": "eta-11",
+        "it": "11",
+        "en": "eleven",
+        "traducibile": true
+      },
+      {
+        "value": "eta-12",
+        "it": "12",
+        "en": "twelve",
+        "traducibile": true
+      },
+      {
+        "value": "eta-13",
+        "it": "13",
+        "en": "thirteen",
+        "traducibile": true
+      },
+      {
+        "value": "eta-14",
+        "it": "14",
+        "en": "fourteen",
+        "traducibile": true
+      },
+      {
+        "value": "eta-15",
+        "it": "15",
+        "en": "fifteen",
+        "traducibile": true
+      },
+      {
+        "value": "eta-16",
+        "it": "16",
+        "en": "sixteen",
+        "traducibile": true
+      },
+      {
+        "value": "eta-17",
+        "it": "17",
+        "en": "seventeen",
+        "traducibile": true
+      }
+    ]
   }
 }

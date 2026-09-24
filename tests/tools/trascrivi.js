@@ -198,14 +198,27 @@ function episodio(id, gradeNames) {
   fuori.speakerLabels = {};
   pers.forEach((r) => { fuori.speakerLabels[nb(r[0])] = r[1].trim(); });
 
-  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true), 5, 'slot');
+  // ⚠️ SEI COLONNE DAL 2026-09-24 (passo 1.8-bis (3)): fra `tabella` e
+  // `predefinito` e' nata `righe`, che prende un PEZZO di una tabella
+  // condivisa. Un punto vuol dire «tutta la tabella».
+  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true), 6, 'slot');
   // Il segnaposto e la chiave dello slot hanno lo stesso nome: la mappa esiste
   // perche' POSSANO divergere, non perche' divergano.
   fuori.placeholderMap = {};
   slot.forEach((r) => { fuori.placeholderMap[nb(r[0])] = nb(r[0]); });
-  fuori.personalizationTablesUsed = slot.map((r) => ({
-    key: nb(r[0]), label: r[1].trim(), type: nb(r[2]), table: nb(r[3]), default: nb(r[4])
-  }));
+  fuori.personalizationTablesUsed = slot.map((r) => {
+    const voce = {
+      key: nb(r[0]), label: r[1].trim(), type: nb(r[2]), table: nb(r[3]), default: nb(r[5])
+    };
+    // ⚠️ `rows` ESISTE SOLO QUANDO SERVE, e non e' pigrizia: una chiave che c'e'
+    // sempre — vuota per sette slot su otto — chiederebbe a chi legge il JSON di
+    // distinguere «tutte le righe» da «nessuna riga», che e' proprio la
+    // distinzione che il codice non deve indovinare. Assente vuol dire «tutta
+    // la tabella», e lo dice l'assenza.
+    const righe = r[4].split('·').map((v) => nb(v)).filter(Boolean);
+    if (righe.length) voce.rows = righe;
+    return voce;
+  });
 
   // ⚠️ IL LABEL DI UN GRADO NON STA NEL FILE EPISODIO: si prende da
   // `gradeNames` della struttura, che e' la sua unica fonte (regola 4). Cosi'

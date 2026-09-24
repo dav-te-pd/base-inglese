@@ -20,6 +20,12 @@ cognome ferrari
 cognome marino
 cognome rossi
 cognome russo
+figliaEta 12
+figliaEta 13
+figliaEta 14
+figliaEta 15
+figliaEta 16
+figliaEta 17
 figliaNome alice
 figliaNome beatrice
 figliaNome chiara
@@ -28,6 +34,14 @@ figliaNome giorgia
 figliaNome martina
 figliaNome sara
 figliaNome sofia
+figlioEta 10
+figlioEta 11
+figlioEta 4
+figlioEta 5
+figlioEta 6
+figlioEta 7
+figlioEta 8
+figlioEta 9
 figlioNome filippo
 figlioNome giorgio
 figlioNome leo
