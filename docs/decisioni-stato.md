@@ -1046,8 +1046,16 @@ seconda e' peggio della prima:
 **I gradi C e D non c'entrano:** li' `c-1`, `d-1` sono gia' posizionali oggi, e
 per una battuta la posizione **e'** la sua identita'.
 
-**Condizione: la decisione e' di chi guida il progetto, ed e' due righe di
-markdown** — la colonna `id` dei gradi A e B dei due episodi. *Il JSON e' gia'
+✅ **CHIUSA IL 2026-09-24: gli id sono tornati descrittivi.** *«`a-1` non e' un
+id, e' una posizione — e la regola 4 lo dice gia' per gli episodi. La B e' una
+frase, e oggi per la terza volta abbiamo visto che le frasi cedono.»* Gli id
+sono stati **ripresi dal JSON di `main`**, non riscritti a memoria, e verificati
+uno per uno: **8 liste su 8 combaciano, zero id cambiati**. Corretto anche il
+modello `-VUOTO`, che era la fonte dell'errore: la riga di esempio adesso dice
+`a-parola`, con accanto il perche'.
+
+*Condizione originale (per memoria): la decisione era di chi guida il progetto, ed erano due righe di
+markdown* — la colonna `id` dei gradi A e B dei due episodi. *Il JSON e' gia'
 scritto con gli id posizionali: se si torna ai descrittivi, e' una rigenerazione
 e una suite, non un lavoro.*
 
@@ -1075,6 +1083,32 @@ una cinquantina e la verifica e' sul testo prodotto, non sull'app.*
 
 *Intanto le due righe NON sono state trascritte, col perche' scritto accanto nel
 file DATI: senza quella riga, al prossimo giro qualcuno le rimette.*
+
+---
+
+# ⚠️ UNA FRASE NON DIFENDE: LA TERZA APPLICAZIONE — 2026-09-24
+
+> **«Le prime due volte la difesa era una frase, e l'ho violata io scrivendone
+> un'altra che spiegava la stessa cosa. Adesso c'e' il comando, e il rosso
+> nomina la causa.»**
+
+**E' la terza volta che questa lezione si applica, e le tre insieme sono la
+prova che non e' un aneddoto:**
+
+| | Il caso | Cos'era la difesa prima | Cos'e' adesso |
+|---|---|---|---|
+| **N.12** | i valori ricopiati nei test invece che letti dalla fonte | *«si leggono dalla fonte»*, scritto | il test **legge** la fonte, e un valore ricopiato non c'e' piu' da ricopiare |
+| **`attendi-ci.sh`** | il commit corto che dava «la corsa non esiste» | *«il commit va intero»*, scritto in testa | lo script **lo estende da solo** con `git rev-parse`, e un commit corto esce **64 col motivo** |
+| **la trappola del marcatore** | il titolo citato nella prosa che `indexOf` trova per primo | *«qui la stringa non si scrive apposta»*, scritto nel file | `[Fonte]` **verifica che ognuno degli otto marcatori compaia una volta sola**, e lo dice **prima** dell'asserzione sul contenuto |
+
+⚠️ **E la terza e' la piu' istruttiva, perche' la violazione l'ha fatta chi
+aveva appena scritto la difesa** — scrivendo un'altra frase che spiegava la
+stessa trappola. *E' la stessa forma della regola 19: non mancava la regola,
+mancava il fatto che la rendesse applicabile. **Un elenco di parole si legge e
+si crede di averlo applicato; un elenco di comandi o passa o non passa.***
+
+**La forma che funziona, in una riga: il difetto diventa un'ASSERZIONE che
+nomina la CAUSA, e sta PRIMA di quella che nomina l'effetto.**
 
 ---
 

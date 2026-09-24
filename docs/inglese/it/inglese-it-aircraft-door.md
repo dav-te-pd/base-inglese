@@ -122,12 +122,12 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `b-1` | good morning | buongiorno | gud MOR-ning | saluto |
-| `b-2` | welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza |
-| `b-3` | here they are | eccoli | hia dei ar | espressione |
-| `b-4` | thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia |
-| `b-5` | this way, please | da questa parte, prego | dis UEI pliiz | indicazione di direzione |
-| `b-6` | enjoy your flight | buon volo | en-GIOI ior flait | formula di congedo |
+| `b-good-morning` | good morning | buongiorno | gud MOR-ning | saluto |
+| `b-welcome-aboard` | welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza |
+| `b-here-they-are` | here they are | eccoli | hia dei ar | espressione |
+| `b-thank-you` | thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia |
+| `b-this-way-please` | this way, please | da questa parte, prego | dis UEI pliiz | indicazione di direzione |
+| `b-enjoy-your-flight` | enjoy your flight | buon volo | en-GIOI ior flait | formula di congedo |
 
 ### Grado A — le parole
 
@@ -135,18 +135,18 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `a-1` | morning | mattina | MOR-ning | sostantivo |
-| `a-2` | welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza |
-| `a-3` | tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale |
-| `a-4` | here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo |
-| `a-5` | they | loro | dei — la "th" è la lingua fra i denti | pronome |
-| `a-6` | she | lei | scii — lunga | pronome |
-| `a-7` | he | lui | hii — con il soffio davanti | pronome |
-| `a-8` | wife | moglie | uaif — la "e" finale non si legge | sostantivo, famiglia |
-| `a-9` | daughter | figlia | DO-ter — **la "gh" non si legge affatto** | sostantivo, famiglia |
-| `a-10` | son | figlio | san — **non "son" come in italiano** | sostantivo, famiglia |
-| `a-11` | enjoy | godersi | en-GIOI | verbo |
-| `a-12` | flight | volo | flait — **la "gh" muta, come in daughter** | sostantivo |
+| `a-morning` | morning | mattina | MOR-ning | sostantivo |
+| `a-welcome` | welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza |
+| `a-tickets` | tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale |
+| `a-here` | here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo |
+| `a-they` | they | loro | dei — la "th" è la lingua fra i denti | pronome |
+| `a-she` | she | lei | scii — lunga | pronome |
+| `a-he` | he | lui | hii — con il soffio davanti | pronome |
+| `a-wife` | wife | moglie | uaif — la "e" finale non si legge | sostantivo, famiglia |
+| `a-daughter` | daughter | figlia | DO-ter — **la "gh" non si legge affatto** | sostantivo, famiglia |
+| `a-son` | son | figlio | san — **non "son" come in italiano** | sostantivo, famiglia |
+| `a-enjoy` | enjoy | godersi | en-GIOI | verbo |
+| `a-flight` | flight | volo | flait — **la "gh" muta, come in daughter** | sostantivo |
 
 ---
 

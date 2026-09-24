@@ -131,15 +131,31 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `b-1` | espressione | traduzione | come si legge | etichetta grammaticale |
+| `b-esempio-espressione` | espressione | traduzione | come si legge | etichetta grammaticale |
 
 ### Grado A — le parole
 
 *Stesse colonne del grado B → `levels.A.items[]`.*
 
+⚠️ **L'ID DEI GRADI A E B È DESCRITTIVO, MAI UN NUMERO — E QUESTA RIGA NASCE DA
+UN ERRORE DI QUESTO STESSO MODELLO.** Il 2026-09-23 la riga di esempio diceva
+`a-1`, i due episodi l'hanno seguita, e sono arrivati in fondo alla trascrizione
+prima che qualcuno se ne accorgesse.
+
+**Perché non è una preferenza:** `app/sessione.js` costruisce la chiave della
+mastery come `<modulo>:<id della voce>:<direzione>`. Con un id posizionale,
+**inserire domani una parola in mezzo al grado A rinumera tutte quelle dopo** —
+e `match:a-5:en-it`, che era «where», diventa la parola nuova. **Nessun errore,
+nessun rosso: il colore di una voce passa a un'altra.**
+
+*È la stessa cosa che la regola 4 dice degli episodi: «l'id non cambia mai —
+descrittivo, congelato; metterci una posizione è lo stesso errore di
+`episode1`».* **I gradi C e D fanno eccezione, e per una ragione: lì la
+posizione È l'identità della battuta.**
+
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `a-1` | parola | traduzione | come si legge | etichetta grammaticale |
+| `a-parola` | parola | traduzione | come si legge | etichetta grammaticale |
 
 ---
 

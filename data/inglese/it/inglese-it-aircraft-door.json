@@ -22,84 +22,84 @@
       "label": "Parole",
       "items": [
         {
-          "id": "a-1",
+          "id": "a-morning",
           "english": "morning",
           "italian": "mattina",
           "pronunciationTip": "MOR-ning",
           "grammarCategory": "sostantivo"
         },
         {
-          "id": "a-2",
+          "id": "a-welcome",
           "english": "welcome",
           "italian": "benvenuto",
           "pronunciationTip": "UEL-com — la \"e\" finale non si legge",
           "grammarCategory": "espressione di accoglienza"
         },
         {
-          "id": "a-3",
+          "id": "a-tickets",
           "english": "tickets",
           "italian": "biglietti",
           "pronunciationTip": "TI-chets — la \"ck\" è una \"c\" dura sola",
           "grammarCategory": "sostantivo plurale"
         },
         {
-          "id": "a-4",
+          "id": "a-here",
           "english": "here",
           "italian": "qui",
           "pronunciationTip": "hia — la \"h\" è un soffio, la \"e\" finale muta",
           "grammarCategory": "avverbio di luogo"
         },
         {
-          "id": "a-5",
+          "id": "a-they",
           "english": "they",
           "italian": "loro",
           "pronunciationTip": "dei — la \"th\" è la lingua fra i denti",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-6",
+          "id": "a-she",
           "english": "she",
           "italian": "lei",
           "pronunciationTip": "scii — lunga",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-7",
+          "id": "a-he",
           "english": "he",
           "italian": "lui",
           "pronunciationTip": "hii — con il soffio davanti",
           "grammarCategory": "pronome"
         },
         {
-          "id": "a-8",
+          "id": "a-wife",
           "english": "wife",
           "italian": "moglie",
           "pronunciationTip": "uaif — la \"e\" finale non si legge",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-9",
+          "id": "a-daughter",
           "english": "daughter",
           "italian": "figlia",
           "pronunciationTip": "DO-ter — <strong>la \"gh\" non si legge affatto</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-10",
+          "id": "a-son",
           "english": "son",
           "italian": "figlio",
           "pronunciationTip": "san — <strong>non \"son\" come in italiano</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
-          "id": "a-11",
+          "id": "a-enjoy",
           "english": "enjoy",
           "italian": "godersi",
           "pronunciationTip": "en-GIOI",
           "grammarCategory": "verbo"
         },
         {
-          "id": "a-12",
+          "id": "a-flight",
           "english": "flight",
           "italian": "volo",
           "pronunciationTip": "flait — <strong>la \"gh\" muta, come in daughter</strong>",
@@ -111,42 +111,42 @@
       "label": "Espressioni",
       "items": [
         {
-          "id": "b-1",
+          "id": "b-good-morning",
           "english": "good morning",
           "italian": "buongiorno",
           "pronunciationTip": "gud MOR-ning",
           "grammarCategory": "saluto"
         },
         {
-          "id": "b-2",
+          "id": "b-welcome-aboard",
           "english": "welcome aboard",
           "italian": "benvenuti a bordo",
           "pronunciationTip": "UEL-com a-BORD",
           "grammarCategory": "formula di accoglienza"
         },
         {
-          "id": "b-3",
+          "id": "b-here-they-are",
           "english": "here they are",
           "italian": "eccoli",
           "pronunciationTip": "hia dei ar",
           "grammarCategory": "espressione"
         },
         {
-          "id": "b-4",
+          "id": "b-thank-you",
           "english": "thank you",
           "italian": "grazie",
           "pronunciationTip": "THENK iu — la \"th\" fra i denti",
           "grammarCategory": "formula di cortesia"
         },
         {
-          "id": "b-5",
+          "id": "b-this-way-please",
           "english": "this way, please",
           "italian": "da questa parte, prego",
           "pronunciationTip": "dis UEI pliiz",
           "grammarCategory": "indicazione di direzione"
         },
         {
-          "id": "b-6",
+          "id": "b-enjoy-your-flight",
           "english": "enjoy your flight",
           "italian": "buon volo",
           "pronunciationTip": "en-GIOI ior flait",

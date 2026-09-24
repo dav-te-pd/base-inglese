@@ -102,84 +102,84 @@
       "label": "Parole",
       "items": [
         {
-          "id": "a-1",
+          "id": "a-hello",
           "english": "hello",
           "italian": "Ciao / Salve",
           "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
           "grammarCategory": "saluto"
         },
         {
-          "id": "a-2",
+          "id": "a-hi",
           "english": "hi",
           "italian": "Ciao",
           "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
           "grammarCategory": "saluto"
         },
         {
-          "id": "a-3",
+          "id": "a-nice",
           "english": "nice",
           "italian": "bello / piacevole",
           "pronunciationTip": "nais",
           "grammarCategory": "aggettivo"
         },
         {
-          "id": "a-4",
+          "id": "a-meet",
           "english": "meet",
           "italian": "incontrare",
           "pronunciationTip": "miit — la \"i\" è lunga e tesa, non \"mit\"",
           "grammarCategory": "verbo"
         },
         {
-          "id": "a-5",
+          "id": "a-where",
           "english": "where",
           "italian": "dove",
           "pronunciationTip": "UEAR — la \"wh\" è un soffio, non \"vu\"",
           "grammarCategory": "avverbio interrogativo"
         },
         {
-          "id": "a-6",
+          "id": "a-italy",
           "english": "Italy",
           "italian": "Italia",
           "pronunciationTip": "I-ta-li — accento sulla prima",
           "grammarCategory": "nome di paese"
         },
         {
-          "id": "a-7",
+          "id": "a-from",
           "english": "from",
           "italian": "da / di",
           "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
           "grammarCategory": "preposizione"
         },
         {
-          "id": "a-8",
+          "id": "a-and",
           "english": "and",
           "italian": "e",
           "pronunciationTip": "and — la \"d\" finale si sente appena",
           "grammarCategory": "congiunzione"
         },
         {
-          "id": "a-9",
+          "id": "a-years",
           "english": "years",
           "italian": "anni",
           "pronunciationTip": "i-ars — parte con un suono di \"i\"",
           "grammarCategory": "sostantivo"
         },
         {
-          "id": "a-10",
+          "id": "a-old",
           "english": "old",
           "italian": "vecchio (di età)",
           "pronunciationTip": "ould — la \"o\" è lunga",
           "grammarCategory": "aggettivo"
         },
         {
-          "id": "a-11",
+          "id": "a-the",
           "english": "the",
           "italian": "il / la / i / le",
           "pronunciationTip": "de — la lingua tra i denti, non \"ze\"",
           "grammarCategory": "articolo"
         },
         {
-          "id": "a-12",
+          "id": "a-family",
           "english": "family",
           "italian": "famiglia",
           "pronunciationTip": "FA-mi-li — accento sulla prima",
@@ -191,49 +191,49 @@
       "label": "Espressioni",
       "items": [
         {
-          "id": "b-1",
+          "id": "b-i-am",
           "english": "I am",
           "italian": "(io) sono",
           "pronunciationTip": "ai am",
           "grammarCategory": "pronome + verbo essere"
         },
         {
-          "id": "b-2",
+          "id": "b-im",
           "english": "I'm",
           "italian": "(io) sono",
           "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
           "grammarCategory": "pronome + verbo essere, contratto"
         },
         {
-          "id": "b-3",
+          "id": "b-we-are",
           "english": "we are",
           "italian": "(noi) siamo",
           "pronunciationTip": "ui ar",
           "grammarCategory": "pronome + verbo essere"
         },
         {
-          "id": "b-4",
+          "id": "b-nice-to-meet-you",
           "english": "nice to meet you",
           "italian": "Piacere di conoscerti / conoscervi",
           "pronunciationTip": "nais tu MIIT iu",
           "grammarCategory": "espressione idiomatica"
         },
         {
-          "id": "b-5",
+          "id": "b-i-am-from",
           "english": "I am from",
           "italian": "Vengo da / Sono di",
           "pronunciationTip": "ai am fram",
           "grammarCategory": "pronome + verbo essere + preposizione"
         },
         {
-          "id": "b-6",
+          "id": "b-and-you",
           "english": "and you?",
           "italian": "E tu? / E voi?",
           "pronunciationTip": "and IU — accento su \"you\"",
           "grammarCategory": "espressione"
         },
         {
-          "id": "b-7",
+          "id": "b-years-old",
           "english": "years old",
           "italian": "anni (di età)",
           "pronunciationTip": "i-ars OULD",

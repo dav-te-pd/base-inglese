@@ -139,13 +139,13 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `b-1` | I am | (io) sono | ai am | pronome + verbo essere |
-| `b-2` | I'm | (io) sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
-| `b-3` | we are | (noi) siamo | ui ar | pronome + verbo essere |
-| `b-4` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
-| `b-5` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
-| `b-6` | and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
-| `b-7` | years old | anni (di età) | i-ars OULD | espressione per l'età |
+| `b-i-am` | I am | (io) sono | ai am | pronome + verbo essere |
+| `b-im` | I'm | (io) sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
+| `b-we-are` | we are | (noi) siamo | ui ar | pronome + verbo essere |
+| `b-nice-to-meet-you` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
+| `b-i-am-from` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
+| `b-and-you` | and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
+| `b-years-old` | years old | anni (di età) | i-ars OULD | espressione per l'età |
 
 ### Grado A — le parole
 
@@ -153,18 +153,18 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `a-1` | hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
-| `a-2` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
-| `a-3` | nice | bello / piacevole | nais | aggettivo |
-| `a-4` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
-| `a-5` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
-| `a-6` | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
-| `a-7` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
-| `a-8` | and | e | and — la "d" finale si sente appena | congiunzione |
-| `a-9` | years | anni | i-ars — parte con un suono di "i" | sostantivo |
-| `a-10` | old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
-| `a-11` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
-| `a-12` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
+| `a-hello` | hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
+| `a-hi` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
+| `a-nice` | nice | bello / piacevole | nais | aggettivo |
+| `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
+| `a-where` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
+| `a-italy` | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
+| `a-from` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
+| `a-and` | and | e | and — la "d" finale si sente appena | congiunzione |
+| `a-years` | years | anni | i-ars — parte con un suono di "i" | sostantivo |
+| `a-old` | old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
+| `a-the` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
+| `a-family` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
 
 ---
 
