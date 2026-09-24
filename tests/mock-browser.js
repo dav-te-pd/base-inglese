@@ -157,7 +157,17 @@ function costruisci(opzioni) {
   // La guardia sul `_corrente` dentro `_finisci` e' la parte che conta: una
   // chiusura in ritardo non deve spegnere l'audio partito dopo di lei.
   //
-  // `paused` resta finto: e' **F.2c**, e va da solo.
+  // ⚠️ E `paused` E' VERO DAL PASSO F.2c (2026-09-24). Non e' un'etichetta:
+  // `pause()` ferma il timer e si ricorda quanto mancava, `resume()` riparte
+  // da li'. *Un `paused` che cambia solo un booleano direbbe "sono in pausa"
+  // mentre l'audio finisce da solo alla sua ora — la stessa forma del finto
+  // che semplifica troppo (regola 19).*
+  //
+  // ⚠️ E IL GUADAGNO E' MISURATO: `riprendiLaVoce()` fa
+  // `if (synth && synth.paused) synth.resume();`. Con `paused` sempre
+  // `undefined`, quella riga **non e' mai stata eseguita da nessun test** —
+  // il pulsante di pausa del Dialogo (`dgTogglePause`, app/dialogo.js:589)
+  // riprendeva solo il timer della battuta, mai la voce.
   const nucleo = `
     (function () {
       function FakeUtterance(text) {
@@ -165,12 +175,15 @@ function costruisci(opzioni) {
       }
       var fakeSynth = {
         speaking: false,
+        paused: false,
         _corrente: null,
         speak: function (utter) {
           var self = this;
           this.speaking = true;
+          this.paused = false;
           this._corrente = utter;
           if (utter.onstart) utter.onstart();
+          utter._finePrevista = Date.now() + ${o.fineVoceMs};
           utter._timer = setTimeout(function () { self._finisci(utter); }, ${o.fineVoceMs});
         },
         // Chiude UNA utterance, una volta sola: la guardia su _corrente e'
@@ -181,6 +194,7 @@ function costruisci(opzioni) {
           if (this._corrente !== utter) return;
           clearTimeout(utter._timer);
           this.speaking = false;
+          this.paused = false;
           this._corrente = null;
           if (utter.onend) utter.onend();
         },
@@ -188,7 +202,26 @@ function costruisci(opzioni) {
           var self = this, u = this._corrente;
           if (u) setTimeout(function () { self._finisci(u); }, 0);
         },
-        pause: function () {}, resume: function () {},
+        // ⚠️ pause() SOSPENDE DAVVERO, dal passo F.2c: ferma il timer e si
+        // ricorda quanto mancava. Un paused che cambia solo un'etichetta
+        // sarebbe peggio di niente — direbbe "sono in pausa" mentre l'audio
+        // finisce da solo alla sua ora. (Niente apici inversi qui dentro:
+        // questo testo vive in un template literal.)
+        pause: function () {
+          if (!this.speaking || this.paused) return;
+          var u = this._corrente;
+          this.paused = true;
+          clearTimeout(u._timer);
+          u._restano = Math.max(0, u._finePrevista - Date.now());
+        },
+        resume: function () {
+          if (!this.paused) return;
+          var self = this, u = this._corrente;
+          this.paused = false;
+          if (!u) return;
+          u._finePrevista = Date.now() + u._restano;
+          u._timer = setTimeout(function () { self._finisci(u); }, u._restano);
+        },
         getVoices: function () { return [{ name: ${JSON.stringify(o.nomeVoce)}, lang: 'en-US' }]; },
         onvoiceschanged: null
       };
