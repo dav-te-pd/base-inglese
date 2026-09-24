@@ -1,7 +1,7 @@
 {
   "speech": {
-    "recognitionLang": "en-US",
-    "synthesisLang": "en-US"
+    "synthesisLang": "en-US",
+    "recognitionLang": "en-US"
   },
   "grades": [
     "A",
@@ -40,25 +40,17 @@
       "name": "Your Story",
       "subtitle": "Personalizza la tua storia"
     },
-    "repeatAloud": {
-      "name": "Repeat Aloud",
-      "subtitle": "Ripeti ad alta voce"
-    },
     "meetTheStory": {
       "name": "Meet the Story",
       "subtitle": "Ascolta la storia"
     },
+    "repeatAloud": {
+      "name": "Repeat Aloud",
+      "subtitle": "Ripeti ad alta voce"
+    },
     "whyWeSayIt": {
       "name": "Why We Say It",
       "subtitle": "Perché si dice così"
-    },
-    "voicePractice": {
-      "name": "Voice Practice",
-      "subtitle": "Allena la pronuncia"
-    },
-    "voiceCoach": {
-      "name": "Voice Check",
-      "subtitle": "Metti alla prova la pronuncia"
     },
     "matchEngIta": {
       "name": "Match Practice en→it",
@@ -68,14 +60,6 @@
       "name": "Match Practice it→en",
       "subtitle": "Abbina le traduzioni"
     },
-    "speedMatchEngIta": {
-      "name": "Speed Match en→it",
-      "subtitle": "Traduci a tempo"
-    },
-    "speedMatchItaEng": {
-      "name": "Speed Match it→en",
-      "subtitle": "Traduci a tempo"
-    },
     "flashcardAEngIta": {
       "name": "Flash Card en→it",
       "subtitle": "Ripassa quello che hai imparato"
@@ -83,6 +67,10 @@
     "flashcardAItaEng": {
       "name": "Flash Card it→en",
       "subtitle": "Ripassa quello che hai imparato"
+    },
+    "voicePractice": {
+      "name": "Voice Practice",
+      "subtitle": "Allena la pronuncia"
     },
     "dialogoAscoltaRipeti": {
       "name": "Dialogue: Listen & Repeat",
@@ -95,6 +83,18 @@
     "dialogoContinuo": {
       "name": "Dialogue: Real Dialogue",
       "subtitle": "Il dialogo vero"
+    },
+    "speedMatchEngIta": {
+      "name": "Speed Match en→it",
+      "subtitle": "Traduci a tempo"
+    },
+    "speedMatchItaEng": {
+      "name": "Speed Match it→en",
+      "subtitle": "Traduci a tempo"
+    },
+    "voiceCoach": {
+      "name": "Voice Check",
+      "subtitle": "Metti alla prova la pronuncia"
     }
   },
   "sequences": {
@@ -228,7 +228,5 @@
       "categoria": "storia",
       "sequence": "narrativo-standard"
     }
-  },
-  "_nota_prova_corta": "SONDA, NON CONTENUTO. 'prova-corta' e' stata aggiunta il 2026-09-20 per provare i due selettori del Pannello Admin: cinque passi contro ventidue, cosi' la mappa si accorcia sotto gli occhi e 'ha funzionato' si distingue da 'sto guardando la vecchia'. NON viene da docs/inglese/it/struttura-corso.md e nessun episodio la dichiara: e' inerte finche' qualcuno non la sceglie dal pannello. Si toglie quando arrivano le sequenze vere.",
-  "_nota_ordine_episodi": "episodeSequences e' il gemello di sequences, un livello sopra: la' i MODULI di un episodio, qui gli EPISODI di un corso. L'edizione dichiara quale usa con episodeSequence — una sola, perche' un'edizione ha un catalogo solo; il plurale esiste per il giorno in cui servisse un secondo percorso degli stessi episodi. RIORDINARE E' SPOSTARE UNA RIGA di questa lista: il numero dell'episodio non esiste da nessuna parte, e' la sua posizione qui. L'ORDINE DEVE COMBACIARE con la tabella della sezione 7 di docs/inglese/it/inglese-it-struttura-corso.md, che ne resta la fonte (regola 26): lo verifica tests/test_struttura_corso.js, cosi' i due non possono divergere in silenzio."
+  }
 }

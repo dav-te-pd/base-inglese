@@ -1,114 +1,112 @@
 {
-  "_nota": {
-    "cosa": "Le tabelle di personalizzazione condivise fra tutti gli episodi di questa edizione (CLAUDE.md regola 4). Un file episodio le NOMINA per stringa — \"table\": \"people.papa\" — e non ne duplica il contenuto.",
-    "attenzione": "IL CONTENUTO QUI DENTRO E' QUELLO CHE L'APP AVEVA IN APP_CONFIG IL 2026-09-15, NON QUELLO DEL MAGAZZINO. Non e' una perdita: e' una scelta.",
-    "perche": "Il passo che ha creato questo file e' una CONVERSIONE PURA — i dati escono dal codice e arrivano da un fetch, e nient'altro cambia. Se fosse arrivato anche il contenuto nuovo, un rosso avrebbe avuto due sospettati invece di uno.",
-    "le_due_differenze_con_docs_inglese_it_tabelle_personalizzazione_md": [
-      "DESTINAZIONI: qui sei (Cina, Giappone, Spagna, Francia, Germania, Irlanda). Il magazzino ne ha UNDICI, e Spagna/Francia/Germania sono USCITE per una decisione didattica scritta nel markdown. Le due tabelle divergono, e quella giusta e' quella del markdown.",
-      "ID: qui \"marco\", \"mondovi\", \"cina\". Nel magazzino \"papa-marco\", \"orig-mondovi\", \"dest-cina\".",
-      "CHIUSA IL 2026-09-20 (passo 1.8): la TRADUCIBILITA' era dedotta dalla tabella (buildSlotFields: slot.table.indexOf(\"people.\") === 0) e adesso e' dichiarata PER RIGA, con la colonna \"traducibile\". Il comportamento non e' cambiato di un carattere: ogni riga porta il valore che la deduzione le dava. E' cambiato CHI lo decide — la riga, non il nome della tabella che la contiene."
-    ],
-    "quindi": "Chi apre questo file e lo confronta col markdown trova DUE differenze e NON deve concludere che si sia perso qualcosa. Il contenuto vero arriva col passo che porta anche il secondo campo per riga (citta'+paese), le eta' in lettere e la migrazione dei valori salvati — vedi la sezione \"Cosa manca\" del markdown.",
-    "luoghi_di_partenza": "La chiave e' \"departures\". Lo SLOT che la usa si chiama \"partenza\" (inglese-it-gate.json): sono due nomi diversi della stessa cosa, e non e' un errore.",
-    "colonne_di_una_riga": "value (l'id salvato), it, en, e traducibile. Le colonne fr/es/de sono USCITE il 2026-09-20 (passo 1.8): erano 147 stringhe vuote su 49 righe e non le leggeva nessuno. Un'edizione francese non le vuole qui — vuole il suo file, in data/francese/it/ (CLAUDE.md regola 4: un'edizione non e' una traduzione).",
-    "traducibile": "false = e' un nome proprio e resta com'e' in ogni lingua (Marco resta Marco). true = si traduce (Torino -> Turin). Chi manca vale true: le tabelle interne a un episodio (le eta') sono numeri nudi, e per loro it ed en coincidono comunque."
-  },
   "people": {
     "papa": [
       {
-        "value": "marco",
+        "value": "papa-marco",
         "it": "Marco",
         "en": "Mark",
         "traducibile": false
       },
       {
-        "value": "giancarlo",
+        "value": "papa-giancarlo",
         "it": "Giancarlo",
         "en": "Giancarlo",
         "traducibile": false
       },
       {
-        "value": "francesco",
+        "value": "papa-francesco",
         "it": "Francesco",
         "en": "Francis",
         "traducibile": false
       },
       {
-        "value": "andrea",
+        "value": "papa-andrea",
         "it": "Andrea",
         "en": "Andrew",
         "traducibile": false
       },
       {
-        "value": "luca",
+        "value": "papa-luca",
         "it": "Luca",
         "en": "Luke",
         "traducibile": false
       },
       {
-        "value": "paolo",
+        "value": "papa-paolo",
         "it": "Paolo",
         "en": "Paul",
         "traducibile": false
       },
       {
-        "value": "stefano",
+        "value": "papa-stefano",
         "it": "Stefano",
-        "en": "Steven",
+        "en": "Stephen",
         "traducibile": false
       },
       {
-        "value": "davide",
+        "value": "papa-davide",
         "it": "Davide",
         "en": "David",
+        "traducibile": false
+      },
+      {
+        "value": "papa-claudio",
+        "it": "Claudio",
+        "en": "Claude",
+        "traducibile": false
+      },
+      {
+        "value": "papa-federico",
+        "it": "Federico",
+        "en": "Frederick",
         "traducibile": false
       }
     ],
     "mamma": [
       {
-        "value": "giulia",
+        "value": "mamma-giulia",
         "it": "Giulia",
         "en": "Julia",
         "traducibile": false
       },
       {
-        "value": "anna",
+        "value": "mamma-anna",
         "it": "Anna",
-        "en": "Anna",
+        "en": "Ann",
         "traducibile": false
       },
       {
-        "value": "chiara",
+        "value": "mamma-chiara",
         "it": "Chiara",
         "en": "Clare",
         "traducibile": false
       },
       {
-        "value": "nicoletta",
+        "value": "mamma-nicoletta",
         "it": "Nicoletta",
         "en": "Nicole",
         "traducibile": false
       },
       {
-        "value": "laura",
+        "value": "mamma-laura",
         "it": "Laura",
         "en": "Laura",
         "traducibile": false
       },
       {
-        "value": "elena",
+        "value": "mamma-elena",
         "it": "Elena",
         "en": "Helen",
         "traducibile": false
       },
       {
-        "value": "silvia",
+        "value": "mamma-silvia",
         "it": "Silvia",
         "en": "Sylvia",
         "traducibile": false
       },
       {
-        "value": "francesca",
+        "value": "mamma-francesca",
         "it": "Francesca",
         "en": "Frances",
         "traducibile": false
@@ -116,49 +114,49 @@
     ],
     "figlia": [
       {
-        "value": "emma",
+        "value": "figlia-emma",
         "it": "Emma",
         "en": "Emma",
         "traducibile": false
       },
       {
-        "value": "sofia",
+        "value": "figlia-sofia",
         "it": "Sofia",
-        "en": "Sophia",
+        "en": "Sophie",
         "traducibile": false
       },
       {
-        "value": "alice",
+        "value": "figlia-alice",
         "it": "Alice",
         "en": "Alice",
         "traducibile": false
       },
       {
-        "value": "giorgia",
+        "value": "figlia-giorgia",
         "it": "Giorgia",
         "en": "Georgia",
         "traducibile": false
       },
       {
-        "value": "martina",
+        "value": "figlia-martina",
         "it": "Martina",
         "en": "Martina",
         "traducibile": false
       },
       {
-        "value": "sara",
+        "value": "figlia-sara",
         "it": "Sara",
         "en": "Sarah",
         "traducibile": false
       },
       {
-        "value": "chiara",
+        "value": "figlia-chiara",
         "it": "Chiara",
         "en": "Clare",
         "traducibile": false
       },
       {
-        "value": "beatrice",
+        "value": "figlia-beatrice",
         "it": "Beatrice",
         "en": "Beatrice",
         "traducibile": false
@@ -166,99 +164,123 @@
     ],
     "figlio": [
       {
-        "value": "tommaso",
+        "value": "figlio-tommaso",
         "it": "Tommaso",
         "en": "Thomas",
         "traducibile": false
       },
       {
-        "value": "leo",
+        "value": "figlio-leo",
         "it": "Leo",
         "en": "Leo",
         "traducibile": false
       },
       {
-        "value": "marco",
+        "value": "figlio-marco",
         "it": "Marco",
         "en": "Mark",
         "traducibile": false
       },
       {
-        "value": "giorgio",
+        "value": "figlio-giorgio",
         "it": "Giorgio",
         "en": "George",
         "traducibile": false
       },
       {
-        "value": "matteo",
+        "value": "figlio-matteo",
         "it": "Matteo",
         "en": "Matthew",
         "traducibile": false
       },
       {
-        "value": "lorenzo",
+        "value": "figlio-lorenzo",
         "it": "Lorenzo",
         "en": "Lawrence",
         "traducibile": false
       },
       {
-        "value": "simone",
+        "value": "figlio-simone",
         "it": "Simone",
         "en": "Simon",
         "traducibile": false
       },
       {
-        "value": "filippo",
+        "value": "figlio-filippo",
         "it": "Filippo",
         "en": "Philip",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-claudio",
+        "it": "Claudio",
+        "en": "Claude",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-federico",
+        "it": "Federico",
+        "en": "Frederick",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-paolo",
+        "it": "Paolo",
+        "en": "Paul",
         "traducibile": false
       }
     ],
     "cognome": [
       {
-        "value": "rossi",
-        "it": "Rossi",
-        "en": "Rossi",
-        "traducibile": false
-      },
-      {
-        "value": "bianchi",
-        "it": "Bianchi",
-        "en": "Bianchi",
-        "traducibile": false
-      },
-      {
-        "value": "ferrari",
-        "it": "Ferrari",
-        "en": "Ferrari",
-        "traducibile": false
-      },
-      {
-        "value": "russo",
-        "it": "Russo",
-        "en": "Russo",
-        "traducibile": false
-      },
-      {
-        "value": "costa",
+        "value": "cognome-costa",
         "it": "Costa",
         "en": "Costa",
         "traducibile": false
       },
       {
-        "value": "marino",
+        "value": "cognome-rossi",
+        "it": "Rossi",
+        "en": "Rossi",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-bianchi",
+        "it": "Bianchi",
+        "en": "Bianchi",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-ferrari",
+        "it": "Ferrari",
+        "en": "Ferrari",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-ferrario",
+        "it": "Ferrario",
+        "en": "Ferrario",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-russo",
+        "it": "Russo",
+        "en": "Russo",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-marino",
         "it": "Marino",
         "en": "Marino",
         "traducibile": false
       },
       {
-        "value": "barberis",
+        "value": "cognome-barberis",
         "it": "Barberis",
         "en": "Barberis",
         "traducibile": false
       },
       {
-        "value": "ambruosi",
+        "value": "cognome-ambruosi",
         "it": "Ambruosi",
         "en": "Ambruosi",
         "traducibile": false
@@ -268,59 +290,59 @@
   "places": {
     "departures": [
       {
-        "value": "mondovi",
+        "value": "orig-mondovi",
         "it": "Mondovì",
         "en": "Mondovì",
         "traducibile": true
       },
       {
-        "value": "torino",
+        "value": "orig-torino",
         "it": "Torino",
         "en": "Turin",
         "traducibile": true
       },
       {
-        "value": "milano",
+        "value": "orig-milano",
         "it": "Milano",
         "en": "Milan",
+        "traducibile": true
+      },
+      {
+        "value": "orig-roma",
+        "it": "Roma",
+        "en": "Rome",
+        "traducibile": true
+      },
+      {
+        "value": "orig-napoli",
+        "it": "Napoli",
+        "en": "Naples",
+        "traducibile": true
+      },
+      {
+        "value": "orig-palermo",
+        "it": "Palermo",
+        "en": "Palermo",
         "traducibile": true
       }
     ],
     "destinations": [
       {
-        "value": "cina",
-        "it": "Cina",
-        "en": "China",
+        "value": "dest-pechino",
+        "it": "Pechino",
+        "en": "Beijing",
         "traducibile": true
       },
       {
-        "value": "giappone",
-        "it": "Giappone",
-        "en": "Japan",
+        "value": "dest-shanghai",
+        "it": "Shanghai",
+        "en": "Shanghai",
         "traducibile": true
       },
       {
-        "value": "spagna",
-        "it": "Spagna",
-        "en": "Spain",
-        "traducibile": true
-      },
-      {
-        "value": "francia",
-        "it": "Francia",
-        "en": "France",
-        "traducibile": true
-      },
-      {
-        "value": "germania",
-        "it": "Germania",
-        "en": "Germany",
-        "traducibile": true
-      },
-      {
-        "value": "irlanda",
-        "it": "Irlanda",
-        "en": "Ireland",
+        "value": "dest-hong-kong",
+        "it": "Hong Kong",
+        "en": "Hong Kong",
         "traducibile": true
       }
     ]

@@ -140,6 +140,32 @@ function creaMappa(nome) {
 
 function confrontaTestoConLaFonte(log) {
   const md = fs.readFileSync(repoPath.apply(null, FONTE.split('/')), 'utf8');
+
+  // ⚠️ OGNI MARCATORE DEVE COMPARIRE UNA VOLTA SOLA, E QUESTA RIGA E' UN
+  // COMANDO AL POSTO DI UN'ATTENZIONE.
+  //
+  // `tabellaSotto` e il riquadro dei numeri usano `indexOf`, cioe' la PRIMA
+  // occorrenza. Basta che il testo del file citi un marcatore mentre lo
+  // spiega, e il lettore legge la tabella sbagliata — **senza esplodere**:
+  // trova una tabella, la confronta, e dice una differenza che non c'entra
+  // niente con quella vera.
+  //
+  // Misurato tre volte in due giorni, l'ultima **scrivendo la frase che
+  // spiega questa trappola**: la suite ha detto «grado A: la tabella ha 4
+  // righe, il json 12 voci», e le 4 righe erano la tabella della
+  // spiegazione. *Una frase che raccomanda attenzione l'ho gia' scritta e
+  // gia' violata; questo elenco o passa o non passa.*
+  {
+    const marcatori = ['### Grado A', '### Grado B', '### Grado C', '### Grado D',
+      '## 5 — LE SKILL', '## 6 — PERSONAGGI ED ETICHETTE', '## 7 — GLI SLOT',
+      'Numeri attesi nel JSON'];
+    const doppi = marcatori
+      .map(m => ({ m, n: md.split(m).length - 1 }))
+      .filter(x => x.n !== 1);
+    log('[Fonte] Ogni marcatore che un test cerca compare UNA volta sola in ' + FONTE,
+      doppi.length === 0,
+      doppi.map(x => '"' + x.m + '" ' + x.n + ' volte').join(' | '));
+  }
   const voci = g => loadGrade(g);
   const segna = creaMappa('segnaposto');
   const differenze = [];
@@ -159,7 +185,20 @@ function confrontaTestoConLaFonte(log) {
     a.chiavi.forEach((k, i) => segna.aggiungi(k, b.chiavi[i], dove));
   };
 
-  // ── Gradi A e B: quattro colonne, nessun segnaposto, confronto secco ──
+  // ⚠️ LE COLONNE SONO CAMBIATE IL 2026-09-23, E IL BLOCCO E' STATO SEGUITO,
+  // NON TOLTO (divieto 3). Il markdown ha preso la forma DATI: ogni tabella
+  // porta l'`id` come prima colonna, il grado D porta il `ruolo`, e il conto
+  // delle skill non sta piu' in una colonna del grado D ma nella sezione 5.
+  // L'invariante non e' cambiato — *il testo del json coincide con le tabelle
+  // della fonte* — e' cambiato dove stanno le colonne.
+  //
+  // ⚠️ E IL BLOCCO ADESSO PUO' CONTROLLARE UNA COSA IN PIU', che prima era
+  // impossibile: **che l'id del markdown sia quello del json**. Prima la
+  // tabella non lo portava, quindi le righe si accoppiavano per POSIZIONE e
+  // basta: una riga spostata nel markdown e non nel json passava inosservata
+  // finche' i due testi restavano uguali.
+
+  // ── Gradi A e B: id, testo, pronuncia, categoria ──
   [['A', '### Grado A'], ['B', '### Grado B']].forEach(([grado, titolo]) => {
     const t = tabellaSotto(md, titolo);
     const items = voci(grado);
@@ -170,14 +209,24 @@ function confrontaTestoConLaFonte(log) {
     t.righe.forEach((riga, i) => {
       const it = items[i];
       const dove = 'grado ' + grado + ' riga ' + (i + 1) + ' (' + it.id + ')';
-      confronta(dove + ' inglese', riga[0], it.english);
-      confronta(dove + ' italiano', riga[1], it.italian);
-      confronta(dove + ' pronuncia', riga[2], it.pronunciationTip);
-      confronta(dove + ' categoria', riga[3], it.grammarCategory);
+      confronta(dove + ' id', riga[0], it.id);
+      confronta(dove + ' inglese', riga[1], it.english);
+      confronta(dove + ' italiano', riga[2], it.italian);
+      confronta(dove + ' pronuncia', riga[3], it.pronunciationTip);
+      confronta(dove + ' categoria', riga[4], it.grammarCategory);
     });
   });
 
-  // ── Grado D: chi parla, il testo, e quante skill porta ogni battuta ──
+  // ── Le skill: quante ne porta ogni battuta, contate dalla sezione 5 ──
+  // Due righe con la stessa battuta sono due skill della stessa battuta: e'
+  // la forma che il file DATI dichiara, e il totale e' gia' controllato dal
+  // riquadro dei numeri attesi. Qui conta che stiano sulla battuta GIUSTA.
+  const skillPerBattuta = {};
+  tabellaSotto(md, '## 5 — LE SKILL').righe.forEach(r => {
+    skillPerBattuta[r[0]] = (skillPerBattuta[r[0]] || 0) + 1;
+  });
+
+  // ── Grado D: id, chi parla, il ruolo, il testo ──
   const tD = tabellaSotto(md, '### Grado D');
   const battuteMd = tD.righe;
   const battuteJson = voci('D');
@@ -188,18 +237,22 @@ function confrontaTestoConLaFonte(log) {
     battuteMd.forEach((riga, i) => {
       const it = battuteJson[i];
       const dove = 'grado D ' + riga[0] + ' (' + it.id + ')';
+      confronta(dove + ' id', riga[0], it.id);
       chi.aggiungi(riga[1], it.speaker, dove);
-      confrontaConSegnaposto(dove + ' inglese', riga[2], it.english);
-      confrontaConSegnaposto(dove + ' italiano', riga[3], it.italian);
-      // "1, 2" sono due skill, "—" nessuna. Il totale è già controllato dai
-      // numeri attesi: qui conta che stiano sulla battuta GIUSTA.
-      const attese = riga[4] === '—' ? 0 : riga[4].split(',').filter(x => x.trim()).length;
+      // Il ruolo decide da che parte sta la bolla: e' un dato, non una nota.
+      confronta(dove + ' ruolo', riga[2], it.ruolo);
+      confrontaConSegnaposto(dove + ' inglese', riga[3], it.english);
+      confrontaConSegnaposto(dove + ' italiano', riga[4], it.italian);
+      const attese = skillPerBattuta[riga[0]] || 0;
       const trovate = (it.whatYouLearn || []).length;
-      if (attese !== trovate) differenze.push(dove + ': la fonte le dà ' + attese + ' skill, il json ' + trovate);
+      if (attese !== trovate) differenze.push(dove + ': la fonte le da\' ' + attese + ' skill, il json ' + trovate);
     });
   }
 
-  // ── Grado C: le righe "= dN" non si ricopiano, si risolvono ──
+  // ── Grado C: id, testo, e da quale battuta viene ──
+  // ⚠️ LA SCORCIATOIA «= dN» NON C'E' PIU': il file DATI scrive la frase per
+  // intero anche quando e' identica alla battuta. Una riga che rimandava
+  // altrove si leggeva solo tenendo due tabelle sotto gli occhi.
   const tC = tabellaSotto(md, '### Grado C');
   const frasiJson = voci('C');
   if (tC.righe.length !== frasiJson.length) {
@@ -208,18 +261,10 @@ function confrontaTestoConLaFonte(log) {
     tC.righe.forEach((riga, i) => {
       const it = frasiJson[i];
       const dove = 'grado C ' + riga[0] + ' (' + it.id + ')';
-      const da = riga[3];                               // "d4"
-      let ing = riga[1], ita = riga[2];
-      const uguale = /^=\s*(d\d+)$/.exec(ing.trim());
-      if (uguale) {
-        const origine = battuteMd.find(r => r[0] === uguale[1]);
-        if (!origine) { differenze.push(dove + ': "' + ing + '" rimanda a una battuta che non esiste'); return; }
-        ing = origine[2]; ita = origine[3];
-      }
-      confrontaConSegnaposto(dove + ' inglese', ing, it.english);
-      confrontaConSegnaposto(dove + ' italiano', ita, it.italian);
-      // "d4" nella colonna "Da" è la battuta d-4 del json.
-      confronta(dove + ' fromLine', da.replace(/^d/, 'd-'), it.fromLine);
+      confronta(dove + ' id', riga[0], it.id);
+      confrontaConSegnaposto(dove + ' inglese', riga[1], it.english);
+      confrontaConSegnaposto(dove + ' italiano', riga[2], it.italian);
+      confronta(dove + ' fromLine', riga[3], it.fromLine);
     });
   }
 
@@ -562,7 +607,7 @@ async function run() {
     // Un nome scelto e ben riconoscibile: se riaffiorasse come etichetta si
     // vedrebbe subito, e non si confonderebbe con nessuna parola del dialogo.
     await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Etichette'),
-      JSON.stringify({ papa: 'giancarlo', mamma: 'nicoletta' })));
+      JSON.stringify({ papa: 'papa-giancarlo', mamma: 'mamma-nicoletta' })));
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
     await page.click('#go-episode');
@@ -591,7 +636,19 @@ async function run() {
     log('[B0] ...e il nome scelto c\'è, dentro le battute', dentro.indexOf('Giancarlo') !== -1);
     // La prova ②: il contorno c'è. Si guarda che l'etichetta del personaggio
     // esterno sia più di una parola sola, senza ricopiarla.
-    const esterno = (fonte.speakerLabels || {}).guide || '';
+    //
+    // ⚠️ IL PERSONAGGIO ESTERNO SI PRENDE DAL `ruolo`, NON DA UN NOME.
+    // Qui c'era `(fonte.speakerLabels || {}).guide`, cioè la chiave scritta a
+    // mano. Il 2026-09-23 quella chiave è diventata `hostess-gate` — e la riga
+    // non sarebbe morta: `esterno` sarebbe stato `''`, e l'asserzione avrebbe
+    // detto «l'etichetta non porta il contorno» stampando `etichetta: ""`.
+    // **Un rosso che manda a guardare nel posto sbagliato**: accusa il
+    // contorno mentre il guasto è il nome. Il `ruolo` è il dato che definisce
+    // quel personaggio; il nome è come si chiama oggi.
+    const speakerEsterno = (loadGrade('D').find(l => l.ruolo !== 'famiglia') || {}).speaker;
+    const esterno = (fonte.speakerLabels || {})[speakerEsterno] || '';
+    log('[B0] Il dialogo ha un personaggio non-famiglia, e ha la sua etichetta',
+      !!speakerEsterno && !!esterno, 'speaker: ' + speakerEsterno + ' | etichetta: "' + esterno + '"');
     log('[B0] L\'etichetta del personaggio esterno porta il contorno, non il solo mestiere',
       esterno.trim().split(/\s+/).length > 1, 'etichetta: "' + esterno + '"');
     log('[B0] Nessun errore JS', errors.length === 0, errors.join(' | '));
@@ -649,7 +706,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
-    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'torino' })));
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'orig-torino' })));
     await page.reload();
     await page.waitForSelector('#go-episode');
     await page.click('#go-episode');

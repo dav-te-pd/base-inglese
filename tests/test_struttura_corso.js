@@ -188,6 +188,68 @@ async function run() {
     log('[Nomi] Nome e sottotitolo combaciano carattere per carattere', okValori);
   }
 
+  // ============ 3-bis. Le sequenze dei moduli ============
+  //
+  // ⚠️ NASCE IL 2026-09-23, INSIEME ALLA SEZIONE 5 DEL DOCUMENTO, E SENZA DI
+  // LEI QUELLA SEZIONE SAREBBE DECORATIVA. Fino al 2026-09-22 i 22 passi
+  // vivevano SOLO nel JSON: erano l'ultimo dato dell'edizione senza fonte
+  // markdown, per una decisione che aveva due ragioni — «due elenchi
+  // divergono» e «il pannello Admin ci scrive dentro». La seconda e' caduta
+  // misurandola (il pannello scrive in `localStorage`, quel browser soltanto).
+  // **La prima non e' caduta: e' diventata questa asserzione.**
+  //
+  // COSA SI PERDE SENZA QUESTO BLOCCO: riordinare un passo nel JSON e non nel
+  // documento (o viceversa) non romperebbe niente — l'app funzionerebbe, con
+  // un ordine che la sua fonte non dichiara. E' lo stesso buco che `[Ordine]`
+  // ha chiuso per gli episodi, un livello piu' sotto.
+  {
+    const righe = tabellaSotto(doc, '## 5 — LE SEQUENZE DEI MODULI');
+    // ⚠️ `idModulo` sul NOME della sequenza non si puo' usare, e va detto:
+    // cerca `[A-Za-z][A-Za-z0-9]*`, e `narrativo-standard` ha un trattino —
+    // tornerebbe `narrativo`, cioe' un nome che non esiste, in silenzio.
+    // Sui moduli va bene: quelli sono camelCase senza trattini.
+    const dalDoc = {};
+    righe.forEach(r => {
+      const nome = r[0].replace(/`/g, '').trim();
+      const passo = { module: idModulo(r[1]) };
+      const g = grado(r[2]);
+      if (g) passo.grade = g;
+      (dalDoc[nome] = dalDoc[nome] || []).push(passo);
+    });
+
+    console.log('[Sequenze] documento: ' + Object.keys(dalDoc)
+      .map(n => n + '=' + dalDoc[n].length + ' passi').join(', '));
+
+    const nomiDoc = Object.keys(dalDoc).slice().sort();
+    const nomiConfig = Object.keys(config.sequences || {}).slice().sort();
+    const okNomi = JSON.stringify(nomiDoc) === JSON.stringify(nomiConfig);
+    if (!okNomi) diff('nomi delle sequenze', nomiDoc, nomiConfig);
+    log('[Sequenze] Ci sono le stesse sequenze, non una di piu e non una di meno', okNomi);
+
+    // Ogni sequenza si confronta PASSO PER PASSO, e l'ordine E' il dato: una
+    // sequenza e' una lista, non un insieme. Un modulo spostato di una
+    // posizione e' una decisione didattica diversa (i principi dell'ordine
+    // stanno nel documento, sezione 6 di allora: «il quiz dopo la versione
+    // calma dello stesso esercizio»).
+    nomiDoc.filter(n => nomiConfig.indexOf(n) !== -1).forEach(n => {
+      const ok = JSON.stringify(dalDoc[n]) === JSON.stringify(config.sequences[n]);
+      if (!ok) diff('passi di ' + n, dalDoc[n], config.sequences[n]);
+      log('[Sequenze] `' + n + '` combacia passo per passo (' + dalDoc[n].length + ')', ok);
+    });
+
+    // Un passo puo' nominare solo moduli e gradi che esistono: un refuso qui
+    // non alza niente a runtime — `resolveModuleOrder` salta il passo ignoto e
+    // la mappa nasce piu' corta di quanto qualcuno crede.
+    const moduliIgnoti = [];
+    const gradiIgnoti = [];
+    Object.keys(dalDoc).forEach(n => dalDoc[n].forEach(p => {
+      if (!config.moduleLabels[p.module]) moduliIgnoti.push(n + ' -> ' + p.module);
+      if (p.grade && config.grades.indexOf(p.grade) === -1) gradiIgnoti.push(n + ' -> ' + p.grade);
+    }));
+    log('[Sequenze] Ogni passo nomina un modulo che esiste', moduliIgnoti.length === 0, moduliIgnoti.join(', '));
+    log('[Sequenze] Ogni passo nomina un grado che esiste', gradiIgnoti.length === 0, gradiIgnoti.join(', '));
+  }
+
   // ============ 4. Gli episodi: nome, categoria e sequenza ============
   {
     const righe = tabellaSotto(doc, '## 7 — GLI EPISODI');

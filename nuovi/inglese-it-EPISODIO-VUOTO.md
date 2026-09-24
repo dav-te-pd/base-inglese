@@ -15,10 +15,16 @@ le note di scrittura, gli esclusi di proposito — stanno nei file RAGIONI.
 
 ### ① QUANTO È RIGIDO IL PARSER — misurato su `tests/test_story_modules.js` e `tests/test_episodio2.js`, 2026-09-23
 
-⚠️ **DI TUTTO QUESTO FILE, UN TEST LEGGE UNA COSA SOLA: il riquadro dei numeri
-attesi.** Titoli, numeri di sezione, ordine delle sezioni, nomi delle colonne:
-**niente di tutto questo è un'interfaccia.** Si possono cambiare senza rompere
-niente — l'unico lettore delle tabelle sono io.
+⚠️ **DI QUESTO FILE UN TEST LEGGE UNA COSA SOLA: il riquadro dei numeri
+attesi** (`tests/test_episodio2.js`). Titoli, numeri di sezione, ordine delle
+sezioni e nomi delle colonne **non sono un'interfaccia**: si possono cambiare
+senza rompere niente.
+
+⚠️ **MA NON VALE PER TUTTI GLI EPISODI, e la differenza e' stata misurata il
+2026-09-23:** di `gate`, `tests/test_story_modules.js` legge **anche le tabelle
+dei gradi**, confrontandole col JSON cella per cella. **Li' l'ordine delle
+colonne e' un'interfaccia; qui no.** *Chi cambia la forma di questo modello
+cambia tutti e due: il primo se ne accorge, il secondo no.*
 
 **Il riquadro invece è rigido, e in un modo che va saputo prima di scriverlo:**
 
@@ -125,15 +131,31 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `b-1` | espressione | traduzione | come si legge | etichetta grammaticale |
+| `b-esempio-espressione` | espressione | traduzione | come si legge | etichetta grammaticale |
 
 ### Grado A — le parole
 
 *Stesse colonne del grado B → `levels.A.items[]`.*
 
+⚠️ **L'ID DEI GRADI A E B È DESCRITTIVO, MAI UN NUMERO — E QUESTA RIGA NASCE DA
+UN ERRORE DI QUESTO STESSO MODELLO.** Il 2026-09-23 la riga di esempio diceva
+`a-1`, i due episodi l'hanno seguita, e sono arrivati in fondo alla trascrizione
+prima che qualcuno se ne accorgesse.
+
+**Perché non è una preferenza:** `app/sessione.js` costruisce la chiave della
+mastery come `<modulo>:<id della voce>:<direzione>`. Con un id posizionale,
+**inserire domani una parola in mezzo al grado A rinumera tutte quelle dopo** —
+e `match:a-5:en-it`, che era «where», diventa la parola nuova. **Nessun errore,
+nessun rosso: il colore di una voce passa a un'altra.**
+
+*È la stessa cosa che la regola 4 dice degli episodi: «l'id non cambia mai —
+descrittivo, congelato; metterci una posizione è lo stesso errore di
+`episode1`».* **I gradi C e D fanno eccezione, e per una ragione: lì la
+posizione È l'identità della battuta.**
+
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `a-1` | parola | traduzione | come si legge | etichetta grammaticale |
+| `a-parola` | parola | traduzione | come si legge | etichetta grammaticale |
 
 ---
 

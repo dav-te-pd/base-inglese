@@ -1,41 +1,89 @@
-**Versione: 20260921c**
+**Versione: 20260923a**
 
 # Struttura del corso — inglese per italiani
 
-> **Fonte per `data/inglese/it/inglese-it-struttura-corso.json`.** *Claude Code trascrive, non decide.*
->
-> **Le istruzioni stanno qui, non nel messaggio.** Il messaggio è sempre:
-> *«aggiorna leggendo l'ultima versione di `inglese-it-struttura-corso` in `docs/inglese/it/`»*.
->
-> ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
-
 ---
 
-## 1 — IL FILE DI STRUTTURA
+## 1 — COME SI LEGGE QUESTO FILE
 
-**STRUTTURA-CORSO_001** · La struttura del corso vive in **`data/inglese/it/inglese-it-struttura-corso.json`**,
-un file per edizione. *Una decisione presa per l'inglese non governa il francese.*
+**Questo è un file DATI: tutto quello che c'è dentro finisce in
+`data/inglese/it/inglese-it-struttura-corso.json`.** Le ragioni, le decisioni e
+quello che è aperto stanno nei file RAGIONI e non qui.
 
-**STRUTTURA-CORSO_002** · Il JSON ha **sette chiavi**, e ogni sezione di questo file ne riempie una:
+### ① QUANTO È RIGIDO IL PARSER — misurato su `tests/test_struttura_corso.js`, 2026-09-23
 
-| Chiave | Sezione |
+**Il lettore è la funzione `tabellaSotto(testo, titolo)`, e fa tre cose. Tutte
+e tre decidono come va scritto questo file.**
+
+**Cerca il titolo per TESTO ESATTO, e il NUMERO è dentro il testo.**
+`testo.indexOf(titolo)` — sottostringa, sensibile a maiuscole e accenti. I
+cinque titoli cercati, alla lettera:
+
+**I cinque titoli cercati sono `##` più uno spazio più il testo di questa
+colonna**, carattere per carattere:
+
+| Il testo dopo `## ` | Cosa ne legge |
 |---|---|
-| `grades`, `gradeNames` | 2 — I gradi |
-| `moduleTypes` | 3 — Le categorie |
-| `moduleLabels` | 4 — I nomi dei moduli |
-| `sequences` | 6 — Le sequenze dei moduli |
-| `episodes` | 7 — Gli episodi |
-| `speech` | 8 — Le lingue del parlato |
+| `2 — I GRADI` | `grades` e `gradeNames` |
+| `3 — LE CATEGORIE DEI MODULI` | `moduleTypes` |
+| `4 — I NOMI DEI MODULI` | `moduleLabels` |
+| `7 — GLI EPISODI` | `episodes` **e** l'ordine di `episodeSequences` |
+| `8 — LE LINGUE DEL PARLATO` | `speech` |
 
-**STRUTTURA-CORSO_003** · ⚠️ **L'app carica questo JSON prima di disegnare qualunque schermata.** Se
-non arriva, si vede la schermata d'errore — non una mappa a metà.
+⚠️ **IL `## ` QUI SOPRA È STACCATO APPOSTA, e non è pedanteria.** Se questa
+tabella scrivesse i titoli per intero, `indexOf` troverebbe **questa riga**
+invece della sezione vera — e il parser leggerebbe come «tabella dei gradi» il
+resto di questa tabella, senza lamentarsi. *La prova è ripetibile:
+`grep -c '^## 2'` deve dare **1**.*
+
+⚠️ **Il trattino è un trattone `—` (U+2014) con uno spazio prima e uno dopo.**
+Un trattino normale `-` non viene trovato, e il test non dice «trattino
+sbagliato»: dice «Titolo non trovato».
+
+⚠️ **RINUMERARE UNA SEZIONE ROMPE IL TEST.** È il motivo per cui **qui il 5 e il
+6 non esistono**: le due sezioni che li portavano sono passate in RAGIONI, e
+chiudere il buco tirando indietro il 7 farebbe fallire tre asserzioni. *Il buco
+non è un difetto: è il segno visibile che quei numeri sono un'interfaccia.*
+
+**Prende la PRIMA tabella dopo il titolo, e ignora tutto quello che c'è in
+mezzo.** Righe di prosa, avvisi, sottotitoli: saltati, purché non comincino con
+`|`. La tabella finisce alla prima riga **non vuota** che non comincia con `|`
+— **una riga vuota dentro la tabella non la chiude.**
+
+**Legge le colonne PER POSIZIONE, mai per nome.** `r[0]`, `r[1]`, `r[2]`,
+`r[3]`. **L'intestazione della tabella non viene mai letta**: le sue parole sono
+libere, **l'ordine delle colonne no**. Serve almeno una riga oltre
+all'intestazione, altrimenti il test esplode invece di diventare rosso.
+
+⚠️ **I backtick si tolgono in alcune colonne e in altre NO**, e la differenza si
+vede solo qui:
+
+| Dove | I backtick |
+|---|---|
+| id di categoria, modulo, episodio · categoria · sequenza · chiavi del parlato | **tolti** — scriverli o no è uguale |
+| **lettera del grado**, **nome del grado**, **nome e sottotitolo del modulo**, **nome dell'episodio** | **NON tolti** — un backtick di troppo è una differenza |
+
+**Nome e sottotitolo di un modulo, e il nome di un episodio, si confrontano
+carattere per carattere, accenti compresi.** *Il 2026-09-21 «Perché si dice
+così» scritto con gli apostrofi è passato inosservato: è testo che legge lo
+studente.*
+
+**L'ordine delle righe conta in tre sezioni su cinque:**
+
+| Sezione | L'ordine delle righe |
+|---|---|
+| `2 — I GRADI` | **è** l'ordine di `grades` |
+| `3 — LE CATEGORIE DEI MODULI` | **è** l'ordine delle chiavi di `moduleTypes` |
+| `7 — GLI EPISODI` | **è** l'ordine degli episodi del corso — **spostare un episodio è spostare questa riga** |
+| `4 — I NOMI DEI MODULI` | non conta: è un elenco a chiave, nessuno lo scorre |
+| `8 — LE LINGUE DEL PARLATO` | non conta |
 
 ---
 
 ## 2 — I GRADI
 
-**STRUTTURA-CORSO_004** · Quattro gradi. La **lettera** è l'identificativo tecnico (codice, dati,
-Pannello Admin). Il **nome** è quello che vede lo studente.
+*Colonne, nell'ordine: **lettera** → `grades` e chiave di `gradeNames` · **nome
+mostrato** → valore di `gradeNames`. La terza colonna non viene letta.*
 
 | Lettera | Nome mostrato | Cosa contiene |
 |---|---|---|
@@ -44,43 +92,30 @@ Pannello Admin). Il **nome** è quello che vede lo studente.
 | C | Frasi | frasi, ricavate spezzando le battute |
 | D | Dialogo | le battute intere |
 
-**STRUTTURA-CORSO_005** · Il nome si mostra accanto alla categoria, separato da un punto medio:
-*«Studio · Parole»*, *«Quiz · Frasi»*.
-
-**STRUTTURA-CORSO_006** · *Perché il nome serve:* **la lettera non dice niente a chi usa l'app** —
-senza, gli esercizi sembrano ripetersi senza motivo.
-
 ---
 
 ## 3 — LE CATEGORIE DEI MODULI
 
-**STRUTTURA-CORSO_007** · Sei categorie. Dicono allo studente **cosa lo aspetta**, non se verrà
-valutato: **tutti i moduli registrano il risultato, sempre**.
+*Colonne: **id** → chiave di `moduleTypes` (i backtick si tolgono) · **etichetta**
+→ `moduleTypes.<id>.label`. L'ordine delle righe è l'ordine delle chiavi.*
 
-**STRUTTURA-CORSO_008** · **La differenza fra studio e quiz non è la valutazione: è la
-pressione.** Nello studio si va al proprio ritmo, nel quiz c'è il tempo o l'avanzamento
-automatico.
-
-| Chiave | Etichetta | Moduli |
+| Id | Etichetta mostrata | A cosa serve |
 |---|---|---|
 | `inizio` | Inizio | Your Story |
-| `studio` | Studio | Meet the Story, Repeat Aloud, Why We Say It, Flash Card, Match Practice, Voice Practice |
+| `studio` | Studio | si va al proprio ritmo |
 | `dialogo` | Studia il dialogo | i tre Dialogue |
-| `quiz` | Quiz | Speed Match, Voice Check |
-| `test` | Verifica finale | Test — **non ancora costruito** |
-| `fine` | Fine | Modulo Finale, Download — **non ancora costruiti** |
+| `quiz` | Quiz | c'è il tempo o l'avanzamento automatico |
+| `test` | Verifica finale | non ancora costruito |
+| `fine` | Fine | non ancora costruito |
 
 ---
 
 ## 4 — I NOMI DEI MODULI
 
-**STRUTTURA-CORSO_009** · Ogni modulo ha **nome** e **sottotitolo**, modificabili separatamente.
+*Colonne: **id** → chiave di `moduleLabels` · **nome** → `.name` · **sottotitolo**
+→ `.subtitle`. Nome e sottotitolo si confrontano carattere per carattere.*
 
-**STRUTTURA-CORSO_010** · **I nomi restano in inglese, i sottotitoli nella lingua dello studente.**
-*Il nome è l'etichetta del modulo; il sottotitolo dice cosa ci si fa — e un'edizione tedesca
-vuole i suoi.*
-
-| Chiave | Nome | Sottotitolo |
+| Id | Nome | Sottotitolo |
 |---|---|---|
 | `personalizzazione` | Your Story | Personalizza la tua storia |
 | `meetTheStory` | Meet the Story | Ascolta la storia |
@@ -100,174 +135,80 @@ vuole i suoi.*
 
 ---
 
-## 5 — LE REGOLE DI ESITO
+## 5 — LE SEQUENZE DEI MODULI
 
-**STRUTTURA-CORSO_011** · Un modulo produce un tipo di dato diverso a seconda di com'è fatto, **e
-la regola discende dal dato**.
+*Colonne: **sequenza** → chiave di `sequences` · **modulo** → `module` · **grado** → `grade`
+(vuoto dove il modulo non lavora su un grado).*
 
-| Regola | Dato prodotto | Moduli |
+⚠️ **L'ordine delle righe di ogni sequenza è l'ordine dei suoi passi.**
+
+⚠️ **Questa sezione nasce il 2026-09-23, e cambia una decisione del 21.** *Allora i 22 passi
+restavano solo nel JSON perché «il pannello Admin li modifica». **La misura ha detto che il
+pannello scrive solo in `localStorage`** — quel browser soltanto: l'unico scrittore del JSON è
+Claude Code, come per tutti gli altri dati. Erano l'ultimo dato senza fonte.*
+
+| Sequenza | Modulo | Grado |
 |---|---|---|
-| `completionRules` | nessuno | Your Story, Meet the Story, Repeat Aloud |
-| `selfAssessment` | una dichiarazione sul modulo intero | i tre Dialogue |
-| `selfScoreRules` | % di autovalutazioni | Flash Card, Why We Say It |
-| `moduleRules` | % di risposte verificate | Match Practice, Speed Match, Voice Practice, Voice Check, Test |
+| `narrativo-standard` | `personalizzazione` | |
+| `narrativo-standard` | `meetTheStory` | D |
+| `narrativo-standard` | `repeatAloud` | A |
+| `narrativo-standard` | `matchEngIta` | A |
+| `narrativo-standard` | `matchItaEng` | A |
+| `narrativo-standard` | `flashcardAEngIta` | A |
+| `narrativo-standard` | `flashcardAItaEng` | A |
+| `narrativo-standard` | `repeatAloud` | B |
+| `narrativo-standard` | `matchEngIta` | B |
+| `narrativo-standard` | `matchItaEng` | B |
+| `narrativo-standard` | `flashcardAEngIta` | B |
+| `narrativo-standard` | `voicePractice` | B |
+| `narrativo-standard` | `whyWeSayIt` | D |
+| `narrativo-standard` | `matchEngIta` | C |
+| `narrativo-standard` | `matchItaEng` | C |
+| `narrativo-standard` | `voicePractice` | C |
+| `narrativo-standard` | `dialogoAscoltaRipeti` | D |
+| `narrativo-standard` | `dialogoRipetiATempo` | D |
+| `narrativo-standard` | `dialogoContinuo` | D |
+| `narrativo-standard` | `speedMatchEngIta` | C |
+| `narrativo-standard` | `speedMatchItaEng` | C |
+| `narrativo-standard` | `voiceCoach` | C |
+| `prova-corta` | `personalizzazione` | |
+| `prova-corta` | `meetTheStory` | D |
+| `prova-corta` | `repeatAloud` | A |
+| `prova-corta` | `matchEngIta` | A |
+| `prova-corta` | `dialogoAscoltaRipeti` | D |
 
-**STRUTTURA-CORSO_012** · **Quale tentativo conta:** `lastAttempt` dove si può ritentare (Voice
-Practice), `firstAttempt` dove non si può.
+⚠️ **`prova-corta` è una sonda, non contenuto:** *serve a provare i selettori del Pannello Admin, e
+**nessun episodio la dichiara**.*
 
-**STRUTTURA-CORSO_013** · *La ragione:* **il giro di ripasso ripropone le voci sbagliate finchè non
-escono giuste** — con `lastAttempt` conterebbe sempre quasi 100%.
-
----
-
-## 6 — LE SEQUENZE DEI MODULI
-
-**STRUTTURA-CORSO_014** · «Sequenza» nomina **due cose diverse**, e vanno tenute distinte:
-
-| | Cosa ordina | Dove vive |
-|---|---|---|
-| **sequenza dei moduli** | i moduli dentro un episodio | `sequences` in questo JSON |
-| **sequenza degli episodi** | gli episodi dentro un'edizione | `inglese-it-sequenza-episodi.md` |
-
-**STRUTTURA-CORSO_015** · Una sequenza dei moduli è **una lista ordinata di coppie
-`{ module, grade }`** — quale modulo, e su quale grado lavora.
-
-**STRUTTURA-CORSO_016** · **Il grado sta nella posizione, non nel modulo.** *Lo stesso modulo
-compare più volte con gradi diversi riusando un solo descrittore.*
-
-**STRUTTURA-CORSO_017** · ⚠️ **I passi delle sequenze stanno solo nel JSON, e si modificano
-LI'.** Precisamente: `data/inglese/it/inglese-it-struttura-corso.json`, chiave **`sequences`**, una voce per
-nome di sequenza, ognuna una lista di coppie `{ "module": "...", "grade": "..." }` nell'ordine in
-cui si incontrano. *Qui non vanno elencati: due elenchi sugli stessi passi divergono al primo
-riordino, e questo file perderebbe in silenzio.*
-
-**STRUTTURA-CORSO_017-bis** · ⚠️ **IL PANNELLO ADMIN NON È IL POSTO DOVE SI MODIFICANO, E VA
-SAPUTO PRIMA DI PROVARCI.** Il pannello sa riordinare i passi, cambiare grado e accendere o
-spegnere un modulo — **ma scrive in `localStorage`, cioè in quel browser soltanto.** La modifica
-non arriva mai al JSON, non la vede nessun altro, e **sparisce svuotando i dati del sito**. E
-crearne una nuova il pannello non lo sa fare affatto.
-
-*Serve a **provare** una sequenza diversa prima di deciderla, non a deciderla.* **Deciso il
-2026-09-21 che non si farà il lavoro per renderlo definitivo:** *«queste cose si modificano
-talmente tante volte che è uno spreco creare la possibilità di modifica dal pannello; è molto più
-facile passare dal file»*.
-
-**STRUTTURA-CORSO_018** · **Una sequenza si può cambiare quando serve** — aggiungere un modulo,
-toglierlo, riordinarlo. *L'uniformità aiuta lo studio, ma non è un vincolo.*
-
-**STRUTTURA-CORSO_019** · ⚠️ **Un'eccezione si scrive per intero, mai come sottrazione da un'altra
-sequenza.** *«narrativo-standard meno Flash Card» si legge solo tenendo aperti due documenti — e
-quando la base cambia, l'eccezione cambia senza che nessuno l'abbia toccata.*
-
-### Le sequenze che esistono
-
-| Nome | Passi | A cosa serve |
-|---|---|---|
-| `narrativo-standard` | 22 | la sequenza degli episodi narrativi |
-| `prova-corta` | 5 | ⚠️ **una sonda, non contenuto** — serve a provare i selettori del Pannello Admin. **Nessun episodio la dichiara.** Si toglie quando arrivano le sequenze vere |
-
-### Come si costruisce una sequenza — i principi dell'ordine
-
-*Ogni principio dice cosa deve essere vero; la riga «oggi» dice dove lo è. **Se un esempio diventa
-falso, è il principio che viene violato.***
-
-**STRUTTURA-CORSO_020** · **Il primo contatto con la storia viene prima di lavorarci sopra.**
-→ *oggi: Meet the Story, subito dopo Your Story*
-
-**STRUTTURA-CORSO_021** · **I gradi vanno in progressione:** parole, espressioni, frasi, dialogo.
-
-**STRUTTURA-CORSO_022** · **Le regole si spiegano dopo i pezzi che governano, prima di usarle in un
-dialogo.**
-→ *oggi: Why We Say It dopo il grado B, prima dei tre Dialogue*
-
-**STRUTTURA-CORSO_023** · **Prima la misura, poi la dichiarazione.**
-→ *oggi: Match Practice prima di Flash Card*
-
-**STRUTTURA-CORSO_024** · **Un quiz viene dopo la versione calma dello stesso esercizio.**
-→ *oggi: Speed Match dopo Match Practice*
-
-**STRUTTURA-CORSO_025** · ⚠️ **Ogni direzione presente in un quiz deve essere stata esercitata
-prima con calma.**
+*Le sue cinque righe sono state verificate contro il JSON il 2026-09-23: le prime quattro
+combaciavano, la quinta no — diceva `voiceCoach` · C dove il JSON ha `dialogoAscoltaRipeti` · D.
+**Allineata al JSON**, che per una sonda inerte è il fatto di oggi.*
 
 ---
 
 ## 7 — GLI EPISODI
 
-**STRUTTURA-CORSO_026** · Ogni episodio ha una **categoria**: **`storia`**, **`grammatica`**,
-**`pronuncia`**. *La categoria dice **cosa contiene** l'episodio; la sequenza dice **in che ordine si
-fanno i suoi moduli** — e un episodio di `grammatica` può chiedere `narrativo-standard`.*
+*Colonne: **id** → chiave di `episodes` · **nome** → `.nome` · **categoria** →
+`.categoria` · **sequenza** → `.sequence`.*
 
-**STRUTTURA-CORSO_027** · ⚠️ **La categoria non dice dove sta l'episodio: dice cosa contiene.** *Un
-grammaticale può stare all'inizio, in mezzo, o dopo il decimo — sta dove serve.*
+⚠️ **L'ORDINE DELLE RIGHE È L'ORDINE DEGLI EPISODI DEL CORSO.** Finisce in
+`episodeSequences.<nome>`, e `tests/test_struttura_corso.js` blocco `[Ordine]`
+verifica che i due combacino. **Non esiste un numero d'episodio: esiste questa
+posizione.**
 
-**STRUTTURA-CORSO_028** · *A cosa serve la categoria:* **lo studente sa cosa lo aspetta** guardando
-la mappa — come studio e quiz per i moduli. *E a noi dice **quali moduli servono** per scriverlo.*
-
-**STRUTTURA-CORSO_029** · ⚠️ **E' l'episodio che dichiara la sequenza, non la sequenza che elenca i
-suoi episodi.** *Una sequenza non sa chi la usa, e due episodi possono chiedere la stessa.*
-
-| Episodio | Nome | Categoria | Sequenza |
+| Id | Nome | Categoria | Sequenza dei moduli |
 |---|---|---|---|
 | `gate` | Al gate | `storia` | `narrativo-standard` |
 | `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
-
-**STRUTTURA-CORSO_030** · **Cosa vince, e non c'è una quarta possibilità:**
-
-| L'episodio dichiara | Vale |
-|---|---|
-| solo `sequence` | quella sequenza |
-| solo `moduleOrder` (ordine scritto per intero) | quell'ordine |
-| **tutte e due** | **errore** — si dice, non si sceglie |
-| **niente** | **errore** — nessun default implicito |
-
-**STRUTTURA-CORSO_031** · ⚠️ **Lo studente legge solo il NOME dell'episodio** — *«Al gate», «Sulla
-porta dell'aereo».* **Mai l'id, mai il nome del file, mai «Episodio 1».**
-
-**STRUTTURA-CORSO_032** · Il badge in mappa mostra il **nome dell'episodio**, e il nome vive **qui**, in
-`episodes.<id>.nome` — ⚠️ *non nel file episodio: la mappa disegna il badge **senza caricare il file
-episodio**, e questo file arriva prima di qualunque schermata.*
 
 ---
 
 ## 8 — LE LINGUE DEL PARLATO
 
-**STRUTTURA-CORSO_033** · Due lingue, perché rispondono a due domande diverse:
+*Colonne: **chiave** → dentro `speech` (il prefisso `speech.` si toglie) ·
+**valore**. Le due si confrontano separate: parlare e ascoltare sono due cose.*
 
-| Chiave | Valore | Cosa decide |
-|---|---|---|
-| `speech.synthesisLang` | `en-US` | in che lingua l'app **parla** |
-| `speech.recognitionLang` | `en-US` | in che lingua l'app **ascolta** |
-
-**STRUTTURA-CORSO_034** · Il valore è **il codice di una voce**: lingua + paese — `en-US`
-inglese americano, `en-GB` britannico, `fr-FR` francese di Francia. *Decide **con che voce l'app
-legge le frasi** e **in che lingua riconosce lo studente mentre parla**.* **E' sempre la lingua che
-si impara** — la lingua dello studente serve alle traduzioni, non alla voce.
-
----
-
-## 9 — DA AGGIORNARE QUANDO
-
-**STRUTTURA-CORSO_035** · **Si aggiunge un modulo** → categoria, regola di esito, nome e
-sottotitolo qui; **la sua posizione nelle sequenze dentro `sequences`**, nel JSON.
-
-**STRUTTURA-CORSO_036** · **Si aggiunge un grado** → nella tabella dei gradi col nome mostrato.
-
-**STRUTTURA-CORSO_037** · **Si aggiunge una sequenza** → una chiave nuova dentro `sequences`,
-nel JSON, **scritta per intero**; qui solo la riga nella tabella «Le sequenze che esistono».
-
-**STRUTTURA-CORSO_038** · **Si aggiunge un episodio** → nella tabella degli episodi con la sequenza
-che chiede, e nella sequenza degli episodi.
-
-**STRUTTURA-CORSO_039** · **Si cambia la lingua parlata** → le due voci di `speech`, e sono due.
-
----
-
-## 10 — PER UN'EDIZIONE NUOVA
-
-**STRUTTURA-CORSO_040** · Ogni edizione ha il suo file — `docs/{lingua}/{studente}/{lingua}-{studente}-struttura-corso.md` — e il suo JSON.
-
-**STRUTTURA-CORSO_041** · *Cosa cambia:* **le direzioni** (`en→it` diventa `fr→it`), **i
-sottotitoli**, **le lingue del parlato**, **e le sequenze se la coppia di lingue lo richiede**.
-
-**STRUTTURA-CORSO_042** · *Cosa non cambia:* **i gradi, le categorie, le regole di esito, i
-principi dell'ordine.** *Sono del metodo, non della lingua.*
+| Chiave | Valore |
+|---|---|
+| `speech.synthesisLang` | `en-US` |
+| `speech.recognitionLang` | `en-US` |

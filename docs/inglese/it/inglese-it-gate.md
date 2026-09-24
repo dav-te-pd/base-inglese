@@ -1,307 +1,279 @@
-**Versione: 20260921c**
+**Versione: 20260923a**
 
 # Episodio «Al gate» — inglese per italiani
 
----
-
-## 1 — FONTE E METODO
-
-**GATE_001** · Questo file è la **fonte per `data/inglese/it/inglese-it-gate.json`**. *Claude Code
-trascrive, non decide* (regola 1.13).
-
-**GATE_002** · Il messaggio a Claude Code è sempre: *«aggiorna leggendo l'ultima versione di
-`inglese-it-gate` in `docs/inglese/it/`»*.
-
-**GATE_003** · **Quello che segue sostituisce integralmente il contenuto del JSON.** Non si aggiunge:
-si rimpiazza.
-
-**GATE_004** · Le regole valide per ogni episodio stanno nel **registro degli episodi**; il metodo di
-scrittura in **`APPLINGUE-metodo-didattico`**. *Qui c'è solo quello che riguarda questo episodio.*
-
-**GATE_005** · ⚠️ **Non fondare decisioni su questo file senza verifica in chat** (regola master 1.5).
+*Id: `gate`. Nome, categoria e sequenza vivono nella sezione 7 di
+`inglese-it-struttura-corso`.*
 
 ---
 
-## 2 — L'EPISODIO
+## 1 — COME SI LEGGE QUESTO FILE
 
-| | |
+**Questo è un file DATI: tutto quello che c'è dentro finisce in
+`data/inglese/it/inglese-it-gate.json`.** Le ragioni — la scena, cosa insegna,
+le note di scrittura, gli esclusi di proposito — stanno nei file RAGIONI.
+
+### ① QUANTO È RIGIDO IL PARSER — misurato su `tests/test_story_modules.js` e `tests/test_episodio2.js`, 2026-09-23
+
+⚠️ **DI QUESTO FILE UN TEST LEGGE DUE COSE, E LA SECONDA NON E' QUELLA CHE
+AVEVO SCRITTO.** Qui c'era *«un test legge una cosa sola: il riquadro dei numeri
+attesi»*, e **era falso** — misurato il 2026-09-23, dopo che la suite e' andata
+rossa proprio su quella riga:
+
+| Cosa legge un test | Chi |
 |---|---|
-| **Id** | `gate` — congelato: è la chiave dei progressi salvati |
-| **Nome mostrato** | *Al gate* — **la fonte è `inglese-it-struttura-corso`**, tabella degli episodi |
-| **Categoria** | `storia` |
-| **Sequenza dei moduli** | `narrativo-standard` |
+| il **riquadro dei numeri attesi** | `tests/test_story_modules.js` |
+| ⚠️ **le tabelle dei gradi A, B, C, D e la sezione 5 delle skill**, confrontate col JSON **cella per cella** | `tests/test_story_modules.js`, blocco `[Fonte]` |
 
-**GATE_006** · Lo studente legge solo il nome — **«Al gate»** — anche nel badge in mappa.
+**Quindi per QUESTO episodio l'ordine delle colonne è un'interfaccia**, non una
+scelta di impaginazione: spostarne una fa rosso. I titoli delle sezioni no —
+quelli il blocco li cerca per il loro titolo di terzo livello (`###` piu'
+«Grado» piu' la lettera), senza il numero di sezione.
 
-**GATE_007** · **Numeri attesi nel JSON:** 12 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8
-slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
+⚠️ **E QUEL TITOLO QUI NON E' SCRITTO PER INTERO, ED E' LA TERZA VOLTA IN DUE
+GIORNI CHE SERVE:** il blocco cerca la **prima** occorrenza nel file, quindi una
+citazione in questa sezione gli farebbe leggere **la tabella qui sopra** come
+tabella del grado A. *E' successo: la suite ha detto «la tabella ha 4 righe, il
+json 12 voci» — scrivendo la frase che spiega proprio questa trappola.*
 
----
+⚠️ **E l'asimmetria va saputa: `aircraft-door` NON ha questo controllo.**
+`tests/test_episodio2.js` legge solo il suo riquadro dei numeri. **`gate` è
+l'unico episodio in cui l'accordo fra markdown e JSON è verificato da una
+macchina** — negli altri è verificato da chi trascrive.
 
-## 3 — LA SCENA
+**Il riquadro invece è rigido, e in un modo che va saputo prima di scriverlo:**
 
-**GATE_008** · **Dove:** il gate dell'aeroporto, prima dell'imbarco, PRETTE Airlines. **Chi:**
-l'hostess al gate e la famiglia.
+| | Come funziona |
+|---|---|
+| **Si trova** | cercando **la stringa che apre il riquadro della sezione 2**, e ne prende la **prima** occorrenza nel file |
+| **Finisce** | alla **prima riga vuota** dopo quel punto |
+| **Si legge** | ricucendo le righe con uno spazio, e togliendo `*` e `>` — **ma non `|`** |
+| **Si estrae** | con sei espressioni: `N voci in A` · `N in B` · `N in C` · `N battute in D` · `N skill` · `N slot` |
 
-**GATE_009** · **Cosa succede:** *la famiglia arriva al gate. L'hostess la saluta e
-si dice contenta di conoscerla. Il padre si presenta; lei gli chiede da dove viene, e lui risponde.
-Poi l'hostess si rivolge alla mamma, che si presenta. I figli si presentano da soli e dicono quanti
-anni hanno. Alla fine tutti insieme dicono chi sono: la famiglia.*
+⚠️ **QUI QUELLA STRINGA NON È SCRITTA, ED È VOLUTO:** il parser prende la
+**prima** occorrenza nel file, quindi una citazione in questa sezione gli
+farebbe leggere **questa tabella** invece del riquadro vero — e i sei numeri
+verrebbero fuori come `N`, senza che niente si lamenti. *È successo scrivendo
+questo file, e la prova è ripetibile: `grep -c` su quella stringa deve dare
+**1**.*
 
-**GATE_010** · **Questo testo va anche nel modulo di apertura dell'episodio** (regola 7c.0) **e nel video dell'episodio.**
+⚠️ **PER QUESTO IL RIQUADRO È L'UNICA COSA NON TABELLARE DI QUESTO FILE, e non
+è una svista.** Il markdown vuole una riga vuota prima di una tabella; il parser
+si ferma alla prima riga vuota. **Una tabella qui darebbe un riquadro vuoto e
+l'errore «numero atteso non trovato».** Resta un paragrafo finché non
+cambiamo i due test.
 
-**GATE_011** · La premessa è **«la tua famiglia parte per una vacanza»**, non «una famiglia
-italiana»: *il paese di partenza è personalizzabile.*
-
-**GATE_012** · **È la prima situazione comunicativa: ti presenti tu.**
-
----
-
-## 4 — CONTENUTI VIDEO — MESSAGGI INIZIALI E FINALI
-
-·
-
----
-
-## 5 — CONTENUTI SOCIAL
-
-·
-
----
-
-## 6 — COSA INSEGNA
-
-**GATE_013** · **Salutare:** `hello` e `hi`, e la differenza di registro fra i due.
-
-**GATE_014** · **Presentarsi:** `I am` / `I'm` — *in inglese non «mi chiamo», ma «io sono»; e il
-pronome non si salta mai.*
-
-**GATE_015** · **Il primo incontro:** `nice to meet you`.
-
-**GATE_016** · **Da dove vieni:** `where are you from?` e `I am from` — *domanda e risposta con le
-stesse parole.*
-
-**GATE_017** · **Rimandare la domanda:** `and you?`
-
-**GATE_018** · **L'età col verbo essere:** `I'm sixteen years old` e `I'm ten` — *mai «I have ten
-years».*
-
-**GATE_019** · **Il plurale del verbo essere:** `we are` — *e il cognome prima di `family`.*
-
-**GATE_020** · **Esclusi di proposito:** *«Can you introduce yourselves?»* — riflessivo difficile ·
-*il genitivo sassone* («I'm {papà}'s wife») — struttura ostica · *«everyone»* — lunga e poco utile
-all'inizio.
+**Ogni numero si prende col suo NOME accanto, mai per posizione:** l'ordine
+dentro il paragrafo è libero, le parole no.
 
 ---
 
-## 7 — LA MATRICE
+## 2 — I NUMERI ATTESI
 
-### Grado D — nove battute
+**Numeri attesi nel JSON:** 12 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
 
-| # | Chi | Inglese | Italiano | Skill |
+*Il paragrafo qui sopra è il solo pezzo del file che un test legge. La riga
+vuota che segue lo chiude: non metterne una dentro.*
+
+---
+
+## 3 — LA REGOLA GENERALE
+
+*Finisce in `generalRule`, ed è **facoltativa**: senza, Repeat Aloud non disegna
+il riquadro. La legge un modulo solo.*
+
+⚠️ **Oggi `inglese-it-gate.json` ne porta una che non ha nessuna fonte in
+nessun markdown.** Questa sezione esiste perché smetta di essere così.
+
+| Testo |
+|---|
+| La "e" finale in inglese non si legge quasi mai. |
+
+---
+
+## 4 — LA MATRICE
+
+### Grado D — le battute
+
+*Colonne → `levels.D.items[]`: **id** → `id` · **speaker** → `speaker`, e deve
+essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en** →
+`english` · **it** → `italian`.*
+
+⚠️ **`ruolo` ha due soli stati che contano:** `famiglia` mette la bolla a
+**destra**, qualunque altro valore la mette a sinistra.
+
+| id | speaker | ruolo | en | it |
 |---|---|---|---|---|
-| d1 | Hostess al gate | Hello! Nice to meet you. | Ciao! Piacere di conoscervi. | 1, 2 |
-| d2 | Papà | Hello! I am {papà}. | Ciao! Sono {papà}. | — |
-| d3 | Hostess al gate | Where are you from, {papà}? | Di dove sei, {papà}? | 3 |
-| d4 | Papà | I am from {partenza}, Italy. | Vengo da {partenza}, in Italia. | 4 |
-| d5 | Hostess al gate | And you? | E tu? | 5 |
-| d6 | Mamma | Hello! I am {mamma}. | Ciao! Sono {mamma}. | — |
-| d7 | Figlia | Hi! I'm {figlia}. I'm {etàFiglia} years old. | Ciao! Sono {figlia}. Ho {etàFiglia} anni. | 6 |
-| d8 | Figlio | Hi! I'm {figlio}. I'm {etàFiglio}. | Ciao! Sono {figlio}. Ho {etàFiglio} anni. | 7 |
-| d9 | Tutti | We are the {cognome} family! | Siamo la famiglia {cognome}! | 8 |
+| `d-1` | `hostess-gate` | `staff` | Hello! Nice to meet you. | Ciao! Piacere di conoscervi. |
+| `d-2` | `papa` | `famiglia` | Hello! I am {{papa}}. | Ciao! Sono {{papa}}. |
+| `d-3` | `hostess-gate` | `staff` | Where are you from, {{papa}}? | Di dove sei, {{papa}}? |
+| `d-4` | `papa` | `famiglia` | I am from {{partenza}}, Italy. | Vengo da {{partenza}}, in Italia. |
+| `d-5` | `hostess-gate` | `staff` | And you? | E tu? |
+| `d-6` | `mamma` | `famiglia` | Hello! I am {{mamma}}. | Ciao! Sono {{mamma}}. |
+| `d-7` | `figlia` | `famiglia` | Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old. | Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni. |
+| `d-8` | `figlio` | `famiglia` | Hi! I'm {{figlioNome}}. I'm {{figlioEta}}. | Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni. |
+| `d-9` | `tutti` | `famiglia` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! |
 
-**GATE_021** · **Nove battute invece di dieci: eccezione dichiarata.** *L'episodio è nato a dodici ed
-è stato diviso; le tre battute tolte sono il nucleo dell'episodio successivo.*
+### Grado C — le frasi
 
-**GATE_022** · **Otto skill su sette battute:** d1 ne porta due; d2 e d6 nessuna — *sono le due
-presentazioni dei genitori, identiche nella struttura: in Why We Say It quelle card non hanno
-pulsanti e prendono la spunta da sole.*
+*Colonne → `levels.C.items[]`: **id** · **en** → `english` · **it** → `italian` ·
+**da** → `fromLine`, l'id della battuta da cui è ricavata.*
 
-### Grado C — nove frasi
+| id | en | it | da |
+|---|---|---|---|
+| `c-1` | I am {{papa}}. | Sono {{papa}}. | `d-2` |
+| `c-2` | Where are you from? | Di dove sei? | `d-3` |
+| `c-3` | I am from {{partenza}}, Italy. | Vengo da {{partenza}}, in Italia. | `d-4` |
+| `c-4` | I am {{mamma}}. | Sono {{mamma}}. | `d-6` |
+| `c-5` | I'm {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` |
+| `c-6` | I'm {{figliaEta}} years old. | Ho {{figliaEta}} anni. | `d-7` |
+| `c-7` | I'm {{figlioNome}}. | Sono {{figlioNome}}. | `d-8` |
+| `c-8` | I'm {{figlioEta}}. | Ho {{figlioEta}} anni. | `d-8` |
+| `c-9` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! | `d-9` |
 
-| # | Inglese | Italiano | Da | Perché differisce |
+### Grado B — le espressioni
+
+*Colonne → `levels.B.items[]`: **id** · **en** → `english` · **it** →
+`italian` · **pronuncia** → `pronunciationTip` · **categoria** →
+`grammarCategory`.*
+
+| id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| c1 | I am {papà}. | Sono {papà}. | d2 | tolto `Hello!` |
-| c2 | Where are you from? | Di dove sei? | d3 | tolto il vocativo |
-| c3 | `= d4` | | d4 | identica |
-| c4 | I am {mamma}. | Sono {mamma}. | d6 | tolto `Hello!` |
-| c5 | I'm {figlia}. | Sono {figlia}. | d7 | tolto `Hi!`, e la battuta contiene due frasi |
-| c6 | I'm {etàFiglia} years old. | Ho {etàFiglia} anni. | d7 | seconda frase della battuta |
-| c7 | I'm {figlio}. | Sono {figlio}. | d8 | tolto `Hi!`, e la battuta contiene due frasi |
-| c8 | I'm {etàFiglio}. | Ho {etàFiglio} anni. | d8 | seconda frase della battuta |
-| c9 | `= d9` | | d9 | identica |
+| `b-i-am` | I am | (io) sono | ai am | pronome + verbo essere |
+| `b-im` | I'm | (io) sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
+| `b-we-are` | we are | (noi) siamo | ui ar | pronome + verbo essere |
+| `b-nice-to-meet-you` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
+| `b-i-am-from` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
+| `b-and-you` | and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
+| `b-years-old` | years old | anni (di età) | i-ars OULD | espressione per l'età |
 
-### Grado B — sette espressioni
+### Grado A — le parole
 
-| Inglese | Italiano | Pronuncia | Categoria |
+*Stesse colonne del grado B → `levels.A.items[]`.*
+
+| id | en | it | pronuncia | categoria |
+|---|---|---|---|---|
+| `a-hello` | hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
+| `a-hi` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
+| `a-nice` | nice | bello / piacevole | nais | aggettivo |
+| `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
+| `a-where` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
+| `a-italy` | Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
+| `a-from` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
+| `a-and` | and | e | and — la "d" finale si sente appena | congiunzione |
+| `a-years` | years | anni | i-ars — parte con un suono di "i" | sostantivo |
+| `a-old` | old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
+| `a-the` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
+| `a-family` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
+
+---
+
+## 5 — LE SKILL
+
+*Colonne → `levels.D.items[].whatYouLearn[]`: **battuta** → a quale `id` del
+grado D si attacca · **#** → l'ordine dentro la lista di quella battuta ·
+**titolo** → `title` · **corpo** → `body`.*
+
+**`whatYouLearn` è SEMPRE una lista**, anche con una skill sola: due righe con
+la stessa battuta sono due skill della stessa battuta. **Una battuta senza
+righe qui non ha skill** — in Why We Say It la sua card non ha pulsanti e
+prende la spunta da sola.
+
+⚠️ **Nel corpo:** HTML sì, `<br>` per andare a capo, `<strong>` per
+evidenziare, **mai `<p>`**. I segnaposto si sostituiscono come ovunque, e la
+citazione inglese chiede la propria lingua con `{{chiave:en}}`.
+
+⚠️ **`difficulty` non lo scrivo più:** oggi sta nel JSON e **non lo legge
+nessuno**.
+
+| battuta | # | titolo | corpo |
 |---|---|---|---|
-| I am | (io) sono | ai am | pronome + verbo essere |
-| I'm | (io) sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
-| we are | (noi) siamo | ui ar | pronome + verbo essere |
-| nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
-| I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
-| and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
-| years old | anni (di età) | i-ars OULD | espressione per l'età |
-
-**GATE_023** · **`nice to meet you` e `and you?` stanno in B** benché siano frasi intere: *non c'è
-nessun pezzo da cambiare.*
-
-**GATE_024** · **`where are you from?` sta in C:** *la skill 3 insegna che domanda e risposta usano le
-stesse parole — metterla in B contraddirebbe la spiegazione.*
-
-**GATE_025** · **`I am` e `I'm` stanno vicini, entrambi in B:** *il confronto è l'insegnamento*
-(regola 4.1).
-
-### Grado A — dodici parole
-
-| Voce | Italiano | Pronuncia | Categoria |
-|---|---|---|---|
-| hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
-| hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
-| nice | bello / piacevole | nais | aggettivo |
-| meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
-| where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
-| Italy | Italia | I-ta-li — accento sulla prima | nome di paese |
-| from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
-| and | e | and — la "d" finale si sente appena | congiunzione |
-| years | anni | i-ars — parte con un suono di "i" | sostantivo |
-| old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
-| the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
-| family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
-
-**GATE_026** · *Più i numeri delle età, che vengono dall'episodio grammaticale dei numeri.*
-
-**GATE_027** · **Non stanno nel grado A:** `I`, `you`, `we` — *vivono in `I am`, `we are`, `and
-you?`* · `am`, `are` — *vivono in `I am`, `we are`* · `to` — *da solo non ha un significato usabile
-qui.*
-
-**GATE_028** · **Maiuscole:** in A e B solo `Italy`, perché la lingua la impone.
-
-**GATE_029** · ⚠️ **APERTO — `Italy` è una voce fissa, e d4 la scrive a mano.** *Quando le tabelle
-avranno il secondo campo per riga (città + paese nella stessa riga), il paese diventa parte dello
-slot `partenza`, `Italy` esce dal grado A e il grado scende a 11.* **Il paese non sarà mai un nono
-slot:** *sceglierli separati permetterebbe «Torino, Francia»* (regola 2.7).
+| `d-1` | 1 | Hello e Hi | Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>"Hello" è un po' più educato, "Hi" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".<br>È come in italiano — "Buongiorno" a chi non conosci, "Ciao" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, "Hello" va bene sempre, con chiunque. |
+| `d-1` | 2 | Nice to meet you | Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!". |
+| `d-3` | 1 | Chiedere da dove viene qualcuno | "Where are you from?" vuol dire "di dove sei?".<br>"Where" significa "dove". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra. |
+| `d-4` | 1 | Dire da dove vieni | "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".<br>"From" significa "da". La userai tantissimo. |
+| `d-5` | 1 | And you? | Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente. |
+| `d-7` | 1 | I am e I'm | Il papà dice "I am {{papa}}", la figlia dice "I'm {{figliaNome}}". Sono la stessa cosa: "I'm" è solo la forma corta.<br>Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> "I'm from Turin" è uguale a "I am from Turin".<br>Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. <strong>In inglese non si può:</strong> "I" ci deve essere sempre. Non esiste dire "am Marco". |
+| `d-8` | 1 | Dire quanti anni hai | La figlia dice "I'm {{figliaEta}} <strong>years old</strong>". Il figlio dice solo "I'm {{figlioEta}}".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".<br>Ricordatelo, perché è la differenza più grande con l'italiano. |
+| `d-9` | 1 | We are | "We are" vuol dire "noi siamo".<br>Conosci già "I am" — io sono. Quando si parla in più di uno diventa "we are": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola "family", al contrario dell'italiano. |
 
 ---
 
-## 8 — LE SKILL
+## 6 — PERSONAGGI ED ETICHETTE
 
-**GATE_030 — 1 · su d1 `Hello!` — Hello e Hi** *(facile)*
-> Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.
-> "Hello" è un po' più educato, "Hi" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".
-> È come in italiano — "Buongiorno" a chi non conosci, "Ciao" a un amico. Nessuno dei due è sbagliato.
-> Se sei in dubbio, "Hello" va bene sempre, con chiunque.
+*Colonne → `speakerLabels`: **chiave** → quello che scrivi nella colonna
+`speaker` del grado D · **etichetta** → quello che lo studente legge sopra la
+bolla.*
 
-**GATE_031 — 2 · su d1 `Nice to meet you.` — Nice to meet you** *(facile)*
-> Si dice quando incontri qualcuno per la **prima volta**, ed è il modo normale di farlo: né troppo formale né troppo informale.
-> Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".
-> Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!".
+⚠️ **La chiave nel JSON è `speakerLabels`.** *Fino al 2026-09-09 si chiamava
+`dialogueSpeakerLabels`, e quel nome non esiste più da nessuna parte.*
 
-**GATE_032 — 3 · su d3 `Where are you from?` — Chiedere da dove viene qualcuno** *(facile)*
-> "Where are you from?" vuol dire "di dove sei?".
-> "Where" significa "dove". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.
-> Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.
-> Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra.
-
-**GATE_033 — 4 · su d4 `I am from {partenza}.` — Dire da dove vieni** *(facile)*
-> "I am from {{partenza:en}}" vuol dire "vengo da {{partenza}}".
-> Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".
-> "From" significa "da". La userai tantissimo.
-
-**GATE_034 — 5 · su d5 `And you?` — And you?** *(facile)*
-> Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.
-> Nel dialogo l'hostess l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.
-> Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.
-
-**GATE_035 — 6 · su d7 `Hi! I'm {figlia}.` — I am e I'm** *(facile)*
-> Il papà dice "I am {{papà}}", la figlia dice "I'm {{figlia}}". Sono la stessa cosa: "I'm" è solo la forma corta.
-> Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".
-> **La forma corta vale sempre, non solo con i nomi:** "I'm from Turin" è uguale a "I am from Turin".
-> Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.
-> Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. **In inglese non si può:** "I" ci deve essere sempre. Non esiste dire "am Marco".
-
-**GATE_036 — 7 · su d8 `I'm {etàFiglio}.` — Dire quanti anni hai** *(facile)*
-> La figlia dice "I'm {{etàFiglia}} **years old**". Il figlio dice solo "I'm {{etàFiglio}}".
-> Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.
-> Attenzione a una cosa: in inglese **non si usa il verbo avere** per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".
-> Ricordatelo, perché è la differenza più grande con l'italiano.
-
-**GATE_037 — 8 · su d9 `We are the {cognome} family!` — We are** *(facile)*
-> "We are" vuol dire "noi siamo".
-> Conosci già "I am" — io sono. Quando si parla in più di uno diventa "we are": cambia sia la parola per dire chi, sia il verbo.
-> Nota che in inglese il cognome va **prima** della parola "family", al contrario dell'italiano.
-
----
-
-## 9 — PERSONAGGI ED ETICHETTE
-
-| Personaggio *(colonna «Chi»)* | Etichetta a schermo |
+| chiave | etichetta a schermo |
 |---|---|
-| Hostess al gate | **Hostess al gate** |
-| Papà | **Papà** |
-| Mamma | **Mamma** |
-| Figlia | **Figlia** |
-| Figlio | **Figlio** |
-| Tutti | **Tutti** |
-
-**GATE_038** · *Da questa tabella Claude Code trascrive `dialogueSpeakerLabels`.*
+| `hostess-gate` | Hostess al gate |
+| `papa` | Papà |
+| `mamma` | Mamma |
+| `figlia` | Figlia |
+| `figlio` | Figlio |
+| `tutti` | Tutti |
 
 ---
 
-## 10 — PERSONALIZZAZIONE
+## 7 — GLI SLOT
 
-**GATE_039** · **Otto slot:** papà, mamma, figlia, figlio, età figlia, età figlio, cognome, partenza.
-*Le destinazioni non ci sono: questo episodio non le usa.*
+*Due cose insieme, e vanno in due posti del JSON: le colonne **chiave** →
+`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e cinque →
+una voce di `personalizationTablesUsed`.*
 
-| Slot | Id |
+| chiave | etichetta | tipo | tabella | predefinito |
+|---|---|---|---|---|
+| `papa` | Nome del papà / utente | `select` | `people.papa` | `papa-marco` |
+| `mamma` | Nome della mamma | `select` | `people.mamma` | `mamma-giulia` |
+| `figliaNome` | Nome della figlia | `select` | `people.figlia` | `figlia-emma` |
+| `figliaEta` | Età della figlia | `select` | `episode.ageOptions.figlia` | `16` |
+| `figlioNome` | Nome del figlio | `select` | `people.figlio` | `figlio-tommaso` |
+| `figlioEta` | Età del figlio | `select` | `episode.ageOptions.figlio` | `8` |
+| `cognome` | Cognome della famiglia | `select` | `people.cognome` | `cognome-costa` |
+| `partenza` | Città di partenza | `select` | `places.departures` | `orig-mondovi` |
+
+⚠️ **L'«etichetta» non ha nessuna fonte oggi**, e la schermata Personalizza la
+mostra: sta qui perché smetta di vivere solo nel JSON.
+
+⚠️ **Il «`/ utente`» dell'etichetta di `papa` NON è un residuo: è l'unico posto
+del progetto dove è scritto che quello slot è lo studente stesso**, e non un
+personaggio come gli altri. *Tolto per sbaglio il 2026-09-23 e rimesso lo stesso
+giorno.*
+
+**La «tabella» è un riferimento a `inglese-it-tabelle-personalizzazione`**, con
+due forme sole:
+
+| Forma | Vuol dire |
 |---|---|
-| papà | `papa-marco` *(pred.)* · `papa-giancarlo` · `papa-francesco` · `papa-andrea` · `papa-luca` · `papa-paolo` · `papa-stefano` · `papa-davide` · `papa-claudio` · `papa-federico` |
-| mamma | `mamma-giulia` *(pred.)* · `mamma-anna` · `mamma-chiara` · `mamma-nicoletta` · `mamma-laura` · `mamma-elena` · `mamma-silvia` · `mamma-francesca` |
-| figlia | `figlia-emma` *(pred.)* · `figlia-sofia` · `figlia-alice` · `figlia-giorgia` · `figlia-martina` · `figlia-sara` · `figlia-chiara` · `figlia-beatrice` |
-| figlio | `figlio-tommaso` *(pred.)* · `figlio-leo` · `figlio-marco` · `figlio-giorgio` · `figlio-matteo` · `figlio-lorenzo` · `figlio-simone` · `figlio-filippo` · `figlio-claudio` · `figlio-federico` · `figlio-paolo` |
-| cognome | `cognome-costa` *(pred.)* · `cognome-rossi` · `cognome-bianchi` · `cognome-ferrari` · `cognome-ferrario` · `cognome-russo` · `cognome-marino` · `cognome-barberis` · `cognome-ambruosi` |
-| età figlia | `eta-12` … `eta-17`, predefinito `eta-16` |
-| età figlio | `eta-4` … `eta-11`, predefinito `eta-8` |
-| partenza | `orig-mondovi` *(pred.)* · `orig-torino` · `orig-milano` · `orig-roma` · `orig-napoli` · `orig-palermo` · `orig-lugano` · `orig-nizza` |
+| `people.papa`, `places.departures`, … | una tabella del magazzino condiviso |
+| `episode.<qualcosa>` | una tabella dichiarata **dentro questo stesso file episodio** — oggi le età |
 
-**GATE_040** · **Le chiavi degli slot nel JSON sono `papa`, `figliaNome`, `figliaEta`…**, non la
-notazione `{papà}` di questo file. *Sono la struttura dei valori salvati: cambiarle è una
-migrazione.* **Vedi `rinomine` 004.**
-
-**GATE_041** · ⚠️ **APERTO — questi sono gli id del magazzino nuovo** (`papa-marco`). *Oggi il JSON
-delle tabelle usa ancora quelli vecchi (`marco`): si allineano col passo delle tabelle.*
+⚠️ **Il «predefinito» è un id di quella tabella, e va scelto con attenzione:**
+se un valore salvato non si trova più fra le opzioni, il codice **non ripiega
+sul predefinito — ripiega sulla PRIMA RIGA della tabella.**
 
 ---
 
-## 11 — NOTE DI SCRITTURA
+## 8 — LE TABELLE INTERNE ALL'EPISODIO
 
-**GATE_042** · **Adulti e ragazzi parlano diverso:** papà e mamma «Hello» e «I am», i figli «Hi» e
-«I'm». *Una distinzione di registro che spiega due differenze, e rispetta la forma estesa prima
-della contratta.*
+*Le righe che valgono **solo per questo episodio** e non vanno nel magazzino
+condiviso. Finiscono in una chiave di primo livello del JSON, e l'unico modo di
+raggiungerle è che uno slot della sezione 7 dica `episode.<nome>.<gruppo>`.*
 
-**GATE_043** · **Le due forme dell'età:** la figlia «I'm sixteen years old», il figlio «I'm ten».
-*Chi conosce solo la seconda, al ristorante risponde «we are three» e dice di avere tre anni.*
+⚠️ **Oggi è il caso delle età di `gate`** (`ageOptions.figlia`,
+`ageOptions.figlio`), **e nemmeno quelle hanno una fonte markdown.** Questa
+sezione esiste per quello.
 
-**GATE_044** · **I numeri si scrivono in lettere nella battuta** — `sixteen`, non `16`: *è la parola
-che l'episodio dei numeri insegna, e in Voice Practice va pronunciata. Nella personalizzazione si
-sceglie la cifra: due usi, non una duplicazione.*
+⚠️ **Una riga «nuda» vale per tutte e due le lingue.** Il codice la trasforma in
+`{value, it, en}` **tutti e tre uguali** — che è il motivo per cui oggi si legge
+`I'm 16 years old` e non `I'm sixteen`. **Per avere una parola in inglese serve
+un altro passo**, non una riga scritta diversa qui.
 
-**GATE_045** · ⚠️ **APERTO — oggi l'app dice `I'm 16 years old`, con la cifra.** *La correzione
-arriva con le età in parole (tabelle ③).* **Cambia cosa il riconoscimento vocale si aspetta di
-sentire: vuole un test suo.**
-
----
-
-## 12 — REGOLE IN SOSPESO
-
-| Regola | Perché è in sospeso | Dove verrà usata |
+| nome | gruppo | valori, in ordine |
 |---|---|---|
-| `the` come articolo | entra dentro `We are the {cognome} family` senza la sua scheda (regola 4.6) | la scheda di `the`, che potrà usare questa battuta come esempio già noto |
-
----
-
-## 13 — CHIAVI DEL JSON
-
-**GATE_046** · ⚠️ **APERTO — questo JSON porta `generalRule` e `ageOptions`, `aircraft-door` no.**
-*`ageOptions` si spiega — qui ci sono le età. `generalRule` va verificato.* **Serve la lista delle
-chiavi di un episodio, dichiarata nel registro degli episodi.**
+| `ageOptions` | `figlia` | `12` · `13` · `14` · `15` · `16` · `17` |
+| `ageOptions` | `figlio` | `4` · `5` · `6` · `7` · `8` · `9` · `10` · `11` |
