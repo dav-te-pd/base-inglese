@@ -22,17 +22,97 @@ e niente altro.
 
 ---
 
-# DOVE SIAMO — 2026-09-20
+# DOVE SIAMO — 2026-09-24
 
-**Lo spacchettamento è FINITO.** `index.html` non ha più codice: 3561 righe, di
-cui **2498 CSS**, 1022 markup, e **una riga di JavaScript** (`window.BI.boot()`).
-L'app vive in 23 file sotto `app/`, e **nessuno di loro chiede più niente a
-`index.html`**.
+**Lo spacchettamento è FINITO** (2026-09-20): `index.html` tiene il markup e
+**una riga di JavaScript**, l'app vive in 23 file sotto `app/` e 12 sotto
+`stile/`, e nessuno di loro chiede più niente a `index.html`.
 
-**La suite:** 69 file, 1534 asserzioni, verde in locale e in CI.
+**E dal 2026-09-24 è finito anche il RIORDINO DEI DOCUMENTI**, che era la coda
+dello spacchettamento senza che nessuno l'avesse chiamata così:
+
+| | Prima | Adesso |
+|---|---|---|
+| **I dati dell'edizione** | scritti a mano nei JSON | **generati** dai markdown con `node tests/tools/trascrivi.js`, che si ferma se i conti non tornano |
+| **Le fonti** | 8 file in `docs/inglese/it/` | **5**: i quattro DATI che l'app legge + `inglese-it-edizione.md`, che non legge nessuno |
+| **I documenti scaduti** | mescolati ai vivi in `docs/` | **`docs/archivio/`**, quattro fotografie datate che dicono in testa a cosa si riferiscono |
+| **Gli strumenti** | `tests/tools/README.md` ne descriveva 3 su 26 | tutti e 26, raggruppati per domanda |
+
+**La suite:** 78 file, **1694 asserzioni**, verde in locale e in CI.
 
 **L'obiettivo, in una riga:** *arrivare a un sistema online e sicuro, e poi
 scrivere episodi.*
+
+---
+
+# ⚠️ COSA C'È DA FARE — 2026-09-24
+
+**Non c'è una catena numerata davanti, e non è una dimenticanza: è la regola
+45 applicata a sé stessa.** *Il 2026-09-20 sono state guardate quattro righe di
+piano e **tutte e quattro erano sbagliate** — un passo quattro volte più grande
+della stima, uno già fatto, uno per tre quinti, uno per metà e col nome che
+mandava a guardare la metà fatta.* **Quindi si decide il prossimo passo quando
+si prende, non adesso.**
+
+**Quello che resta aperto, raggruppato per QUANDO si sblocca — non per ordine:**
+
+## Aspettano CONTENUTO (episodi nuovi da scrivere)
+
+| | Cosa | Cosa sblocca |
+|---|---|---|
+| **1.8-bis ②** | **la riga città+paese** — `resolveSlotValue` restituisce **una stringa sola**, quindi `orig-lugano` non può rientrare: la battuta di `gate` scrive `Italy` a mano | fa rientrare Lugano e Nizza, e fa scendere il grado A di `gate` da 12 a 11 |
+| **1.8-bis ③** | **le età in parole** — oggi si legge `I'm 16 years old`. Vuole che le età escano dal file episodio ed entrino nel magazzino, **più un modo di usare un SOTTOINSIEME di una tabella, che oggi non esiste** | vuole un test suo sul riconoscimento vocale |
+| **1.8-bis ④** | **la migrazione dei valori salvati** | ⚠️ obbligatoria se si fa ② o ③ |
+| **F.7** · **1.20** | il test trasversale sugli episodi · il pannello degli episodi | **alla revisione di design di fine episodio 5** — tutt'e due aspettano un catalogo vero invece di due episodi |
+
+## Aspettano di essere PRESI (nessuna dipendenza)
+
+| | Cosa |
+|---|---|
+| **1.18** | ⚠️ **la famiglia di asserzioni che corre contro timer corti**, e che rende la CI inaffidabile. *L'ipotesi del tetto è già stata smontata da una misura: 11–15 ms contro 500 di margine.* Il primo passo è **misurare sul runner**, non alzare numeri |
+| **F.2** | i 17 finti sintetizzatori senza `speaking` — **stessa famiglia di 1.18, vista dall'altro lato** |
+| **la guardia delle opzioni** | ⚠️ **un valore aggiunto a una tabella non è provato da nessuno**: le prove guidano il predefinito. È il caso Lugano — *una frase falsa su due opzioni su otto, e la suite sarebbe rimasta verde* |
+| **1.16** | `wipeEpisodeProgress` cancella tre chiavi per episodio su sette |
+| **F.3** · **F.4** | il giro di design sulla mastery · le varianti di `bootAsUser`/`mockInit` nei test |
+| **③ delle sequenze** | il Pannello Admin non sa creare né cancellare una sequenza |
+
+## Aspettano SUPABASE (o la decidono)
+
+| | Cosa |
+|---|---|
+| **1.12** | ⚠️ **la catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e **va fatto prima di Supabase** |
+| **la schermata di attesa** | oggi `struttura-corso.json` arriva in millisecondi e non si vede; **col server su una rete lenta resterebbe una pagina vuota senza spiegazione** |
+
+## Per definizione ULTIMO
+
+| | Cosa |
+|---|---|
+| **1.10** | **il giro dei buchi** — *si fa quando la lista smette di cambiare* |
+
+---
+
+# ⚠️ IL WORKFLOW, DAL 2026-09-24
+
+**Cambiato da solo mentre lavoravamo, e vale la pena scriverlo perché nessuno
+l'ha deciso in un giro apposta.**
+
+| | Prima | Adesso |
+|---|---|---|
+| **Chi scrive i dati** | io, a mano, leggendo il markdown | `node tests/tools/trascrivi.js` |
+| **Dove si scrive il contenuto** | otto file in `docs/inglese/it/` | **DATI** (4, li leggo io) e **RAGIONI** (`edizione.md`, non lo leggo mai) |
+| **Come arriva un file nuovo** | incollato in chat | in **`nuovi/`**, che non fa partire la CI; io confronto e riporto, **poi** si promuove |
+| **Prima di cancellare un file** | si guardava | **si cerca chi lo nomina**, e i rimandi si correggono nello stesso commit |
+
+**Il giro di un episodio nuovo, in cinque mosse:**
+
+1. **tu** scrivi `docs/inglese/it/inglese-it-{id}.md` partendo da `nuovi/inglese-it-EPISODIO-VUOTO.md`
+2. **tu** aggiungi la riga alla sezione 7 di `struttura-corso.md` — *è quella che decide l'ordine, ed è l'unica che un test confronta col JSON*
+3. **io** lancio il trascrittore: se i conti dichiarati non tornano **si ferma invece di scrivere**
+4. **io** lancio la suite completa, poi la CI
+5. **tu** guardi su Pages **la cosa che il codice vecchio non sa fare**
+
+---
+
 
 ---
 
