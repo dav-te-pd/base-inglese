@@ -21,6 +21,33 @@ on:
     # partire la suite lo stesso.
     paths-ignore:
       - 'nuovi/**'
+      # ⚠️ I REGISTRI — dal 2026-09-24, e NON perche' «sono documenti».
+      #
+      # La regola 43 mette la riga del registro nello STESSO commit del codice
+      # che descrive, quindi questi file si toccano di continuo. Ma un commit
+      # che tocca SOLO loro non puo' rompere niente: **misurato il 2026-09-24,
+      # nessun test li legge** — compaiono solo dentro commenti, e l'unico che
+      # li apre davvero e' `tests/tools/censimento-pezzi.js`, che non sta nella
+      # suite. Il comando che lo dice:
+      #
+      #   grep -rn "readFileSync.*docs/correzioni" tests/
+      #
+      # ⚠️ E LA CARTELLA `docs/inglese/**` NON E' QUI DENTRO, di proposito:
+      # quella i test la leggono davvero — `test_story_modules` apre
+      # `inglese-it-gate.md`, `test_struttura_corso` la struttura, e
+      # `trascrivi.js` ci costruisce sopra i JSON. Escluderla sarebbe una
+      # misura che non misura (regola 37).
+      #
+      # Come sopra: GitHub salta il workflow solo quando TUTTI i file cambiati
+      # cadono nel filtro. Un commit che mescola un registro e una riga di
+      # codice — cioe' il caso normale della regola 43 — fa partire la suite.
+      - 'docs/correzioni.md'
+      - 'docs/decisioni-stato.md'
+      - 'docs/decisioni-storico.md'
+      - 'docs/componenti-condivisi.md'
+      - 'docs/componenti-singoli.md'
+      - 'docs/cyber-security.md'
+      - 'docs/scelte-strategiche-infrastrutturali.md'
 
 jobs:
   regressione:

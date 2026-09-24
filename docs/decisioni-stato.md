@@ -108,7 +108,7 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 |---|---|
 | **1.18** | ⚠️ **la famiglia di asserzioni che corre contro timer corti**, e che rende la CI inaffidabile. *L'ipotesi del tetto è già stata smontata da una misura: 11–15 ms contro 500 di margine.* Il primo passo è **misurare sul runner**, non alzare numeri |
 | **F.2** | i 17 finti sintetizzatori senza `speaking` — **stessa famiglia di 1.18, vista dall'altro lato** |
-| **la guardia delle opzioni** | ⚠️ **un valore aggiunto a una tabella non è provato da nessuno**: le prove guidano il predefinito. È il caso Lugano — *una frase falsa su due opzioni su otto, e la suite sarebbe rimasta verde* |
+| ~~**la guardia delle opzioni**~~ | ❌ **CHIUSA il 2026-09-24 senza farla, e la ragione è di chi guida il progetto:** *«non mettiamo guardie in cose che a ogni episodio cambiano — se serve cambiare qualcosa nell'episodio 1, lo mettiamo a posto e capiamo perché».* ⚠️ **Il difetto che l'aveva chiesta resta vero** — un valore aggiunto a una tabella non è provato da nessuno, le prove guidano il predefinito, ed è il caso Lugano: *una frase falsa su due opzioni su otto, con la suite verde.* **Ma le opzioni sono CONTENUTO, e cambiano a ogni episodio:** una guardia che le elenca invecchierebbe a ogni riga nuova, cioè sarebbe la forma che questo progetto passa il tempo a togliere. *Chiusa come decisione, non come dimenticanza: se il caso si ripresenta si guarda l'episodio, non si aggiunge una lista.* |
 | **1.16** | `wipeEpisodeProgress` cancella tre chiavi per episodio su sette |
 | **F.3** · **F.4** | il giro di design sulla mastery · le varianti di `bootAsUser`/`mockInit` nei test |
 | **③ delle sequenze** | il Pannello Admin non sa creare né cancellare una sequenza |
