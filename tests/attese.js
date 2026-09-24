@@ -271,8 +271,37 @@ async function attendiTono(page, frequenze, quanti, timeoutMs) {
   }
 }
 
+// ⚠️ LA MISURA DI UNA CATENA — passo 1.18, 2026-09-24.
+//
+// Stampa quanto ci mette DAVVERO un effetto ad arrivare, sempre: verde o
+// rosso, in locale e sul runner. Serve a una cosa sola, ed e' la prima riga
+// del passo 1.18: **prendere i tempi invece di sceglierli.**
+//
+// *«Sostituire un numero scelto con un altro numero scelto e' la stessa forma,
+// col verde in piu' per un po'.» Finche' non si sa quanto ci mette una catena
+// sul runner, alzare un tetto non e' una correzione: e' una scommessa.*
+//
+// ⚠️ NON FA FALLIRE NIENTE E NON ASPETTA NIENTE DI SUO: avvolge un'attesa che
+// c'e' gia'. Se quella cade, cade come prima — e il tempo stampato dice fin
+// dove era arrivata.
+//
+// La riga esce con un prefisso fisso (`MISURA`) perche' si possa raccoglierla
+// dal log della CI con un `grep`, invece di leggerla a occhio fra migliaia di
+// righe.
+async function misura(nome, fn) {
+  const t0 = Date.now();
+  try {
+    const out = await fn();
+    console.log('MISURA ' + nome + ': ' + (Date.now() - t0) + ' ms');
+    return out;
+  } catch (e) {
+    console.log('MISURA ' + nome + ': ' + (Date.now() - t0) + ' ms (CADUTA)');
+    throw e;
+  }
+}
+
 module.exports = {
   attendiSottotitoloEsito, attendiVisibile, attendiNascosto,
   attendiAbilitato, attendiDisabilitato, attendiClasse,
-  attendiCheParla, attendiTono
+  attendiCheParla, attendiTono, misura
 };

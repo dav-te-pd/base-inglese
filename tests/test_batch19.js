@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
-const { attendiAbilitato, attendiVisibile } = require('./attese');
+const { attendiAbilitato, attendiVisibile, misura } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
@@ -249,6 +249,11 @@ async function toccaFinoA(page, p, voluto) {
 // E' la famiglia ⓪-octies applicata PRIMA del prossimo rosso invece che dopo:
 // la diagnosi si scrive quando si capisce che manca, non quando serve.
 function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
+  // ⚠️ MISURATA dal passo 1.18: il tetto e' 15 s e nessuno sa quanto ci metta
+  // DAVVERO sul runner. La riga di [SR Task1] e' caduta qui il 2026-09-22, e
+  // quella catena non era mai stata misurata — *il numero dell'altra non vale
+  // per questa.*
+  return misura('batch19 domanda-successiva/' + p, function () {
   return page.waitForFunction((a) => {
     const b = document.getElementById(a.pre + '-dontknow-btn');
     const c = document.getElementById(a.pre + '-counter');
@@ -257,7 +262,8 @@ function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
     if (!rev.hidden) return null;
     if (c.textContent.trim() === a.prima) return null;
     return { spento: b.disabled, nascosto: b.hidden, contatore: c.textContent.trim() };
-  }, { pre: p, prima: contatorePrecedente }, { timeout: 15000 })
+  }, { pre: p, prima: contatorePrecedente }, { timeout: 15000 });
+  })
     .then(h => h.jsonValue())
     .catch(async function (e) {
       // Lo stato al momento della resa: e' l'unica cosa che distingue «non e'

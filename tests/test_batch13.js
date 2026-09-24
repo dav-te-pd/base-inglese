@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
-const { attendiClasse, attendiVisibile } = require('./attese');
+const { attendiClasse, attendiVisibile, misura } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
@@ -130,7 +130,12 @@ async function run() {
     const stillRecordingBeforeCutoff = await page.evaluate(() => document.getElementById('vc-record-btn').classList.contains('is-recording'));
     log('[6b] Still recording just before the (shrunk) silence timeout fires', stillRecordingBeforeCutoff);
 
-    await page.waitForFunction(() => !document.getElementById('vc-silence-warning').hidden, { timeout: 3000 });
+    // ⚠️ MISURATA dal passo 1.18: quanto ci mette l'avviso di silenzio ad
+    // arrivare dopo il click. Il timer e' 300 ms, e la riga sopra legge a 200:
+    // **il margine di QUESTA catena e' 100 ms, non 485.**
+    await misura('batch13/6b avviso-di-silenzio', function () {
+      return page.waitForFunction(() => !document.getElementById('vc-silence-warning').hidden, { timeout: 3000 });
+    });
     const warningText = await page.$eval('#vc-silence-warning', el => el.textContent);
     log('[6b] Silence warning appears', warningText.length > 0);
     log('[6b] Warning text mentions the configured seconds (0.3)', warningText.indexOf('0.3') !== -1);
@@ -165,6 +170,17 @@ async function run() {
     // ATTESA-LEGITTIMA: come sopra — si aspetta oltre il punto in cui il timeout di
     // silenzio SAREBBE scattato, per verificare che non sia scattato. Un non-evento non
     // si aspetta: il tempo e' la misura.
+    // ⚠️ IL TEMPO VERO DELLA CATENA CHE CADE SUL RUNNER — passo 1.18.
+    //
+    // L'attesa a tempo resta (e' un NON-evento: si prova che l'avviso NON
+    // compare, e un non-evento non si aspetta). Accanto pero' si MISURA quanto
+    // ci mette l'effetto che l'asserzione legge davvero — «stop -> area di
+    // conferma visibile» — cosi' dal log della CI si legge il numero del
+    // RUNNER invece di quello del container.
+    await misura('batch13/6b stop-verso-conferma', function () {
+      return page.waitForFunction(() => !document.getElementById('vc-confirm-area').hidden, { timeout: 4000 })
+        .catch(function () { return null; });
+    });
     await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che l'avviso di silenzio NON compare dopo un parlato riconosciuto
     // ⚠️ LO STATO SI LEGGE TUTTO INSIEME, E SI STAMPA QUANDO UNA DELLE DUE
     // RIGHE E' ROSSA — aggiunto il 2026-09-22 dopo un rosso di CI che non si
