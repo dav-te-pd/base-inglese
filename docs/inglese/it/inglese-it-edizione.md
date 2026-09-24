@@ -1,4 +1,4 @@
-**Versione: 20260924b**
+**Versione: 20260924d**
 
 # L'edizione — inglese per italiani
 
@@ -15,7 +15,7 @@
 | Parte | Cosa c'è |
 |---|---|
 | **1 — L'edizione** | la trama, la rotta, i tratti, gli obiettivi A1, la traccia dei primi dieci episodi |
-| **2 — Il metodo** | come si scrive un episodio: la cipolla, gli undici passi, le regole dei dialoghi e delle skill, le tredici sezioni, la checklist dei file |
+| **2 — Il metodo** | come si scrive un episodio: la cipolla, gli undici passi, le regole dei dialoghi e delle skill, dove va ciò che si scrive, la checklist dei file |
 | **3 — La grammatica** | le strutture, le schede, le regole della lingua, i criteri di cosa entra in A1 |
 | **4 — Gli episodi** | il tabellone, e le ragioni di ogni episodio scritto |
 | **5 — Da fare** | trovate non ancora usate, episodi da collocare, gli aperti |
@@ -64,36 +64,8 @@ dell'episodio.** *Un episodio non «è» A1.2: sta in un tratto che si chiama co
 tratto, ed è giusto — il tratto dice **a che punto sei**, non **cosa sei**.*
 
 **EDIZIONE-TRATTI_008** · *È la ragione per cui il livello non compare nel nome dei file.*
-
-**EDIZIONE-TRATTI_009** · ⚠️ **APERTO — la stagione è A1, e A1.1 e A1.2 sono tratti dentro la stagione.**
-*Come si chiamano per lo studente, se si vedono, è da decidere col tabellone degli episodi.*
-
-### A1.1 — l'apertura, le fondamenta, l'inizio del viaggio
-
-**EDIZIONE_013** · **L'ordine è quello delle righe.** *Nessun numero: gli episodi si spostano, e il
-riferimento stabile è l'id.* **Spostare un episodio è spostare una riga.**
-
-| # | Episodio | Tipo | Stato |
-|---|---|---|---|
-| **0** | **`benvenuto`** | ⭐ **apertura del corso** | **da creare — solo lo spazio** |
-| 1 | `numeri` | `grammatica` · apre | scheda 3.5 fatta, **episodio da scrivere** |
-| 2 | `verb-to-be` | `grammatica` · apre | scheda 3.3 fatta, **episodio da scrivere** |
-| 3 | `gate` | `storia` | ✅ **scritto e trascritto** |
-| 4 | `aircraft-door` | `storia` | ✅ **scritto e trascritto** |
-
-**EDIZIONE_014** · ⚠️ **QUESTA TABELLA NON È LA FONTE PER L'APP, E VA SAPUTO PRIMA DI SPOSTARCI UNA
-RIGA.** *L'ordine che l'app legge è quello della tabella della sezione 7 di
-`inglese-it-struttura-corso`, ed è l'unico che un test confronta col JSON. Qui ci sono anche gli
-episodi che **non esistono ancora**, che là non possono stare.* **Quando `numeri` e `verb-to-be`
-verranno scritti, la riga va spostata in tutte e due.**
-
-### A1.2 — in volo, e il primo personaggio che tornerà
-
-| # | Episodio | Tipo | Stato |
-|---|---|---|---|
-| 5 | `seat` — il posto | `storia` | bozza |
-| 6 | `seat-neighbour` — il vicino di posto | `storia` | bozza |
-| 7 | `before-takeoff` — prima del decollo | `storia` | bozza |
+**EDIZIONE_006** · ⚠️ **APERTO — la stagione è A1, e A1.1 e A1.2 sono tratti dentro la stagione.**
+*Come si chiamano per lo studente, e se si vedono, è da decidere col tabellone.*
 
 ### La progressione dello scambio
 
@@ -442,41 +414,34 @@ della richiesta, mai i numeri.**
 
 ---
 
-## 2.6 — LE SEZIONI DI UN EPISODIO
+## 2.6 — DOVE VA CIÒ CHE SI SCRIVE DI UN EPISODIO
 
-**REGISTRO-EPISODI_004** · **Ogni file episodio ha queste tredici sezioni, in quest'ordine:**
+**REGISTRO-EPISODI_004** · ⚠️ **Un episodio si scrive in DUE posti, e non è una duplicazione:**
 
-| # | Sezione | Cosa contiene |
-|---|---|---|
-| 1 | Fonte e metodo | il JSON che alimenta, il messaggio fisso, il rimando a questo registro |
-| 2 | L'episodio | id, nome mostrato (la fonte è `struttura-corso`), categoria, sequenza dei moduli, numeri attesi |
-| 3 | La scena | dove, chi, cosa succede — il testo della pagina di inizio episodio e del video |
-| 4 | Contenuti video — messaggi iniziali e finali | le idee per il video dell'episodio, scritte mentre lo si pensa |
-| 5 | Contenuti social | le idee per i social, idem |
-| 6 | Cosa insegna | le strutture, gli esclusi di proposito, i vincoli sulla sequenza |
-| 7 | La matrice | i gradi D → C → B → A |
-| 8 | Le skill | una per battuta, testo completo |
-| 9 | Personaggi ed etichette | la tabella da cui si trascrive `dialogueSpeakerLabels` |
-| 10 | Personalizzazione | gli slot e i loro id |
-| 11 | Note di scrittura | le scelte che non si vedono dalla matrice |
-| 12 | Regole in sospeso | le strutture entrate senza la loro scheda |
-| 13 | Chiavi del JSON | le chiavi che l'episodio porta |
+| | File | Chi lo legge | Cosa ci sta |
+|---|---|---|---|
+| **DATI** | `inglese-it-{id}.md` | **Claude Code e un test** | le otto sezioni del modello: numeri attesi, regola generale, matrice, skill, personaggi, slot, tabelle interne |
+| **RAGIONI** | **la parte 4 di questo file** | noi | scena, cosa insegna, note di scrittura, regole in sospeso, contenuti video e social |
 
-**REGISTRO-EPISODI_005** · ⚠️ **Se una sezione non ha niente, si scrive un punto `·`** — *così si vede
-che non è stata dimenticata.*
+**REGISTRO-EPISODI_005** · **La forma del file DATI non si inventa:** *sta in
+`nuovi/inglese-it-EPISODIO-VUOTO.md`, che è il modello.* ⚠️ **I titoli delle sue sezioni sono
+un'interfaccia — un parser li cerca per testo esatto.**
+
+**REGISTRO-EPISODI_024** · **Nella parte 4 di questo file, ogni episodio ha sempre queste voci, in
+quest'ordine:** *La scena · Cosa insegna · Note di scrittura · Regole in sospeso · Contenuti video ·
+Contenuti social.* **Se una non ha niente, si scrive un punto `·`** — *così si vede che non è stata
+dimenticata.*
 
 **REGISTRO-EPISODI_006** · **La prima riga di ogni file è la versione, e solo quella:**
-`**Versione: 20260921c**`. *Nella chat il nome del file porta la versione
-(`inglese-it-gate-20260921c.md`); nel repository no — Davide la toglie prima di caricarlo, perché
-test e rimandi leggono i file per nome.*
+`**Versione: 20260924c**`. *Nella chat il nome del file porta la versione; nel repository no — la
+versione si toglie prima di caricare, perché test e rimandi leggono i file per nome.*
 
 **REGISTRO-EPISODI_022** · **Il nome mostrato e la categoria di un episodio vivono in
-`inglese-it-struttura-corso`**, tabella degli episodi. *Il file episodio li cita, non li ripete.*
+`inglese-it-struttura-corso`**, tabella degli episodi. *Il file DATI li cita, non li ripete.*
 Categorie: **`storia`**, **`grammatica`**, **`pronuncia`**.
 
 **REGISTRO-EPISODI_023** · **La scena è anche il testo della pagina di inizio episodio e la base del
-video.** *Le idee per video e social si scrivono nelle sezioni 4 e 5 mentre si scrive l'episodio —
-non dopo, a memoria.*
+video.** *Le idee per video e social si scrivono mentre si scrive l'episodio — non dopo, a memoria.*
 
 ---
 
@@ -550,19 +515,19 @@ uguali a Pechino, Shanghai e Hong Kong.*
 ---
 ## 2.8 — FILE DA AGGIORNARE QUANDO NASCE UN EPISODIO
 
-**REGISTRO-EPISODI_024** · **Ogni episodio nuovo tocca questi file.** *È la checklist: se uno non è
+**REGISTRO-EPISODI_028** · **Ogni episodio nuovo tocca questi file.** *È la checklist: se uno non è
 stato toccato, o l'episodio non ne aveva bisogno — e va detto — o è stato dimenticato.*
 
 | File | Cosa ci si scrive | Chi |
 |---|---|---|
-| `inglese-it-{id}` | il file dell'episodio, tredici sezioni | noi |
+| `inglese-it-{id}` | il file DATI dell'episodio, otto sezioni | noi |
 | questo file | la riga del tabellone, sospesi, strutture, promesse, voci | noi |
 | `inglese-it-struttura-corso` | la riga nella tabella degli episodi: id, nome, categoria, sequenza | noi |
 | la sezione 7 di `inglese-it-struttura-corso` | la posizione dell'episodio | noi |
 | la parte 3 di questo file | le strutture nuove che l'episodio apre | noi, se serve |
 | `inglese-it-tabelle-personalizzazione` | slot o valori nuovi | noi, se serve |
 | la parte 1.3 di questo file | l'obiettivo che l'episodio copre | noi, se serve |
-| `APPLINGUE-registro-voci` | le voci nuove — *finché non entra in questo registro* | noi |
+| la parte 4 di questo file | le ragioni dell'episodio, e le voci nuove nel tabellone 4.1 | noi |
 | `data/inglese/it/inglese-it-{id}.json` | la trascrizione | Claude Code |
 
 ---
@@ -1143,23 +1108,25 @@ sua riga del tabellone — **e da qui si cancella**.*
 *L'ordine si fissa quando si scrivono. Quando un episodio entra in sequenza, passa in
 la sezione 7 di `inglese-it-struttura-corso` e da qui si cancella.*
 
-| Episodio | Categoria | Cosa insegna |
-|---|---|---|
-| `toilet` — il bagno in volo | `storia` | `excuse me` per far alzare · `sorry` per lo sbaglio. **Episodio corto** |
-| `drinks-cart` — il carrello delle bevande | `storia` | `a` / `an` — *venti caffè uguali* (inventario 2.1) |
-| `taxi` — il taxi all'arrivo | `storia` | `the` — *un taxi solo* (inventario 2.2) |
-| `restaurant` — il ristorante | `storia` | `excuse me` per chiamare — *il terzo uso* |
-| `hotel-reception` — la reception | `storia` | il resto della famiglia: `husband`, `mother`, `father` |
-| `nomi-propri` | `grammatica` · apre | R.1 — **dopo il ritiro bagagli o al controllo passaporti**, dove si incontrano nomi veri |
-| `gh-muta` | `pronuncia` | parte da `daughter` e `flight` |
-| `th` | `pronuncia` | · |
-| `saluti` | `grammatica` · riordina | R.9 — *viene dopo* |
-| `formule-di-servizio` | `grammatica` · riordina | *viene dopo* |
-| `please-1`, `please-2` | `grammatica` · riordina | *i quattro significati di `please`* |
-| `articolo-di-troppo` | trappola | inventario 2.3 |
-| `youre-welcome` | trappola | vedi le trappole qui sopra |
-| `eta-con-avere` | trappola | inventario R.3 |
-| `preposizioni-paesi` | trappola | vedi le trappole qui sopra |
+| Episodio | Categoria | Cosa insegna | Stato |
+|---|---|---|---|
+| `numeri` | `grammatica` · apre | i numeri 1-20 — inventario 3.1 | **scheda fatta, manca l'episodio** |
+| `verb-to-be` | `grammatica` · apre | il verbo essere — inventario 1.1, 1.2, 1.3 | **scheda fatta, manca l'episodio** |
+| `toilet` — il bagno in volo | `storia` | `excuse me` per far alzare · `sorry` per lo sbaglio. **Episodio corto** | · |
+| `drinks-cart` — il carrello delle bevande | `storia` | `a` / `an` — *venti caffè uguali* (inventario 2.1) | · |
+| `taxi` — il taxi all'arrivo | `storia` | `the` — *un taxi solo* (inventario 2.2) | · |
+| `restaurant` — il ristorante | `storia` | `excuse me` per chiamare — *il terzo uso* | · |
+| `hotel-reception` — la reception | `storia` | il resto della famiglia: `husband`, `mother`, `father` | · |
+| `nomi-propri` | `grammatica` · apre | R.1 — **dopo il ritiro bagagli o al controllo passaporti**, dove si incontrano nomi veri | · |
+| `gh-muta` | `pronuncia` | parte da `daughter` e `flight` | · |
+| `th` | `pronuncia` | · | · |
+| `saluti` | `grammatica` · riordina | R.9 — *viene dopo* | · |
+| `formule-di-servizio` | `grammatica` · riordina | *viene dopo* | · |
+| `please-1`, `please-2` | `grammatica` · riordina | *i quattro significati di `please`* | · |
+| `articolo-di-troppo` | trappola | inventario 2.3 | · |
+| `youre-welcome` | trappola | vedi le trappole qui sopra | · |
+| `eta-con-avere` | trappola | inventario R.3 | · |
+| `preposizioni-paesi` | trappola | vedi le trappole qui sopra | · |
 
 ## 5.2 — GLI APERTI DELLE TABELLE
 **TABELLE_025** · **Oggi il JSON ha il contenuto vecchio:** *id `marco` invece di `papa-marco`, sei
