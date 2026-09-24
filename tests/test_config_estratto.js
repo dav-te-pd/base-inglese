@@ -33,7 +33,7 @@
 // Qui si guarda solo dove sta e quando arriva.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, globDati } = require('./test-env');
 const { posizioneTag } = require('./strati');
 
 let passed = 0, failed = 0;
@@ -245,6 +245,89 @@ async function run() {
     // riga della battuta c'e'», perche' i due totali ci sono anche a vuoto.
     log('[D] ...e la tabella disegna la riga di quella battuta', righe >= 3, String(righe));
     log('[D] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  // ── [E] IL GRUPPO CHE L'UTENTE HA APERTO SOPRAVVIVE ALL'ARRIVO DELLA
+  //        STRUTTURA DEL CORSO ──────────────────────────────────────────
+  //
+  // ⚠️ PROTEGGE UN DIFETTO VERO DELL'APP, non una fragilita' del test, ed e'
+  // il PRIMO trovato dal censimento sotto stress di 1.18
+  // (`tests/tools/stress.sh`). Due commenti di `app/mappa.js` si
+  // contraddicevano: quello di `aggiungiGruppiMagazzino` diceva, col caso che
+  // l'aveva insegnato, che un `renderConfigPanel()` completo **azzera il
+  // `<details>` che l'utente aveva appena aperto** — e per questo i gruppi del
+  // magazzino si AGGIUNGONO; ma quando arrivava la struttura del corso il
+  // codice chiamava proprio il ridisegno completo, **col commento accanto che
+  // diceva «e' la stessa forma di aggiungiGruppiMagazzino».**
+  //
+  // ⚠️ PERCHE' NESSUNO L'AVEVA VISTO: su una macchina veloce la struttura
+  // arriva prima che qualcuno abbia il tempo di aprire un gruppo. Qui il
+  // ritardo non serve a «dare tempo»: **serve a mettere il gesto DENTRO la
+  // finestra**, cioe' e' la condizione del difetto, non un tetto.
+  //
+  // ⚠️ IL LIMITE, DICHIARATO (regola 32), PERCHE' NON E' OVVIO: si verifica
+  // che il gruppo sia ANCORA APERTO, **non** che sia lo stesso nodo. Il nodo
+  // viene sostituito lo stesso — il pannello si ridisegna davvero — e la
+  // ragione e' che i gruppi generici nascono da `window.APP_CONFIG`, che con
+  // l'arrivo della struttura CAMBIA: non ridisegnarli li lascerebbe vecchi.
+  // Quello che si conserva e' la sola cosa che appartiene a chi guarda: cosa
+  // aveva aperto.
+  //
+  // *Quindi questo test NON si accorgerebbe di un ridisegno che perde lo
+  // scorrimento, il fuoco, o un menu aperto a meta'. Copre il sintomo
+  // riportato — «il gruppo si richiude sotto le dita» — e lo dice.*
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await page.route(globDati('struttura-corso.json'), async function (route) {
+      await new Promise(function (x) { setTimeout(x, 1200); });
+      await route.continue();
+    });
+    await page.goto(APP_URL + '?config');
+    await page.waitForSelector('#config-panel-overlay.is-open', { timeout: 15000 });
+    // Si apre un gruppo e lo si MARCA, dentro la finestra in cui la struttura
+    // non e' ancora arrivata.
+    const apertoSu = await page.evaluate(function () {
+      var d = document.querySelector('#config-panel-body .config-group');
+      if (!d) return null;
+      d.open = true;
+      d.setAttribute('data-gruppo-marcato', '1');
+      var t = d.querySelector('summary');
+      return t ? t.textContent : '(senza summary)';
+    });
+    log('[E] C\'e\' un gruppo da aprire prima che la struttura arrivi',
+      apertoSu !== null, String(apertoSu));
+    // L'APPRODO: la struttura e' arrivata. Si aspetta un fatto che nessuna
+    // delle due asserzioni qui sotto legge (regola 44) — la vista di casa
+    // disegnata, che esiste solo dopo `caricaStrutturaCorso`.
+    await page.waitForSelector('#view-home.is-active, #view-onboarding.is-active',
+      { timeout: 15000 }).then(function () {}, function () {});
+    await page.waitForTimeout(1500); // ATTESA-LEGITTIMA: si verifica che una cosa NON accada (il nodo non deve sparire), e un non-evento non si aspetta: si da' il tempo perche' il ridisegno avvenisse
+    const esito = await page.evaluate(function (titolo) {
+      var gruppi = Array.prototype.slice.call(
+        document.querySelectorAll('#config-panel-body .config-group'));
+      var suo = gruppi.filter(function (g) {
+        var t = g.querySelector('summary');
+        return t && t.textContent === titolo;
+      })[0];
+      return {
+        ilGruppoCESANCORA: !!suo,
+        eAperto: !!(suo && suo.open),
+        // La marcatura dice se il nodo e' lo STESSO: non e' un'asserzione, e'
+        // il fatto che spiega perche' l'asserzione guarda il titolo e non il
+        // nodo. Se un giorno tornasse `true`, il pannello avrebbe smesso di
+        // ridisegnarsi — e questa riga lo direbbe nel messaggio.
+        stessoNodo: !!document.querySelector('#config-panel-body .config-group[data-gruppo-marcato]')
+      };
+    }, apertoSu);
+    log('[E] Il gruppo che era aperto c\'e\' ancora dopo l\'arrivo della struttura',
+      esito.ilGruppoCESANCORA === true, JSON.stringify(esito));
+    log('[E] ...ed e\' RIMASTO APERTO (non si richiude sotto le dita)',
+      esito.eAperto === true, JSON.stringify(esito));
+    log('[E] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }
 

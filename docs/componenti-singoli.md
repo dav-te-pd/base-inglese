@@ -223,3 +223,15 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 |---|---|---|---|
 | `scriviTestiHome()` | Scrive il saluto e il pulsante della schermata iniziale leggendoli dal file dei testi, col nome dello studente e quello dell'episodio dentro. | — → niente | ⚠️ **Che il markup abbia già qualcosa di sensato da dire.** Non scrive se il testo è vuoto: i testi possono non essere ancora arrivati, e svuotare «Ciao!» e «Inizia» sarebbe peggio di lasciarli. |
 | `goHome()` | Porta alla schermata iniziale: scrive i testi, e **li riscrive quando arrivano** se lo studente è ancora lì. | — → niente | Che `views.home` dica se vale ancora la pena scrivere. *Senza quel controllo si scriverebbe su una schermata già lasciata — invisibile, ma è la forma da cui nascono i guasti di ordine.* |
+
+## `app/mappa.js` — il Pannello Admin, il disegno
+
+*Catalogati il 2026-09-24 facendo il primo passo di `1.18`: sono i pezzi che
+quel passo ha dovuto capire riga per riga (regola 46).*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `renderConfigPanel()` | Ridisegna **da capo** il corpo del pannello, un gruppo per ogni chiave di primo livello di `window.APP_CONFIG`. | *niente* → *niente* | ⚠️ **Che ridisegnare da capo sia necessario**, e lo è: i gruppi generici nascono da `APP_CONFIG`, che **cambia** quando arriva la struttura del corso. ⚠️ **E che lo stato aperto/chiuso vada CONSERVATO QUI DENTRO** (dal 2026-09-24): sta qui e non in chi chiama per la regola 20 — i punti da cui si può ridisegnare si moltiplicano, la funzione che disegna resta una. *Il nodo viene sostituito lo stesso: si conserva `open`, non l'identità.* |
+| `openConfigPanel()` | Apre il pannello: disegna i gruppi, i quattro riquadri che dipendono dall'episodio, e poi chiede il magazzino. | *niente* → *niente* | ⚠️ **Che sia chiamata anche a pannello GIÀ APERTO**, quando arriva la struttura del corso: è quella seconda chiamata che ha reso necessario conservare lo stato dei gruppi. Il `.catch` vuoto sul magazzino **è legittimo e registrato** (`tests/ERRORI-INGOIATI.md`): senza tabelle il pannello resta senza due gruppi, non chiuso. |
+| `aggiungiGruppiMagazzino(tables)` | Attacca i due gruppi `people` e `places` a pannello già aperto, **aggiungendoli**. | `tables` → *niente*, e scrive `window.APP_CONFIG[k]` | Che i due gruppi si riconoscano dal **testo del `summary`** (`textContent === k`): è la stessa chiave su cui `renderConfigPanel` conserva l'apertura. **Il magazzino è una copia di lavoro su `APP_CONFIG`, non la fonte:** chi legge i valori davvero è `resolveSlotTable`. |
+| `renderStoryCardsExplanationStatsPanel()` | Il riquadro delle risposte di Why We Say It, per utente ed episodio correnti. | *niente* → *niente* | ⚠️ **Che senza episodio esca SUBITO** (`riquadroSenzaEpisodio`): finché la struttura non è arrivata quel riquadro **non ha righe**, e chi lo conta troppo presto legge zero. *È il motivo per cui un'asserzione che conta le righe deve approdare su «il riquadro non è più nello stato senza-episodio», non su «ci sono tre righe» (regola 44).* |

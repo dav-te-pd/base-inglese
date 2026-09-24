@@ -1067,13 +1067,51 @@
     return details;
   }
 
+  // ⚠️ LO STATO APERTO/CHIUSO DEI GRUPPI SI CONSERVA QUI DENTRO, e sta qui e
+  // non in chi chiama per la regola 20: i punti da cui si puo' ridisegnare il
+  // pannello si moltiplicano nel tempo, la funzione che lo ridisegna resta
+  // una sola.
+  //
+  // ⚠️ IL DIFETTO CHE L'HA SCRITTA, E NON E' UN'IPOTESI — RIPRODOTTO TRE
+  // VOLTE SU TRE il 2026-09-24. Due commenti di QUESTO FILE si
+  // contraddicevano: quello di `aggiungiGruppiMagazzino` diceva, col caso che
+  // l'aveva insegnato, *«un renderConfigPanel() completo azzera il <details>
+  // che l'utente aveva appena aperto»* — e per questo i due gruppi del
+  // magazzino si AGGIUNGONO. Ma quando arriva la STRUTTURA DEL CORSO, il
+  // codice chiamava `openConfigPanel()`, cioe' proprio il ridisegno completo,
+  // **e il commento li' accanto diceva «e' la stessa forma di
+  // aggiungiGruppiMagazzino» mentre faceva l'opposto.**
+  //
+  // Misurato ritardando `struttura-corso.json`: si apre un gruppo, arriva la
+  // struttura, e il nodo aperto **non esiste piu'** — non richiuso: sostituito.
+  //
+  // *Non l'ha trovato nessuno rileggendo: l'ha trovato il censimento sotto
+  // stress di 1.18 (`tests/tools/stress.sh`), perche' in una macchina veloce
+  // la struttura arriva prima che qualcuno abbia il tempo di aprire un
+  // gruppo. **E' il primo difetto dell'app trovato da quel censimento.***
+  //
+  // Il ridisegno completo NON si toglie: serve, perche' i gruppi generici
+  // nascono da `window.APP_CONFIG`, che con la struttura cambia. Quello che
+  // si conserva e' la sola cosa che appartiene a chi guarda: cosa aveva
+  // aperto.
   function renderConfigPanel() {
+    var aperti = {};
+    Array.prototype.forEach.call(
+      configPanelBodyEl.querySelectorAll('.config-group'),
+      function (gruppo) {
+        var titolo = gruppo.querySelector('summary');
+        if (titolo && gruppo.open) aperti[titolo.textContent] = true;
+      });
     configPanelBodyEl.innerHTML = '';
     Object.keys(window.APP_CONFIG).forEach(function (sectionKey) {
       // Meta-documentation about the panel's own fields, not itself a
       // tunable parameter — never shown as its own editable group.
       if (sectionKey === 'configFieldDescriptions') return;
-      configPanelBodyEl.appendChild(renderConfigGroup(sectionKey, window.APP_CONFIG[sectionKey]));
+      var gruppo = renderConfigGroup(sectionKey, window.APP_CONFIG[sectionKey]);
+      configPanelBodyEl.appendChild(gruppo);
+      // La chiave E' il testo del summary — lo dice `aggiungiGruppiMagazzino`,
+      // che cerca i suoi due gruppi proprio per `textContent === k`.
+      if (aperti[sectionKey]) gruppo.open = true;
     });
   }
 
