@@ -1,5 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
-const { attendiCheParla, attendiClasse, attendiVisibile } = require('./attese');
+const { attendiCheParla, attendiClasse, attendiVisibile, misura } = require('./attese');
 const { loadGrade } = require('./quiz-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -86,7 +86,16 @@ const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 async function run() {
   const browser = await launchBrowser();
   const results = [];
-  const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+  // ⚠️ IL TERZO ARGOMENTO SI STAMPA — aggiunto il 2026-09-24 (passo 1.18).
+  //
+  // Qui `log` ne prendeva due e buttava via il resto: una riga rossa usciva
+  // **senza il suo perche'**, anche quando chi l'aveva scritta il perche'
+  // l'aveva passato. *E' successo scrivendo questo stesso passo: la diagnosi
+  // del ramo «pulsante non trovato» e' stata scritta, passata, e non stampata.*
+  const log = (msg, ok, extra) => {
+    results.push({ msg, ok });
+    console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg + (!ok && extra ? '  -> ' + extra : ''));
+  };
 
   // ============ JOB 1a: Dialogo Ripeti a Tempo (countdown profile) — still fully locked, unchanged ============
   {
@@ -300,21 +309,55 @@ async function run() {
     await bootAsUser(page, 'T17Job1ebis', ALL_BEFORE_QM.concat(['matchEngIta']));
     await openModule(page, 'matchItaEng');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
-    if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
+    // ⚠️ SI ASPETTA IL PULSANTE, NON 150 ms — passo 1.18, 2026-09-24.
+    //
+    // Qui c'era `waitForTimeout(150)` e subito dopo `page.$(...)`: se le
+    // opzioni non erano ancora disegnate, `miniListenBtn` usciva **null** e il
+    // ramo `else` faceva cadere **tutte e due** le asserzioni con un `false`
+    // nudo — senza dire che il pulsante non c'era.
+    //
+    // ⚠️ ED E' ESATTAMENTE LA FIRMA DEL ROSSO DI CI DEL 2026-09-24 (corsa
+    // n.291, commit di SOLI DOCUMENTI): le due righe di [Job1e-bis] cadute
+    // **insieme**. *Due asserzioni che cadono sempre insieme non sono due
+    // misure: sono un ramo che non distingue «la cosa e' rotta» da «non ho
+    // trovato il pulsante».* E' la stessa famiglia del vecchio `null` di
+    // `attendiDomandaSuccessiva`.
+    //
+    // L'attesa e' su un effetto che NESSUNA delle due asserzioni legge — il
+    // pulsante esiste — quindi non le rende vere per costruzione (regola 44).
+    if (startVisible2) {
+      await page.click('#qm-start-btn');
+      await misura('batch17/1e-bis opzioni-disegnate', function () {
+        return page.waitForSelector('#qm-options [data-qm-listen-index]', { timeout: 5000 })
+          .catch(function () { return null; });
+      });
+    }
     const miniListenBtn = await page.$('#qm-options [data-qm-listen-index]');
     if (miniListenBtn) {
       await miniListenBtn.click();
-      await attendiCheParla(page);
+      await misura('batch17/1e-bis mini-ascolto-parte', function () { return attendiCheParla(page); });
       const speakingDuring = await page.evaluate(() => window.speechSynthesis.speaking);
-      log('[Job1e-bis] Option mini-listen audio is actually playing', speakingDuring === true);
+      log('[Job1e-bis] Option mini-listen audio is actually playing', speakingDuring === true,
+        'speaking=' + speakingDuring);
       const anyOption = await page.$('#qm-options .sr-option:not([disabled])');
       if (anyOption) { await anyOption.click(); }
       await page.waitForTimeout(50); // ATTESA-LEGITTIMA: l'ISTANTE e' la misura. Si legge 50ms dopo il tocco perche' il finto sintetizzatore si spegne DA SOLO dopo 500ms: un'attesa «finche' non parla piu'» tornerebbe comunque, e «il tocco l'ha fermato» diventerebbe «prima o poi ha smesso», vera sempre. I 50ms sono la distanza fra le due cose. (regola 16 — vedi il blocco [D] di test_attese_condivise.js, che rende il pericolo eseguibile)
       const speakingAfterAnswer = await page.evaluate(() => window.speechSynthesis.speaking);
-      log('[Job1e-bis] Answering stops the option\'s own mini-listen audio (bleed guard)', speakingAfterAnswer === false);
+      log('[Job1e-bis] Answering stops the option\'s own mini-listen audio (bleed guard)',
+        speakingAfterAnswer === false, 'speaking=' + speakingAfterAnswer);
     } else {
-      log('[Job1e-bis] Option mini-listen audio is actually playing', false);
-      log('[Job1e-bis] Answering stops the option\'s own mini-listen audio (bleed guard)', false);
+      // ⚠️ IL RAMO DICE PERCHE'. Prima erano due `false` nudi, indistinguibili
+      // dal caso in cui l'audio e' davvero rotto — e sul runner sono caduti
+      // proprio cosi', senza lasciare niente da cui ripartire.
+      const diag = await page.evaluate(() => ({
+        vista: !!document.querySelector('#view-match.is-active'),
+        opzioni: document.querySelectorAll('#qm-options .sr-option').length,
+        miniAscolti: document.querySelectorAll('#qm-options [data-qm-listen-index]').length,
+        startVisibile: !document.getElementById('qm-start-btn').hidden
+      })).catch(function () { return null; });
+      const perche = 'nessun pulsante di mini-ascolto — ' + JSON.stringify(diag);
+      log('[Job1e-bis] Option mini-listen audio is actually playing', false, perche);
+      log('[Job1e-bis] Answering stops the option\'s own mini-listen audio (bleed guard)', false, perche);
     }
     log('[Job1e-bis] No JS errors', errors.length === 0);
     await page.close();
