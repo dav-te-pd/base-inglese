@@ -1,18 +1,28 @@
 // I FINTI DEL BROWSER, IN UN POSTO SOLO — passo F.4, 2026-09-24.
 //
-// ⚠️ PERCHE' ESISTE, E IL NUMERO E' LA RAGIONE: **38 file di test avevano un
-// `mockInit` PROPRIO, in 27 varianti distinte.** Non erano 27 idee diverse —
-// misurato lo stesso giorno, il nucleo (`speechSynthesis` +
-// `SpeechSynthesisUtterance`) c'e' in **tutti e 38**, e a divergere sono
-// quattro pezzi opzionali: il riconoscimento vocale (22), le leve di Voice
-// Coach (16), `AudioContext` (6), e la proprieta' `speaking` (17).
+// ⚠️ PERCHE' ESISTE, E IL NUMERO E' LA RAGIONE. **Misurato il 2026-09-24:
+// quarantacinque file di test si costruivano un finto `speechSynthesis`
+// PROPRIO.** Non erano quarantacinque idee diverse — il nucleo
+// (`speechSynthesis` + `SpeechSynthesisUtterance`) c'e' in tutti, e a
+// divergere sono quattro pezzi opzionali: il riconoscimento vocale, la
+// proprieta' `speaking`, `AudioContext`, le leve di Voice Coach.
 //
-// ⚠️ E IL COSTO DI QUELLE COPIE NON E' ESTETICO, E' MISURATO: **ventuno di
-// quei finti non dichiarano `speaking`**, e `speaking` non e' un dettaglio —
-// `app/audio.js` ci costruisce sopra `staParlando()`, la cui prima riga
-// **gate il Blocco Ascolto** (`if (!staParlando()) return;`). *In quei ventuno
-// file la Regola Azione Critica (regola 16) non gira mai, e nessuno se ne
-// accorge: e' il passo F.2, che viene DOPO questo.*
+// ⚠️ IL NUMERO QUI SOPRA E' UNA CORREZIONE, E LA CORREZIONE E' IL PUNTO.
+// La prima stesura di questo commento diceva «38 file, 27 varianti, 21 senza
+// `speaking`». Erano il conto dei file che hanno un `const mockInit`, e
+// **sei file il finto ce l'hanno con un altro nome** (`mockVoce`,
+// `mockSilenzio`, `finta`): quei sei non erano mai stati contati. *Un numero
+// che dipende dal NOME della variabile misura la variabile, non il problema
+// — regola 37.* Il conto vero si rifa' con un comando, non si ricopia:
+//
+//     grep -l "defineProperty(window, 'speechSynthesis'" tests/test_*.js | wc -l
+//
+// ⚠️ E IL COSTO DI QUELLE COPIE NON E' ESTETICO, E' MISURATO: **diciassette
+// di quei finti non dichiarano `speaking`**, e `speaking` non e' un dettaglio
+// — `app/audio.js` ci costruisce sopra `staParlando()`, la cui prima riga
+// **gate il Blocco Ascolto** (`if (!staParlando()) return;`). *In quei
+// diciassette file la Regola Azione Critica (regola 16) non gira mai, e
+// nessuno se ne accorge: e' il passo F.2, che viene DOPO questo.*
 //
 // ⚠️ QUESTO PASSO NON CAMBIA IL COMPORTAMENTO DI NESSUN FILE, ED E' LA
 // SCELTA CHE LO RENDE FATTIBILE. Ogni file converte al nucleo che aveva,
@@ -42,18 +52,84 @@
 const PREDEFINITI = {
   fineVoceMs: 20,              // quanto tarda `onend` dopo `speak()`
   nomeVoce: 'Fake Male Voice', // cosa torna `getVoices()`
-  riconoscimento: false,       // il finto SpeechRecognition
-  ritardoRiconoscimentoMs: 15
+  riconoscimento: false,       // vedi FORME sotto
+  ritardoRiconoscimentoMs: 15, // quanto tarda `onresult` dopo `start()`
+  ritardoFineRiconoscimentoMs: 5 // quanto tarda `onend` dopo `stop()`
 };
+
+// ⚠️ LE QUATTRO FORME DEL RICONOSCIMENTO, E NON SONO UN'ASTRAZIONE: sono i
+// quattro comportamenti che i file di oggi avevano davvero, e differiscono
+// **su QUANDO arriva `onend`** — cioe' esattamente sull'ordine degli eventi
+// asincroni che la regola 19 dice di non semplificare.
+//
+//   'auto'    start → (ritardo) onresult E onend · stop() non fa niente
+//   'suStop'  start → (ritardo) onresult · onend SOLO dopo stop()
+//   'manuale' start → onstart subito · stop → onend subito · nessun onresult
+//   'muto'    start non fa niente · onend solo dopo stop()  (premi e non parli)
+//
+// `true` vale 'auto', per chi scriveva prima che le forme avessero un nome.
+const FORME = ['auto', 'suStop', 'manuale', 'muto'];
+
+function corpoRiconoscimento(o) {
+  const forma = o.riconoscimento === true ? 'auto' : o.riconoscimento;
+  if (!forma) return '';
+  if (FORME.indexOf(forma) < 0) {
+    throw new Error('mock-browser: riconoscimento sconosciuto "' + forma +
+      '" — le forme sono ' + FORME.join(', '));
+  }
+
+  // Il risultato che `onresult` consegna: quello che il test ha messo in
+  // window.__vcTranscript, oppure results vuoto ("sentito, nessuna parola").
+  const consegna = `
+        if (self.onresult) {
+          var text = window.__vcTranscript || '';
+          self.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
+        }`;
+
+  const start = {
+    auto: `var self = this; setTimeout(function () {${consegna}
+        if (self.onend) self.onend();
+      }, ${o.ritardoRiconoscimentoMs});`,
+    suStop: `var self = this; setTimeout(function () {${consegna}
+      }, ${o.ritardoRiconoscimentoMs});`,
+    manuale: `if (this.onstart) this.onstart();`,
+    muto: ``
+  }[forma];
+
+  const stop = {
+    auto: ``,
+    suStop: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
+    manuale: `if (this.onend) this.onend();`,
+    muto: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`
+  }[forma];
+
+  const abort = forma === 'manuale' ? `` : `if (this.onend) this.onend();`;
+
+  return `
+    (function () {
+      function FakeRecognition() {
+        this.onstart = null; this.onresult = null; this.onend = null; this.onerror = null;
+      }
+      FakeRecognition.prototype.start = function () { ${start} };
+      FakeRecognition.prototype.stop = function () { ${stop} };
+      FakeRecognition.prototype.abort = function () { ${abort} };
+      window.SpeechRecognition = FakeRecognition;
+      window.webkitSpeechRecognition = FakeRecognition;
+    })();
+  `;
+}
 
 function costruisci(opzioni) {
   const o = Object.assign({}, PREDEFINITI, opzioni || {});
 
-  // ⚠️ Il nucleo e' scritto SENZA `speaking`, perche' ventuno file di oggi non
-  // ce l'hanno e questo passo non cambia comportamento. Chi ce l'ha lo chiede.
+  // ⚠️ Il nucleo e' scritto SENZA `speaking`, perche' diciassette file di oggi
+  // non ce l'hanno e questo passo non cambia comportamento. Chi ce l'ha lo
+  // tiene suo finche' non arriva F.2.
   const nucleo = `
     (function () {
-      function FakeUtterance(text) { this.text = text; }
+      function FakeUtterance(text) {
+        this.text = text; this.onstart = null; this.onend = null; this.onerror = null;
+      }
       var fakeSynth = {
         speak: function (utter) {
           if (utter.onstart) utter.onstart();
@@ -68,31 +144,13 @@ function costruisci(opzioni) {
     })();
   `;
 
-  const riconoscimento = !o.riconoscimento ? '' : `
-    (function () {
-      function FakeRecognition() { this.onresult = null; this.onend = null; this.onerror = null; }
-      FakeRecognition.prototype.start = function () {
-        var self = this;
-        setTimeout(function () {
-          if (self.onresult) {
-            var text = window.__vcTranscript || '';
-            self.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
-          }
-          if (self.onend) self.onend();
-        }, ${o.ritardoRiconoscimentoMs});
-      };
-      FakeRecognition.prototype.stop = function () {};
-      FakeRecognition.prototype.abort = function () { if (this.onend) this.onend(); };
-      window.SpeechRecognition = FakeRecognition;
-      window.webkitSpeechRecognition = FakeRecognition;
-    })();
-  `;
-
-  return { content: nucleo + riconoscimento };
+  return { content: nucleo + corpoRiconoscimento(o) };
 }
 
 module.exports = {
   mockBrowser: costruisci,
-  // Il nucleo com'e' nei quattro file del gruppo piu' numeroso.
-  mockInit: costruisci()
+  // Il nucleo com'e' nel gruppo piu' numeroso: 20 ms, 'Fake Male Voice',
+  // nessun riconoscimento.
+  mockInit: costruisci(),
+  FORME
 };

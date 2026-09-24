@@ -45,19 +45,10 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-const mockInit = () => {
-  Object.defineProperty(window, 'speechSynthesis', { value: {
-    speak(u) { if (u.onstart) u.onstart(); setTimeout(function () { if (u.onend) u.onend(); }, 10); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'F', lang: 'en-US' }]; }, onvoiceschanged: null
-  }, configurable: true });
-  window.SpeechSynthesisUtterance = function (t) { this.text = t; };
-  function FakeRec() { this.onstart = null; this.onend = null; this.onresult = null; this.onerror = null; }
-  FakeRec.prototype.start = function () { if (this.onstart) this.onstart(); };
-  FakeRec.prototype.stop = function () { if (this.onend) this.onend(); };
-  FakeRec.prototype.abort = function () {};
-  window.SpeechRecognition = FakeRec; window.webkitSpeechRecognition = FakeRec;
-};
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
+const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F', riconoscimento: 'manuale' });
 
 async function run() {
   // ── ② Strutturale: non apre il browser ──────────────────────────────

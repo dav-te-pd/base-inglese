@@ -30,6 +30,9 @@
 const { launchBrowser, APP_URL } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { attendiVisibile } = require('./attese');
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
 
 const BASE = APP_URL;
 // Il telefono è il posto in cui il problema si presenta: schermo corto, e il
@@ -45,49 +48,11 @@ const MODULI = [
 ];
 
 // [A] Riconoscimento che non produce mai niente: premi e non parli.
-const mockSilenzio = () => {
-  class FakeUtterance { constructor(t) { this.text = t; } }
-  Object.defineProperty(window, 'speechSynthesis', { value: {
-    speak(u) { if (u.onstart) u.onstart(); setTimeout(() => { if (u.onend) u.onend(); }, 10); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  }, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() {}
-    stop() { setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockSilenzio = mockBrowser({ fineVoceMs: 10, nomeVoce: 'Fake', riconoscimento: 'muto' });
 
 // [B] Riconoscimento che risponde subito con quello che gli si mette in
 // window.__vcTranscript — vuoto significa "sentito, ma nessuna parola".
-const mockRisposta = () => {
-  class FakeUtterance { constructor(t) { this.text = t; } }
-  Object.defineProperty(window, 'speechSynthesis', { value: {
-    speak(u) { if (u.onstart) u.onstart(); setTimeout(() => { if (u.onend) u.onend(); }, 10); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  }, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() {
-      setTimeout(() => {
-        const t = window.__vcTranscript || '';
-        if (this.onresult) this.onresult({ results: t ? [{ 0: { transcript: t }, isFinal: true, length: 1 }] : [] });
-        if (this.onend) this.onend();
-      }, 15);
-    }
-    stop() {}
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockRisposta = mockBrowser({ fineVoceMs: 10, nomeVoce: 'Fake', riconoscimento: 'auto' });
 
 async function apriModulo(page, utente, moduleId) {
   await page.goto(BASE);

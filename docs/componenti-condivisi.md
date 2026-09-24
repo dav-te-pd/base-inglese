@@ -135,3 +135,15 @@ catalogato: si cataloga quando un passo lo legge (regola 46).*
 | `calcolaStatoEpisodi()` | legge il progresso di **ogni** episodio una volta sola e dice qual è il primo incompleto | *niente* → `{ ordine, primoIncompleto }` | che `EPISODES` sia costruito e l'utente sia noto. **Il conto si fa una volta per disegno, non una per riga:** dentro `episodeStatus` significherebbe rileggere il magazzino tante volte quante sono le righe. `primoIncompleto` è `null` a corso finito |
 | `openEpisodes()` | apre la lista degli episodi | *niente* → *niente* | ⚠️ **che i testi possano non esserci**: è la **prima** schermata dopo casa, quindi ci si arriva a cache fredda — chiede `loadModuleInstructions()` e ripassa da sé, o va alla schermata d'errore (regola 35). *La mappa ha la stessa guardia e lì costa solo su un punto su dieci; qui su tutti.* |
 
+
+## `tests/mock-browser.js` — il finto del browser, dal lato dei test
+
+*Sta fra i condivisi dal 2026-09-24 (passo F.4): **ventuno file di test** lo
+usano. Non è codice dell'app, ma è codice che decide cosa i test vedono — e
+una copia sbagliata qui produce un verde che non prova niente (regola 37).*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `mockBrowser(opzioni)` | Costruisce il finto `speechSynthesis` (+ `SpeechSynthesisUtterance`) e, se richiesto, il finto `SpeechRecognition`, da dare a `page.addInitScript`. | `{ fineVoceMs, nomeVoce, riconoscimento, ritardoRiconoscimentoMs, ritardoFineRiconoscimentoMs }` → **`{ content: '<testo>' }`**, non una funzione | ⚠️ **Che chi lo usa NON si aspetti una funzione.** `addInitScript` **serializza** la funzione che riceve: una che chiudesse su `opzioni` arriverebbe nel browser **senza** quelle opzioni, e nessuno lo direbbe. Componendo il testo qui, i valori ci sono per davvero. ⚠️ **E il nucleo NON dichiara `speaking`**: `app/audio.js` ci costruisce sopra `staParlando()`, la cui prima riga gate il **Blocco Ascolto** (regola 16) — quindi nei file che passano di qui quella regola **non gira**. È un fatto dichiarato, non una dimenticanza: renderla onesta è il passo F.2, e mescolarlo con l'unificazione renderebbe illeggibile il suo rosso. |
+| `mockInit` | Il nucleo com'è nel gruppo più numeroso: 20 ms, `'Fake Male Voice'`, nessun riconoscimento. | *niente* — è già `{ content }` | Che il file non avesse parametri suoi. Chi ne aveva chiama `mockBrowser(...)` coi valori che aveva **prima**: questo passo non cambia il comportamento di nessun file. |
+| `FORME` | I quattro comportamenti del riconoscimento, per nome. | → `['auto', 'suStop', 'manuale', 'muto']` | ⚠️ **Che la differenza fra le quattro sia QUANDO arriva `onend`**, non un dettaglio di forma: `auto` lo manda insieme al risultato, `suStop` solo dopo `stop()`, `manuale` manda `onstart` e non produce mai risultati, `muto` non fa niente su `start()` (premi e non parli). *È esattamente l'ordine degli eventi asincroni che la regola 19 dice di non semplificare — un nome sbagliato qui non dà un errore, dà un verde.* Un nome fuori elenco **alza**, non ripiega. |

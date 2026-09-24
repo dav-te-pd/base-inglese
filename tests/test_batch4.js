@@ -4,24 +4,10 @@ const { allSteps } = require('./module-order');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; } }
-  const fakeSynth = {
-    speak(utter) { if (utter.onstart) utter.onstart(); setTimeout(() => { if (utter.onend) utter.onend(); }, 20); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() { setTimeout(() => { if (this.onresult) this.onresult({ results: [] }); }, 5); }
-    stop() { setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
+const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
 async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.goto(BASE);

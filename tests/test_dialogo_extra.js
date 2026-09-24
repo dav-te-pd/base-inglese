@@ -31,16 +31,10 @@ const ETICHETTE = loadEpisode().speakerLabels;
 // distingue «Papa'» da «Marco».
 const NOMI_SCELTI = Object.keys(slotValues()).map(k => slotValues()[k].it);
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; } }
-  const fakeSynth = {
-    speak(utter) { if (utter.onstart) utter.onstart(); setTimeout(() => { if (utter.onend) utter.onend(); }, 25); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
+const mockInit = mockBrowser({ fineVoceMs: 25 });
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);

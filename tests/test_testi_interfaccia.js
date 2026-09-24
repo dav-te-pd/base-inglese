@@ -35,15 +35,10 @@ const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
 const J = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; } }
-  const fakeSynth = {
-    speak(u) { if (u.onstart) u.onstart(); setTimeout(() => { if (u.onend) u.onend(); }, 5); },
-    cancel() {}, getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
+const mockInit = mockBrowser({ fineVoceMs: 5, nomeVoce: 'Fake' });
 
 const UTENTE = 'TestiInterfaccia';
 let ok = 0, ko = 0;

@@ -54,14 +54,10 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-const mockInit = () => {
-  Object.defineProperty(window, 'speechSynthesis', { value: {
-    speak(u) { if (u.onstart) u.onstart(); setTimeout(function () { if (u.onend) u.onend(); }, 10); },
-    cancel() {}, pause() {}, resume() {},
-    getVoices() { return [{ name: 'F', lang: 'en-US' }]; }, onvoiceschanged: null
-  }, configurable: true });
-  window.SpeechSynthesisUtterance = function (t) { this.text = t; };
-};
+// Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
+// stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
+const { mockBrowser } = require('./mock-browser');
+const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F' });
 
 const FILE_TABELLE = 'data/inglese/it/inglese-it-tabelle-personalizzazione.json';
 
