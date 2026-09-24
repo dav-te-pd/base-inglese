@@ -86,6 +86,20 @@ una verifica già fatta.*
 
 ## Aspettano di essere PRESI (nessuna dipendenza)
 
+### ⚠️ DUE DIFETTI MISURATI IL 2026-09-24, NON CORRETTI — e sono DUE, non uno
+
+*Trovati su Pages ripersonalizzando `gate`: `aircraft-door` è tornato bloccato
+**con dentro i suoi moduli fatti**. Misurati a codice fermo, decisi in chat,
+scritti qui perché una cosa trovata e non corretta vive nella conversazione
+finché non entra in un file — e la conversazione non sopravvive al container
+(regola 43).*
+
+| | Il difetto | La decisione presa |
+|---|---|---|
+| **S.1** | **Lo sblocco degli episodi non è un dato: si RICALCOLA a ogni disegno.** `calcolaStatoEpisodi` percorre l'ordine e dà `current` al **primo incompleto**; tutti quelli dopo sono `locked`. ⚠️ **Quindi `aircraft-door` non è stato «ribloccato»: non era mai stato «sbloccato»** — era aperto solo come effetto collaterale di essere il primo incompleto. **Non esiste nessun dato «questo episodio è sbloccato».** *L'azzeramento invece è innocente: cancella tre chiavi, tutte con l'id di quell'episodio, e i progressi degli altri non li tocca.* | ✅ **Si corregge la DERIVAZIONE, non la cancellazione** — *non c'è niente da non cancellare*. **«Un episodio che ha progresso proprio non è mai bloccato»**: si deriva da un dato che esiste già, zero dati nuovi, zero migrazioni. ⚠️ **E il quarto stato NON serve: si mostra come `current`.** *«Corrente» per lo studente vuol dire «qui puoi entrare», e un episodio cominciato e non finito è esattamente quello. **Due episodi correnti insieme non sono un'incoerenza: sono due posti dove può andare, ed è vero.** Inventare un quarto stato vorrebbe dire spiegargli una distinzione che non gli serve per decidere cosa fare.* |
+| **S.2** | **`wipeEpisodeProgress` cancella TRE chiavi su NOVE**, con l'elenco **scritto a mano**. Sopravvivono le dichiarazioni di Why We Say It, le statistiche delle spiegazioni, l'uso dell'audio, i salti di battuta — quindi anche `gate` resta in uno stato misto. ⚠️ **Erano SETTE quando l'elenco fu scritto: le due nate dopo non sono mai state aggiunte, e nessuno se n'è accorto.** | ✅ **Passo suo** — sono due difetti che si sono incontrati, non uno. ⚠️ **E la correzione NON è aggiungere le due mancanti:** *una lista di nove che era di sette e a cui nessuno ha badato tornerà incompleta alla decima.* **La lista non si deve più scrivere a mano.** Se derivarla non si può, allora serve **una guardia che confronti le chiavi dell'episodio con quelle cancellate, e che diventi rossa quando ne nasce una nuova.** |
+
+
 | | Cosa |
 |---|---|
 | **1.18** | ⚠️ **la famiglia di asserzioni che corre contro timer corti**, e che rende la CI inaffidabile. *L'ipotesi del tetto è già stata smontata da una misura: 11–15 ms contro 500 di margine.* Il primo passo è **misurare sul runner**, non alzare numeri |
