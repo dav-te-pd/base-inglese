@@ -120,6 +120,52 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 | **1.12** | ⚠️ **la catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e **va fatto prima di Supabase** |
 | **la schermata di attesa** | oggi `struttura-corso.json` arriva in millisecondi e non si vede; **col server su una rete lenta resterebbe una pagina vuota senza spiegazione** |
 
+## Un GIRO che si ripete — non un passo
+
+### ⚠️ I FILE FERMI DA PIÙ DI UNA SETTIMANA — chiesto il 2026-09-24
+
+*Proposto da chi guida il progetto: **«verificare se ci sono file non aggiornati
+da più di una settimana. Se sì, guardare dentro cosa c'è e se è attuale e utile.
+In caso, riportarli in chat in una tabella e decidere cosa fare per ciascun
+file.»** Accettato, con una correzione che lo salva dall'essere una misura che
+non misura.*
+
+⚠️ **LA DATA DEL FILESYSTEM QUI NON FUNZIONA, E IL CONTROLLO SAREBBE MUTO.** Il
+container clona il repository da zero a ogni sessione: `ls -l` dice che **tutti**
+i file sono di oggi. *Un controllo sulle date dei file direbbe sempre «nessun
+file vecchio»: zero allarmi, zero informazione — e nessuno se ne accorgerebbe,
+perché un elenco vuoto somiglia a un buon risultato.*
+
+**La misura è l'ultimo commit che ha toccato quel file:**
+
+```
+git ls-files | while read f; do
+  d=$(git log -1 --format=%at -- "$f")
+  [ -n "$d" ] && [ $(( ($(date +%s) - d) / 86400 )) -gt 7 ] && echo "$f"
+done
+```
+
+**Prima misura, 2026-09-24: 33 file su 209.** E non sono sparsi — **due terzi
+sono una famiglia sola**:
+
+| Quanti | Cosa | Fermi dal |
+|---|---|---|
+| **12** | `docs/screenshots/` — 11 immagini + README | **2026-08-29** |
+| **8** | `tests/tools/screenshot_*.js` — gli strumenti che quelle immagini le producevano | 2026-09-09 |
+| 4 | `package.json`, `package-lock.json`, `tests/serve.js`, `.nojekyll` | 08-29 / 08-30 |
+| ~9 | helper dei test (`quiz-driver`, `story-driver`, `apri-modulo`, …) | 09-09 / 09-10 |
+
+*Cioè il primo giro ha già il suo candidato: gli screenshot e i loro strumenti.
+**Non si cancellano e non si aggiornano senza guardarli** — la domanda della
+regola è «cosa c'è dentro, è attuale, serve a qualcuno», e la risposta va in una
+tabella in chat, un file per riga.*
+
+**Quando si fa:** è un giro che si ripete, non un passo che si chiude — quindi
+non sta nella catena e non blocca niente. *Si fa quando la lista dei passi è
+ferma, come il 1.10, oppure quando serve una pausa dal codice.* Deciso il
+2026-09-24: **non adesso** — *«io andrei avanti con i punti attuali sennò
+continuiamo ad interromperli e sembrano infiniti»*.
+
 ## Per definizione ULTIMO
 
 | | Cosa |
@@ -213,7 +259,7 @@ lavorare su una base che non si può misurare.*
 | **1.3** | ~~le stringhe del markup~~ | ✅ **CHIUSO il 2026-09-21, in quattro pezzi.** **1.3a** — ricontate (95 occorrenze in `index.html`, 47 distinte, **non** le 101/48 del piano), **54 spostate**; il markup porta `data-testo` e `hydrateTesti` lo riempie appena i testi arrivano. **1.3b** — la mappa aspetta i suoi testi, con la sua schermata d'errore: dei dieci punti che la aprono, **nove** sono un «← Mappa» dentro un modulo e non pagano niente. **1.3c** — censimento su `app/*.js` guardando **dove la stringa arriva allo schermo**: 28 punti, **nove spostate**; `Pausa` stava in due posti e `Risposta corretta: ` in due file. **1.3d** — `moduleLabels`, **trenta testi**, esce da `app/config.js` e va nell'edizione. ⚠️ **Restano nel markup 41 occorrenze, nessuna per dimenticanza:** onboarding/home (devono funzionare quando niente funziona), Pannello Admin (strumento, non studente), sovrascritte a runtime (segnaposto). |
 | **1.8** | **Le tabelle di personalizzazione prendono la forma nuova** | ✅ **1.8 A FATTO il 2026-09-20:** via le colonne `fr`/`es`/`de` (147 stringhe vuote, zero lettori), **traducibilità dichiarata per riga**, e il test rovesciato ⑤ nella forma che oggi è possibile (9 slot su 9). ⚠️ **RESTA 1.8-bis, E ASPETTA IL CONTENUTO:** ② città+paese sulla stessa riga · ③ età in lettere · ④ **la migrazione**, che le prime due rendono obbligatoria. *Senza ④, cambiando `marco` in `papa-marco` chi ha personalizzato si ritrova le scelte riportate alla prima opzione — in silenzio, senza errore e senza un rosso.* **Il markdown è stato allineato il 2026-09-21** (autorizzato in chat, regola 33): dice cosa è fatto e cosa no. |
 | **1.10** | **Il giro dei buchi** | ⚠️ **Non è un riassunto: è una ricerca di cosa non è in nessuna lista.** Si fa quando la lista smette di cambiare, cioè alla fine di questa tappa |
-| **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* |
+| **1.12** | **La CATENA DI VALIDAZIONE delle edizioni — CINQUE, due episodi ciascuna** | ⚠️ **È il collaudo che dice se il modello delle edizioni regge**, e va fatto prima di Supabase. Si fa **una per volta, in quest'ordine**, e ognuna parte solo quando la precedente funziona: **① `francese/it`** mette alla prova il modello · **② `it/francese`** ⚠️ **è la sola che prova la SECONDA metà della coppia** — uno studente non italiano — e da sola vale più delle altre tre messe insieme · **③ `tedesco/it`** che la prima non fosse un caso · **④ `spagnolo/it`** che il costo scenda invece di restare uguale · **⑤ `it/spagnolo`** che anche il rovescio si ripeta. *Se la quarta costa quanto la prima, il modello non regge e si vede lì.* Il contenuto lo scrive chi guida il progetto, in `docs/{lingua}/{studente}/` (regole 26 e 33), corretto davvero — un contenuto finto non farebbe vedere gli errori. ⚠️ **IL COSTO DELLE DUE ROVESCIATE VA DETTO:** in `it/francese` le spiegazioni si scrivono **in francese**, non in italiano, ed è un lavoro di natura diversa dal tradurre un dialogo. *Se l'energia dovesse finire, la ② è quella da non saltare e la ④ quella da saltare.* ⚠️ **L'ORDINE È CAMBIATO IL 2026-09-24, DECISO DA CHI GUIDA IL PROGETTO: SI PARTE DALLO SPAGNOLO, E SI VALIDA PRIMA DI CONTINUARE CON GLI EPISODI.** Non più ① `francese/it` ② `it/francese`, ma **① `spagnolo/it` → ② `it/spagnolo`**, e *«quando sarà ok faremo un episodio di italiano per spagnoli, così da validare tutto prima di continuare con gli episodi»*. ⚠️ **UNA COSA A FAVORE, che il piano diceva già:** la seconda è *«la sola che prova la SECONDA metà della coppia, e da sola vale più delle altre tre messe insieme»* — **questa scelta la prende per seconda invece che per quarta.** ⚠️ **E UNA COSA CHE SI PERDE, e va riassegnata invece che dimenticata: la ④ NON era «un'altra edizione», era LA MISURA DEL COSTO** — *«che il costo scenda invece di restare uguale. Se la quarta costa quanto la prima, il modello non regge e si vede lì.»* Con lo spagnolo in prima posizione **quella misura resta senza soggetto**: la prenderà la quarta edizione qualunque essa sia, e va scritto quando si deciderà quale. ⚠️ **PRIMO OSTACOLO, TROVATO IL 2026-09-24 E NON CORRETTO: `tests/tools/trascrivi.js` CONOSCE UNA SOLA EDIZIONE** — riga 25, `const ED = { lingua: 'inglese', studente: 'it' };`, più un `'corso-inglese-a1'` scritto fisso alle righe 312-313. *Chi scrive `docs/spagnolo/it/` lo scriverebbe e nessuno lo leggerebbe.* **È lavoro mio, e si fa quando il primo episodio spagnolo è pronto**, così lo strumento si prova su un contenuto vero — ed è lo stesso giro in cui si scopre cos'altro è scritto fisso. |
 
 ### ⚠️ LA CODA CHE IL LAVORO HA FATTO EMERGERE — 2026-09-21
 
