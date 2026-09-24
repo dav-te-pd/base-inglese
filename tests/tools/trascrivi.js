@@ -314,17 +314,36 @@ function main() {
     episodioCorrente: s.ordine[0],
     episodes: s.episodes
   };
-  console.log('struttura del corso:');
-  scrivi(dati('struttura-corso'), strutturaJson, controlla);
-
-  console.log('tabelle di personalizzazione:');
-  scrivi(dati('tabelle-personalizzazione'), tabelle(), controlla);
-
-  console.log('episodi:');
+  // ⚠️ PRIMA SI LEGGE TUTTO, POI SI SCRIVE TUTTO — 2026-09-24.
+  //
+  // Qui si leggeva e scriveva un file per volta. Un errore a meta' — un conto
+  // che non torna, una tabella con le colonne sbagliate — fermava lo strumento
+  // **dopo** aver gia' riscritto i file precedenti: sul disco restavano meta'
+  // JSON nuovi e meta' vecchi, **e niente lo diceva**.
+  //
+  // Visto succedere lo stesso giorno: la corsa si e' fermata su
+  // `aircraft-door.md` e intanto `tabelle` e `gate` erano gia' aggiornati.
+  //
+  // *Non e' grave — la fonte resta il markdown e basta rilanciare — ma e' la
+  // forma che questo progetto insegue: un guasto che lascia uno stato
+  // intermedio senza dichiararlo (regola 37). Qui costa cinque righe.*
+  const daScrivere = [
+    ['struttura del corso:', dati('struttura-corso'), strutturaJson, null],
+    ['tabelle di personalizzazione:', dati('tabelle-personalizzazione'), tabelle(), null]
+  ];
   Object.keys(s.episodes).forEach((id) => {
     const e = episodio(id, s.gradeNames);
-    console.log('   ' + id + ': ' + JSON.stringify(e.conti));
-    scrivi(dati(id), e.json, controlla);
+    daScrivere.push([null, dati(id), e.json, '   ' + id + ': ' + JSON.stringify(e.conti)]);
+  });
+
+  // Da qui in giu' non si legge piu' niente: se si e' arrivati, tutti i
+  // markdown sono validi e tutti i conti tornano.
+  let sezioneEpisodi = false;
+  daScrivere.forEach((r) => {
+    if (r[0]) console.log(r[0]);
+    else if (!sezioneEpisodi) { console.log('episodi:'); sezioneEpisodi = true; }
+    if (r[3]) console.log(r[3]);
+    scrivi(r[1], r[2], controlla);
   });
 }
 
