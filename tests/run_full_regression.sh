@@ -134,6 +134,27 @@ rm -rf "$(dirname "$ESITI")"
 # asserzioni invece di quaranta esce comunque con zero.
 # Un calo rende la suite rossa come un fallimento, perche' e' peggio: un test
 # che fallisce lo sai, uno che non parte no.
+# ⚠️ LE MISURE DELLE CATENE — passo 1.18, 2026-09-24.
+#
+# `misura()` (tests/attese.js) stampa «MISURA <nome>: N ms» dentro l'output del
+# suo file, che finisce in `<file>.result.txt`. In CI quei file **si stampano
+# solo se il file FALLISCE**, quindi sul runner — l'unico posto dove il numero
+# serve — non arrivava niente.
+#
+# *Era una misura che non misurava dove doveva: prodotta nel container, cioe'
+# nella macchina che gia' sappiamo essere piu' veloce (regola 19).*
+#
+# Qui si raccolgono da tutti i `.result.txt` e si stampano in fondo, sempre:
+# verde o rosso, in locale e in CI. Se non ce n'e' nessuna, lo dice - **una
+# sezione vuota e' un'informazione, la sua assenza e' un silenzio.**
+echo "=== misure delle catene (1.18) ==="
+if grep -h '^MISURA ' $(echo "$FILES" | tr ' ' '\n' | sed 's/\.js$/.result.txt/') 2>/dev/null | sort; then
+  :
+else
+  echo "(nessuna misura in questa corsa)"
+fi
+echo ""
+
 echo "=== conteggio asserzioni ==="
 if ! node tools/conta-asserzioni.js $FILES; then
   OVERALL_OK=0
