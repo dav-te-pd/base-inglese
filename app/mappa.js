@@ -1227,27 +1227,59 @@
     // dice la mappa quando lo si apre. Qui non lo si dichiara completato per
     // sbaglio solo perche' non ha un ultimo passo da controllare.
     if (!passi.length) return episodeId === primoIncompleto ? 'current' : 'locked';
-    return episodeId === primoIncompleto ? 'current'
-      : (episodiCompletati[episodeId] ? 'completed' : 'locked');
+    // ⚠️ UN EPISODIO CHE HA PROGRESSO PROPRIO NON E' MAI BLOCCATO — 2026-09-24
+    // (S.1), e la ragione e' un difetto visto su Pages.
+    //
+    // Ripersonalizzando `gate` (che azzera i SUOI progressi, e solo i suoi)
+    // `aircraft-door` tornava `locked` **con dentro i suoi moduli fatti**.
+    //
+    // ⚠️ E NON ERA STATO «RIBLOCCATO»: NON ERA MAI STATO «SBLOCCATO». Era
+    // aperto solo come effetto collaterale di essere il primo incompleto, e
+    // **non esiste nessun dato «questo episodio e' sbloccato»**. *Ne segue che
+    // il difetto non si corregge cancellando meno: non c'e' niente da non
+    // cancellare. Si corregge la DERIVAZIONE.*
+    //
+    // Il dato c'e' gia' e non costa niente: `calcolaStatoEpisodi` legge il
+    // progresso di ogni episodio per sapere se e' finito, e nello stesso giro
+    // sa anche se e' stato COMINCIATO.
+    //
+    // ⚠️ L'ORDINE CONTA, e sbagliarlo non fa rumore: `completed` va guardato
+    // PRIMA. Un episodio finito ha progresso, quindi con l'ordine invertito
+    // diventerebbe `current` — la spunta sparirebbe da tutti gli episodi
+    // finiti, e nessun rosso lo direbbe se il test guardasse solo i bloccati.
+    //
+    // ⚠️ E IL QUARTO STATO NON SERVE: si mostra `current`. *«Corrente» per lo
+    // studente vuol dire «qui puoi entrare», e un episodio cominciato e non
+    // finito e' esattamente quello. Due episodi correnti insieme non sono
+    // un'incoerenza: sono due posti dove puo' andare, ed e' vero. Inventare un
+    // quarto stato vorrebbe dire spiegargli una distinzione che non gli serve
+    // per decidere cosa fare.*
+    if (episodiCompletati[episodeId]) return 'completed';
+    if (episodeId === primoIncompleto || episodiIniziati[episodeId]) return 'current';
+    return 'locked';
   }
 
   // Il calcolo si fa UNA VOLTA per disegno, non una per riga: leggere il
   // progresso di ogni episodio dentro `episodeStatus` significherebbe
   // rileggere il magazzino tante volte quante sono le righe.
   var episodiCompletati = {};
+  // Chi e' stato COMINCIATO: almeno un modulo completato. Sta accanto a
+  // `episodiCompletati` e si riempie nello stesso giro, perche' viene dalla
+  // stessa lettura del magazzino (S.1).
+  var episodiIniziati = {};
   function calcolaStatoEpisodi() {
     var ordine = BI.resolveEpisodeOrder().order;
     var utente = getUserName();
     episodiCompletati = {};
+    episodiIniziati = {};
     var primoIncompleto = null;
     ordine.forEach(function (id) {
       var passi = (EPISODES[id] && EPISODES[id].modules) || [];
       var ultimo = passi.length ? passi[passi.length - 1].id : null;
-      var fatto = false;
-      if (ultimo) {
-        fatto = loadModuleProgress(id, utente).completed.indexOf(ultimo) !== -1;
-      }
+      var fatti = loadModuleProgress(id, utente).completed;
+      var fatto = !!ultimo && fatti.indexOf(ultimo) !== -1;
       episodiCompletati[id] = fatto;
+      episodiIniziati[id] = fatti.length > 0;
       if (!fatto && primoIncompleto === null) primoIncompleto = id;
     });
     // Corso finito: nessun incompleto. L'ultimo resta apribile (e' completato,

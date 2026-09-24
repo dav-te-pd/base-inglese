@@ -84,7 +84,7 @@ una verifica già fatta.*
 
 ## Aspettano di essere PRESI (nessuna dipendenza)
 
-### ⚠️ S.1 — LO SBLOCCO DEGLI EPISODI, misurato il 2026-09-24 e non corretto
+### ~~S.1 — LO SBLOCCO DEGLI EPISODI~~ — ✅ **FATTO il 2026-09-24**
 
 *Trovato su Pages ripersonalizzando `gate`: `aircraft-door` è tornato bloccato
 **con dentro i suoi moduli fatti**. Misurato a codice fermo, deciso in chat,
@@ -101,7 +101,7 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 
 | | Il difetto | La decisione presa |
 |---|---|---|
-| **S.1** | **Lo sblocco degli episodi non è un dato: si RICALCOLA a ogni disegno.** `calcolaStatoEpisodi` percorre l'ordine e dà `current` al **primo incompleto**; tutti quelli dopo sono `locked`. ⚠️ **Quindi `aircraft-door` non è stato «ribloccato»: non era mai stato «sbloccato»** — era aperto solo come effetto collaterale di essere il primo incompleto. **Non esiste nessun dato «questo episodio è sbloccato».** *L'azzeramento invece è innocente: cancella tre chiavi, tutte con l'id di quell'episodio, e i progressi degli altri non li tocca.* | ✅ **Si corregge la DERIVAZIONE, non la cancellazione** — *non c'è niente da non cancellare*. **«Un episodio che ha progresso proprio non è mai bloccato»**: si deriva da un dato che esiste già, zero dati nuovi, zero migrazioni. ⚠️ **E il quarto stato NON serve: si mostra come `current`.** *«Corrente» per lo studente vuol dire «qui puoi entrare», e un episodio cominciato e non finito è esattamente quello. **Due episodi correnti insieme non sono un'incoerenza: sono due posti dove può andare, ed è vero.** Inventare un quarto stato vorrebbe dire spiegargli una distinzione che non gli serve per decidere cosa fare.* |
+| ~~**S.1**~~ | ✅ **FATTO.** `episodeStatus` guarda `episodiIniziati`, riempito nello stesso giro che gia' leggeva il progresso: zero letture in piu', zero chiavi nuove, zero migrazioni. Falsificato due volte — la derivazione vecchia fa cadere solo le 2 di `[E]` con `locked bloccato=true`, l'ordine invertito fa cadere `[C]`, che esisteva gia'. *Restava:* | **Lo sblocco degli episodi non è un dato: si RICALCOLA a ogni disegno.** `calcolaStatoEpisodi` percorre l'ordine e dà `current` al **primo incompleto**; tutti quelli dopo sono `locked`. ⚠️ **Quindi `aircraft-door` non è stato «ribloccato»: non era mai stato «sbloccato»** — era aperto solo come effetto collaterale di essere il primo incompleto. **Non esiste nessun dato «questo episodio è sbloccato».** *L'azzeramento invece è innocente: cancella tre chiavi, tutte con l'id di quell'episodio, e i progressi degli altri non li tocca.* | ✅ **Si corregge la DERIVAZIONE, non la cancellazione** — *non c'è niente da non cancellare*. **«Un episodio che ha progresso proprio non è mai bloccato»**: si deriva da un dato che esiste già, zero dati nuovi, zero migrazioni. ⚠️ **E il quarto stato NON serve: si mostra come `current`.** *«Corrente» per lo studente vuol dire «qui puoi entrare», e un episodio cominciato e non finito è esattamente quello. **Due episodi correnti insieme non sono un'incoerenza: sono due posti dove può andare, ed è vero.** Inventare un quarto stato vorrebbe dire spiegargli una distinzione che non gli serve per decidere cosa fare.* |
 
 
 | | Cosa |

@@ -209,6 +209,13 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `EPISODES.<id>.categoria` | `storia`, `grammatica` o `pronuncia`, stessa strada. | — → stringa o `null` | Come sopra; il ripiego è `null`, perché una categoria inventata sarebbe peggio di una mancante. |
 
 
+## `app/mappa.js` — la lista degli episodi
+
+| Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|
+| `calcolaStatoEpisodi` | Legge **una volta per disegno** il progresso di ogni episodio del corso e ne ricava tre cose: chi è **finito**, chi è stato **cominciato**, e qual è il **primo incompleto**. | `()` → `{ ordine, primoIncompleto }`, più due mappe di modulo | Che leggere il magazzino dentro `episodeStatus` costerebbe una lettura **per riga** invece che una per disegno. ⚠️ **«Finito» è l'ULTIMA POSIZIONE della sequenza, non un modulo per nome e non un conteggio** (regola 30): gli episodi di `grammatica` avranno meno moduli, e un passo aggiunto in mezzo ri-bloccherebbe di colpo tutti quelli finiti. |
+| `episodeStatus` | Lo stato di una riga della lista: `completed`, `current` o `locked`. | `(episodeId, primoIncompleto)` → la stringa dello stato | ⚠️ **Che lo sblocco NON sia un dato salvato: si ricalcola a ogni disegno.** Non esiste nessuna chiave «questo episodio è sbloccato» — *ne segue che un difetto di sblocco non si corregge cancellando meno, ma cambiando questa derivazione.* ⚠️ **E che l'ORDINE dei tre rami conti: `completed` va guardato PRIMA.** Un episodio finito ha progresso, quindi invertendo i primi due la spunta sparirebbe da tutti gli episodi finiti — *e lo prende `[C]` di `test_lista_episodi`, non una riga scritta per questo.* ⚠️ **Il quarto stato non esiste di proposito:** un episodio cominciato e non finito si mostra `current`, perché «corrente» per lo studente vuol dire «qui puoi entrare». |
+
 ## `app/mappa.js` — la schermata iniziale
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |

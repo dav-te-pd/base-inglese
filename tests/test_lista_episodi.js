@@ -3,6 +3,10 @@
 // POSIZIONE** della sequenza — non un modulo chiamato per nome, non un
 // conteggio.
 //
+// PROTEGGE ANCHE, dal 2026-09-24 (S.1): che un episodio GIA' COMINCIATO non
+// torni bloccato quando si ripersonalizza quello prima — blocco [E]. Visto su
+// Pages: `aircraft-door` tornava `locked` con dentro i suoi moduli fatti.
+//
 // COSA SI PERDE SENZA QUESTO FILE. Prima del passo 1.13-bis l'unica strada
 // per raggiungere un episodio diverso dal primo era l'interruttore del
 // Pannello Admin: uno strumento, non una schermata per lo studente. Se questa
@@ -164,6 +168,44 @@ async function run() {
     log('[D] ...e il secondo resta BLOCCATO', righe[1].stato === 'locked' && righe[1].bloccato === true,
       righe[1].stato + ' bloccato=' + righe[1].bloccato);
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ============ [E] Chi ha COMINCIATO non torna bloccato ============
+  //
+  // ⚠️ IL DIFETTO VISTO SU PAGES, S.1: ripersonalizzare `gate` ne azzera i
+  // progressi — **e solo i suoi** — ma `aircraft-door` tornava `locked` **con
+  // dentro i suoi moduli fatti**.
+  //
+  // Non era stato «ribloccato»: **non era mai stato sbloccato.** Era aperto
+  // solo come effetto collaterale di essere il primo incompleto, e non esiste
+  // nessun dato «questo episodio e' sbloccato». *Per questo la correzione e'
+  // la derivazione e non la cancellazione: non c'era niente da non cancellare.*
+  //
+  // ⚠️ IL CASO PIU' DIVERSO (regola 42) E' `gate`, NON `aircraft-door`:
+  // `gate` qui ha **zero** progresso proprio, quindi e' `current` per la
+  // PRIMA regola (e' il primo incompleto) e non per la seconda. Guidare solo
+  // il secondo lascerebbe passare una riga che rende `current` **tutti**.
+  //
+  // Il rovescio - un episodio senza progresso e non primo resta `locked` - non
+  // si riscrive qui: e' gia' il blocco [A], che semina niente. *Senza quello,
+  // «non e' mai bloccato» diventerebbe «non e' bloccato nessuno».*
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(e.message));
+    // `gate` vuoto (come dopo una ripersonalizzazione), il secondo cominciato.
+    await apri(page, 'ListaE', { 'aircraft-door': [tutti[0]] });
+    const righe = await righeEpisodi(page);
+    console.log('    seme: gate vuoto, aircraft-door con 1 passo su ' + tutti.length);
+    log('[E] Il primo, appena azzerato, e\' ATTUALE per essere il primo incompleto',
+      righe[0].stato === 'current' && righe[0].bloccato === false,
+      righe[0].stato + ' bloccato=' + righe[0].bloccato);
+    log('[E] Il secondo, che ha progresso proprio, NON e\' bloccato',
+      righe[1].bloccato === false, righe[1].stato + ' bloccato=' + righe[1].bloccato);
+    log('[E] ...e si mostra ATTUALE, non con un quarto stato inventato',
+      righe[1].stato === 'current', righe[1].stato);
+    log('[E] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
 
