@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260924a**
+**Versione: 20260924b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -535,10 +535,13 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     decisione presa, non un appunto.
 
     Riguarda **tutto ciò che sta sotto `docs/{lingua}/`** (regola 4), senza
-    elenco: la cartella è il criterio, non i nomi dei file. Oggi ci stanno
-    `episodio-N.md`, `struttura-corso.md`, `tabelle-personalizzazione.md`,
-    `inventario-grammaticale.md` e `obiettivi-a1.md`, e domani ce ne staranno
-    altri — la regola li copre già.
+    elenco: **la cartella è il criterio, non i nomi dei file**, e domani ce ne
+    staranno altri — la regola li copre già.
+
+    ⚠️ *Qui c'era un elenco di cinque nomi, e il 2026-09-24 **due di quelli non
+    esistevano più**: `inventario-grammaticale.md` e `obiettivi-a1.md` erano
+    confluiti in `inglese-it-edizione.md`. La riga che spiega perché l'elenco
+    non va scritto ne portava uno **falso a metà**.*
 
     *Perché senza elenco, e non è pignoleria: fino al 2026-09-08 questa riga
     ne nominava due su sei, quindi **quattro file di contenuto non erano
