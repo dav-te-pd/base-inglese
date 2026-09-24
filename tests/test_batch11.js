@@ -356,10 +356,14 @@ async function run() {
     await page.close();
   }
 
-  // ============ Modulo Finale prep: the outcomes data shape episodeFinalOutcomeCase() will read ============
-  // episodeFinalOutcomeCase itself is closured (no UI consumes it yet —
-  // "predisponi la logica", Modulo Finale isn't built), so this confirms
-  // the one thing it depends on: loadModuleOutcomes()'s stored shape
+  // ============ Modulo Finale prep: la FORMA dei dati che il Modulo Finale leggera' ============
+  // ⚠️ QUI C'ERA IL NOME `episodeFinalOutcomeCase`, CANCELLATA COL PASSO F.5
+  // IL 2026-09-24 perche' non aveva chiamanti — il suo disegno resta in
+  // `docs/decisioni-storico.md` e si riscrivera' quando il Modulo Finale
+  // nascera' davvero.
+  //
+  // **Questo blocco resta, e protegge la cosa che serve comunque:**
+  // loadModuleOutcomes()'s stored shape
   // ({ [moduleId]: { level: 'verde'|'giallo'|'rosso', ... } }) is exactly
   // what both Voice Coach (ModuleRules) and Dialogo (selfAssessment)
   // write, regardless of which rule produced it.

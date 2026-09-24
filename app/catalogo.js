@@ -210,13 +210,18 @@
 
   var EPISODES = buildEpisodes({
     gate: {
-      // ⚠️ `segments` è CODICE MORTO, e resta qui solo perché toglierlo
-      // cambierebbe questo oggetto: lo legge solo buildTargetTokens, cioè la
-      // vista `pronunciation`, che non è raggiungibile da nessun punto
-      // dell'app (nessuno chiama startPronunciationExercise). Sparisce
-      // insieme a quella vista, allo spacchettamento — è registrato in
-      // docs/decisioni-stato.md fra le pulizie rimandate. Non è né contenuto
-      // dell'episodio né struttura: è un residuo.
+      // ⚠️ `segments` NON HA PIÙ NESSUN LETTORE, DAL 2026-09-24 (passo F.5).
+      //
+      // Qui c'era scritto «lo legge solo `buildTargetTokens`»: quella funzione
+      // è stata cancellata — non aveva chiamanti — e con lei se n'è andato
+      // l'ultimo lettore. **Adesso questo campo non lo legge nessuno, in tutta
+      // l'app.**
+      //
+      // ⚠️ E NON È STATO TOLTO NELLO STESSO PASSO, di proposito: toglierlo
+      // cambia la FORMA DELL'EPISODIO, cioè un dato, e F.5 era deciso su due
+      // funzioni. *Una cancellazione decisa per A che si porta dietro B non è
+      // la decisione che è stata presa.* Registrato in
+      // `docs/decisioni-stato.md` come trovato e non corretto.
       //
       // Fixed words are authored individually so punctuation stays attached
       // to the right word; slots expand to one or more words at render time.
@@ -294,7 +299,8 @@
   // ⚠️ I MESSAGGI QUI DENTRO RESTANO NEL CODICE, DI PROPOSITO — non sono una
   // dimenticanza del passo 18. Sono DIAGNOSTICA D'AUTORE: parlano a chi
   // COMPONE un episodio, non a chi studia. Stessa scelta per
-  // episodeGradeRequired e buildTargetTokens.
+  // episodeGradeRequired. *Qui c'era anche `buildTargetTokens`, cancellata
+  // col passo F.5 il 2026-09-24 perché non aveva chiamanti.*
   //
   // E oltre alla categoria c'e' un argomento pratico: chi sbaglia a comporre
   // un episodio sta guardando il codice e i dati. Mandarlo a cercare il

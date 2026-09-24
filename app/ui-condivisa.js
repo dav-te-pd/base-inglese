@@ -1127,44 +1127,6 @@
   renderSummaryScreen('voice-coach-summary-screen', 'voice-coach-summary-title', 'Modulo completato!', 'voice-coach-complete-btn');
 
   // ============================================================
-  // ⚠️ `buildTargetTokens` — ARRIVATA QUI COL PASSO ②, E OGGI NON HA NESSUN
-  // CHIAMANTE.
-  //
-  // Non e' un errore e non e' da togliere di iniziativa (regola 1): costruisce
-  // l'elenco dei token di una frase con i valori dello studente gia' dentro,
-  // ed e' scritta per un allineamento parola-per-parola. Sta QUI e non nel
-  // catalogo perche' i soli due nomi che usa — `slotDefault` e
-  // `resolveSlotValue` — sono in questo file: portarla altrove avrebbe creato
-  // una dipendenza nuova **per del codice che nessuno chiama**.
-  //
-  // *Registrata in `docs/decisioni-stato.md` come trovata e non corretta: tenerla o
-  // toglierla e' una decisione di chi guida il progetto, non mia.*
-  // ============================================================
-  // Builds the flat target token list for alignment/rendering: each token
-  // is a rendered word plus the stable mastery unit it belongs to. Fixed
-  // words get a position-based id; every word of a slot's value shares the
-  // slot's own id, so changing a slot's selection never shifts or resets
-  // other items' progress.
-  function buildTargetTokens(episode, values) {
-    var tokens = [];
-    var fixedIdx = 0;
-    episode.segments.forEach(function (seg) {
-      if (seg.text) {
-        tokens.push({ word: seg.text, unitId: 'fixed:' + (fixedIdx++) });
-      } else {
-        var rawValue = (values[seg.slot] || '').trim() || slotDefault(episode, seg.slot);
-        var phrase = resolveSlotValue(episode, seg.slot, rawValue, 'en');
-        var words = phrase.split(/\s+/).filter(Boolean);
-        if (!words.length) words = [''];
-        words.forEach(function (w, i) {
-          var isLast = i === words.length - 1;
-          tokens.push({ word: w + (isLast && seg.suffix ? seg.suffix : ''), unitId: 'slot:' + seg.slot });
-        });
-      }
-    });
-    return tokens;
-  }
-
   BI.moduloDiAiutoAttivo = moduloDiAiutoAttivo;
   BI.openAttemptPopup = openAttemptPopup;
   BI.closeAttemptPopup = closeAttemptPopup;

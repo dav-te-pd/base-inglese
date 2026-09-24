@@ -342,36 +342,6 @@
   });
 
   // ============================================================
-  // ⚠️ `episodeFinalOutcomeCase` — ARRIVATA QUI COL PASSO ②, E OGGI NON HA
-  // NESSUN CHIAMANTE.
-  //
-  // E' pronta per il Modulo Finale, che non e' costruito. Sta qui perche'
-  // legge `loadModuleOutcomes`, che questo file aliasa gia': portarla altrove
-  // avrebbe creato una dipendenza nuova per del codice che nessuno chiama.
-  // *Registrata in `docs/decisioni-stato.md` come trovata e non corretta.*
-  // ============================================================
-  // Modulo Finale (not yet built) needs to pick one of three contents —
-  // this is that decision, ready ahead of the screen itself. Only
-  // modules that actually carry a verde/giallo/rosso outcome.level
-  // count (ModuleRules or selfAssessment — see CONFIG.moduleOutcomeRules);
-  // a plain completionRules module (Repeat Aloud, Meet the Story, Your
-  // Story) has no judgment to weigh in, same as it never gets an
-  // outcome-* class on its own map row. 'almenoUnRosso' wins over
-  // 'gialloNoRosso' if both are present; an episode with no graded
-  // modules at all defaults to 'tuttiVerdi' (nothing to flag). Reads
-  // data/inglese/it/inglese-it-messaggi-feedback.json's episodeFinalMessages[caseKey] for the
-  // actual text (compliment first, then an optional trailing tip) —
-  // never write the copy here.
-  function episodeFinalOutcomeCase(episode, userName) {
-    var outcomes = loadModuleOutcomes(episode.id, userName);
-    var levels = episode.modules
-      .map(function (m) { return outcomes[m.id] && outcomes[m.id].level; })
-      .filter(Boolean);
-    if (levels.indexOf('rosso') !== -1) return 'almenoUnRosso';
-    if (levels.indexOf('giallo') !== -1) return 'gialloNoRosso';
-    return 'tuttiVerdi';
-  }
-
   // ============================================================
   // I CINQUE PULSANTI DELLA MAPPA — arrivati qui col passo ③, 2026-09-20.
   //
