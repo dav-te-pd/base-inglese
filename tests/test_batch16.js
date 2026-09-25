@@ -132,15 +132,41 @@ async function run() {
     // attiva **e** sintetizzatore in voce — invece di un tempo fisso. Nessuna
     // delle asserzioni qui sotto legge quei due fatti (regola 44): leggono il
     // PULSANTE, e poi cosa succede quando lo si preme.
-    const audioPartito = await page.waitForFunction(() =>
-      document.querySelector('.dg-bubble.is-active') && window.speechSynthesis.speaking === true,
-      { timeout: 10000 }).then(function () { return true; }, function () { return false; });
-    log('[Job2] La prima battuta arriva a parlare davvero', audioPartito === true);
-    const pausaDuranteAudio = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
+    // ⚠️ L'ATTESA, LA LETTURA E IL CLICK STANNO TUTTI DENTRO LA PAGINA —
+    // 2026-09-25, censimento di 1.18.
+    //
+    // Prima erano tre viaggi separati: si aspettava `speaking === true`, poi
+    // un `$eval` leggeva il pulsante, poi un `click` lo premeva. **La voce
+    // finta dura 700 ms, e sotto contesa due round-trip ci stanno dentro
+    // benissimo:** la battuta finiva da sola, il countdown della battuta dopo
+    // partiva, e `«la pausa NON fa avanzare il dialogo»` trovava un countdown
+    // acceso. *Caduta a 40 processi in parallelo — e le sue vicine no, perche'
+    // guardano dopo.*
+    //
+    // ⚠️ E LA CURA NON E' ALLUNGARE LA VOCE. Questo stesso blocco, piu' sotto,
+    // ha bisogno che la battuta FINISCA perche' parta il countdown: una voce
+    // lunga aggiusterebbe la prima meta' e romperebbe la seconda. *Si toglie
+    // invece la dimensione tempo (regola 19): dentro la pagina il guardiano,
+    // la lettura e il click girano nello STESSO contesto JS, e fra loro non
+    // puo' cadere nessun viaggio.*
+    const alClick = await page.evaluate(() => new Promise(function (risolvi) {
+      var t0 = Date.now();
+      (function guarda() {
+        var btn = document.getElementById('dg-pause-btn');
+        var bolla = document.querySelector('.dg-bubble.is-active');
+        if (btn && bolla && window.speechSynthesis.speaking === true) {
+          var disabilitato = btn.disabled;
+          btn.click();
+          risolvi({ partito: true, disabilitato: disabilitato });
+          return;
+        }
+        if (Date.now() - t0 > 10000) { risolvi({ partito: false, disabilitato: null }); return; }
+        setTimeout(guarda, 10);
+      })();
+    }));
+    log('[Job2] La prima battuta arriva a parlare davvero', alClick.partito === true);
     log('[Job2] Pausa e\' ACCESO mentre la battuta parla (prima era spento)',
-      pausaDuranteAudio === false, 'disabled: ' + pausaDuranteAudio);
-    // Si preme mentre parla: la voce si ferma, e il dialogo NON avanza.
-    await page.click('#dg-pause-btn');
+      alClick.disabilitato === false, 'disabled: ' + alClick.disabilitato);
     const dopoPausa = await page.evaluate(() => ({
       etichetta: document.getElementById('dg-pause-btn').textContent.trim(),
       parla: window.speechSynthesis.speaking

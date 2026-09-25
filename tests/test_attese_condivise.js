@@ -159,19 +159,51 @@ async function run() {
   {
     const page = await nuovaPagina(browser);
 
+    // ⚠️ UN RIFERIMENTO, NON UN NUMERO — 2026-09-25, censimento di 1.18.
+    //
+    // Qui c'era `< 250ms`, tre volte. **Un'asserzione su una durata da
+    // orologio non puo' sopravvivere alla contesa PER COSTRUZIONE:** sotto
+    // carico un round-trip verso il browser supera 250 ms comunque si comporti
+    // il codice, e l'asserzione diventa una misura della macchina invece che
+    // del comportamento. *Caduta a 40 processi in parallelo, e delle tre
+    // sorelle ne e' caduta UNA: la firma di una soglia sfiorata, non di un
+    // difetto.*
+    //
+    // ⚠️ E ALZARE IL NUMERO SAREBBE LA STESSA FORMA, col verde in piu' per un
+    // po'. Quello che si vuole dire e' **«non ha aspettato»**, e «aspettare»
+    // ha senso solo CONTRO qualcosa: si misura quindi un'attesa che aspetta
+    // DAVVERO — mille millesimi, sulla stessa pagina e con lo stesso
+    // round-trip — e si chiede che i casi «gia' veri» stiano sotto la sua
+    // meta'.
+    //
+    // *Il conto che lo rende robusto: se `S` e' l'attesa vera (1000 ms) e `O`
+    // il costo del round-trip, il riferimento vale `S+O` e l'immediato `O`.
+    // La condizione `O < (S+O)/2` si riduce a **`O < S`**, cioe' regge finche'
+    // un round-trip resta sotto il secondo — quattro volte il margine di
+    // prima, e scritto come proprieta' invece che come costante.*
+    await page.evaluate(() => window.cambiaDopo(1000));
+    const tRif = Date.now();
+    await attendiAbilitato(page, '#b', 5000);
+    const riferimento = Date.now() - tRif;
+
     const t1 = Date.now();
     const g1 = await attendiAbilitato(page, '#gia-abilitato', 5000);
     const d1 = Date.now() - t1;
     log('[C] Su un pulsante GIA\' abilitato torna true...', g1 === true);
-    log('[C] ...e torna SUBITO: non ha verificato niente (< 250ms)', d1 < 250, d1 + 'ms');
+    log('[C] ...e torna SUBITO: non ha verificato niente (meno della meta\' di un\'attesa vera)',
+        d1 < riferimento / 2, d1 + 'ms contro ' + riferimento + 'ms');
 
     const t2 = Date.now();
     const g2 = await attendiVisibile(page, '#gia-visibile', 5000);
-    log('[C] Su un elemento GIA\' visibile torna true subito', g2 === true && (Date.now() - t2) < 250);
+    const d2 = Date.now() - t2;
+    log('[C] Su un elemento GIA\' visibile torna true subito',
+        g2 === true && d2 < riferimento / 2, d2 + 'ms contro ' + riferimento + 'ms');
 
     const t3 = Date.now();
     const g3 = await attendiClasse(page, '#con-classe', 'is-active', 5000);
-    log('[C] Su un elemento che ha GIA\' la classe torna true subito', g3 === true && (Date.now() - t3) < 250);
+    const d3 = Date.now() - t3;
+    log('[C] Su un elemento che ha GIA\' la classe torna true subito',
+        g3 === true && d3 < riferimento / 2, d3 + 'ms contro ' + riferimento + 'ms');
 
     // E il caso simmetrico su attendiNascosto: un elemento che non esiste
     // AFFATTO e' «nascosto» per Playwright. E' il limite dichiarato in testa
