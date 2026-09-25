@@ -1,43 +1,12 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiClasse, attendiVisibile, misura } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) { this.speaking = true; this._current = utter; if (utter.onstart) utter.onstart(); utter._timer = setTimeout(() => { if (this._current === utter) { this.speaking = false; this._current = null; } if (utter.onend) utter.onend(); }, 20); },
-    cancel() { if (this._current) { var u = this._current; this.speaking = false; this._current = null; clearTimeout(u._timer); } },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-
-  // window.__vcNeverResult: true -> onresult is never called at all (true
-  // silence, distinct from onresult firing with an empty transcript).
-  // window.__vcTranscript: used only when __vcNeverResult is falsy.
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this._stopped = false; }
-    start() {
-      this._stopped = false;
-      if (window.__vcNeverResult) return; // never fires onresult
-      setTimeout(() => {
-        if (this._stopped) return;
-        if (this.onresult) {
-          var text = window.__vcTranscript || '';
-          this.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
-        }
-      }, 5);
-    }
-    stop() { this._stopped = true; setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { this._stopped = true; if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
 const bootAsUser = (page, userName, completedModules) =>
   bootUtente(page, { utente: userName, completati: completedModules, introChiuse: INTRO_DI_TUTTI });

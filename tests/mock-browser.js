@@ -102,17 +102,35 @@ function corpoRiconoscimento(o) {
 
   // Il risultato che `onresult` consegna: quello che il test ha messo in
   // window.__vcTranscript, oppure results vuoto ("sentito, nessuna parola").
+  // ⚠️ DUE COSE NELLA CONSEGNA, DAL 2026-09-25 — e nessuna delle due e' una
+  // comodita':
+  //
+  //   `window.__vcNeverResult` — **il silenzio VERO**, cioe' «`onresult` non
+  //   arriva affatto», che e' un caso DIVERSO da «`onresult` arriva con una
+  //   trascrizione vuota». *Voice Coach distingue i due: uno fa scattare il
+  //   timeout di silenzio, l'altro no.* Viene da `test_batch13`, l'ultimo file
+  //   che si scriveva il finto da solo.
+  //
+  //   `self._fermata` — **dopo `stop()` un risultato non arriva piu'.** In un
+  //   motore vero e' cosi'; il nucleo invece consegnava lo stesso, perche' il
+  //   timeout partito con `start()` non sapeva niente dello `stop()`. *Un
+  //   finto che consegna dopo lo stop non e' piu' permissivo: e' un finto che
+  //   racconta un ordine di eventi che nel browser non capita.*
   const consegna = `
+        if (self._fermata) return;
+        if (window.__vcNeverResult) return;
         if (self.onresult) {
           var text = window.__vcTranscript || '';
           self.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
         }`;
 
   const start = {
-    auto: `var self = this; setTimeout(function () {${consegna}
+    auto: `var self = this; this._fermata = false;
+      setTimeout(function () {${consegna}
         if (self.onend) self.onend();
       }, ${o.ritardoRiconoscimentoMs});`,
-    suStop: `var self = this; setTimeout(function () {${consegna}
+    suStop: `var self = this; this._fermata = false;
+      setTimeout(function () {${consegna}
       }, ${o.ritardoRiconoscimentoMs});`,
     manuale: `if (this.onstart) this.onstart();`,
     muto: ``,
@@ -130,7 +148,8 @@ function corpoRiconoscimento(o) {
 
   const stop = {
     auto: ``,
-    suStop: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
+    suStop: `var self = this; this._fermata = true;
+      setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
     manuale: `if (this.onend) this.onend();`,
     muto: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
     continuo: `var self = this;
@@ -142,7 +161,7 @@ function corpoRiconoscimento(o) {
       }, ${o.ritardoFineRiconoscimentoMs});`
   }[forma];
 
-  const abort = forma === 'manuale' ? `` :
+  const abort = forma === 'manuale' ? `this._fermata = true;` :
     forma === 'continuo'
       ? `this._fermata = true; if (this._interim) clearInterval(this._interim); if (this.onend) this.onend();`
       : `if (this.onend) this.onend();`;
