@@ -208,34 +208,27 @@
     return out;
   }
 
+  // ⚠️ I DUE EPISODI NON PORTANO PIU' NIENTE QUI DENTRO, DAL 2026-09-25.
+  //
+  // `gate` aveva un campo `segments` — la frase scomposta parola per parola,
+  // trentadue voci. **Il suo ultimo lettore era `buildTargetTokens`,
+  // cancellata col passo F.5 perche' non aveva chiamanti**, e da quel giorno
+  // quel campo non lo leggeva piu' nessuno in tutta l'app.
+  //
+  // ⚠️ LA PROVA CHE SI POTEVA TOGLIERE NON E' UN grep, E' UN FATTO:
+  // **`aircraft-door` non l'ha mai avuto** — e' sempre stato `{}` — e l'app
+  // ci funziona sopra da quando esiste. *«Un episodio senza segments» non era
+  // un caso da provare: era gia' il caso normale, meta' del catalogo.*
+  //
+  // Le altre forme cercate prima di cancellare (regola 41), zero compresi:
+  // `.segments` come chiave raggiunta **0**, dentro un identificatore piu'
+  // lungo **0**, al singolare **0**, nei file di `data/` **0**.
+  //
+  // *Il contenuto della frase non si perde: vive nel grado C del file
+  // episodio, che e' la fonte vera. Qui era una SECONDA copia, scomposta per
+  // una vista che non esiste piu'.*
   var EPISODES = buildEpisodes({
-    gate: {
-      // ⚠️ `segments` NON HA PIÙ NESSUN LETTORE, DAL 2026-09-24 (passo F.5).
-      //
-      // Qui c'era scritto «lo legge solo `buildTargetTokens`»: quella funzione
-      // è stata cancellata — non aveva chiamanti — e con lei se n'è andato
-      // l'ultimo lettore. **Adesso questo campo non lo legge nessuno, in tutta
-      // l'app.**
-      //
-      // ⚠️ E NON È STATO TOLTO NELLO STESSO PASSO, di proposito: toglierlo
-      // cambia la FORMA DELL'EPISODIO, cioè un dato, e F.5 era deciso su due
-      // funzioni. *Una cancellazione decisa per A che si porta dietro B non è
-      // la decisione che è stata presa.* Registrato in
-      // `docs/decisioni-stato.md` come trovato e non corretto.
-      //
-      // Fixed words are authored individually so punctuation stays attached
-      // to the right word; slots expand to one or more words at render time.
-      segments: [
-        { text: "Hello," }, { text: "I'm" }, { slot: 'papa', suffix: '.' },
-        { text: "This" }, { text: "is" }, { slot: 'mamma', suffix: ',' },
-        { text: "my" }, { text: "wife." }, { text: "Our" }, { text: "children" }, { text: "are" },
-        { slot: 'figliaNome', suffix: ',' }, { text: "who" }, { text: "is" }, { slot: 'figliaEta' },
-        { text: "years" }, { text: "old," }, { text: "and" }, { slot: 'figlioNome', suffix: ',' },
-        { text: "who" }, { text: "is" }, { slot: 'figlioEta' }, { text: "years" }, { text: "old." },
-        { text: "We" }, { text: "are" }, { text: "leaving" }, { slot: 'partenza' },
-        { text: "and" }, { text: "flying" }, { text: "to" }, { slot: 'destinazione', suffix: '.' }
-      ]
-    },
+    gate: {},
     // (docs/inglese/it/inglese-it-aircraft-door.md). Nome e categoria stanno
     // nel file di struttura dell'edizione, non qui.
     'aircraft-door': {}
