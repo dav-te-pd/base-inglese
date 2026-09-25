@@ -35,8 +35,8 @@
 # e' l'unica persona a cui serve.*
 # ##########################################################################
 #
-# Ultimo aggiornamento: 2026-09-24
-# Totale: 1736
+# Ultimo aggiornamento: 2026-09-25
+# Totale: 1740
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -49,7 +49,7 @@ test_batch12.js 57
 test_batch13.js 21
 test_batch14.js 40
 test_batch15.js 39
-test_batch16.js 35
+test_batch16.js 39
 test_batch17.js 44
 test_batch18.js 19
 test_batch19.js 40
