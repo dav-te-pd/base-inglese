@@ -62,6 +62,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { stepsBefore, stepIds } = require('./module-order');
 const { attendiVisibile } = require('./attese');
 
@@ -73,17 +74,7 @@ function log(name, ok, extra) {
   else { failed++; console.log('  FAIL  ' + name + (extra ? '  -> ' + extra : '')); }
 }
 
-const mockVoce = () => {
-  class FakeUtterance { constructor(t) { this.text = t; this.onstart = null; this.onend = null; } }
-  const finta = {
-    speaking: false, _u: null, detti: [],
-    speak(u) { this.detti.push(u.text); this.speaking = true; this._u = u; if (u.onstart) u.onstart(); setTimeout(() => { if (this._u === u) { this.speaking = false; this._u = null; } if (u.onend) u.onend(); }, 20); },
-    cancel() { this.speaking = false; this._u = null; },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Finta', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: finta, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockVoce = mockBrowser({ nomeVoce: 'Finta' });
 
 async function apriPasso(page, passo) {
   await page.goto(BASE);
@@ -235,9 +226,9 @@ async function apriPasso(page, passo) {
   const parlatoDopoTocco = await page.evaluate(() => {
     const btn = document.querySelector('#story-cards-body .wws-card.is-ahead .listen-block-btn');
     if (!btn) return null;
-    const prima = window.speechSynthesis.detti.length;
+    const prima = window.__detti.length;
     btn.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    return { prima: prima, dopo: window.speechSynthesis.detti.length };
+    return { prima: prima, dopo: window.__detti.length };
   });
   if (parlatoDopoTocco) {
     log('[3] La guardia regge anche a un click sintetico (pointer-events non basta)',

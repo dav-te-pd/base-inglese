@@ -42,6 +42,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { openModule } = require('./map-driver');
 const { stepsBefore } = require('./module-order');
 
@@ -54,25 +55,7 @@ function log(nome, ok, extra) {
 // La sintesi vocale come quella vera: `onend` arriva in modo ASINCRONO anche
 // dopo `cancel()`. Un mock che lo chiama subito nasconderebbe proprio la
 // famiglia di difetti che questo file guarda (CLAUDE.md regola 19).
-const mockInit = () => {
-  class FU { constructor(t) { this.text = t; this.onstart = null; this.onend = null; } }
-  const fs2 = {
-    speaking: false, _u: null, _t: null,
-    speak(u) {
-      this.speaking = true; this._u = u; if (u.onstart) u.onstart();
-      this._t = setTimeout(() => { this.speaking = false; this._u = null; if (u.onend) u.onend(); }, 400);
-    },
-    cancel() {
-      if (!this._u) return;
-      var u = this._u; clearTimeout(this._t); this.speaking = false; this._u = null;
-      setTimeout(function () { if (u.onend) u.onend(); }, 0);
-    },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'F', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fs2, configurable: true });
-  window.SpeechSynthesisUtterance = FU;
-};
+const mockInit = mockBrowser({ fineVoceMs: 400, nomeVoce: 'F' });
 
 function contaTimer() {
   window.__vivi = new Set();

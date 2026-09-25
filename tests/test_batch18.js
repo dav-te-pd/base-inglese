@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { attendiCheParla, attendiClasse } = require('./attese');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
@@ -9,34 +10,7 @@ const BASE = APP_URL;
 // engines resolve cancel() asynchronously (per toggleSpeak's own comment
 // near moduleEpoch), and that's exactly what exposed the is-active race
 // this round's job 2 fixes. A synchronous-only mock would mask it.
-const mockInitAsync = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) {
-      this.speaking = true; this._current = utter;
-      if (utter.onstart) utter.onstart();
-      utter._timer = setTimeout(() => {
-        if (this._current === utter) { this.speaking = false; this._current = null; }
-        if (utter.onend) utter.onend();
-      }, 500);
-    },
-    cancel() {
-      if (this._current) {
-        var u = this._current;
-        this.speaking = false;
-        this._current = null;
-        clearTimeout(u._timer);
-        // Asynchronous on purpose (see comment above) — a few ms later,
-        // like a real engine, not in the same tick as cancel() itself.
-        setTimeout(() => { if (u.onerror) u.onerror({ error: 'canceled' }); }, 15);
-      }
-    },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockInitAsync = mockBrowser({ fineVoceMs: 500, ritardoCancelMs: 15 });
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);

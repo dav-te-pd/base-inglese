@@ -18,6 +18,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { stepsBefore } = require('./module-order');
 const { loadGrade, loadEpisode } = require('./quiz-driver');
 
@@ -280,16 +281,7 @@ function confrontaTestoConLaFonte(log) {
 
 const BASE = APP_URL;
 
-const mockInit = () => {
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(u) { this.speaking = true; this._current = u; if (u.onstart) u.onstart(); u._t = setTimeout(() => { if (this._current === u) { this.speaking = false; this._current = null; } if (u.onend) u.onend(); }, 15); },
-    cancel() { if (this._current) { var u = this._current; this.speaking = false; this._current = null; clearTimeout(u._t); } },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = function (t) { this.text = t; this.onstart = null; this.onend = null; this.onerror = null; };
-};
+const mockInit = mockBrowser({ fineVoceMs: 15, nomeVoce: 'Fake' });
 
 async function bootAsUser(page, userName, moduleId) {
   await page.goto(BASE);

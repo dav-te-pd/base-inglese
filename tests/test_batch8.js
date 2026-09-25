@@ -1,36 +1,11 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart=null; this.onend=null; this.onerror=null; } }
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) { this.speaking=true; this._current=utter; if(utter.onstart) utter.onstart(); utter._timer=setTimeout(()=>{ if(this._current===utter){this.speaking=false;this._current=null;} if(utter.onend) utter.onend(); },20); },
-    cancel() { if(this._current){var u=this._current;this.speaking=false;this._current=null;clearTimeout(u._timer);} },
-    pause(){}, resume(){}, getVoices(){return [{name:'Fake Male Voice',lang:'en-US'}];}, onvoiceschanged:null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() {
-      setTimeout(() => {
-        if (this.onresult) {
-          var text = window.__vcTranscript || '';
-          this.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
-        }
-      }, 5);
-    }
-    stop() { setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);

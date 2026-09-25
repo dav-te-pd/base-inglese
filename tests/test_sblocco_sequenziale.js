@@ -29,26 +29,14 @@
 // test_dialogo_extra.js.
 
 const { launchBrowser, APP_URL } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { stepsBefore } = require('./module-order');
 
 const BASE = APP_URL;
 
 // Una sintesi vocale finta che si limita a CONTARE: qui non interessa cosa
 // dice, interessa se ha aperto bocca.
-const mockVoce = () => {
-  class FakeUtterance { constructor(t) { this.text = t; } }
-  window.__detti = [];
-  Object.defineProperty(window, 'speechSynthesis', { value: {
-    speaking: false, _cur: null,
-    speak(u) { window.__detti.push(u.text); this.speaking = true; this._cur = u;
-      if (u.onstart) u.onstart();
-      u._t = setTimeout(() => { if (this._cur === u) { this.speaking = false; this._cur = null; } if (u.onend) u.onend(); }, 20); },
-    cancel() { if (this._cur) { const u = this._cur; this.speaking = false; this._cur = null; clearTimeout(u._t); } },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  }, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockVoce = mockBrowser({ nomeVoce: 'Fake' });
 
 async function apriModulo(page, utente, moduleId) {
   await page.goto(BASE);

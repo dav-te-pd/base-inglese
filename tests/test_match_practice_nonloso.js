@@ -39,6 +39,7 @@
 // qui non si vedrebbe.
 
 const { launchBrowser, APP_URL } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { stepsBefore } = require('./module-order');
 
 const BASE = APP_URL;
@@ -51,17 +52,7 @@ function log(name, ok, extra) {
 
 // Una sintesi vocale finta che finisce in modo ASINCRONO come quella vera
 // (regola 19: un mock che finisce all'istante nasconde i bug di ordine).
-const mockVoce = () => {
-  class FakeUtterance { constructor(t) { this.text = t; this.onstart = null; this.onend = null; } }
-  const finta = {
-    speaking: false, _u: null,
-    speak(u) { this.speaking = true; this._u = u; if (u.onstart) u.onstart(); setTimeout(() => { if (this._u === u) { this.speaking = false; this._u = null; } if (u.onend) u.onend(); }, 20); },
-    cancel() { this.speaking = false; this._u = null; },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Finta', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: finta, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockVoce = mockBrowser({ nomeVoce: 'Finta' });
 
 // Tutto lo stato del modulo in un'unica valutazione sincrona: fra due letture
 // separate la schermata puo' cambiare, e si finirebbe per ragionare su una

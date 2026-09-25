@@ -48,6 +48,7 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { allSteps } = require('./module-order');
 const { openModule } = require('./map-driver');
 
@@ -57,25 +58,7 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-const mockInit = () => {
-  class FakeUtterance { constructor(t) { this.text = t; this.onstart = null; this.onend = null; this.onerror = null; } }
-  const f = {
-    speaking: false, _current: null,
-    speak(u) {
-      this.speaking = true; this._current = u;
-      if (u.onstart) u.onstart();
-      u._t = setTimeout(() => {
-        if (this._current === u) { this.speaking = false; this._current = null; }
-        if (u.onend) u.onend();
-      }, 20);
-    },
-    cancel() { if (this._current) { var u = this._current; this.speaking = false; this._current = null; clearTimeout(u._t); } },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: f, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockInit = mockBrowser({ nomeVoce: 'Fake' });
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(APP_URL);

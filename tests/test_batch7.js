@@ -1,29 +1,12 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockInit: mockInitCondiviso } = require('./mock-browser');
 const { allSteps } = require('./module-order');
 const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart=null; this.onend=null; this.onerror=null; } }
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) {
-      this.speaking = true; this._current = utter;
-      if (utter.onstart) utter.onstart();
-      utter._timer = setTimeout(() => {
-        if (this._current === utter) { this.speaking = false; this._current = null; }
-        if (utter.onend) utter.onend();
-      }, 20);
-    },
-    cancel() { if (this._current) { var u=this._current; this.speaking=false; this._current=null; clearTimeout(u._timer); } },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-};
+const mockInit = mockInitCondiviso;
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);

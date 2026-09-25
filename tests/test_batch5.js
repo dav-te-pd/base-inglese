@@ -1,51 +1,11 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { attendiCheParla, attendiDisabilitato, attendiNascosto } = require('./attese');
 const { allSteps } = require('./module-order');
 const { openModule } = require('./map-driver');
 const BASE = APP_URL;
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart=null; this.onend=null; this.onerror=null; } }
-  window.__speakLog = [];
-  const fakeSynth = {
-    speaking: false,
-    _current: null,
-    speak(utter) {
-      this.speaking = true;
-      this._current = utter;
-      window.__speakLog.push(utter.text);
-      if (utter.onstart) utter.onstart();
-      // simulate a natural finish after a delay
-      utter._timer = setTimeout(() => {
-        if (this._current === utter) { this.speaking = false; this._current = null; }
-        if (utter.onend) utter.onend();
-      }, 400);
-    },
-    cancel() {
-      if (this._current) {
-        var u = this._current;
-        this.speaking = false;
-        this._current = null;
-        clearTimeout(u._timer);
-        // simulate async interruption firing onerror on a later task (macrotask)
-        setTimeout(() => { if (u.onerror) u.onerror(); }, 30);
-      }
-    },
-    pause() {}, resume() {},
-    getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() { setTimeout(() => { if (this.onresult) this.onresult({ results: [] }); }, 5); }
-    stop() { setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockInit = mockBrowser({ fineVoceMs: 400, ritardoCancelMs: 30, riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
 async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.goto(BASE);
@@ -104,7 +64,7 @@ async function run() {
     // correzione già applicata a test_batch15.js Job8).
     const leaving = await page.evaluate(() => {
       var speakingBefore = window.speechSynthesis.speaking;
-      var logLenBefore = window.__speakLog.length;
+      var logLenBefore = window.__detti.length;
       document.getElementById('dialogo-back-map').click();
       return { speakingBefore: speakingBefore, logLenBefore: logLenBefore, stillSpeaking: window.speechSynthesis.speaking };
     });
@@ -128,7 +88,7 @@ async function run() {
     // finestra e si verifica che sia rimasta vuota. Se la macchina è lenta il
     // rischio è un verde generoso, non un rosso casuale.
     await page.waitForTimeout(600); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — nessuna NUOVA battuta accodata dopo l'uscita. Per un evento che non deve accadere non esiste una condizione da aspettare: si lascia una finestra e si verifica che sia rimasta vuota
-    const logLenAfter = await page.evaluate(() => window.__speakLog.length);
+    const logLenAfter = await page.evaluate(() => window.__detti.length);
     log('[Job1] No NEW utterance was queued after leaving (sequence did not continue)', logLenAfter === logLenBefore);
     log('[Job1] No JS errors', errors.length === 0);
     await page.close();
@@ -153,10 +113,10 @@ async function run() {
     await page.click('#dialogo-back-map');
     await page.waitForTimeout(150);
     // open a totally different module (repeatAloud) and confirm no residual speak calls arrive
-    const logLenAtSwitch = await page.evaluate(() => window.__speakLog.length);
+    const logLenAtSwitch = await page.evaluate(() => window.__detti.length);
     await openModule(page, 'repeatAloud');
     await page.waitForTimeout(600); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — nessuna battuta accodata dopo essere passati a un ALTRO modulo. Un evento che non deve accadere non ha una condizione da aspettare: si lascia una finestra e si verifica che sia rimasta vuota
-    const logLenAfterSwitch = await page.evaluate(() => window.__speakLog.length);
+    const logLenAfterSwitch = await page.evaluate(() => window.__detti.length);
     log('[Job1b] No further utterance queued after switching to a different module', logLenAfterSwitch === logLenAtSwitch);
     log('[Job1b] No JS errors', errors.length === 0);
     await page.close();

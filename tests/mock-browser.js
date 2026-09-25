@@ -54,8 +54,19 @@ const PREDEFINITI = {
   nomeVoce: 'Fake Male Voice', // cosa torna `getVoices()`
   riconoscimento: false,       // vedi FORME sotto
   ritardoRiconoscimentoMs: 15, // quanto tarda `onresult` dopo `start()`
-  ritardoFineRiconoscimentoMs: 5 // quanto tarda `onend` dopo `stop()`
+  ritardoFineRiconoscimentoMs: 5, // quanto tarda `onend` dopo `stop()`
+  ritardoCancelMs: 0           // quanto tarda `onend` dopo `cancel()`
 };
+
+// ⚠️ `ritardoCancelMs` NON E' UN PARAMETRO DI COMODO, E' L'UNICA COSA CHE
+// DISTINGUEVA TRE FINTI DAL NUCLEO — 2026-09-25, passo F.4 coda.
+// `test_batch18` (15 ms), `test_batch5` (30 ms) e `test_batch6` (5 ms)
+// ritardavano apposta la chiusura di `cancel()`, e il loro commento dice
+// perche': **dare al callback vecchio ogni occasione di sbagliare**. Zero
+// millisecondi resta asincrono — e' comunque un altro macrotask — ma non
+// lascia passare in mezzo nessun altro timer del test. *Portarli tutti a
+// zero avrebbe indebolito le loro asserzioni senza che nessun rosso lo
+// dicesse: la regola 44 al rovescio.*
 
 // ⚠️ LE QUATTRO FORME DEL RICONOSCIMENTO, E NON SONO UN'ASTRAZIONE: sono i
 // quattro comportamenti che i file di oggi avevano davvero, e differiscono
@@ -149,6 +160,23 @@ function costruisci(opzioni) {
   // non manda niente, quella protezione non veniva esercitata da nessuno di
   // questi file: c'era, e nessun test poteva dire se funzionava.*
   //
+  // ⚠️ E `speaking` DIVENTA FALSO NELLO STESSO GIRO SINCRONO DI `cancel()`,
+  // DAL 2026-09-25 — l'`onend` arriva dopo, ma **lo stato no**.
+  //
+  // *Non e' una rifinitura: e' un rosso, e il rosso l'ha trovato la coda di
+  // F.4.* `test_batch5 [Job1]` clicca «esci dal modulo» e legge
+  // `speechSynthesis.speaking` **nella stessa chiamata sincrona** — apposta,
+  // per la regola 19: cosi' i due valori descrivono lo stesso istante invece
+  // di due round-trip. Con un `cancel()` che rimandava anche lo *stato*, quel
+  // test leggeva `true` e cadeva.
+  //
+  // **E il file aveva ragione lui:** in un motore vero `cancel()` interrompe
+  // subito, e `speaking` risponde `false` da quel momento; e' l'*evento* a
+  // tardare. Dieci dei quattordici finti scritti a mano lo facevano cosi'.
+  // *Il nucleo aveva preso la parte asincrona e se l'era portata via anche la
+  // parte sincrona — un finto che promette meno della realta', la regola 19
+  // nella sua forma classica.*
+  //
   // ⚠️ LA FORMA NON E' STATA INVENTATA QUI: e' quella che
   // `test_dialogo_extra.js` si era scritta a mano (`mockConCancelVero`) per i
   // suoi due test sull'audio interrotto, ed e' stata portata dentro
@@ -188,6 +216,10 @@ function costruisci(opzioni) {
   // riprendeva solo il timer della battuta, mai la voce.
   const nucleo = `
     (function () {
+      // Cosa e' stato detto, in ordine. Sempre presente: tre file se la
+      // scrivevano da soli con tre nomi diversi (detti, __detti, __speakLog),
+      // e un pezzo condiviso con tre nomi e' il difetto della regola 18.
+      window.__detti = [];
       function FakeUtterance(text) {
         this.text = text; this.onstart = null; this.onend = null; this.onerror = null;
       }
@@ -197,6 +229,7 @@ function costruisci(opzioni) {
         _corrente: null,
         speak: function (utter) {
           var self = this;
+          window.__detti.push(utter.text);
           this.speaking = true;
           this.paused = false;
           this._corrente = utter;
@@ -216,9 +249,18 @@ function costruisci(opzioni) {
           this._corrente = null;
           if (utter.onend) utter.onend();
         },
+        // Smette di parlare SUBITO, e l'onend dell'utterance interrotta arriva
+        // DOPO: sono due istanti diversi, e confonderli e' quello che questo
+        // nucleo faceva fino al 2026-09-25. (Niente apici inversi qui dentro:
+        // questo testo vive in un template literal.)
         cancel: function () {
-          var self = this, u = this._corrente;
-          if (u) setTimeout(function () { self._finisci(u); }, 0);
+          var u = this._corrente;
+          if (!u) return;
+          clearTimeout(u._timer);
+          this.speaking = false;
+          this.paused = false;
+          this._corrente = null;
+          setTimeout(function () { if (u.onend) u.onend(); }, ${o.ritardoCancelMs});
         },
         // ⚠️ pause() SOSPENDE DAVVERO, dal passo F.2c: ferma il timer e si
         // ricorda quanto mancava. Un paused che cambia solo un'etichetta
