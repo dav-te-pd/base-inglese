@@ -225,16 +225,55 @@ function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
   // DAVVERO sul runner. La riga di [SR Task1] e' caduta qui il 2026-09-22, e
   // quella catena non era mai stata misurata — *il numero dell'altra non vale
   // per questa.*
-  return misura('batch19 domanda-successiva/' + p, function () {
-  return page.waitForFunction((a) => {
+  // ⚠️ IL POPUP DEI TENTATIVI E' UNO STATO, NON UN RITARDO — 2026-09-25.
+  //
+  // Questa riga e' caduta in una corsa NORMALE a quattro in parallelo, con lo
+  // stato `{contatore: "2 / 9", revealAperto: false, spento: true,
+  // quizAttivo: true}`. **E il tetto non c'entra: la catena misurata vale
+  // ~610 ms contro 15 s, venticinque volte il margine.** Un rallentamento non
+  // spiega un'attesa che non finisce mai.
+  //
+  // ⚠️ LO SPIEGA IL CODICE DELL'APP, LETTO: dopo una risposta GIUSTA
+  // `app/speedmatch.js` fa `setTimeout(srGoNext, feedbackPauseMs)`, e
+  // `srGoNext` **se c'e' un `srPendingNudge` apre il popup dei tentativi e
+  // passa alla domanda dopo SOLO quando lo si chiude**. Il popup scatta a
+  // `CONFIG.retryQueue.attemptsReminderThreshold` tentativi sulla stessa voce
+  // — e quante volte una voce venga ritentata dipende da quanto e' andata male
+  // la fortuna del ciclo «tocca la prima opzione e spera». *Quindi non e' un
+  // difetto che arriva col carico: e' uno STATO dell'app che questa attesa non
+  // conosceva, e davanti al quale aspettava quindici secondi una cosa che non
+  // poteva succedere senza un click.*
+  //
+  // ⚠️ E LA CURA NON E' ALZARE IL TETTO — sarebbe aspettare piu' a lungo la
+  // stessa cosa impossibile. Il popup si CHIUDE, come gia' fanno i cicli di
+  // `test_batch9` e `test_batch15`, e poi si continua ad aspettare. *Chiuderlo
+  // non e' scavalcare un'asserzione: nessuna riga di questo file afferma
+  // qualcosa sul popup — lo fa `test_batch11`, che e' il suo posto.*
+  const guarda = (a) => {
+    const pop = document.getElementById('attempt-popup');
+    if (pop && pop.classList.contains('is-open')) return { popup: true };
     const b = document.getElementById(a.pre + '-dontknow-btn');
     const c = document.getElementById(a.pre + '-counter');
     const rev = document.getElementById(a.pre + '-reveal');
     if (!b || !c || !rev) return null;
     if (!rev.hidden) return null;
     if (c.textContent.trim() === a.prima) return null;
-    return { spento: b.disabled, nascosto: b.hidden, contatore: c.textContent.trim() };
-  }, { pre: p, prima: contatorePrecedente }, { timeout: 15000 });
+    return { popup: false, spento: b.disabled, nascosto: b.hidden, contatore: c.textContent.trim() };
+  };
+  return misura('batch19 domanda-successiva/' + p, async function () {
+    // Tre giri e non uno: il popup puo' ripresentarsi. Un numero fisso di
+    // giri invece di un `while` perche' un ciclo che chiude popup all'infinito
+    // nasconderebbe un popup che si riapre da solo — che sarebbe un difetto
+    // vero, e deve restare visibile come resa.
+    for (var giro = 0; giro < 3; giro++) {
+      var h = await page.waitForFunction(guarda,
+        { pre: p, prima: contatorePrecedente }, { timeout: 15000 });
+      var v = await h.jsonValue();
+      if (!v.popup) return h;
+      await page.click('#attempt-popup-next');
+    }
+    return page.waitForFunction(guarda,
+      { pre: p, prima: contatorePrecedente }, { timeout: 15000 });
   })
     .then(h => h.jsonValue())
     .catch(async function (e) {
@@ -248,7 +287,8 @@ function attendiDomandaSuccessiva(page, p, contatorePrecedente) {
           contatore: c ? c.textContent.trim() : '(manca)',
           revealAperto: rev ? !rev.hidden : null,
           spento: b ? b.disabled : null,
-          quizAttivo: !!document.querySelector('#view-' + (pre === 'sr' ? 'speed-match' : 'match') + '.is-active')
+          quizAttivo: !!document.querySelector('#view-' + (pre === 'sr' ? 'speed-match' : 'match') + '.is-active'),
+          popupAperto: !!document.querySelector('#attempt-popup.is-open')
         };
       }, p).catch(function () { return null; });
       return { arreso: true, motivo: e && e.name === 'TimeoutError' ? 'timeout 15s' : String(e && e.message),
