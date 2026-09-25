@@ -20,7 +20,7 @@
 //    Non una duplicazione: una RISORSA CONDIVISA — e una risorsa condivisa non
 //    si divide per QUANDO una cosa gira, che e' l'unico criterio che lo
 //    spacchettamento ha. Cinque domande (`vocePossibile`, `staParlando`,
-//    `fermaLaVoce`, `pausaLaVoce`, `riprendiLaVoce`) le hanno dato un
+//    `fermaLaVoce`) le hanno dato un
 //    padrone: il nucleo audio possiede `synth`, gli altri gli chiedono.
 //
 // ② L'epoca era una VARIABILE letta da qui e scritta da `leaveModule`.
@@ -144,13 +144,22 @@ window.BI = window.BI || {};
     if (staParlando()) synth.cancel();
   }
 
-  function pausaLaVoce() {
-    if (staParlando() && !synth.paused) synth.pause();
-  }
-
-  function riprendiLaVoce() {
-    if (synth && synth.paused) synth.resume();
-  }
+  // ⚠️ QUI C'ERANO `pausaLaVoce` E `riprendiLaVoce`, CANCELLATE IL 2026-09-25
+  // — E NON PERCHE' ERANO BRUTTE: PERCHE' NON POTEVANO FUNZIONARE.
+  //
+  // Chiamavano `synth.pause()` / `synth.resume()`. Il loro unico chiamante era
+  // il pulsante «Pausa» del Dialogo Continuo, che pero' e' **spento mentre
+  // l'audio parla** — e quel `disabled` non era una svista: era la cura di un
+  // difetto vero (*«"Pausa" pausing mid-AUDIO used to hang the whole dialogue,
+  // synth.pause() is unreliable mid-utterance»*, Job 2, 3° collaudo). Quindi
+  // venivano chiamate **e non facevano niente**, sempre.
+  //
+  // Dal 2026-09-25 la pausa del Dialogo non passa piu' di qui: interrompe la
+  // battuta con `cancel()` e la risuona da capo alla ripresa
+  // (`dgTogglePause`). Queste due sono rimaste senza nemmeno quel chiamante.
+  //
+  // *Se un giorno un motore rendesse `pause()` affidabile, si riscrivono in
+  // cinque righe — e a quel punto avranno un chiamante che puo' usarle.*
 
   function pickVoice() {
     if (!synth) return null;
@@ -221,8 +230,6 @@ window.BI = window.BI || {};
   BI.vocePossibile = vocePossibile;
   BI.staParlando = staParlando;
   BI.fermaLaVoce = fermaLaVoce;
-  BI.pausaLaVoce = pausaLaVoce;
-  BI.riprendiLaVoce = riprendiLaVoce;
   BI.nuovaEpoca = nuovaEpoca;
   BI.epocaCorrente = epocaCorrente;
   BI.toggleSpeak = toggleSpeak;

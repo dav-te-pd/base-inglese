@@ -55,9 +55,10 @@
   var tokenize = BI.tokenize;
   var toggleSpeak = BI.toggleSpeak;
   var fermaLaVoce = BI.fermaLaVoce;
-  // ⚠️ `BI.pausaLaVoce` e `BI.riprendiLaVoce` NON si aliasano piu' qui dal
-  // 2026-09-25: la pausa della voce non passa da `synth.pause()`. Vedi
-  // `dgTogglePause`.
+  // ⚠️ `BI.pausaLaVoce` e `BI.riprendiLaVoce` NON ESISTONO PIU', dal
+  // 2026-09-25: la pausa della voce non passa da `synth.pause()`, e quelle due
+  // non avevano piu' nessun chiamante. Vedi `dgTogglePause` qui sotto e il
+  // commento al loro posto in `app/audio.js`.
   var uiText = BI.uiText;
   var fillTemplate = BI.fillTemplate;
   var speakerLabel = BI.speakerLabel;
@@ -634,9 +635,9 @@
   // un esercizio di ascolto risentire la battuta dall'inizio non e' un costo:
   // e' un ripasso.
   //
-  // *`pausaLaVoce` e `riprendiLaVoce` non le chiama piu' nessuno: restano
-  // registrate in `docs/decisioni-stato.md` come trovate e non tolte —
-  // cancellarle e' una decisione sullo strato audio, non sul Dialogo.*
+  // *`pausaLaVoce` e `riprendiLaVoce` sono state cancellate il 2026-09-25:
+  // erano rimaste senza chiamanti, e prima ancora non potevano funzionare —
+  // il motivo per esteso e' al loro posto in `app/audio.js`.*
   function dgTogglePause() {
     var audioInCorso = dgLineaInAscolto !== null;
     if (!dgPaused && dgLineTimerTimeoutId === null && !audioInCorso) return;
