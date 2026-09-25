@@ -45,6 +45,13 @@ const BASELINE = process.env.BASELINE_ASSERZIONI ||
 // Una riga e' un'asserzione se comincia (a meno di spazi) con OK, PASS o FAIL
 // come parola intera. Il confine di parola tiene fuori "FAILURES:" e le righe
 // di dettaglio che seguono, che non sono asserzioni ma il loro riepilogo.
+// ⚠️ QUESTA RIGA HA UN PARENTE, E I DUE DEVONO RESTARE D'ACCORDO:
+// `tests/tools/stress.sh` cerca le righe rosse per censire chi cade sotto
+// contesa. Fino al 2026-09-25 la cercava col trattino (`^FAIL - `), e per
+// **quattro file su 78** — quelli che scrivono `  FAIL  <nome>` — non
+// nominava MAI l'asserzione: finivano in un secchio che dice il file e non
+// la riga. *La forma qui sotto le vedeva gia' tutte: mancava il riuso
+// (regola 13).* Chi tocca una guardi l'altra.
 const RIGA_ASSERZIONE = /^\s*(OK|PASS|FAIL)\b/;
 
 function contaFile(nomeJs) {

@@ -44,12 +44,33 @@ for g in $(seq 1 "$GIRI"); do
   echo "--- giro $g/$GIRI -> $LOG"
   SUITE_PARALLELE="$PAR" bash run_full_regression.sh > "$LOG" 2>&1
   # Le righe rosse le scrivono i file, non questo script: si leggono da li'.
-  # ⚠️ IL TRATTINO NON E' PIGNOLERIA: i file scrivono in fondo anche una riga
-  # `FAILURES:`, e un `grep '^FAIL'` la prende — producendo nel censimento una
-  # voce che non e' un'asserzione. *Trovato usando lo strumento la prima
-  # volta: una riga «3 FAILURES:» in cima al conto, cioe' il difetto della
-  # regola 37 dentro l'attrezzo fatto per misurarlo.*
-  grep -h '^FAIL - ' ./*.result.txt 2>/dev/null | sed "s/^FAIL *- */giro$g|/" >> "$CENSIMENTO"
+  #
+  # ⚠️ `\b` E NON UN TRATTINO, E LA DIFFERENZA E' UN CASO VERO — 2026-09-25.
+  # Qui c'era `grep -h '^FAIL - '`, col trattino, e la ragione scritta accanto
+  # era giusta: i file scrivono in fondo anche una riga `FAILURES:`, e un
+  # `grep '^FAIL'` la prende. **Ma il trattino risolveva quel caso creandone
+  # uno peggiore: QUATTRO FILE su 78 scrivono la riga rossa in un'altra forma**
+  # — `  FAIL  <nome>`, con gli spazi davanti e senza trattino
+  # (`test_blocco_ascolto`, `test_conta_asserzioni`,
+  # `test_interruttore_episodio`, `test_match_practice_nonloso`).
+  #
+  # *Per quei quattro il censimento non nominava MAI l'asserzione:* finivano
+  # nel secchio `MORTO O ROSSO`, che dice il file e non la riga — e «MORTO O
+  # ROSSO» si legge come «il file e' morto», non come «non so leggere la
+  # riga». **La regola 37 nella sua forma pura: non somiglia a un errore,
+  # somiglia a un risultato.**
+  #
+  # ⚠️ **Trovato al primo giro dopo lo strumento nuovo, e il caso caduto era
+  # PROPRIO uno dei quattro** (`test_interruttore_episodio`, 1 giro su 3).
+  #
+  # ⚠️ E LA FORMA GIUSTA NON E' STATA INVENTATA QUI: e' quella che
+  # `tests/tools/conta-asserzioni.js` usa da sempre —
+  # `RIGA_ASSERZIONE = /^\s*(OK|PASS|FAIL)\b/`. *Il confine di parola tiene
+  # fuori `FAILURES:` senza chiedere un trattino, quindi vede tutte e due le
+  # forme.* **La conoscenza c'era: questo script non l'aveva riusata**
+  # (regola 13). I due devono restare d'accordo, e si citano a vicenda.
+  grep -hE '^[[:space:]]*FAIL\b' ./*.result.txt 2>/dev/null \
+    | sed -E "s/^[[:space:]]*FAIL[[:space:]]*-?[[:space:]]*/giro$g|/" >> "$CENSIMENTO"
 
   # ⚠️ E I FILE CHE MUOIONO VANNO NOMINATI, non contati: un file che non
   # arriva in fondo NON lascia righe FAIL, e la prima stesura ne raccoglieva
