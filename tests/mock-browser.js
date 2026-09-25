@@ -55,7 +55,9 @@ const PREDEFINITI = {
   riconoscimento: false,       // vedi FORME sotto
   ritardoRiconoscimentoMs: 15, // quanto tarda `onresult` dopo `start()`
   ritardoFineRiconoscimentoMs: 5, // quanto tarda `onend` dopo `stop()`
-  ritardoCancelMs: 0           // quanto tarda `onend` dopo `cancel()`
+  ritardoCancelMs: 0,          // quanto tarda `onend` dopo `cancel()`
+  ritardoInterimMs: 20,        // 'continuo': il primo risultato intermedio
+  intervalloInterimMs: 100     // 'continuo': ogni quanto ne arriva un altro
 };
 
 // ⚠️ `ritardoCancelMs` NON E' UN PARAMETRO DI COMODO, E' L'UNICA COSA CHE
@@ -77,9 +79,18 @@ const PREDEFINITI = {
 //   'suStop'  start → (ritardo) onresult · onend SOLO dopo stop()
 //   'manuale' start → onstart subito · stop → onend subito · nessun onresult
 //   'muto'    start non fa niente · onend solo dopo stop()  (premi e non parli)
+//   'continuo' start → risultati INTERMEDI a ripetizione · il definitivo solo
+//              dopo stop()  (parli a lungo, senza mai smettere)
+//
+// ⚠️ LA QUINTA, 'continuo', NON E' UNA VARIANTE DELLE ALTRE: e' l'unica in
+// cui **arriva qualcosa MENTRE si parla**. Viene da `test_batch14`, e il suo
+// commento dice a cosa serve: con i risultati intermedi spenti, niente
+// aggiorna `vcLatestTranscript` prima di `stop()`, e **il timeout di
+// silenzio scattava a meta' frase**. *Una forma che non si puo' ottenere
+// allungando i ritardi di un'altra: e' un ordine di eventi diverso.*
 //
 // `true` vale 'auto', per chi scriveva prima che le forme avessero un nome.
-const FORME = ['auto', 'suStop', 'manuale', 'muto'];
+const FORME = ['auto', 'suStop', 'manuale', 'muto', 'continuo'];
 
 function corpoRiconoscimento(o) {
   const forma = o.riconoscimento === true ? 'auto' : o.riconoscimento;
@@ -104,22 +115,43 @@ function corpoRiconoscimento(o) {
     suStop: `var self = this; setTimeout(function () {${consegna}
       }, ${o.ritardoRiconoscimentoMs});`,
     manuale: `if (this.onstart) this.onstart();`,
-    muto: ``
+    muto: ``,
+    continuo: `var self = this;
+      this._fermata = false;
+      setTimeout(function () {
+        if (self._fermata || !self.onresult) return;
+        self.onresult({ results: [{ 0: { transcript: 'hello' }, isFinal: false, length: 1 }] });
+      }, ${o.ritardoInterimMs});
+      this._interim = setInterval(function () {
+        if (self._fermata || !self.onresult) return;
+        self.onresult({ results: [{ 0: { transcript: 'hello there how are' }, isFinal: false, length: 1 }] });
+      }, ${o.intervalloInterimMs});`
   }[forma];
 
   const stop = {
     auto: ``,
     suStop: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
     manuale: `if (this.onend) this.onend();`,
-    muto: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`
+    muto: `var self = this; setTimeout(function () { if (self.onend) self.onend(); }, ${o.ritardoFineRiconoscimentoMs});`,
+    continuo: `var self = this;
+      this._fermata = true;
+      if (this._interim) clearInterval(this._interim);
+      setTimeout(function () {
+        if (self.onresult) self.onresult({ results: [{ 0: { transcript: window.__vcFinalTranscript || 'hello there how are you' }, isFinal: true, length: 1 }] });
+        if (self.onend) self.onend();
+      }, ${o.ritardoFineRiconoscimentoMs});`
   }[forma];
 
-  const abort = forma === 'manuale' ? `` : `if (this.onend) this.onend();`;
+  const abort = forma === 'manuale' ? `` :
+    forma === 'continuo'
+      ? `this._fermata = true; if (this._interim) clearInterval(this._interim); if (this.onend) this.onend();`
+      : `if (this.onend) this.onend();`;
 
   return `
     (function () {
       function FakeRecognition() {
         this.onstart = null; this.onresult = null; this.onend = null; this.onerror = null;
+        this._fermata = false; this._interim = null;
       }
       FakeRecognition.prototype.start = function () { ${start} };
       FakeRecognition.prototype.stop = function () { ${stop} };
@@ -129,6 +161,92 @@ function corpoRiconoscimento(o) {
     })();
   `;
 }
+
+// ⚠️ LA SPIA DEI TONI — TREDICI COPIE, 2026-09-25.
+//
+// I suoni dell'app (Traguardo, Uscita, il countdown del Dialogo, il
+// mini-ascolto delle opzioni) passano tutti da Web Audio, e per vederli i
+// test avvolgono `createOscillator` e `createGain`. **Misurato: tredici file
+// se lo riscrivevano.** Sei fuori dal mock, byte per byte identici
+// (`batch2`, `batch2b`, `batch3`, `batch3b`, `new_features`, `voicecoach`);
+// quattro dentro il proprio `mockInit`, identici a loro volta (`batch10`,
+// `batch11`, `batch12`, `batch17`); e tre che divergono di poche righe —
+// `batch16` per le sole graffe, `dialogo_extra` che aggiunge `t`,
+// `batch15` che aggiunge `qmSummaryHidden`.
+//
+// ⚠️ NON E' UN'OPZIONE DI `mockBrowser`, ED E' UNA SCELTA: sei file la
+// usano **senza** il finto del sintetizzatore, come secondo
+// `addInitScript`. Farla dipendere dal mock costringerebbe quei sei a
+// chiedere un finto che non gli serve.
+//
+//     const { spiaToni } = require('./mock-browser');
+//     await page.addInitScript(spiaToni);
+//
+// ⚠️ `t: performance.now()` C'E' SEMPRE, e viene da `dialogo_extra`: un
+// istante costa niente e non puo' rompere nessuna asserzione — tutte
+// filtrano per `freq`. *Un campo in piu' che nessuno legge e' gratis; un
+// campo che manca costringe a riscrivere la spia.*
+//
+// ⚠️ E `window.__noAudioCtx` NON C'E' PIU': le sette copie che lo
+// scrivevano **non avevano un lettore**, in tutto il repository. *E' la
+// famiglia di `__recognitionStarted` e di `__toneLog` — non un numero
+// sbagliato, un numero che nessuno guarda mai (regola 37).*
+//
+// L'UNICO GANCIO: `window.__annotaTono`. Se la pagina la definisce, quello
+// che torna finisce dentro ogni tono. Serve a `batch15`, che verifica che
+// **ogni nota del Traguardo suoni a schermata finale GIA' visibile**: quel
+// dato esiste solo nell'istante del tono, quindi va preso li' e non dopo.
+const SPIA_TONI = `
+  (function () {
+    var OrigAC = window.AudioContext || window.webkitAudioContext;
+    if (!OrigAC) return;
+    window.__playedTones = [];
+    var OrigCreateOscillator = OrigAC.prototype.createOscillator;
+    var OrigCreateGain = OrigAC.prototype.createGain;
+    OrigAC.prototype.createOscillator = function () {
+      var osc = OrigCreateOscillator.call(this);
+      var freq = null;
+      Object.defineProperty(osc.frequency, 'value', {
+        set: function (v) { freq = v; },
+        get: function () { return freq; }
+      });
+      osc.__getFreq = function () { return freq; };
+      window.__pendingOsc = osc;
+      return osc;
+    };
+    OrigAC.prototype.createGain = function () {
+      var gain = OrigCreateGain.call(this);
+      var origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
+      gain.gain.setValueAtTime = function (v, t) {
+        if (window.__pendingOsc) {
+          var tono = { freq: window.__pendingOsc.__getFreq(), volume: v, t: performance.now() };
+          if (typeof window.__annotaTono === 'function') {
+            var extra = window.__annotaTono() || {};
+            for (var k in extra) { if (Object.prototype.hasOwnProperty.call(extra, k)) tono[k] = extra[k]; }
+          }
+          window.__playedTones.push(tono);
+        }
+        return origSetValueAtTime(v, t);
+      };
+      return gain;
+    };
+  })();
+`;
+
+// ⚠️ GLI AVVISI — tre copie identiche (`batch10`, `batch11`, `batch12`).
+// Raccoglie `console.warn` in `window.__consoleWarnings` **senza zittirlo**:
+// l'originale viene chiamato lo stesso, cosi' un avviso resta visibile nel
+// log della corsa oltre che leggibile dall'asserzione.
+const CATTURA_AVVISI = `
+  (function () {
+    window.__consoleWarnings = [];
+    var origWarn = console.warn.bind(console);
+    console.warn = function () {
+      window.__consoleWarnings.push(Array.prototype.slice.call(arguments).join(' '));
+      origWarn.apply(console, arguments);
+    };
+  })();
+`;
 
 function costruisci(opzioni) {
   const o = Object.assign({}, PREDEFINITI, opzioni || {});
@@ -293,8 +411,22 @@ function costruisci(opzioni) {
   return { content: nucleo + corpoRiconoscimento(o) };
 }
 
+// Mette insieme piu' pezzi in un solo `addInitScript`. Serve dove il finto e
+// la spia erano UN blocco: cosi' i punti di chiamata — sessanta, misurati —
+// non vanno toccati uno per uno, e i pezzi restano installati nello stesso
+// istante di prima.
+function componi() {
+  var pezzi = Array.prototype.map.call(arguments, function (p) { return p.content; });
+  return { content: pezzi.join('\n') };
+}
+
 module.exports = {
   mockBrowser: costruisci,
+  componi,
+  // Due pezzi che si passano ad `addInitScript` per conto loro, perche' chi
+  // li vuole non sempre vuole anche il finto del sintetizzatore.
+  spiaToni: { content: SPIA_TONI },
+  catturaAvvisi: { content: CATTURA_AVVISI },
   // Il nucleo com'e' nel gruppo piu' numeroso: 20 ms, 'Fake Male Voice',
   // nessun riconoscimento.
   mockInit: costruisci(),

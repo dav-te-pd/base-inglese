@@ -9,30 +9,6 @@ const BASE = APP_URL;
 const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
-const toneCapture = () => {
-  const OrigAC = window.AudioContext || window.webkitAudioContext;
-  if (!OrigAC) { window.__noAudioCtx = true; return; }
-  window.__playedTones = [];
-  const OrigCreateOscillator = OrigAC.prototype.createOscillator;
-  const OrigCreateGain = OrigAC.prototype.createGain;
-  OrigAC.prototype.createOscillator = function () {
-    const osc = OrigCreateOscillator.call(this);
-    let freq = null;
-    Object.defineProperty(osc.frequency, 'value', { set(v) { freq = v; }, get() { return freq; } });
-    osc.__getFreq = () => freq;
-    window.__pendingOsc = osc;
-    return osc;
-  };
-  OrigAC.prototype.createGain = function () {
-    const gain = OrigCreateGain.call(this);
-    const origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
-    gain.gain.setValueAtTime = function (v, t) {
-      if (window.__pendingOsc) window.__playedTones.push({ freq: window.__pendingOsc.__getFreq(), volume: v });
-      return origSetValueAtTime(v, t);
-    };
-    return gain;
-  };
-};
 
 async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.goto(BASE);

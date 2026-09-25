@@ -33,7 +33,7 @@ const NOMI_SCELTI = Object.keys(slotValues()).map(k => slotValues()[k].it);
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
-const { mockBrowser } = require('./mock-browser');
+const { mockBrowser, spiaToni } = require('./mock-browser');
 const mockInit = mockBrowser({ fineVoceMs: 25 });
 
 async function bootAsUser(page, userName, completedModules) {
@@ -101,36 +101,10 @@ async function run() {
       window.APP_CONFIG.dialogo.pausaPerParola = 10;
       window.APP_CONFIG.dialogo.pausaMassima = 500;
     });
-    // Capture oscillator frequencies + gain values played.
-    await page.evaluate(() => {
-      const OrigAC = window.AudioContext || window.webkitAudioContext;
-      if (!OrigAC) { window.__noAudioCtx = true; return; }
-      window.__playedTones = [];
-      const OrigCreateOscillator = OrigAC.prototype.createOscillator;
-      const OrigCreateGain = OrigAC.prototype.createGain;
-      OrigAC.prototype.createOscillator = function () {
-        const osc = OrigCreateOscillator.call(this);
-        let freq = null;
-        Object.defineProperty(osc.frequency, 'value', {
-          set(v) { freq = v; },
-          get() { return freq; }
-        });
-        osc.__getFreq = () => freq;
-        window.__pendingOsc = osc;
-        return osc;
-      };
-      OrigAC.prototype.createGain = function () {
-        const gain = OrigCreateGain.call(this);
-        const origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
-        gain.gain.setValueAtTime = function (v, t) {
-          if (window.__pendingOsc) {
-            window.__playedTones.push({ freq: window.__pendingOsc.__getFreq(), volume: v, t: performance.now() });
-          }
-          return origSetValueAtTime(v, t);
-        };
-        return gain;
-      };
-    });
+    // La spia dei toni, dal pezzo condiviso. Resta un'installazione DOPO il
+    // boot (non `addInitScript`) perche' questo blocco conta i toni a delta:
+    // installarla prima farebbe entrare nel conto quelli dell'avvio.
+    await page.addScriptTag({ content: spiaToni.content });
     await openModule(page, 'dialogoRipetiATempo');
     await page.waitForFunction(() => document.getElementById('dg-start-btn') && !document.getElementById('dg-start-btn').disabled);
     await page.click('#dg-start-btn');

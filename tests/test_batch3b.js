@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
+const { spiaToni } = require('./mock-browser');
 const { attendiAbilitato, attendiVisibile } = require('./attese');
 const { gradeOf, stepIds, stepsBefore } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
@@ -18,30 +19,6 @@ const D2 = BATTUTE[1].id;
 const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ riconoscimento: 'auto' });
 
-const toneCapture = () => {
-  const OrigAC = window.AudioContext || window.webkitAudioContext;
-  if (!OrigAC) { window.__noAudioCtx = true; return; }
-  window.__playedTones = [];
-  const OrigCreateOscillator = OrigAC.prototype.createOscillator;
-  const OrigCreateGain = OrigAC.prototype.createGain;
-  OrigAC.prototype.createOscillator = function () {
-    const osc = OrigCreateOscillator.call(this);
-    let freq = null;
-    Object.defineProperty(osc.frequency, 'value', { set(v) { freq = v; }, get() { return freq; } });
-    osc.__getFreq = () => freq;
-    window.__pendingOsc = osc;
-    return osc;
-  };
-  OrigAC.prototype.createGain = function () {
-    const gain = OrigCreateGain.call(this);
-    const origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
-    gain.gain.setValueAtTime = function (v, t) {
-      if (window.__pendingOsc) window.__playedTones.push({ freq: window.__pendingOsc.__getFreq(), volume: v });
-      return origSetValueAtTime(v, t);
-    };
-    return gain;
-  };
-};
 
 async function bootAsUser(page, userName, completedModules, extraStorage) {
   await page.goto(BASE);
@@ -221,7 +198,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T9Sound', ALL_BEFORE_SR);
     await page.evaluate(() => { window.APP_CONFIG.speedMatch.countdownStepMs = 60; });
-    await page.evaluate(toneCapture);
+    await page.addScriptTag({ content: spiaToni.content });
     await openModule(page, 'speedMatchEngIta');
     await page.waitForTimeout(400);
     await page.click('#sr-ready-btn');

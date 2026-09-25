@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { spiaToni } = require('./mock-browser');
 const { attendiClasse } = require('./attese');
 const { gradeOf, stepsBefore } = require('./module-order');
 const { loadGrade, playThroughQuiz } = require('./quiz-driver');
@@ -19,30 +20,6 @@ const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
 const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
 
-const toneCapture = () => {
-  const OrigAC = window.AudioContext || window.webkitAudioContext;
-  if (!OrigAC) { window.__noAudioCtx = true; return; }
-  window.__playedTones = [];
-  const OrigCreateOscillator = OrigAC.prototype.createOscillator;
-  const OrigCreateGain = OrigAC.prototype.createGain;
-  OrigAC.prototype.createOscillator = function () {
-    const osc = OrigCreateOscillator.call(this);
-    let freq = null;
-    Object.defineProperty(osc.frequency, 'value', { set(v) { freq = v; }, get() { return freq; } });
-    osc.__getFreq = () => freq;
-    window.__pendingOsc = osc;
-    return osc;
-  };
-  OrigAC.prototype.createGain = function () {
-    const gain = OrigCreateGain.call(this);
-    const origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
-    gain.gain.setValueAtTime = function (v, t) {
-      if (window.__pendingOsc) window.__playedTones.push({ freq: window.__pendingOsc.__getFreq(), volume: v });
-      return origSetValueAtTime(v, t);
-    };
-    return gain;
-  };
-};
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);
@@ -232,7 +209,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3QMSound', BEFORE_QM);
-    await page.evaluate(toneCapture);
+    await page.addScriptTag({ content: spiaToni.content });
     await openModule(page, 'matchEngIta');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');

@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser } = require('./mock-browser');
 const { attendiAbilitato, attendiClasse, attendiNascosto, attendiVisibile } = require('./attese');
 const { declareAllSkills } = require('./story-driver');
 const { gradeOf, stepsBefore } = require('./module-order');
@@ -15,55 +16,7 @@ const BASE = APP_URL;
 const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
 const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
 
-const mockInit = () => {
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart = null; this.onend = null; this.onerror = null; } }
-  window.__speakLog = [];
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) { this.speaking = true; this._current = utter; window.__speakLog.push(utter.text); if (utter.onstart) utter.onstart(); utter._timer = setTimeout(() => { if (this._current === utter) { this.speaking = false; this._current = null; } if (utter.onend) utter.onend(); }, 20); },
-    cancel() { if (this._current) { var u = this._current; this.speaking = false; this._current = null; clearTimeout(u._timer); } },
-    pause() {}, resume() {}, getVoices() { return [{ name: 'Fake Male Voice', lang: 'en-US' }]; }, onvoiceschanged: null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-
-  // Simulates a long, CONTINUOUSLY spoken phrase: an interim result
-  // (isFinal:false) fires quickly after start, then more speech keeps
-  // "arriving" (more interim results) well past the silence timeout,
-  // finally a single isFinal result when stop() is called. Job 1's own
-  // bug: with interimResults off, none of this would ever update
-  // vcLatestTranscript before stop(), so the silence timeout used to
-  // fire even mid-speech.
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; this._interimTimer = null; this._stopped = false; }
-    start() {
-      this._stopped = false;
-      var self = this;
-      // First interim result almost immediately — proves speech was heard.
-      setTimeout(function () {
-        if (self._stopped || !self.onresult) return;
-        self.onresult({ results: [{ 0: { transcript: 'hello' }, isFinal: false, length: 1 }] });
-      }, 20);
-      // Keep "talking" well past a short silence-timeout window.
-      this._interimTimer = setInterval(function () {
-        if (self._stopped || !self.onresult) return;
-        self.onresult({ results: [{ 0: { transcript: 'hello there how are' }, isFinal: false, length: 1 }] });
-      }, 100);
-    }
-    stop() {
-      this._stopped = true;
-      if (this._interimTimer) clearInterval(this._interimTimer);
-      var self = this;
-      setTimeout(function () {
-        if (self.onresult) self.onresult({ results: [{ 0: { transcript: window.__vcFinalTranscript || 'hello there how are you' }, isFinal: true, length: 1 }] });
-        if (self.onend) self.onend();
-      }, 5);
-    }
-    abort() { this._stopped = true; if (this._interimTimer) clearInterval(this._interimTimer); if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-};
+const mockInit = mockBrowser({ riconoscimento: 'continuo' });
 
 async function bootAsUser(page, userName, completedModules) {
   await page.goto(BASE);

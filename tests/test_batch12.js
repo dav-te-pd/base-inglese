@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
+const { mockBrowser, componi, spiaToni, catturaAvvisi } = require('./mock-browser');
 const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
@@ -11,62 +12,7 @@ function istruzioni() {
   return JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
 }
 
-const mockInit = () => {
-  window.__consoleWarnings = [];
-  const origWarn = console.warn.bind(console);
-  console.warn = function () { window.__consoleWarnings.push(Array.from(arguments).join(' ')); origWarn.apply(console, arguments); };
-
-  class FakeUtterance { constructor(text) { this.text = text; this.onstart=null; this.onend=null; this.onerror=null; } }
-  window.__toneLog = [];
-  const fakeSynth = {
-    speaking: false, _current: null,
-    speak(utter) { this.speaking=true; this._current=utter; if(utter.onstart) utter.onstart(); utter._timer=setTimeout(()=>{ if(this._current===utter){this.speaking=false;this._current=null;} if(utter.onend) utter.onend(); },20); },
-    cancel() { if(this._current){var u=this._current;this.speaking=false;this._current=null;clearTimeout(u._timer);} },
-    pause(){}, resume(){}, getVoices(){return [{name:'Fake Male Voice',lang:'en-US'}];}, onvoiceschanged:null
-  };
-  Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });
-  window.SpeechSynthesisUtterance = FakeUtterance;
-
-  class FakeRecognition {
-    constructor() { this.onresult = null; this.onend = null; this.onerror = null; }
-    start() {
-      setTimeout(() => {
-        if (this.onresult) {
-          var text = window.__vcTranscript || '';
-          this.onresult({ results: text ? [{ 0: { transcript: text }, isFinal: true, length: 1 }] : [] });
-        }
-      }, 5);
-    }
-    stop() { setTimeout(() => { if (this.onend) this.onend(); }, 5); }
-    abort() { if (this.onend) this.onend(); }
-  }
-  window.SpeechRecognition = FakeRecognition;
-  window.webkitSpeechRecognition = FakeRecognition;
-
-  const OrigAC = window.AudioContext || window.webkitAudioContext;
-  if (OrigAC) {
-    window.__playedTones = [];
-    const OrigCreateOscillator = OrigAC.prototype.createOscillator;
-    const OrigCreateGain = OrigAC.prototype.createGain;
-    OrigAC.prototype.createOscillator = function () {
-      const osc = OrigCreateOscillator.call(this);
-      let freq = null;
-      Object.defineProperty(osc.frequency, 'value', { set(v) { freq = v; }, get() { return freq; } });
-      osc.__getFreq = () => freq;
-      window.__pendingOsc = osc;
-      return osc;
-    };
-    OrigAC.prototype.createGain = function () {
-      const gain = OrigCreateGain.call(this);
-      const origSetValueAtTime = gain.gain.setValueAtTime.bind(gain.gain);
-      gain.gain.setValueAtTime = function (v, t) {
-        if (window.__pendingOsc) window.__playedTones.push({ freq: window.__pendingOsc.__getFreq(), volume: v });
-        return origSetValueAtTime(v, t);
-      };
-      return gain;
-    };
-  }
-};
+const mockInit = componi(mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 }), spiaToni, catturaAvvisi);
 
 // I passi della mappa, calcolati dalla sequenza vera (CONFIG.sequences)
 // invece che riscritti qui: un riordino non deve piu' rompere questo file.
