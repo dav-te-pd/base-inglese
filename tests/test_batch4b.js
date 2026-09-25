@@ -1,4 +1,5 @@
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiVisibile } = require('./attese');
 const { allSteps } = require('./module-order');
 const BASE = APP_URL;
@@ -8,27 +9,11 @@ const BASE = APP_URL;
 const { mockInit } = require('./mock-browser');
 
 
-async function bootAsUser(page, userName, completedModules) {
-  await page.goto(BASE);
-  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
-  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
-  // c'e' ancora niente» si leggono uguali, e il test clicca un pulsante che
-  // non e' ancora comparso. Vedi `attendiPrimaSchermata` in test-env.js.
-  await attendiPrimaSchermata(page);
-  var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
-  if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForTimeout(100); }
-  await page.fill('#name-input', userName);
-  await page.click('#onboarding-form button[type=submit]');
-  await page.waitForTimeout(100);
-  await page.evaluate(({ userName, completedModules }) => {
-    if (completedModules) localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
-    // deliberately NOT dismissing intros, so the Spiegazione/intro screen shows
-    localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + userName, '1');
-    localStorage.setItem('baseinglese:introDismissed:personalizzazione:' + userName, '1');
-  }, { userName, completedModules });
-  await page.click('#go-episode');
-  await page.waitForTimeout(150);
-}
+// ⚠️ SOLO DUE INTRO CHIUSE, DI PROPOSITO: questo file verifica proprio la
+// schermata di Spiegazione, quindi le altre introduzioni DEVONO comparire.
+const bootAsUser = (page, userName, completedModules) =>
+  bootUtente(page, { utente: userName, completati: completedModules,
+    introChiuse: ['mappaEpisodio', 'personalizzazione'] });
 
 async function run() {
   const browser = await launchBrowser();

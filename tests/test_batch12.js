@@ -1,5 +1,6 @@
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
+const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni, catturaAvvisi } = require('./mock-browser');
 const { attendiClasse, attendiTono } = require('./attese');
 const { allSteps } = require('./module-order');
@@ -21,29 +22,9 @@ const ALL_MODULES = allSteps();
 // due apparizioni dello stesso modulo condividono lo stesso kind.
 const ALL_KINDS = ALL_MODULES.map(id => id.replace(/-\d+$/, ''));
 
-async function bootAsUser(page, userName, completedModules) {
-  await page.goto(BASE);
-  // ⚠️ L'app non disegna niente finche' non arriva `struttura-corso.json`
-  // (passo 1.11b): senza questa attesa, «non c'e' il campo del nome» e «non
-  // c'e' ancora niente» si leggono uguali, e il test clicca un pulsante che
-  // non e' ancora comparso. Vedi `attendiPrimaSchermata` in test-env.js.
-  await attendiPrimaSchermata(page);
-  var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
-  if (!onboardingVisible) { await page.click('#switch-user'); await page.waitForTimeout(100); }
-  await page.fill('#name-input', userName);
-  await page.click('#onboarding-form button[type=submit]');
-  await page.waitForTimeout(100);
-  await page.evaluate(({ userName, completedModules, kinds }) => {
-    if (completedModules) localStorage.setItem(BI.moduleProgressKey('gate', userName), JSON.stringify({ completed: completedModules }));
-    // flashcardAEngIta/flashcardAItaEng share ONE kind, 'flashcard'
-    // (intro-dismiss is keyed by kind, not module id) — not in ALL_MODULES.
-    kinds.concat(['mappaEpisodio', 'flashcard']).forEach(k => {
-      localStorage.setItem('baseinglese:introDismissed:' + k + ':' + userName, '1');
-    });
-  }, { userName, completedModules, kinds: ALL_KINDS });
-  await page.click('#go-episode');
-  await page.waitForTimeout(150);
-}
+const bootAsUser = (page, userName, completedModules) =>
+  bootUtente(page, { utente: userName, completati: completedModules,
+    introChiuse: ALL_KINDS.concat(['mappaEpisodio', 'flashcard']) });
 
 // ---- Voice Coach (Practice/Check) driving helpers ----
 async function vcAnswerLine(page, transcript) {
