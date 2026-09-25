@@ -87,7 +87,15 @@ for g in $(seq 1 "$GIRI"); do
   #
   # Il secchio resta, ed e' necessario: un file che muore davvero (timeout,
   # crash) NON lascia righe rosse, e senza questo non comparirebbe affatto.
-  grep -h '^FILE FAILED:' "$LOG" 2>/dev/null | sed 's/^FILE FAILED: *//' | while read -r f; do
+  #
+  # ⚠️ E IL ` (exit 1)` VA TOLTO, perche' la riga non finisce col nome del
+  # file. *Scritta la prima volta senza guardare la riga vera, questa guardia
+  # cercava `./test_batch16.js (exit 1).result.txt` — un file che non esiste —
+  # quindi non trovava mai la riga rossa e il doppio conteggio restava.*
+  # **Una guardia che non guarda e' la cosa che questo script esiste per
+  # scovare, scritta dentro lo script stesso: la regola 37 al terzo giro.**
+  grep -h '^FILE FAILED:' "$LOG" 2>/dev/null \
+    | sed -e 's/^FILE FAILED: *//' -e 's/ (exit.*$//' | while read -r f; do
     if ! grep -qE '^[[:space:]]*FAIL\b' "./${f%.js}.result.txt" 2>/dev/null; then
       echo "giro$g|MORTO O ROSSO: $f" >> "$CENSIMENTO"
     fi
