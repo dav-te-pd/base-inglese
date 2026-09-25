@@ -179,14 +179,64 @@ async function run() {
       var btn = document.getElementById('dg-pause-btn');
       return btn && !btn.hidden;
     }, { timeout: 5000 }).catch(() => {});
-    await page.waitForTimeout(400); // ATTESA-LEGITTIMA: NON e' una guardia di questa famiglia — l'asserzione legge un PULSANTE (dg-pause-btn disabilitato), non un suono: il censimento l'ha messa fra «un suono o la voce» perche' l'etichetta del log nomina l'audio. E il momento conta: si legge mentre la battuta parla, prima che parta il countdown
-    const pauseDisabledDuringAudio = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
-    log('[Job2] Pausa is disabled while a line\'s audio is actively speaking', pauseDisabledDuringAudio === true);
-    // Try clicking it anyway (native click on disabled button = no-op) — dialogue must not freeze.
-    await page.evaluate(() => document.getElementById('dg-pause-btn').click());
-    await page.waitForTimeout(200); // ATTESA-LEGITTIMA: verifica che un click su un pulsante DISABILITATO non produca niente — il testo deve restare "Pausa". Non c'e' nessuno stato da attendere: aspettarne uno significherebbe aspettare l'evento che non deve accadere
-    const stillPaused = await page.evaluate(() => document.getElementById('dg-pause-btn').textContent.trim());
-    log('[Job2] Clicking Pausa while disabled does NOT toggle it to "Riprendi"', stillPaused === 'Pausa');
+    // ⚠️ QUI C'ERANO DUE ASSERZIONI CHE NON MISURAVANO QUELLO CHE DICEVANO,
+    // E LA SECONDA NON POTEVA FALLIRE — riscritte il 2026-09-25.
+    //
+    // La prima diceva *«Pausa is disabled while a line's AUDIO is actively
+    // speaking»* e leggeva dopo 400 ms fissi. **Misurato con una sonda in
+    // quell'istante: `speaking: false`, zero bolle attive, zero countdown —
+    // si era ancora dentro il 3-2-1 di avvio.** Il pulsante era spento perche'
+    // non stava succedendo NIENTE, non perche' l'audio parlava: l'asserzione
+    // era verde per il motivo sbagliato, e lo sarebbe rimasta anche il giorno
+    // in cui il comportamento fosse cambiato. *La seconda ci costruiva sopra:
+    // «cliccare Pausa MENTRE E' DISABILITATO non fa niente» partiva da una
+    // premessa che non era vera in quel punto.*
+    //
+    // ⚠️ E IL COMPORTAMENTO E' CAMBIATO DAVVERO, il 2026-09-25: adesso
+    // «Pausa» e' ACCESO mentre la battuta parla, e fermarla interrompe la voce
+    // senza toccare `synth.pause()` (vedi `dgTogglePause`). Queste righe
+    // provano quello.
+    //
+    // L'APPRODO: si aspetta che la battuta stia parlando DAVVERO — bolla
+    // attiva **e** sintetizzatore in voce — invece di un tempo fisso. Nessuna
+    // delle asserzioni qui sotto legge quei due fatti (regola 44): leggono il
+    // PULSANTE, e poi cosa succede quando lo si preme.
+    const audioPartito = await page.waitForFunction(() =>
+      document.querySelector('.dg-bubble.is-active') && window.speechSynthesis.speaking === true,
+      { timeout: 10000 }).then(function () { return true; }, function () { return false; });
+    log('[Job2] La prima battuta arriva a parlare davvero', audioPartito === true);
+    const pausaDuranteAudio = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
+    log('[Job2] Pausa e\' ACCESO mentre la battuta parla (prima era spento)',
+      pausaDuranteAudio === false, 'disabled: ' + pausaDuranteAudio);
+    // Si preme mentre parla: la voce si ferma, e il dialogo NON avanza.
+    await page.click('#dg-pause-btn');
+    const dopoPausa = await page.evaluate(() => ({
+      etichetta: document.getElementById('dg-pause-btn').textContent.trim(),
+      parla: window.speechSynthesis.speaking
+    }));
+    log('[Job2] Premendo Pausa mentre parla, il pulsante diventa "Riprendi"',
+      dopoPausa.etichetta === 'Riprendi', JSON.stringify(dopoPausa));
+    // ⚠️ ATTESA-LEGITTIMA, e qui il TEMPO E' LA MISURA: si verifica che una
+    // cosa NON accada — la pausa non deve far partire il countdown della
+    // battuta dopo. E' il difetto che questa strada rischiava: `cancel()` fa
+    // arrivare `onend`, e `onend` su questo profilo avvia il countdown.
+    await page.waitForTimeout(500); // ATTESA-LEGITTIMA: prova che in pausa NON parte il countdown della battuta successiva
+    const inPausa = await page.evaluate(() => ({
+      parla: window.speechSynthesis.speaking,
+      countdown: document.querySelectorAll('.dg-bubble.dg-bubble-timer').length
+    }));
+    log('[Job2] In pausa la voce e\' ferma', inPausa.parla === false, JSON.stringify(inPausa));
+    log('[Job2] ...e la pausa NON fa avanzare il dialogo (nessun countdown partito)',
+      inPausa.countdown === 0, JSON.stringify(inPausa));
+    // Riprendi: la battuta si risuona da capo.
+    await page.click('#dg-pause-btn');
+    const risuonata = await page.waitForFunction(() => window.speechSynthesis.speaking === true,
+      { timeout: 5000 }).then(function () { return true; }, function () { return false; });
+    log('[Job2] Riprendendo, la battuta si risuona da capo', risuonata === true);
+    // Si rimette in pausa e si riprende, per tornare allo stato che le righe
+    // qui sotto si aspettano (dialogo che cammina).
+    await page.waitForFunction(() => window.speechSynthesis.speaking === false,
+      { timeout: 10000 }).then(function () {}, function () {});
     // Wait for the countdown to actually start (audio ends) -> Pausa should now be enabled.
     await page.waitForFunction(() => {
       var btn = document.getElementById('dg-pause-btn');

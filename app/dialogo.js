@@ -55,8 +55,9 @@
   var tokenize = BI.tokenize;
   var toggleSpeak = BI.toggleSpeak;
   var fermaLaVoce = BI.fermaLaVoce;
-  var pausaLaVoce = BI.pausaLaVoce;
-  var riprendiLaVoce = BI.riprendiLaVoce;
+  // ⚠️ `BI.pausaLaVoce` e `BI.riprendiLaVoce` NON si aliasano piu' qui dal
+  // 2026-09-25: la pausa della voce non passa da `synth.pause()`. Vedi
+  // `dgTogglePause`.
   var uiText = BI.uiText;
   var fillTemplate = BI.fillTemplate;
   var speakerLabel = BI.speakerLabel;
@@ -122,6 +123,19 @@
   var dgLastOutcome = null; // l'autovalutazione dichiarata, in attesa del pulsante (vedi dgFinishModule)
   var dgFurthestIndex = -1; // Ripeti a Tempo only: highest dialogue index played this viewing — see dgApplySequenceLock
   var dgPaused = false;
+
+  // ⚠️ LA BATTUTA IL CUI AUDIO STA SUONANDO ADESSO — dal 2026-09-25.
+  //
+  // Serve a due cose che il sintetizzatore non sa dire in modo affidabile:
+  // tenere ACCESO il pulsante Pausa mentre l'audio parla, e sapere COSA
+  // risuonare quando si riprende.
+  //
+  // ⚠️ E NON SI USA `staParlando()` AL SUO POSTO, per un motivo di ordine:
+  // `toggleSpeak` chiama `onStart` **prima** di `synth.speak()` (lo dice il
+  // suo commento, ed e' voluto — un blocco della UI sull'`onstart` vero
+  // arriverebbe tardi). In quell'istante `speaking` e' ancora `false`: un
+  // pulsante deciso da li' nascerebbe spento proprio mentre l'audio parte.
+  var dgLineaInAscolto = null;
   // Per-line countdown bar state (Ripeti a Tempo/Continuo only) — a
   // single active timer at a time, same pattern as Speed Match's own
   // srTimeoutId, but pause-aware (dgPauseLineTimer/dgResumeLineTimer)
@@ -379,7 +393,7 @@
     var nextBtn = document.getElementById('dg-next-line-btn');
     if (nextBtn) nextBtn.disabled = !isCountingDown;
     var pauseBtn = document.getElementById('dg-pause-btn');
-    if (pauseBtn) pauseBtn.disabled = !isCountingDown && !dgPaused;
+    if (pauseBtn) pauseBtn.disabled = !isCountingDown && !dgPaused && dgLineaInAscolto === null;
   }
 
   function dgStartLineTimer(bubble, line) {
@@ -542,10 +556,25 @@
     toggleSpeak(english, bubble, undefined, {
       onStart: function () {
         dgActiveBubble = bubble;
+        dgLineaInAscolto = line;
+        // Far partire una battuta ESCE dalla pausa, sempre. Senza questa
+        // riga, toccare una bolla a dialogo in pausa lascerebbe `dgPaused`
+        // acceso, e l'`onEnd` qui sotto si tirerebbe indietro: il dialogo si
+        // fermerebbe li' senza che niente lo dica.
+        if (dgPaused) dgTogglePause();
         dgLockAll(true, bubble);
         dgUpdateToolbarButtonState();
       },
       onEnd: function () {
+        // ⚠️ UNA FINE CHIESTA DALLA PAUSA NON E' UNA FINE — 2026-09-25.
+        //
+        // Mettere in pausa l'audio vuol dire interromperlo (`fermaLaVoce`),
+        // e un `cancel()` fa arrivare `onend` **come una fine normale**. Su
+        // questo profilo `onend` fa partire il countdown della battuta dopo:
+        // senza questa riga **la pausa farebbe avanzare il dialogo**, cioe'
+        // esattamente il contrario di quello che chiede.
+        if (dgPaused) return;
+        dgLineaInAscolto = null;
         dgMarkHeard(line.id);
         if (dgProfile.countdown) {
           dgStartLineTimer(bubble, line);
@@ -586,18 +615,60 @@
   // unreliable and used to hang the whole dialogue. This early return is
   // belt-and-braces for that same window, same shape as
   // dgSkipToNextLine's own guard.
+  // ⚠️ LA PAUSA FERMA ANCHE LA VOCE, DAL 2026-09-25 — E NON CON
+  // `synth.pause()`.
+  //
+  // Fino a ieri il pulsante era SPENTO mentre l'audio parlava, e il motivo
+  // era giusto: *«"Pausa" pausing mid-AUDIO used to hang the whole dialogue
+  // (synth.pause() is unreliable mid-utterance)»* — Job 2, 3° collaudo. Quel
+  // `disabled` non era una dimenticanza: era la cura di un difetto trovato.
+  //
+  // ⚠️ MA LA CURA COSTAVA UNA COSA ALLO STUDENTE: durante la battuta non
+  // poteva fermare niente. Doveva aspettare la fine dell'audio per avere il
+  // pulsante.
+  //
+  // **La strada presa non usa `synth.pause()` — non lo tocca proprio.** Alla
+  // pausa la battuta si INTERROMPE (`fermaLaVoce`, cioe' `cancel()`, che dal
+  // passo F.2b si comporta come un motore vero); alla ripresa **si risuona
+  // da capo**. Il motore non viene mai messo nello stato inaffidabile, e per
+  // un esercizio di ascolto risentire la battuta dall'inizio non e' un costo:
+  // e' un ripasso.
+  //
+  // *`pausaLaVoce` e `riprendiLaVoce` non le chiama piu' nessuno: restano
+  // registrate in `docs/decisioni-stato.md` come trovate e non tolte —
+  // cancellarle e' una decisione sullo strato audio, non sul Dialogo.*
   function dgTogglePause() {
-    if (!dgPaused && dgLineTimerTimeoutId === null) return;
+    var audioInCorso = dgLineaInAscolto !== null;
+    if (!dgPaused && dgLineTimerTimeoutId === null && !audioInCorso) return;
     dgPaused = !dgPaused;
     var btn = document.getElementById('dg-pause-btn');
     if (btn) btn.textContent = uiText(dgPaused ? 'dialogoShared.resumeLabel' : 'dialogoShared.pauseLabel');
     if (dgPaused) {
-      pausaLaVoce();
+      // ⚠️ `dgPaused` E' GIA' ACCESO QUANDO SI INTERROMPE, e l'ordine e' la
+      // correzione: `fermaLaVoce()` fa arrivare `onend`, e l'`onEnd` di
+      // `dgPlayLine` si tira indietro solo se trova la pausa gia' accesa.
+      if (audioInCorso) {
+        fermaLaVoce();
+        // ⚠️ E LA CLASSE `speaking` SI TOGLIE QUI, A MANO — misurato, non
+        // dedotto. `toggleSpeak` riconosce «questo pulsante sta gia'
+        // parlando» da quella classe, e la toglie nel suo `onend`; ma la
+        // fine qui l'abbiamo chiesta noi e non aspettiamo `onend` (il nostro
+        // si tira indietro apposta). **Senza questa riga, alla ripresa
+        // `toggleSpeak` legge «stavo parlando» e si ferma invece di
+        // risuonare**: il pulsante diceva "Pausa" e non usciva piu' niente.
+        // *Visto con una sonda: dopo la pausa la bolla aveva ancora
+        // `speaking`, e il giro di ripresa moriva li'.*
+        if (dgActiveBubble) dgActiveBubble.classList.remove('speaking');
+      }
       dgPauseLineTimer();
+    } else if (audioInCorso) {
+      var battuta = dgLineaInAscolto;
+      dgLineaInAscolto = null;
+      dgPlayLine(battuta);
     } else {
-      riprendiLaVoce();
       dgResumeLineTimer();
     }
+    dgUpdateToolbarButtonState();
   }
 
   // Dialogo Continuo only: the 3-2-1 before it starts playing on its

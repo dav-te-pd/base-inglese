@@ -157,6 +157,24 @@ function costruisci(opzioni) {
   // La guardia sul `_corrente` dentro `_finisci` e' la parte che conta: una
   // chiusura in ritardo non deve spegnere l'audio partito dopo di lei.
   //
+  // ⚠️⚠️ AVVERTENZA, E NON E' UNA SFUMATURA: QUI `pause()` FUNZIONA MEGLIO
+  // CHE NEL BROWSER VERO — 2026-09-25.
+  //
+  // Il finto qui sotto sospende e riprende in modo perfetto. **Un motore vero
+  // no:** `synth.pause()` a meta' frase e' inaffidabile, e sul Dialogo
+  // Continuo **bloccava l'intero dialogo** (Job 2, 3° collaudo — il fatto e'
+  // scritto in tre punti di `app/dialogo.js`).
+  //
+  // ⚠️ QUINDI UN TEST CHE SI APPOGGIA A `pause()`/`resume()` PROVA QUESTO
+  // FINTO, NON L'APP. Sarebbe verde qui e impiantato su Pages: la regola 19 al
+  // rovescio — non un finto che semplifica, **un finto che promette piu' della
+  // realta'**.
+  //
+  // *L'app infatti non lo usa piu': dal 2026-09-25 la pausa del Dialogo
+  // interrompe la battuta (`cancel()`) e la risuona da capo alla ripresa,
+  // senza toccare `synth.pause()`. `paused` resta qui perche' il nucleo sia
+  // completo, non perche' serva a qualcuno.*
+  //
   // ⚠️ E `paused` E' VERO DAL PASSO F.2c (2026-09-24). Non e' un'etichetta:
   // `pause()` ferma il timer e si ricorda quanto mancava, `resume()` riparte
   // da li'. *Un `paused` che cambia solo un booleano direbbe "sono in pausa"
