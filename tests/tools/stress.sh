@@ -76,8 +76,22 @@ for g in $(seq 1 "$GIRI"); do
   # arriva in fondo NON lascia righe FAIL, e la prima stesura ne raccoglieva
   # solo il messaggio (`name: 'TimeoutError'`) — che non dice DOVE. Il nome lo
   # scrive la suite: `FILE FAILED: <file>`.
-  grep -h '^FILE FAILED:' "$LOG" 2>/dev/null \
-    | sed "s/^FILE FAILED: */giro$g|MORTO O ROSSO: /" >> "$CENSIMENTO"
+  #
+  # ⚠️ **E SOLO PER I FILE CHE NON HANNO LASCIATO UNA RIGA ROSSA** — 2026-09-25.
+  # Finche' il grep qui sopra non vedeva quattro file su 78, i due secchi non
+  # si sovrapponevano mai. Adesso che li vede, un file che **cade** su
+  # un'asserzione **ed esce 1** finiva contato DUE volte: una col nome
+  # dell'asserzione, una col nome del file. *Il censimento diceva «cadute: 2»
+  # dove ce n'era una — un numero gonfio e' un numero sbagliato, e lo dice
+  # sottovoce.*
+  #
+  # Il secchio resta, ed e' necessario: un file che muore davvero (timeout,
+  # crash) NON lascia righe rosse, e senza questo non comparirebbe affatto.
+  grep -h '^FILE FAILED:' "$LOG" 2>/dev/null | sed 's/^FILE FAILED: *//' | while read -r f; do
+    if ! grep -qE '^[[:space:]]*FAIL\b' "./${f%.js}.result.txt" 2>/dev/null; then
+      echo "giro$g|MORTO O ROSSO: $f" >> "$CENSIMENTO"
+    fi
+  done
   echo "    cadute: $(grep -c "^giro$g|" "$CENSIMENTO" || echo 0)"
 done
 

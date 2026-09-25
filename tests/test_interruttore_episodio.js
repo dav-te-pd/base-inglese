@@ -269,6 +269,26 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
       // pulsante CON IL BADGE IN MAPPA, che e' il requisito vero (le due
       // schermate concordano) e non una copia dell'implementazione. Un badge
       // ricopiato nel test invecchierebbe al primo episodio nuovo.
+      // ⚠️ PRIMA SI ASPETTA CHE I TESTI DELL'INTERFACCIA SIANO ARRIVATI, e
+      // l'attesa e' su una cosa che nessuna di queste due asserzioni legge
+      // (regola 44). *Trovato dal censimento di 1.18 il 2026-09-25: sotto
+      // contesa questa riga cadeva con `pulsante: "Inizia"` contro
+      // `mappa: "Sulla porta dell'aereo"` — 1 giro su 5 a venti in parallelo.*
+      //
+      // ⚠️ E L'APP HA RAGIONE LEI, il difetto era qui. `scriviTestiHome`
+      // (app/mappa.js) scrive il pulsante **solo se c'e' qualcosa da
+      // scrivere**, e finche' `istruzioni-moduli.json` non arriva lascia
+      // apposta la parola del markup — "Inizia" — invece di un pulsante muto;
+      // poi riscrive quando i testi arrivano. *Questa riga leggeva nel mezzo.*
+      //
+      // L'approdo e' il SALUTO: `scriviTestiHome` scrive `#home-greeting` e
+      // `#go-episode` **nella stessa chiamata sincrona**, quindi il saluto
+      // cambiato garantisce che anche il pulsante sia stato riscritto. E non
+      // puo' essere vero per costruzione: il markup dice `Ciao!`, il modello
+      // dice `Ciao, {nome}!` — con un nome dentro, sempre diverso.
+      await page.waitForFunction(
+        () => (document.getElementById('home-greeting') || {}).textContent !== 'Ciao!',
+        null, { timeout: 15000 });
       const pulsanteCasa = (await page.textContent('#go-episode')).trim();
 
       const battute = await battuteDiMeetTheStory(page, secondo, 'InterruttoreB');
