@@ -1049,6 +1049,64 @@
       ': le modifiche si salvano, ma in mappa non le vedrai finché un episodio che usa questa sequenza non è quello aperto.</p>';
   }
 
+  // ⚠️ LA LISTA DEGLI EPISODI — 2026-09-26. Gemella di `renderModuleOrderRows`
+  // e non un secondo meccanismo: stesse frecce, stesso occhio, stesso
+  // `persistConfigSection`. *Due liste che si somigliano devono somigliarsi
+  // anche nel codice o divergono al primo ritocco (regola 11 e regola 30).*
+  //
+  // ⚠️ E MOSTRA TUTTI GLI EPISODI CHE ESISTONO, non solo quelli nominati
+  // dall'ordine, ed e' quello che rende impossibile scrivere un id sbagliato:
+  // **non c'e' nessun posto dove scriverlo.** Chi non e' nominato compare in
+  // coda — la stessa cosa che `resolveEpisodeOrder` fa da sola — e spostarlo
+  // su lo nomina.
+  //
+  // ⚠️ SPEGNERE NON E' TOGLIERE DALLA LISTA, ed e' il punto che ha corretto il
+  // piano di questo passo: togliere un id da `episodeSequences` lo manda **in
+  // coda**, non lo spegne (vedi `resolveEpisodeOrder`). Lo spegnimento e' una
+  // dichiarazione a parte, `CONFIG.episodiSpenti`.
+  function ordineEpisodiPerPannello() {
+    var nome = window.APP_CONFIG.episodeSequence;
+    var seq = (window.APP_CONFIG.episodeSequences && window.APP_CONFIG.episodeSequences[nome]) || [];
+    var esistenti = Object.keys(EPISODES);
+    var nominati = seq.filter(function (id) { return !!EPISODES[id]; });
+    var inCoda = esistenti.filter(function (id) { return nominati.indexOf(id) === -1; });
+    return nominati.concat(inCoda);
+  }
+
+  function episodioSpento(id) {
+    var spenti = window.APP_CONFIG.episodiSpenti;
+    return Array.isArray(spenti) && spenti.indexOf(id) !== -1;
+  }
+
+  function renderEpisodeOrderRows(list) {
+    var order = ordineEpisodiPerPannello();
+    list.innerHTML = order.map(function (id, i) {
+      var spento = episodioSpento(id);
+      var nome = (EPISODES[id] && EPISODES[id].nome) || id;
+      var onOffBtn = '<button type="button" class="btn btn-secondary btn-sm config-module-order-onoff" data-episode-onoff="' + id + '"' +
+        ' aria-pressed="' + (spento ? 'false' : 'true') + '" aria-label="' + (spento ? 'Attiva' : 'Disattiva') + ' questo episodio">' +
+        icon(spento ? 'eye-off' : 'eye') + '</button>';
+      return '<div class="config-module-order-row' + (spento ? ' is-off' : '') + '">' +
+        '<span class="config-module-order-label">' + nome + '</span>' +
+        onOffBtn +
+        '<div class="config-module-order-controls">' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-episode-move="up" data-episode-index="' + i + '"' + (i === 0 ? ' disabled' : '') + ' aria-label="Sposta su">' + icon('chevron-up') + '</button>' +
+        '<button type="button" class="btn btn-secondary btn-sm" data-episode-move="down" data-episode-index="' + i + '"' + (i === order.length - 1 ? ' disabled' : '') + ' aria-label="Sposta giù">' + icon('chevron-down') + '</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderEpisodeOrderField() {
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    wrap.innerHTML = configFieldDescriptionHtml(['episodeSequences']);
+    var list = document.createElement('div');
+    list.className = 'config-episode-order-list';
+    wrap.appendChild(list);
+    renderEpisodeOrderRows(list);
+    return wrap;
+  }
+
   function renderModuleOrderField() {
     var wrap = document.createElement('div');
     wrap.className = 'config-field';
@@ -1091,6 +1149,8 @@
       body.appendChild(renderEpisodeSwitchField());
     } else if (sectionKey === 'sequences') {
       body.appendChild(renderModuleOrderField());
+    } else if (sectionKey === 'episodeSequences') {
+      body.appendChild(renderEpisodeOrderField());
     } else if (Array.isArray(section)) {
       body.appendChild(renderConfigJsonField([sectionKey], section));
     } else if (section !== null && typeof section === 'object') {
@@ -1547,6 +1607,47 @@
       // capito" non è una cosa che lo studente possa dire.
     });
   }  configPanelBodyEl.addEventListener('click', function (e) {
+    // ⚠️ GLI EPISODI STANNO PRIMA DELLA GUARDIA DEI MODULI, E NON E'
+    // UN'ABITUDINE DI SCRITTURA: due righe piu' sotto c'e'
+    // `if (!order) return;`, che riguarda la sequenza dei MODULI. Un episodio
+    // con un `moduleOrder` proprio non ha una sequenza da riordinare, quindi
+    // `ordineInModifica()` torna `null` — e i pulsanti degli episodi non
+    // funzionerebbero, **senza nessun errore**: un click che non fa niente.
+    var epOnOff = e.target.closest('[data-episode-onoff]');
+    if (epOnOff) {
+      var epId = epOnOff.getAttribute('data-episode-onoff');
+      // `episodiSpenti` puo' non esistere ancora in un'edizione vecchia: si
+      // crea qui invece di pretenderla nel file (la stessa cortesia che
+      // `resolveEpisodeOrder` usa leggendola).
+      if (!Array.isArray(window.APP_CONFIG.episodiSpenti)) window.APP_CONFIG.episodiSpenti = [];
+      var spenti = window.APP_CONFIG.episodiSpenti;
+      var dove = spenti.indexOf(epId);
+      if (dove === -1) spenti.push(epId); else spenti.splice(dove, 1);
+      persistConfigSection('episodiSpenti');
+      renderEpisodeOrderRows(epOnOff.closest('.config-episode-order-list'));
+      return;
+    }
+
+    var epMove = e.target.closest('[data-episode-move]');
+    if (epMove) {
+      var attuale = ordineEpisodiPerPannello();
+      var da = Number(epMove.getAttribute('data-episode-index'));
+      var verso = epMove.getAttribute('data-episode-move') === 'up' ? da - 1 : da + 1;
+      if (verso < 0 || verso >= attuale.length) return;
+      var t = attuale[da]; attuale[da] = attuale[verso]; attuale[verso] = t;
+      // ⚠️ SI RISCRIVE LA LISTA INTERA, compresi quelli che prima stavano «in
+      // coda» perche' nessuno li nominava. *E' il solo modo per cui spostare
+      // in su un episodio non nominato lo nomini davvero: se si salvasse solo
+      // la parte nominata, quello spostamento si perderebbe al ricaricamento
+      // senza che niente lo dicesse.*
+      var nomeSeq = window.APP_CONFIG.episodeSequence;
+      if (!window.APP_CONFIG.episodeSequences) window.APP_CONFIG.episodeSequences = {};
+      window.APP_CONFIG.episodeSequences[nomeSeq] = attuale;
+      persistConfigSection('episodeSequences');
+      renderEpisodeOrderRows(epMove.closest('.config-episode-order-list'));
+      return;
+    }
+
     var order = ordineInModifica();
     if (!order) return;
     var list = null;

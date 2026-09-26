@@ -145,10 +145,23 @@ window.BI = window.BI || {};
   // `episodioCorrente` stava in `app/config.js` ed era l'ultimo valore
   // globale della famiglia che il passo 1.11 aveva portato nell'edizione.
   var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels',
-    'sequences', 'episodes', 'episodeSequences', 'episodeSequence', 'episodioCorrente'];
+    'sequences', 'episodes', 'episodeSequences', 'episodeSequence', 'episodiSpenti',
+    'episodioCorrente'];
 
   var strutturaPromise = null;
 
+  // ⚠️ QUESTO CICLO ASSEGNA ANCHE QUANDO IL FILE NON HA LA CHIAVE, e il fatto
+  // serve a chi aggiunge una voce all'elenco qui sopra: `CONFIG[k] = dati[k]`
+  // scrive `undefined` su una chiave assente, quindi **un valore di partenza
+  // scritto in `app/config.js` NON sopravvive all'arrivo della struttura.**
+  //
+  // E' la ragione per cui `episodiSpenti` sta nel file dell'edizione con `[]`
+  // dentro benche' sia una manopola del Pannello Admin e non contenuto: senza
+  // quella riga nel file, l'unico modo di dargli un valore di partenza
+  // sarebbe... nessuno. *Gli override del pannello tornano sopra due righe
+  // piu' giu', quindi lo spegnimento non si perde — ma lo stato di riposo
+  // «nessuno spento» va dichiarato da qualche parte, e l'unica che il ciclo
+  // non cancella e' il file.*
   function applicaStruttura(dati) {
     CHIAVI_STRUTTURA.forEach(function (k) { CONFIG[k] = dati[k]; });
     // Le due lingue sono le uniche che entrano DENTRO una sezione invece di

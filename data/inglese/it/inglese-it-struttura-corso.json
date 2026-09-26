@@ -216,6 +216,7 @@
     ]
   },
   "episodeSequence": "corso-inglese-a1",
+  "episodiSpenti": [],
   "episodioCorrente": "gate",
   "episodes": {
     "gate": {

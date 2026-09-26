@@ -267,7 +267,14 @@
 
   /* La vista di riordino delle sequenze (see renderModuleOrderField) — one
      row per module id, up/down buttons instead of a raw JSON textarea. */
-  .config-module-order-list {
+  /* ⚠️ E LA LISTA DEGLI EPISODI USA LE STESSE REGOLE, dal 2026-09-26: il
+     selettore e' condiviso e non duplicato. *Due liste che nel codice sono
+     gemelle (renderEpisodeOrderRows e renderModuleOrderRows) devono essere
+     gemelle anche qui, o divergono al primo ritocco — regola 11.* Le RIGHE
+     infatti portano già la stessa classe `config-module-order-row`: qui si
+     aggiunge solo il contenitore. */
+  .config-module-order-list,
+  .config-episode-order-list {
     display: flex;
     flex-direction: column;
     gap: 6px;

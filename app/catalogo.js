@@ -384,7 +384,42 @@
       errore = (errore ? errore + ' ' : '') + 'Questi episodi esistono ma la sequenza "' + nome +
         '" non li nomina, quindi finiscono in coda: ' + fuoriSequenza.join(', ') + '.';
     }
-    return { order: validi.concat(fuoriSequenza), errore: errore };
+    var tutti = validi.concat(fuoriSequenza);
+
+    // ⚠️ GLI SPENTI ESCONO QUI, E «SPENTO» E' UNA DICHIARAZIONE — NON
+    // L'ASSENZA DALLA LISTA. Passo 2026-09-26.
+    //
+    // *La distinzione non e' formale, e il codice qui sopra dice perche':
+    // «un episodio che ESISTE ma che la sequenza non nomina resta
+    // raggiungibile IN CODA, invece di sparire in silenzio».* Se l'assenza
+    // valesse anche come spegnimento, quelle due cose si confonderebbero — e
+    // **un episodio nuovo, che nessuno ha ancora nominato, nascerebbe spento**
+    // invece di comparire in fondo.
+    //
+    // Quindi `episodiSpenti` e' una lista sua. E' una manopola del Pannello
+    // Admin, non contenuto dell'edizione: sta accanto all'ordine perche'
+    // risponde alla stessa domanda — *quali episodi vede lo studente, e in che
+    // ordine* — ma si tocca da un pulsante, non scrivendo un file.
+    //
+    // ⚠️ E UN ID SPENTO CHE NON ESISTE NON E' UN ERRORE: e' il caso normale
+    // di chi spegne un episodio e poi lo rinomina. *Un avviso li' direbbe
+    // «hai spento una cosa che non c'e'», che non e' un guasto e non ha una
+    // riparazione.*
+    var spenti = Array.isArray(CONFIG.episodiSpenti) ? CONFIG.episodiSpenti : [];
+    var accesi = tutti.filter(function (id) { return spenti.indexOf(id) === -1; });
+
+    // ⚠️ SPEGNERLI TUTTI NON LASCIA L'APP SENZA EPISODI IN SILENZIO: si dice,
+    // e si tiene l'ordine intero. *Una lista di episodi vuota e' la schermata
+    // che sembra rotta senza spiegare perche' — e la ragione sarebbe una
+    // manopola, non un dato mancante.*
+    if (!accesi.length && tutti.length) {
+      return { order: tutti, errore: (errore ? errore + ' ' : '') +
+        'Sono spenti TUTTI gli episodi (' + spenti.join(', ') + '): li si riaccende ' +
+        'dal Pannello Admin. Finche\' e\' cosi\', l\'app li mostra tutti come se ' +
+        'nessuno fosse spento.' };
+    }
+
+    return { order: accesi, errore: errore };
   }
 
   // L'ordine, gia' risolto, per chi deve solo elencarli. L'errore lo dice

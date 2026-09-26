@@ -224,6 +224,21 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `scriviTestiHome()` | Scrive il saluto e il pulsante della schermata iniziale leggendoli dal file dei testi, col nome dello studente e quello dell'episodio dentro. | — → niente | ⚠️ **Che il markup abbia già qualcosa di sensato da dire.** Non scrive se il testo è vuoto: i testi possono non essere ancora arrivati, e svuotare «Ciao!» e «Inizia» sarebbe peggio di lasciarli. |
 | `goHome()` | Porta alla schermata iniziale: scrive i testi, e **li riscrive quando arrivano** se lo studente è ancora lì. | — → niente | Che `views.home` dica se vale ancora la pena scrivere. *Senza quel controllo si scriverebbe su una schermata già lasciata — invisibile, ma è la forma da cui nascono i guasti di ordine.* |
 
+## `app/mappa.js` — il Pannello Admin, la lista degli EPISODI
+
+*Catalogati il 2026-09-26 col passo che li ha scritti (regola 46). Sono i
+**gemelli** dei pezzi del gruppo `sequences` qui sopra: stesse frecce, stesso
+occhio, stesso `persistConfigSection` — e restano due serie di funzioni perché
+lavorano su due livelli diversi (i passi di un episodio contro gli episodi di
+un corso, regola 30). **Chi tocca una guardi l'altra.***
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `ordineEpisodiPerPannello()` | L'ordine da mostrare nel pannello: prima quelli che la sequenza **nomina**, poi in coda tutti gli altri che esistono. | `()` → array di id | ⚠️ **Che mostri TUTTI gli episodi che esistono, non quelli nominati, ed è questo che rende impossibile scrivere un id sbagliato: non c'è nessun posto dove scriverlo.** ⚠️ **E che NON sia `resolveEpisodeOrder()`, benché gli somigli:** quella toglie gli spenti, questa **no** — nel pannello uno spento deve restare visibile, è lì che si riaccende. *Due funzioni e non una perché rispondono a due domande: «cosa vede lo studente» e «cosa posso manovrare».* |
+| `episodioSpento(id)` | Dice se un episodio è nella dichiarazione degli spenti. | `id` → booleano | Che `CONFIG.episodiSpenti` possa **non esistere** (un'edizione scritta prima del 2026-09-26): l'assenza vale «nessuno spento», non un errore. |
+| `renderEpisodeOrderRows(list)` | Riscrive le righe dentro il contenitore che le ospita: etichetta, occhio, frecce. | `list` (il nodo `.config-episode-order-list`) → niente, scrive `innerHTML` | ⚠️ **Che le righe portino la STESSA classe `config-module-order-row` dei moduli** — il CSS è condiviso e non duplicato (regola 11), e due liste gemelle che divergono nel foglio di stile divergono al primo ritocco. **L'etichetta è il `nome` dell'episodio, mai il suo id:** l'id è tecnico, e nel pannello si riordina un corso. **L'occhio dichiara `aria-pressed`**, perché «spento» non può vivere solo nell'opacità. |
+| `renderEpisodeOrderField()` | Il campo intero del gruppo `episodeSequences`: la descrizione del parametro, poi la lista. | `()` → il nodo del campo | ⚠️ **Che non ci sia nessun menu di scelta, al contrario del gemello dei moduli** (`renderSequencePickerHtml`): di sequenze di episodi ne esiste **una per edizione**, e un menu di un elemento è rumore. *Il giorno in cui si cambia edizione dal pannello, quella è un'altra manopola e ha il suo disegno.* |
+
 ## `app/mappa.js` — il Pannello Admin, il disegno
 
 *Catalogati il 2026-09-24 facendo il primo passo di `1.18`: sono i pezzi che
