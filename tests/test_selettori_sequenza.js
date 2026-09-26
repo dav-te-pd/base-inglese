@@ -42,6 +42,22 @@
 // si riempie a mano nel file dell'edizione. Verifica che sappia sceglierle e
 // modificarle.
 
+// ⚠️ I SELETTORI DELLE RIGHE DI RIORDINO SONO AMBITI DAL LORO CONTENITORE, dal
+// 2026-09-26, e non e' uno stile di scrittura: dal passo della lista degli
+// EPISODI la classe `.config-module-order-row` la portano DUE liste — quella
+// dei moduli e quella degli episodi — perche' il CSS e' condiviso e non
+// duplicato (regola 11). Una `querySelectorAll('.config-module-order-row')`
+// nuda conta quindi le righe di tutte e due: **questo file e'
+// andato rosso con «24 righe» dove i moduli sono 22.**
+//
+// *Il test non era sbagliato: era giusto finche' quella classe voleva dire una
+// cosa sola. E' la forma del commento che invecchia perche' cambia il mondo
+// intorno, non il codice che descrive — qui applicata a un SELETTORE.*
+//
+// Si scrive `.config-module-order-list .config-module-order-row`: il
+// contenitore dice di quale delle due liste si parla, e lo dira' anche alla
+// terza.
+
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, strutturaCorso } = require('./test-env');
 
@@ -197,7 +213,7 @@ async function run() {
     const partenza = await page.evaluate(() => {
       const sel = document.querySelector('[data-sequence-pick]');
       return sel ? { scelta: sel.value, opzioni: Array.from(sel.options).map(o => o.value),
-                     righe: document.querySelectorAll('.config-module-order-row').length } : null;
+                     righe: document.querySelectorAll('.config-module-order-list .config-module-order-row').length } : null;
     });
     log('[C] Il menu «quale sequenza sto modificando» c\'è', partenza !== null, 'nessun [data-sequence-pick]');
     log('[C] Parte dalla sequenza dell\'episodio aperto',
@@ -210,7 +226,7 @@ async function run() {
     await page.selectOption('[data-sequence-pick]', altra);
     const dopo = await page.evaluate(() => ({
       scelta: document.querySelector('[data-sequence-pick]').value,
-      righe: document.querySelectorAll('.config-module-order-row').length,
+      righe: document.querySelectorAll('.config-module-order-list .config-module-order-row').length,
       avviso: !!document.querySelector('.config-field-hint')
     }));
     log('[C] Scegliendone un\'altra cambiano le righe',
@@ -236,7 +252,7 @@ async function run() {
 
     const altra = nomiNelFile.find(n => n !== 'narrativo-standard');
     await page.selectOption('[data-sequence-pick]', altra);
-    await page.click('.config-module-order-row:nth-child(2) [data-order-move="up"]');
+    await page.click('.config-module-order-list .config-module-order-row:nth-child(2) [data-order-move="up"]');
 
     const esito = await page.evaluate(function (d) {
       const ov = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');

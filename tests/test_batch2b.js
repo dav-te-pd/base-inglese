@@ -1,3 +1,19 @@
+// ⚠️ I SELETTORI DELLE RIGHE DI RIORDINO SONO AMBITI DAL LORO CONTENITORE, dal
+// 2026-09-26, e non e' uno stile di scrittura: dal passo della lista degli
+// EPISODI la classe `.config-module-order-row` la portano DUE liste — quella
+// dei moduli e quella degli episodi — perche' il CSS e' condiviso e non
+// duplicato (regola 11). Una `querySelectorAll('.config-module-order-row')`
+// nuda conta quindi le righe di tutte e due: **questo file e'
+// andato rosso con «24 righe» dove i moduli sono 22.**
+//
+// *Il test non era sbagliato: era giusto finche' quella classe voleva dire una
+// cosa sola. E' la forma del commento che invecchia perche' cambia il mondo
+// intorno, non il codice che descrive — qui applicata a un SELETTORE.*
+//
+// Si scrive `.config-module-order-list .config-module-order-row`: il
+// contenitore dice di quale delle due liste si parla, e lo dira' anche alla
+// terza.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { spiaToni } = require('./mock-browser');
@@ -60,12 +76,12 @@ async function run() {
       var g = groups.find(function (el) { return el.querySelector('summary').textContent === 'sequences'; });
       if (g) g.open = true;
     });
-    const rowCount = await page.$$eval('.config-module-order-row', els => els.length);
+    const rowCount = await page.$$eval('.config-module-order-list .config-module-order-row', els => els.length);
     log('[1] Config panel shows one reorder row per module', rowCount === globalOrder.length);
-    const firstLabel = await page.$eval('.config-module-order-row:nth-child(1) .config-module-order-label', el => el.textContent);
+    const firstLabel = await page.$eval('.config-module-order-list .config-module-order-row:nth-child(1) .config-module-order-label', el => el.textContent);
     const nomePersonalizza = await page.evaluate(() => window.APP_CONFIG.moduleLabels.personalizzazione.name);
     log('[1] La prima riga porta l\'etichetta di Personalizza dichiarata in CONFIG (' + nomePersonalizza + ')', firstLabel === nomePersonalizza);
-    await page.click('.config-module-order-row:nth-child(1) [data-order-move="down"]');
+    await page.click('.config-module-order-list .config-module-order-row:nth-child(1) [data-order-move="down"]');
     // Niente attesa: il gestore del riordino riscrive APP_CONFIG e ridisegna le
     // righe in modo SINCRONO, quindi il valore e' gia' quello nuovo quando il
     // click torna. E l'approdo non potrebbe comunque essere APP_CONFIG, che e'
@@ -79,7 +95,7 @@ async function run() {
     // pulsante con la lettera cicla CONFIG.grades. Compare solo per i
     // moduli che leggono contenuto dall'episodio — Personalizza non ne ha.
     const gradeState = await page.evaluate(() => {
-      var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var rows = Array.from(document.querySelectorAll('.config-module-order-list .config-module-order-row'));
       var order = window.APP_CONFIG.sequences['narrativo-standard'];
       return rows.map(function (row, i) {
         var btn = row.querySelector('[data-order-grade]');
@@ -92,7 +108,7 @@ async function run() {
     log('[1] Ogni altra riga mostra il grado della sua coppia', withGrade.length === gradeState.length - 1 && withGrade.every(r => r.chip === r.grade));
 
     const cycled = await page.evaluate(() => {
-      var rows = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var rows = Array.from(document.querySelectorAll('.config-module-order-list .config-module-order-row'));
       var i = rows.findIndex(function (row) { return !!row.querySelector('[data-order-grade]'); });
       var before = window.APP_CONFIG.sequences['narrativo-standard'][i].grade;
       rows[i].querySelector('[data-order-grade]').click();
@@ -103,7 +119,7 @@ async function run() {
         before: before,
         after: after,
         expected: window.APP_CONFIG.grades[(window.APP_CONFIG.grades.indexOf(before) + 1) % window.APP_CONFIG.grades.length],
-        chip: document.querySelectorAll('.config-module-order-row')[i].querySelector('[data-order-grade]').textContent.trim(),
+        chip: document.querySelectorAll('.config-module-order-list .config-module-order-row')[i].querySelector('[data-order-grade]').textContent.trim(),
         stored: overrides.sequences['narrativo-standard'][i].grade
       };
     });
@@ -116,7 +132,7 @@ async function run() {
     // mappa, non restare grigio — l'obiettivo è vedere l'episodio come lo
     // vedrà lo studente.
     const spegni = await page.evaluate(() => {
-      var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var righe = Array.from(document.querySelectorAll('.config-module-order-list .config-module-order-row'));
       var order = window.APP_CONFIG.sequences['narrativo-standard'];
       var prima = order.length;
       righe[1].querySelector('[data-order-onoff]').click();
@@ -124,8 +140,8 @@ async function run() {
       return {
         prima: prima,
         off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off,
-        restaInLista: document.querySelectorAll('.config-module-order-row').length === prima,
-        rigaSegnata: document.querySelectorAll('.config-module-order-row.is-off').length === 1,
+        restaInLista: document.querySelectorAll('.config-module-order-list .config-module-order-row').length === prima,
+        rigaSegnata: document.querySelectorAll('.config-module-order-list .config-module-order-row.is-off').length === 1,
         salvato: !!overrides.sequences['narrativo-standard'][1].off
       };
     });
@@ -134,7 +150,7 @@ async function run() {
     log('[1] Lo stato spento finisce negli override in localStorage', spegni.salvato === true);
 
     const riacceso = await page.evaluate(() => {
-      var righe = Array.from(document.querySelectorAll('.config-module-order-row'));
+      var righe = Array.from(document.querySelectorAll('.config-module-order-list .config-module-order-row'));
       righe[1].querySelector('[data-order-onoff]').click();
       var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
       return { off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off, salvato: !!overrides.sequences['narrativo-standard'][1].off };
