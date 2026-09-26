@@ -336,10 +336,24 @@
   // Un percorso che non esiste lascia il testo com'era invece di svuotarlo:
   // una chiave sbagliata si vede come "non e' cambiato niente", non come un
   // pulsante senza scritta.
+  // ⚠️ E `data-testo-aria` PER IL NOME ACCESSIBILE, dal 2026-09-26 (passo 1.3).
+  //
+  // *Non e' una rifinitura: `#vc-record-btn` porta «Tocca per registrare» in
+  // `aria-label`, e la stessa frase sta nella didascalia sotto.* Spostando la
+  // didascalia e lasciando l'`aria-label` scritto nel markup, le due copie
+  // diventano due — **e quella che divergerebbe in silenzio e' proprio quella
+  // che nessuno vede guardando lo schermo.** La regola 8 non distingue fra
+  // testo visto e testo letto da uno screen reader: sono entrambi testo che
+  // lo studente riceve.
   function hydrateTesti(root) {
-    (root || document).querySelectorAll('[data-testo]').forEach(function (el) {
+    var dove = (root || document);
+    dove.querySelectorAll('[data-testo]').forEach(function (el) {
       var t = uiText(el.getAttribute('data-testo'));
       if (t) el.textContent = t;
+    });
+    dove.querySelectorAll('[data-testo-aria]').forEach(function (el) {
+      var t = uiText(el.getAttribute('data-testo-aria'));
+      if (t) el.setAttribute('aria-label', t);
     });
   }
 

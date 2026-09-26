@@ -40,17 +40,17 @@
      (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20260925c"></script>
-<script src="app/spazio.js?v=20260925c"></script>
-<script src="app/magazzino.js?v=20260925c"></script>
-<script src="app/identita.js?v=20260925c"></script>
-<script src="app/avvio.js?v=20260925c"></script>
-<script src="app/progressi.js?v=20260925c"></script>
-<script src="app/audio.js?v=20260925c"></script>
-<script src="app/suoni.js?v=20260925c"></script>
-<script src="app/quiz-engine.js?v=20260925c"></script>
-<script src="app/dati.js?v=20260925c"></script>
-<script src="app/catalogo.js?v=20260925c"></script>
+<script src="app/config.js?v=20260926a"></script>
+<script src="app/spazio.js?v=20260926a"></script>
+<script src="app/magazzino.js?v=20260926a"></script>
+<script src="app/identita.js?v=20260926a"></script>
+<script src="app/avvio.js?v=20260926a"></script>
+<script src="app/progressi.js?v=20260926a"></script>
+<script src="app/audio.js?v=20260926a"></script>
+<script src="app/suoni.js?v=20260926a"></script>
+<script src="app/quiz-engine.js?v=20260926a"></script>
+<script src="app/dati.js?v=20260926a"></script>
+<script src="app/catalogo.js?v=20260926a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -72,18 +72,18 @@
 
      La `?v=` è la stessa dei tag `<script>` e per la stessa ragione: il perché
      sta scritto per esteso sopra i primi. -->
-<link rel="stylesheet" href="stile/base.css?v=20260925c">
-<link rel="stylesheet" href="stile/componenti.css?v=20260925c">
-<link rel="stylesheet" href="stile/condivisi.css?v=20260925c">
-<link rel="stylesheet" href="stile/guscio.css?v=20260925c">
-<link rel="stylesheet" href="stile/schermate.css?v=20260925c">
-<link rel="stylesheet" href="stile/repeataloud.css?v=20260925c">
-<link rel="stylesheet" href="stile/storycards.css?v=20260925c">
-<link rel="stylesheet" href="stile/voice.css?v=20260925c">
-<link rel="stylesheet" href="stile/match.css?v=20260925c">
-<link rel="stylesheet" href="stile/dialogo.css?v=20260925c">
-<link rel="stylesheet" href="stile/speedmatch.css?v=20260925c">
-<link rel="stylesheet" href="stile/flashcard.css?v=20260925c">
+<link rel="stylesheet" href="stile/base.css?v=20260926a">
+<link rel="stylesheet" href="stile/componenti.css?v=20260926a">
+<link rel="stylesheet" href="stile/condivisi.css?v=20260926a">
+<link rel="stylesheet" href="stile/guscio.css?v=20260926a">
+<link rel="stylesheet" href="stile/schermate.css?v=20260926a">
+<link rel="stylesheet" href="stile/repeataloud.css?v=20260926a">
+<link rel="stylesheet" href="stile/storycards.css?v=20260926a">
+<link rel="stylesheet" href="stile/voice.css?v=20260926a">
+<link rel="stylesheet" href="stile/match.css?v=20260926a">
+<link rel="stylesheet" href="stile/dialogo.css?v=20260926a">
+<link rel="stylesheet" href="stile/speedmatch.css?v=20260926a">
+<link rel="stylesheet" href="stile/flashcard.css?v=20260926a">
 </head>
 <body>
   <div class="app">
@@ -211,7 +211,7 @@
           <div id="customize-warning-screen" class="module-screen" hidden>
             <div class="danger-panel">
               <span class="danger-panel-icon" data-icon="triangle-alert" data-icon-class="icon-lg"></span>
-              <h1 class="danger-panel-title" id="customize-warning-title">Attenzione</h1>
+              <h1 class="danger-panel-title" id="customize-warning-title" data-testo="personalizzazione.midEpisodeWarningTitle">Attenzione</h1>
               <div class="danger-panel-body" id="customize-warning-body"></div>
             </div>
             <label class="slot-field">
@@ -424,7 +424,7 @@
             <p class="choice-box-hint" id="story-cards-complete-hint" hidden></p>
 
             <div class="story-cards-complete-row">
-              <button type="button" class="btn btn-primary btn-block" id="story-cards-complete">Ho finito</button>
+              <button type="button" class="btn btn-primary btn-block" id="story-cards-complete" data-testo="condivisi.hoFinito">Ho finito</button>
               <!-- Solo durante un primo giro non ancora completato: salva le
                    dichiarazioni fatte finora senza completare il modulo.
                    Uscire da "← Mappa" invece non salva, come ovunque. -->
@@ -489,7 +489,7 @@
                  button, not about the phrase. -->
             <div class="vc-retry-row" id="vc-retry-row">
               <p class="vc-attempt-label" id="vc-attempt-label"></p>
-              <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" disabled>Riprova</button>
+              <button type="button" class="btn btn-secondary btn-sm" id="voice-coach-retry-btn" data-testo="voceShared.retryCheck" disabled>Riprova</button>
             </div>
 
             <div class="vc-cue panel" id="vc-cue"></div>
@@ -509,11 +509,11 @@
             <div class="listen-block vc-audio-row" id="vc-audio-controls"></div>
 
             <div class="vc-mic-area">
-              <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare">
+              <button type="button" class="record-toggle-btn" id="vc-record-btn" aria-label="Tocca per registrare" data-testo-aria="voceShared.recordStart">
                 <span id="vc-record-icon" data-icon="mic" data-icon-class="icon-lg"></span>
               </button>
               <div class="vc-record-timer" id="vc-record-timer" hidden>0s</div>
-              <p class="status-text" id="vc-record-caption">Tocca per registrare</p>
+              <p class="status-text" id="vc-record-caption" data-testo="voceShared.recordStart">Tocca per registrare</p>
               <!-- Shown when the silence timeout auto-stops a
                    recording with no voice detected — that recording is
                    discarded, never offered for Invia/Cancella. -->
@@ -968,7 +968,7 @@
     <button type="button" class="overlay-backdrop" id="help-overlay-backdrop" aria-label="Chiudi"></button>
     <div class="overlay-panel card">
       <div class="overlay-header">
-        <h2 id="help-overlay-title">Aiuto</h2>
+        <h2 id="help-overlay-title" data-testo="aiuto.titolo">Aiuto</h2>
         <button type="button" class="overlay-close" id="help-overlay-close" aria-label="Chiudi"><span data-icon="x"></span></button>
       </div>
       <div class="overlay-body" id="help-overlay-body"></div>
@@ -1100,19 +1100,19 @@
      *I due numeri che stavano qui — «nove strati», «tredici nodi» — erano
      diventati dieci e dodici senza che nessuno li toccasse. Il conto lo danno
      `grep -c 'src="app/' index.html` e `grep -c 'class="view"' index.html`.* -->
-<script src="app/orchestrazione.js?v=20260925c"></script>
-<script src="app/ui-condivisa.js?v=20260925c"></script>
-<script src="app/sessione.js?v=20260925c"></script>
-<script src="app/mappa.js?v=20260925c"></script>
-<script src="app/storycards.js?v=20260925c"></script>
-<script src="app/personalizza.js?v=20260925c"></script>
-<script src="app/repeataloud.js?v=20260925c"></script>
-<script src="app/flashcard.js?v=20260925c"></script>
-<script src="app/match.js?v=20260925c"></script>
-<script src="app/speedmatch.js?v=20260925c"></script>
-<script src="app/voice.js?v=20260925c"></script>
-<script src="app/dialogo.js?v=20260925c"></script>
-<script src="app/apertura.js?v=20260925c"></script>
+<script src="app/orchestrazione.js?v=20260926a"></script>
+<script src="app/ui-condivisa.js?v=20260926a"></script>
+<script src="app/sessione.js?v=20260926a"></script>
+<script src="app/mappa.js?v=20260926a"></script>
+<script src="app/storycards.js?v=20260926a"></script>
+<script src="app/personalizza.js?v=20260926a"></script>
+<script src="app/repeataloud.js?v=20260926a"></script>
+<script src="app/flashcard.js?v=20260926a"></script>
+<script src="app/match.js?v=20260926a"></script>
+<script src="app/speedmatch.js?v=20260926a"></script>
+<script src="app/voice.js?v=20260926a"></script>
+<script src="app/dialogo.js?v=20260926a"></script>
+<script src="app/apertura.js?v=20260926a"></script>
 
 <script>
 // ============================================================

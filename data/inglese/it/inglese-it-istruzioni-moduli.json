@@ -20,6 +20,7 @@
       "confirmButton": "Cancella i progressi e modifica",
       "cancelButton": "Annulla, torna alla mappa"
     },
+    "midEpisodeWarningTitle": "Attenzione",
     "requestBoxSaved": "✓ Richiesta salvata. Grazie!"
   },
   "meetTheStory": {
@@ -268,6 +269,7 @@
   },
   "aiuto": {
     "menuTitle": "Hai bisogno di aiuto?",
+    "titolo": "Aiuto",
     "optionInstructions": "Rivedi come funziona l'esercizio",
     "optionClarify": "Vorrei capire questo",
     "optionUrgent": "Sono veramente bloccato, Davide ho bisogno del tuo aiuto",
