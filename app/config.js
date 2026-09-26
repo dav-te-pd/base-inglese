@@ -53,6 +53,32 @@
       lingua: 'inglese',
       studente: 'it'
     },
+    // ---- LA SCHERMATA DI ATTESA: due tempi, e nessuno dei due e' estetico ----
+    //
+    // Chiesti da chi guida il progetto il 2026-09-26 guardando Pages: *«adesso
+    // si vede qualcosa che scompare all'istante, non va benissimo. O si legge,
+    // o meglio che non esca nulla»*. **E' esatto, e il difetto ha un nome: un
+    // lampo non si legge come «sto caricando», si legge come «qualcosa non
+    // funziona».**
+    //
+    //   `ritardoPrimaDiMostrarlaMs`  finche' non sono passati, la schermata
+    //                               NON compare. Se i dati arrivano prima,
+    //                               non si vede affatto — che e' il caso di
+    //                               Pages, ed e' il risultato giusto.
+    //   `minimoVisibileMs`          se invece e' comparsa, resta almeno
+    //                               questo tempo anche se i dati arrivano
+    //                               subito dopo. *Meglio due secondi di
+    //                               frase leggibile che un lampo.*
+    //
+    // ⚠️ I DUE NON SI SOMMANO E NON SONO LO STESSO NUMERO SCRITTO DUE VOLTE:
+    // il primo decide **se** parlare, il secondo **per quanto**. Con 1000 e
+    // 2000, un caricamento da 1200 ms produce: 1000 di niente, poi la frase
+    // dal millesimo 1000 al 3000. *Un caricamento da 900 ms non mostra
+    // niente.*
+    attesa: {
+      ritardoPrimaDiMostrarlaMs: 1000,
+      minimoVisibileMs: 2000
+    },
     // ---- speech recognition & synthesis ----
     speech: {
       // ⚠️ `recognitionLang` e `synthesisLang` NON sono qui, e non e' una
@@ -584,6 +610,8 @@
     // implementation detail, with a sensible range where one exists.
     // Purely descriptive — never read by anything except the panel. ----
     configFieldDescriptions: {
+      'attesa.ritardoPrimaDiMostrarlaMs': 'Quanto l\'app aspetta prima di mostrare la schermata di attesa. Se i dati arrivano prima di questo tempo, quella schermata non compare affatto — ed è il caso normale su una rete buona. Abbassarlo a zero la fa comparire sempre, anche per un lampo.',
+      'attesa.minimoVisibileMs': 'Per quanto tempo la schermata di attesa resta a schermo una volta comparsa, anche se i dati arrivano subito dopo. Serve perché una frase che lampeggia non si legge come «sto caricando» ma come «qualcosa non funziona».',
       'edizione.lingua': 'La lingua che si impara — la prima metà della coppia che dà il nome alla cartella dei dati e al prefisso dei file degli episodi. Cambiarla senza che quella cartella esista porta alla schermata d\'errore: non è un modo per tradurre l\'app, è il modo di puntarla a un\'altra edizione già scritta.',
       'edizione.studente': 'La lingua di chi studia — la seconda metà della coppia. Decide in che lingua lo studente legge spiegazioni, nomi dei gradi ed etichette. Vale la stessa avvertenza della voce sopra.',
       'episodioCorrente': 'Quale episodio apre l\'app. Il menu elenca gli episodi che esistono: sceglierne uno ricarica la pagina, perché mappa, progressi e contenuti si costruiscono all\'avvio. Serve a raggiungere un episodio per provarlo — la scelta dell\'episodio per lo studente sarà un\'altra cosa, con il suo disegno.',

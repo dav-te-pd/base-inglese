@@ -56,6 +56,27 @@ si prende, non adesso.**
 
 **Quello che resta aperto, raggruppato per QUANDO si sblocca — non per ordine:**
 
+## ⚠️ DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI — segnalati il 2026-09-26, DA FARE
+
+*Chiesto da chi guida il progetto: **«segnalo e verificalo poi dopo che ci
+metteremo mano»**. Misurato oggi, non corretto — sono file di contenuto
+(regola 33) e la correzione va fatta quando si toccano.*
+
+⚠️ **VA FATTA PRIMA SUL MODELLO, altrimenti il prossimo episodio la riporta
+indietro:** `nuovi/inglese-it-EPISODIO-VUOTO.md` è la fotocopia da cui nascono
+gli episodi nuovi.
+
+| Dove | Cosa dice di falso | Cosa è vero |
+|---|---|---|
+| `nuovi/inglese-it-EPISODIO-VUOTO.md:223` · `docs/inglese/it/inglese-it-aircraft-door.md:225` | «un valore salvato fuori elenco **non ripiega sul predefinito — ripiega sulla PRIMA RIGA**» | ripiega **sul predefinito**; la prima riga è solo l'ultima spiaggia — corretto il 2026-09-24 (passo 1.8-bis ④) |
+| `nuovi/inglese-it-EPISODIO-VUOTO.md:228` · `docs/inglese/it/inglese-it-aircraft-door.md:230` — sezione **8, «LE TABELLE INTERNE ALL'EPISODIO»** | «oggi è il caso delle età di `gate`» (`ageOptions.figlia`, tabelle dentro il file episodio) | le età sono **salite in `ages.anni`**, il magazzino condiviso, lo stesso 2026-09-24 |
+
+✅ **E LA FONTE DA CUI COPIARE C'È GIÀ, misurata:** `docs/inglese/it/inglese-it-gate.md`
+ha **entrambi** i paragrafi corretti — riga **265-267** («*ripiega proprio sul
+predefinito, e la prima riga è solo l'ultima spiaggia*») e riga **284** («*Il
+passo 1.8-bis ③ le ha portate nel magazzino condiviso (`ages.anni`)*»).
+*Quindi non è una riscrittura: è un travaso da un file che è già giusto.*
+
 ## Aspettano CONTENUTO (episodi nuovi da scrivere)
 
 ✅ **1.8-bis È CHIUSO: ④, ② e ③ sono fatti** (2026-09-24). *Le tre righe restano

@@ -424,6 +424,44 @@
 
   document.getElementById('map-back-home').addEventListener('click', goHome);
 
+  // Lo stato della schermata di attesa. Tre cose e non una, perche'
+  // rispondono a tre domande diverse: se il timer e' ancora in volo, se la
+  // schermata e' GIA' comparsa (e quando), e se l'app e' andata avanti.
+  var attesaTimer = null;
+  var attesaComparsaA = null;
+  var attesaGiaPassata = false;
+
+  // Fa la cosa che tocca fare, e la scelta e' UNA di tre — non un ramo in piu'
+  // per ogni caso:
+  //
+  //   il timer e' ancora in volo  -> lo si annulla e non si vede niente
+  //   e' comparsa da poco         -> si aspetta il resto di `minimoVisibileMs`
+  //   e' comparsa da un pezzo     -> si va avanti subito
+  //
+  // ⚠️ E `proseguiPure` NON e' un callback di comodo: e' quello che sposta il
+  // resto del boot DOPO l'attesa minima. Chiamare `accendi()` subito e poi
+  // «tenere la schermata sopra» vorrebbe dire disegnare la mappa mentre lo
+  // studente guarda una frase — cioe' due schermate vive insieme, che e'
+  // esattamente il tipo di stato che `showView` esiste per non avere.
+  function spegniAttesa(proseguiPure) {
+    attesaGiaPassata = true;
+    if (attesaTimer !== null) { clearTimeout(attesaTimer); attesaTimer = null; proseguiPure(); return; }
+    if (attesaComparsaA === null) { proseguiPure(); return; }
+    var restano = CONFIG.attesa.minimoVisibileMs - (Date.now() - attesaComparsaA);
+    if (restano <= 0) { proseguiPure(); return; }
+    setTimeout(proseguiPure, restano);
+  }
+
+  // La strada del guasto: si annulla e si va, SENZA l'attesa minima.
+  //
+  // ⚠️ E non e' una scorciatoia: un guasto si mostra subito (regola 35). *Far
+  // restare due secondi una frase che dice «sto preparando il corso» davanti a
+  // un caricamento gia' fallito sarebbe una bugia col cronometro.*
+  function annullaAttesa() {
+    attesaGiaPassata = true;
+    if (attesaTimer !== null) { clearTimeout(attesaTimer); attesaTimer = null; }
+  }
+
   function boot() {
     // ⚠️ LE ICONE PRIMA DI TUTTO: il markup statico porta dei segnaposto
     // `data-icon`, e finche' nessuno li riempie le schermate hanno dei buchi.
@@ -431,6 +469,30 @@
     // per posizione; adesso e' la prima riga di `boot()`, che e' dove "l'app
     // si accende" ha un nome.
     hydrateIcons(document);
+
+    // ⚠️ LA SCHERMATA DI ATTESA NON NASCE ACCESA: LA ACCENDE UN TIMER.
+    //
+    // Chiesto guardando Pages il 2026-09-26: *«adesso si vede qualcosa che
+    // scompare all'istante, non va benissimo. O si legge, o meglio che non
+    // esca nulla»*. **Un lampo non si legge come «sto caricando», si legge
+    // come «qualcosa non funziona»** — quindi per
+    // `CONFIG.attesa.ritardoPrimaDiMostrarlaMs` non si mostra niente, e se i
+    // dati arrivano prima non si vede AFFATTO. *E' il caso di Pages, ed e' il
+    // risultato giusto.*
+    //
+    // L'istante in cui e' comparsa si ricorda qui e non dentro `accendi()`:
+    // serve a `spegniAttesa` per sapere quanto le resta da stare a schermo, e
+    // un tempo calcolato dove la schermata NON e' comparsa sarebbe un tempo
+    // inventato.
+    attesaComparsaA = null;
+    attesaTimer = setTimeout(function () {
+      attesaTimer = null;
+      // Se l'app e' gia' andata avanti questa non deve riaccendere niente:
+      // `accendi()` mette la sua vista, e noi arriveremmo dopo.
+      if (attesaGiaPassata) return;
+      attesaComparsaA = Date.now();
+      showView('attesa');
+    }, CONFIG.attesa.ritardoPrimaDiMostrarlaMs);
 
     // ⚠️ LA PORTA `?config` STA QUI, PRIMA DEL FETCH, DAL 2026-09-21 — e il
     // perche' e' un caso vero, non una simmetria.
@@ -464,7 +526,10 @@
     // Il rifiuto NON si ingoia: va alla schermata d'errore (regola 35), con
     // il suo «riprova» che rifa' `boot()`. Una mappa vuota al posto di un
     // messaggio sarebbe il guasto muto invece di quello che si vede.
-    caricaStrutturaCorso().then(accendi).catch(function () {
+    caricaStrutturaCorso().then(function () {
+      spegniAttesa(accendi);
+    }).catch(function () {
+      annullaAttesa();
       showLoadError(function () { boot(); });
     });
   }
