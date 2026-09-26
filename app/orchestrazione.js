@@ -59,6 +59,11 @@
     // La lista degli EPISODI sta prima della mappa dei MODULI, come nel
     // giro dello studente: casa -> episodi -> mappa -> modulo (passo
     // 1.13-bis, 2026-09-22).
+    // ⚠️ `attesa` STA IN QUESTO ELENCO PERCHE' ALTRIMENTI NON SI SPEGNE MAI:
+    // `showView` non nomina nessuna vista, gira su queste chiavi. *Una vista
+    // che nasce accesa nel markup e non e' qui resterebbe sopra tutte le
+    // altre per sempre* — ed e' l'unica vista dell'app che nasce accesa.
+    attesa: document.getElementById('view-attesa'),
     episodes: document.getElementById('view-episodes'),
     map: document.getElementById('view-map'),
     repeatAloud: document.getElementById('view-repeat-aloud'),

@@ -120,7 +120,7 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 | | Cosa |
 |---|---|
 | **1.12** | ⚠️ **la catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e **va fatto prima di Supabase** |
-| **la schermata di attesa** | oggi `struttura-corso.json` arriva in millisecondi e non si vede; **col server su una rete lenta resterebbe una pagina vuota senza spiegazione** |
+| ~~**la schermata di attesa**~~ | ✅ **FATTA il 2026-09-26.** Una vista che nasce `is-active` nel markup, con la frase anche lì (regola 35), spenta da `showView` dentro `accendi()` e **mai riaccesa**. Nasce col suo test, falsificato sui **due guasti opposti**. *Dichiarato: su Pages non si vede — è l'assicurazione per il giorno in cui i dati arriveranno da una rete vera.* |
 
 ## Un GIRO che si ripete — non un passo
 
@@ -337,7 +337,7 @@ momento.
 |---|---|
 | ~~①~~ | ✅ **CHIUSA il 2026-09-20.** L'override **si fonde** invece di sostituire: le chiavi del foglietto vincono una per una, quelle nuove del file restano. `persistConfigSection` continua a salvare l'oggetto intero, e adesso va bene così |
 | ~~②~~ | ✅ **CHIUSA il 2026-09-20.** È un **menu** con i nomi che esistono, e **ricarica**. Un nome che non esiste resta nell'elenco dichiarandosi, invece di far cambiare la sequenza in silenzio al primo salvataggio |
-| ③ | **Il Pannello Admin non sa creare né cancellare una sequenza.** Riordina, cambia grado, accende e spegne: il magazzino si riempie solo a mano nel file |
+| ③ | ❌ **«CREARE/CANCELLARE UNA SEQUENZA DAL PANNELLO»: CHIUSA SENZA FARLA, il 2026-09-26, e la decisione è di chi guida il progetto:** *«penso che creare una sequenza dal pannello non servirà mai»*. ✅ **E al suo posto ne nasce un'altra, chiesta nello stesso momento: GESTIRE GLI EPISODI DAL PANNELLO — spostare prima/dopo, spegnere e riaccendere**, *«come adesso è utile fare la stessa cosa con i moduli»*. ⚠️ **Non è il gemello di quello che il pannello fa sui moduli, e la misura lo dice:** un passo di sequenza è `{"module": "…"}` e **non ha nessun campo «spento»** — il pannello riordina e spegne **agendo su `moduleOrder`**, cioè togliendo o rimettendo una voce da una LISTA. **Per gli episodi quella lista non esiste:** stanno in un **oggetto** (`episodes: { gate, aircraft-door }`) e il loro ordine viene da `resolveEpisodeOrder`. ✅ **DECISO: si fa una lista, `episodeOrder`, come `moduleOrder`** — così spostare è riordinare e spegnere è togliere una voce, **un meccanismo solo per due cose invece di due campi nuovi**. *Da fare, non fatto.* |
 | ④ | ~~**`resolveEpisodeOrder` ha il nome della cosa sbagliata**~~ — ✅ **rinominata in `resolveModuleOrder` il 2026-09-21** (riga 1.15). *Resta qui perché era la prova che l'ambiguità della parola «sequenza» non stava solo nella chat: stava in un nome del codice* |
 
 ⚠️ **DUE SU QUATTRO CHIUSE IL 2026-09-20**, col passo dei selettori — cioè
