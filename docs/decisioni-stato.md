@@ -296,7 +296,7 @@ attendere abbastanza a lungo da poterla provare.
 |---|---|---|
 | **1.3** stringhe del markup | **CODICE** | 101 occorrenze in `index.html`, **48 distinte**; 64 occorrenze sono **15 stringhe ripetute** (`Spiegazione` ×19, `Help` ×9, `← Mappa` ×7). **Almeno 24 delle 48 NON si spostano**: 8 di onboarding/home (decisione presa — devono funzionare quando niente funziona), 8 del Pannello Admin (strumento, non studente), 8 nomi di moduli **sovrascritti a runtime** da `CONFIG.moduleLabels`, cioè segnaposto |
 | ~~**1.4**~~ catalogo dei pezzi | **DOCUMENTI** | 548 scoperti su 562 — e cresce da sé quando nascono file. ⚠️ **NON È PIÙ UN PASSO dal 2026-09-20: è la regola 46 «CHI TOCCA, CATALOGA»** — la riga resta qui perché è la misura che ha scritto la regola |
-| **1.8** tabelle di personalizzazione | **CODICE** | **27 punti in sei file**: `ui-condivisa.js` 10 · `personalizza.js` 7 · `apertura.js` 6 · `config.js` 2 · `catalogo.js` 1 · `mappa.js` 1. Più **sei file di test** che ci passano dentro |
+| ~~**1.8**~~ tabelle di personalizzazione | ✅ **CHIUSO** — `1.8 A` il 2026-09-20, `1.8-bis` (②③④) il 2026-09-24. ⚠️ *La superficie qui accanto è la stima del 2026-09-20, **prima** che il lavoro fosse fatto: resta scritta perché è il numero che ha deciso di non accorparlo con 1.3, non perché ci sia ancora da fare.* | **27 punti in sei file**: `ui-condivisa.js` 10 · `personalizza.js` 7 · `apertura.js` 6 · `config.js` 2 · `catalogo.js` 1 · `mappa.js` 1. Più **sei file di test** che ci passano dentro |
 | **1.10** giro dei buchi | documenti | **per definizione ULTIMO**: «si fa quando la lista smette di cambiare» |
 | **1.12** edizioni | contenuto di chi guida il progetto | `docs/francese/` non esiste ancora |
 

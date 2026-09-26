@@ -41,7 +41,17 @@ servono, raggruppati per domanda.
 |---|---|
 | `apri-modulo.js` | *com'è un modulo per uno studente arrivato fin lì?* Segna completati i passi precedenti, stampa titolo, elementi fuori dai bordi, segnaposto grezzi, errori JS. `--shot=nome.png` per lo screenshot |
 | `screenshot_blocco_ascolto.js` | il Blocco Ascolto in **ogni** modulo che lo mostra, in un giro solo |
-| `screenshot_themes.js` · `screenshot_batch3.js` · `screenshot_final.js` · `screenshot_final2.js` · `screenshot_warn_only.js` | istantanee di agosto, da adattare al bisogno del momento — **non** da lanciare così come sono |
+
+⚠️ **QUI C'ERANO ALTRE CINQUE ISTANTANEE, E SONO STATE CANCELLATE IL
+2026-09-26** — `screenshot_themes`, `screenshot_batch3`, `screenshot_final`,
+`screenshot_final2`, `screenshot_warn_only`. *Ferme dal 2026-09-09, e
+**l'unica cosa che le nominava era questa riga**: nessun test, nessuno script,
+nessun workflow. Un elenco che descrive sé stesso non è un riferimento.* La
+riga diceva «da adattare al bisogno del momento, **non** da lanciare così come
+sono» — cioè, letta per quello che dice, *cinque file che nessuno può eseguire
+e che nessuno ha adattato in diciassette giorni.* **Chi ne avrà bisogno parte
+da `apri-modulo.js`, che ha `--shot`.**
+
 
 ## ⑤ I baseline che si riscrivono guidando l'app
 
