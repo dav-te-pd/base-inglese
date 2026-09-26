@@ -26,5 +26,12 @@
 #
 # Lo scrive a mano chi cambia la decisione, e il commit che lo cambia porta
 # il motivo.
-boot onboarding
+# ⚠️ TRE DAL 2026-09-26, e la terza RAFFORZA la regola 21 invece di
+# indebolirla: `showView('attesa')` gira dentro `boot()`, **prima che qualunque
+# modulo sia mai stato aperto** — cioe' esattamente la ragione per cui i due
+# `onboarding` non hanno bisogno della pulizia. *Il conto sale a tre e la
+# famiglia resta una: «le chiamate diritte sono quelle che vengono prima
+# dell'identita'».*
 switch-user onboarding
+boot attesa
+boot onboarding
