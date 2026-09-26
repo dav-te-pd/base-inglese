@@ -75,6 +75,7 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **Gli id posizionali** | Gli id delle voci degli episodi sono diventati **posizionali** (`a-1`, `d-4`), e il modello lo ha insegnato. Un riordino del contenuto cambia gli id, e **gli id sono le chiavi della mastery di chi studia** | **prima che ci sia più di un profilo che conti**, cioè con Supabase | qui sotto, sezione omonima |
 | **Le cose piccole** | Otto famiglie, il dettaglio nello storico: deroghe dichiarate senza scadenza, pulizie rimandate, dati che nessuno può leggere, il volume di `sfxPlayTone` fuori da `APP_CONFIG`, la causa di `test_batch19` mai chiusa, il report per grado | **nessuna ha una condizione propria**: si prendono quando si passa vicino | `# LE COSE PICCOLE`, più sotto |
 
+| **I testi che lo studente legge** | ⚠️ **Censiti il 2026-09-26, e due file su sette non hanno una fonte markdown: `istruzioni-moduli.json` (208 stringhe) e `messaggi-feedback.json` (141).** Il primo ha la bozza in `nuovi/`; il secondo **non l'ha mai letto nessuno**, e sono i testi dell'ESITO — *una spiegazione lunga si salta, un messaggio di esito sbagliato si crede*. Piu' **quattro stringhe nel codice**: le tre domande dei Dialogue in `app/config.js` e il messaggio del browser in `index.html` | **il primo e' in corso**; il secondo appena chi guida il progetto lo vuole guardare | qui sotto, «il censimento di tutto cio' che lo studente legge» |
 ⚠️ **E QUELLO CHE NON È IN QUESTA TABELLA È CHIUSO.** *Un elenco che porta anche
 il chiuso non si legge per decidere: si legge per ricordare, ed è un altro
 mestiere e un altro file.*
@@ -126,6 +127,73 @@ alla prossima modifica a `config`** — *«mettilo insieme quando faremo un'altr
 modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspettare
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
+
+## ⚠️ IL CENSIMENTO DI TUTTO CIO' CHE LO STUDENTE LEGGE — 2026-09-26
+
+⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO DOPO AVER SCOPERTO UN FILE CHE
+NON SAPEVA DI AVERE:** *«questo file non mi ricordavo nemmeno l'esistenza. ci
+sono altri file che dovremmo secondo te rivedere insieme?»*. **Misurato, non
+ricordato.**
+
+### ① I file di dati: tre su sette non hanno una fonte markdown
+
+| File dati | Stringhe | Fonte markdown | Lo studente lo legge? |
+|---|---|---|---|
+| `inglese-it-gate.json` | 261 | ✅ `inglese-it-gate.md` | sì |
+| `inglese-it-tabelle-personalizzazione.json` | 229 | ✅ `...-tabelle-personalizzazione.md` | sì |
+| **`inglese-it-istruzioni-moduli.json`** | **208** | ❌ **NESSUNA** → la bozza e' `nuovi/inglese-it-istruzioni-moduli.md` | **sì, tutto** |
+| `inglese-it-aircraft-door.json` | 185 | ✅ `inglese-it-aircraft-door.md` | sì |
+| **`inglese-it-messaggi-feedback.json`** | **141** | ❌ **NESSUNA** | **sì, tutto** |
+| `inglese-it-struttura-corso.json` | 108 | ✅ `inglese-it-struttura-corso.md` | in parte (`gradeNames`, `moduleLabels`) |
+| `inglese-it-migrazioni-personalizzazione.json` | 62 | ❌ nessuna, **e va bene** | **no** |
+
+⚠️ **`messaggi-feedback.json` E' IL SECONDO CASO IDENTICO AL PRIMO, E NESSUNO
+L'HA MAI RIVISTO: 141 stringhe in dieci famiglie** — `percentageRule`,
+`voiceCoachMessages`, `speedRoundMessages`, `valvolaSicurezzaMessages`,
+`moduleCompleteMessages`, `studioCompleteMessages`,
+`storyCardsCompleteMessages`, `dialogoCompleteMessages`, `retryIntroMessages`,
+`episodeFinalMessages`. *Sono i testi che lo studente legge **nel momento
+dell'esito**, cioe' quelli che pesano di piu': una frase troppo lunga in una
+spiegazione la si salta, una frase sbagliata dopo un errore la si crede.*
+
+✅ **`migrazioni-personalizzazione.json` NON serve una fonte, e la ragione e' che
+non e' testo:** sono mappe da id salvato a id di oggi, e le sue chiavi `_LEGGIMI`
+/ `_COSA_E` portano dentro il file la spiegazione di se stesso. *E' il pattern
+giusto per un file che nessuno legge a schermo.*
+
+### ② Fuori dai file di dati: due punti dove il testo dello studente sta nel CODICE
+
+| Dove | Cosa | Perche' e' un caso |
+|---|---|---|
+| **`app/config.js:434, 446, 454`** | le **tre domande** del Box Doppia Scelta dei Dialogue: *«L'hai imparato?»*, *«Sai ripetere le frasi?»*, *«Ce l'hai fatta?»* (`dialogo.profili.*.finalBoxQuestion`) | ⚠️ **Testo che lo studente legge, dentro `APP_CONFIG` invece che in `istruzioni-moduli.json` (regola 8).** *Ci e' finito perche' e' una proprieta' del PROFILO, e il profilo e' configurazione — ma la domanda e' contenuto. E non e' coperto dall'eccezione della regola 35: non parla del meccanismo che lo porta.* |
+| **`index.html:619`** | *«Il tuo browser non supporta il riconoscimento vocale (Web Speech API).»* | ⚠️ **L'ultimo messaggio d'errore dello studente scritto nel markup.** *Non e' la regola 35: quel messaggio non parla di `istruzioni-moduli.json`, quindi il testo da la' arriverebbe benissimo.* |
+
+### ③ Le stringhe del markup: 29, e 22 sono decise di proposito
+
+Misurate con una lettura statica di `index.html` (tag con testo e senza
+`data-testo`). **Nessuna e' una dimenticanza nuova:** sono le tre famiglie gia'
+decise il 2026-09-26 col passo 1.3 — onboarding/home (**devono funzionare quando
+niente funziona**), Pannello Admin (**strumento, non studente**: 7 delle 29), e i
+**nomi dei moduli nelle intestazioni**, che `CONFIG.moduleLabels` **riscrive a
+runtime**.
+
+⚠️ **E il markup porta DUE nomi che a runtime vengono sostituiti da altri: dice
+«Voice Coach» dove `moduleLabels` dice «Voice Check», e «Ascolta e Ripeti» dove
+dice «Dialogue: Listen & Repeat».** *Lo studente vede quello giusto, quindi non
+e' un difetto: e' un nome vecchio che sopravvive in un posto che nessuno rilegge
+— la stessa forma del commento invecchiato, applicata al markup.*
+
+### Cosa vale la pena rivedere insieme, in ordine
+
+| | Cosa | Quante stringhe | Perche' adesso |
+|---|---|---|---|
+| **1** | le **16 spiegazioni** (`howItWorks`) | 16 titoli + 16 corpi | **gia' in corso**: una persona vera le ha provate e le ha dette troppo lunghe |
+| **2** | i **messaggi di esito** (`messaggi-feedback.json`) | **141** | e' il file gemello del primo per natura, e nessuno l'ha mai letto. *Si legge con lo stesso giro: estrarre, guardare, accorciare, mettere sotto fonte* |
+| **3** | i **16 promemoria** (`helpReminder`) | 16 + 16 | stanno nello stesso file delle spiegazioni, quindi costano zero in piu' se si guardano insieme |
+| **4** | le **tre domande** dei Dialogue e il messaggio del browser | 4 | due righe di codice, e chiudono l'ultimo testo dello studente fuori dai file di dati |
+
+⚠️ **E L'ORDINE NON E' PER DIMENSIONE: e' per QUANTO PESA UNA FRASE SBAGLIATA.**
+*Una spiegazione lunga si salta; un messaggio di esito sbagliato si crede.*
 
 ## ⚠️ DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI — segnalati il 2026-09-26, DA FARE
 
