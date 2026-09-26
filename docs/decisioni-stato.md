@@ -66,7 +66,7 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **1.20** (un terzo) | **La scelta dell'EDIZIONE dal Pannello Admin.** Le altre due parti — spostare gli episodi, spegnerli — **sono fatte il 2026-09-26** | **è la stessa cosa di 1.12**, e ci sta dentro | qui sotto |
 | **④ delle sequenze** | Una **rinomina** rimandata di proposito da chi guida il progetto: *«non rinominiamo più perché parliamo di cose differenti, le rinomine le rivedremo più avanti»* | **al giro delle rinomine**, quando ci sarà | qui sotto, «le quattro delle sequenze» |
 | **I due paragrafi scaduti** | Due frasi false nel **modello degli episodi** e in `inglese-it-aircraft-door.md` — il ripiego «sulla prima riga» (è sul predefinito) e le età di `gate` descritte come tabelle interne (sono in `ages.anni`) | **quando si mette mano a quei file** (regola 33), e **prima sul modello** o il prossimo episodio le riporta indietro. *La fonte da cui copiare è già giusta:* `inglese-it-gate.md` righe 265-267 e 284 | qui sotto |
-| **Il nome dell'app** | «Base Inglese» sta in **quattro punti** di `index.html`, tutti dentro la finestra in cui **nessun file scaricato esiste ancora** | **quando il nome è deciso.** *Chi guida il progetto, 2026-09-26: «il nome non lo so… lo stiamo definendo»* | qui sotto |
+| **«Base Inglese»** | ⚠️ **NON È UN NOME, SONO DUE**, e la misura li separa: `<title>` e la schermata di attesa sono il nome **dell'APP** (compaiono prima del file dell'edizione), i due badge di onboarding e home sono il nome del **CORSO** (compaiono dentro `accendi()`, cioè dopo). *Ne segue che vanno in due posti: `app/config.js` e `struttura-corso.json`.* **E il corso oggi non ha un campo suo:** `episodeSequence` vale `corso-inglese-a1`, che è l'id di un ordine, non un titolo | **insieme alla prossima modifica a `config`**, e il nome non è ancora deciso. *Deciso così da chi guida il progetto il 2026-09-26* | qui sotto |
 | **Il Pannello Admin vero** | `config` va chiuso a tutti quando nascerà quello vero | **con Supabase** | qui sotto |
 | **I file fermi** | Un **giro** che si ripete, non un passo: i file che nessun commit tocca da più di una settimana | **quando lo si vuole rifare** | qui sotto |
 
@@ -79,30 +79,53 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 il chiuso non si legge per decidere: si legge per ricordare, ed è un altro
 mestiere e un altro file.*
 
-## ⚠️ IL NOME DELL'APP — misurato il 2026-09-26, non fatto
+## ⚠️ «BASE INGLESE» — E NON È UNA COSA SOLA: SONO DUE — misurato il 2026-09-26, non fatto
 
-**Quattro punti in `index.html`**, e la misura dice cosa si può e cosa no:
+⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO, E HA CAMBIATO LA RISPOSTA:**
+*«forse dove adesso vedo base inglese, non è il nome dell'app ma forse il nome
+del corso. io "base inglese" lo vedo solo nella schermata che adesso è impostata
+come iniziale»*.
 
-| Riga | Dove | Cosa lo vede |
+**Aveva ragione, e la misura lo separa in due.** Il primo giro di questa scheda
+diceva «quattro punti, uno solo in `app/config.js`»: **è sbagliato**, perché
+tratta come un valore solo due cose che vivono in due mondi diversi.
+
+| Riga | Dove | Quando compare | Di chi è il nome |
+|---|---|---|---|
+| `6` | `<title>` | **prima di qualunque JavaScript** | **dell'APP** |
+| `162` | `.app-title` della schermata di **attesa** | mentre `struttura-corso.json` **non è arrivato** | **dell'APP** |
+| `173` | `.badge` dell'**onboarding** | **dopo** che la struttura è arrivata | **del CORSO** |
+| `208` | `.badge` della **home** | **dopo** che la struttura è arrivata | **del CORSO** |
+
+⚠️ **LA RIGA CHE SEPARA I DUE GRUPPI È UNA MISURA, NON UN'OPINIONE:**
+`showView('onboarding')` sta **dentro `accendi()`** (`app/mappa.js:587`), cioè
+nel `.then` di `caricaStrutturaCorso()`; e `goHome()` è la sua alternativa nello
+stesso `if`. **Quindi quelle due schermate non esistono mai prima del file
+dell'edizione** — e un nome che venga da lì arriva sempre in tempo.
+
+*Le altre due no, e per ragioni opposte: `<title>` lo legge il browser prima di
+eseguire una riga, e la schermata di attesa **esiste proprio per coprire quel
+fetch** — prendere il suo titolo dal file che sta aspettando è la regola 35 alla
+lettera.*
+
+**Ne segue la forma, e i due posti sono già quelli giusti per altre cose:**
+
+| | Dove va | Perché lì |
 |---|---|---|
-| `6` | `<title>` | la linguetta del browser, **prima di qualunque JavaScript** |
-| `162` | `.app-title` della **schermata di attesa** | lo studente mentre `struttura-corso.json` non è arrivato |
-| `173` | `.badge` dell'**onboarding** | lo studente prima di avere un'identità |
-| `208` | `.badge` della **home** | lo studente a ogni ritorno a casa |
+| **il nome dell'APP** | `app/config.js` | primo `<script>` bloccante, già in memoria quando parte tutto (regola 3); compare da solo nel Pannello Admin; `<title>` si scrive da lì con una riga |
+| **il nome del CORSO** | `data/{lingua}/{studente}/struttura-corso.json` | **è dell'edizione, esattamente come `gradeNames`** (regola 26): un corso di spagnolo vuole il suo nome, e condividerlo farebbe governare lo spagnolo da una scelta presa per l'inglese |
 
-⚠️ **TUTTI E QUATTRO STANNO PRIMA CHE UN FILE SCARICATO ESISTA, e questo decide
-dove il nome NON può vivere: `istruzioni-moduli.json` è escluso.** *È la
-famiglia della regola 35 nella sua forma più pura — la schermata che annuncia un
-caricamento non può prendere il proprio testo dal file che sta caricando.*
+⚠️ **E OGGI IL CORSO HA GIÀ UN NOME, che però non è quello che lo studente
+legge:** `episodeSequence` vale `"corso-inglese-a1"` — *l'id dell'ordine degli
+episodi, non un titolo.* Notato da chi guida il progetto nello stesso giro:
+*«uno è il nome dell'app e uno è il nome del corso?»*. **Sono due cose, e la
+seconda non ha ancora un campo suo.**
 
-✅ **Il posto giusto è `app/config.js`**, il primo `<script>` bloccante: è già in
-memoria quando parte tutto il resto (regola 3), compare da solo nel Pannello
-Admin, e `<title>` si scrive da lì con una riga. **Un punto solo, editabile,
-senza rompere la regola 35.**
-
-*Non fatto: il nome non è deciso, e cambiarlo in quattro punti oggi
-significherebbe farlo due volte.*
-
+**DECISO il 2026-09-26 da chi guida il progetto: si aspetta, e si fa INSIEME
+alla prossima modifica a `config`** — *«mettilo insieme quando faremo un'altra
+modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspettare
+non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
+punti oggi vuol dire cambiarlo due volte.
 
 ## ⚠️ DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI — segnalati il 2026-09-26, DA FARE
 
