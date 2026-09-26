@@ -326,12 +326,20 @@
   // Quindi quando una vista di modulo compare, i suoi testi ci sono gia': non
   // esiste l'istante in cui un pulsante e' vuoto.
   //
-  // ⚠️ E LA MAPPA NON E' COPERTA, ED E' UN LIMITE DICHIARATO, NON UN BUCO
-  // DIMENTICATO: `openEpisodeMap` e' SINCRONA e non aspetta niente. Le sue
-  // stringhe restano scritte nel markup finche' non si decide se la mappa
-  // debba aspettare i testi — che e' una decisione sul COMPORTAMENTO (avrebbe
-  // una schermata d'errore in piu'), non uno spostamento. Sta in
-  // docs/decisioni-stato.md come 1.3b.
+  // ⚠️ E LA MAPPA E' COPERTA ANCHE LEI, dal 2026-09-21 (passo 1.3b).
+  //
+  // *Qui c'era scritto il contrario — «la mappa NON e' coperta, ed e' un
+  // limite dichiarato: `openEpisodeMap` e' SINCRONA e non aspetta niente» —
+  // ed era vero fino al 20 settembre.* Adesso `openEpisodeMap` la sua guardia
+  // ce l'ha (`app/mappa.js`, `if (!BI.istruzioniInMemoria())`), e se il file
+  // non arriva va alla schermata d'errore come i moduli.
+  //
+  // ⚠️ **LA RIGA E' STATA CORRETTA IL 2026-09-26, CINQUE GIORNI DOPO ESSERE
+  // DIVENTATA FALSA — e nel frattempo era stata CREDUTA:** il 26 settembre
+  // `1.3b` e' stato scritto come «resta aperto» in `decisioni-stato.md`
+  // copiando proprio questo commento. *Un commento invecchiato non resta un
+  // commento invecchiato: diventa un'istruzione sbagliata, e poi lo stato di
+  // un passo.*
   //
   // Un percorso che non esiste lascia il testo com'era invece di svuotarlo:
   // una chiave sbagliata si vede come "non e' cambiato niente", non come un
