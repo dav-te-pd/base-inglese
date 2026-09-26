@@ -192,8 +192,23 @@ somigliano solo contando.***
 
 | Famiglia | Stringhe | Perché nessuno la legge | Cosa farne |
 |---|---|---|---|
-| **`speedRoundMessages`** | **15** | ⚠️ **DATO MORTO.** Speed Match esiste e funziona, ma `app/speedmatch.js:328` pesca da **`moduleCompleteMessages`**. *Il nome è quello di prima della rinomina `speedRound` → `speedMatch`: la famiglia porta il nome di un modulo che non si chiama più così, e il suo lettore **non l'ha mai avuta**.* ⚠️ **E NON L'HA TROVATO NESSUNA RINOMINA**, benché la ⑥ della regola 41 cerchi il segmento assemblato: il nome vive in una **chiave JSON**, che nessuna delle sei forme guarda | **da decidere:** cancellarla, **oppure** collegarla, se Speed Match deve avere messaggi SUOI invece di quelli generici. *Non è un refuso da correggere in silenzio: è una scelta di contenuto* |
+| **`speedRoundMessages`** | **15** | ⚠️ **NON HA MAI AVUTO UN LETTORE, verificato in tre modi.** ① `app/speedmatch.js:328` pesca da `moduleCompleteMessages`, **dal commit in cui quel sottotitolo è nato** (`d4dd507`). ② `git log -S'speedRoundMessages['` e `-S'.speedRoundMessages'` su tutta la storia: **zero letture**. ③ Le due sole apparizioni nel codice erano la **copia inline di sicurezza** in `index.html` (`f7298f9` → `97b7d02`), cioè un doppione dei dati. *Il nome è quello di prima della rinomina `speedRound` → `speedMatch`.* ⚠️ **E nessuna delle sei forme della regola 41 l'avrebbe trovata: il nome vive in una CHIAVE JSON.** | **da decidere:** cancellarla, oppure collegarla se Speed Match deve avere messaggi suoi |
 | **`episodeFinalMessages`** | **25** | **Aspetta un modulo che non esiste**: il **Test di verifica finale**, fra i «previsti ma non ancora costruiti» di `CLAUDE.md`. Il blocco che ne guarda i dati si chiama apposta **«Modulo Finale prep»** (`tests/test_batch11.js`) | **si tiene:** è contenuto scritto in anticipo di proposito, non un residuo. *Accorciarlo adesso è lavoro che nessuno può collaudare* |
+
+⚠️ **E QUESTA FAMIGLIA ERA GIÀ STATA TROVATA UNA VOLTA, E LA SCOPERTA È ANDATA
+VIA COL DOCUMENTO CHE LA PORTAVA.** Il censimento di `docs/validazione.md` la
+scriveva alla lettera — *«Mai letta. Unica occorrenza in `index.html`: la copia
+di sicurezza»* — e citava anche `episodeFinalMessages`. Quel documento il
+2026-09-24 è finito in **`docs/archivio/`**, giustamente, perché descriveva un
+`index.html` da 11.000 righe.
+
+⚠️ **L'archivio ha fatto il suo mestiere; è mancato il passo prima.** *Una
+fotografia non si aggiorna — è la regola di `docs/archivio/` e resta giusta — ma
+**prima di archiviare un documento se ne tirano fuori i fatti ancora veri**, che
+non invecchiano insieme alla descrizione che li conteneva.* **E il 2026-09-26 ho
+fatto lo stesso errore in piccolo:** un mio `grep` aveva stampato
+`docs/archivio/validazione.md:631` fra i risultati, e non l'ho aperto — *la
+riga che nominava il difetto era sullo schermo.*
 
 ⚠️ **E `tuttiVerdi.tip` VUOTA È VOLUTA, CON UN TEST CHE LA DIFENDE:**
 `tests/test_batch11.js` asserisce `finali.tuttiVerdi.tip.length === 0`. **Il
