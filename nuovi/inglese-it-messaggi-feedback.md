@@ -92,17 +92,21 @@ la fascia o il caso (`alto`/`medio`/`basso`, `riuscita`/`nonRiuscita`, ...) ·
 
 **Quante ne ha ciascuna famiglia:**
 
-| Famiglia | Messaggi | Gruppi |
-|---|---|---|
-| `voiceCoachMessages` | **15** | `alto`, `basso`, `medio` |
-| `speedRoundMessages` | **15** | `alto`, `basso`, `medio` |
-| `valvolaSicurezzaMessages` | **10** | `nonRiuscita.bodies`, `riuscita.bodies` |
-| `moduleCompleteMessages` | **15** | `alto`, `basso`, `medio` |
-| `studioCompleteMessages` | **5** | `default` |
-| `storyCardsCompleteMessages` | **15** | `alto`, `basso`, `medio` |
-| `dialogoCompleteMessages` | **10** | `nonAncora`, `siLoSo` |
-| `retryIntroMessages` | **20** | `first.bodies`, `first.titles`, `last.bodies`, `last.titles` |
-| `episodeFinalMessages` | **25** | `almenoUnRosso.compliments`, `almenoUnRosso.tip`, `gialloNoRosso.compliments`, `gialloNoRosso.tip`, `tuttiVerdi.compliments` |
+| Famiglia | Messaggi | Gruppi | Chi la legge nel codice |
+|---|---|---|---|
+| `voiceCoachMessages` | **15** | `alto`, `basso`, `medio` | `app/voice.js:1016` |
+| `speedRoundMessages` | **15** | `alto`, `basso`, `medio` | ⚠️ **NESSUNO** |
+| `valvolaSicurezzaMessages` | **10** | `nonRiuscita.bodies`, `riuscita.bodies` | `app/ui-condivisa.js:873` |
+| `moduleCompleteMessages` | **15** | `alto`, `basso`, `medio` | `app/flashcard.js:256`, `app/match.js:265`, `app/speedmatch.js:328`, `app/voice.js:617` |
+| `studioCompleteMessages` | **5** | `default` | `app/repeataloud.js:179`, `app/storycards.js:322` |
+| `storyCardsCompleteMessages` | **15** | `alto`, `basso`, `medio` | `app/storycards.js:320` |
+| `dialogoCompleteMessages` | **10** | `nonAncora`, `siLoSo` | `app/dialogo.js:606` |
+| `retryIntroMessages` | **20** | `first.bodies`, `first.titles`, `last.bodies`, `last.titles` | `app/ui-condivisa.js:125` |
+| `episodeFinalMessages` | **25** | `almenoUnRosso.compliments`, `almenoUnRosso.tip`, `gialloNoRosso.compliments`, `gialloNoRosso.tip`, `tuttiVerdi.compliments` | ⚠️ **NESSUNO** |
+
+⚠️ **LA COLONNA «CHI LA LEGGE» E' MISURATA DAL CODICE A OGNI GENERAZIONE, e
+non e' un ornamento: dice se accorciare un messaggio si vede.** *Due famiglie
+hanno zero lettori, e per due ragioni diverse — vedi la sezione 6.*
 
 | Famiglia | Gruppo | # | Testo |
 |---|---|---|---|
@@ -262,7 +266,31 @@ che non si vede.*
 |---|---|
 | `episodeFinalMessages` | `tuttiVerdi.tip` |
 
-⚠️ **E QUESTA VUOTA E' UNA DOMANDA APERTA, NON UN FATTO DECISO:** i suoi due
-fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno **cinque** consigli
-ciascuno. *Puo' essere voluto — «a chi ha tutto verde non c'e' niente da
-consigliare» — o uno spazio mai riempito. Chi guida il progetto decide.*
+⚠️ **QUESTA VUOTA E' VOLUTA, E C'E' UN TEST CHE LA DIFENDE.** Misurato il
+2026-09-26: `tests/test_batch11.js` asserisce `finali.tuttiVerdi.tip.length === 0`
+con la riga *«tuttiVerdi has NO tip (nessun consiglio)»*, e la riga accanto
+pretende che gli altri due il consiglio ce l'abbiano. **Il disegno e': un
+complimento SEMPRE, un consiglio SOLO quando c'e' qualcosa da rivedere.**
+
+⚠️ **QUINDI RIEMPIRLA FAREBBE DUE DANNI, e il primo e' il piu' piccolo:** la
+suite andrebbe **rossa**; e a chi ha fatto un episodio perfetto l'app direbbe
+*«ripassa i moduli gialli»*, che e' **falso**. *La lista vuota non e' un buco:
+e' il modo in cui «niente da consigliare» si scrive in una struttura che per
+tutti gli altri casi un consiglio ce l'ha.*
+
+---
+
+## 6 — LE DUE FAMIGLIE CHE NESSUNO LEGGE
+
+⚠️ **QUARANTA DELLE 141 STRINGHE DI QUESTO FILE OGGI NON LE VEDE NESSUNO,
+e le due ragioni sono opposte.** *Misurato il 2026-09-26 cercando ogni famiglia
+in `app/*.js` e scartando i commenti.*
+
+| Famiglia | Stringhe | Perche' nessuno la legge | Cosa farne |
+|---|---|---|---|
+| `speedRoundMessages` | **15** | ⚠️ **DATO MORTO.** Speed Match esiste e funziona, ma `app/speedmatch.js:328` pesca da **`moduleCompleteMessages`**. *Il nome e' quello di prima della rinomina `speedRound` -> `speedMatch`: la famiglia porta il nome di un modulo che non si chiama piu' cosi', e il suo lettore non l'ha mai avuta.* | **da decidere:** cancellarla, oppure ricollegarla se Speed Match deve avere messaggi SUOI invece di quelli generici |
+| `episodeFinalMessages` | **25** | **Aspetta un modulo che non esiste.** E' il **Test di verifica finale**, che `CLAUDE.md` elenca fra i *«previsti ma non ancora costruiti»* — e il blocco del test che ne guarda i dati si chiama apposta **«Modulo Finale prep»**. | **si tiene:** e' contenuto scritto in anticipo di proposito, non un residuo. *Accorciarla adesso e' lavoro che nessuno puo' collaudare* |
+
+*La differenza fra le due sta in una domanda sola: **c'e' stato un lettore che
+l'ha perso, o non c'e' ancora stato?** La prima e' un residuo, la seconda un
+anticipo — e si somigliano solo guardando il conteggio.*

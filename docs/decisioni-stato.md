@@ -183,6 +183,29 @@ dice «Dialogue: Listen & Repeat».** *Lo studente vede quello giusto, quindi no
 e' un difetto: e' un nome vecchio che sopravvive in un posto che nessuno rilegge
 — la stessa forma del commento invecchiato, applicata al markup.*
 
+### ⚠️ E DENTRO `messaggi-feedback.json`: QUARANTA STRINGHE SU 141 OGGI NON LE VEDE NESSUNO
+
+*Trovate il 2026-09-26 rispondendo a una domanda di chi guida il progetto — «non
+so cosa sia `tuttiVerdi.tip`» — cercando **chi legge** ogni famiglia in
+`app/*.js` invece di guardare i testi. **Le due ragioni sono opposte, e si
+somigliano solo contando.***
+
+| Famiglia | Stringhe | Perché nessuno la legge | Cosa farne |
+|---|---|---|---|
+| **`speedRoundMessages`** | **15** | ⚠️ **DATO MORTO.** Speed Match esiste e funziona, ma `app/speedmatch.js:328` pesca da **`moduleCompleteMessages`**. *Il nome è quello di prima della rinomina `speedRound` → `speedMatch`: la famiglia porta il nome di un modulo che non si chiama più così, e il suo lettore **non l'ha mai avuta**.* ⚠️ **E NON L'HA TROVATO NESSUNA RINOMINA**, benché la ⑥ della regola 41 cerchi il segmento assemblato: il nome vive in una **chiave JSON**, che nessuna delle sei forme guarda | **da decidere:** cancellarla, **oppure** collegarla, se Speed Match deve avere messaggi SUOI invece di quelli generici. *Non è un refuso da correggere in silenzio: è una scelta di contenuto* |
+| **`episodeFinalMessages`** | **25** | **Aspetta un modulo che non esiste**: il **Test di verifica finale**, fra i «previsti ma non ancora costruiti» di `CLAUDE.md`. Il blocco che ne guarda i dati si chiama apposta **«Modulo Finale prep»** (`tests/test_batch11.js`) | **si tiene:** è contenuto scritto in anticipo di proposito, non un residuo. *Accorciarlo adesso è lavoro che nessuno può collaudare* |
+
+⚠️ **E `tuttiVerdi.tip` VUOTA È VOLUTA, CON UN TEST CHE LA DIFENDE:**
+`tests/test_batch11.js` asserisce `finali.tuttiVerdi.tip.length === 0`. **Il
+disegno è: un complimento SEMPRE, un consiglio SOLO quando c'è qualcosa da
+rivedere.** *Riempirla farebbe due danni — la suite rossa, e a chi ha fatto un
+episodio perfetto l'app direbbe «ripassa i moduli gialli», che è falso.*
+
+⚠️ **QUINDI LA DECISIONE «teniamo cinque dappertutto» HA UN'ECCEZIONE, E VA
+DETTA PRIMA DI ESEGUIRLA** (regola 14-bis): vale per le nove liste che un
+messaggio ce l'hanno, **non** per `tuttiVerdi.tip`, dove il numero giusto è
+**zero** e non è una dimenticanza.
+
 ### Cosa vale la pena rivedere insieme, in ordine
 
 | | Cosa | Quante stringhe | Perche' adesso |

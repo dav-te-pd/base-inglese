@@ -31,6 +31,24 @@ def foglie(v, p=''):
     else:
         yield p, v
 
+# ⚠️ CHI LEGGE OGNI FAMIGLIA SI MISURA DAL CODICE A OGNI GENERAZIONE, NON SI
+# SCRIVE A MANO: un elenco di lettori scritto in un documento non cambia quando
+# un lettore sparisce — ed e' esattamente cosi' che `speedRoundMessages` e'
+# rimasto nel file per giorni dopo aver perso il suo (regola 38).
+import glob, re as _re
+def lettori(fam):
+    # ⚠️ SI CONTANO LE RIGHE, NON LE OCCORRENZE: `data.X && data.X[k]` nomina la
+    # famiglia due volte sulla STESSA riga, ed e' un lettore solo. *Senza il
+    # dedup la colonna diceva `app/voice.js:1016, app/voice.js:1016`, cioe'
+    # contava la forma della guardia invece dei lettori.*
+    fuori = []
+    for f in sorted(glob.glob('app/*.js')):
+        for n_riga, testo in enumerate(open(f).read().split('\n'), 1):
+            if fam not in testo: continue
+            if testo.lstrip().startswith('//') or testo.lstrip().startswith('*'): continue
+            fuori.append('`%s:%d`' % (f, n_riga))
+    return fuori
+
 tutte = [(fam, p, v) for fam in d for p, v in foglie(d[fam])]
 messaggi = [(f, p, v) for f, p, v in tutte if isinstance(v, str) and p.endswith(']')]
 titoli   = [(f, p, v) for f, p, v in tutte if isinstance(v, str) and not p.endswith(']') and f != 'percentageRule']
@@ -131,15 +149,21 @@ A('**#** -> la posizione nella lista.*')
 A('')
 A('**Quante ne ha ciascuna famiglia:**')
 A('')
-A('| Famiglia | Messaggi | Gruppi |')
-A('|---|---|---|')
+A('| Famiglia | Messaggi | Gruppi | Chi la legge nel codice |')
+A('|---|---|---|---|')
 per_fam = collections.Counter(f for f, _, _ in messaggi)
 gruppi = collections.defaultdict(set)
 for f, p, _ in messaggi:
     gruppi[f].add(p.split('[')[0])
 for f in d:
     if per_fam[f]:
-        A('| `%s` | **%d** | %s |' % (f, per_fam[f], ', '.join('`%s`' % g for g in sorted(gruppi[f]))))
+        L = lettori(f)
+        A('| `%s` | **%d** | %s | %s |' % (f, per_fam[f], ', '.join('`%s`' % g for g in sorted(gruppi[f])),
+           ', '.join(L) if L else '⚠️ **NESSUNO**'))
+A('')
+A('⚠️ **LA COLONNA «CHI LA LEGGE» E\' MISURATA DAL CODICE A OGNI GENERAZIONE, e')
+A('non e\' un ornamento: dice se accorciare un messaggio si vede.** *Due famiglie')
+A('hanno zero lettori, e per due ragioni diverse — vedi la sezione 6.*')
 A('')
 A('| Famiglia | Gruppo | # | Testo |')
 A('|---|---|---|---|')
@@ -174,10 +198,34 @@ A('|---|---|')
 for f, p, _ in vuote:
     A('| `%s` | `%s` |' % (f, p))
 A('')
-A('⚠️ **E QUESTA VUOTA E\' UNA DOMANDA APERTA, NON UN FATTO DECISO:** i suoi due')
-A('fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno **cinque** consigli')
-A('ciascuno. *Puo\' essere voluto — «a chi ha tutto verde non c\'e\' niente da')
-A('consigliare» — o uno spazio mai riempito. Chi guida il progetto decide.*')
+A('⚠️ **QUESTA VUOTA E\' VOLUTA, E C\'E\' UN TEST CHE LA DIFENDE.** Misurato il')
+A('2026-09-26: `tests/test_batch11.js` asserisce `finali.tuttiVerdi.tip.length === 0`')
+A('con la riga *«tuttiVerdi has NO tip (nessun consiglio)»*, e la riga accanto')
+A('pretende che gli altri due il consiglio ce l\'abbiano. **Il disegno e\': un')
+A('complimento SEMPRE, un consiglio SOLO quando c\'e\' qualcosa da rivedere.**')
+A('')
+A('⚠️ **QUINDI RIEMPIRLA FAREBBE DUE DANNI, e il primo e\' il piu\' piccolo:** la')
+A('suite andrebbe **rossa**; e a chi ha fatto un episodio perfetto l\'app direbbe')
+A('*«ripassa i moduli gialli»*, che e\' **falso**. *La lista vuota non e\' un buco:')
+A('e\' il modo in cui «niente da consigliare» si scrive in una struttura che per')
+A('tutti gli altri casi un consiglio ce l\'ha.*')
+A('')
+A('---')
+A('')
+A('## 6 — LE DUE FAMIGLIE CHE NESSUNO LEGGE')
+A('')
+A('⚠️ **QUARANTA DELLE %d STRINGHE DI QUESTO FILE OGGI NON LE VEDE NESSUNO,' % n_str)
+A('e le due ragioni sono opposte.** *Misurato il 2026-09-26 cercando ogni famiglia')
+A('in `app/*.js` e scartando i commenti.*')
+A('')
+A('| Famiglia | Stringhe | Perche\' nessuno la legge | Cosa farne |')
+A('|---|---|---|---|')
+A('| `speedRoundMessages` | **15** | ⚠️ **DATO MORTO.** Speed Match esiste e funziona, ma `app/speedmatch.js:328` pesca da **`moduleCompleteMessages`**. *Il nome e\' quello di prima della rinomina `speedRound` -> `speedMatch`: la famiglia porta il nome di un modulo che non si chiama piu\' cosi\', e il suo lettore non l\'ha mai avuta.* | **da decidere:** cancellarla, oppure ricollegarla se Speed Match deve avere messaggi SUOI invece di quelli generici |')
+A('| `episodeFinalMessages` | **25** | **Aspetta un modulo che non esiste.** E\' il **Test di verifica finale**, che `CLAUDE.md` elenca fra i *«previsti ma non ancora costruiti»* — e il blocco del test che ne guarda i dati si chiama apposta **«Modulo Finale prep»**. | **si tiene:** e\' contenuto scritto in anticipo di proposito, non un residuo. *Accorciarla adesso e\' lavoro che nessuno puo\' collaudare* |')
+A('')
+A('*La differenza fra le due sta in una domanda sola: **c\'e\' stato un lettore che')
+A('l\'ha perso, o non c\'e\' ancora stato?** La prima e\' un residuo, la seconda un')
+A('anticipo — e si somigliano solo guardando il conteggio.*')
 A('')
 open(OUT, 'w').write('\n'.join(O))
 print('scritto', OUT, '—', len(O), 'righe')
@@ -247,6 +295,9 @@ for fam, gruppo, n, testo in t3[inizio_msg + 1:]:
 for fam, perc, testo in righe_di('4 — I TITOLI')[1:]:
     metti(ric.setdefault(fam.strip('`'), {}), perc.strip('`'), scella(testo))
 
+# ⚠️ La sezione 6 NON si rimonta: parla di chi legge le famiglie, non porta
+# dati del JSON. Il verificatore la ignora di proposito, e se un giorno
+# portasse dati l'andata e ritorno lo direbbe subito.
 for fam, perc in righe_di('5 — LE LISTE VUOTE')[1:]:
     metti(ric.setdefault(fam.strip('`'), {}), perc.strip('`'), [])
 
