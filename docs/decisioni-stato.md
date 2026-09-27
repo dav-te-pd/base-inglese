@@ -128,6 +128,85 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
+## ⚠️ LE TRE COLONNE IN CODA: IL TEST TIENE, IL TRASCRITTORE SI FERMA — 2026-09-27
+
+*Domanda bloccante di chi guida il progetto prima di caricare i due episodi
+nuovi. **Misurato leggendo i due lettori, non uno.***
+
+| Lettore | Tollera tre colonne in coda? | Perché |
+|---|---|---|
+| **`tests/test_story_modules.js` `[Fonte]`** | ✅ **SÌ, resta verde** | Legge **per indice fisso** (`riga[0]`…`riga[4]`), e `tabellaSotto` **non confronta le celle con l'intestazione** né guarda l'ultima. Indici massimi usati: A/B `riga[4]`, C `riga[3]`, D `riga[4]`. *Una colonna in coda non viene letta da nessuno* |
+| **`tests/tools/trascrivi.js`** | ❌ **NO, e si ferma bene** | `colonne(righe, 5, 'grado A')` alza `Error: grado A: la riga 1 ha 8 colonne invece di 5` e **non scrive nessun JSON**. *Non è un difetto: `colonne()` esiste apposta perché una tabella di forma diversa non passi in silenzio* |
+
+> **Quindi la risposta è: il test non si rompe, il trascrittore sì — ed è il
+> trascrittore quello che serve per convertire.**
+
+**Cosa serve, ed è un numero per grado:** `trascrivi.js:265-268` passa a
+`colonne()` il numero atteso. Le tabelle nuove hanno **D 5→6** (`tipo`), **C
+4→7**, **A e B 5→8**. *Se le tre colonne restano solo nel markdown, cambiare
+quei quattro numeri è tutto il lavoro.*
+
+⚠️ **E L'UNICO POSTO DOVE UNA COLONNA IN CODA NON È GRATIS È UN ALTRO:**
+`trascrivi.js:187` fa `const quante = grezze[0].length` e alla 208
+`if (quante === 6) riga.paese = …` — **quella tabella RAMIFICA sul numero di
+colonne.** *È la tabella delle personalizzazioni, non quella dei gradi, quindi
+queste tre colonne non la toccano; ma è il posto da guardare il giorno che si
+aggiunge una colonna là.*
+
+### ⚠️ E «i numeri attesi non cambiano» è vero solo se le colonne NON entrano nel JSON
+
+*Misurato su `gate` (A=11, B=7, C=9, D=9 → 36 righe) e `aircraft-door` (32).*
+
+| Se le tre colonne entrano nel JSON | Stringhe nuove su `gate` |
+|---|---|
+| `tipo`, su tutti e quattro i gradi | **36** |
+| `esercizio` (A, B, C) **se resta `sì`/`no`** | **27** — *zero se diventa un booleano* |
+| `nonCon` (A, B, C) | **quante sono gli id elencati**: una lista vuota non porta stringhe |
+
+**`gate` passerebbe da 261 stringhe a 297 più le due voci sopra.** *Quindi la
+frase «i numeri attesi di ogni file non cambiano» va detta in modo più preciso:
+**è vera per i conteggi delle VOCI per grado** — 11/7/9/9 non si muovono — e
+falsa per il conteggio delle stringhe, se le colonne diventano campi.*
+
+### I nomi delle chiavi: la casa parla inglese, con UNA eccezione
+
+*Misurato sui campi delle voci di `gate`:*
+
+| Inglese | Italiano |
+|---|---|
+| `id`, `english`, `italian`, `pronunciationTip`, `grammarCategory`, `fromLine`, `speaker`, `whatYouLearn` — **8** | `ruolo` — **1** |
+
+⚠️ **Aggiungere tre campi italiani porterebbe il conto a 4 contro 8, cioè
+trasformerebbe una regola con un'eccezione in nessuna regola.** *Per questo il
+consiglio è l'inglese — non per gusto: perché `ruolo` oggi si riconosce come
+l'eccezione, e con altri tre non si riconoscerebbe più niente.*
+
+| Colonna | Cosa contiene (dal markdown) | Nome proposto |
+|---|---|---|
+| `tipo` | `standard` · `locale` · `slang`, su tutti e quattro i gradi | **`register`** — è il termine linguistico esatto per questa scala |
+| `esercizio` | `sì`/`no`: se il target entra negli esercizi (A, B, C) | **`inExercises`**, e ⚠️ **come BOOLEANO, non come la stringa `"sì"`** — *una chiave inglese con un valore italiano è peggio di entrambe le scelte* |
+| `non con` | lista di id con cui non deve mai comparire come distrattore | **`notWith`** |
+
+### L'accento del personaggio: una SECONDA mappa, e la misura lo decide
+
+⚠️ **`speakerLabels` NON può diventare `chiave → { etichetta, accento }`, e il
+punto è uno solo:** `app/ui-condivisa.js:984` fa
+
+```js
+return (episode.speakerLabels && episode.speakerLabels[speaker]) || speaker;
+```
+
+**e quel valore finisce diretto sopra la bolla.** *Annidandolo, sopra ogni bolla
+comparirebbe `[object Object]`* — e `tests/test_dialogo_extra.js:29` usa la
+stessa mappa come elenco delle etichette attese, quindi confronterebbe stringhe
+con oggetti.
+
+✅ **`speakerAccents`, mappa a parte: additiva, quattro lettori di
+`speakerLabels` intoccati** (`app/apertura.js:100`, `app/ui-condivisa.js:984`,
+`tests/test_dialogo_extra.js:29`, `trascrivi.js:236`). *E rispetta la ragione
+per cui l'accento è del personaggio e non della battuta: una mappa per
+personaggio è la stessa forma delle etichette.*
+
 ## ⚠️ LE MISURE DEL PACCHETTO 1 — 2026-09-27
 
 *Chieste da chi guida il progetto insieme al pacchetto di modifiche. **Misurate,
