@@ -19,6 +19,36 @@
 | ⚠️ **E IL FILE CAMBIA NOME: `inglese-it-istruzioni-moduli` → `it-istruzioni-moduli`** | *questi testi **non dipendono dalla lingua che si insegna: dipendono dalla lingua dello STUDENTE**. «Tocca il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`.* **Copiarli per edizione vorrebbe dire 349 stringhe duplicate ogni volta** — con quattro edizioni per italiani, **1047 copie che nessuno riallineerebbe.** *Lo stesso vale per `messaggi-feedback` → `it-messaggi-feedback`* |
 | **E le dieci frasi che nominavano la lingua sono diventate neutre** | *«Vedi una parola in **inglese** e 4 traduzioni in **italiano**» → **«Vedi una parola e quattro traduzioni»**.* **La direzione è già nel titolo del modulo** — «Match Practice en→it» — *quindi ripeterla nel corpo era ridondanza, non informazione. Zero segnaposti, zero codice, e un altro pezzo di testo in meno* |
 
+### ⚠️ DUE FATTI SALVATI DA `spiegazioni-moduli-estratte.md` PRIMA DI CANCELLARLO
+
+**Quel file era un appoggio, e Code ne aveva già ricavato `it-istruzioni-moduli`. Ma due cose vivevano
+solo lì.**
+
+**① Il markup esatto del riquadro, che la sezione 4 non riporta.** *La sezione 4 dà il **testo** dei due
+consigli, non l'involucro:*
+
+```html
+<div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>IL TESTO</div>
+```
+
+⚠️ **Va aggiunto alla sezione 4**, o chi ricompone il `body` non sa come si chiude il riquadro — *e
+l'etichetta visibile, «Un consiglio», non è scritta in nessun altro posto.*
+
+**② La misura di partenza, che è l'unico modo di dire quanto abbiamo accorciato.**
+
+| | Caratteri | Media per spiegazione |
+|---|---|---|
+| **Prima**, corpo + riquadro | **10.873** | 680 |
+| *di cui i dodici riquadri ricopiati* | *2.574* | · |
+| **Prima**, solo corpo | **8.299** | 519 |
+| ⭐ **Adesso**, solo corpo | **5.559** | **347** |
+
+**Un terzo in meno sul corpo, e il riquadro non si ricopia più.** *Contando anche quello, lo studente
+legge **la metà**: da 10.873 a 5.559 più due riquadri condivisi.*
+
+⚠️ **E il vero accorciamento arriva coi video**, non adesso: *quando il video fa vedere il microfono che
+diventa rosso, il testo non deve più descriverlo.* **Questi sedici testi si riaprono allora.**
+
 ### La regola che ha guidato il taglio
 
 > **La spiegazione dice cosa devi fare la prima volta. Il promemoria dice come farlo meglio o più
