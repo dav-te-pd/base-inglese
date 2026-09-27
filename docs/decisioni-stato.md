@@ -128,6 +128,61 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
+## ⚠️ QUATTRO MISURE — 2026-09-27, secondo giro
+
+**① Le voci dei gradi NON servono solo agli esercizi.** *Misurato sui due
+accessori (`episodeGrade`, `episodeGradeRequired`) e sui 22 passi con il loro
+grado.*
+
+| Grado | Chi lo mostra FUORI da Match / Speed Match / Flash Card |
+|---|---|
+| **A** | **Repeat Aloud** (passo 3) |
+| **B** | **Repeat Aloud** (8) · **Voice Practice** (12) |
+| **C** | **Voice Practice** (16) · **Voice Check** (22) |
+| **D** | **Meet the Story** (2) · **Why We Say It** (13) · i tre Dialogue (17-19) |
+
+> ⚠️ **Quindi «non scrivere la riga» NON funziona: toglierebbe la voce anche da
+> Repeat Aloud, che è il modulo il cui mestiere è ripeterla.** *`inExercises`
+> serve davvero, e i quattro numeri di `trascrivi.js` con lui.*
+
+✅ **`whatYouLearn` invece è letto da un solo punto** — `app/storycards.js:143`,
+Why We Say It — e **solo sul grado D**.
+
+**② `role` / `family`: passo PICCOLO — cinque punti in tutto.**
+
+| Punto | Cosa fa |
+|---|---|
+| `app/ui-condivisa.js:965` | **l'unico lettore dell'app**: `line.ruolo === 'famiglia' ? 'right' : 'left'` — da che lato sta la bolla |
+| `tests/tools/trascrivi.js:279` | scrive il campo |
+| `tests/test_story_modules.js:244` | confronta markdown e JSON |
+| `tests/test_story_modules.js:640` | cerca il primo `ruolo !== 'famiglia'` |
+| i due JSON | 9 + 9 valori `"famiglia"`, rigenerati dal markdown |
+
+*Un lettore solo nell'app, e il valore `'famiglia'` confrontato in due punti
+(uno di app, uno di test). **Niente migrazione dei progressi: `ruolo` non entra
+in nessuna chiave del magazzino.***
+
+**③ Sì, l'app sa qual è l'episodio precedente, e senza dati nuovi.**
+`BI.resolveEpisodeOrder().order` dà l'ordine, `BI.episodioCorrente()` dà quello
+aperto: il precedente è `order[order.indexOf(id) - 1]`, e per il primo è
+`undefined` — cioè «parti dai predefiniti». *Entrambi già esposti su `BI`.*
+✅ **E `episodeId` nella chiave resta: manca solo la copia all'apertura**, dentro
+`loadCustomValues` (`app/progressi.js:280`), che è il punto da cui il modulo
+Personalizza legge.
+
+**④ L'app parla con la VOCE DEL BROWSER, e file audio non ne esiste nessuno.**
+`app/audio.js:58` `var synth = window.speechSynthesis`, `:207`
+`new SpeechSynthesisUtterance(text)`. **Zero occorrenze di `new Audio(`, `.mp3`,
+`.ogg`, `.wav`, `<audio>` in tutto il repository.** Il pulsante 🔊 è il **Blocco
+Ascolto condiviso** (`BI.speakListenBlock`), usato da Flash Card, Match, Repeat
+Aloud e Story Cards: passa il testo **già montato coi segnaposto sostituiti**
+alla sintesi.
+
+> ⭐ **Ne segue la risposta alla preoccupazione: oggi un segnaposto costa ZERO.**
+> *La sintesi riceve una stringa, e non sa né gli importa quanti segnaposto
+> c'erano. Il prezzo nascerebbe **solo** con l'audio registrato — e allora una
+> battuta con due segnaposto vorrebbe un file per ogni combinazione.*
+
 ## ⚠️ LE TRE COLONNE IN CODA: IL TEST TIENE, IL TRASCRITTORE SI FERMA — 2026-09-27
 
 *Domanda bloccante di chi guida il progetto prima di caricare i due episodi
