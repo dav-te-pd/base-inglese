@@ -128,6 +128,113 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
+## ⚠️ LE MISURE DEL PACCHETTO 1 — 2026-09-27
+
+*Chieste da chi guida il progetto insieme al pacchetto di modifiche. **Misurate,
+non ricordate**, e due hanno cambiato la domanda che le aveva chieste.*
+
+### ① La verifica di Speed Match, fatta — e Pages NON è raggiungibile da qui
+
+⚠️ **Il passo ① del pacchetto era «la verifica su Pages PRIMA di tutto», ed era
+mio. NON HO POTUTO FARLO COME SCRITTO:** il proxy di uscita del container nega
+`dav-te-pd.github.io:443` (`connect_rejected`, exit 56 di `curl`). *È un limite
+dell'ambiente, non una dimenticanza, e vale per ogni verifica «su Pages» che
+qualcuno assegni a me: **posso guidare l'app, non posso guardare il sito
+pubblicato**.*
+
+✅ **Fatto nella forma più forte che l'ambiente consente, e il risultato è quello
+atteso:** `tests/test_batch7.js` guida Speed Match fino alla Schermata Finale e
+legge `#sr-summary-title-sub`. Il sottotitolo è stato
+**`«Non è andata benissimo, ma è solo un punto di partenza: ripassiamo
+insieme.»`**, che è `moduleCompleteMessages.basso[4]` — **non** una delle quindici
+di `speedRoundMessages`. *Confermato guidando il modulo vero, non leggendo il
+codice.*
+
+⚠️ **Il limite di questa prova, dichiarato:** gira sull'albero locale al commit
+di `main`, non sul sito. *Prova cosa fa il codice pubblicato, non che Pages stia
+servendo quel codice* — e quello lo può guardare solo chi apre il sito.
+
+### ② E il test che sembrava difendere quel collegamento NON lo difende
+
+⚠️ **`tests/test_batch7.js:66` è una misura che non misura, e l'ho scoperto
+cercando cosa il passo ③ avrebbe fatto diventare rosso:**
+
+```js
+log('[Job2] Rotating subtitle is non-empty and from moduleCompleteMessages',
+    !!subtitle && subtitle.length > 5);
+```
+
+**Il messaggio nomina la famiglia; l'asserzione controlla solo che ci siano più
+di cinque caratteri.** *Quindi cambiare `'moduleCompleteMessages'` →
+`'speedMatchMessages'` lascerebbe quella riga **VERDE**, e la suite direbbe che
+il sottotitolo viene da una famiglia che non legge più.* ⚠️ **Va corretta nello
+stesso commit del collegamento** (regola 32): l'asserzione deve confrontare il
+testo con le liste di QUELLA famiglia, lette dal file.
+
+⚠️ **E nel blocco subito sotto ce n'è una seconda della stessa forma:**
+`data.moduleCompleteMessages[Math.floor(Math.random() * data.moduleCompleteMessages.length)]`
+— `moduleCompleteMessages` è un **oggetto** (`{alto, medio, basso}`), quindi
+`.length` è `undefined` e l'indice è `NaN`: quella riga vale sempre `undefined`.
+*La sua asserzione è passata dichiarando «saw 1 distinct in 6 tries».*
+
+### ③ B1 e B2 — il mix e i due contatori: NON esistono, e le frasi sono ancora vere
+
+| Domanda | Misura | Comando |
+|---|---|---|
+| **B1** · il mix 40/30/20/10 | ❌ **zero occorrenze** in `app/`, `data/`, `index.html` | `grep -rniE "\bmix\b\|40.*30.*20.*10\|lacun" app/ data/ index.html` |
+| **B2** · contatore generale e a finestra mobile | ❌ **non esistono.** Gli unici «contatori» del codice sono altri tre: le carte di Flash Card (`fc-counter`), i tentativi di Voice (`vc-attempt-…`) e il contatore di parole di Voice Coach (`tokenize`) | `grep -rniE "finestraMobile\|windowSize\|rolling" app/*.js` |
+
+✅ **Quindi la frase di `APPLINGUE-regole` §3.2 è ancora vera alla lettera**, e la
+sua condizione è scaduta: *«non è un'emergenza con un solo episodio, lo diventa
+dal secondo»* — **gli episodi pubblicati sono due.**
+
+### ④ B4 — la mappatura modulo → categoria: **15 su 15 GIUSTE**
+
+*Dedotta da chi guida il progetto dal criterio della sezione 3, confermata
+leggendo i quindici descrittori di `app/catalogo.js:111-134`, campo `type`.*
+**Nessuna correzione: le tredici non confermate coincidono tutte.**
+
+| Categoria | Moduli | |
+|---|---|---|
+| `inizio` | `personalizzazione` | ✅ |
+| `studio` | `meetTheStory`, `repeatAloud`, `whyWeSayIt`, `matchEngIta`, `matchItaEng`, `flashcardAEngIta`, `flashcardAItaEng`, `voicePractice` | ✅ 8 su 8 |
+| `dialogo` | `dialogoAscoltaRipeti`, `dialogoRipetiATempo`, `dialogoContinuo` | ✅ |
+| `quiz` | `speedMatchEngIta`, `speedMatchItaEng`, `voiceCoach` | ✅ |
+
+### ⑤ B3 — il salvataggio della personalizzazione, e una frase del pacchetto che è FALSA
+
+**Come si salva oggi**, `app/progressi.js:263`:
+
+```js
+function customValuesKey(episodeId, userName) {
+  return prefissoMagazzino() + episodeId + ':custom:' + userName;
+}
+```
+
+e `prefissoMagazzino()` è `'baseinglese:' + edizione.lingua + '-' + edizione.studente + ':'`.
+
+> **L'ambito di oggi è: EDIZIONE · EPISODIO · STUDENTE.** Tre livelli, e
+> l'episodio è già dentro la chiave.
+
+⚠️ **NE SEGUE CHE UNA CELLA DEL PACCHETTO DICE UNA COSA FALSA.** La nuova
+spiegazione di `personalizzazione` dice *«valgono per tutto il livello»*; il
+testo di prima diceva *«per tutto l'episodio»*, **e quello era vero**. *Con
+`episodeId` nella chiave, due episodi dello stesso livello hanno già set
+separati: la frase nuova promette allo studente una cosa che il codice non fa.*
+
+✅ **E la buona notizia risponde alla domanda vera: la modifica più piccola è
+ZERO sul salvataggio.** L'ambito è già più fine di un livello. *Non manca un
+posto dove tenere un set diverso: manca **chi dichiara a quale set guardare** —
+ed è esattamente la distinzione posta nella domanda («un id dice qual è il set,
+non a quale set guardare»).*
+
+**La forma minima, da decidere e non fatta:** l'episodio dichiara un **ambito**
+(`personalizationScope`, un nome), e `customValuesKey` usa quel nome al posto di
+`episodeId`. *Gli episodi che condividono l'ambito condividono i nomi; un
+episodio A2 ne dichiara uno nuovo e riparte con nomi nuovi.* **Cambia una
+funzione e nasce un campo nel descrittore** — e chi non lo dichiara ripiega sul
+proprio `id`, cioè il comportamento di oggi.
+
 ## ⚠️ IL CENSIMENTO DI TUTTO CIO' CHE LO STUDENTE LEGGE — 2026-09-26
 
 ⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO DOPO AVER SCOPERTO UN FILE CHE
