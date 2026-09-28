@@ -1005,7 +1005,7 @@
     };
   }
   function dialogueLineAlign(line) {
-    return line.ruolo === 'famiglia' ? 'right' : 'left';
+    return line.role === 'family' ? 'right' : 'left';
   }
   /* L'etichetta sopra la bolla. UNA sola strada: quella dichiarata nel file
      episodio, perché è contenuto (regola 4).

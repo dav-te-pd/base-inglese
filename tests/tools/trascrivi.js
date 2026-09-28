@@ -467,7 +467,13 @@ function episodio(ed, id, gradeNames) {
     let items;
     if (g === 'D') {
       items = gradi.D.map((r) => {
-        const it = { id: nb(r[0]), speaker: nb(r[1]), ruolo: nb(r[2]), english: r[3].trim(), italian: r[4].trim() };
+        // ⚠️ LA CHIAVE E' `role`, NON `ruolo` — dal 2026-09-28 (passo D).
+        // *Le chiavi del JSON sono in inglese come tutte le altre (`speaker`,
+        // `english`, `italian`): `ruolo` era l'unica in italiano, ed era
+        // l'italiano di chi scrive il contenuto finito in un file che lo
+        // esegue.* **La COLONNA del markdown si chiama ancora `ruolo`, ed è
+        // voluto: quel file lo scrive chi guida il progetto, in italiano.**
+        const it = { id: nb(r[0]), speaker: nb(r[1]), role: nb(r[2]), english: r[3].trim(), italian: r[4].trim() };
         // whatYouLearn e' SEMPRE una lista, e c'e' solo se la battuta ha
         // almeno una skill: una lista vuota direbbe un'altra cosa.
         if (perBattuta[it.id]) it.whatYouLearn = perBattuta[it.id];

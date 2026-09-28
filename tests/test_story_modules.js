@@ -241,7 +241,12 @@ function confrontaTestoConLaFonte(log) {
       confronta(dove + ' id', riga[0], it.id);
       chi.aggiungi(riga[1], it.speaker, dove);
       // Il ruolo decide da che parte sta la bolla: e' un dato, non una nota.
-      confronta(dove + ' ruolo', riga[2], it.ruolo);
+      // ⚠️ LA COLONNA SI CHIAMA `ruolo` E LA CHIAVE `role`, dal 2026-09-28
+      // (passo D), e non e' una svista: **il markdown lo scrive chi guida il
+      // progetto, in italiano; il JSON ha le chiavi in inglese come tutte le
+      // altre.** *Questa riga e' proprio il punto in cui le due lingue si
+      // toccano, ed e' l'unico.*
+      confronta(dove + ' ruolo', riga[2], it.role);
       confrontaConSegnaposto(dove + ' inglese', riga[3], it.english);
       confrontaConSegnaposto(dove + ' italiano', riga[4], it.italian);
       const attese = skillPerBattuta[riga[0]] || 0;
@@ -629,15 +634,17 @@ async function run() {
     // La prova ②: il contorno c'è. Si guarda che l'etichetta del personaggio
     // esterno sia più di una parola sola, senza ricopiarla.
     //
-    // ⚠️ IL PERSONAGGIO ESTERNO SI PRENDE DAL `ruolo`, NON DA UN NOME.
+    // ⚠️ IL PERSONAGGIO ESTERNO SI PRENDE DAL `role`, NON DA UN NOME.
     // Qui c'era `(fonte.speakerLabels || {}).guide`, cioè la chiave scritta a
     // mano. Il 2026-09-23 quella chiave è diventata `hostess-gate` — e la riga
     // non sarebbe morta: `esterno` sarebbe stato `''`, e l'asserzione avrebbe
     // detto «l'etichetta non porta il contorno» stampando `etichetta: ""`.
     // **Un rosso che manda a guardare nel posto sbagliato**: accusa il
     // contorno mentre il guasto è il nome. Il `ruolo` è il dato che definisce
-    // quel personaggio; il nome è come si chiama oggi.
-    const speakerEsterno = (loadGrade('D').find(l => l.ruolo !== 'famiglia') || {}).speaker;
+    // quel personaggio; il nome è come si chiama oggi. *La chiave si chiama
+    // `role` dal 2026-09-28, e il valore `family`: prima erano `ruolo` e
+    // `famiglia`.*
+    const speakerEsterno = (loadGrade('D').find(l => l.role !== 'family') || {}).speaker;
     const esterno = (fonte.speakerLabels || {})[speakerEsterno] || '';
     log('[B0] Il dialogo ha un personaggio non-famiglia, e ha la sua etichetta',
       !!speakerEsterno && !!esterno, 'speaker: ' + speakerEsterno + ' | etichetta: "' + esterno + '"');

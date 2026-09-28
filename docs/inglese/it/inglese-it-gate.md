@@ -1,4 +1,4 @@
-**Versione: 20260923a**
+**Versione: 20260928a**
 
 # Episodio «Al gate» — inglese per italiani
 
@@ -72,52 +72,29 @@ dentro il paragrafo è libero, le parole no.
 
 **Numeri attesi nel JSON:** 11 voci in A, 7 in B, 9 in C, 9 battute in D, 8 skill, 8 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
 
-*Il paragrafo qui sopra è il solo pezzo del file che un test legge. La riga
-vuota che segue lo chiude: non metterne una dentro.*
-
----
-
 ## 3 — LA REGOLA GENERALE
-
-*Finisce in `generalRule`, ed è **facoltativa**: senza, Repeat Aloud non disegna
-il riquadro. La legge un modulo solo.*
-
-⚠️ **Oggi `inglese-it-gate.json` ne porta una che non ha nessuna fonte in
-nessun markdown.** Questa sezione esiste perché smetta di essere così.
 
 | Testo |
 |---|
 | La "e" finale in inglese non si legge quasi mai. |
 
----
-
 ## 4 — LA MATRICE
 
 ### Grado D — le battute
 
-*Colonne → `levels.D.items[]`: **id** → `id` · **speaker** → `speaker`, e deve
-essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en** →
-`english` · **it** → `italian`.*
-
-⚠️ **`ruolo` ha due soli stati che contano:** `famiglia` mette la bolla a
-**destra**, qualunque altro valore la mette a sinistra.
-
 | id | speaker | ruolo | en | it |
 |---|---|---|---|---|
 | `d-1` | `hostess-gate` | `staff` | Hello! Nice to meet you. | Ciao! Piacere di conoscervi. |
-| `d-2` | `papa` | `famiglia` | Hello! I am {{papa}}. | Ciao! Sono {{papa}}. |
+| `d-2` | `papa` | `family` | Hello! I am {{papa}}. | Ciao! Sono {{papa}}. |
 | `d-3` | `hostess-gate` | `staff` | Where are you from, {{papa}}? | Di dove sei, {{papa}}? |
-| `d-4` | `papa` | `famiglia` | I am from {{partenza}}, {{partenza.paese:en}}. | Vengo da {{partenza}}, in {{partenza.paese}}. |
+| `d-4` | `papa` | `family` | I am from {{partenza}}, {{partenza.paese:en}}. | Vengo da {{partenza}}, in {{partenza.paese}}. |
 | `d-5` | `hostess-gate` | `staff` | And you? | E tu? |
-| `d-6` | `mamma` | `famiglia` | Hello! I am {{mamma}}. | Ciao! Sono {{mamma}}. |
-| `d-7` | `figlia` | `famiglia` | Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old. | Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni. |
-| `d-8` | `figlio` | `famiglia` | Hi! I'm {{figlioNome}}. I'm {{figlioEta}}. | Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni. |
-| `d-9` | `tutti` | `famiglia` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! |
+| `d-6` | `mamma` | `family` | Hello! I am {{mamma}}. | Ciao! Sono {{mamma}}. |
+| `d-7` | `figlia` | `family` | Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old. | Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni. |
+| `d-8` | `figlio` | `family` | Hi! I'm {{figlioNome}}. I'm {{figlioEta}}. | Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni. |
+| `d-9` | `tutti` | `family` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! |
 
 ### Grado C — le frasi
-
-*Colonne → `levels.C.items[]`: **id** · **en** → `english` · **it** → `italian` ·
-**da** → `fromLine`, l'id della battuta da cui è ricavata.*
 
 | id | en | it | da |
 |---|---|---|---|
@@ -133,14 +110,10 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 ### Grado B — le espressioni
 
-*Colonne → `levels.B.items[]`: **id** · **en** → `english` · **it** →
-`italian` · **pronuncia** → `pronunciationTip` · **categoria** →
-`grammarCategory`.*
-
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `b-i-am` | I am | (io) sono | ai am | pronome + verbo essere |
-| `b-im` | I'm | (io) sono | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
+| `b-i-am` | I am | (io) sono, forma piena | ai am | pronome + verbo essere |
+| `b-im` | I'm | (io) sono, forma corta | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
 | `b-we-are` | we are | (noi) siamo | ui ar | pronome + verbo essere |
 | `b-nice-to-meet-you` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
 | `b-i-am-from` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
@@ -149,11 +122,9 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 
 ### Grado A — le parole
 
-*Stesse colonne del grado B → `levels.A.items[]`.*
-
 | id | en | it | pronuncia | categoria |
 |---|---|---|---|---|
-| `a-hello` | hello | Ciao / Salve | hel-LOU — la "h" è un soffio leggero | saluto |
+| `a-hello` | hello | Salve | hel-LOU — la "h" è un soffio leggero | saluto |
 | `a-hi` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
 | `a-nice` | nice | bello / piacevole | nais | aggettivo |
 | `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
@@ -165,47 +136,20 @@ essere una chiave della tabella dei personaggi · **ruolo** → `ruolo` · **en*
 | `a-the` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
 | `a-family` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
 
----
-
 ## 5 — LE SKILL
-
-*Colonne → `levels.D.items[].whatYouLearn[]`: **battuta** → a quale `id` del
-grado D si attacca · **#** → l'ordine dentro la lista di quella battuta ·
-**titolo** → `title` · **corpo** → `body`.*
-
-**`whatYouLearn` è SEMPRE una lista**, anche con una skill sola: due righe con
-la stessa battuta sono due skill della stessa battuta. **Una battuta senza
-righe qui non ha skill** — in Why We Say It la sua card non ha pulsanti e
-prende la spunta da sola.
-
-⚠️ **Nel corpo:** HTML sì, `<br>` per andare a capo, `<strong>` per
-evidenziare, **mai `<p>`**. I segnaposto si sostituiscono come ovunque, e la
-citazione inglese chiede la propria lingua con `{{chiave:en}}`.
-
-⚠️ **`difficulty` non lo scrivo più:** oggi sta nel JSON e **non lo legge
-nessuno**.
 
 | battuta | # | titolo | corpo |
 |---|---|---|---|
-| `d-1` | 1 | Hello e Hi | Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>"Hello" è un po' più educato, "Hi" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".<br>È come in italiano — "Buongiorno" a chi non conosci, "Ciao" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, "Hello" va bene sempre, con chiunque. |
+| `d-1` | 1 | Hello e Hi | Sono i due modi normali di salutare.<br>"Hello" è un po' più educato — in italiano è più vicino a "Salve". "Hi" è più amichevole: è il nostro "Ciao". Nel dialogo lo senti: il papà e la mamma dicono "Hello", i figli dicono "Hi".<br>Nessuno dei due è sbagliato. Se sei in dubbio, "Hello" va bene sempre, con chiunque. |
 | `d-1` | 2 | Nice to meet you | Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro "piacere di conoscerti".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta "Hello!". |
 | `d-3` | 1 | Chiedere da dove viene qualcuno | "Where are you from?" vuol dire "di dove sei?".<br>"Where" significa "dove". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde "I am from {{partenza:en}}" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra. |
-| `d-4` | 1 | Dire da dove vieni | "I am from {{partenza:en}}" vuol dire "vengo da {{partenza:it}}".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".<br>"From" significa "da". La userai tantissimo. |
-| `d-5` | 1 | And you? | Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente. |
+| `d-4` | 1 | Dire da dove vieni | "I am from {{partenza:en}}" vuol dire "vengo da {{partenza:it}}".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono "io vengo", dicono "io sono da".<br>"From" significa "da". La userai tantissimo.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in inglese. La tua città a volte cambia: Torino diventa <strong>Turin</strong>. Su questo torniamo per bene più avanti. |
+| `d-5` | 1 | And you? | Vuol dire "e tu?" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con "And you?" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.<br><strong>E nota "you":</strong> due battute fa l'hostess l'ha detto a tutta la famiglia — "nice to meet <strong>you</strong>", cioè <strong>voi</strong>. Adesso lo dice solo alla mamma, e vuol dire <strong>tu</strong>. È la stessa parola: l'inglese non ne ha due. |
 | `d-7` | 1 | I am e I'm | Il papà dice "I am {{papa:en}}", la figlia dice "I'm {{figliaNome:en}}". Sono la stessa cosa: "I'm" è solo la forma corta.<br>Vuol dire "io sono", ed è così che ci si presenta in inglese: non "mi chiamo", ma "io sono".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> "I'm from Turin" è uguale a "I am from Turin".<br>Sentirai "I'm" quasi sempre nel parlato. "I am" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici "sono Marco" e il "io" lo salti. <strong>In inglese non si può:</strong> "I" ci deve essere sempre. Non esiste dire "am Marco". |
 | `d-8` | 1 | Dire quanti anni hai | La figlia dice "I'm {{figliaEta:en}} <strong>years old</strong>". Il figlio dice solo "I'm {{figlioEta:en}}".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice "I have ten years" — si dice "I am ten", cioè letteralmente "io sono dieci".<br>Ricordatelo, perché è la differenza più grande con l'italiano. |
 | `d-9` | 1 | We are | "We are" vuol dire "noi siamo".<br>Conosci già "I am" — io sono. Quando si parla in più di uno diventa "we are": cambia sia la parola per dire chi, sia il verbo.<br>Nota che in inglese il cognome va <strong>prima</strong> della parola "family", al contrario dell'italiano. |
 
----
-
 ## 6 — PERSONAGGI ED ETICHETTE
-
-*Colonne → `speakerLabels`: **chiave** → quello che scrivi nella colonna
-`speaker` del grado D · **etichetta** → quello che lo studente legge sopra la
-bolla.*
-
-⚠️ **La chiave nel JSON è `speakerLabels`.** *Fino al 2026-09-09 si chiamava
-`dialogueSpeakerLabels`, e quel nome non esiste più da nessuna parte.*
 
 | chiave | etichetta a schermo |
 |---|---|
@@ -216,17 +160,11 @@ bolla.*
 | `figlio` | Figlio |
 | `tutti` | Tutti |
 
----
-
 ## 7 — GLI SLOT
-
-*Due cose insieme, e vanno in due posti del JSON: le colonne **chiave** →
-`placeholderMap` (il nome che scrivi dentro i `{{...}}`), e tutte e sei →
-una voce di `personalizationTablesUsed`.*
 
 | chiave | etichetta | tipo | tabella | righe | predefinito |
 |---|---|---|---|---|---|
-| `papa` | Nome del papà / utente | `select` | `people.papa` | · | `papa-marco` |
+| `papa` | Nome del papà | `select` | `people.papa` | · | `papa-marco` |
 | `mamma` | Nome della mamma | `select` | `people.mamma` | · | `mamma-giulia` |
 | `figliaNome` | Nome della figlia | `select` | `people.figlia` | · | `figlia-emma` |
 | `figliaEta` | Età della figlia | `select` | `ages.anni` | `eta-12` · `eta-13` · `eta-14` · `eta-15` · `eta-16` · `eta-17` | `eta-16` |
@@ -235,56 +173,4 @@ una voce di `personalizationTablesUsed`.*
 | `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-costa` |
 | `partenza` | Città di partenza | `select` | `places.departures` | · | `orig-mondovi` |
 
-⚠️ **L'«etichetta» non ha nessuna fonte oggi**, e la schermata Personalizza la
-mostra: sta qui perché smetta di vivere solo nel JSON.
-
-⚠️ **Il «`/ utente`» dell'etichetta di `papa` NON è un residuo: è l'unico posto
-del progetto dove è scritto che quello slot è lo studente stesso**, e non un
-personaggio come gli altri. *Tolto per sbaglio il 2026-09-23 e rimesso lo stesso
-giorno.*
-
-**La «tabella» è un riferimento a `inglese-it-tabelle-personalizzazione`**, con
-due forme:
-
-| Forma | Vuol dire |
-|---|---|
-| `people.papa`, `places.departures`, `ages.anni`, … | una tabella del magazzino condiviso |
-| `episode.<qualcosa>` | una tabella dichiarata **dentro questo stesso file episodio** — ⚠️ **oggi NESSUNO la usa**, e la forma resta perché un episodio futuro può averne bisogno |
-
-⚠️ **LA COLONNA «RIGHE» È NATA IL 2026-09-24 (passo 1.8-bis ③), e serve a una
-cosa sola: prendere un PEZZO di una tabella condivisa.** Un punto `·` vuol dire
-«tutta la tabella». *Le età sono l'unico caso di oggi: stanno nel magazzino
-insieme a tutte le altre, e la figlia ne vede sei, il figlio otto.*
-
-⚠️ **E si ELENCANO gli id, non si dichiara un intervallo.** *Un intervallo
-darebbe per scontato che la tabella sia ordinata e numerica — vero oggi per le
-età e per nient'altro — e quando smetterà di esserlo **non darà un errore: darà
-l'insieme sbagliato.***
-
-**Il «predefinito» è un id di quella tabella.** ⚠️ *Qui c'era scritto che un
-valore salvato fuori elenco «ripiega sulla PRIMA RIGA e non sul predefinito»:
-**era vero fino al 2026-09-24**, e il passo 1.8-bis ④ l'ha corretto — adesso
-ripiega proprio sul predefinito, e la prima riga è solo l'ultima spiaggia.*
-
----
-
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO
-
-*Le righe che valgono **solo per questo episodio** e non vanno nel magazzino
-condiviso. Finiscono in una chiave di primo livello del JSON, e l'unico modo di
-raggiungerle è che uno slot della sezione 7 dica `episode.<nome>.<gruppo>`.*
-
-⚠️ **OGGI QUESTA SEZIONE È VUOTA, E NON È UNA DIMENTICANZA.**
-
-Fino al 2026-09-24 ci stavano le età di `gate` (`ageOptions.figlia`,
-`ageOptions.figlio`), come valori **nudi**: il codice li trasformava in
-`{value, it, en}` tutti e tre uguali, ed è il motivo per cui si leggeva
-`I'm 16 years old` invece di `I'm sixteen`.
-
-**Il passo 1.8-bis ③ le ha portate nel magazzino condiviso** (`ages.anni`, dove
-`it` è la cifra ed `en` la parola) **e ha dato agli slot la colonna «righe»**,
-così la figlia ne vede sei e il figlio otto pur pescando dalla stessa tabella.
-
-*La sezione resta perché la forma `episode.<qualcosa>` esiste ancora e un
-episodio futuro può averne bisogno: una tabella che ha senso solo dentro una
-storia non deve finire nel magazzino di tutti.*

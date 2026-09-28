@@ -22,7 +22,7 @@
   "personalizationTablesUsed": [
     {
       "key": "papa",
-      "label": "Nome del papà / utente",
+      "label": "Nome del papà",
       "type": "select",
       "table": "people.papa",
       "default": "papa-marco"
@@ -102,7 +102,7 @@
         {
           "id": "a-hello",
           "english": "hello",
-          "italian": "Ciao / Salve",
+          "italian": "Salve",
           "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
           "grammarCategory": "saluto"
         },
@@ -184,14 +184,14 @@
         {
           "id": "b-i-am",
           "english": "I am",
-          "italian": "(io) sono",
+          "italian": "(io) sono, forma piena",
           "pronunciationTip": "ai am",
           "grammarCategory": "pronome + verbo essere"
         },
         {
           "id": "b-im",
           "english": "I'm",
-          "italian": "(io) sono",
+          "italian": "(io) sono, forma corta",
           "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
           "grammarCategory": "pronome + verbo essere, contratto"
         },
@@ -297,13 +297,13 @@
         {
           "id": "d-1",
           "speaker": "hostess-gate",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Hello! Nice to meet you.",
           "italian": "Ciao! Piacere di conoscervi.",
           "whatYouLearn": [
             {
               "title": "Hello e Hi",
-              "body": "Sono i due modi normali di salutare, e vogliono dire la stessa cosa: ciao.<br>\"Hello\" è un po' più educato, \"Hi\" un po' più amichevole. Nel dialogo lo senti: il papà e la mamma dicono \"Hello\", i figli dicono \"Hi\".<br>È come in italiano — \"Buongiorno\" a chi non conosci, \"Ciao\" a un amico. Nessuno dei due è sbagliato.<br>Se sei in dubbio, \"Hello\" va bene sempre, con chiunque."
+              "body": "Sono i due modi normali di salutare.<br>\"Hello\" è un po' più educato — in italiano è più vicino a \"Salve\". \"Hi\" è più amichevole: è il nostro \"Ciao\". Nel dialogo lo senti: il papà e la mamma dicono \"Hello\", i figli dicono \"Hi\".<br>Nessuno dei due è sbagliato. Se sei in dubbio, \"Hello\" va bene sempre, con chiunque."
             },
             {
               "title": "Nice to meet you",
@@ -314,14 +314,14 @@
         {
           "id": "d-2",
           "speaker": "papa",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Hello! I am {{papa}}.",
           "italian": "Ciao! Sono {{papa}}."
         },
         {
           "id": "d-3",
           "speaker": "hostess-gate",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Where are you from, {{papa}}?",
           "italian": "Di dove sei, {{papa}}?",
           "whatYouLearn": [
@@ -334,40 +334,40 @@
         {
           "id": "d-4",
           "speaker": "papa",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "I am from {{partenza}}, {{partenza.paese:en}}.",
           "italian": "Vengo da {{partenza}}, in {{partenza.paese}}.",
           "whatYouLearn": [
             {
               "title": "Dire da dove vieni",
-              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza:it}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo."
+              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza:it}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in inglese. La tua città a volte cambia: Torino diventa <strong>Turin</strong>. Su questo torniamo per bene più avanti."
             }
           ]
         },
         {
           "id": "d-5",
           "speaker": "hostess-gate",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "And you?",
           "italian": "E tu?",
           "whatYouLearn": [
             {
               "title": "And you?",
-              "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente."
+              "body": "Vuol dire \"e tu?\" — si usa per rimandare la stessa domanda a un'altra persona, senza doverla ripetere tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con \"And you?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.<br><strong>E nota \"you\":</strong> due battute fa l'hostess l'ha detto a tutta la famiglia — \"nice to meet <strong>you</strong>\", cioè <strong>voi</strong>. Adesso lo dice solo alla mamma, e vuol dire <strong>tu</strong>. È la stessa parola: l'inglese non ne ha due."
             }
           ]
         },
         {
           "id": "d-6",
           "speaker": "mamma",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Hello! I am {{mamma}}.",
           "italian": "Ciao! Sono {{mamma}}."
         },
         {
           "id": "d-7",
           "speaker": "figlia",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
           "italian": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
           "whatYouLearn": [
@@ -380,7 +380,7 @@
         {
           "id": "d-8",
           "speaker": "figlio",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
           "italian": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
           "whatYouLearn": [
@@ -393,7 +393,7 @@
         {
           "id": "d-9",
           "speaker": "tutti",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "We are the {{cognome}} family!",
           "italian": "Siamo la famiglia {{cognome}}!",
           "whatYouLearn": [

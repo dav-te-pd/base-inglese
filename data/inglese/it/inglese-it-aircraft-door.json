@@ -1,5 +1,6 @@
 {
   "episodeId": "aircraft-door",
+  "generalRule": "L'accento inglese quasi mai cade dove lo metterebbe un italiano: la sillaba scritta in maiuscolo te lo dice.",
   "speakerLabels": {
     "hostess-porta": "Hostess alla porta",
     "papa": "Papà",
@@ -195,7 +196,7 @@
         {
           "id": "d-1",
           "speaker": "hostess-porta",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Good morning! Welcome aboard.",
           "italian": "Buongiorno! Benvenuti a bordo.",
           "whatYouLearn": [
@@ -212,7 +213,7 @@
         {
           "id": "d-2",
           "speaker": "hostess-porta",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Your tickets, please.",
           "italian": "I biglietti, per favore.",
           "whatYouLearn": [
@@ -225,7 +226,7 @@
         {
           "id": "d-3",
           "speaker": "papa",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Here they are.",
           "italian": "Eccoli.",
           "whatYouLearn": [
@@ -238,7 +239,7 @@
         {
           "id": "d-4",
           "speaker": "papa",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "She is my wife.",
           "italian": "Lei è mia moglie.",
           "whatYouLearn": [
@@ -251,7 +252,7 @@
         {
           "id": "d-5",
           "speaker": "papa",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "She is my daughter, he is my son.",
           "italian": "Lei è mia figlia, lui è mio figlio.",
           "whatYouLearn": [
@@ -264,14 +265,14 @@
         {
           "id": "d-6",
           "speaker": "hostess-porta",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Thank you.",
           "italian": "Grazie."
         },
         {
           "id": "d-7",
           "speaker": "hostess-porta",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "{{destinazione}}? This way, please.",
           "italian": "{{destinazione}}? Da questa parte, prego.",
           "whatYouLearn": [
@@ -284,14 +285,14 @@
         {
           "id": "d-8",
           "speaker": "tutti",
-          "ruolo": "famiglia",
+          "role": "family",
           "english": "Thank you!",
           "italian": "Grazie!"
         },
         {
           "id": "d-9",
           "speaker": "hostess-porta",
-          "ruolo": "staff",
+          "role": "staff",
           "english": "Enjoy your flight!",
           "italian": "Buon volo!",
           "whatYouLearn": [
