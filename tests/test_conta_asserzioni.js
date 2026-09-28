@@ -163,6 +163,38 @@ function esegui(args, env) {
     try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
   }
 
+  // ── [G] L'ELENCO DELLA SUITE COPRE OGNI FILE DI TEST CHE ESISTE ─────
+  //
+  // ⚠️ TROVATO IL 2026-09-28, ESEGUENDO: `test_testi_dal_markdown.js` era
+  // scritto, committato, verde da solo — **e non girava.** La corsa completa
+  // diceva «80 file» prima e «80 file» dopo, cioè il numero giusto per la
+  // domanda sbagliata.
+  //
+  // `FILES` in `tests/run_full_regression.sh` è un elenco scritto a mano, e un
+  // elenco scritto a mano invecchia a ogni file nuovo **senza nessun segnale**:
+  // il file che manca non fallisce, non compare, non esiste. *E' la stessa
+  // forma della regola 41 — un elenco di nomi si legge e si crede di averlo
+  // applicato — e della 49: qui il controllo che non controlla è la suite
+  // stessa.*
+  //
+  // La difesa non è «ricordarsene»: è questa riga. *Sostituire `FILES` con un
+  // `ls` sarebbe l'altra strada, ed è stata scartata: l'ordine dei file nella
+  // corsa non è casuale, e un file nuovo entrerebbe nella suite senza che
+  // nessuno l'abbia deciso.*
+  {
+    const sh = fs.readFileSync(path.join(__dirname, 'run_full_regression.sh'), 'utf8');
+    const m = sh.match(/^FILES="([^"]*)"/m);
+    const elenco = m ? m[1].split(/\s+/).filter(Boolean) : [];
+    const disco = fs.readdirSync(__dirname).filter((f) => /^test_.*\.js$/.test(f));
+    const mancanti = disco.filter((f) => elenco.indexOf(f) === -1);
+    const fantasmi = elenco.filter((f) => disco.indexOf(f) === -1);
+    log('[G] La suite ha un elenco di file da lanciare', elenco.length > 0, 'trovati: ' + elenco.length);
+    log('[G] Ogni file test_*.js sul disco sta nell\'elenco della suite — nessun test che non gira',
+      mancanti.length === 0, mancanti.join(', '));
+    log('[G] E nessun nome nell\'elenco punta a un file che non c\'e\' piu\'',
+      fantasmi.length === 0, fantasmi.join(', '));
+  }
+
   console.log('\n=== CONTA ASSERZIONI SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   process.exit(failed === 0 ? 0 : 1);
 })();
