@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260924b**
+**Versione: 20260928a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -814,10 +814,21 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     | ④ | `grep -rn "[a-z]V[a-z]" .` | **dentro un identificatore più lungo** — `openSpeedRound`, `loadSeExplanationStats` |
     | ⑤ | `grep -rn "V parola\|V PAROLA\|v parola" .` | **con lo spazio**, nella prosa — `Speed Round`, `SPEED ROUND` |
     | ⑥ | `grep -rn "'segmento'" .` | **il percorso assemblato a pezzi** — `repoPath('data','it',…)` |
+| ⑦ | `grep -rn "\"vecchio" data/ --include=*.json` | **la CHIAVE di un file di dati** — `"speedRoundMessages": {` |
 
     ⚠️ **Sulla ④ non c'è `\b`, ed è il punto.** È precisamente il confine di
     parola che fa mancare quella forma: in `loadSeExplanationStats` il `Se` è
     preceduto da una minuscola, quindi `\bse[A-Z]` non lo trova.
+
+    ⚠️ **LA ⑦ E' NATA IL 2026-09-28, E DA UN DIFETTO CHE E' COSTATO SETTIMANE.**
+    La rinomina `speedRound` → `speedMatch` (passi 3+4) ha lasciato in piedi
+    `speedRoundMessages`, **una chiave di
+    `data/{lingua}/{studente}/messaggi-feedback.json`** — e con lei quindici
+    messaggi che **nessuno ha mai visto**, perche' il modulo pescava altrove.
+    ⚠️ **Le sei forme di sopra cercano IDENTIFICATORI NEL CODICE: nessuna di
+    loro guarda dentro un JSON di dati.** *Il nome vecchio e' sopravvissuto in
+    un file che non e' codice, e la verifica per sottrazione non aveva un
+    comando che ci passasse.* **La ⑦ e' quel comando.**
 
     ⚠️ **Sulla ⑥ si cerca il SEGMENTO, non il percorso.** In
     `repoPath('data', 'it', nome)` la stringa `data/it/` **non esiste mai per
@@ -1086,6 +1097,52 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     codice**: non finisce mai perché cresce da sé quando nascono file nuovi, e
     un passo che non finisce mai, messo in fila con quelli che finiscono, li
     blocca tutti.*
+
+47. **UN CAMPO NASCE IL GIORNO IN CUI QUALCOSA LO LEGGE.** Prima di quel
+    giorno vive nel file di lavoro di chi scrive il contenuto, non nel JSON che
+    l'app carica.
+
+    *Deciso da chi guida il progetto il 2026-09-27, e non in astratto: sono
+    stati contati **quattro** campi progettati prima di avere un lettore.*
+
+    | Campo | Com'e' finita |
+    |---|---|
+    | `speedRoundMessages` | **quindici messaggi mai visti da nessuno**, per settimane: il modulo pescava da `moduleCompleteMessages`, e il nome era quello di prima di una rinomina |
+    | `speakerAccents` | **non e' mai nato**, e la misura l'ha fermato: `app/ui-condivisa.js` restituisce l'etichetta **diritta** sopra la bolla, quindi annidarla dava `[object Object]` |
+    | `register` · `inExercises` | **68 celle tutte «standard» e 50 tutte «sì»**: zero usi. *E `inExercises` aveva anche il nome sbagliato — Repeat Aloud **è** un esercizio* |
+
+    ⚠️ **Il costo non e' il campo: e' che un campo senza lettore SEMBRA
+    funzionare.** *Nessun test lo guarda — non c'e' niente da guardare — quindi
+    non c'e' rosso, non c'e' segnale, e il giorno in cui un lettore arriva
+    trova un dato che nessuno ha mai verificato. `speedRoundMessages` non e'
+    stato scoperto da una rilettura: e' stato scoperto cercando **chi legge**
+    ogni famiglia, ed era stato trovato una volta prima e perso col documento
+    che lo diceva.*
+
+    **In pratica:** un campo si aggiunge al JSON **nello stesso passo** che
+    scrive il codice che lo legge. Finche' quel codice non esiste, il dato sta
+    in un documento — dove si puo' scrivere, discutere e correggere senza
+    fingere di essere in produzione.
+
+48. **UN TESTO SI SCRIVE UNA VOLTA SOLA.** Se la fonte esiste già altrove si
+    **deriva**; se non esiste, si crea il posto e si deriva da lì.
+
+    *Deciso da chi guida il progetto il 2026-09-27.*
+
+    ⚠️ **E il caso che l'ha scritta non e' una duplicazione qualunque: è una
+    che si vede solo la seconda volta.** I sedici `howItWorks.title` di
+    `istruzioni-moduli.json` ricopiavano i nomi dei moduli che
+    `struttura-corso.md` **dichiara già**. Finche' esiste un'edizione sola
+    sembra ridondanza innocua; **il giorno in cui quel file diventa condiviso
+    fra le edizioni — e lo è, perche' i testi dipendono dalla lingua dello
+    STUDENTE e non da quella insegnata — un corso di spagnolo mostrerebbe
+    sedici pop-up intitolati «Your Story».** *Non e' una pulizia: e' la
+    riparazione di un difetto che non e' ancora scattato.*
+
+    **Ne segue anche il rovescio, ed e' la parte operativa:** quando un testo
+    non ha una fonte, **non si ricopia: si crea la fonte.** *È quello che è
+    stato fatto il 2026-09-26 con i due file che nessun markdown generava —
+    208 e 141 stringhe — prima di toccarne una sola parola.*
 
 ## Riferimenti operativi
 

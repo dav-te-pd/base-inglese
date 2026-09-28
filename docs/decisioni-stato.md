@@ -158,7 +158,7 @@ tolta al modulo il cui mestiere è ripeterla.
 | **5+6** | | **208 stringhe diventano 177** |
 | **7** | **I percorsi: `data/condivisi/it/`** | La cartella perché i file saranno più di due e le lingue più di una; **il nome tiene `it` comunque, perché un file deve dirsi da solo senza dipendere dalla cartella** |
 | **8** | **La rinomina dei due file PER PRIMA** | *Il passo che scrive dentro `it-istruzioni-moduli` e quello che gli cambia nome, in quest'ordine, toccherebbero il file due volte.* **Così ogni file si tocca una volta** |
-| **9** | **Le due asserzioni che non misurano: riparate prima o nel commit del collegamento** | **Mai dopo** |
+| ~~**9**~~ | ✅ **FATTO il 2026-09-28, in un passo suo (A), e sono state TRE non due**: le due con la firma piu' quella che pescava su un oggetto. **Tutte e tre viste cadere su un guasto realistico, e la forma vecchia reggeva entrambi i guasti.** *Il blocco della varieta' e' stato tolto e non riparato: non misurava niente e apriva sei pagine per farlo.* | ✅ |
 
 ### Due definizioni
 

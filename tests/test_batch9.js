@@ -4,6 +4,14 @@ const { mockBrowser } = require('./mock-browser');
 const { allSteps } = require('./module-order');
 const { attendiNascosto, attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const { openModule } = require('./map-driver');
+const fs = require('fs');
+const { fileEdizione } = require('./test-env');
+
+// ⚠️ IL TESTO SI LEGGE DAL FILE, NON SI RICOPIA QUI (regola 24 e regola 15 dei
+// valori ricopiati): una frase incollata in un test invecchia e rompe la CI
+// senza che niente sia rotto.
+const ISTRUZIONI = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+
 const BASE = APP_URL;
 
 const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 });
@@ -16,7 +24,12 @@ const ALL_MODULES = allSteps();
 async function run() {
   const browser = await launchBrowser();
   const results = [];
-  const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+  // Il terzo argomento si stampa solo quando cade: un rosso che non dice cosa
+  // ha letto costringe a rilanciare per saperlo.
+  const log = (msg, ok, dettaglio) => {
+    results.push({ msg, ok });
+    console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg + (!ok && dettaglio ? '  -> ' + dettaglio : ''));
+  };
 
   // ============ JOB 2A: Match Practice "alto" bucket (answer everything right) ============
   {
@@ -214,7 +227,18 @@ async function run() {
     const hintVisibleBefore = await attendiVisibile(page, '#dg-choice-hint');
     const hintText = await page.$eval('#dg-choice-hint', el => el.textContent).catch(() => null);
     log('[Job3] Hint is visible before all lines are heard', hintVisibleBefore);
-    log('[Job3] Hint text is non-empty and comes from istruzioni-moduli.json', !!hintText && hintText.length > 5);
+    // ⚠️ QUESTA RIGA NOMINAVA IL FILE E CONTAVA I CARATTERI —
+    // `!!hintText && hintText.length > 5`. Riparata il 2026-09-28: era la
+    // seconda della famiglia trovata censendo le asserzioni che non misurano
+    // (51 della forma, 8 con questa firma, 2 difetti veri). *Con quella
+    // condizione, un giorno in cui `#dg-choice-hint` finisse riempito da una
+    // stringa scritta nel codice — cioe' esattamente il guasto che la regola 8
+    // vieta — la riga sarebbe rimasta verde dicendo «comes from
+    // istruzioni-moduli.json».*
+    const attesoHint = ISTRUZIONI.dialogoShared && ISTRUZIONI.dialogoShared.choiceBoxHint;
+    log('[Job3] Hint text is exactly dialogoShared.choiceBoxHint from istruzioni-moduli.json',
+      !!attesoHint && (hintText || '').trim() === attesoHint.trim(),
+      'letto: "' + hintText + '" | atteso: "' + attesoHint + '"');
     console.log('    -> hint text: "' + hintText + '"');
     const boxDisabled = await page.$eval('#dg-not-yet-btn', el => el.disabled).catch(() => null);
     log('[Job3] Choice box is disabled while hint is shown', boxDisabled === true);

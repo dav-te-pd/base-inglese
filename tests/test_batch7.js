@@ -5,6 +5,20 @@ const { allSteps } = require('./module-order');
 const { attendiSottotitoloEsito, attendiVisibile } = require('./attese');
 const { chiudiPopupTentativiSeAperto } = require('./quiz-driver');
 const { openModule } = require('./map-driver');
+const fs = require('fs');
+const { fileEdizione } = require('./test-env');
+
+// ⚠️ I MESSAGGI SI LEGGONO DAL FILE, NON SI RICOPIANO QUI: una frase ricopiata
+// in un test invecchia e rompe la CI senza che niente sia rotto. Il percorso lo
+// costruisce `fileEdizione`, il gemello di `percorsoEdizione` (regola 24).
+const MESSAGGI = JSON.parse(fs.readFileSync(fileEdizione('messaggi-feedback.json'), 'utf8'));
+
+// Tutte le frasi di una famiglia, qualunque siano le sue fasce: la fascia che
+// esce dipende dal punteggio, e un test che guida il quiz «rispondendo alla
+// prima opzione abilitata» non sa quale otterra'.
+const frasiDi = (famiglia) => Object.keys(MESSAGGI[famiglia] || {})
+  .reduce((tutte, fascia) => tutte.concat(MESSAGGI[famiglia][fascia] || []), []);
+
 const BASE = APP_URL;
 
 const mockInit = mockInitCondiviso;
@@ -17,7 +31,13 @@ const ALL_MODULES = allSteps();
 async function run() {
   const browser = await launchBrowser();
   const results = [];
-  const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
+  // ⚠️ IL TERZO ARGOMENTO SI STAMPA SOLO QUANDO CADE, e serve: un rosso che
+  // dice «il sottotitolo non e' fra le frasi attese» senza dire QUALE frase
+  // abbia letto costringe a rilanciare per saperlo.
+  const log = (msg, ok, dettaglio) => {
+    results.push({ msg, ok });
+    console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg + (!ok && dettaglio ? '  -> ' + dettaglio : ''));
+  };
 
   // ============ JOB 2: rotating subtitle on Speed Match Schermata Finale ============
   {
@@ -63,7 +83,20 @@ async function run() {
       await attendiSottotitoloEsito(page, 'sr-summary-title-sub');
       const subtitle = await page.$eval('#sr-summary-title-sub', el => el.textContent).catch(() => null);
       log('[Job2] Fixed title is "Round completato!"', title === 'Round completato!');
-      log('[Job2] Rotating subtitle is non-empty and from moduleCompleteMessages', !!subtitle && subtitle.length > 5);
+      // ⚠️ QUESTA RIGA CONTAVA I CARATTERI E IL SUO MESSAGGIO NOMINAVA UNA
+      // FAMIGLIA — `!!subtitle && subtitle.length > 5`. Riparata il 2026-09-28
+      // perche' era il caso di scuola della «misura che non misura» (regola
+      // 37): il messaggio prometteva la provenienza, la condizione guardava la
+      // lunghezza, e **cambiare la famiglia da cui Speed Match pesca avrebbe
+      // lasciato questa riga verde**. *Trovata cercando cosa sarebbe diventato
+      // rosso al passo del collegamento: niente.*
+      //
+      // Adesso confronta il sottotitolo con le frasi VERE della famiglia, lette
+      // dal file: e' l'unica forma che cade quando la provenienza cambia.
+      const attese = frasiDi('moduleCompleteMessages');
+      log('[Job2] Rotating subtitle is one of moduleCompleteMessages (' + attese.length + ' frasi)',
+        !!subtitle && attese.indexOf(subtitle.trim()) !== -1,
+        'letto: "' + subtitle + '"');
       console.log('    -> subtitle: "' + subtitle + '"');
     }
     log('[Job2] No JS errors', errors.length === 0);
@@ -71,26 +104,35 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 2: rotating subtitle differs across page loads (randomness sanity) ============
+  // ============ JOB 2-bis: la ROTAZIONE e' possibile — sul dato, non su sei pagine ============
+  //
+  // ⚠️ QUI C'ERA UN BLOCCO CHE NON MISURAVA NIENTE, DUE VOLTE, E APRIVA SEI
+  // PAGINE PER FARLO. Tolto il 2026-09-28. Diceva «il sottotitolo cambia fra un
+  // caricamento e l'altro» e faceva questo:
+  //
+  //     data.moduleCompleteMessages[Math.floor(Math.random() * data.moduleCompleteMessages.length)]
+  //
+  // ⚠️ **`moduleCompleteMessages` e' un OGGETTO** (`{alto, medio, basso}`),
+  // quindi `.length` e' `undefined`, `Math.random() * undefined` e' `NaN`, e
+  // l'indice `[NaN]` vale **sempre `undefined`**. Il `Set` finiva con un solo
+  // elemento — `undefined` — e l'asserzione chiedeva `seen.size >= 1`, che con
+  // un `Set` non vuoto e' **vera per costruzione**. *Sbagliata due volte nello
+  // stesso punto: l'indice e la soglia.* E passava dichiarando «saw 1 distinct
+  // in 6 tries», cioe' **stampando il proprio fallimento come risultato**.
+  //
+  // ⚠️ E NON PESCAVA DALL'APP: rifaceva la pescata dentro la pagina. Sei
+  // caricamenti che non hanno mai aperto un modulo.
+  //
+  // Nessuna copertura si perde, perche' non ce n'era. Al suo posto la cosa che
+  // si puo' davvero affermare sul dato: **che una rotazione sia possibile**,
+  // cioe' che ogni fascia abbia almeno due frasi distinte. *Che l'app ne peschi
+  // una a caso lo dice `pickRandom`, che ha un punto unico e sei chiamanti.*
   {
-    const seen = new Set();
-    for (let attempt = 0; attempt < 6; attempt++) {
-      const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
-      await page.addInitScript(mockInit);
-      await page.goto(BASE);
-      await page.evaluate(() => {
-        return fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()).then(data => {
-          window.__testPick = data.moduleCompleteMessages[Math.floor(Math.random() * data.moduleCompleteMessages.length)];
-        });
-      });
-      // Niente attesa: l'evaluate qui sopra RESTITUISCE la promise del fetch, e
-      // page.evaluate la aspetta da solo — quindi window.__testPick e' gia'
-      // scritto quando torna. I 50 ms non guardavano niente.
-      const pick = await page.evaluate(() => window.__testPick);
-      seen.add(pick);
-      await page.close();
-    }
-    log('[Job2] moduleCompleteMessages has multiple distinct entries reachable (variety sanity, saw ' + seen.size + ' distinct in 6 tries)', seen.size >= 1);
+    const fasce = Object.keys(MESSAGGI.moduleCompleteMessages);
+    const magre = fasce.filter((f) => new Set(MESSAGGI.moduleCompleteMessages[f]).size < 2);
+    log('[Job2-bis] Ogni fascia di moduleCompleteMessages ha almeno due frasi distinte, quindi la rotazione e\' possibile',
+      fasce.length > 0 && magre.length === 0,
+      'fasce: ' + fasce.join(', ') + ' | magre: ' + (magre.join(', ') || 'nessuna'));
   }
 
   // ============ JOB 3+4: safety-valve popup fires on Match Practice, both variants ============
