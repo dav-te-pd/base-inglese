@@ -151,7 +151,27 @@ function main(argv) {
   const mancanti = [];
   files.forEach((f) => {
     const n = contaFile(f);
-    if (n === null) mancanti.push(f); else conteggi[f] = n;
+    // ⚠️ LA CHIAVE E' SEMPRE IL NOME `.js`, QUALUNQUE FORMA ARRIVI DA ARGV —
+    // 2026-09-28, e non e' una comodita': e' la riparazione di un guardiano
+    // SPENTO PER DUE GIORNI.
+    //
+    // `leggiBaseline()` accetta solo righe `qualcosa.js <numero>`. La chiave
+    // era il nome **verbatim** di argv, quindi un `--scrivi *.result.txt`
+    // — comodo, perche' e' proprio quello che il file legge — ha scritto
+    // ottanta righe `test_x.result.txt 17`, che il lettore **non riconosce**.
+    //
+    // ⚠️ E IL GUASTO NON SI E' VISTO, perche' `leggiBaseline()` torna `null` e
+    // il programma stampa «Nessun baseline registrato» e **esce con 0**: un
+    // controllo che dice «niente da controllare» e passa. *Due corse complete
+    // dopo, il conteggio non ha piu' confrontato niente — e l'unica cosa che
+    // quel file esiste per impedire, un verde che prova meno di ieri, e' stata
+    // possibile senza segnale.* E' la stessa famiglia delle asserzioni riparate
+    // nello stesso giro (regola 37).
+    //
+    // Normalizzando qui, le due forme diventano la stessa e lo sbaglio non si
+    // puo' piu' fare: il lettore e lo scrittore non possono divergere.
+    const chiave = f.replace(/\.result\.txt$/, '.js');
+    if (n === null) mancanti.push(f); else conteggi[chiave] = n;
   });
   const totale = Object.keys(conteggi).reduce((s, f) => s + conteggi[f], 0);
 
