@@ -52,7 +52,7 @@ async function run() {
     const page = await browser.newPage();
     await bloccaFontEsterni(page);
     if (RITARDA) {
-      await page.route('**/istruzioni-moduli.json', async function (route) {
+      await page.route('**/*istruzioni-moduli.json*', async function (route) {
         await new Promise(function (r) { setTimeout(r, RITARDA); });
         await route.continue();
       });
@@ -63,7 +63,7 @@ async function run() {
       document.addEventListener('DOMContentLoaded', function () {
         window.__boot.tDom = performance.now();
         // e subito il fetch che il giro B farebbe al boot
-        fetch('data/inglese/it/inglese-it-istruzioni-moduli.json')
+        fetch(window.BI.MODULE_INSTRUCTIONS_FILE)
           .then(function (r) { return r.json(); })
           .then(function () { window.__boot.tJson = performance.now(); })
           .catch(function () { window.__boot.tJson = -1; });

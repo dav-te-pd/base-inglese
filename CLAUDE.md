@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260928a**
+**Versione: 20260928c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -198,7 +198,11 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 7. **Un modulo si segna "completato" SOLO quando l'utente clicca esplicitamente un pulsante** (es. "Ho finito, torna alla mappa") — mai in automatico (non per aver ascoltato tutto l'audio, aperto tutte le traduzioni, ecc.). Vale per ogni modulo, presente e futuro: chi aggiunge un nuovo modulo deve dargli un pulsante di completamento esplicito, non inventare un trigger implicito.
 
-8. **I testi di un modulo vivono sempre in `data/{lingua-che-si-impara}/{lingua-studente}/istruzioni-moduli.json`** (oggi `data/inglese/it/inglese-it-istruzioni-moduli.json`), mai scritti nel codice del componente. *Il percorso porta ENTRAMBE le lingue, come ogni file dell'edizione: qui c'era scritto `data/{lingua}/`, che è mezzo percorso.*
+8. **I testi di un modulo vivono sempre in `data/condivisi/{lingua-studente}/istruzioni-moduli.json`** (oggi `data/condivisi/it/it-istruzioni-moduli.json`), mai scritti nel codice del componente.
+
+    ⚠️ **IL PERCORSO PORTA UNA LINGUA SOLA, E DAL 2026-09-28 NON È QUELLA DELL'EDIZIONE: è quella dello STUDENTE.** *Qui c'era scritto `data/{lingua-che-si-impara}/{lingua-studente}/`, con la nota «il percorso porta ENTRAMBE le lingue, come ogni file dell'edizione» — ed è stato vero fino a quel giorno.* Questi testi **non dipendono dalla lingua che si insegna**: «tocca il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`. Tenerli dentro l'edizione vorrebbe dire **349 stringhe duplicate a ogni edizione nuova** — con quattro edizioni per italiani, **1047 copie che nessuno riallineerebbe** (regola 48). Si raggiungono con **`percorsoCondiviso(...)`**, non con `percorsoEdizione(...)`.
+
+    ⚠️ **E il prefisso del nome segue la cartella: una lingua sola, `it-`, non la coppia.** *Il nome tiene comunque la lingua, perché un file esce dal repository e lì il percorso si perde — la stessa ragione della regola 4.* La convenzione è protetta da `tests/test_nomenclatura_edizione.js`, che tratta `condivisi` come **nome riservato** e non come una lingua.
 
     **Non è l'unico file di testi condivisi: ce n'è un secondo, `messaggi-feedback.json`**, con i messaggi di fine modulo e quelli dei tentativi. I due si distinguono così: qui i testi che spiegano **come si usa** un modulo, lì quelli che **rispondono a un esito**. Entrambi si raggiungono da una costante in cima allo script (`MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`), mai con il percorso scritto dentro una riga di `fetch`. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
 
@@ -587,7 +591,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 35. **Un messaggio che segnala il fallimento di un meccanismo non può
     dipendere da quel meccanismo.** È l'**unica eccezione ammessa alla
     regola 8** — i testi che lo studente legge stanno in
-    `data/{lingua}/{studente}/istruzioni-moduli.json` — e va scritta **con il motivo
+    `data/condivisi/{lingua-studente}/istruzioni-moduli.json` — e va scritta **con il motivo
     accanto**, nel codice, non lasciata sembrare una dimenticanza.
 
     Il caso che l'ha fatta nascere: la schermata d'errore di caricamento
@@ -823,7 +827,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     ⚠️ **LA ⑦ E' NATA IL 2026-09-28, E DA UN DIFETTO CHE E' COSTATO SETTIMANE.**
     La rinomina `speedRound` → `speedMatch` (passi 3+4) ha lasciato in piedi
     `speedRoundMessages`, **una chiave di
-    `data/{lingua}/{studente}/messaggi-feedback.json`** — e con lei quindici
+    `data/condivisi/{lingua-studente}/messaggi-feedback.json`** — e con lei quindici
     messaggi che **nessuno ha mai visto**, perche' il modulo pescava altrove.
     ⚠️ **Le sei forme di sopra cercano IDENTIFICATORI NEL CODICE: nessuna di
     loro guarda dentro un JSON di dati.** *Il nome vecchio e' sopravvissuto in
@@ -1143,6 +1147,45 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     non ha una fonte, **non si ricopia: si crea la fonte.** *È quello che è
     stato fatto il 2026-09-26 con i due file che nessun markdown generava —
     208 e 141 stringhe — prima di toccarne una sola parola.*
+
+49. **UN CONTROLLO CHE NON PUÒ CONTROLLARE DEVE FALLIRE, NON PASSARE.** Se il
+    dato su cui si appoggia manca o è illeggibile, **esce rosso e dice perché.**
+    *«Niente da controllare» non è un esito buono: è un esito assente travestito
+    da buono.*
+
+    **Deciso da chi guida il progetto il 2026-09-28, ed è la sorella maggiore
+    della regola 32: quella guarda la singola prova, questa guarda chi guarda le
+    prove.**
+
+    ⚠️ **IL CASO, ED È IL PIÙ GRAVE DEI QUATTRO DI QUEL GIORNO.**
+    `tests/tools/conta-asserzioni.js` è la difesa contro *un verde che prova
+    meno di ieri*. Il 2026-09-26 il suo baseline è stato rigenerato con
+    `--scrivi *.result.txt`, e le chiavi sono finite `test_x.result.txt` mentre
+    il lettore accetta solo `test_x.js`. Da quel momento `leggiBaseline()`
+    tornava `null`, il programma stampava **«Nessun baseline registrato»** e
+    **usciva con 0**.
+
+    > **Due corse complete non hanno confrontato niente, e nessuna delle due l'ha
+    > detto: la riga sembrava informativa e l'uscita diceva «bene».**
+
+    *Le altre tre cose riparate quel giorno difendevano una schermata. Questa
+    difendeva la suite — cioè tutte le altre difese insieme.*
+
+    **In pratica, le tre forme in cui questa regola si applica:**
+
+    | Chi controlla | Se il dato non c'è, oggi | Cosa deve fare |
+    |---|---|---|
+    | un **confronto con un baseline** | «nessun baseline», uscita 0 | **uscita ≠ 0**, e dire quale file manca |
+    | una **sonda** (`page.route`) che non intercetta niente | il test resta verde e misura un'altra cosa | *«ho intercettato»* è **un'asserzione**, non un commento |
+    | un **test che legge una fonte** (un JSON, un markdown) | legge `undefined` e confronta con `undefined` | **fallire sulla fonte assente prima di confrontare** |
+
+    ⚠️ **E la prova che una di queste difese funziona è una sola: TOGLIERE IL
+    DATO E VEDERE ROSSO.** *Non «leggere il codice e convincersi»: il ramo
+    «dato assente» è quello che non gira mai, quindi è l'unico che nessuno ha
+    mai visto funzionare.* **Misurato sull'uscita, che è quello che la suite
+    guarda** (`if ! node tools/conta-asserzioni.js $FILES`): con un baseline
+    alterato a mano esce **1** e nomina il calo; prima della riparazione usciva
+    **0** in entrambi i casi.
 
 ## Riferimenti operativi
 

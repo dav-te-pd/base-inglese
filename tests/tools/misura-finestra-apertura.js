@@ -89,7 +89,7 @@ const sonda = () => {
     page.on('pageerror', function (e) { errori.push(String(e).slice(0, 70)); });
     await page.addInitScript(sonda);
     if (RITARDA) {
-      await page.route('**/messaggi-feedback.json', async function (r) {
+      await page.route('**/*messaggi-feedback.json*', async function (r) {
         await new Promise(function (x) { setTimeout(x, RITARDA); });
         await r.continue();
       });

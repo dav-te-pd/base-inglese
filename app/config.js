@@ -306,7 +306,7 @@
       afterSpeechTimeoutMs: 1200,
       // Minimum % of correct (green) words, out of the whole target
       // sentence, needed for 1/2/3 stars — mirrors the "range" fields
-      // documented in data/inglese/it/inglese-it-messaggi-feedback.json's percentageRule.
+      // documented in data/condivisi/it/it-messaggi-feedback.json's percentageRule.
       starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 },
       // Progressive mic-trouble detection: counts CONSECUTIVE recordings
       // where the recognizer heard no words at all — not a wrong word,

@@ -191,9 +191,12 @@ function sorgenteChe(pezzo) {
 // Quindi il glob lo costruisce questa funzione, una volta per tutte: `*` in
 // coda prende la query se c'e' e non da' fastidio se non c'e'.
 // ⚠️ ANCHE IL GLOB PORTA IL PREFISSO, e non e' simmetria per bellezza: senza,
-// `**/istruzioni-moduli.json*` NON corrisponde a
-// `inglese-it-istruzioni-moduli.json` — il glob vuole che il nome COMINCI
-// cosi'. Un'intercettazione che non intercetta non fallisce: lascia passare la
+// `**/struttura-corso.json*` NON corrisponde a
+// `inglese-it-struttura-corso.json` — il glob vuole che il nome COMINCI
+// cosi'. *L'esempio era `istruzioni-moduli.json` fino al 2026-09-28, quando
+// quel file e' uscito dall'edizione: un esempio che nomina un file spostato
+// manda a cercare nel posto sbagliato — per i due condivisi c'e'
+// `globCondivisi`.* Un'intercettazione che non intercetta non fallisce: lascia passare la
 // richiesta vera e il test diventa verde misurando un'altra cosa (regola 37).
 function globDati(nomeFile) {
   return '**/' + prefissoEdizione(configApp().edizione) + nomeFile + '*';
@@ -279,9 +282,31 @@ function fileEdizione(nome) {
   return repoPath('data', ed.lingua, ed.studente, prefissoEdizione(ed) + nome);
 }
 
+// ⚠️ IL FRATELLO DI `fileEdizione` PER I DUE FILE CHE NON SEGUONO L'EDIZIONE —
+// 2026-09-28, passo B. Il gemello di `percorsoCondiviso` in `app/dati.js`
+// (regola 24: i percorsi si costruiscono, non si incollano).
+//
+// `data/condivisi/{lingua-studente}/{lingua-studente}-<nome>`: **una lingua
+// sola, quella di chi studia.** *I testi dell'interfaccia non dipendono dalla
+// lingua che si insegna — «tocca il microfono» e' identico in `inglese/it` e in
+// `spagnolo/it` — e copiarli per edizione vorrebbe dire 349 stringhe duplicate
+// ogni volta.*
+function fileCondiviso(nome) {
+  const ed = configApp().edizione;
+  return repoPath('data', 'condivisi', ed.studente, ed.studente + '-' + nome);
+}
+
+// Il glob per intercettare uno dei due file condivisi dentro `page.route`.
+// ⚠️ **Finisce con `*` perche' i fetch dei dati portano la versione** (regola
+// 6): un glob che finisce in `.json` non intercetta niente e la sonda resta
+// verde avendo provato zero.
+function globCondivisi(nomeFile) {
+  return '**/' + configApp().edizione.studente + '-' + nomeFile + '*';
+}
+
 // La struttura del corso dell'edizione viva, gia' letta.
 function strutturaCorso() {
   return JSON.parse(require('fs').readFileSync(fileEdizione('struttura-corso.json'), 'utf8'));
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, globDati };
+module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, fileCondiviso, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, globDati, globCondivisi };

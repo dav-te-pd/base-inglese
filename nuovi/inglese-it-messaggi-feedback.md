@@ -1,8 +1,8 @@
 # Messaggi di esito — inglese per italiani
 
-**Il gemello di `data/inglese/it/inglese-it-messaggi-feedback.json`.** Questo file
+**Il gemello di `data/condivisi/it/it-messaggi-feedback.json`.** ⚠️ *Il JSON ha cambiato nome e posto il 2026-09-28 (passo B): non segue l'edizione, perche' i suoi testi dipendono dalla lingua dello STUDENTE e non da quella insegnata. Questo markdown ne prendera' il nome quando arrivera' la versione completa.* Questo file
 **spiega e decide**, quel JSON **esegue** (CLAUDE.md regola 26). Sta accanto a
-`inglese-it-istruzioni-moduli.md` e non dentro di lui: *quello e' il testo che dice
+`it-istruzioni-moduli.md` e non dentro di lui: *quello e' il testo che dice
 **come si usa** un modulo, questo quello che **risponde a un esito** — e la regola 8
 li tiene in due file da prima che esistesse una fonte per nessuno dei due.*
 

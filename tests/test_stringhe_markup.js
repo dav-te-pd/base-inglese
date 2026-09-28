@@ -37,7 +37,7 @@
 // Nessuna delle tre è una dimenticanza, e nessuna è protetta da qui.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, fileEdizione, globDati } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, fileEdizione, globDati, fileCondiviso, globCondivisi } = require('./test-env');
 const { openModule } = require('./map-driver');
 
 let passed = 0, failed = 0;
@@ -83,7 +83,7 @@ async function apriMappa(page, utente) {
 async function run() {
   const browser = await launchBrowser();
   const html = fs.readFileSync(repoPath('index.html'), 'utf8');
-  const testi = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+  const testi = JSON.parse(fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8'));
 
   // ── [A] LA POSSIBILITÀ È TOLTA, non sconsigliata ─────────────────────
   {
@@ -228,7 +228,7 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
-    await page.route(globDati('istruzioni-moduli.json'), async function (route) {
+    await page.route(globCondivisi('istruzioni-moduli.json'), async function (route) {
       await new Promise(function (x) { setTimeout(x, 800); });
       await route.continue();
     });

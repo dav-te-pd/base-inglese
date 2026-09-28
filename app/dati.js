@@ -118,6 +118,36 @@ window.BI = window.BI || {};
       ed.lingua + '-' + ed.studente + '-' + nomeFile);
   }
 
+  // ⚠️ E IL SUO FRATELLO: I TESTI DELL'INTERFACCIA NON SEGUONO L'EDIZIONE —
+  // 2026-09-28, passo B.
+  //
+  // `data/condivisi/{lingua-studente}/{lingua-studente}-<nome>`: una sola
+  // lingua nel percorso, quella di **chi studia**, e non la coppia.
+  //
+  // **Perche', e non e' una semplificazione: quei testi non dipendono dalla
+  // lingua che si insegna.** *«Tocca il microfono per registrare» e' identico
+  // in `inglese/it` e in `spagnolo/it`.* Tenerli dentro l'edizione vorrebbe
+  // dire **349 stringhe duplicate per ogni edizione** — con quattro edizioni
+  // per italiani, **1047 copie che nessuno riallineerebbe**, e una copia che
+  // nessuno riallinea diverge.
+  //
+  // ⚠️ **QUINDI QUI `ed.lingua` NON COMPARE, E DEVE NON COMPARIRE.** Se un
+  // giorno qualcuno lo aggiunge «per simmetria», quei testi tornano a
+  // moltiplicarsi per edizione. *Il test che lo impedisce e'
+  // `test_edizione_una_volta.js`, blocco `[B]`, e la sua seconda asserzione
+  // prova che cambiando edizione questi due percorsi **NON si muovono**.*
+  //
+  // ⚠️ **E IL NOME TIENE LA LINGUA COMUNQUE** (`it-istruzioni-moduli.json`,
+  // non `istruzioni-moduli.json`): un file esce dal repository — cartella
+  // Download, poi una chat — e li' la cartella si perde. *E' la stessa ragione
+  // della regola 4 sui file episodio, applicata a un file che non e' di
+  // un'edizione.*
+  function percorsoCondiviso(nomeFile) {
+    var ed = CONFIG.edizione;
+    return conVersione('data/condivisi/' + ed.studente + '/' +
+      ed.studente + '-' + nomeFile);
+  }
+
 
   // howItWorks/helpReminder text (CLAUDE.md rule 8) lives in this file,
   // shared across episodes and keyed by module kind — never hardcoded
@@ -200,13 +230,13 @@ window.BI = window.BI || {};
     return strutturaPromise;
   }
 
-  var MODULE_INSTRUCTIONS_FILE = percorsoEdizione('istruzioni-moduli.json');
+  var MODULE_INSTRUCTIONS_FILE = percorsoCondiviso('istruzioni-moduli.json');
 
   // Il quarto file di dati, e l'unico che fino al 2026-09-09 aveva il percorso
   // scritto dentro la riga di fetch invece che qui. Era l'unico dei tre che
   // uno spostamento di cartelle poteva rompere in silenzio: non compariva in
   // nessun elenco di percorsi, stava in mezzo a una funzione.
-  var FEEDBACK_MESSAGES_FILE = percorsoEdizione('messaggi-feedback.json');
+  var FEEDBACK_MESSAGES_FILE = percorsoCondiviso('messaggi-feedback.json');
 
   // Le tabelle di personalizzazione condivise (nomi, citta', paesi). Uscite da
   // APP_CONFIG il 2026-09-15: sono contenuto dell'edizione (CLAUDE.md regola 4),

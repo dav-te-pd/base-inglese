@@ -38,6 +38,24 @@ const RADICI = ['data', 'docs'];
 // ⚠️ LA FUNZIONE È PURA, E IL PERCHÉ È NEL COMMENTO IN TESTA: prende un elenco
 // di percorsi e restituisce chi sgarra, senza toccare il disco. Il test la
 // falsifica con un elenco finto e poi le dà quello vero.
+// ⚠️ `condivisi` NON È UNA LINGUA, ED È L'UNICA ECCEZIONE — 2026-09-28, passo B.
+//
+// `data/condivisi/{lingua-studente}/` tiene i testi dell'interfaccia, che **non
+// dipendono dalla lingua che si insegna ma da quella dello STUDENTE**: «tocca
+// il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`.
+// *Copiarli per edizione vorrebbe dire 349 stringhe duplicate ogni volta — con
+// quattro edizioni per italiani, 1047 copie che nessuno riallineerebbe.*
+//
+// ⚠️ **Quindi lì il prefisso atteso è UNA lingua sola, non la coppia**:
+// `it-istruzioni-moduli.json`, non `condivisi-it-istruzioni-moduli.json`.
+// *Il nome tiene comunque la lingua, perché un file esce dal repository e lì la
+// cartella si perde — la stessa ragione della regola 4.*
+//
+// **È un nome riservato, e va scritto qui e non dedotto:** una cartella che si
+// chiamasse `condivisi` come lingua vera sarebbe un'edizione «condiviso per
+// italiani», che non esiste e non esisterà.
+const CARTELLA_CONDIVISA = 'condivisi';
+
 function fileFuoriConvenzione(percorsi) {
   const fuori = [];
   percorsi.forEach(function (p) {
@@ -46,7 +64,9 @@ function fileFuoriConvenzione(percorsi) {
     // una cartella in più dentro un'edizione non è prevista, e se nascesse
     // questa riga la segnalerebbe invece di ignorarla in silenzio.
     if (pezzi.length !== 4) { fuori.push({ file: p, motivo: 'non sta in {radice}/{lingua}/{studente}/' }); return; }
-    const atteso = pezzi[1] + '-' + pezzi[2] + '-';
+    // La cartella condivisa ha la sua convenzione, e resta una convenzione:
+    // non è «qui non si guarda».
+    const atteso = pezzi[1] === CARTELLA_CONDIVISA ? pezzi[2] + '-' : pezzi[1] + '-' + pezzi[2] + '-';
     if (pezzi[3].indexOf(atteso) !== 0) {
       fuori.push({ file: p, motivo: 'dovrebbe cominciare con "' + atteso + '"' });
     }
@@ -132,7 +152,12 @@ function elencaEdizioni() {
   const edizioni = {};
   percorsi.forEach(function (p) {
     const pezzi = p.split('/');
-    if (pezzi.length === 4) edizioni[pezzi[1] + '/' + pezzi[2]] = true;
+    // ⚠️ `condivisi/` non è un'edizione, quindi non le si chiede un file di
+    // struttura né degli episodi: non ne ha e non deve averne. *Escluderla qui
+    // e darle la sua convenzione in `fileFuoriConvenzione` sono due cose
+    // diverse: la prima dice «non è un corso», la seconda «ha comunque un
+    // nome giusto e uno sbagliato».*
+    if (pezzi.length === 4 && pezzi[1] !== CARTELLA_CONDIVISA) edizioni[pezzi[1] + '/' + pezzi[2]] = true;
   });
 
   const mancanti = [];

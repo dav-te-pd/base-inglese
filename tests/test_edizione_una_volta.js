@@ -1,6 +1,33 @@
 // PROTEGGE: che l'edizione — la coppia `{lingua-che-si-impara}/{lingua-studente}`
-// della regola 4 — sia dichiarata in UN PUNTO SOLO, e che tutti e quattro i
-// percorsi dei dati la seguano insieme.
+// della regola 4 — sia dichiarata in UN PUNTO SOLO, e che i percorsi dei dati
+// stiano ognuno dalla parte giusta di un confine.
+//
+// ⚠️ L'INVARIANTE SI E' RISTRETTO IL 2026-09-28 (passo B), E NON E' UNA SVISTA:
+// FINO A QUEL GIORNO DICEVA «TUTTI E QUATTRO SEGUONO L'EDIZIONE».
+//
+// Adesso i quattro percorsi si dividono in due gruppi, e il test prova
+// entrambe le cose — che i primi due la seguano **e che i secondi due NON si
+// muovano**:
+//
+//   | segue l'edizione | non la segue |
+//   |---|---|
+//   | il file EPISODIO (`inglese-it-gate.json`) | `it-istruzioni-moduli.json` |
+//   | le TABELLE di personalizzazione | `it-messaggi-feedback.json` |
+//
+// ⚠️ **IL PERCHE', perche' senza il perche' un invariante piu' corto si legge
+// come una dimenticanza e qualcuno lo «ripara» rimettendolo com'era:**
+// istruzioni e messaggi **non dipendono dalla lingua che si insegna, ma dalla
+// lingua dello STUDENTE**. *«Tocca il microfono per registrare» e' identico in
+// `inglese/it` e in `spagnolo/it`.* Copiarli per edizione vorrebbe dire **349
+// stringhe duplicate ogni volta** — e con quattro edizioni per italiani
+// (inglese, spagnolo, francese, tedesco) **1047 copie che nessuno
+// riallineerebbe.**
+//
+// ⚠️ **E LA SECONDA META' E' PIU' FORTE DI QUELLO CHE IL TEST PROVAVA PRIMA:**
+// «questi due seguono l'edizione» cade solo se il percorso sbaglia; «questi due
+// NON si muovono» cade anche il giorno in cui qualcuno aggiunge `ed.lingua` a
+// `percorsoCondiviso` «per simmetria» — che e' il modo in cui quelle 1047 copie
+// tornerebbero.
 //
 // ⚠️ COSA SI PERDE SENZA QUESTO FILE, ed e' un guasto MUTO.
 //
@@ -116,11 +143,16 @@ async function run() {
         episodio: window.BI.episodeDataFile('gate')
       };
     });
-    log('[B] I tre file condivisi stanno nella cartella dell\'edizione',
-      nudo(prima.istruzioni) === 'data/inglese/it/inglese-it-istruzioni-moduli.json' &&
-      nudo(prima.feedback) === 'data/inglese/it/inglese-it-messaggi-feedback.json' &&
+    // ⚠️ DUE ASSERZIONI E NON UNA, dal 2026-09-28: il confine si vede solo se le
+    // due parti si affermano separatamente. *Una riga sola, piu' corta, e'
+    // esattamente quello che fra un mese si legge come una dimenticanza.*
+    log('[B] Le tabelle di personalizzazione stanno nella cartella dell\'edizione',
       nudo(prima.tabelle) === 'data/inglese/it/inglese-it-tabelle-personalizzazione.json',
-      JSON.stringify(prima));
+      prima.tabelle);
+    log('[B] I testi dell\'interfaccia NO: stanno in data/condivisi/{studente}/, perche\' dipendono dalla lingua dello studente',
+      nudo(prima.istruzioni) === 'data/condivisi/it/it-istruzioni-moduli.json' &&
+      nudo(prima.feedback) === 'data/condivisi/it/it-messaggi-feedback.json',
+      JSON.stringify({ istruzioni: prima.istruzioni, feedback: prima.feedback }));
     log('[B] Il file episodio porta la coppia anche nel NOME',
       nudo(prima.episodio) === 'data/inglese/it/inglese-it-gate.json', prima.episodio);
 
@@ -150,11 +182,16 @@ async function run() {
         episodio: window.BI.episodeDataFile('gate')
       };
     });
-    log('[B] Cambiata l\'edizione, la segue il file delle istruzioni',
-      nudo(dopo.istruzioni) === 'data/francese/it/francese-it-istruzioni-moduli.json', dopo.istruzioni);
-    log('[B] ...la segue il file dei messaggi di feedback',
-      nudo(dopo.feedback) === 'data/francese/it/francese-it-messaggi-feedback.json', dopo.feedback);
-    log('[B] ...la seguono le tabelle di personalizzazione',
+    // ⚠️ QUESTE DUE RIGHE SONO ROVESCIATE DAL 2026-09-28, ED E' LA META' CHE
+    // VALE PIU' DELL'ALTRA: prima dicevano «cambiata l'edizione, la seguono» e
+    // si aspettavano `data/francese/it/francese-it-…`. Adesso provano che quei
+    // due percorsi **NON SI MUOVONO**, cioe' cadono il giorno in cui qualcuno
+    // rimette la lingua insegnata in `percorsoCondiviso`.
+    log('[B] Cambiata l\'edizione, il file delle istruzioni NON si muove: i testi non seguono la lingua insegnata',
+      nudo(dopo.istruzioni) === 'data/condivisi/it/it-istruzioni-moduli.json', dopo.istruzioni);
+    log('[B] ...e nemmeno quello dei messaggi di feedback',
+      nudo(dopo.feedback) === 'data/condivisi/it/it-messaggi-feedback.json', dopo.feedback);
+    log('[B] ...mentre la seguono le tabelle di personalizzazione',
       nudo(dopo.tabelle) === 'data/francese/it/francese-it-tabelle-personalizzazione.json', dopo.tabelle);
     log('[B] ...e la segue il file episodio, cartella E prefisso insieme',
       nudo(dopo.episodio) === 'data/francese/it/francese-it-gate.json', dopo.episodio);
@@ -167,10 +204,15 @@ async function run() {
     // **direbbe una bugia su quale corso contiene**. Questo e' il difetto che
     // `test_nomenclatura_edizione.js` guarda sul disco e questo blocco guarda
     // a runtime — due misure diverse sulla stessa decisione.
-    log('[B] I quattro si muovono INSIEME: nessuno resta all\'edizione vecchia',
-      [dopo.istruzioni, dopo.feedback, dopo.tabelle, dopo.episodio]
+    // ⚠️ ERANO QUATTRO E ADESSO SONO DUE, E LA RIGA DICE QUALI — 2026-09-28.
+    // *Diceva «i quattro si muovono INSIEME», e con quattro percorsi su quattro
+    // dentro l'edizione bastava un `every`. Adesso il gruppo che si muove e' di
+    // due: elencarli invece di contarli e' l'unica forma che non si legge come
+    // un `every` a cui e' caduto un elemento.*
+    log('[B] I due che seguono l\'edizione si muovono INSIEME: nessuno resta a quella vecchia',
+      [dopo.tabelle, dopo.episodio]
         .every(function (p) { return nudo(p).indexOf('data/francese/it/') === 0; }),
-      JSON.stringify(dopo));
+      JSON.stringify({ tabelle: dopo.tabelle, episodio: dopo.episodio }));
 
     await page.evaluate(function () { localStorage.clear(); });
     await page.close();

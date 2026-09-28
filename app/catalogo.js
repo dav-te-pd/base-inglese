@@ -79,7 +79,7 @@
      moduleUsesGrade guarda per non mostrarle il pulsante del grado.
 
      I testi howItWorks/helpReminder di ogni kind stanno in
-     data/inglese/it/inglese-it-istruzioni-moduli.json (regola 8), non qui. */
+     data/condivisi/it/it-istruzioni-moduli.json (regola 8), non qui. */
   // ── L'UNICO PUNTO IN CUI L'APP, DA FUORI, SA COME SI CHIAMA IL CANCELLO ──
   //
   // Personalizza non e' un modulo come gli altri: e' il passo che, finche' non

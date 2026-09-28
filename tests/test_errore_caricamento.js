@@ -28,7 +28,7 @@
 // apertura è la più corta.
 const fs = require('fs');
 const path = require('path');
-const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, globDati } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, globDati, fileCondiviso } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
 const PASSO = 'matchEngIta';
@@ -39,7 +39,7 @@ const FILE_EPISODIO = 'gate.json'; // il prefisso dell'edizione lo mette globDat
 // cambia nel file, il test continua a valere; se qualcuno li riporta dentro
 // il codice, il test se ne accorge.
 const TESTI = JSON.parse(
-  fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8')
+  fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8')
 ).erroreCaricamento;
 
 const risultati = [];

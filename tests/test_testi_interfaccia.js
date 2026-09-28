@@ -1,5 +1,5 @@
 // PROTEGGE: che i testi dell'interfaccia arrivino DAVVERO da
-// data/inglese/it/inglese-it-istruzioni-moduli.json (regola 8), e non tornino di
+// data/condivisi/it/it-istruzioni-moduli.json (regola 8), e non tornino di
 // nascosto nel codice — e che la riga che lo rende possibile non sparisca.
 //
 // COSA SI PERDE SENZA: il passo 18 ha spostato i testi scritti su richiesta
@@ -30,10 +30,10 @@
 // smettesse di CHIAMARLA, tornando a scrivere il testo nel codice, qui non si
 // vedrebbe.
 const fs = require('fs');
-const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, fileEdizione, globDati } = require('./test-env');
+const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, fileEdizione, globDati, fileCondiviso, globCondivisi } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 const { openModule } = require('./map-driver');
-const J = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+const J = JSON.parse(fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8'));
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
@@ -204,7 +204,7 @@ async function run() {
   // serve, su qualunque macchina, e non si chiude mai da sola.
   var apriIlCancello;
   var cancelloTesti = new Promise(function (r) { apriIlCancello = r; });
-  await pagina3.route(globDati('istruzioni-moduli.json'), async function (route) {
+  await pagina3.route(globCondivisi('istruzioni-moduli.json'), async function (route) {
     await cancelloTesti;
     await route.continue();
   });

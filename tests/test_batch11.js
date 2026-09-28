@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni, catturaAvvisi } = require('./mock-browser');
 const { attendiClasse, attendiVisibile } = require('./attese');
@@ -13,7 +13,7 @@ const BASE = APP_URL;
 // index.html, sparita insieme al fallback. Il file è la fonte, quindi è da lì
 // che si guarda, e per questa verifica il browser non serve.
 const MESSAGGI = JSON.parse(
-  fs.readFileSync(fileEdizione('messaggi-feedback.json'), 'utf8'));
+  fs.readFileSync(fileCondiviso('messaggi-feedback.json'), 'utf8'));
 
 const mockInit = componi(mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 }), spiaToni, catturaAvvisi);
 

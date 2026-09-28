@@ -1,4 +1,4 @@
-const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');
 const { allSteps } = require('./module-order');
@@ -10,7 +10,7 @@ const { fileEdizione } = require('./test-env');
 // ⚠️ IL TESTO SI LEGGE DAL FILE, NON SI RICOPIA QUI (regola 24 e regola 15 dei
 // valori ricopiati): una frase incollata in un test invecchia e rompe la CI
 // senza che niente sia rotto.
-const ISTRUZIONI = JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+const ISTRUZIONI = JSON.parse(fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8'));
 
 const BASE = APP_URL;
 
@@ -116,7 +116,15 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.goto(BASE);
-    const data = await page.evaluate(() => fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()));
+    // ⚠️ IL PERCORSO NON SI SCRIVE: SI CHIEDE ALL'APP — 2026-09-28, passo B.
+    // Qui c'era `fetch('data/condivisi/it/it-messaggi-feedback.json')`
+    // incollato per intero, e dentro `page.evaluate` un aiutante di Node non
+    // arriva. `window.BI.FEEDBACK_MESSAGES_FILE` e' lo stesso valore che l'app
+    // chiede davvero — **versione compresa** — quindi il test non puo' piu'
+    // scaricare un file diverso da quello che l'app legge. *E' la regola 48
+    // applicata a un percorso: sei posti che sapevano la stessa cosa erano cinque
+    // di troppo.*
+    const data = await page.evaluate(() => fetch(window.BI.FEEDBACK_MESSAGES_FILE).then(r => r.json()));
     log('[Job2] moduleCompleteMessages is bucketed {alto,medio,basso}, each 5 entries',
       data.moduleCompleteMessages && data.moduleCompleteMessages.alto.length === 5 && data.moduleCompleteMessages.medio.length === 5 && data.moduleCompleteMessages.basso.length === 5);
     log('[Job2] dialogoCompleteMessages is {siLoSo,nonAncora}, each 5 entries',
@@ -158,7 +166,7 @@ async function run() {
     await attendiSottotitoloEsito(page, 'dg-summary-title-sub');
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Non ancora" subtitle: "' + subtitle + '"');
-    const data = await page.evaluate(() => fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch(window.BI.FEEDBACK_MESSAGES_FILE).then(r => r.json()));
     log('[Job2B] "Non ancora" outcome subtitle is one of dialogoCompleteMessages.nonAncora', data.dialogoCompleteMessages.nonAncora.indexOf(subtitle) !== -1);
     log('[Job2B] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
@@ -187,7 +195,7 @@ async function run() {
     await attendiSottotitoloEsito(page, 'dg-summary-title-sub');
     const subtitle = await page.$eval('#dg-summary-title-sub', el => el.textContent).catch(() => null);
     console.log('    -> "Si lo so" subtitle: "' + subtitle + '"');
-    const data = await page.evaluate(() => fetch('data/inglese/it/inglese-it-messaggi-feedback.json').then(r => r.json()));
+    const data = await page.evaluate(() => fetch(window.BI.FEEDBACK_MESSAGES_FILE).then(r => r.json()));
     log('[Job2B] "Sì, lo so" outcome subtitle is one of dialogoCompleteMessages.siLoSo', data.dialogoCompleteMessages.siLoSo.indexOf(subtitle) !== -1);
     log('[Job2B] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);

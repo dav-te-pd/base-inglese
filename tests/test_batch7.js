@@ -1,4 +1,4 @@
-const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockInit: mockInitCondiviso } = require('./mock-browser');
 const { allSteps } = require('./module-order');
@@ -11,7 +11,7 @@ const { fileEdizione } = require('./test-env');
 // ⚠️ I MESSAGGI SI LEGGONO DAL FILE, NON SI RICOPIANO QUI: una frase ricopiata
 // in un test invecchia e rompe la CI senza che niente sia rotto. Il percorso lo
 // costruisce `fileEdizione`, il gemello di `percorsoEdizione` (regola 24).
-const MESSAGGI = JSON.parse(fs.readFileSync(fileEdizione('messaggi-feedback.json'), 'utf8'));
+const MESSAGGI = JSON.parse(fs.readFileSync(fileCondiviso('messaggi-feedback.json'), 'utf8'));
 
 // Tutte le frasi di una famiglia, qualunque siano le sue fasce: la fascia che
 // esce dipende dal punteggio, e un test che guida il quiz «rispondendo alla

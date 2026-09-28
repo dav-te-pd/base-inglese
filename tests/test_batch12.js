@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni, catturaAvvisi } = require('./mock-browser');
 const { attendiClasse, attendiTono } = require('./attese');
@@ -10,7 +10,7 @@ const BASE = APP_URL;
 
 // I testi dell'interfaccia, letti dal file come li legge l'app.
 function istruzioni() {
-  return JSON.parse(fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+  return JSON.parse(fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8'));
 }
 
 const mockInit = componi(mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs: 5 }), spiaToni, catturaAvvisi);

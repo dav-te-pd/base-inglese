@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiClasse, attendiVisibile } = require('./attese');
 const { stepsBefore } = require('./module-order');
@@ -12,7 +12,7 @@ const BASE = APP_URL;
 // fonte (CLAUDE.md regola 8), quindi è da lì che si guarda — e per queste
 // verifiche non serve nemmeno aprire il browser.
 const ISTRUZIONI = JSON.parse(
-  fs.readFileSync(fileEdizione('istruzioni-moduli.json'), 'utf8'));
+  fs.readFileSync(fileCondiviso('istruzioni-moduli.json'), 'utf8'));
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
