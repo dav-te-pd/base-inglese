@@ -93,8 +93,15 @@ async function run() {
       //
       // Adesso confronta il sottotitolo con le frasi VERE della famiglia, lette
       // dal file: e' l'unica forma che cade quando la provenienza cambia.
-      const attese = frasiDi('moduleCompleteMessages');
-      log('[Job2] Rotating subtitle is one of moduleCompleteMessages (' + attese.length + ' frasi)',
+      // ⚠️ E IL 2026-09-28 (passo C) QUESTA RIGA E' ANDATA ROSSA, CHE E' IL
+      // MOTIVO PER CUI ERA STATA RIPARATA: *Speed Match ha smesso di pescare
+      // da `moduleCompleteMessages` e ha cominciato a pescare dalla famiglia
+      // sua, quindici messaggi che nessuno aveva mai visto.* **Nella forma
+      // vecchia — `subtitle.length > 5` — quel cambio sarebbe passato
+      // inosservato**, che è esattamente quello che era successo per
+      // settimane.
+      const attese = frasiDi('speedMatchMessages');
+      log('[Job2] Rotating subtitle is one of speedMatchMessages (' + attese.length + ' frasi)',
         !!subtitle && attese.indexOf(subtitle.trim()) !== -1,
         'letto: "' + subtitle + '"');
       console.log('    -> subtitle: "' + subtitle + '"');
@@ -127,13 +134,19 @@ async function run() {
   // si puo' davvero affermare sul dato: **che una rotazione sia possibile**,
   // cioe' che ogni fascia abbia almeno due frasi distinte. *Che l'app ne peschi
   // una a caso lo dice `pickRandom`, che ha un punto unico e sei chiamanti.*
-  {
-    const fasce = Object.keys(MESSAGGI.moduleCompleteMessages);
-    const magre = fasce.filter((f) => new Set(MESSAGGI.moduleCompleteMessages[f]).size < 2);
-    log('[Job2-bis] Ogni fascia di moduleCompleteMessages ha almeno due frasi distinte, quindi la rotazione e\' possibile',
+  //
+  // ⚠️ DUE FAMIGLIE E NON UNA, DAL 2026-09-28 (passo C): Speed Match ha
+  // smesso di pescare da `moduleCompleteMessages` e pesca dalla sua. *Lasciare
+  // qui la sola famiglia vecchia vorrebbe dire garantire la rotazione dove non
+  // serve piu' e non garantirla dove serve adesso \u2014 la stessa asserzione, ma
+  // puntata all'indirizzo di ieri.*
+  ['moduleCompleteMessages', 'speedMatchMessages'].forEach(function (famiglia) {
+    const fasce = Object.keys(MESSAGGI[famiglia] || {});
+    const magre = fasce.filter((f) => new Set(MESSAGGI[famiglia][f]).size < 2);
+    log('[Job2-bis] Ogni fascia di ' + famiglia + ' ha almeno due frasi distinte, quindi la rotazione e\' possibile',
       fasce.length > 0 && magre.length === 0,
       'fasce: ' + fasce.join(', ') + ' | magre: ' + (magre.join(', ') || 'nessuna'));
-  }
+  });
 
   // ============ JOB 3+4: safety-valve popup fires on Match Practice, both variants ============
   {
