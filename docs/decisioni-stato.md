@@ -128,6 +128,69 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
+## ⚠️ PASSO B — LA SUPERFICIE MISURATA PRIMA DI TOCCARE, E UN INVARIANTE CHE CAMBIA SIGNIFICATO — 2026-09-28
+
+*`vai con A, poi subito B`. A e' chiuso; **B non e' partito**, e la ragione e'
+una misura: non e' «una rinomina di percorsi».*
+
+### ⚠️ IL PUNTO CHE BLOCCA: `test_edizione_una_volta.js` ASSERISCE L'OPPOSTO DELLA DECISIONE 7
+
+Quel file esiste per dire che **tutti e quattro i percorsi dei dati seguono
+l'edizione**, dichiarata in un punto solo. La sua riga `[B]`:
+
+```js
+log('[B] I tre file condivisi stanno nella cartella dell\'edizione',
+  nudo(prima.istruzioni) === 'data/inglese/it/inglese-it-istruzioni-moduli.json' &&
+  nudo(prima.feedback)   === 'data/inglese/it/inglese-it-messaggi-feedback.json' &&
+  nudo(prima.tabelle)    === 'data/inglese/it/inglese-it-tabelle-personalizzazione.json', …);
+```
+
+e più sotto la prova col francese: cambiando edizione, **tutti e tre** devono
+diventare `data/francese/it/francese-it-…`.
+
+> ⚠️ **La decisione 7 dice che due di quei tre NON devono più seguire l'edizione.
+> Quindi non è un test da aggiornare: è un invariante che si RESTRINGE** — da
+> «tutti e quattro i percorsi seguono l'edizione» a «l'episodio e le tabelle di
+> personalizzazione la seguono; le istruzioni e i messaggi NO, perché dipendono
+> dalla lingua dello studente».
+
+*E il restringimento va scritto nella testata del file come nuovo invariante,
+altrimenti fra un mese quella riga si legge come una dimenticanza e qualcuno
+«ripara» rimettendo i due percorsi dentro l'edizione.* **È il caso della regola
+32 applicata a un test che cambia mestiere, non a uno che nasce.**
+
+### La superficie, contata
+
+| Dove | Punti | Note |
+|---|---|---|
+| **`app/dati.js:203, 209`** | 2 | i due `percorsoEdizione(...)` → servirà un `percorsoCondiviso(...)` |
+| **percorsi incollati PER INTERO dentro `page.evaluate`** | **6** | `test_batch15.js` ×2, `test_batch9.js` ×3, `tests/tools/misura-finestra-boot.js` ×1 — *`fetch('data/inglese/it/inglese-it-…')` scritti a mano: dentro la pagina `fileEdizione` non arriva* |
+| **`test_edizione_una_votta.js`** | 4 asserzioni | l'invariante che cambia significato, sopra |
+| `fileEdizione(...)` nei test | 7 file | servirà un `fileCondiviso(...)` in `tests/test-env.js` |
+| `globDati(...)` | 4 punti | le sonde che ritardano o abortiscono i due file |
+| commenti col percorso vecchio | 10 | `index.html` ×5, `app/*.js` ×5 |
+| **regola 6** | **36 tag** | `app/dati.js` cambia, quindi la versione sale su tutti |
+
+**Totale: una ventina di punti in dodici file, più un invariante da riscrivere.**
+
+⚠️ **E la settima forma della regola 41, nata stamattina, serve subito qui:** il
+nome vecchio vive anche **dentro i due JSON che si spostano** — no, non come
+chiave, ma il loro NOME di file è il dato che cambia, e i sei `fetch` incollati
+sono esattamente la forma ⑥ («il percorso assemblato a pezzi») nella sua
+variante peggiore: **assemblato per niente, scritto per intero.**
+
+### Cosa NON cambia, e va detto
+
+✅ **`docs/` non ha ancora una fonte markdown per questi due file**, quindi B
+sposta **solo** i JSON. *Il markdown nascerà col pacchetto delle sezioni 2-3
+(177 stringhe) e nascerà già in `docs/condivisi/it/`: non c'è niente da
+spostare due volte.*
+
+⚠️ **Ma il JSON sì: B lo sposta e C ne riscrive il contenuto.** *Due tocchi
+dello stesso file sono inevitabili — la decisione 8 evitava l'altra cosa, cioè
+scrivere dentro e POI rinominare, che è peggio perché la scrittura andrebbe
+rifatta sul nome nuovo.*
+
 ## ⚠️ IL PACCHETTO 1, DECISO PUNTO PER PUNTO — 2026-09-27
 
 *Tutto deciso da chi guida il progetto. **La numerazione è la sua** e si copia
