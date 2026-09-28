@@ -1297,7 +1297,14 @@
   // used to need one too, but it's a real entry in currentEpisode.
   // modulesById now (see personalizzazioneModule below) — no duplicate
   // object for the same module.
-  var MAP_PSEUDO_MODULE = { id: 'mappaEpisodio', kind: 'mappaEpisodio', label: 'Mappa dell\'episodio' };
+  // ⚠️ NESSUN `label`, ED È LA REGOLA E NON UN BUCO — passo C, 2026-09-28.
+  // `label` è il nome del passo, e viene da `CONFIG.moduleLabels`: una
+  // schermata non sta in nessuna sequenza, quindi lì dentro non c'è e non
+  // deve esserci. Il suo nome è il suo `pageTitle`, nel file dei testi, e lo
+  // legge `titoloSpiegazione`. *Prima era scritto qui a mano, uguale a quel
+  // `pageTitle`: due copie della stessa frase, e una sola l'avrebbe vista
+  // cambiare* (regola 48).
+  var MAP_PSEUDO_MODULE = { id: 'mappaEpisodio', kind: 'mappaEpisodio' };
 
   var STATUS_LABEL = { completed: 'Completato', current: 'Attuale', locked: 'Bloccato' };
 
@@ -1452,7 +1459,8 @@
   // Pseudo-modulo come MAP_PSEUDO_MODULE: la lista degli episodi non e' un
   // modulo, ma ha una schermata sua e quindi i suoi due testi (regola 8), e
   // la macchina condivisa di Help/Spiegazione chiede solo `.kind` e `.id`.
-  var EPISODES_PSEUDO_MODULE = { id: 'listaEpisodi', kind: 'listaEpisodi', label: 'I tuoi episodi' };
+  // Senza `label`, come MAP_PSEUDO_MODULE qui sopra e per la stessa ragione.
+  var EPISODES_PSEUDO_MODULE = { id: 'listaEpisodi', kind: 'listaEpisodi' };
 
   function openEpisodes() {
     // Stessa guardia della mappa (passo 1.3b): i testi prima di disegnare,
@@ -1515,7 +1523,7 @@
       mapShowScreen('main');
     } else {
       document.getElementById('map-intro-dont-show-again').checked = false;
-      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body', MAP_PSEUDO_MODULE.label, 'map-intro-start-btn', 'map-intro-dont-show-text');
+      renderIntroContent('mappaEpisodio', 'map-intro-title', 'map-intro-body', '', 'map-intro-start-btn', 'map-intro-dont-show-text');
       mapShowScreen('intro');
     }
   }
@@ -1595,7 +1603,13 @@
     if (dontShowEl) dontShowEl.textContent = '';
     loadModuleInstructions().then(function (data) {
       var entry = data[kind] && data[kind].howItWorks;
-      renderSpiegazioneTitle(titleEl, (entry && entry.title) || moduleLabel);
+      // ⚠️ IL TITOLO NON VIENE PIU' DALLA VOCE — passo C, 2026-09-28.
+      // Il perché sta accanto a `titoloSpiegazione` in `app/ui-condivisa.js`,
+      // dove vive la stessa decisione per il pop-up. Qui `moduleLabel` è il
+      // nome del PASSO e arriva da `CONFIG`, quindi è già pronto; le due
+      // schermate non ne hanno uno e prendono il loro `pageTitle`, che prima
+      // di questo `.then` non era ancora arrivato.
+      renderSpiegazioneTitle(titleEl, moduleLabel || uiText(kind + '.pageTitle'));
       document.getElementById(bodyElId).innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';

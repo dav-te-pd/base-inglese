@@ -1,17 +1,15 @@
 {
   "personalizzazione": {
+    "howItWorks": {
+      "body": "<p>Qui scegli i nomi dei personaggi della storia — o lasci quelli proposti: nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo.</p><p><b>Queste scelte valgono per questo episodio.</b> Se vuoi cambiarle dopo averlo iniziato, l'episodio si rifà da capo.</p><p>Quando sei pronto, premi «Inizia l'episodio».</p>"
+    },
+    "helpReminder": {
+      "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. «Reset» torna ai valori di partenza.</p><p>Le scelte valgono per questo episodio: per cambiarle dopo averlo iniziato, l'episodio si rifà da capo.</p><p>In fondo alla pagina puoi suggerirci nomi o parole che non trovi nelle liste.</p>"
+    },
     "pageDescription": "Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.",
     "requestBoxLabel": "Non trovi il nome, la città o la parola che ti serve?",
     "requestBoxExample": "Esempio: se vai a Parigi invece che in Cina, scrivi \"Parigi\" nel campo Destinazione qui sotto — valuteremo di adattare il corso.",
     "requestBoxDuplicateWarning": "Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.",
-    "howItWorks": {
-      "title": "Your Story",
-      "body": "<p>Qui puoi scegliere i nomi dei personaggi della storia, o lasciare quelli proposti — nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo tra le opzioni disponibili, o il pulsante 'Reset' per tornare al valore di default.</p><p><b>Attenzione:</b> queste scelte valgono per TUTTO l'episodio — cambiarle a metà strada creerebbe confusione con quello che hai già esercitato. Se vuoi cambiarle dopo aver iniziato, dovrai rifare l'episodio da capo.</p><p>In fondo alla pagina trovi anche un modo per suggerirci nomi o parole che non trovi nelle liste.</p><p>Quando sei pronto, premi 'Inizia l'episodio'.</p>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Tocca un campo per personalizzarlo, o lascialo com'è. Le scelte valgono per tutto l'episodio — per cambiarle dopo, si riparte da capo. 'Reset' torna al default.</p>"
-    },
     "midEpisodeWarning": {
       "title": "Stai per cancellare i tuoi progressi",
       "body": "<p>Hai già iniziato questo episodio. Se cambi ora i nomi e i luoghi della storia, tutto quello che hai fatto finora smette di avere senso: si riferiva alle parole che stai per sostituire.</p><p>Per continuare, <b>perderai tutti i progressi fatti in questo episodio</b> — dovrai rifare da capo gli esercizi che avevi già completato.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p>",
@@ -25,22 +23,58 @@
   },
   "meetTheStory": {
     "howItWorks": {
-      "title": "Meet the Story",
-      "body": "<p>È il tuo primo incontro con la storia dell'episodio: qui si ascolta, non si studia.</p><p>Ogni battuta ha il pulsante 🔊 per sentirla, e puoi scegliere la velocità se va troppo veloce. La traduzione è già lì sotto, sempre visibile: a questo punto non hai ancora studiato niente, quindi non ha senso nasconderla.</p><p>Ascolta il dialogo tutte le volte che vuoi. Non devi ricordare niente adesso: le parole, le frasi e le regole arrivano nei moduli successivi.</p><p>Quando ti sei fatto un'idea della storia, premi \"Ho finito\".</p>"
+      "body": "<p>È il tuo primo incontro con la storia: qui si ascolta, non si studia.</p><p>Tocca 🔊 su ogni battuta per sentirla. La traduzione è già sotto, sempre visibile — non hai ancora studiato niente, quindi non ha senso nasconderla.</p><p>Ascolta quante volte vuoi. <b>Non devi ricordare niente adesso:</b> le parole, le frasi e le regole arrivano dopo.</p><p>Quando ti sei fatto un'idea della storia, premi «Ho finito».</p>"
     },
     "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Ascolta le battute con 🔊, alla velocità che preferisci. La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi \"Ho finito\".</p>"
+      "body": "<p>Ascolta le battute con 🔊, alla velocità che preferisci (100/75/50%). La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi «Ho finito».</p>"
+    }
+  },
+  "repeatAloud": {
+    "howItWorks": {
+      "body": "<p>Ascolta ogni parola con 🔊, leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti ad alta voce finché non ti sembra uguale. <b>Se ti sembra diverso è normale:</b> più avanti ci sono esercizi che ti dicono se la pronuncia è giusta.</p><p>Quando hai ripassato tutte le parole, premi «Ho finito, torna alla mappa».</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Premi 🔊 per ascoltare ogni parola (velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi «Ho finito, torna alla mappa». Se non vuoi farlo adesso, tocca «Mappa».</p>"
+    }
+  },
+  "matchEngIta": {
+    "howItWorks": {
+      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
+    }
+  },
+  "matchItaEng": {
+    "howItWorks": {
+      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
+    }
+  },
+  "flashcard": {
+    "howItWorks": {
+      "body": "<p>Guarda la parola sulla carta, e ascoltala se vuoi.</p><p>Prima di girarla prova a indovinarla — senza impazzire: se non sei sicuro tocca «Non ancora», tanto tornerà.</p><p>Poi tocca la carta per girarla, e dicci se te la ricordavi.</p><p><b>Le carte che non sai tornano finché non le impari davvero.</b></p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
+    }
+  },
+  "voicePractice": {
+    "howItWorks": {
+      "body": "<p>Leggi la frase in italiano, ascolta il modello con 🔊, poi tocca il microfono per registrare.</p><p>Tocca di nuovo per fermarti, e scegli se inviare la registrazione o cancellarla e rifarla.</p><p>Dopo l'invio ogni parola si colora: <b>verde</b> se corretta, <b>giallo</b> se simile, <b>rosso</b> se da rivedere, con un punteggio a stelle.</p><p><b>Qui ti alleni, non vieni valutato:</b> puoi riprovare la stessa frase più volte.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. <b>Si ferma anche da solo</b> se resti in silenzio o se superi il tempo massimo. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. «Esercitati ancora» per riprovare la stessa frase — il contatore mostra quante volte ti restano, e quando finiscono si va avanti comunque.</p><p>Qui non c'è un ripasso finale: è uno spazio libero per allenarti.</p>"
     }
   },
   "whyWeSayIt": {
     "howItWorks": {
-      "title": "Why We Say It",
-      "body": "<p>Il dialogo lo conosci già: qui si guarda <em>perché</em> si dice così.</p><p>Su quasi ogni battuta trovi uno o più pulsanti con il nome di una regola. Al primo giro si aprono in ordine, una alla volta: leggila e poi dì se ti è chiara — non c'è una risposta giusta, serve solo a sapere cosa vale la pena rivedere. Dichiarata quella, si apre la successiva.</p><p>Puoi ascoltare ogni riga con il pulsante 🔊 (puoi scegliere la velocità) e aprire \"Mostra traduzione\" se ti serve una mano.</p><p>Quando le hai viste tutte, premi \"Ho finito\". Se devi interrompere, \"Esci e riprendi dopo\" tiene il punto in cui sei arrivato.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      "body": "<p>Il dialogo lo conosci già: qui si guarda <em>perché</em> si dice così.</p><p>Su quasi ogni battuta trovi uno o più pulsanti col nome di una regola. Si aprono in ordine, una alla volta: leggila e poi dì se ti è chiara — <b>non c'è una risposta giusta</b>, serve solo a sapere cosa vale la pena rivedere.</p><p>Quando le hai viste tutte, premi «Ho finito».</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara.</p><p>Quando le hai viste tutte, premi \"Ho finito\".</p>"
+      "body": "<p>Apri le regole una alla volta, nell'ordine in cui si presentano, e dopo ognuna dì se ti è chiara. Il pulsante finale si accende quando hai risposto a tutte.</p><p>Quando le hai viste tutte, premi «Ho finito». Se devi interrompere, «Esci e riprendi dopo» tiene il punto in cui sei arrivato.</p>"
     },
     "completeHint": "Si attiva quando hai risposto a tutte le regole.",
     "selfCheck": {
@@ -116,13 +150,59 @@
     "noRuleHint": "Qui non c'è niente di nuovo: è solo la storia.",
     "lockedHint": "Prima le regole qui sopra"
   },
-  "listaEpisodi": {
+  "dialogoAscoltaRipeti": {
     "howItWorks": {
-      "title": "I tuoi episodi",
-      "body": "<p>Questa è la lista degli episodi del corso, nell'ordine in cui si fanno.</p><p>Puoi aprire l'episodio attuale, o tornare su uno che hai già finito. Il successivo si sblocca quando hai completato <b>l'ultimo passaggio</b> di quello che stai facendo.</p>"
+      "body": "<p>Questo è il dialogo intero dell'episodio, dall'inizio alla fine.</p><p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Quante volte vuoi, nell'ordine che preferisci.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: <b>usalo quando ti serve, e prova a usarlo sempre meno</b> — è così che il cervello impara a leggere senza appoggiarsi all'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
-      "title": "Come funziona, in breve",
+      "body": "<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>La spunta verde ti ricorda quali hai già ascoltato. Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>"
+    }
+  },
+  "dialogoRipetiATempo": {
+    "howItWorks": {
+      "body": "<p>Stesso dialogo di prima, questa volta con il tempo.</p><p>Tocca una battuta: la senti, poi parte una barra. <b>Quella barra è il tuo turno</b> — ripeti ad alta voce mentre scorre.</p><p>Qui non ci sono traduzioni: a questo punto il dialogo dovresti già capirlo. Se non è così, torna a «Ascolta e ripeti».</p><p>Passi alla battuta successiva quando vuoi tu.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra. Durante l'ascolto e la barra tutto il resto è bloccato: serve a farti fare davvero l'esercizio.</p><p><b>Scorciatoia:</b> mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine — fa la stessa cosa del pulsante «Prossima frase».</p>"
+    }
+  },
+  "dialogoContinuo": {
+    "howItWorks": {
+      "body": "<p>Questa è la prova generale: il dialogo scorre da solo, dall'inizio alla fine, come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola quella dopo.</p><p>Se devi fermarti, usa il pulsante di pausa.</p><p><b>Se riesci a starci dietro senza fermarti, sei pronto per il Test.</b></p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra. Usa il pulsante di pausa se devi fermarti.</p><p><b>Scorciatoia:</b> mentre scorre la barra puoi toccare la battuta per passare subito alla successiva.</p>"
+    }
+  },
+  "speedMatchEngIta": {
+    "howItWorks": {
+      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
+    }
+  },
+  "speedMatchItaEng": {
+    "howItWorks": {
+      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
+    }
+  },
+  "voiceCoach": {
+    "howItWorks": {
+      "body": "<p>Leggi la frase in italiano, ascolta il modello con 🔊, poi tocca il microfono per registrare.</p><p>Tocca di nuovo per fermarti, e scegli se inviare o cancellare e rifare.</p><p>Dopo l'invio ogni parola si colora — verde, giallo o rosso — con un punteggio a stelle.</p><p><b>Qui conta una registrazione sola per frase: è una verifica, non un allenamento.</b> Le frasi andate meno bene tornano a fine esercizio.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare.</p><p>Dopo l'invio guarda i colori e le stelle, poi tocca «Avanti». <b>Una sola registrazione conta per frase:</b> quelle andate meno bene tornano a fine esercizio.</p>"
+    }
+  },
+  "listaEpisodi": {
+    "howItWorks": {
+      "body": "<p>Questa è la lista degli episodi del corso, nell'ordine in cui si fanno.</p><p>Puoi aprire l'episodio attuale, o tornare su uno che hai già finito.</p><p>Il successivo si sblocca quando completi <b>l'ultimo passaggio</b> di quello che stai facendo.</p>"
+    },
+    "helpReminder": {
       "body": "<p>Apri l'episodio attuale, o uno già finito per rivederlo. Il successivo arriva quando chiudi l'ultimo passaggio di questo.</p>"
     },
     "pageTitle": "I tuoi episodi",
@@ -130,125 +210,13 @@
   },
   "mappaEpisodio": {
     "howItWorks": {
-      "title": "Mappa dell'episodio",
-      "body": "<p>Questa è la mappa dell'episodio: mostra tutti i passaggi che farai, in ordine.</p><p>Puoi cliccare solo sul passaggio attuale (evidenziato) o tornare a rivedere uno già completato — non puoi saltare avanti a un passaggio non ancora sbloccato.</p><p>Completa un passaggio alla volta per avanzare nella storia.</p>"
+      "body": "<p>Questa è la mappa dell'episodio: tutti i passaggi che farai, in ordine.</p><p>Puoi toccare il passaggio attuale, quello evidenziato, o tornare su uno già completato. <b>Non puoi saltare avanti.</b></p>"
     },
     "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Clicca sul passaggio attuale per iniziarlo, o su uno già completato per rivederlo. Niente salti in avanti.</p>"
+      "body": "<p>Tocca il passaggio attuale per iniziarlo, o uno già completato per rivederlo. Niente salti in avanti.</p>"
     },
     "pageTitle": "Mappa dell'episodio",
     "pageSubtitle": "Completa i moduli in ordine per avanzare nella storia."
-  },
-  "repeatAloud": {
-    "howItWorks": {
-      "title": "Repeat Aloud",
-      "body": "<p>Ascolta ogni parola con il pulsante 🔊 (puoi scegliere la velocità), leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti più volte finché non ti sembra uguale. Non ti preoccupare se ti sembra diverso: è normale, stai imparando. Arriveranno successivamente esercizi in cui capiremo insieme se la tua pronuncia è corretta.</p><p>Poi passa alla successiva. Quando hai ripassato tutte le parole, premi \"Ho finito, torna alla mappa\".</p><p>Se non lo vuoi fare adesso, clicca semplicemente \"Mappa\".</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Premi 🔊 per ascoltare ogni parola (puoi scegliere la velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi \"Ho finito, torna alla mappa\".</p>"
-    }
-  },
-  "speedMatchEngIta": {
-    "howItWorks": {
-      "title": "Speed Match en→it",
-      "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
-    }
-  },
-  "speedMatchItaEng": {
-    "howItWorks": {
-      "title": "Speed Match it→en",
-      "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta prima che scada il tempo, o tocca \"Non lo so\" se non la ricordi.</p><p>L'obiettivo non è la velocità, è la correttezza. Se sbagli, ti mostreremo la risposta giusta: leggila e memorizzala, è così che si avanza nel Metodo Prette — ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni prima che scada il tempo. \"Non lo so\" se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
-    }
-  },
-  "flashcard": {
-    "howItWorks": {
-      "title": "Flash Card",
-      "body": "<p>Guarda la parola sulla carta, ascoltala se vuoi.</p><p>Prima di girarla, prova a indovinarla — ragionaci un attimo, ma senza impazzire: se non sei sicuro, tocca semplicemente 'Non ancora', tanto tornerà come da Metodo Prette.</p><p>Poi toccala per girarla e vedere la traduzione.</p><p>Dopo averla girata, dicci se te la sei ricordata o no — se dici 'non ancora', te la riproporremo finché non la impari davvero.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
-    }
-  },
-  "voicePractice": {
-    "howItWorks": {
-      "title": "Voice Practice",
-      "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Con \"Esercitati ancora\" puoi riprovare la stessa frase più volte — il contatore ti mostra sempre quante te ne restano; esaurite, si va avanti comunque.</p><p>Qui non c'è un ripasso finale delle frasi andate meno bene: è uno spazio libero per allenarti, non una verifica.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. \"Esercitati ancora\" per riprovare la stessa frase (il contatore mostra quante volte ti restano), \"Avanti\" per la prossima.</p>"
-    }
-  },
-  "voiceCoach": {
-    "howItWorks": {
-      "title": "Voice Check",
-      "body": "<p>Leggi la frase in italiano, ascolta il modello inglese con il pulsante 🔊 (puoi scegliere la velocità), poi tocca il microfono per registrare — lo stesso pulsante diventa rosso e si trasforma in uno stop.</p><p>Tocca di nuovo per fermarti quando hai finito di parlare (si ferma anche da solo se resti in silenzio o se superi il tempo massimo). A quel punto scegli se inviare la registrazione per la valutazione oppure cancellarla e rifarla — prima di inviare puoi sempre cambiare idea.</p><p>Dopo l'invio, vedrai ogni parola colorata: verde se corretta, giallo se simile, rosso se da rivedere, insieme a un punteggio a stelle. Una sola registrazione conta per ogni frase: come sempre, a fine esercizio ti verranno riproposte le frasi andate meno bene, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare la registrazione.</p><p>Dopo l'invio guarda i colori e le stelle, poi tocca \"Avanti\": una sola registrazione conta per frase, quelle andate meno bene torneranno a fine esercizio.</p>"
-    }
-  },
-  "dialogoAscoltaRipeti": {
-    "howItWorks": {
-      "title": "Dialogue: Listen & Repeat",
-      "body": "<p>Questo è il dialogo intero dell'episodio, dall'inizio alla fine.</p><p>Tocca una battuta qualsiasi per ascoltarla, poi ripetila ad alta voce. Puoi riascoltarla quante volte vuoi, e nell'ordine che preferisci.</p><p>La spunta verde ti ricorda quali battute hai già ascoltato.</p><p>Il pulsante in alto apre tutte le traduzioni insieme: usalo quando ti serve, e prova a usarlo sempre meno — è così che il cervello si abitua a leggere l'inglese senza appoggiarsi all'italiano.</p><p>Quando hai ascoltato tutte le battute, in fondo trovi la domanda finale.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>"
-    }
-  },
-  "dialogoRipetiATempo": {
-    "howItWorks": {
-      "title": "Dialogue: Repeat in Time",
-      "body": "<p>Stesso dialogo di prima, ma questa volta con il tempo.</p><p>Tocca una battuta: la senti, e subito dopo parte una barra. Quella barra è il tuo turno — ripeti ad alta voce mentre scorre.</p><p>Mentre la battuta suona e mentre scorre la barra non puoi toccare nient'altro: serve a farti fare davvero l'esercizio, senza scappare avanti.</p><p>Qui non ci sono traduzioni: a questo punto dovresti già capire il dialogo. Se ti accorgi di non ricordarlo, torna un passaggio indietro e rifai \"Ascolta e ripeti\".</p><p>Sei tu a decidere quando passare alla battuta successiva.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere. Fa la stessa cosa del pulsante \"Prossima frase\".</p>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra.</p><p>Durante l'ascolto e la barra tutto il resto è bloccato. Finita la barra, tocca tu la battuta successiva.</p>"
-    }
-  },
-  "dialogoContinuo": {
-    "howItWorks": {
-      "title": "Dialogue: Real Dialogue",
-      "body": "<p>Questa è la prova generale: il dialogo intero scorre da solo, dall'inizio alla fine, esattamente come lo sentirai in una conversazione vera.</p><p>Dopo un breve conto alla rovescia parte la prima battuta. La ascolti, ripeti ad alta voce mentre scorre la barra, e appena finisce parte da sola la battuta dopo — senza che tu debba toccare nulla.</p><p>Se hai bisogno di fermarti, usa il pulsante di pausa.</p><p>Se riesci a stare dietro al dialogo intero senza fermarti, sei pronto per il Test.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div><p>Mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine: serve a chi ha già finito di ripetere.</p>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra.</p><p>Usa il pulsante di pausa se devi fermarti.</p>"
-    }
-  },
-  "matchEngIta": {
-    "howItWorks": {
-      "title": "Match Practice en→it",
-      "body": "<p>Vedrai una parola in inglese e 4 possibili traduzioni in italiano — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola inglese, tocca la traduzione italiana corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
-    }
-  },
-  "matchItaEng": {
-    "howItWorks": {
-      "title": "Match Practice it→en",
-      "body": "<p>Vedrai una parola in italiano e 4 possibili traduzioni in inglese — tocca quella giusta.</p><p>Qui non c'è tempo limite: prenditi il momento che ti serve per ragionarci.</p><p>Come sempre, a fine esercizio ti verranno riproposte le domande che hai sbagliato, per una comprensione ottimale e duratura.</p><div class=\"general-rule panel\"><span class=\"general-rule-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
-    },
-    "helpReminder": {
-      "title": "Come funziona, in breve",
-      "body": "<p>Vedi la parola italiana, tocca la traduzione inglese corretta tra le 4 opzioni. Nessun tempo limite.</p><p>Le domande sbagliate torneranno a fine esercizio, finché non sono tutte corrette.</p>"
-    }
   },
   "dialogoShared": {
     "choiceBoxHint": "Si attiva quando hai ascoltato tutte le battute del dialogo.",

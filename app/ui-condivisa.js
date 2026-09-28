@@ -229,7 +229,7 @@
     // resolves, and the fallback if this module has no entry at all —
     // every caller already knows its own module.label, so this is only
     // ever an explicit override for the rare case that differs.
-    var placeholderTitle = options.placeholderTitle || module.label || '';
+    var placeholderTitle = options.placeholderTitle || titoloSpiegazione(module);
     var titleEl = document.getElementById('howitworks-overlay-title');
     renderSpiegazioneTitle(titleEl, placeholderTitle);
     document.getElementById('howitworks-overlay-body').innerHTML =
@@ -254,7 +254,9 @@
 
     loadModuleInstructions().then(function (data) {
       var entry = data[module.kind] && data[module.kind].howItWorks;
-      renderSpiegazioneTitle(titleEl, (entry && entry.title) || placeholderTitle);
+      // Il titolo si rilegge qui invece di riusare `placeholderTitle`: per
+      // una schermata viene dal file appena arrivato, e prima era vuoto.
+      renderSpiegazioneTitle(titleEl, titoloSpiegazione(module) || placeholderTitle);
       document.getElementById('howitworks-overlay-body').innerHTML = entry
         ? entry.body
         : '<p>Contenuto non ancora disponibile per questo modulo.</p>';
@@ -475,7 +477,14 @@
     openOverlay();
     loadModuleInstructions().then(function (data) {
       var entry = data[module.kind] && data[module.kind][field];
-      document.getElementById('help-overlay-title').textContent = (entry && entry.title) || fallbackTitle;
+      // ⚠️ IL TITOLO NON VIENE PIU' DALLA VOCE — passo C, 2026-09-28.
+      //
+      // Erano sedici copie identiche di `aiuto.titleInstructions`, cioè del
+      // testo che chi chiama passa già come `fallbackTitle`: **la voce del
+      // menu Aiuto e il titolo del pannello che si apre sono la stessa
+      // cosa** (regola 48). *Cambiarla cambia diciassette schermate, ed è
+      // giusto così: sono lo stesso pannello.*
+      document.getElementById('help-overlay-title').textContent = fallbackTitle;
       document.getElementById('help-overlay-body').innerHTML = entry
         ? '<div class="overlay-text">' + entry.body + '</div>'
         : '<p class="overlay-text">Contenuto non ancora disponibile per questo modulo.</p>';
@@ -718,6 +727,40 @@
   // *E' lo stesso secondo parametro che `uiText` ha da sempre per i casi in
   // cui il testo vero non puo' essere ancora arrivato — non un meccanismo
   // nuovo, e non l'eccezione della regola 35, che riguarda la circolarità.*
+  // ⚠️ DA DOVE VIENE IL NOME NEL TITOLO «SPIEGAZIONE» — passo C, 2026-09-28.
+  //
+  // **Prima stava scritto nel file dei testi, sedici volte, come
+  // `howItWorks.title`. Adesso si deriva, e non è una pulizia: era un difetto
+  // che non era ancora scattato** (regola 48). *Quel file è CONDIVISO fra le
+  // edizioni — i suoi testi dipendono dalla lingua dello studente, non da
+  // quella insegnata — mentre i nomi dei moduli sono dell'edizione. Il giorno
+  // dello spagnolo, un corso di spagnolo avrebbe mostrato sedici pop-up
+  // intitolati «Your Story».*
+  //
+  // Le due sorgenti, e la regola è una sola: **il titolo è il nome della cosa
+  // in cui sei.**
+  //
+  // | Chi apre | Da dove |
+  // |---|---|
+  // | un modulo | `module.label`, cioè `CONFIG.moduleLabels[<id del PASSO>].name` |
+  // | una schermata (mappa, lista episodi) | il suo `pageTitle`, nel file dei testi |
+  //
+  // ⚠️ **E l'id è quello del PASSO, non del kind — è la metà che si sarebbe
+  // persa scrivendo `moduleLabels[module.kind]`.** *Flash Card ha UN kind e
+  // DUE passi (`flashcardAEngIta`, `flashcardAItaEng`): col kind il pop-up
+  // direbbe «Flash Card» in tutti e due e il verso sparirebbe — mentre Match
+  // e Speed Match, che hanno due kind, lo dicono già.* `module.label` porta
+  // già l'id del passo da `app/catalogo.js`, quindi qui non c'è niente da
+  // scegliere: c'è da non buttarlo via.
+  //
+  // Una schermata non ha `label` perché non sta in nessuna sequenza, quindi
+  // non ha una voce in `moduleLabels`: non è un caso mancante, è l'altra metà
+  // della regola.
+  function titoloSpiegazione(module) {
+    if (!module) return '';
+    return module.label || uiText(module.kind + '.pageTitle');
+  }
+
   function renderSpiegazioneTitle(el, moduleName) {
     el.innerHTML = '<span class="spiegazione-title-kicker">' + uiText('condivisi.spiegazione', 'Spiegazione') + '</span>' +
       (moduleName ? '<span class="spiegazione-title-name">' + moduleNameHtml(moduleName) + '</span>' : '');

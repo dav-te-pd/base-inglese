@@ -69,28 +69,75 @@ const dati = (ed, n) => path.join(RADICE, 'data', ed.lingua, ed.studente, ed.pre
 // "|", si buttano l'intestazione e la riga dei trattini. Una riga vuota
 // DENTRO la tabella non la chiude: la chiude la prima riga non vuota che non
 // comincia con "|".
-function tabellaSotto(testo, titolo, obbligatoria) {
+// \u26a0\ufe0f E DAL 2026-09-28 SI PUO' CHIEDERE **QUALE** TABELLA, PER INTESTAZIONE.
+//
+// Senza, si prende la prima \u2014 che va bene finche' sotto un titolo ce n'e' una
+// sola. *Non e' piu' vero: la sezione 3 di `messaggi-feedback` apre con una
+// tabella di CONTEGGI e poi ha quella dei messaggi.* Prendere la prima e
+// basta darebbe i conteggi al posto dei testi, e il controllo sul numero di
+// colonne lo direbbe \u2014 ma dirlo per caso non e' dirlo: `intestazione` lo
+// rende una scelta, e una tabella che non c'e' ferma tutto col suo nome.
+function tabellaSotto(testo, titolo, obbligatoria, intestazione) {
   const i = testo.indexOf(titolo);
   if (i === -1) {
     if (obbligatoria) throw new Error('Titolo non trovato: ' + titolo);
     return [];
   }
   const righe = testo.slice(i + titolo.length).split('\n');
-  const out = [];
-  let dentro = false;
+  const blocchi = [];
+  let corrente = null;
   for (const riga of righe) {
     const t = riga.trim();
+    // Una SEZIONE NUOVA chiude sempre: nessuna tabella scavalca un `## `, e
+    // senza questa riga la ricerca per intestazione andrebbe a pescare la
+    // tabella di un'altra sezione \u2014 cioe' darebbe la risposta giusta alla
+    // domanda sbagliata.
+    if (t.startsWith('## ')) break;
     if (t.startsWith('|')) {
-      dentro = true;
       const celle = t.split('|').slice(1, -1).map((c) => c.trim());
       if (celle.every((c) => /^-+$/.test(c))) continue;
-      out.push(celle);
-    } else if (dentro && t !== '') break;
+      // \u26a0\ufe0f UN NUMERO DI COLONNE DIVERSO APRE UNA TABELLA NUOVA, e non e' una
+      // furbizia: una riga vuota non chiude una tabella (ci sono tabelle che
+      // ne hanno dentro), quindi due tabelle separate da una riga vuota sola
+      // si fonderebbero in una. *La forma le distingue: una tabella ha un
+      // numero di colonne, e cambiarlo vuol dire che ne e' cominciata
+      // un'altra.* Due tabelle con le STESSE colonne restano una sola, e
+      // l'intestazione dice a chi le legge quale voleva.
+      if (corrente && corrente[0].length !== celle.length) corrente = null;
+      if (!corrente) { corrente = []; blocchi.push(corrente); }
+      corrente.push(celle);
+    } else if (corrente && t !== '') {
+      corrente = null;
+      // Una riga di prosa CHIUDE la tabella ma non la sezione: sotto ce ne
+      // puo' essere un'altra, e `intestazione` dice quale si voleva.
+      if (!intestazione) break;
+    }
   }
-  return out.slice(1); // via l'intestazione
+  if (!blocchi.length) return [];
+  if (!intestazione) return blocchi[0].slice(1);
+  const voluto = intestazione.map((c) => c.toLowerCase());
+  const scelto = blocchi.find((b) =>
+    b[0].length === voluto.length &&
+    b[0].every((c, n) => c.toLowerCase() === voluto[n]));
+  if (!scelto) {
+    throw new Error('Sotto "' + titolo + '" non c\'e\' nessuna tabella con intestazione ' +
+      JSON.stringify(intestazione) + ' \u2014 trovate: ' +
+      JSON.stringify(blocchi.map((b) => b[0])));
+  }
+  return scelto.slice(1);
 }
 
 const nb = (c) => String(c == null ? '' : c).replace(/`/g, '').trim();
+
+// ⚠️ UNO SPAZIO AI BORDI DI UN TESTO SI SCRIVE `␣` (U+2423), E NON E' UN VEZZO.
+//
+// Una cella di tabella va tagliata ai lati — deve, altrimenti l'allineamento
+// della tabella finirebbe nel dato — quindi uno spazio ai bordi sparirebbe
+// **senza nessun errore**. Misurato il 2026-09-26: una stringa sola ce l'ha,
+// `condivisi.rispostaCorretta` = `Risposta corretta:␣`, e senza quello spazio
+// l'app scrive «Risposta corretta:Hello» attaccato. *Il segno si vede, lo
+// spazio no.*
+const spazi = (c) => String(c == null ? '' : c).replace(/\u2423/g, ' ');
 
 // ⚠️ IL GRASSETTO MARKDOWN DIVENTA HTML, E NON E' UNA DECISIONE: e' la
 // traduzione fedele di quello che un markdown vuol dire.
@@ -133,9 +180,17 @@ function struttura(ed) {
   const moduleTypes = {};
   cat.forEach((r) => { moduleTypes[nb(r[0])] = { label: r[1].trim() }; });
 
-  const nomi = colonne(tabellaSotto(t, '## 4 — I NOMI DEI MODULI', true), 3, 'nomi dei moduli');
+  // ⚠️ QUATTRO COLONNE DAL 2026-09-28 (passo C): l'ultima e' `categoria`.
+  //
+  // Non e' un campo in piu': e' la risposta a una domanda che prima non si
+  // poteva nemmeno formulare. *«`studioCompleteMessages` parla di pronuncia,
+  // ma quanti dei moduli che lo mostrano fanno aprire bocca?» — senza questa
+  // colonna bisogna contarli a mano ogni volta, e chi conta a mano sbaglia.*
+  const nomi = colonne(tabellaSotto(t, '## 4 — I NOMI DEI MODULI', true), 4, 'nomi dei moduli');
   const moduleLabels = {};
-  nomi.forEach((r) => { moduleLabels[nb(r[0])] = { name: r[1].trim(), subtitle: r[2].trim() }; });
+  nomi.forEach((r) => {
+    moduleLabels[nb(r[0])] = { name: r[1].trim(), subtitle: r[2].trim(), categoria: nb(r[3]) };
+  });
 
   const passi = colonne(tabellaSotto(t, '## 5 — LE SEQUENZE DEI MODULI', true), 3, 'sequenze');
   const sequences = {};
@@ -209,6 +264,142 @@ function tabelle(ed) {
       return riga;
     });
   });
+  return out;
+}
+
+// ── i due file CONDIVISI ─────────────────────────────────────────────
+//
+// ⚠️ NON SONO DI UN'EDIZIONE, E PER QUESTO NON PASSANO DA `edizioni()`.
+// `data/condivisi/{studente}/` tiene i testi dell'interfaccia, che dipendono
+// dalla lingua dello STUDENTE e non da quella insegnata (regola 8, riscritta
+// il 2026-09-28). *Copiarli per edizione vorrebbe dire 349 stringhe duplicate
+// ogni volta.*
+//
+// Quindi qui il criterio e' un altro, ed e' lo stesso in forma: **una cartella
+// sotto `docs/condivisi/` e' una lingua-studente se contiene il suo
+// `{studente}-istruzioni-moduli.md`.** Non un elenco (regola 4).
+function studentiCondivisi() {
+  const base = path.join(RADICE, 'docs', 'condivisi');
+  if (!fs.existsSync(base)) return [];
+  return fs.readdirSync(base, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name)
+    .filter((st) => fs.existsSync(path.join(base, st, st + '-istruzioni-moduli.md')));
+}
+
+const docC = (st, n) => path.join(RADICE, 'docs', 'condivisi', st, st + '-' + n + '.md');
+const datiC = (st, n) => path.join(RADICE, 'data', 'condivisi', st, st + '-' + n + '.json');
+
+// Scrive `valore` dentro `oggetto` seguendo un percorso puntato, con `[n]` o
+// `.n` per la posizione in una lista: `selfCheck.answers.0.button`.
+//
+// ⚠️ UN SEGMENTO NUMERICO CREA UNA LISTA, UNO NO CREA UN OGGETTO — e la
+// differenza non e' estetica: `{"0": "..."}` e `["..."]` si stampano quasi
+// uguali in un JSON e si comportano in modo diverso in `pickRandom`.
+function infila(oggetto, percorso, valore) {
+  const pezzi = percorso.replace(/\[(\d+)\]/g, '.$1').split('.');
+  let cur = oggetto;
+  pezzi.forEach((pezzo, i) => {
+    const ultimo = i === pezzi.length - 1;
+    if (ultimo) { cur[pezzo] = valore; return; }
+    if (cur[pezzo] == null) cur[pezzo] = /^\d+$/.test(pezzi[i + 1]) ? [] : {};
+    cur = cur[pezzo];
+  });
+}
+
+// I testi dell'interfaccia: `{studente}-istruzioni-moduli.json`.
+//
+// ⚠️ I 32 TITOLI NON SI SCRIVONO PIU', E NON E' UNA DIMENTICANZA (regola 48).
+// `howItWorks.title` viene da `moduleLabels.<id del passo>.name`, che sta nella
+// struttura dell'EDIZIONE; `helpReminder.title` da `aiuto.titleInstructions`,
+// qui sotto. *Scriverli qui vorrebbe dire che un corso di spagnolo mostra
+// sedici pop-up intitolati «Your Story»: questo file e' condiviso, i nomi dei
+// moduli no.*
+function istruzioni(st) {
+  const t = fs.readFileSync(docC(st, 'istruzioni-moduli'), 'utf8');
+  const out = {};
+
+  // Il corpo del pop-up «Spiegazione». Sei colonne: # | kind | passi | corpo |
+  // consiglio | video. Del JSON fanno parte solo `kind` e `corpo`; a `corpo`
+  // si attacca in coda il riquadro della sezione 4 quando la colonna
+  // `consiglio` ne nomina uno.
+  //
+  // ⚠️ L'INVOLUCRO NON STA NELLA CELLA: sta qui, una volta sola. *La cella
+  // porta il TESTO; il riquadro attorno — e la sua etichetta visibile
+  // «Un consiglio», che non e' scritta in nessun altro posto — e' la stessa
+  // per tutti e due, e ricopiarla in due celle vorrebbe dire due copie.*
+  // Tre colonne: id | quante spiegazioni lo usano | testo. La seconda e'
+  // documentazione e non entra nel JSON.
+  const consigli = {};
+  colonne(tabellaSotto(t, '## 4 — I DUE CONSIGLI CONDIVISI', true), 3, 'consigli')
+    .forEach((r) => {
+      consigli[nb(r[0])] = '<div class="general-rule panel">' +
+        '<span class="general-rule-label">Un consiglio</span>' + spazi(r[2]) + '</div>';
+    });
+
+  colonne(tabellaSotto(t, '## 2 — LE SPIEGAZIONI', true), 6, 'spiegazioni').forEach((r) => {
+    const kind = nb(r[1]);
+    // `—` (U+2014) vuol dire «nessun consiglio», e lo dice il markdown in
+    // testa alla sezione 2. Una cella vuota non sarebbe la stessa cosa: si
+    // legge come una dimenticanza, e questa e' una scelta.
+    const consiglio = nb(r[4]) === '\u2014' ? '' : nb(r[4]);
+    if (consiglio && !consigli[consiglio]) {
+      throw new Error('spiegazioni: ' + kind + ' chiede il consiglio "' + consiglio +
+        '" che la sezione 4 non ha');
+    }
+    infila(out, kind + '.howItWorks.body', r[3].trim() + (consiglio ? consigli[consiglio] : ''));
+  });
+
+  colonne(tabellaSotto(t, '## 3 — I PROMEMORIA', true), 3, 'promemoria').forEach((r) => {
+    infila(out, nb(r[1]) + '.helpReminder.body', r[2].trim());
+  });
+
+  colonne(tabellaSotto(t, '## 5 — GLI ALTRI TESTI DI UN MODULO', true), 3, 'altri testi')
+    .forEach((r) => { infila(out, nb(r[0]) + '.' + nb(r[1]), spazi(r[2])); });
+
+  colonne(tabellaSotto(t, '## 6 — I TESTI CHE NON SONO DI UN MODULO', true), 3, 'testi condivisi')
+    .forEach((r) => { infila(out, nb(r[0]) + '.' + nb(r[1]), spazi(r[2])); });
+
+  return out;
+}
+
+// I messaggi di esito: `{studente}-messaggi-feedback.json`.
+function messaggi(st) {
+  const t = fs.readFileSync(docC(st, 'messaggi-feedback'), 'utf8');
+  const out = {};
+
+  // ⚠️ `showMessage` E' UN BOOLEANO, e la colonna «tipo» lo dice: una cella
+  // letta come stringa darebbe `"false"`, che e' VERA.
+  colonne(tabellaSotto(t, '## 2 — LE FASCE', true), 3, 'fasce').forEach((r) => {
+    const tipo = nb(r[1]);
+    const grezzo = spazi(r[2]);
+    if (tipo !== 'testo' && tipo !== 'booleano') {
+      throw new Error('fasce: tipo "' + tipo + '" sconosciuto in ' + nb(r[0]));
+    }
+    infila(out, nb(r[0]), tipo === 'booleano' ? grezzo === 'true' : grezzo);
+  });
+
+  colonne(tabellaSotto(t, '## 3 — I MESSAGGI', true,
+    ['Famiglia', 'Gruppo', '#', 'Testo']), 4, 'messaggi').forEach((r) => {
+    const n = nb(r[2]);
+    // La tabella dei CONTEGGI in testa alla sezione ha tre colonne, non
+    // quattro, quindi `colonne` non la vede. Questa riga copre il caso
+    // opposto: una riga a quattro colonne che non ha un numero al terzo posto.
+    if (!/^\d+$/.test(n)) throw new Error('messaggi: "' + n + '" non e\' una posizione');
+    infila(out, nb(r[0]) + '.' + nb(r[1]) + '.' + String(Number(n) - 1), spazi(r[3]));
+  });
+
+  colonne(tabellaSotto(t, '## 4 — I TITOLI', true), 3, 'titoli').forEach((r) => {
+    infila(out, nb(r[0]) + '.' + nb(r[1]), spazi(r[2]));
+  });
+
+  // ⚠️ LE LISTE VUOTE HANNO UNA SEZIONE LORO, E SENZA DI LEI SPARIREBBERO:
+  // una lista senza righe non ha righe nella sezione 3. *La differenza fra
+  // «lista vuota» e «chiave che non c'e'» la vede solo il codice che la legge.*
+  colonne(tabellaSotto(t, '## 5 — LE LISTE VUOTE', true), 2, 'liste vuote').forEach((r) => {
+    infila(out, nb(r[0]) + '.' + nb(r[1]), []);
+  });
+
   return out;
 }
 
@@ -337,6 +528,17 @@ function main() {
   const controlla = process.argv.indexOf('--controlla') !== -1;
 
   const trovate = edizioni();
+  const condivisi = studentiCondivisi();
+  // ⚠️ ZERO CARTELLE CONDIVISE NON E' UN SUCCESSO SILENZIOSO, per la stessa
+  // ragione di zero edizioni (regola 49): senza i testi dell'interfaccia
+  // l'app non disegna niente, e uno strumento che non trova niente da fare
+  // deve dirlo invece di uscire con 0.
+  if (!condivisi.length) {
+    console.error('Nessuna cartella trovata sotto docs/condivisi/.');
+    console.error('Ce n\'e\' una per lingua dello STUDENTE, e contiene il suo');
+    console.error('{studente}-istruzioni-moduli.md (regola 8).');
+    process.exit(1);
+  }
   // ⚠️ ZERO EDIZIONI NON E' UN SUCCESSO SILENZIOSO. Senza questa riga lo
   // strumento stamperebbe niente e uscirebbe con 0: «tutto a posto» e «non ho
   // trovato niente da fare» si leggerebbero uguali (regola 37).
@@ -372,6 +574,21 @@ function main() {
       episodeSequences: {},
       episodeSequence: nomeSequenza,
       episodioCorrente: s.ordine[0],
+      // \u26a0\ufe0f `episodiSpenti` NON VIENE DAL MARKDOWN, E DEVE ESSERCI LO STESSO
+      // \u2014 trovato il 2026-09-28 (passo C), e il difetto era vero da due giorni.
+      //
+      // E' una manopola del Pannello Admin e non contenuto, quindi nel
+      // markdown non ha una riga. Ma `applicaStruttura` assegna **anche quando
+      // il file non ha la chiave** (`app/dati.js:183`), quindi un valore di
+      // partenza scritto in `app/config.js` non sopravvive all'arrivo della
+      // struttura: lo stato di riposo \u00abnessuno spento\u00bb esiste solo se sta qui.
+      //
+      // \u26a0\ufe0f **E senza questa riga la prima corsa del trascrittore lo avrebbe
+      // TOLTO dal file, in silenzio.** *La chiave e' nata il 2026-09-26 col
+      // passo 1.13-ter, scritta a mano nel JSON; il trascrittore non l'ha mai
+      // saputa. Nessun rosso: il JSON sarebbe restato valido, e l'occhio del
+      // pannello avrebbe smesso di partire da \u00abnessuno spento\u00bb.*
+      episodiSpenti: [],
       episodes: s.episodes
     };
     strutturaJson.episodeSequences[nomeSequenza] = s.ordine;
@@ -381,6 +598,12 @@ function main() {
       const e = episodio(ed, id, s.gradeNames);
       daScrivere.push([null, dati(ed, id), e.json, '   ' + id + ': ' + JSON.stringify(e.conti)]);
     });
+  });
+
+  condivisi.forEach((st) => {
+    daScrivere.push([null, null, null, null, 'condivisi/' + st]);
+    daScrivere.push(['testi dell\'interfaccia:', datiC(st, 'istruzioni-moduli'), istruzioni(st), null]);
+    daScrivere.push(['messaggi di esito:', datiC(st, 'messaggi-feedback'), messaggi(st), null]);
   });
 
   // Da qui in giu' non si legge piu' niente: se si e' arrivati, tutti i
@@ -395,4 +618,16 @@ function main() {
   });
 }
 
-main();
+// ⚠️ SI ESEGUE SOLO SE LANCIATO, NON SE RICHIESTO — dal 2026-09-28 (passo C).
+//
+// `tests/test_testi_dal_markdown.js` rigenera i JSON **con queste stesse
+// funzioni** e li confronta con quelli sul disco: e' l'unico modo perche' il
+// test conti i testi **rigenerando** invece di portarsi dentro un numero
+// scritto a mano, che invecchierebbe al primo testo nuovo.
+//
+// Senza questa riga, `require` di questo file **riscriverebbe i cinque JSON**
+// prima di ogni confronto — cioe' il test si preparerebbe da solo la risposta
+// che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
+if (require.main === module) main();
+
+module.exports = { edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC };

@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260928c**
+**Versione: 20260928d**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -204,7 +204,16 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     ⚠️ **E il prefisso del nome segue la cartella: una lingua sola, `it-`, non la coppia.** *Il nome tiene comunque la lingua, perché un file esce dal repository e lì il percorso si perde — la stessa ragione della regola 4.* La convenzione è protetta da `tests/test_nomenclatura_edizione.js`, che tratta `condivisi` come **nome riservato** e non come una lingua.
 
-    **Non è l'unico file di testi condivisi: ce n'è un secondo, `messaggi-feedback.json`**, con i messaggi di fine modulo e quelli dei tentativi. I due si distinguono così: qui i testi che spiegano **come si usa** un modulo, lì quelli che **rispondono a un esito**. Entrambi si raggiungono da una costante in cima allo script (`MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`), mai con il percorso scritto dentro una riga di `fetch`. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con `howItWorks: { title, body }` e `helpReminder: { title, body }` (`body` è HTML pronto per l'inserimento).
+    **Non è l'unico file di testi condivisi: ce n'è un secondo, `messaggi-feedback.json`**, con i messaggi di fine modulo e quelli dei tentativi. I due si distinguono così: qui i testi che spiegano **come si usa** un modulo, lì quelli che **rispondono a un esito**. Entrambi si raggiungono da una costante in cima allo script (`MODULE_INSTRUCTIONS_FILE`, `FEEDBACK_MESSAGES_FILE`), mai con il percorso scritto dentro una riga di `fetch`. Non solo "Guarda come si fa" (`howItWorks`) e i promemoria del pannello Help (`helpReminder`): anche le domande e le risposte di un'autovalutazione, le frasi di supporto che le seguono, le righe che spiegano perché un pulsante è spento, le etichette di un riquadro. Se è testo che lo studente legge e che non è contenuto dell'episodio, sta qui. Struttura: un oggetto per ogni `kind` di modulo (es. `repeatAloud`, `whyWeSayIt`), ciascuno con **`howItWorks: { body }` e `helpReminder: { body }`** (`body` è HTML pronto per l'inserimento).
+
+    ⚠️ **I DUE `title` SONO USCITI DA QUI IL 2026-09-28 (passo C), ED È LA REGOLA 48 APPLICATA A UN DIFETTO CHE NON ERA ANCORA SCATTATO.** *Erano 32 stringhe: sedici copie dei nomi dei moduli, che `struttura-corso.json` dichiara già, e sedici copie identiche di `aiuto.titleInstructions`.* **Questo file è condiviso fra le edizioni, i nomi dei moduli no: il giorno dello spagnolo, un corso di spagnolo avrebbe mostrato sedici pop-up intitolati «Your Story».** Adesso si derivano, e le due fonti sono:
+
+    | Titolo | Viene da |
+    |---|---|
+    | `howItWorks` — il pop-up «Spiegazione» | **il nome del PASSO**, `CONFIG.moduleLabels[<id del passo>].name` — oppure, per una schermata che in nessuna sequenza sta, il suo `pageTitle` in questo file |
+    | `helpReminder` — il pannello Help | **`aiuto.titleInstructions`**, cioè la voce del menu che apre quel pannello: sono lo stesso pannello |
+
+    ⚠️ **L'id è quello del PASSO e non del `kind`, e la differenza si vede su uno solo: `flashcard` ha un kind e DUE passi** (`flashcardAEngIta`, `flashcardAItaEng`). *Col kind, il pop-up direbbe «Flash Card» in tutti e due e il verso sparirebbe — mentre Match e Speed Match, che hanno due kind, lo dicono già.* Il pezzo si chiama **`titoloSpiegazione`** e sta in `app/ui-condivisa.js`.
 
     **Non tutte le chiavi sono moduli, ed è voluto.** `mappaEpisodio` è la mappa dell'episodio: modulo non è, ma ha una schermata sua e quindi i suoi due testi come tutti. `dialogoShared` è il blocco condiviso dai tre Dialogue, e **non ha né `howItWorks` né `helpReminder`**: non è un modulo, non ha una schermata propria da spiegare, e i testi che porta servono ai tre che la schermata ce l'hanno. Nessuna delle due è una dimenticanza da sistemare. Sono condivisi tra gli episodi della stessa edizione — non sono contenuto specifico di un episodio, quindi non vivono nel file episodio della regola 4 — ma non fra edizioni: sono testo che lo studente legge nella propria lingua. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 

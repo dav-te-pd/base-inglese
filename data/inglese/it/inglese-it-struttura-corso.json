@@ -38,63 +38,78 @@
   "moduleLabels": {
     "personalizzazione": {
       "name": "Your Story",
-      "subtitle": "Personalizza la tua storia"
+      "subtitle": "Personalizza la tua storia",
+      "categoria": "inizio"
     },
     "meetTheStory": {
       "name": "Meet the Story",
-      "subtitle": "Ascolta la storia"
+      "subtitle": "Ascolta la storia",
+      "categoria": "studio"
     },
     "repeatAloud": {
       "name": "Repeat Aloud",
-      "subtitle": "Ripeti ad alta voce"
+      "subtitle": "Ripeti ad alta voce",
+      "categoria": "studio"
     },
     "whyWeSayIt": {
       "name": "Why We Say It",
-      "subtitle": "Perché si dice così"
+      "subtitle": "Perché si dice così",
+      "categoria": "studio"
     },
     "matchEngIta": {
       "name": "Match Practice en→it",
-      "subtitle": "Abbina le traduzioni"
+      "subtitle": "Abbina le traduzioni",
+      "categoria": "studio"
     },
     "matchItaEng": {
       "name": "Match Practice it→en",
-      "subtitle": "Abbina le traduzioni"
+      "subtitle": "Abbina le traduzioni",
+      "categoria": "studio"
     },
     "flashcardAEngIta": {
       "name": "Flash Card en→it",
-      "subtitle": "Ripassa quello che hai imparato"
+      "subtitle": "Ripassa quello che hai imparato",
+      "categoria": "studio"
     },
     "flashcardAItaEng": {
       "name": "Flash Card it→en",
-      "subtitle": "Ripassa quello che hai imparato"
+      "subtitle": "Ripassa quello che hai imparato",
+      "categoria": "studio"
     },
     "voicePractice": {
       "name": "Voice Practice",
-      "subtitle": "Allena la pronuncia"
+      "subtitle": "Allena la pronuncia",
+      "categoria": "studio"
     },
     "dialogoAscoltaRipeti": {
       "name": "Dialogue: Listen & Repeat",
-      "subtitle": "Ascolta e ripeti"
+      "subtitle": "Ascolta e ripeti",
+      "categoria": "dialogo"
     },
     "dialogoRipetiATempo": {
       "name": "Dialogue: Repeat in Time",
-      "subtitle": "Ripeti a tempo"
+      "subtitle": "Ripeti a tempo",
+      "categoria": "dialogo"
     },
     "dialogoContinuo": {
       "name": "Dialogue: Real Dialogue",
-      "subtitle": "Il dialogo vero"
+      "subtitle": "Il dialogo vero",
+      "categoria": "dialogo"
     },
     "speedMatchEngIta": {
       "name": "Speed Match en→it",
-      "subtitle": "Traduci a tempo"
+      "subtitle": "Traduci a tempo",
+      "categoria": "quiz"
     },
     "speedMatchItaEng": {
       "name": "Speed Match it→en",
-      "subtitle": "Traduci a tempo"
+      "subtitle": "Traduci a tempo",
+      "categoria": "quiz"
     },
     "voiceCoach": {
       "name": "Voice Check",
-      "subtitle": "Metti alla prova la pronuncia"
+      "subtitle": "Metti alla prova la pronuncia",
+      "categoria": "quiz"
     }
   },
   "sequences": {
@@ -216,8 +231,8 @@
     ]
   },
   "episodeSequence": "corso-inglese-a1",
-  "episodiSpenti": [],
   "episodioCorrente": "gate",
+  "episodiSpenti": [],
   "episodes": {
     "gate": {
       "nome": "Al gate",

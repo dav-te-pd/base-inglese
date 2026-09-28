@@ -325,7 +325,15 @@
     // ModuleRules map badge.
     var pct = srVocab.length ? Math.round((srFirstTryCorrectCount / srVocab.length) * 100) : 0;
     srLastAvgPct = pct;
-    applyOutcomeSubtitle('sr-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
+    // ⚠️ `speedMatchMessages`, NON `moduleCompleteMessages` — passo C, 2026-09-28.
+    //
+    // Quella famiglia esiste da settimane con quindici messaggi **che nessuno
+    // ha mai visto**: si chiamava `speedRoundMessages`, cioè col nome di prima
+    // della rinomina `speedRound` → `speedMatch`, e questa riga pescava
+    // altrove. *Nessun rosso: un dato senza lettore non rompe niente, e per
+    // questo è nata la regola 47 — un campo nasce il giorno in cui qualcosa
+    // lo legge. Oggi è quel giorno.*
+    applyOutcomeSubtitle('sr-summary-title-sub', 'speedMatchMessages', percentageBucket(pct));
   }
 
   function srStartQuiz() {

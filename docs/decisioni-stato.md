@@ -128,45 +128,17 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
-## ⚠️ PASSO C — I DUE MARKDOWN MISURATI PRIMA DI TRASCRIVERE, E LE TRE DERIVAZIONI DECISE — 2026-09-28
+## ⚠️ TRE COSE APERTE SUI TESTI CONDIVISI — lasciate fuori dal passo C, 2026-09-28
 
-*I tre file caricati da chi guida il progetto in `nuovi/` (`it-istruzioni-moduli-20260928a.md`,
-`it-messaggi-feedback-20260928a.md`, `inglese-it-struttura-corso-20260928a.md`). **Niente e' ancora
-trascritto.** Questa sezione tiene la misura e le decisioni; sparisce quando C e' eseguito.*
+*Il passo C è stato eseguito (`docs/correzioni.md`). Queste tre sono uscite dalla
+sua misura e **non sono state toccate di proposito**: due sono decisioni di chi
+guida il progetto, una è una misura mia che lui ha messo fuori dal giro.*
 
-### La copertura, contata sui file veri (regola 29)
-
-| | Foglie del JSON | Righe nel markdown | Combaciano | Riscritte apposta |
-|---|---|---|---|---|
-| **`it-istruzioni-moduli`** | 208 | **176 scritte + 32 derivate** | **144 su 144** (sez. 5-6) | **32**: i 16 corpi `howItWorks` + i 16 `helpReminder` |
-| **`it-messaggi-feedback`** | 143 | **143** (sez. 2+3+4+5) | **141 su 143** | **2** — `moduleCompleteMessages.alto[4]` e `speedMatchMessages.medio[4]` |
-
-⚠️ **Zero percorsi senza riga in tutti e due.** *Nessuna stringa si perde nella trascrizione: quello
-che cambia, cambia perche' e' stato riscritto.*
-
-⚠️ **E il markdown dei messaggi porta gia' il nome NUOVO, `speedMatchMessages`, dove il JSON ha ancora
-`speedRoundMessages`.** *Quindi la trascrizione di quel file **e'** la meta'-dati del passo E: la
-rinomina della chiave non e' un passo a parte, e' una conseguenza.* Resta da fare la meta'-codice —
-`app/speedmatch.js:328`, oggi `'moduleCompleteMessages'`.
-
-### ⚠️ LE TRE DERIVAZIONI CHE NON RISOLVEVANO, E COME SI RISOLVONO
-
-*`helpReminder.title` ← `aiuto.titleInstructions` copre **16 su 16** senza tocchi: i sedici di oggi
-sono gia' identici a «Come funziona, in breve». `howItWorks.title` ← `moduleLabels.<kind>.name`
-copre **13 su 16**, e i tre che restano non sono lo stesso problema.*
-
-| Chi | Perche' non risolve | **Deciso il 2026-09-28** |
+| | Cosa | Chi decide, e quando |
 |---|---|---|
-| `flashcard` | in `moduleLabels` non c'e' `flashcard`: ci sono **`flashcardAEngIta` e `flashcardAItaEng`**, due voci con nomi diversi — *il file dei testi ha **un** kind dove la sequenza ha **due** passi* | **il titolo viene dal LABEL DEL PASSO, non del kind**: «Flash Card en→it» o «it→en» secondo dove sei. *Il lettore ha gia' il descrittore sotto mano (`app/ui-condivisa.js:256` riceve `module`, non solo `module.kind`), e `app/mappa.js:1590` ha gia' `moduleLabel` come ripiego.* **Toglie anche un'asimmetria che c'e' oggi: Match e Speed Match il verso lo dicono, Flash Card no** |
-| `listaEpisodi` · `mappaEpisodio` | **non sono moduli**: non stanno in nessuna sequenza, quindi non hanno e non devono avere una voce in `moduleLabels` | **il titolo viene dal loro `pageTitle`**, che sta gia' nello stesso file e vale gia' «I tuoi episodi» e «Mappa dell'episodio». *Nessun testo nuovo, nessuna scelta di contenuto: la fonte esisteva gia' e nessuno la stava usando* |
-
-### Cosa resta aperto su questi due file
-
-| | Cosa | Chi decide |
-|---|---|---|
-| **`episodeFinalMessages.tuttiVerdi.tip`** | lista **vuota**, mentre i due fratelli hanno cinque consigli. *Voluto («a chi ha tutto verde non c'e' niente da consigliare») o mai riempito?* | chi guida il progetto |
-| **`studioCompleteMessages`** | parla di ascolto e pronuncia, ma la categoria `studio` ha **otto** moduli e in quattro non si apre bocca. ⚠️ **Prima di riscrivere serve una misura: compare alla fine di OGNI modulo `studio` o una volta sola?** | misura mia, **non in questo giro** (dichiarato nel file, sezione 6) |
-| **«Non mostrarmi piu' questa schermata»** | oggi si puo' toccare dal **primo** passaggio: si zittisce una spiegazione senza averla letta. *Proposta: dal secondo in poi.* | chi guida il progetto, **fuori da questo giro** (sezione 7 del file) |
+| **`episodeFinalMessages.tuttiVerdi.tip`** | lista **vuota**, mentre i suoi due fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno cinque consigli ciascuno. *Può essere voluto — «a chi ha tutto verde non c'è niente da consigliare» — o uno spazio mai riempito.* La lista vuota è dichiarata nella sezione 5 del markdown, quindi non sparisce | **chi guida il progetto.** " + W + " *E la famiglia intera aspetta un lettore: 25 stringhe per il modulo di verifica finale, che non esiste (regola 47)* |
+| **`studioCompleteMessages`** | parla di ascolto e pronuncia, ma la categoria `studio` ha **otto** moduli e in quattro non si apre bocca. 🔴 **Prima di riscrivere serve una misura: compare alla fine di OGNI modulo `studio` o una volta sola alla fine del blocco?** *Se è il secondo, due dei cinque testi si salvano* | **misura mia**, messa fuori dal giro da chi guida il progetto. ⭐ *È la prima domanda che la colonna `categoria`, arrivata col passo C, rende possibile — prima non si poteva nemmeno formulare* |
+| **«Non mostrarmi più questa schermata»** | si può toccare dal **primo** passaggio: oggi si zittisce una spiegazione senza averla letta, **ed è il modo in cui un utente vero si è bloccato**. *Proposta: appare dal secondo in poi — chi ha già visto quella schermata sa cosa sta zittendo* | **chi guida il progetto**, dichiarata nella sezione 7 del markdown delle istruzioni |
 
 ## ⚠️ IL PACCHETTO 1, DECISO PUNTO PER PUNTO — 2026-09-27
 

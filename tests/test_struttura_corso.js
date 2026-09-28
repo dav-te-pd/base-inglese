@@ -152,8 +152,14 @@ async function run() {
   {
     const righe = tabellaSotto(doc, '## 4 — I NOMI DEI MODULI');
     const dalDoc = {};
+    // ⚠️ LA COLONNA `categoria` E' ARRIVATA IL 2026-09-28 (passo C), ed e' la
+    // quarta: qui si legge insieme alle altre due perche' **una colonna che il
+    // test non guarda e' una colonna che puo' dire il falso** — e questa dice
+    // a quale categoria appartiene un modulo, cioe' quella con cui la mappa
+    // scrive «Studio · Parole».
     righe.forEach(r => {
-      dalDoc[r[0].replace(/`/g, '').trim()] = { name: r[1].trim(), subtitle: r[2].trim() };
+      dalDoc[r[0].replace(/`/g, '').trim()] =
+        { name: r[1].trim(), subtitle: r[2].trim(), categoria: r[3].replace(/`/g, '').trim() };
     });
     console.log('[Nomi] documento: ' + Object.keys(dalDoc).length + ' moduli | APP_CONFIG: ' +
       Object.keys(config.moduleLabels).length);
@@ -185,7 +191,15 @@ async function run() {
     // documento portava «Perche' si dice cosi'» con gli apostrofi, ed e' testo
     // che legge lo STUDENTE. Era l'unico sottotitolo con lettere accentate,
     // quindi l'unico su cui la differenza si vedeva — e nessuno la guardava.
-    log('[Nomi] Nome e sottotitolo combaciano carattere per carattere', okValori);
+    log('[Nomi] Nome, sottotitolo e categoria combaciano carattere per carattere', okValori);
+
+    // ⚠️ E OGNI CATEGORIA DEV'ESSERE UNA DI QUELLE DICHIARATE, come gia' si
+    // chiede agli episodi piu' sotto: una categoria inventata non romperebbe
+    // niente e la mappa mostrerebbe un'etichetta vuota.
+    const catIgnote = Object.keys(dalDoc)
+      .filter(k => !Object.prototype.hasOwnProperty.call(config.moduleTypes, dalDoc[k].categoria));
+    log('[Nomi] Ogni modulo dichiara una categoria che esiste in moduleTypes',
+      catIgnote.length === 0, catIgnote.join(', '));
   }
 
   // ============ 3-bis. Le sequenze dei moduli ============
