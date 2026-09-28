@@ -4559,3 +4559,54 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 | **1.12** | ⚠️ **la catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e **va fatto prima di Supabase** |
 | ~~**la schermata di attesa**~~ | ✅ **FATTA il 2026-09-26.** Una vista che nasce `is-active` nel markup, con la frase anche lì (regola 35), spenta da `showView` dentro `accendi()` e **mai riaccesa**. Nasce col suo test, falsificato sui **due guasti opposti**. *Dichiarato: su Pages non si vede — è l'assicurazione per il giorno in cui i dati arriveranno da una rete vera.* |
 
+
+---
+
+## Il file episodio diventa di SOLI DATI, e cosa c'era prima nel modello — 2026-09-28
+
+*Deciso da chi guida il progetto, ed è una decisione sulla forma del
+contenuto, non sul contenuto.* **Il markdown che vive in `docs/{lingua}/{studente}/`
+porta le sole sezioni 2-8, cioè esattamente quello che serve al trascrittore.
+Le copie spiegate — la scena, cosa insegna, le note di scrittura — restano a
+chi scrive gli episodi, fuori dal repository.**
+
+⚠️ **PERCHÉ, E LA RAGIONE È OPERATIVA E NON ESTETICA:** *se il file che
+arriva è il file che vive, allora «corretto» e «non corretto» si decidono con
+un confronto, e non esiste nessun passaggio in cui chi trascrive sceglie
+qualcosa al posto di chi scrive.* **Il 2026-09-28 quel passaggio c'è stato: ai
+due sorgenti di `gate` e `aircraft-door` è stata rimessa sopra la testa del
+file vecchio — 69 e 54 righe — che chi li aveva scritti aveva tolto apposta.**
+Nessun danno, e nemmeno un errore di lettura: una scelta fatta dove la
+richiesta taceva (regola 43, «LUI DECIDE SENZA CHIEDERE»).
+
+### Cosa il modello NON porta più, e dove è andato
+
+| | Dov'è adesso |
+|---|---|
+| **quanto è rigido il parser** — il riquadro dei numeri attesi, la prima occorrenza, la prima riga vuota, le sei espressioni col nome accanto | `tests/tools/README.md`, riga `trascrivi.js`. *Stava nel modello, quindi veniva copiato dentro ogni episodio nuovo: una descrizione del parser che invecchia dentro un file di contenuto. Adesso sta accanto al parser.* |
+| **cosa non serve più di quello che stava nel formato vecchio** | qui sotto, ed è storia: serviva a chi ha convertito, non serve a chi scrive |
+
+### Cosa era stato tolto quando il formato è nato, e perché
+
+*Misurato il 2026-09-23, conservato qui perché è il ragionamento che ha
+prodotto la forma di oggi.*
+
+| Stava in | Cosa | Perché non serve |
+|---|---|---|
+| `## 1` | fonte e metodo, il messaggio fisso | è il metodo, non un dato |
+| `## 2` | id, nome mostrato, categoria, sequenza | **vivono in `struttura-corso`, sezione 7** — qui sarebbero una seconda copia |
+| `## 3` | la scena | **non entra in nessuna chiave del JSON** |
+| `## 4`, `## 5` | video e social | idem |
+| `## 6` | cosa insegna, gli esclusi di proposito | idem |
+| `## 11`, `## 12` | note di scrittura, regole in sospeso | idem |
+| `## 7` | la colonna **«Chi»** della matrice D | l'etichetta vera viene dalla tabella dei personaggi |
+| `## 7` | la colonna **«Skill»** della matrice D | la skill è attaccata alla battuta nella sezione delle skill |
+| `## 7` | la colonna **«Perché differisce»** del grado C | è il ragionamento, non il dato |
+
+**E tre chiavi che il JSON portava e che nessuno legge, quindi non si
+trascrivono più:** `episodeTitle` *(il nome vero è `episodes.<id>.nome` in
+`struttura-corso`)*, `language`, `level`.
+
+⚠️ **Due campi restano perché li chiede la regola 4, e oggi non li
+legge nessuno:** `grammarCategory` (gradi A e B) e `fromLine` (grado C). *Si
+scrivono lo stesso; toglierli sarebbe una decisione sulla regola.*
