@@ -128,6 +128,20 @@ modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspett
 non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
 punti oggi vuol dire cambiarlo due volte.
 
+## ⚠️ NESSUNA GUARDIA DICE CHE UNA CARTELLA CHIUSA NON HA FILE IN PIÙ — trovato il 2026-09-29, rimandato
+
+*Trovato facendo l'elenco dei file per la tabella «chi scrive, chi legge» di chi guida il progetto.*
+
+**`test_nomenclatura_edizione` guarda i prefissi e che ogni episodio dichiarato abbia i suoi due file — NON che nelle cartelle chiuse non ce ne sia un terzo.** *Il 2026-09-28 un `docs/inglese/it/inglese-it-provamodello.md` messo per prova sarebbe passato verde.*
+
+| Le cartelle chiuse | Possono contenere solo |
+|---|---|
+| `data/condivisi/{studente}/` · `docs/condivisi/{studente}/` | i due file |
+| `data/{lingua}/{studente}/` | struttura, tabelle, migrazioni, un JSON per episodio dichiarato |
+| `docs/{lingua}/{studente}/` | struttura, tabelle, un markdown per episodio dichiarato |
+
+**CONDIZIONE: con Supabase.** *Deciso da chi guida il progetto il 2026-09-29: «ci saranno ancora altri cambi da fare sicuramente».* La tabella la scrive lui, per cartella; **il giorno che c'è, un test la legge e va rosso su un file che non prevede** — altrimenti resta un documento da confrontare a mano.
+
 ## ⚠️ TRE COSE APERTE SUI TESTI CONDIVISI — lasciate fuori dal passo C, 2026-09-28
 
 *Il passo C è stato eseguito (`docs/correzioni.md`). Queste tre sono uscite dalla
