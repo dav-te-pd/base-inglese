@@ -648,7 +648,7 @@ sono una famiglia sola**:
 
 | Quanti | Cosa | Fermi dal | Cosa è cambiato dopo |
 |---|---|---|---|
-| **12** | `docs/screenshots/` — 11 immagini + README | **2026-08-29** | — |
+| ~~**12**~~ | ~~`docs/screenshots/` — 11 immagini + README~~ | **2026-08-29** | ✅ **TOLTI il 2026-09-29**, dopo averli guardati: mostravano «Episodio 1», «Speak Easy», «Quick Match» e l'intestazione a tre pulsanti impilati — un'app che non esiste più. *Restano nella storia di git* |
 | **1** | `tests/tools/screenshot_*.js` — gli strumenti che quelle immagini le producevano | 2026-09-09 | ⚠️ **Questa riga diceva OTTO, ed erano SEI il giorno in cui è stata scritta** (misurato il 2026-09-26: `git ls-tree` sul commit del 24 settembre ne conta 6). **Cinque cancellati il 2026-09-26** perché l'unica cosa che li nominava era la riga di `tests/tools/README.md` che li elencava; **resta `screenshot_blocco_ascolto`**, che ha tre riferimenti veri. *Un numero dentro un censimento non si cita: si rimisura (regola 38).* |
 | 4 | `package.json`, `package-lock.json`, `tests/serve.js`, `.nojekyll` | 08-29 / 08-30 | — |
 | ~9 | helper dei test (`quiz-driver`, `story-driver`, `apri-modulo`, …) | 09-09 / 09-10 | — |
