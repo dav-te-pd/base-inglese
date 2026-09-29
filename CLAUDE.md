@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260928e**
+**Versione: 20260929a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -66,7 +66,7 @@ affidabile.
 | `docs/correzioni.md` | Le cose fatte, con il commit che le ha applicate. |
 | `docs/componenti-condivisi.md`, `docs/componenti-singoli.md` | **Il magazzino da cui si preleva, e la sua sala d'attesa.** Si guardano **prima** di scrivere un pezzo nuovo: se c'è già, si riusa; se sta fra i singoli, si **promuove** invece di riscriverlo. **Ci si SCRIVE dentro quando un passo di codice tocca un file** (regola 46). Quanto manca lo dice un comando, non una stima: `node tests/tools/censimento-pezzi.js`. |
 | `docs/archivio/` | ⚠️ **FOTOGRAFIE DATATE, NON DESCRIVONO L'APP DI OGGI, E NON SI AGGIORNANO.** Ognuna porta in testa quando è stata scattata, a cosa si riferiva e **cosa guardare invece**. Ci sono finiti il 2026-09-24 `validazione.md` (una lettura di `index.html` da 11.000 righe), `censimento-moduli.md` (che diceva «14 moduli» quando sono 15), `collaudo-sei-moduli.md` e `valutazione-catalogo.md` (due verbali di attività chiuse). *Correggere un file qui dentro vorrebbe dire falsificare una fotografia: si archivia, non si aggiorna.* |
-| `tests/tools/README.md` | **I ventisei strumenti, raggruppati per domanda** — le guardie, le attese, il trascrittore, le misure. *Fino al 2026-09-24 ne descriveva tre e si chiamava «Strumenti di verifica visiva»: era vero ad agosto.* |
+| `tests/tools/README.md` | **Gli strumenti, raggruppati per domanda** — le guardie, le attese, il trascrittore, le misure. *Fino al 2026-09-24 ne descriveva tre e si chiamava «Strumenti di verifica visiva»: era vero ad agosto.* ⚠️ **Il numero non si scrive qui, si conta** — `git ls-files tests/tools \| grep -vc README`. *Qui c'era «ventisei»: il 2026-09-29 erano ventidue, e diciassette dopo la pulizia delle misure morte. Un numero in una riga invecchia a ogni strumento, come la regola 6 ha già imparato sui tag.* |
 | `docs/cyber-security.md` | **Cosa si può portare via, cosa uno studente può vedere e cambiare, cosa si perde se qualcosa va storto.** Le due analisi (penetrazione, scaricamento abusivo), i test che le rendono ripetibili, i backup. ⚠️ **È un file suo e non una sezione di `decisioni-stato.md` per una ragione:** quel file **si svuota**, questo **si accumula** — un controllo fatto sei mesi fa resta un fatto, e sapere *quando* si è guardata una cosa l'ultima volta è metà dell'informazione. |
 | `docs/scelte-strategiche-infrastrutturali.md` | **Dove vive il codice, dove vivono i dati, chi serve le pagine, quanto costa.** Le scelte che non riguardano *questa* app ma **il modo in cui le app vengono costruite, pubblicate e protette** — e ne faremo varie, non solo questa. ⚠️ **È un file suo per la stessa ragione di `cyber-security.md`: `decisioni-stato.md` **si svuota**, una scelta infrastrutturale **resta vera per anni** e si rilegge ogni volta che nasce un'app nuova.* |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |

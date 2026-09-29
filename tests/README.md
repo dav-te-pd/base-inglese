@@ -356,6 +356,8 @@ un'impressione.*
 
 È la riga che manca alla checklist di `inglese-it-edizione`, sezione 2.8,
 e sta qui e non lì perché quello è un file di contenuto e questo parla di test.
+*Quel file è uscito dal repository il 2026-09-29: sono le RAGIONI
+dell'edizione, e le tiene chi guida il progetto.*
 **Un episodio nuovo non aggiunge un file di test: aggiunge una colonna a questa
 tabella, e le `U` devono essere tutte ✅ prima che l'episodio sia finito.**
 

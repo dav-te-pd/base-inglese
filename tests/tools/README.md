@@ -62,19 +62,24 @@ da `apri-modulo.js`, che ha `--shot`.**
 
 ## ⑥ Le misure dello spacchettamento
 
-*Nate per il passo 22 — portare `index.html` da un file solo a ventitré.
-**Restano utili quando nasce un file nuovo sotto `app/`**, e non prima.*
+*Nate per il passo 22 — portare `index.html` da un file solo a ventitré.*
+
+⚠️ **CINQUE DI LORO SONO STATE TOLTE IL 2026-09-29, E NON PERCHÉ NESSUNO LE
+CHIAMAVA: PERCHÉ NON MISURAVANO PIÙ NIENTE.** `misura-strato`,
+`misura-chiusura`, `misura-chiamanti`, `misura-avanti` e `misura-storycards`
+leggevano **solo `index.html`** — cercandoci le funzioni del file unico, o
+addirittura le righe 6835-7401 — e oggi `index.html` ha **una riga sola di
+JavaScript**. *Non si rompevano: trovavano zero funzioni e lo stampavano,
+cioè la forma della regola 37.* **Qui c'era scritto «restano utili quando
+nasce un file nuovo sotto `app/`», ed era falso:** un file nuovo nasce da un
+file di `app/`, e loro quello non lo aprivano. Restano nella storia di git,
+se un giorno servisse riscriverle su `app/`.
 
 | Strumento | A cosa risponde |
 |---|---|
 | `censimento-pezzi.js` | *quanto manca al catalogo dei pezzi?* È il comando della regola 46 |
 | `dipendenze.js` | il grafo vero fra i file di `app/`: chi nomina cosa di chi, **e quando** |
 | `buchi.js` | i buchi nei due versi, per un file appena estratto o toccato |
-| `misura-strato.js` | quante righe è uno strato **prima** di estrarlo, e cosa nomina che non gli appartiene |
-| `misura-chiusura.js` | da un nucleo, fin dove bisogna allargare perché le dipendenze siano tutte fuori |
-| `misura-chiamanti.js` | quali pezzi sono nominati da **più** regioni-modulo, e da quante |
-| `misura-avanti.js` | quante funzioni interne a un modulo sono chiamate da codice generico |
-| `misura-costruiti.js` | ⚠️ i legami costruiti a runtime — una chiave o un percorso che **non esiste mai per intero** nel sorgente, quindi nessuna ricerca lo trova |
+| `misura-costruiti.js` | ⚠️ i legami costruiti a runtime — una chiave o un percorso che **non esiste mai per intero** nel sorgente, quindi nessuna ricerca lo trova. *L'unica delle sei misure dello spacchettamento che legge anche `app/`, e quindi l'unica rimasta: serve alla forma ⑥ della regola 41* |
 | `misura-finestra-boot.js` | quanto dura la finestra fra «la pagina c'è» e «i testi sono arrivati» |
 | `misura-finestra-apertura.js` | quanto un modulo fa aspettare prima di essere usabile |
-| `misura-storycards.js` | storyCards: una forma o due? |
