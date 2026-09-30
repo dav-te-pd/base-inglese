@@ -67,7 +67,7 @@ async function run() {
       const response = await route.fetch();
       const json = await response.json();
       if (json.levels.D.items && json.levels.D.items.length) {
-        json.levels.D.items[0].english = json.levels.D.items[0].english + ' {{nonExistentSlot}}';
+        json.levels.D.items[0].target = json.levels.D.items[0].target + ' {{nonExistentSlot}}';
       }
       await route.fulfill({ response, json });
     });

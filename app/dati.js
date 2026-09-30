@@ -298,11 +298,43 @@ window.BI = window.BI || {};
         var tabelle = {};
         Object.keys(data || {}).forEach(function (k) {
           if (k.charAt(0) === '_') return;
-          tabelle[k] = overrides[k] || data[k] || {};
+          tabelle[k] = righeCoiRuoli(overrides[k]) || data[k] || {};
         });
         return tabelle;
       });
     return personalizationTablesPromise;
+  }
+
+  // ⚠️ UN OVERRIDE SALVATO PRIMA DEL 2026-09-30 HA ANCORA `it`/`en`.
+  //
+  // Quel giorno le colonne del magazzino sono diventate RUOLI — `native` e
+  // `target` — e il file e' stato rigenerato. Ma il Pannello Admin salva i
+  // gruppi `people`/`places` INTERI nel browser di chi li ha toccati, e quella
+  // copia non la rigenera nessuno: senza questa funzione ogni nome e ogni
+  // citta' sarebbero rimasti a schermo come `{{papa}}`, solo su quel browser,
+  // senza un errore che dicesse perche'.
+  //
+  // Converte e basta: una riga che ha gia' `native` resta com'e'. *Si toglie
+  // quando non esiste piu' un browser con un override di prima — cioe' con
+  // Supabase, quando il Pannello Admin vero sostituira' questo.*
+  function righeCoiRuoli(gruppo) {
+    if (!gruppo || typeof gruppo !== 'object') return gruppo;
+    var ruoli = function (v) {
+      if (!v || typeof v !== 'object' || v.native !== undefined || v.it === undefined) return v;
+      var nuova = {};
+      Object.keys(v).forEach(function (c) {
+        if (c === 'it') nuova.native = v.it;
+        else if (c === 'en') nuova.target = v.en;
+        else if (c === 'paese') nuova.paese = ruoli(v.paese);
+        else nuova[c] = v[c];
+      });
+      return nuova;
+    };
+    var fuori = {};
+    Object.keys(gruppo).forEach(function (chiave) {
+      fuori[chiave] = Array.isArray(gruppo[chiave]) ? gruppo[chiave].map(ruoli) : gruppo[chiave];
+    });
+    return fuori;
   }
 
   // ⚠️ LE MIGRAZIONI DEGLI ID — passo 1.8-bis (4).

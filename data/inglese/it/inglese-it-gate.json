@@ -101,78 +101,78 @@
       "items": [
         {
           "id": "a-hello",
-          "english": "hello",
-          "italian": "Salve",
+          "target": "hello",
+          "native": "Salve",
           "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
           "grammarCategory": "saluto"
         },
         {
           "id": "a-hi",
-          "english": "hi",
-          "italian": "Ciao",
+          "target": "hi",
+          "native": "Ciao",
           "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
           "grammarCategory": "saluto"
         },
         {
           "id": "a-nice",
-          "english": "nice",
-          "italian": "bello / piacevole",
+          "target": "nice",
+          "native": "bello / piacevole",
           "pronunciationTip": "nais",
           "grammarCategory": "aggettivo"
         },
         {
           "id": "a-meet",
-          "english": "meet",
-          "italian": "incontrare",
+          "target": "meet",
+          "native": "incontrare",
           "pronunciationTip": "miit — la \"i\" è lunga e tesa, non \"mit\"",
           "grammarCategory": "verbo"
         },
         {
           "id": "a-where",
-          "english": "where",
-          "italian": "dove",
+          "target": "where",
+          "native": "dove",
           "pronunciationTip": "UEAR — la \"wh\" è un soffio, non \"vu\"",
           "grammarCategory": "avverbio interrogativo"
         },
         {
           "id": "a-from",
-          "english": "from",
-          "italian": "da / di",
+          "target": "from",
+          "native": "da / di",
           "pronunciationTip": "fram — la \"o\" è aperta, quasi una \"a\"",
           "grammarCategory": "preposizione"
         },
         {
           "id": "a-and",
-          "english": "and",
-          "italian": "e",
+          "target": "and",
+          "native": "e",
           "pronunciationTip": "and — la \"d\" finale si sente appena",
           "grammarCategory": "congiunzione"
         },
         {
           "id": "a-years",
-          "english": "years",
-          "italian": "anni",
+          "target": "years",
+          "native": "anni",
           "pronunciationTip": "i-ars — parte con un suono di \"i\"",
           "grammarCategory": "sostantivo"
         },
         {
           "id": "a-old",
-          "english": "old",
-          "italian": "vecchio (di età)",
+          "target": "old",
+          "native": "vecchio (di età)",
           "pronunciationTip": "ould — la \"o\" è lunga",
           "grammarCategory": "aggettivo"
         },
         {
           "id": "a-the",
-          "english": "the",
-          "italian": "il / la / i / le",
+          "target": "the",
+          "native": "il / la / i / le",
           "pronunciationTip": "de — la lingua tra i denti, non \"ze\"",
           "grammarCategory": "articolo"
         },
         {
           "id": "a-family",
-          "english": "family",
-          "italian": "famiglia",
+          "target": "family",
+          "native": "famiglia",
           "pronunciationTip": "FA-mi-li — accento sulla prima",
           "grammarCategory": "sostantivo"
         }
@@ -183,50 +183,50 @@
       "items": [
         {
           "id": "b-i-am",
-          "english": "I am",
-          "italian": "(io) sono, forma piena",
+          "target": "I am",
+          "native": "(io) sono, forma piena",
           "pronunciationTip": "ai am",
           "grammarCategory": "pronome + verbo essere"
         },
         {
           "id": "b-im",
-          "english": "I'm",
-          "italian": "(io) sono, forma corta",
+          "target": "I'm",
+          "native": "(io) sono, forma corta",
           "pronunciationTip": "aim — tutto attaccato, mai \"ai-em\"",
           "grammarCategory": "pronome + verbo essere, contratto"
         },
         {
           "id": "b-we-are",
-          "english": "we are",
-          "italian": "(noi) siamo",
+          "target": "we are",
+          "native": "(noi) siamo",
           "pronunciationTip": "ui ar",
           "grammarCategory": "pronome + verbo essere"
         },
         {
           "id": "b-nice-to-meet-you",
-          "english": "nice to meet you",
-          "italian": "Piacere di conoscerti / conoscervi",
+          "target": "nice to meet you",
+          "native": "Piacere di conoscerti / conoscervi",
           "pronunciationTip": "nais tu MIIT iu",
           "grammarCategory": "espressione idiomatica"
         },
         {
           "id": "b-i-am-from",
-          "english": "I am from",
-          "italian": "Vengo da / Sono di",
+          "target": "I am from",
+          "native": "Vengo da / Sono di",
           "pronunciationTip": "ai am fram",
           "grammarCategory": "pronome + verbo essere + preposizione"
         },
         {
           "id": "b-and-you",
-          "english": "and you?",
-          "italian": "E tu? / E voi?",
+          "target": "and you?",
+          "native": "E tu? / E voi?",
           "pronunciationTip": "and IU — accento su \"you\"",
           "grammarCategory": "espressione"
         },
         {
           "id": "b-years-old",
-          "english": "years old",
-          "italian": "anni (di età)",
+          "target": "years old",
+          "native": "anni (di età)",
           "pronunciationTip": "i-ars OULD",
           "grammarCategory": "espressione per l'età"
         }
@@ -237,56 +237,56 @@
       "items": [
         {
           "id": "c-1",
-          "english": "I am {{papa}}.",
-          "italian": "Sono {{papa}}.",
+          "target": "I am {{papa}}.",
+          "native": "Sono {{papa}}.",
           "fromLine": "d-2"
         },
         {
           "id": "c-2",
-          "english": "Where are you from?",
-          "italian": "Di dove sei?",
+          "target": "Where are you from?",
+          "native": "Di dove sei?",
           "fromLine": "d-3"
         },
         {
           "id": "c-3",
-          "english": "I am from {{partenza}}, {{partenza.paese:en}}.",
-          "italian": "Vengo da {{partenza}}, in {{partenza.paese}}.",
+          "target": "I am from {{partenza}}, {{partenza.paese:target}}.",
+          "native": "Vengo da {{partenza}}, in {{partenza.paese}}.",
           "fromLine": "d-4"
         },
         {
           "id": "c-4",
-          "english": "I am {{mamma}}.",
-          "italian": "Sono {{mamma}}.",
+          "target": "I am {{mamma}}.",
+          "native": "Sono {{mamma}}.",
           "fromLine": "d-6"
         },
         {
           "id": "c-5",
-          "english": "I'm {{figliaNome}}.",
-          "italian": "Sono {{figliaNome}}.",
+          "target": "I'm {{figliaNome}}.",
+          "native": "Sono {{figliaNome}}.",
           "fromLine": "d-7"
         },
         {
           "id": "c-6",
-          "english": "I'm {{figliaEta}} years old.",
-          "italian": "Ho {{figliaEta}} anni.",
+          "target": "I'm {{figliaEta}} years old.",
+          "native": "Ho {{figliaEta}} anni.",
           "fromLine": "d-7"
         },
         {
           "id": "c-7",
-          "english": "I'm {{figlioNome}}.",
-          "italian": "Sono {{figlioNome}}.",
+          "target": "I'm {{figlioNome}}.",
+          "native": "Sono {{figlioNome}}.",
           "fromLine": "d-8"
         },
         {
           "id": "c-8",
-          "english": "I'm {{figlioEta}}.",
-          "italian": "Ho {{figlioEta}} anni.",
+          "target": "I'm {{figlioEta}}.",
+          "native": "Ho {{figlioEta}} anni.",
           "fromLine": "d-8"
         },
         {
           "id": "c-9",
-          "english": "We are the {{cognome}} family!",
-          "italian": "Siamo la famiglia {{cognome}}!",
+          "target": "We are the {{cognome}} family!",
+          "native": "Siamo la famiglia {{cognome}}!",
           "fromLine": "d-9"
         }
       ]
@@ -298,8 +298,8 @@
           "id": "d-1",
           "speaker": "hostess-gate",
           "role": "staff",
-          "english": "Hello! Nice to meet you.",
-          "italian": "Ciao! Piacere di conoscervi.",
+          "target": "Hello! Nice to meet you.",
+          "native": "Ciao! Piacere di conoscervi.",
           "whatYouLearn": [
             {
               "title": "Hello e Hi",
@@ -315,19 +315,19 @@
           "id": "d-2",
           "speaker": "papa",
           "role": "family",
-          "english": "Hello! I am {{papa}}.",
-          "italian": "Ciao! Sono {{papa}}."
+          "target": "Hello! I am {{papa}}.",
+          "native": "Ciao! Sono {{papa}}."
         },
         {
           "id": "d-3",
           "speaker": "hostess-gate",
           "role": "staff",
-          "english": "Where are you from, {{papa}}?",
-          "italian": "Di dove sei, {{papa}}?",
+          "target": "Where are you from, {{papa}}?",
+          "native": "Di dove sei, {{papa}}?",
           "whatYouLearn": [
             {
               "title": "Chiedere da dove viene qualcuno",
-              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde \"I am from {{partenza:en}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
+              "body": "\"Where are you from?\" vuol dire \"di dove sei?\".<br>\"Where\" significa \"dove\". E la formula funziona tutta insieme: è così che si chiede l'origine di qualcuno.<br>Il papà risponde \"I am from {{partenza:target}}\" — la stessa struttura, girata.<br>Domanda e risposta usano le stesse parole. Se impari una, hai già l'altra."
             }
           ]
         },
@@ -335,12 +335,12 @@
           "id": "d-4",
           "speaker": "papa",
           "role": "family",
-          "english": "I am from {{partenza}}, {{partenza.paese:en}}.",
-          "italian": "Vengo da {{partenza}}, in {{partenza.paese}}.",
+          "target": "I am from {{partenza}}, {{partenza.paese:target}}.",
+          "native": "Vengo da {{partenza}}, in {{partenza.paese}}.",
           "whatYouLearn": [
             {
               "title": "Dire da dove vieni",
-              "body": "\"I am from {{partenza:en}}\" vuol dire \"vengo da {{partenza:it}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in inglese. La tua città a volte cambia: Torino diventa <strong>Turin</strong>. Su questo torniamo per bene più avanti."
+              "body": "\"I am from {{partenza:target}}\" vuol dire \"vengo da {{partenza:native}}\".<br>Anche qui l'inglese usa il verbo essere dove l'italiano usa un altro verbo: non dicono \"io vengo\", dicono \"io sono da\".<br>\"From\" significa \"da\". La userai tantissimo.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in inglese. La tua città a volte cambia: Torino diventa <strong>Turin</strong>. Su questo torniamo per bene più avanti."
             }
           ]
         },
@@ -348,8 +348,8 @@
           "id": "d-5",
           "speaker": "hostess-gate",
           "role": "staff",
-          "english": "And you?",
-          "italian": "E tu?",
+          "target": "And you?",
+          "native": "E tu?",
           "whatYouLearn": [
             {
               "title": "And you?",
@@ -361,19 +361,19 @@
           "id": "d-6",
           "speaker": "mamma",
           "role": "family",
-          "english": "Hello! I am {{mamma}}.",
-          "italian": "Ciao! Sono {{mamma}}."
+          "target": "Hello! I am {{mamma}}.",
+          "native": "Ciao! Sono {{mamma}}."
         },
         {
           "id": "d-7",
           "speaker": "figlia",
           "role": "family",
-          "english": "Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
-          "italian": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
+          "target": "Hi! I'm {{figliaNome}}. I'm {{figliaEta}} years old.",
+          "native": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
           "whatYouLearn": [
             {
               "title": "I am e I'm",
-              "body": "Il papà dice \"I am {{papa:en}}\", la figlia dice \"I'm {{figliaNome:en}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
+              "body": "Il papà dice \"I am {{papa:target}}\", la figlia dice \"I'm {{figliaNome:target}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
             }
           ]
         },
@@ -381,12 +381,12 @@
           "id": "d-8",
           "speaker": "figlio",
           "role": "family",
-          "english": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
-          "italian": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
+          "target": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
+          "native": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
           "whatYouLearn": [
             {
               "title": "Dire quanti anni hai",
-              "body": "La figlia dice \"I'm {{figliaEta:en}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta:en}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+              "body": "La figlia dice \"I'm {{figliaEta:target}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta:target}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
             }
           ]
         },
@@ -394,8 +394,8 @@
           "id": "d-9",
           "speaker": "tutti",
           "role": "family",
-          "english": "We are the {{cognome}} family!",
-          "italian": "Siamo la famiglia {{cognome}}!",
+          "target": "We are the {{cognome}} family!",
+          "native": "Siamo la famiglia {{cognome}}!",
           "whatYouLearn": [
             {
               "title": "We are",

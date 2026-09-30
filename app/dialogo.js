@@ -283,10 +283,10 @@
     document.getElementById('dg-list').innerHTML = dgDialogue.map(function (line) {
       var align = dialogueLineAlign(line);
       var isFamiglia = align === 'right';
-      var english = fillTemplate(line.english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en');
+      var english = fillTemplate(line.target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target');
       var heard = dgHeardIds.indexOf(line.id) !== -1;
       var translationHtml = dgProfile.translations
-        ? '<p class="dg-translation" hidden>' + fillTemplate(line.italian, BI.episodioCorrente(), BI.valoriCorrenti(), 'it') + '</p>'
+        ? '<p class="dg-translation" hidden>' + fillTemplate(line.native, BI.episodioCorrente(), BI.valoriCorrenti(), 'native') + '</p>'
         : '';
       return '<div class="dg-row ' + align + '">' +
         '<div class="dg-item">' +
@@ -399,7 +399,7 @@
 
   function dgStartLineTimer(bubble, line) {
     var fillEl = bubble.querySelector('.sr-timerbar-fill');
-    var ms = dgLineDurationMs(fillTemplate(line.english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en'));
+    var ms = dgLineDurationMs(fillTemplate(line.target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target'));
     bubble.classList.add('dg-bubble-timer');
     if (CONFIG.dialogo.suonoCountdownInizio) sfxPlayCountdownSound();
     dgLineTimerFillEl = fillEl;
@@ -530,7 +530,7 @@
       dgFurthestIndex = lineIndex;
       dgApplySequenceLock();
     }
-    var english = fillTemplate(line.english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en');
+    var english = fillTemplate(line.target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target');
     // Correction (5th collaudo): dgLockAll(true, bubble) used to run
     // BEFORE toggleSpeak, eagerly. That's fine when nothing else was
     // playing, but Ascolta e Ripeti now allows switching straight from

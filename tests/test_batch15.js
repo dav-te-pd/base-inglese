@@ -57,7 +57,7 @@ async function run() {
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
-    const engToIta = {}; vocab.forEach(v => { engToIta[v.english] = v.italian; });
+    const engToIta = {}; vocab.forEach(v => { engToIta[v.target] = v.native; });
     let uscitoSenzaRisposta = null;
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
@@ -131,7 +131,7 @@ async function run() {
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab2 = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
-    const engToIta2 = {}; vocab2.forEach(v => { engToIta2[v.english] = v.italian; });
+    const engToIta2 = {}; vocab2.forEach(v => { engToIta2[v.target] = v.native; });
     for (let i = 0; i < 30; i++) {
       const summaryVisible = await page.isVisible('#qm-summary-screen').catch(() => false);
       if (summaryVisible) break;

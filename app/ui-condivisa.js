@@ -549,7 +549,7 @@
     document.getElementById('help-overlay-body').innerHTML = renderHelpConfirmation();
   });
 
-  // Porta ogni opzione alla forma { value, it, en, traducibile }. Una riga del
+  // Porta ogni opzione alla forma { value, native, target, traducibile }. Una riga del
   // magazzino ce l'ha gia'; un valore nudo — un'eta', che vive dentro il file
   // dell'episodio — diventa tutte le colonne uguali.
   //
@@ -559,13 +559,13 @@
   // cartella (regola 4 — un'edizione non e' una traduzione).
   //
   // ⚠️ E `traducibile` NON si mette qui: un valore nudo che non lo dichiara
-  // vale «si traduce», e per le eta' `it` ed `en` coincidono comunque. Darglielo
+  // vale «si traduce», e per le eta' `native` e `target` coincidono comunque. Darglielo
   // d'ufficio farebbe sembrare una decisione quello che e' un'assenza.
   function slotOptions(field) {
     return (field.options || []).map(function (item) {
       if (item && typeof item === 'object') return item;
       var s = String(item);
-      return { value: s, it: s, en: s };
+      return { value: s, native: s, target: s };
     });
   }
 
@@ -578,15 +578,19 @@
     return field ? field.def : '';
   }
 
-  // What a slot's current (stored) value displays as in a given language:
-  // the option's "it"/"en"/... column for select slots, or the raw text
-  // as typed for any free-text slot. Used both for the exercise phrase
-  // (English) and for dialogue lines (either language) and speaker tags
-  // (Italian) in Story Cards.
+  // What a slot's current (stored) value displays as in a given ROLE:
+  // the option's `target` (la lingua che si impara) or `native` (quella dello
+  // studente) column for select slots, or the raw text as typed for any
+  // free-text slot.
+  // ⚠️ `lang` E' UN RUOLO, NON UNA LINGUA — dal 2026-09-30, deciso da chi
+  // guida il progetto. Qui c'erano `'en'` e `'it'`: in un corso di spagnolo
+  // «Turín» stava sotto `en`, e in un corso d'inglese per spagnoli `es`
+  // sarebbe stata la lingua dello STUDENTE. *La stessa chiave con due ruoli
+  // opposti secondo il file.* Il ruolo invece e' vero in ogni edizione.
   // ⚠️ `campo` — passo 1.8-bis (2), 2026-09-24: quale PEZZO della riga si
   // vuole. Senza, la riga stessa (la citta'); con `'paese'`, il suo sotto-campo.
   //
-  // Il sotto-campo ha la STESSA forma della riga — `it` ed `en` — quindi la
+  // Il sotto-campo ha la STESSA forma della riga — `native` e `target` — quindi la
   // funzione non impara niente di nuovo: cambia solo su cosa guarda.
   //
   // ⚠️ E UN CAMPO CHE NON C'E' NON DA' `undefined` A SCHERMO: si torna alla
@@ -638,35 +642,12 @@
       //
       // ⚠️ E L'ASSENZA VALE «SI TRADUCE», non «non si sa»: le tabelle interne
       // a un episodio (le eta') sono valori nudi e non dichiarano niente. Per
-      // loro `it` ed `en` coincidono, quindi il ramo e' indifferente — ma il
+      // loro `native` e `target` coincidono, quindi il ramo e' indifferente — ma il
       // default va scelto, e questo e' quello che non cambia niente oggi.
       var parte = (campo && picked[campo]) ? picked[campo] : picked;
-      return picked.traducibile === false ? parte.it : parte[colonnaDellaLingua(lang)];
+      return picked.traducibile === false ? parte.native : parte[lang];
     }
     return rawValue;
-  }
-
-  // ⚠️ `en` NEI DATI VUOL DIRE «LA LINGUA CHE SI IMPARA», NON «INGLESE» — dal
-  // 2026-09-30, quando e' arrivata la seconda edizione (spagnolo/it).
-  //
-  // Il nome e' storico: l'app e' nata per l'inglese, e la colonna del magazzino
-  // che porta il valore nella lingua insegnata si chiama `en` in ogni edizione
-  // (il trascrittore la scrive per POSIZIONE, `trascrivi.js`). Il file di
-  // un'edizione di spagnolo invece dice la verita' — `{{partenza.paese:es}}` —
-  // e prima di qui `parte['es']` non esisteva: lo studente leggeva «Soy de
-  // Mondovì, undefined.»
-  //
-  // ⚠️ IL CODICE NON E' UN CAMPO NUOVO: si RICAVA da quello che l'edizione
-  // dichiara gia', la lingua della voce (`es-MX` -> `es`, `en-US` -> `en`).
-  // *Un secondo campo `codice` accanto a `synthesisLang` sarebbe la stessa
-  // cosa scritta due volte (regola 48), e la prima volta che divergono la
-  // voce parlerebbe una lingua e i segnaposto ne cercherebbero un'altra.*
-  function codiceLinguaInsegnata() {
-    return String(CONFIG.speech.synthesisLang || '').split('-')[0].toLowerCase();
-  }
-
-  function colonnaDellaLingua(lang) {
-    return lang === codiceLinguaInsegnata() ? 'en' : lang;
   }
 
   // Fills {{placeholders}} in a dialogue line using the episode's
@@ -676,27 +657,28 @@
   // placeholders are left untouched rather than breaking the line — but
   // logged, since a silently-unfilled {{token}} left on screen used to be
   // the only sign something was missing.
-  // Un segnaposto può chiedere una lingua sua, con {{chiave:en}} o
-  // {{chiave:it}}, invece di seguire quella della chiamata. Serve dove un
-  // testo mescola le due lingue: una skill è scritta in italiano ma cita la
-  // frase inglese del dialogo, quindi "I am from {{partenza:en}}" vuol dire
-  // "vengo da {{partenza}}" deve dare "Turin" nella citazione e "Torino"
-  // nella spiegazione. Senza suffisso vale la lingua della chiamata,
-  // come prima: nessun testo esistente cambia comportamento.
-  // ⚠️ Il suffisso della lingua insegnata e' il CODICE DELL'EDIZIONE — `:en`
-  // in inglese, `:es` in spagnolo — e `colonnaDellaLingua` lo porta sulla
-  // colonna `en` del magazzino, che in ogni edizione vuol dire quella.
+  // Un segnaposto può chiedere un RUOLO suo, con {{chiave:target}} o
+  // {{chiave:native}}, invece di seguire quello della chiamata. Serve dove un
+  // testo mescola le due lingue: una skill è scritta nella lingua dello
+  // studente ma cita la frase del dialogo, quindi "I am from
+  // {{partenza:target}}" vuol dire "vengo da {{partenza}}" deve dare "Turin"
+  // nella citazione e "Torino" nella spiegazione. Senza suffisso vale il ruolo
+  // della chiamata.
+  // ⚠️ IL SUFFISSO E' UN RUOLO DAL 2026-09-30, e non una lingua: prima era
+  // `:en`/`:it`, e per un giorno `:es` tradotto in `en` da una funzione
+  // (`colonnaDellaLingua`, tolta lo stesso giorno). Un suffisso vecchio —
+  // `{{x:en}}` — non trova la colonna, e resta a schermo com'e': vedi sotto.
   // ⚠️ LA REGEX HA IMPARATO IL PUNTO — passo 1.8-bis (2), 2026-09-24.
   //
   // `\w` NON contiene il punto, quindi prima `{{partenza.paese:en}}` non veniva
   // nemmeno RICONOSCIUTO: restava a schermo come testo, davanti allo studente.
-  // Adesso la forma e' `{{chiave}}`, `{{chiave:lingua}}`, `{{chiave.campo}}` e
-  // `{{chiave.campo:lingua}}` — il pezzo prima del punto e' quello che cerca in
+  // Adesso la forma e' `{{chiave}}`, `{{chiave:ruolo}}`, `{{chiave.campo}}` e
+  // `{{chiave.campo:ruolo}}` — il pezzo prima del punto e' quello che cerca in
   // `placeholderMap`, quello dopo e' il campo della riga.
   //
   // Serve perche' una riga del magazzino porta piu' di un valore: una citta' di
   // partenza porta anche il suo paese, e la battuta li vuole tutti e due —
-  // «I am from {{partenza}}, {{partenza.paese:en}}.» Senza, `Italy` restava
+  // «I am from {{partenza}}, {{partenza.paese:target}}.» Senza, `Italy` restava
   // scritto a mano nella battuta, e uno studente di Lugano leggeva «I am from
   // Lugano, Italy».
   function fillTemplate(text, episode, values, lang) {
@@ -708,14 +690,14 @@
       }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
       var valore = resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang, campo);
-      // ⚠️ UNA LINGUA CHE LA RIGA NON HA NON DIVENTA «undefined» A SCHERMO: si
+      // ⚠️ UN RUOLO CHE LA RIGA NON HA NON DIVENTA «undefined» A SCHERMO: si
       // tratta come un segnaposto sconosciuto — resta com'era, e si dice. E'
-      // quello che succede a `{{partenza:fr}}` in un'edizione di spagnolo, e
-      // prima del 2026-09-30 succedeva a ogni `:es`. *La parola «undefined»
+      // quello che succede a un suffisso vecchio (`{{partenza:en}}`) o
+      // sbagliato, e il 2026-09-30 succedeva a ogni `:es`. *La parola «undefined»
       // dentro una frase si legge come contenuto; `{{partenza:fr}}` si legge
       // come un guasto, ed e' quello che e'.*
       if (valore === undefined) {
-        console.warn('fillTemplate: "' + match + '" chiede una lingua che la riga non ha, nell\'episodio "' + episode.id + '"');
+        console.warn('fillTemplate: "' + match + '" chiede un ruolo che la riga non ha (target o native), nell\'episodio "' + episode.id + '"');
         return match;
       }
       return valore;

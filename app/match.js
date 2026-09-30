@@ -170,7 +170,7 @@
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
     document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
     document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
-    var promptText = BI.itemText(qmCurrentItem, qmDirection === 'en-it' ? 'en' : 'it');
+    var promptText = BI.itemText(qmCurrentItem, qmDirection === 'en-it' ? 'target' : 'native');
     document.getElementById('qm-prompt').textContent = promptText;
 
     var audioEl = document.getElementById('qm-prompt-audio');
@@ -341,7 +341,7 @@
       // prompt reads isn't blocked, it stops the prompt (see the
       // .sr-option/qm-dontknow-btn handlers' own stop-on-touch guard,
       // which stays).
-      speakListenBlock(say, BI.itemText(qmCurrentItem, 'en'));
+      speakListenBlock(say, BI.itemText(qmCurrentItem, 'target'));
     });
 
     document.getElementById('qm-dontknow-btn').addEventListener('click', function () {

@@ -206,8 +206,11 @@
     return pendingMastery[unitId];
   }
 
+  // `lang` e' un RUOLO — `'target'` (la lingua che si impara) o `'native'`
+  // (quella dello studente) — ed e' anche la chiave della voce: dal
+  // 2026-09-30 i due nomi coincidono, quindi niente `lang === 'en' ? ...`.
   function itemText(item, lang) {
-    return fillTemplate(lang === 'en' ? item.english : item.italian, currentEpisode, currentValues, lang);
+    return fillTemplate(item[lang], currentEpisode, currentValues, lang);
   }
 
 
@@ -227,10 +230,10 @@
      ============================================================ */
 
   function buildMultipleChoiceOptions(item, direction, vocabPool) {
-    var correctText = itemText(item, direction === 'en-it' ? 'it' : 'en');
+    var correctText = itemText(item, direction === 'en-it' ? 'native' : 'target');
     var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
     var distractors = shuffle(pool).slice(0, 3).map(function (v) {
-      return itemText(v, direction === 'en-it' ? 'it' : 'en');
+      return itemText(v, direction === 'en-it' ? 'native' : 'target');
     });
     var options = distractors.map(function (text) { return { text: text, correct: false }; });
     options.push({ text: correctText, correct: true });

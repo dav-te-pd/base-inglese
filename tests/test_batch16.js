@@ -88,7 +88,7 @@ async function run() {
     // famiglia della misura che non misura (CLAUDE.md regola 37) dentro un
     // test. Se un giorno serve un'asserzione sui luoghi, il nome giusto e'
     // `magazzino.places.departures`.
-    log('[Job1b] people.papa.papa-francesco really has a different EN value (regression bait present)', papaOpt && papaOpt.it !== papaOpt.en);
+    log('[Job1b] people.papa.papa-francesco really has a different EN value (regression bait present)', papaOpt && papaOpt.native !== papaOpt.target);
     log('[Job1b] No JS errors', errors.length === 0);
     await page.close();
   }

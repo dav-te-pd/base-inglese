@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260929b**
+**Versione: 20260930a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -123,7 +123,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      La fonte è la tabella **«I personaggi e le loro etichette»** del markdown dell'episodio, **non** la colonna «Chi» della matrice: la colonna descrive chi parla nella scena e serve a chi scrive.
 
-     **Le "skill" sono i `whatYouLearn`.** Quando se ne parla a voce o in una richiesta si chiamano *skill*; nel JSON il campo si chiama `whatYouLearn` e non ha altri nomi. Una skill è **una spiegazione agganciata a una battuta del grado D**, fatta di `title` e `body` (due campi separati, regola 25). I segnaposto nelle skill vengono sostituiti come in ogni altro testo dell'episodio: una skill è scritta in italiano ma cita la frase inglese del dialogo, quindi la citazione chiede la propria lingua con `{{chiave:en}}` — senza suffisso vale la lingua della chiamata.
+     **Le "skill" sono i `whatYouLearn`.** Quando se ne parla a voce o in una richiesta si chiamano *skill*; nel JSON il campo si chiama `whatYouLearn` e non ha altri nomi. Una skill è **una spiegazione agganciata a una battuta del grado D**, fatta di `title` e `body` (due campi separati, regola 25). I segnaposto nelle skill vengono sostituiti come in ogni altro testo dell'episodio: una skill è scritta in italiano ma cita la frase inglese del dialogo, quindi la citazione chiede il proprio ruolo con `{{chiave:target}}` — senza suffisso vale il ruolo della chiamata. ⚠️ **Il suffisso è un RUOLO e non una lingua, dal 2026-09-30:** `target` è la lingua che si impara, `native` quella dello studente, in ogni edizione — e sono anche i nomi delle due chiavi di ogni voce nel JSON. *Qui c'era `{{chiave:en}}`: in un corso d'inglese per spagnoli `es` sarebbe stata la lingua dello studente, cioè la stessa parola con il ruolo opposto.* Un suffisso vecchio non trova la colonna e resta a schermo com'è.
 
      **`whatYouLearn` è una lista, sempre**, anche quando la skill è una sola: una battuta lunga può introdurre due strutture diverse, ed è normale. Forzarne una sola per battuta significherebbe, prima o poi, spostare una spiegazione per far quadrare la struttura invece che per ragioni didattiche. Una battuta con una skill sola ha una lista di un elemento: il caso semplice non si complica.
 

@@ -98,10 +98,10 @@
     var itemsHtml = episodeGradeRequired(data, currentRepeatAloudModule.grade, currentRepeatAloudModule).map(function (item) {
       return '<div class="repeat-item panel">' +
         '<div class="repeat-item-top">' +
-        '<span class="repeat-item-english">' + BI.itemText(item, 'en') + '</span>' +
+        '<span class="repeat-item-english">' + BI.itemText(item, 'target') + '</span>' +
         renderListenBlock({ say: item.id, blocco: true }) +
         '</div>' +
-        '<span class="repeat-item-italian">' + BI.itemText(item, 'it') + '</span>' +
+        '<span class="repeat-item-italian">' + BI.itemText(item, 'native') + '</span>' +
         '<span class="repeat-item-tip">' + item.pronunciationTip + '</span>' +
         '</div>';
     }).join('');
@@ -150,7 +150,7 @@
       // browsing (tap any word, any order, any time) is the intended
       // behavior, same as Ascolta e Ripeti. toggleSpeak's own toggle
       // handles switching between words safely on its own.
-      speakListenBlock(btn, BI.itemText(item, 'en'));
+      speakListenBlock(btn, BI.itemText(item, 'target'));
     });
 
     document.getElementById('repeat-aloud-back-map').addEventListener('click', openEpisodeMap);

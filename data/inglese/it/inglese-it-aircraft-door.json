@@ -24,85 +24,85 @@
       "items": [
         {
           "id": "a-morning",
-          "english": "morning",
-          "italian": "mattina",
+          "target": "morning",
+          "native": "mattina",
           "pronunciationTip": "MOR-ning",
           "grammarCategory": "sostantivo"
         },
         {
           "id": "a-welcome",
-          "english": "welcome",
-          "italian": "benvenuto",
+          "target": "welcome",
+          "native": "benvenuto",
           "pronunciationTip": "UEL-com — la \"e\" finale non si legge",
           "grammarCategory": "espressione di accoglienza"
         },
         {
           "id": "a-tickets",
-          "english": "tickets",
-          "italian": "biglietti",
+          "target": "tickets",
+          "native": "biglietti",
           "pronunciationTip": "TI-chets — la \"ck\" è una \"c\" dura sola",
           "grammarCategory": "sostantivo plurale"
         },
         {
           "id": "a-here",
-          "english": "here",
-          "italian": "qui",
+          "target": "here",
+          "native": "qui",
           "pronunciationTip": "hia — la \"h\" è un soffio, la \"e\" finale muta",
           "grammarCategory": "avverbio di luogo"
         },
         {
           "id": "a-they",
-          "english": "they",
-          "italian": "loro",
+          "target": "they",
+          "native": "loro",
           "pronunciationTip": "dei — la \"th\" è la lingua fra i denti",
           "grammarCategory": "pronome"
         },
         {
           "id": "a-she",
-          "english": "she",
-          "italian": "lei",
+          "target": "she",
+          "native": "lei",
           "pronunciationTip": "scii — lunga",
           "grammarCategory": "pronome"
         },
         {
           "id": "a-he",
-          "english": "he",
-          "italian": "lui",
+          "target": "he",
+          "native": "lui",
           "pronunciationTip": "hii — con il soffio davanti",
           "grammarCategory": "pronome"
         },
         {
           "id": "a-wife",
-          "english": "wife",
-          "italian": "moglie",
+          "target": "wife",
+          "native": "moglie",
           "pronunciationTip": "uaif — la \"e\" finale non si legge",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
           "id": "a-daughter",
-          "english": "daughter",
-          "italian": "figlia",
+          "target": "daughter",
+          "native": "figlia",
           "pronunciationTip": "DO-ter — <strong>la \"gh\" non si legge affatto</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
           "id": "a-son",
-          "english": "son",
-          "italian": "figlio",
+          "target": "son",
+          "native": "figlio",
           "pronunciationTip": "san — <strong>non \"son\" come in italiano</strong>",
           "grammarCategory": "sostantivo, famiglia"
         },
         {
           "id": "a-enjoy",
-          "english": "enjoy",
-          "italian": "godersi",
+          "target": "enjoy",
+          "native": "godersi",
           "pronunciationTip": "en-GIOI",
           "grammarCategory": "verbo"
         },
         {
           "id": "a-flight",
-          "english": "flight",
-          "italian": "volo",
+          "target": "flight",
+          "native": "volo",
           "pronunciationTip": "flait — <strong>la \"gh\" muta, come in daughter</strong>",
           "grammarCategory": "sostantivo"
         }
@@ -113,43 +113,43 @@
       "items": [
         {
           "id": "b-good-morning",
-          "english": "good morning",
-          "italian": "buongiorno",
+          "target": "good morning",
+          "native": "buongiorno",
           "pronunciationTip": "gud MOR-ning",
           "grammarCategory": "saluto"
         },
         {
           "id": "b-welcome-aboard",
-          "english": "welcome aboard",
-          "italian": "benvenuti a bordo",
+          "target": "welcome aboard",
+          "native": "benvenuti a bordo",
           "pronunciationTip": "UEL-com a-BORD",
           "grammarCategory": "formula di accoglienza"
         },
         {
           "id": "b-here-they-are",
-          "english": "here they are",
-          "italian": "eccoli",
+          "target": "here they are",
+          "native": "eccoli",
           "pronunciationTip": "hia dei ar",
           "grammarCategory": "espressione"
         },
         {
           "id": "b-thank-you",
-          "english": "thank you",
-          "italian": "grazie",
+          "target": "thank you",
+          "native": "grazie",
           "pronunciationTip": "THENK iu — la \"th\" fra i denti",
           "grammarCategory": "formula di cortesia"
         },
         {
           "id": "b-this-way-please",
-          "english": "this way, please",
-          "italian": "da questa parte, prego",
+          "target": "this way, please",
+          "native": "da questa parte, prego",
           "pronunciationTip": "dis UEI pliiz",
           "grammarCategory": "indicazione di direzione"
         },
         {
           "id": "b-enjoy-your-flight",
-          "english": "enjoy your flight",
-          "italian": "buon volo",
+          "target": "enjoy your flight",
+          "native": "buon volo",
           "pronunciationTip": "en-GIOI ior flait",
           "grammarCategory": "formula di congedo"
         }
@@ -160,32 +160,32 @@
       "items": [
         {
           "id": "c-1",
-          "english": "Your tickets, please.",
-          "italian": "I biglietti, per favore.",
+          "target": "Your tickets, please.",
+          "native": "I biglietti, per favore.",
           "fromLine": "d-2"
         },
         {
           "id": "c-2",
-          "english": "She is my wife.",
-          "italian": "Lei è mia moglie.",
+          "target": "She is my wife.",
+          "native": "Lei è mia moglie.",
           "fromLine": "d-4"
         },
         {
           "id": "c-3",
-          "english": "She is my daughter.",
-          "italian": "Lei è mia figlia.",
+          "target": "She is my daughter.",
+          "native": "Lei è mia figlia.",
           "fromLine": "d-5"
         },
         {
           "id": "c-4",
-          "english": "He is my son.",
-          "italian": "Lui è mio figlio.",
+          "target": "He is my son.",
+          "native": "Lui è mio figlio.",
           "fromLine": "d-5"
         },
         {
           "id": "c-5",
-          "english": "{{destinazione}}? This way, please.",
-          "italian": "{{destinazione}}? Da questa parte, prego.",
+          "target": "{{destinazione}}? This way, please.",
+          "native": "{{destinazione}}? Da questa parte, prego.",
           "fromLine": "d-7"
         }
       ]
@@ -197,8 +197,8 @@
           "id": "d-1",
           "speaker": "hostess-porta",
           "role": "staff",
-          "english": "Good morning! Welcome aboard.",
-          "italian": "Buongiorno! Benvenuti a bordo.",
+          "target": "Good morning! Welcome aboard.",
+          "native": "Buongiorno! Benvenuti a bordo.",
           "whatYouLearn": [
             {
               "title": "Buongiorno",
@@ -214,8 +214,8 @@
           "id": "d-2",
           "speaker": "hostess-porta",
           "role": "staff",
-          "english": "Your tickets, please.",
-          "italian": "I biglietti, per favore.",
+          "target": "Your tickets, please.",
+          "native": "I biglietti, per favore.",
           "whatYouLearn": [
             {
               "title": "Please",
@@ -227,8 +227,8 @@
           "id": "d-3",
           "speaker": "papa",
           "role": "family",
-          "english": "Here they are.",
-          "italian": "Eccoli.",
+          "target": "Here they are.",
+          "native": "Eccoli.",
           "whatYouLearn": [
             {
               "title": "Eccoli",
@@ -240,8 +240,8 @@
           "id": "d-4",
           "speaker": "papa",
           "role": "family",
-          "english": "She is my wife.",
-          "italian": "Lei è mia moglie.",
+          "target": "She is my wife.",
+          "native": "Lei è mia moglie.",
           "whatYouLearn": [
             {
               "title": "He is, she is",
@@ -253,8 +253,8 @@
           "id": "d-5",
           "speaker": "papa",
           "role": "family",
-          "english": "She is my daughter, he is my son.",
-          "italian": "Lei è mia figlia, lui è mio figlio.",
+          "target": "She is my daughter, he is my son.",
+          "native": "Lei è mia figlia, lui è mio figlio.",
           "whatYouLearn": [
             {
               "title": "La famiglia",
@@ -266,15 +266,15 @@
           "id": "d-6",
           "speaker": "hostess-porta",
           "role": "staff",
-          "english": "Thank you.",
-          "italian": "Grazie."
+          "target": "Thank you.",
+          "native": "Grazie."
         },
         {
           "id": "d-7",
           "speaker": "hostess-porta",
           "role": "staff",
-          "english": "{{destinazione}}? This way, please.",
-          "italian": "{{destinazione}}? Da questa parte, prego.",
+          "target": "{{destinazione}}? This way, please.",
+          "native": "{{destinazione}}? Da questa parte, prego.",
           "whatYouLearn": [
             {
               "title": "Indicare la direzione",
@@ -286,15 +286,15 @@
           "id": "d-8",
           "speaker": "tutti",
           "role": "family",
-          "english": "Thank you!",
-          "italian": "Grazie!"
+          "target": "Thank you!",
+          "native": "Grazie!"
         },
         {
           "id": "d-9",
           "speaker": "hostess-porta",
           "role": "staff",
-          "english": "Enjoy your flight!",
-          "italian": "Buon volo!",
+          "target": "Enjoy your flight!",
+          "native": "Buon volo!",
           "whatYouLearn": [
             {
               "title": "Qui il dialogo finisce",

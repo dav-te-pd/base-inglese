@@ -379,7 +379,7 @@
   function vcCurrentLine() { return vcCurrentLineObj; }
 
   function vcTargetText() {
-    return fillTemplate(vcCurrentLine().english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en');
+    return fillTemplate(vcCurrentLine().target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target');
   }
 
   function setVcState(state) {
@@ -549,7 +549,7 @@
     } else {
       document.getElementById('vc-attempt-label').textContent = '';
     }
-    document.getElementById('vc-cue').textContent = fillTemplate(line.italian, BI.episodioCorrente(), BI.valoriCorrenti(), 'it');
+    document.getElementById('vc-cue').textContent = fillTemplate(line.native, BI.episodioCorrente(), BI.valoriCorrenti(), 'native');
     document.getElementById('vc-target').textContent = vcTargetText();
     var pronToggle = document.getElementById('vc-pronunciation-toggle');
     var pronEl = document.getElementById('vc-pronunciation');

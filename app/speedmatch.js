@@ -234,7 +234,7 @@
     document.getElementById('sr-dontknow-btn').disabled = false;
     document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
     document.getElementById('sr-ripasso-badge').hidden = !srInRetryPass;
-    var promptText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'en' : 'it');
+    var promptText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'target' : 'native');
     document.getElementById('sr-prompt').textContent = promptText;
     srCurrentOptions = srBuildOptions(srCurrentItem);
     document.getElementById('sr-options').innerHTML = srCurrentOptions.map(function (opt, i) {
@@ -286,7 +286,7 @@
   // answer and wait for an explicit "Avanti" instead of auto-advancing,
   // so the user reads and memorizes it (CLAUDE.md-style deliberate pacing).
   function srShowReveal() {
-    var correctText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'it' : 'en');
+    var correctText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'native' : 'target');
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b, i) {
       if (srCurrentOptions[i] && srCurrentOptions[i].correct) b.classList.add('is-correct');
     });

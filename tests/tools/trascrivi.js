@@ -77,12 +77,38 @@ const dati = (ed, n) => path.join(RADICE, 'data', ed.lingua, ed.studente, ed.pre
 // basta darebbe i conteggi al posto dei testi, e il controllo sul numero di
 // colonne lo direbbe \u2014 ma dirlo per caso non e' dirlo: `intestazione` lo
 // rende una scelta, e una tabella che non c'e' ferma tutto col suo nome.
+// ⚠️ E DAL 2026-09-30 UN TITOLO CHE COMPARE DUE VOLTE, O UNA TABELLA
+// OBBLIGATORIA SENZA RIGHE, FERMANO TUTTO (regola 49).
+//
+// Misurato quel giorno: una tabella nuova nella §1 di `struttura-corso.md`
+// citava per intero `## 5 — LE SEQUENZE DEI MODULI`. `indexOf` ha trovato la
+// CITAZIONE invece della sezione, ha letto sotto di lei una tabella di una
+// riga sola, e il trascrittore ha scritto **`sequences: {}` senza dire
+// niente** — un corso senza nessuna sequenza, cioe' ogni episodio sulla
+// schermata d'errore. *E `test_struttura_corso` sarebbe rimasto verde: legge
+// il markdown con lo stesso metodo, e confrontava vuoto con vuoto.*
 function tabellaSotto(testo, titolo, obbligatoria, intestazione) {
   const i = testo.indexOf(titolo);
   if (i === -1) {
     if (obbligatoria) throw new Error('Titolo non trovato: ' + titolo);
     return [];
   }
+  const ancora = testo.indexOf(titolo, i + titolo.length);
+  if (ancora !== -1) {
+    const riga = (pos) => testo.slice(0, pos).split('\n').length;
+    throw new Error('Il titolo "' + titolo + '" compare piu\' di una volta (righe ' +
+      riga(i) + ' e ' + riga(ancora) + '): il trascrittore leggerebbe la prima, ' +
+      'che forse e\' una citazione. Un titolo cercato si scrive una volta sola.');
+  }
+  const risultato = tabellaSottoDa(testo, i, titolo, intestazione);
+  if (obbligatoria && !risultato.length) {
+    throw new Error('Sotto "' + titolo + '" c\'e\' una tabella senza righe: ' +
+      'una tabella obbligatoria vuota non è un corso vuoto, è un guasto.');
+  }
+  return risultato;
+}
+
+function tabellaSottoDa(testo, i, titolo, intestazione) {
   const righe = testo.slice(i + titolo.length).split('\n');
   const blocchi = [];
   let corrente = null;
@@ -226,8 +252,16 @@ function tabelle(ed) {
     const nome = nb(r[0]);
     // ⚠️ QUATTRO COLONNE O SEI, E NIENT'ALTRO — passo 1.8-bis (2), 2026-09-24.
     //
-    // Quattro: id | it | en | traducibile.
-    // Sei:     id | it | en | paese it | paese en | traducibile.
+    // Quattro: id | native | target | traducibile.
+    // Sei:     id | native | target | paese native | paese target | traducibile.
+    //
+    // ⚠️ `native` E `target` SONO RUOLI, NON LINGUE — dal 2026-09-30, deciso da
+    // chi guida il progetto. Qui c'erano `it` ed `en`: nel file di un corso di
+    // spagnolo, «Turín» sarebbe finito sotto `en`. *Una chiave che dice una
+    // lingua e' vera in un'edizione sola; una che dice il ruolo e' vera in
+    // tutte — in un corso d'inglese per spagnoli `es` sarebbe la lingua dello
+    // studente, `native` resta `native`.* Le intestazioni del markdown restano
+    // libere (`it`, `en`, `es`): si legge per posizione.
     //
     // Il numero NON e' una costante unica perche' le tabelle non sono tutte
     // uguali: `places.departures` porta il paese — senza, la battuta di `gate`
@@ -242,8 +276,8 @@ function tabelle(ed) {
     const quante = grezze.length ? grezze[0].length : 4;
     if (quante !== 4 && quante !== 6) {
       throw new Error(nome + ': ' + quante + ' colonne. Le tabelle di ' +
-        'personalizzazione ne vogliono 4 (id|it|en|traducibile) o 6 ' +
-        '(id|it|en|paese it|paese en|traducibile).');
+        'personalizzazione ne vogliono 4 (id|native|target|traducibile) o 6 ' +
+        '(id|native|target|paese native|paese target|traducibile).');
     }
     const righe = colonne(grezze, quante, nome);
     const [gruppo, chiave] = nome.split('.');
@@ -251,16 +285,16 @@ function tabelle(ed) {
     out[gruppo][chiave] = righe.map((x) => {
       const riga = {
         value: nb(x[0]),
-        it: x[1].trim(),
-        en: x[2].trim(),
+        native: x[1].trim(),
+        target: x[2].trim(),
         // L'assenza vale «si traduce»: si scrive solo il `false`, come il file
         // di oggi. Un `traducibile: true` ovunque sarebbe rumore.
         traducibile: !/^(no|false)$/i.test(x[quante - 1].trim())
       };
-      // Il sotto-campo ha la STESSA forma della riga — `it` ed `en` — cosi'
+      // Il sotto-campo ha la STESSA forma della riga — `native` e `target` — cosi'
       // `resolveSlotValue` non impara niente di nuovo: legge `picked[campo]`
       // dove prima leggeva `picked`.
-      if (quante === 6) riga.paese = { it: x[3].trim(), en: x[4].trim() };
+      if (quante === 6) riga.paese = { native: x[3].trim(), target: x[4].trim() };
       return riga;
     });
   });
@@ -411,7 +445,12 @@ function episodio(ed, id, gradeNames) {
   fuori.episodeId = id;
 
   const regola = colonne(tabellaSotto(t, '## 3 — LA REGOLA GENERALE', false), 1, 'regola generale');
-  if (regola.length) fuori.generalRule = regola[0][0].trim();
+  // ⚠️ `html()` ANCHE QUI, dal 2026-09-30: `generalRule` entra nella pagina come
+  // HTML (Repeat Aloud), esattamente come `pronunciationTip`. La prima regola
+  // generale col grassetto — «**dí**-as», spagnolo, `gate` — sarebbe uscita
+  // con gli asterischi a schermo. *I due episodi inglesi non ne avevano, quindi
+  // nessuno l'aveva visto.*
+  if (regola.length) fuori.generalRule = html(regola[0][0].trim());
 
   // Le tabelle interne: `episode.<nome>.<gruppo>` le raggiunge da qui.
   const interne = colonne(tabellaSotto(t, "## 8 — LE TABELLE INTERNE ALL'EPISODIO", false), 3, 'tabelle interne');
@@ -469,21 +508,21 @@ function episodio(ed, id, gradeNames) {
       items = gradi.D.map((r) => {
         // ⚠️ LA CHIAVE E' `role`, NON `ruolo` — dal 2026-09-28 (passo D).
         // *Le chiavi del JSON sono in inglese come tutte le altre (`speaker`,
-        // `english`, `italian`): `ruolo` era l'unica in italiano, ed era
+        // `target`, `native`): `ruolo` era l'unica in italiano, ed era
         // l'italiano di chi scrive il contenuto finito in un file che lo
         // esegue.* **La COLONNA del markdown si chiama ancora `ruolo`, ed è
         // voluto: quel file lo scrive chi guida il progetto, in italiano.**
-        const it = { id: nb(r[0]), speaker: nb(r[1]), role: nb(r[2]), english: r[3].trim(), italian: r[4].trim() };
+        const it = { id: nb(r[0]), speaker: nb(r[1]), role: nb(r[2]), target: r[3].trim(), native: r[4].trim() };
         // whatYouLearn e' SEMPRE una lista, e c'e' solo se la battuta ha
         // almeno una skill: una lista vuota direbbe un'altra cosa.
         if (perBattuta[it.id]) it.whatYouLearn = perBattuta[it.id];
         return it;
       });
     } else if (g === 'C') {
-      items = gradi.C.map((r) => ({ id: nb(r[0]), english: r[1].trim(), italian: r[2].trim(), fromLine: nb(r[3]) }));
+      items = gradi.C.map((r) => ({ id: nb(r[0]), target: r[1].trim(), native: r[2].trim(), fromLine: nb(r[3]) }));
     } else {
       items = gradi[g].map((r) => ({
-        id: nb(r[0]), english: r[1].trim(), italian: r[2].trim(),
+        id: nb(r[0]), target: r[1].trim(), native: r[2].trim(),
         pronunciationTip: html(r[3].trim()), grammarCategory: r[4].trim()
       }));
     }
@@ -636,4 +675,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC };
+module.exports = { edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };

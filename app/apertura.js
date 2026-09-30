@@ -121,7 +121,7 @@
   // magazzino condiviso: `ages.anni` ha quattordici righe, e la figlia ne vede
   // sei (12-17), il figlio otto (4-11). Prima le due liste erano due tabelle
   // separate dentro `gate`, quindi il problema non esisteva — e nemmeno la
-  // parola in inglese, perche' un valore nudo ha `it` ed `en` uguali.
+  // parola in inglese, perche' un valore nudo ha `native` e `target` uguali.
   //
   // ⚠️ ASSENTE VUOL DIRE «TUTTA LA TABELLA», E LO DICE L'ASSENZA. Sette slot su
   // otto non dichiarano niente: dare loro una lista vuota obbligherebbe questa

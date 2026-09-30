@@ -200,7 +200,7 @@ sarebbe restata verde. *È il difetto che vive dentro un'opzione che nessuno
 prova, ed è il motivo per cui le due righe hanno aspettato invece di entrare.*
 
 **Adesso il paese arriva alla frase con un segnaposto suo:**
-`I am from {{partenza}}, {{partenza.paese:en}}.` ⚠️ **E la strada più corta è
+`I am from {{partenza}}, {{partenza.paese:target}}.` ⚠️ **E la strada più corta è
 stata scartata:** far portare alla colonna `it` il valore già composto — «Lugano,
 Svizzera» — **chiude una porta.** *La città DA SOLA serve: «Turin» era una voce
 del grado A, una parola che si impara. Dentro una cella composta quella voce non

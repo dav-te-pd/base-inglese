@@ -1,4 +1,4 @@
-**Versione: 20260928a**
+**Versione: 20260930a**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -259,8 +259,8 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[11]` | Ci sta. Se resta poco chiara anche dopo gli esercizi, usa il tasto Help in alto. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[12]` | Va bene così: l'importante è che tu sappia che qui c'è qualcosa da recuperare. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[13]` | Nessun problema. Le regole si sistemano da sole man mano che le usi. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[14]` | Capita, e non vuol dire niente sul tuo inglese: vai avanti. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[15]` | Tranquillo. Alcune cose in inglese hanno senso solo dopo che le hai dette a voce. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[14]` | Capita, e non vuol dire niente su come stai andando: vai avanti. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[15]` | Tranquillo. Certe cose hanno senso solo dopo che le hai dette a voce. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[16]` | Va bene. Torna a questa card quando avrai fatto qualche esercizio in più. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[17]` | Nessuna fretta: questa regola tornerà negli episodi successivi. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[18]` | Succede, ed è utile saperlo: ora sai cosa ripassare. |

@@ -107,7 +107,7 @@
           var opts = slotOptions(f);
           control = '<select data-slot="' + f.key + '">' + opts.map(function (o) {
             var selected = o.value === BI.valoriCorrenti()[f.key] ? ' selected' : '';
-            return '<option value="' + o.value + '"' + selected + '>' + o.it + '</option>';
+            return '<option value="' + o.value + '"' + selected + '>' + o.native + '</option>';
           }).join('') + '</select>';
         } else {
           control = '<input type="text" data-slot="' + f.key + '" value="' + (BI.valoriCorrenti()[f.key] || '') + '">';
@@ -162,7 +162,7 @@
     var group = groupSlotFields(BI.episodioCorrente().slotFields).find(function (g) { return g.key === groupKey; });
     if (!group) return;
     var opts = slotOptions(requestGroupField(group));
-    var isDuplicate = opts.some(function (o) { return o.it.toLowerCase() === value.toLowerCase(); });
+    var isDuplicate = opts.some(function (o) { return o.native.toLowerCase() === value.toLowerCase(); });
     var feedbackEl = document.getElementById('request-feedback-' + groupKey);
     loadModuleInstructions().then(function (data) {
       var entry = data.personalizzazione || {};

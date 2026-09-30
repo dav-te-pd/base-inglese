@@ -53,7 +53,7 @@ function log(name, ok, extra) {
 // `fileEdizione` di test-env.js, il gemello di `percorsoEdizione` (regola 24).
 function primaBattuta(episodeId) {
   const dati = JSON.parse(fs.readFileSync(fileEdizione(episodeId + '.json'), 'utf8'));
-  return dati.levels.D.items[0].english;
+  return dati.levels.D.items[0].target;
 }
 
 // `override` e' facoltativo: quando c'e', si scrive nel magazzino DOPO il

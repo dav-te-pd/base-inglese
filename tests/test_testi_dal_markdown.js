@@ -180,5 +180,49 @@ function quanteStringhe(o) {
   });
 }
 
+// ── [D] IL TRASCRITTORE SI FERMA INVECE DI SCRIVERE UN VUOTO — 2026-09-30 ──
+//
+// Il caso vero: una tabella nella §1 di `struttura-corso.md` citava per
+// intero `## 5 — LE SEQUENZE DEI MODULI`, e il trascrittore ha scritto
+// `sequences: {}` senza fermarsi. **[B] qui sopra sarebbe rimasto verde:**
+// rigenera con lo stesso metodo, quindi confronterebbe vuoto con vuoto. Per
+// questo le due guardie si provano su un testo costruito apposta.
+{
+  const sollevato = function (f) { try { f(); return null; } catch (e) { return e.message; } };
+  const titolo = '## 5 — LE SEQUENZE DEI MODULI';
+  const citato = '## 1 — X\n\n| a | b |\n|---|---|\n| cita | `' + titolo + '` |\n\n' +
+    titolo + '\n\n| s | m | g |\n|---|---|---|\n| narr | repeatAloud | A |\n';
+  const msg1 = sollevato(function () { T.tabellaSotto(citato, titolo, true); });
+  log('[D] Un titolo cercato che compare DUE volte ferma il trascrittore, e dice le righe',
+    !!msg1 && /piu' di una volta/.test(msg1) && /righe 5 e 7/.test(msg1), String(msg1));
+
+  const vuota = titolo + '\n\n| s | m | g |\n|---|---|---|\n\nprosa\n';
+  const msg2 = sollevato(function () { T.tabellaSotto(vuota, titolo, true); });
+  log('[D] Una tabella obbligatoria SENZA righe ferma il trascrittore', !!msg2 && /senza righe/.test(msg2), String(msg2));
+  log('[D] ...e una facoltativa senza righe no: dà una lista vuota',
+    sollevato(function () { T.tabellaSotto(vuota, titolo, false); }) === null);
+
+  // ⚠️ IL GRASSETTO DELLA REGOLA GENERALE DIVENTA HTML. Si prende il markdown
+  // VERO di un episodio e gli si mette un grassetto nella regola: cosi' il
+  // resto del file resta quello che il trascrittore sa leggere, e cambia solo
+  // la cella che si vuole misurare.
+  const ed = T.edizioni()[0];
+  const s = T.struttura(ed);
+  const id = Object.keys(s.episodes)[0];
+  const percorso = T.doc(ed, id);
+  const vero = fs.readFileSync(percorso, 'utf8');
+  const i3 = vero.indexOf('## 3 — LA REGOLA GENERALE');
+  const riga = vero.slice(i3).split('\n').find(function (r) { return /^\|/.test(r) && !/^\|\s*-/.test(r) && !/Testo/.test(r); });
+  const orig = fs.readFileSync;
+  let json = null;
+  if (riga) {
+    const finto = vero.replace(riga, '| La voce cade su **dí**-as. |');
+    fs.readFileSync = function (p) { return String(p) === percorso ? finto : orig.apply(fs, arguments); };
+    try { json = T.episodio(ed, id, s.gradeNames).json; } finally { fs.readFileSync = orig; }
+  }
+  log('[D] Il grassetto della regola generale diventa <strong>, non asterischi a schermo',
+    !!json && json.generalRule === 'La voce cade su <strong>dí</strong>-as.', json && json.generalRule);
+}
+
 console.log('\n=== TESTI DAL MARKDOWN: ' + passed + '/' + (passed + failed) + ' passed ===');
 process.exit(failed === 0 ? 0 : 1);

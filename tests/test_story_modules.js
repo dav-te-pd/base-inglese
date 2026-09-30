@@ -211,8 +211,8 @@ function confrontaTestoConLaFonte(log) {
       const it = items[i];
       const dove = 'grado ' + grado + ' riga ' + (i + 1) + ' (' + it.id + ')';
       confronta(dove + ' id', riga[0], it.id);
-      confronta(dove + ' inglese', riga[1], it.english);
-      confronta(dove + ' italiano', riga[2], it.italian);
+      confronta(dove + ' inglese', riga[1], it.target);
+      confronta(dove + ' italiano', riga[2], it.native);
       confronta(dove + ' pronuncia', riga[3], it.pronunciationTip);
       confronta(dove + ' categoria', riga[4], it.grammarCategory);
     });
@@ -247,8 +247,8 @@ function confrontaTestoConLaFonte(log) {
       // altre.** *Questa riga e' proprio il punto in cui le due lingue si
       // toccano, ed e' l'unico.*
       confronta(dove + ' ruolo', riga[2], it.role);
-      confrontaConSegnaposto(dove + ' inglese', riga[3], it.english);
-      confrontaConSegnaposto(dove + ' italiano', riga[4], it.italian);
+      confrontaConSegnaposto(dove + ' inglese', riga[3], it.target);
+      confrontaConSegnaposto(dove + ' italiano', riga[4], it.native);
       const attese = skillPerBattuta[riga[0]] || 0;
       const trovate = (it.whatYouLearn || []).length;
       if (attese !== trovate) differenze.push(dove + ': la fonte le da\' ' + attese + ' skill, il json ' + trovate);
@@ -268,8 +268,8 @@ function confrontaTestoConLaFonte(log) {
       const it = frasiJson[i];
       const dove = 'grado C ' + riga[0] + ' (' + it.id + ')';
       confronta(dove + ' id', riga[0], it.id);
-      confrontaConSegnaposto(dove + ' inglese', riga[1], it.english);
-      confrontaConSegnaposto(dove + ' italiano', riga[2], it.italian);
+      confrontaConSegnaposto(dove + ' inglese', riga[1], it.target);
+      confrontaConSegnaposto(dove + ' italiano', riga[2], it.native);
       confronta(dove + ' fromLine', riga[3], it.fromLine);
     });
   }

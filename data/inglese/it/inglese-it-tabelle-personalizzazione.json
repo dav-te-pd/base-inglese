@@ -3,286 +3,286 @@
     "papa": [
       {
         "value": "papa-marco",
-        "it": "Marco",
-        "en": "Mark",
+        "native": "Marco",
+        "target": "Mark",
         "traducibile": false
       },
       {
         "value": "papa-giancarlo",
-        "it": "Giancarlo",
-        "en": "Giancarlo",
+        "native": "Giancarlo",
+        "target": "Giancarlo",
         "traducibile": false
       },
       {
         "value": "papa-francesco",
-        "it": "Francesco",
-        "en": "Francis",
+        "native": "Francesco",
+        "target": "Francis",
         "traducibile": false
       },
       {
         "value": "papa-andrea",
-        "it": "Andrea",
-        "en": "Andrew",
+        "native": "Andrea",
+        "target": "Andrew",
         "traducibile": false
       },
       {
         "value": "papa-luca",
-        "it": "Luca",
-        "en": "Luke",
+        "native": "Luca",
+        "target": "Luke",
         "traducibile": false
       },
       {
         "value": "papa-paolo",
-        "it": "Paolo",
-        "en": "Paul",
+        "native": "Paolo",
+        "target": "Paul",
         "traducibile": false
       },
       {
         "value": "papa-stefano",
-        "it": "Stefano",
-        "en": "Stephen",
+        "native": "Stefano",
+        "target": "Stephen",
         "traducibile": false
       },
       {
         "value": "papa-davide",
-        "it": "Davide",
-        "en": "David",
+        "native": "Davide",
+        "target": "David",
         "traducibile": false
       },
       {
         "value": "papa-claudio",
-        "it": "Claudio",
-        "en": "Claude",
+        "native": "Claudio",
+        "target": "Claude",
         "traducibile": false
       },
       {
         "value": "papa-federico",
-        "it": "Federico",
-        "en": "Frederick",
+        "native": "Federico",
+        "target": "Frederick",
         "traducibile": false
       }
     ],
     "mamma": [
       {
         "value": "mamma-giulia",
-        "it": "Giulia",
-        "en": "Julia",
+        "native": "Giulia",
+        "target": "Julia",
         "traducibile": false
       },
       {
         "value": "mamma-anna",
-        "it": "Anna",
-        "en": "Ann",
+        "native": "Anna",
+        "target": "Ann",
         "traducibile": false
       },
       {
         "value": "mamma-chiara",
-        "it": "Chiara",
-        "en": "Clare",
+        "native": "Chiara",
+        "target": "Clare",
         "traducibile": false
       },
       {
         "value": "mamma-nicoletta",
-        "it": "Nicoletta",
-        "en": "Nicole",
+        "native": "Nicoletta",
+        "target": "Nicole",
         "traducibile": false
       },
       {
         "value": "mamma-laura",
-        "it": "Laura",
-        "en": "Laura",
+        "native": "Laura",
+        "target": "Laura",
         "traducibile": false
       },
       {
         "value": "mamma-elena",
-        "it": "Elena",
-        "en": "Helen",
+        "native": "Elena",
+        "target": "Helen",
         "traducibile": false
       },
       {
         "value": "mamma-silvia",
-        "it": "Silvia",
-        "en": "Sylvia",
+        "native": "Silvia",
+        "target": "Sylvia",
         "traducibile": false
       },
       {
         "value": "mamma-francesca",
-        "it": "Francesca",
-        "en": "Frances",
+        "native": "Francesca",
+        "target": "Frances",
         "traducibile": false
       }
     ],
     "figlia": [
       {
         "value": "figlia-emma",
-        "it": "Emma",
-        "en": "Emma",
+        "native": "Emma",
+        "target": "Emma",
         "traducibile": false
       },
       {
         "value": "figlia-sofia",
-        "it": "Sofia",
-        "en": "Sophie",
+        "native": "Sofia",
+        "target": "Sophie",
         "traducibile": false
       },
       {
         "value": "figlia-alice",
-        "it": "Alice",
-        "en": "Alice",
+        "native": "Alice",
+        "target": "Alice",
         "traducibile": false
       },
       {
         "value": "figlia-giorgia",
-        "it": "Giorgia",
-        "en": "Georgia",
+        "native": "Giorgia",
+        "target": "Georgia",
         "traducibile": false
       },
       {
         "value": "figlia-martina",
-        "it": "Martina",
-        "en": "Martina",
+        "native": "Martina",
+        "target": "Martina",
         "traducibile": false
       },
       {
         "value": "figlia-sara",
-        "it": "Sara",
-        "en": "Sarah",
+        "native": "Sara",
+        "target": "Sarah",
         "traducibile": false
       },
       {
         "value": "figlia-chiara",
-        "it": "Chiara",
-        "en": "Clare",
+        "native": "Chiara",
+        "target": "Clare",
         "traducibile": false
       },
       {
         "value": "figlia-beatrice",
-        "it": "Beatrice",
-        "en": "Beatrice",
+        "native": "Beatrice",
+        "target": "Beatrice",
         "traducibile": false
       }
     ],
     "figlio": [
       {
         "value": "figlio-tommaso",
-        "it": "Tommaso",
-        "en": "Thomas",
+        "native": "Tommaso",
+        "target": "Thomas",
         "traducibile": false
       },
       {
         "value": "figlio-leo",
-        "it": "Leo",
-        "en": "Leo",
+        "native": "Leo",
+        "target": "Leo",
         "traducibile": false
       },
       {
         "value": "figlio-marco",
-        "it": "Marco",
-        "en": "Mark",
+        "native": "Marco",
+        "target": "Mark",
         "traducibile": false
       },
       {
         "value": "figlio-giorgio",
-        "it": "Giorgio",
-        "en": "George",
+        "native": "Giorgio",
+        "target": "George",
         "traducibile": false
       },
       {
         "value": "figlio-matteo",
-        "it": "Matteo",
-        "en": "Matthew",
+        "native": "Matteo",
+        "target": "Matthew",
         "traducibile": false
       },
       {
         "value": "figlio-lorenzo",
-        "it": "Lorenzo",
-        "en": "Lawrence",
+        "native": "Lorenzo",
+        "target": "Lawrence",
         "traducibile": false
       },
       {
         "value": "figlio-simone",
-        "it": "Simone",
-        "en": "Simon",
+        "native": "Simone",
+        "target": "Simon",
         "traducibile": false
       },
       {
         "value": "figlio-filippo",
-        "it": "Filippo",
-        "en": "Philip",
+        "native": "Filippo",
+        "target": "Philip",
         "traducibile": false
       },
       {
         "value": "figlio-claudio",
-        "it": "Claudio",
-        "en": "Claude",
+        "native": "Claudio",
+        "target": "Claude",
         "traducibile": false
       },
       {
         "value": "figlio-federico",
-        "it": "Federico",
-        "en": "Frederick",
+        "native": "Federico",
+        "target": "Frederick",
         "traducibile": false
       },
       {
         "value": "figlio-paolo",
-        "it": "Paolo",
-        "en": "Paul",
+        "native": "Paolo",
+        "target": "Paul",
         "traducibile": false
       }
     ],
     "cognome": [
       {
         "value": "cognome-costa",
-        "it": "Costa",
-        "en": "Costa",
+        "native": "Costa",
+        "target": "Costa",
         "traducibile": false
       },
       {
         "value": "cognome-rossi",
-        "it": "Rossi",
-        "en": "Rossi",
+        "native": "Rossi",
+        "target": "Rossi",
         "traducibile": false
       },
       {
         "value": "cognome-bianchi",
-        "it": "Bianchi",
-        "en": "Bianchi",
+        "native": "Bianchi",
+        "target": "Bianchi",
         "traducibile": false
       },
       {
         "value": "cognome-ferrari",
-        "it": "Ferrari",
-        "en": "Ferrari",
+        "native": "Ferrari",
+        "target": "Ferrari",
         "traducibile": false
       },
       {
         "value": "cognome-ferrario",
-        "it": "Ferrario",
-        "en": "Ferrario",
+        "native": "Ferrario",
+        "target": "Ferrario",
         "traducibile": false
       },
       {
         "value": "cognome-russo",
-        "it": "Russo",
-        "en": "Russo",
+        "native": "Russo",
+        "target": "Russo",
         "traducibile": false
       },
       {
         "value": "cognome-marino",
-        "it": "Marino",
-        "en": "Marino",
+        "native": "Marino",
+        "target": "Marino",
         "traducibile": false
       },
       {
         "value": "cognome-barberis",
-        "it": "Barberis",
-        "en": "Barberis",
+        "native": "Barberis",
+        "target": "Barberis",
         "traducibile": false
       },
       {
         "value": "cognome-ambruosi",
-        "it": "Ambruosi",
-        "en": "Ambruosi",
+        "native": "Ambruosi",
+        "target": "Ambruosi",
         "traducibile": false
       }
     ]
@@ -291,102 +291,102 @@
     "departures": [
       {
         "value": "orig-mondovi",
-        "it": "Mondovì",
-        "en": "Mondovì",
+        "native": "Mondovì",
+        "target": "Mondovì",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-torino",
-        "it": "Torino",
-        "en": "Turin",
+        "native": "Torino",
+        "target": "Turin",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-milano",
-        "it": "Milano",
-        "en": "Milan",
+        "native": "Milano",
+        "target": "Milan",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-roma",
-        "it": "Roma",
-        "en": "Rome",
+        "native": "Roma",
+        "target": "Rome",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-napoli",
-        "it": "Napoli",
-        "en": "Naples",
+        "native": "Napoli",
+        "target": "Naples",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-palermo",
-        "it": "Palermo",
-        "en": "Palermo",
+        "native": "Palermo",
+        "target": "Palermo",
         "traducibile": true,
         "paese": {
-          "it": "Italia",
-          "en": "Italy"
+          "native": "Italia",
+          "target": "Italy"
         }
       },
       {
         "value": "orig-lugano",
-        "it": "Lugano",
-        "en": "Lugano",
+        "native": "Lugano",
+        "target": "Lugano",
         "traducibile": true,
         "paese": {
-          "it": "Svizzera",
-          "en": "Switzerland"
+          "native": "Svizzera",
+          "target": "Switzerland"
         }
       },
       {
         "value": "orig-nizza",
-        "it": "Nizza",
-        "en": "Nice",
+        "native": "Nizza",
+        "target": "Nice",
         "traducibile": true,
         "paese": {
-          "it": "Francia",
-          "en": "France"
+          "native": "Francia",
+          "target": "France"
         }
       }
     ],
     "destinations": [
       {
         "value": "dest-pechino",
-        "it": "Pechino",
-        "en": "Beijing",
+        "native": "Pechino",
+        "target": "Beijing",
         "traducibile": true
       },
       {
         "value": "dest-shanghai",
-        "it": "Shanghai",
-        "en": "Shanghai",
+        "native": "Shanghai",
+        "target": "Shanghai",
         "traducibile": true
       },
       {
         "value": "dest-hong-kong",
-        "it": "Hong Kong",
-        "en": "Hong Kong",
+        "native": "Hong Kong",
+        "target": "Hong Kong",
         "traducibile": true
       }
     ]
@@ -395,86 +395,86 @@
     "anni": [
       {
         "value": "eta-4",
-        "it": "4",
-        "en": "four",
+        "native": "4",
+        "target": "four",
         "traducibile": true
       },
       {
         "value": "eta-5",
-        "it": "5",
-        "en": "five",
+        "native": "5",
+        "target": "five",
         "traducibile": true
       },
       {
         "value": "eta-6",
-        "it": "6",
-        "en": "six",
+        "native": "6",
+        "target": "six",
         "traducibile": true
       },
       {
         "value": "eta-7",
-        "it": "7",
-        "en": "seven",
+        "native": "7",
+        "target": "seven",
         "traducibile": true
       },
       {
         "value": "eta-8",
-        "it": "8",
-        "en": "eight",
+        "native": "8",
+        "target": "eight",
         "traducibile": true
       },
       {
         "value": "eta-9",
-        "it": "9",
-        "en": "nine",
+        "native": "9",
+        "target": "nine",
         "traducibile": true
       },
       {
         "value": "eta-10",
-        "it": "10",
-        "en": "ten",
+        "native": "10",
+        "target": "ten",
         "traducibile": true
       },
       {
         "value": "eta-11",
-        "it": "11",
-        "en": "eleven",
+        "native": "11",
+        "target": "eleven",
         "traducibile": true
       },
       {
         "value": "eta-12",
-        "it": "12",
-        "en": "twelve",
+        "native": "12",
+        "target": "twelve",
         "traducibile": true
       },
       {
         "value": "eta-13",
-        "it": "13",
-        "en": "thirteen",
+        "native": "13",
+        "target": "thirteen",
         "traducibile": true
       },
       {
         "value": "eta-14",
-        "it": "14",
-        "en": "fourteen",
+        "native": "14",
+        "target": "fourteen",
         "traducibile": true
       },
       {
         "value": "eta-15",
-        "it": "15",
-        "en": "fifteen",
+        "native": "15",
+        "target": "fifteen",
         "traducibile": true
       },
       {
         "value": "eta-16",
-        "it": "16",
-        "en": "sixteen",
+        "native": "16",
+        "target": "sixteen",
         "traducibile": true
       },
       {
         "value": "eta-17",
-        "it": "17",
-        "en": "seventeen",
+        "native": "17",
+        "target": "seventeen",
         "traducibile": true
       }
     ]

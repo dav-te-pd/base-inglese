@@ -303,6 +303,10 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
+    // ⚠️ L'OVERRIDE E' NELLA FORMA DI PRIMA DEL 2026-09-30 — `it`/`en` e non
+    // `native`/`target` — e lo e' apposta: e' quella che un browser vero ha
+    // salvato. Da quel giorno questo blocco prova anche `righeCoiRuoli`
+    // (app/dati.js): senza la conversione la tendina mostrerebbe `undefined`.
     await page.addInitScript(() => {
       localStorage.setItem('baseinglese:configOverrides', JSON.stringify({
         people: {

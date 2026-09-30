@@ -59,10 +59,10 @@ function correctAnswerFor(vocabulary, prompt) {
   const p = String(prompt || '').trim();
   const values = slotValues();
   for (let i = 0; i < vocabulary.length; i++) {
-    if (itemText(vocabulary[i], 'en', values).trim() === p) return itemText(vocabulary[i], 'it', values).trim();
+    if (itemText(vocabulary[i], 'target', values).trim() === p) return itemText(vocabulary[i], 'native', values).trim();
   }
   for (let i = 0; i < vocabulary.length; i++) {
-    if (itemText(vocabulary[i], 'it', values).trim() === p) return itemText(vocabulary[i], 'en', values).trim();
+    if (itemText(vocabulary[i], 'native', values).trim() === p) return itemText(vocabulary[i], 'target', values).trim();
   }
   return null;
 }

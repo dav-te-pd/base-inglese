@@ -49,9 +49,9 @@ async function run() {
     log('[Content] Flash Card it→en: direction label reads "ITALIANO → INGLESE"', directionLabel === 'ITALIANO → INGLESE');
     const frontText = await page.$eval('#fc-front-word', el => el.textContent.trim());
     const backText = await page.$eval('#fc-back-word', el => el.textContent.trim());
-    const item = EPISODE_DATA.levels.A.items.find(function (it) { return it.italian === frontText; });
+    const item = EPISODE_DATA.levels.A.items.find(function (it) { return it.native === frontText; });
     log('[Content] Flash Card it→en: front text is a real ITALIAN entry (not the English one)', !!item);
-    log('[Content] Flash Card it→en: back text is that same entry\'s ENGLISH translation', !!item && backText === item.english);
+    log('[Content] Flash Card it→en: back text is that same entry\'s ENGLISH translation', !!item && backText === item.target);
     // Confirm the flip interaction itself still works (is-flipped toggles) —
     // a light behavior check alongside the content one, not the main point.
     await page.click('#fc-card');
@@ -75,7 +75,7 @@ async function run() {
     const directionLabel = await page.$eval('#qm-direction', el => el.textContent.trim());
     log('[Content] Match Practice it→en: direction label reads "ITALIANO → INGLESE"', directionLabel === 'ITALIANO → INGLESE');
     const promptText = await page.$eval('#qm-prompt', el => el.textContent.trim());
-    const item = EPISODE_DATA.levels.A.items.find(function (it) { return it.italian === promptText; });
+    const item = EPISODE_DATA.levels.A.items.find(function (it) { return it.native === promptText; });
     log('[Content] Match Practice it→en: prompt is a real ITALIAN entry (not the English one)', !!item);
     // Tap any option — is-correct always lands on the objectively correct
     // one regardless of whether the tap itself was right or wrong.
@@ -86,7 +86,7 @@ async function run() {
     // qui sotto sollevava invece di fallire.
     await attendiVisibile(page, '#qm-options .sr-option.is-correct');
     const correctOptionText = await page.$eval('#qm-options .sr-option.is-correct', el => el.textContent.trim());
-    log('[Content] Match Practice it→en: the correct option is that same entry\'s ENGLISH translation', !!item && correctOptionText === item.english);
+    log('[Content] Match Practice it→en: the correct option is that same entry\'s ENGLISH translation', !!item && correctOptionText === item.target);
     log('[Content] Match Practice it→en: No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();

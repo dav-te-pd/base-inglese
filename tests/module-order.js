@@ -131,14 +131,15 @@ function readTable(section, name) {
   return (radice && radice[name]) || null;
 }
 
-// I valori predefiniti di ogni slot, nelle due lingue: quelli che vede un
-// utente di test, che non personalizza niente.
+// I valori predefiniti di ogni slot, nei due ruoli (`native`, `target` — dal
+// 2026-09-30, prima `it`/`en`): quelli che vede un utente di test, che non
+// personalizza niente.
 function slotValues(episodePath) {
   const episode = JSON.parse(fs.readFileSync(repoPath.apply(null, (episodePath || ['data', 'inglese', 'it', 'inglese-it-gate.json'])), 'utf8'));
   const values = {};
   (episode.personalizationTablesUsed || []).forEach(slot => {
     if (slot.table.indexOf('episode.ageOptions.') === 0) {
-      values[slot.key] = { it: String(slot.default), en: String(slot.default) };
+      values[slot.key] = { native: String(slot.default), target: String(slot.default) };
       return;
     }
     const [section, name] = slot.table.split('.');
@@ -162,22 +163,22 @@ function slotValues(episodePath) {
     // il DATO, non una funzione dell'app. Un atteso che chiedesse all'app di
     // confermare se stessa sarebbe vero per costruzione (regola 44).
     values[slot.key] = {
-      it: picked.it,
-      en: picked.traducibile === false ? picked.it : picked.en
+      native: picked.native,
+      target: picked.traducibile === false ? picked.native : picked.target
     };
     // ⚠️ I SOTTO-CAMPI DELLA RIGA — passo 1.8-bis ②, 2026-09-24.
     //
     // Una riga puo' portare piu' di un valore: una citta' di partenza porta
     // anche il suo paese, e la battuta li vuole tutti e due. Senza questa
-    // riga il vocabolario atteso resta «I am from Mondovi, {{partenza.paese:en}}»
+    // riga il vocabolario atteso resta «I am from Mondovi, {{partenza.paese:target}}»
     // mentre l'app mostra «I am from Mondovi, Italy», e il driver del quiz non
     // ritrova piu' la domanda: e' esattamente il rosso del 2026-09-24.
     //
     // Il sotto-campo si copia per intero, senza chiedergli la traducibilita':
     // un paese e' un toponimo e si traduce sempre.
     Object.keys(picked).forEach(function (k) {
-      if (picked[k] && typeof picked[k] === 'object' && picked[k].it !== undefined) {
-        values[slot.key][k] = { it: picked[k].it, en: picked[k].en };
+      if (picked[k] && typeof picked[k] === 'object' && picked[k].native !== undefined) {
+        values[slot.key][k] = { native: picked[k].native, target: picked[k].target };
       }
     });
   });
@@ -188,7 +189,7 @@ function slotValues(episodePath) {
 // fillTemplate(), sui valori predefiniti.
 // ⚠️ LA REGEX CONOSCE IL PUNTO DAL 2026-09-24 (passo 1.8-bis ②), come quella
 // di `fillTemplate`: `{{chiave}}` e `{{chiave.campo}}`. `\w` non contiene il
-// punto, quindi prima `{{partenza.paese:en}}` restava intero nel testo atteso
+// punto, quindi prima `{{partenza.paese:target}}` restava intero nel testo atteso
 // e il confronto col testo vero non tornava mai.
 //
 // Un campo che la riga non ha torna la riga, non `undefined` — la stessa
@@ -196,7 +197,7 @@ function slotValues(episodePath) {
 // tutte uguali.
 function itemText(item, lang, values) {
   const v = values || slotValues();
-  const raw = lang === 'en' ? item.english : item.italian;
+  const raw = item[lang];   // `lang` e' un ruolo: 'target' o 'native'
   return String(raw).replace(/\{\{(\w+)(?:\.(\w+))?(?::(\w+))?\}\}/g, (whole, key, campo, forcedLang) => {
     const box = v[key];
     if (!box) return whole;

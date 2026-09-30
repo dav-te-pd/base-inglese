@@ -19,13 +19,15 @@
 // spiegazione «La figlia dice "I'm 14 years old"». Nessun rosso, e due frasi
 // inglesi diverse.
 //
-// PROTEGGE ANCHE, dal 2026-09-30 ([S]): che il suffisso di lingua di un
-// segnaposto sia il CODICE DELL'EDIZIONE — `:es` in spagnolo come `:en` in
-// inglese — ricavato da `speech.synthesisLang`. Senza, il file spagnolo di
-// `gate` dava «Soy de Turin, undefined.» (misurato rimettendo il codice
-// vecchio: 5 rossi su 7). E che una lingua che la riga non ha non diventi mai
-// la parola «undefined» a schermo. ⚠️ LIMITE: l'edizione spagnola non esiste
-// ancora, quindi [S] la simula cambiando la sola lingua della voce.
+// PROTEGGE ANCHE, dal 2026-09-30 ([S]): che il suffisso di un segnaposto sia
+// un RUOLO — `:target` (la lingua che si impara), `:native` (quella dello
+// studente) — e non una lingua. La mattina di quel giorno era il codice
+// dell'edizione (`:es`), il pomeriggio chi guida il progetto ha deciso i ruoli:
+// in un corso d'inglese per spagnoli `es` sarebbe stata la lingua dello
+// STUDENTE. E che un suffisso vecchio o sbagliato (`:en`, `:es`) non diventi
+// mai la parola «undefined» a schermo: resta il segnaposto, che si legge come
+// un guasto. *Col codice di prima di quel giorno il file spagnolo di `gate`
+// dava «Soy de Turin, undefined.»*
 //
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-20 la risposta si deduceva
 // dal contenitore: `buildSlotFields` guardava `slot.table.indexOf('people.')`
@@ -223,11 +225,11 @@ async function run() {
       const ep = window.BI.episodioCorrente();
       return {
         // il toponimo che dichiara di NON tradursi
-        torino: window.BI.resolveSlotValue(ep, 'partenza', 'orig-torino', 'en'),
+        torino: window.BI.resolveSlotValue(ep, 'partenza', 'orig-torino', 'target'),
         // un toponimo qualunque che non lo dichiara: si traduce come sempre
-        mondovi: window.BI.resolveSlotValue(ep, 'partenza', 'orig-mondovi', 'en'),
+        mondovi: window.BI.resolveSlotValue(ep, 'partenza', 'orig-mondovi', 'target'),
         // un nome proprio: non si traduce, come sempre
-        papa: window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'en')
+        papa: window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'target')
       };
     });
 
@@ -266,8 +268,8 @@ async function run() {
       const ep = window.BI.episodioCorrente();
       const campo = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
       return {
-        en: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'en'),
-        it: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'it'),
+        en: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'target'),
+        it: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'native'),
         // la tendina di Personalizza mostra `o.it`: è la cifra che si scorre
         tendina: Array.prototype.map.call(
           document.querySelectorAll('#view-customize select[data-slot="figliaEta"] option'),
@@ -398,10 +400,10 @@ async function run() {
       // confronta il reso col RESO del predefinito — che e' la cosa che
       // l'asserzione voleva dire fin dall'inizio.
       return {
-        sconosciuto: window.BI.resolveSlotValue(ep, 'figliaEta', 'non-esiste-piu', 'it'),
-        resoDelDef: window.BI.resolveSlotValue(ep, 'figliaEta', campo.def, 'it'),
-        resoDellaPrima: window.BI.resolveSlotValue(ep, 'figliaEta', campo.options[0].value, 'it'),
-        figlio: window.BI.resolveSlotValue(ep, 'figlioEta', 'non-esiste-piu', 'it')
+        sconosciuto: window.BI.resolveSlotValue(ep, 'figliaEta', 'non-esiste-piu', 'native'),
+        resoDelDef: window.BI.resolveSlotValue(ep, 'figliaEta', campo.def, 'native'),
+        resoDellaPrima: window.BI.resolveSlotValue(ep, 'figliaEta', campo.options[0].value, 'native'),
+        figlio: window.BI.resolveSlotValue(ep, 'figlioEta', 'non-esiste-piu', 'native')
       };
     });
 
@@ -440,8 +442,8 @@ async function run() {
       const dati = await window.BI.loadEpisodeData({ dataFile: window.BI.episodeDataFile(ep.id) });
       const d4 = dati.levels.D.items.find(function (i) { return i.id === 'd-4'; });
       return {
-        en: window.BI.fillTemplate(d4.english, ep, v, 'en'),
-        it: window.BI.fillTemplate(d4.italian, ep, v, 'it'),
+        en: window.BI.fillTemplate(d4.target, ep, v, 'target'),
+        it: window.BI.fillTemplate(d4.native, ep, v, 'native'),
         // Il caso in cui il campo NON esiste sulla riga: deve tornare la riga,
         // non `undefined` a schermo.
         //
@@ -453,11 +455,11 @@ async function run() {
         // e **dice quale caso e' caduto**. L'errore non sparisce: diventa il
         // valore che l'asserzione confronta.
         papaConCampo: (function () {
-          try { return window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'en', 'paese'); }
+          try { return window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'target', 'paese'); }
           catch (e) { return 'ALZA: ' + e.message; }
         })(),
         etaConCampo: (function () {
-          try { return window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'en', 'paese'); }
+          try { return window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'target', 'paese'); }
           catch (e) { return 'ALZA: ' + e.message; }
         })()
       };
@@ -538,11 +540,11 @@ async function run() {
         // ⚠️ IL CASO PIÙ DIVERSO (regola 42): l'unico slot senza elenco di
         // righe. Se il filtro si applicasse sempre, resterebbe senza opzioni.
         quantePartenza: partenza.options.length,
-        battutaEn: window.BI.fillTemplate(figliaLinea.english, ep, v, 'en'),
-        battutaIt: window.BI.fillTemplate(figliaLinea.italian, ep, v, 'it'),
+        battutaEn: window.BI.fillTemplate(figliaLinea.target, ep, v, 'target'),
+        battutaIt: window.BI.fillTemplate(figliaLinea.native, ep, v, 'native'),
         // La skill è prosa ITALIANA che cita la battuta INGLESE: senza `:en`
         // direbbe «I'm 14 years old» mentre la battuta sopra dice «fourteen».
-        skill: window.BI.fillTemplate(d8.whatYouLearn[0].body, ep, v, 'it')
+        skill: window.BI.fillTemplate(d8.whatYouLearn[0].body, ep, v, 'native')
       };
     });
 
@@ -571,17 +573,13 @@ async function run() {
     await page.close();
   }
 
-  // ── [S] IL SUFFISSO E' IL CODICE DELL'EDIZIONE — 2026-09-30 ────────────
+  // ── [S] IL SUFFISSO E' UN RUOLO — 2026-09-30 ─────────────────────────
   //
-  // Il file spagnolo di `gate` scrive `{{partenza.paese:es}}`, e l'app
-  // conosceva solo `:en`: `parte['es']` non esisteva e lo studente leggeva
-  // «Soy de Mondovì, undefined.» Il codice si ricava da `speech.synthesisLang`.
-  //
-  // ⚠️ L'EDIZIONE SPAGNOLA NON C'E' ANCORA, quindi qui la si SIMULA cambiando
-  // la sola lingua della voce sull'edizione inglese: e' esattamente il dato da
-  // cui il codice viene ricavato, e nient'altro cambia. I valori che escono
-  // sono inglesi (Turin, fourteen) perche' il magazzino e' quello inglese —
-  // quello che si misura e' che arrivino, non in che lingua sono.
+  // Le citazioni di una skill chiedono la colonna col RUOLO: «I am from
+  // {{partenza:target}}» vuol dire «vengo da {{partenza:native}}» deve dare
+  // Turin e Torino sulla stessa riga. Il seme e' Torino perche' e' una riga
+  // in cui le due colonne DIFFERISCONO: su Mondovi' sarebbero uguali, e un
+  // suffisso ignorato passerebbe inosservato.
   {
     const page = await browser.newPage();
     const errori = [];
@@ -592,48 +590,37 @@ async function run() {
     const esito = await page.evaluate(function () {
       const ep = window.BI.episodioCorrente();
       const v = window.BI.valoriCorrenti();
-      const ft = function (t, l) { return window.BI.fillTemplate(t, ep, v, l); };
-      const speech = window.APP_CONFIG.speech;
-      const prima = speech.synthesisLang;
-      const inglese = {
-        paese: ft('{{partenza.paese:en}}', 'it'),
-        citta: ft('{{partenza:en}}', 'it'),
-        eta: ft('{{figliaEta:en}}', 'it'),
-        // ⚠️ IL CASO PIU' DIVERSO (regola 42): `:es` dove la lingua insegnata
-        // NON e' lo spagnolo. Nessuna colonna lo porta, quindi deve restare un
-        // segnaposto visibile — non diventare «undefined» e non, peggio,
-        // pescare in silenzio la colonna della lingua insegnata.
-        esInInglese: ft('Soy de {{partenza:es}}.', 'it')
+      const ft = function (t, ruolo) { return window.BI.fillTemplate(t, ep, v, ruolo); };
+      return {
+        skill: ft('"I am from {{partenza:target}}" vuol dire "vengo da {{partenza:native}}"', 'native'),
+        paese: ft('{{partenza.paese:target}}', 'native'),
+        eta: ft('{{figliaEta:target}} | {{figliaEta:native}}', 'native'),
+        // Un nome proprio non si traduce: anche chiesto come `target` resta
+        // quello dello studente.
+        nome: ft('{{papa:target}}', 'native'),
+        nomeNative: ft('{{papa}}', 'native'),
+        // ⚠️ IL CASO PIU' DIVERSO (regola 42): un suffisso che NON e' un ruolo.
+        // `:en` e' quello che un file scritto prima di oggi porta ancora; `:es`
+        // quello che il file spagnolo portava ieri. Nessuna colonna si chiama
+        // cosi', quindi devono restare segnaposto visibili — non «undefined»,
+        // e non (peggio) la colonna di un ruolo pescata in silenzio.
+        vecchioEn: ft('I am from {{partenza:en}}.', 'native'),
+        vecchioEs: ft('Soy de {{partenza.paese:es}}.', 'target')
       };
-      speech.synthesisLang = 'es-MX';
-      try {
-        return {
-          inglese: inglese,
-          battuta: ft('Soy de {{partenza}}, {{partenza.paese:es}}.', 'en'),
-          skill: ft('"Soy de {{partenza:es}}" vuol dire "sono di {{partenza:it}}"', 'it'),
-          eta: ft('Tengo {{figliaEta:es}} años.', 'it'),
-          // Un nome proprio non si traduce in nessuna lingua: `:es` deve dare
-          // l'italiano come `:en` lo da' in inglese.
-          nome: ft('{{papa:es}}', 'it'),
-          nomeIt: ft('{{papa}}', 'it')
-        };
-      } finally {
-        speech.synthesisLang = prima;
-      }
     });
 
-    // ⚠️ QUESTA E' LA RIGA CHE DISTINGUE LE DUE VERSIONI: col codice di prima
-    // diceva «Soy de Turin, undefined.»
-    log('[S] Con la voce es-MX, `.paese:es` porta il paese nella battuta',
-      esito.battuta === 'Soy de Turin, ' + esito.inglese.paese + '.', esito.battuta);
-    log('[S] ...e la skill cita la citta\' in tutte e due le lingue',
-      esito.skill === '"Soy de ' + esito.inglese.citta + '" vuol dire "sono di Torino"', esito.skill);
-    log('[S] ...e l\'eta\' arriva, dalla stessa colonna di `:en`',
-      esito.eta === 'Tengo ' + esito.inglese.eta + ' años.', esito.eta);
-    log('[S] ...e un nome proprio resta italiano', esito.nome === esito.nomeIt && esito.nome.length > 0,
-      esito.nome + ' | ' + esito.nomeIt);
-    log('[S] In inglese `:es` resta un segnaposto visibile, mai «undefined»',
-      esito.inglese.esInInglese === 'Soy de {{partenza:es}}.', esito.inglese.esInInglese);
+    // ⚠️ LA RIGA CHE DISTINGUE: col codice della mattina (suffisso = codice di
+    // lingua) `:target` non trovava nessuna colonna.
+    log('[S] `:target` e `:native` danno le due colonne della stessa riga',
+      esito.skill === '"I am from Turin" vuol dire "vengo da Torino"', esito.skill);
+    log('[S] ...anche sul sotto-campo', esito.paese === 'Italy', esito.paese);
+    log('[S] ...e sull\'eta\', che ha la parola in una colonna e la cifra nell\'altra',
+      esito.eta === 'fourteen | 14', esito.eta);
+    log('[S] Un nome proprio resta dello studente anche chiesto come `target`',
+      esito.nome === esito.nomeNative && esito.nome.length > 0, esito.nome + ' | ' + esito.nomeNative);
+    log('[S] Un suffisso vecchio (`:en`) resta un segnaposto visibile, mai «undefined»',
+      esito.vecchioEn === 'I am from {{partenza:en}}.', esito.vecchioEn);
+    log('[S] ...e anche `:es`', esito.vecchioEs === 'Soy de {{partenza.paese:es}}.', esito.vecchioEs);
     log('[S] Nessuna frase porta «undefined»',
       JSON.stringify(esito).indexOf('undefined') === -1, JSON.stringify(esito));
     log('[S] Nessun errore JS', errori.length === 0, errori[0]);

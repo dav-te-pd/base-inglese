@@ -30,7 +30,7 @@ const ETICHETTE = loadEpisode().speakerLabels;
 // I nomi scelti — «Marco», «Chiara» — coi valori predefiniti, cioe' quelli che
 // vede un utente di test. Servono a una sola asserzione, ed e' quella che
 // distingue «Papa'» da «Marco».
-const NOMI_SCELTI = Object.keys(slotValues()).map(k => slotValues()[k].it);
+const NOMI_SCELTI = Object.keys(slotValues()).map(k => slotValues()[k].native);
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.

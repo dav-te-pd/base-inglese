@@ -137,7 +137,7 @@ async function run() {
     await page.waitForTimeout(300); // ATTESA-LEGITTIMA: l'asserzione qui sotto e' negativa — premere il microfono non deve sollevare NESSUN errore. Un errore che non arriva non ha una condizione da aspettare: si lascia una finestra e si guarda se e' rimasta vuota
     log('[B] Premere il microfono non solleva nessun errore', errori.length === 0, errori.join(' | '));
     log('[B] ...e in particolare nessun TypeError sulla battuta assente',
-      !errori.some(e => /reading 'english'/.test(e)), errori.join(' | '));
+      !errori.some(e => /reading 'target'/.test(e)), errori.join(' | '));
 
     // Il file di testi arriva DOPO, e quando arriva il modulo funziona lo
     // stesso: toglierlo dall'apertura non lo ha tolto dall'app.

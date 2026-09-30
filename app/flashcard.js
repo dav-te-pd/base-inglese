@@ -110,8 +110,8 @@
   var fcNavLocked = false;
   var fcNavTimeoutId = null;
 
-  function fcFrontText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'en' : 'it'); }
-  function fcBackText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'it' : 'en'); }
+  function fcFrontText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'target' : 'native'); }
+  function fcBackText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'native' : 'target'); }
 
   function fcShowScreen(name) {
     document.getElementById('fc-intro-screen').hidden = name !== 'intro';

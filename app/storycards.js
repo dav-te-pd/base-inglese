@@ -133,8 +133,8 @@
     var skillIds = [];
     var itemsHtml = episodeGradeRequired(data, currentStoryCardsModule.grade, currentStoryCardsModule).map(function (line) {
       var align = BI.dialogueLineAlign(line);
-      var english = fillTemplate(line.english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en');
-      var italian = fillTemplate(line.italian, BI.episodioCorrente(), BI.valoriCorrenti(), 'it');
+      var english = fillTemplate(line.target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target');
+      var italian = fillTemplate(line.native, BI.episodioCorrente(), BI.valoriCorrenti(), 'native');
       // whatYouLearn è una LISTA di skill, ciascuna { title, body } (CLAUDE.md
       // regola 25). Una battuta lunga può introdurre due strutture diverse —
       // d-1 saluta E si presenta — e forzarle in una spiegazione sola
@@ -146,10 +146,10 @@
         var skillId = storyCardsSkillId(line.id, i);
         skillIds.push(skillId);
         // I segnaposto nelle skill si sostituiscono come in ogni altro testo
-        // dell'episodio; le citazioni inglesi chiedono la propria lingua
-        // con :en (vedi fillTemplate).
-        var skillTitle = fillTemplate(skill.title, BI.episodioCorrente(), BI.valoriCorrenti(), 'it');
-        var skillBody = fillTemplate(skill.body, BI.episodioCorrente(), BI.valoriCorrenti(), 'it');
+        // dell'episodio; le citazioni del dialogo chiedono il proprio ruolo
+        // con :target (vedi fillTemplate).
+        var skillTitle = fillTemplate(skill.title, BI.episodioCorrente(), BI.valoriCorrenti(), 'native');
+        var skillBody = fillTemplate(skill.body, BI.episodioCorrente(), BI.valoriCorrenti(), 'native');
         var answersHtml = ((storyCardsSelfCheck && storyCardsSelfCheck.answers) || []).map(function (a) {
           // Tutti e tre uguali all'apertura: nessuno è preselezionato, e
           // nessuno è "la risposta giusta" — sono tre risposte oneste alla
@@ -241,7 +241,7 @@
         if (!line) return;
         // Correction (5th collaudo): see Repeat Aloud's own comment — no
         // countdown here either, free tapping is the intended behavior.
-        BI.speakListenBlock(listenBtn, fillTemplate(line.english, BI.episodioCorrente(), BI.valoriCorrenti(), 'en'));
+        BI.speakListenBlock(listenBtn, fillTemplate(line.target, BI.episodioCorrente(), BI.valoriCorrenti(), 'target'));
         return;
       }
       // Risposta al self-check. Alimenta due magazzini diversi, che rispondono

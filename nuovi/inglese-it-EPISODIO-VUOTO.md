@@ -46,7 +46,7 @@
 
 | battuta | # | titolo | corpo |
 |---|---|---|---|
-| `d-1` | 1 | Il titolo della spiegazione | Il corpo, in HTML: `<br>` per andare a capo, `<strong>` per il grassetto. Le citazioni chiedono la loro lingua con `{{chiave:en}}`. |
+| `d-1` | 1 | Il titolo della spiegazione | Il corpo, in HTML: `<br>` per andare a capo, `<strong>` per il grassetto. Le citazioni chiedono il loro ruolo con `{{chiave:target}}`. |
 
 ## 6 — PERSONAGGI ED ETICHETTE
 
