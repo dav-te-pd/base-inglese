@@ -27,6 +27,14 @@
 // regola 29 al contrario. *Qui non c'e' nessun numero atteso: c'e' un
 // confronto.*
 //
+// ③ **Dal 2026-09-30 ([E]): un titolo scritto due volte in un markdown di
+//    contenuto.** Il trascrittore trova la PRIMA occorrenza, e se e' una
+//    citazione nella prosa legge la tabella sbagliata senza fermarsi — e' cosi'
+//    che un corso e' uscito senza sequenze. Si guarda OGNI titolo `##`/`###`,
+//    non solo quelli che il trascrittore cerca oggi. **Visto fallire sul file
+//    rotto (la versione `b` della struttura inglese): due rossi col nome del
+//    titolo e la riga, uscita 1.**
+//
 // COSA NON PROTEGGE, dichiarato (regola 32): non dice se un TESTO e' buono.
 // Un markdown con una frase sbagliata dentro produce un JSON con la stessa
 // frase sbagliata, e questo file e' verde. Qui si guarda che le due copie
@@ -51,6 +59,54 @@ function quanteStringhe(o) {
   if (Array.isArray(o)) return o.reduce((n, v) => n + quanteStringhe(v), 0);
   if (o && typeof o === 'object') return Object.keys(o).reduce((n, k) => n + quanteStringhe(o[k]), 0);
   return 0;
+}
+
+// ── [E] OGNI TITOLO DI OGNI FILE DI CONTENUTO COMPARE UNA VOLTA SOLA ─────
+//
+// ⚠️ STA IN TESTA, PRIMA DI [A], ED E' VOLUTO: sul file rotto il trascrittore
+// alza un'eccezione, e se [B] girasse prima il rosso arriverebbe senza
+// nominare il titolo doppio.
+//
+// Proposto da chi guida il progetto il 2026-09-30, con uno script suo
+// (`controllo-titoli.py`) visto cadere sul file rotto e passare su quello
+// riparato. **La guardia di [D] non basta, per due ragioni:** guarda solo i
+// titoli che il trascrittore CERCA oggi — una sezione che imparera' a leggere
+// domani (la §9 della struttura) oggi non e' protetta — e si accorge del
+// difetto solo quando il trascrittore gira. Questo guarda TUTTI i titoli, `##`
+// e `###` (anche i gradi e le tabelle si cercano cosi'), in tutti i markdown
+// sotto `docs/` che il trascrittore legge.
+//
+// ⚠️ SI CONTA OVUNQUE, NON A INIZIO RIGA: `indexOf` non sa cosa sia una riga,
+// e l'occorrenza colpevole del 30 settembre stava dentro una cella di tabella.
+// *La prova che la §1 proponeva — `grep -c '^## 2'` — non l'avrebbe vista.*
+{
+  const path = require('path');
+  const radice = path.join(__dirname, '..', 'docs');
+  const files = [];
+  T.edizioni().forEach(function (ed) {
+    const dir = path.join(radice, ed.lingua, ed.studente);
+    fs.readdirSync(dir).filter(function (f) { return f.endsWith('.md'); })
+      .forEach(function (f) { files.push(path.join(dir, f)); });
+  });
+  T.studentiCondivisi().forEach(function (st) {
+    const dir = path.join(radice, 'condivisi', st);
+    fs.readdirSync(dir).filter(function (f) { return f.endsWith('.md'); })
+      .forEach(function (f) { files.push(path.join(dir, f)); });
+  });
+  // Regola 49: zero file non e' un verde.
+  log('[E] Ci sono markdown di contenuto da controllare', files.length > 0, 'trovati: ' + files.length);
+  files.forEach(function (f) {
+    const t = fs.readFileSync(f, 'utf8');
+    const titoli = Array.from(new Set(t.match(/^#{2,3} [^\n]+$/gm) || []));
+    const doppi = titoli.filter(function (tit) { return t.split(tit).length - 1 !== 1; })
+      .map(function (tit) {
+        const righe = t.split('\n').map(function (r, i) { return r.indexOf(tit) !== -1 && r.trim() !== tit ? i + 1 : 0; })
+          .filter(Boolean);
+        return '«' + tit + '» di troppo alle righe ' + righe.join(', ');
+      });
+    log('[E] ' + path.relative(radice, f) + ': ogni titolo compare una volta sola (' + titoli.length + ' titoli)',
+      doppi.length === 0, doppi.join(' | '));
+  });
 }
 
 // ── [A] IL GIRO DI ANDATA E RITORNO ─────────────────────────────────────
@@ -94,8 +150,14 @@ function quanteStringhe(o) {
     edizioni.length > 0, 'trovate: ' + edizioni.length);
 
   edizioni.forEach(function (ed) {
-    const s = T.struttura(ed);
     const nome = ed.lingua + '/' + ed.studente;
+    // Un markdown che il trascrittore rifiuta (un titolo doppio, una tabella
+    // vuota) diventa un rosso CON IL NOME, non un'eccezione che uccide il file.
+    let s;
+    try { s = T.struttura(ed); } catch (e) {
+      log('[B] ' + nome + ': il trascrittore legge la struttura', false, e.message);
+      return;
+    }
 
     // La struttura si confronta sui pezzi che il markdown porta: il resto
     // (`episodeSequences`, `episodiSpenti`, ...) lo assembla `main()`, che
