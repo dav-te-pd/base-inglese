@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260930b**
+**Versione: 20260930c**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -92,7 +92,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni.
 
-   - **I dati stanno sotto `data/{lingua-che-si-impara}/{lingua-studente}/`, i loro sorgenti markdown sotto `docs/{lingua-che-si-impara}/{lingua-studente}/`.** Oggi: `data/inglese/it/` e `docs/inglese/it/` — si impara l'inglese, si parte dall'italiano. È l'unica edizione finché l'inglese non è finito.
+   - **I dati stanno sotto `data/{lingua-che-si-impara}/{lingua-studente}/`, i loro sorgenti markdown sotto `docs/{lingua-che-si-impara}/{lingua-studente}/`.** Oggi sono **due**: `inglese/it` e, dal 2026-09-30, `spagnolo/it` — si parte dall'italiano, si impara l'inglese o lo spagnolo. *Qui c'era scritto «è l'unica edizione finché l'inglese non è finito»: lo spagnolo è entrato prima, per validare il modello delle edizioni — tutto quello che era scritto su livelli e cartelle era ragionamento finché una seconda edizione non girava.* Lo spagnolo si raggiunge per ora solo dal Pannello Admin (`edizione`).
 
      **Le due lingue nel percorso, in quest'ordine, perché il catalogo cresce per lingua imparata:** venti episodi di inglese per italiani, poi magari inglese per tedeschi. `inglese/` raccoglie, `it/` distingue. Fino al 2026-09-09 la cartella era una sola (`data/it/`) e diceva solo da dove si parte.
 

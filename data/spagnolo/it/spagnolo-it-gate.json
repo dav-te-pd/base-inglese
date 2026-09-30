@@ -1,0 +1,417 @@
+{
+  "episodeId": "gate",
+  "generalRule": "L'accento scritto dice dove cade la voce: <strong>dí</strong>-as, <strong>dón</strong>-de.",
+  "speakerLabels": {
+    "hostess-gate": "Hostess al gate",
+    "papa": "Papà",
+    "mamma": "Mamma",
+    "figlia": "Figlia",
+    "figlio": "Figlio",
+    "tutti": "Tutti"
+  },
+  "placeholderMap": {
+    "papa": "papa",
+    "mamma": "mamma",
+    "figliaNome": "figliaNome",
+    "figliaEta": "figliaEta",
+    "figlioNome": "figlioNome",
+    "figlioEta": "figlioEta",
+    "cognome": "cognome",
+    "partenza": "partenza"
+  },
+  "personalizationTablesUsed": [
+    {
+      "key": "papa",
+      "label": "Nome del papà",
+      "type": "select",
+      "table": "people.papa",
+      "default": "papa-marco"
+    },
+    {
+      "key": "mamma",
+      "label": "Nome della mamma",
+      "type": "select",
+      "table": "people.mamma",
+      "default": "mamma-giulia"
+    },
+    {
+      "key": "figliaNome",
+      "label": "Nome della figlia",
+      "type": "select",
+      "table": "people.figlia",
+      "default": "figlia-emma"
+    },
+    {
+      "key": "figliaEta",
+      "label": "Età della figlia",
+      "type": "select",
+      "table": "ages.anni",
+      "default": "eta-16",
+      "rows": [
+        "eta-12",
+        "eta-13",
+        "eta-14",
+        "eta-15",
+        "eta-16",
+        "eta-17"
+      ]
+    },
+    {
+      "key": "figlioNome",
+      "label": "Nome del figlio",
+      "type": "select",
+      "table": "people.figlio",
+      "default": "figlio-tommaso"
+    },
+    {
+      "key": "figlioEta",
+      "label": "Età del figlio",
+      "type": "select",
+      "table": "ages.anni",
+      "default": "eta-8",
+      "rows": [
+        "eta-4",
+        "eta-5",
+        "eta-6",
+        "eta-7",
+        "eta-8",
+        "eta-9",
+        "eta-10",
+        "eta-11"
+      ]
+    },
+    {
+      "key": "cognome",
+      "label": "Cognome della famiglia",
+      "type": "select",
+      "table": "people.cognome",
+      "default": "cognome-costa"
+    },
+    {
+      "key": "partenza",
+      "label": "Città di partenza",
+      "type": "select",
+      "table": "places.departures",
+      "default": "orig-mondovi"
+    }
+  ],
+  "levels": {
+    "A": {
+      "label": "Parole",
+      "items": [
+        {
+          "id": "a-hola",
+          "target": "hola",
+          "native": "Ciao / Salve",
+          "pronunciationTip": "O-la — <strong>la «h» non si legge</strong>, come in italiano",
+          "grammarCategory": "saluto"
+        },
+        {
+          "id": "a-dias",
+          "target": "días",
+          "native": "giorni",
+          "pronunciationTip": "DI-as — *l'accento scritto è sulla «i»*",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-mucho",
+          "target": "mucho",
+          "native": "molto",
+          "pronunciationTip": "MU-cio — ⚠️ <strong>la «ch» spagnola è la «c» di «ciao»</strong>",
+          "grammarCategory": "avverbio di quantità"
+        },
+        {
+          "id": "a-gusto",
+          "target": "gusto",
+          "native": "piacere",
+          "pronunciationTip": "GUS-to",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-soy",
+          "target": "soy",
+          "native": "(io) sono",
+          "pronunciationTip": "soi — *una sillaba*",
+          "grammarCategory": "verbo `ser`"
+        },
+        {
+          "id": "a-es",
+          "target": "es",
+          "native": "(lui/lei) è · (lei) è",
+          "pronunciationTip": "es",
+          "grammarCategory": "verbo `ser`"
+        },
+        {
+          "id": "a-somos",
+          "target": "somos",
+          "native": "(noi) siamo",
+          "pronunciationTip": "SO-mos",
+          "grammarCategory": "verbo `ser`"
+        },
+        {
+          "id": "a-tengo",
+          "target": "tengo",
+          "native": "(io) ho",
+          "pronunciationTip": "TEN-go — *la «g» è dura, come in «gatto»*",
+          "grammarCategory": "verbo `tener`"
+        },
+        {
+          "id": "a-de",
+          "target": "de",
+          "native": "di / da",
+          "pronunciationTip": "de",
+          "grammarCategory": "preposizione"
+        },
+        {
+          "id": "a-donde",
+          "target": "dónde",
+          "native": "dove",
+          "pronunciationTip": "DON-de — *l'accento scritto è sulla prima*",
+          "grammarCategory": "avverbio interrogativo"
+        },
+        {
+          "id": "a-y",
+          "target": "y",
+          "native": "e",
+          "pronunciationTip": "i — <strong>si legge «i», non «ipsilon»</strong>",
+          "grammarCategory": "congiunzione"
+        },
+        {
+          "id": "a-usted",
+          "target": "usted",
+          "native": "lei *(di cortesia)*",
+          "pronunciationTip": "us-TE — ⚠️ <strong>la «d» finale non si sente quasi</strong>",
+          "grammarCategory": "pronome di cortesia"
+        },
+        {
+          "id": "a-yo",
+          "target": "yo",
+          "native": "io",
+          "pronunciationTip": "<strong>GIO</strong> — ⚠️ *a inizio frase la «y» spagnola somiglia alla nostra «gi» di «gioco»*",
+          "grammarCategory": "pronome soggetto"
+        },
+        {
+          "id": "a-anos",
+          "target": "años",
+          "native": "anni",
+          "pronunciationTip": "A-gnos — <strong>la «ñ» è il nostro «gn»</strong>",
+          "grammarCategory": "sostantivo plurale"
+        },
+        {
+          "id": "a-la",
+          "target": "la",
+          "native": "la",
+          "pronunciationTip": "la",
+          "grammarCategory": "articolo"
+        },
+        {
+          "id": "a-familia",
+          "target": "familia",
+          "native": "famiglia",
+          "pronunciationTip": "fa-MI-lia — *accento come in italiano*",
+          "grammarCategory": "sostantivo"
+        }
+      ]
+    },
+    "B": {
+      "label": "Espressioni",
+      "items": [
+        {
+          "id": "b-buenos-dias",
+          "target": "buenos días",
+          "native": "Buongiorno",
+          "pronunciationTip": "BUE-nos DI-as",
+          "grammarCategory": "saluto di servizio"
+        },
+        {
+          "id": "b-mucho-gusto",
+          "target": "mucho gusto",
+          "native": "Piacere di conoscerti / conoscervi",
+          "pronunciationTip": "MU-cio GUS-to",
+          "grammarCategory": "espressione idiomatica"
+        },
+        {
+          "id": "b-soy-de",
+          "target": "soy de",
+          "native": "Sono di / Vengo da",
+          "pronunciationTip": "soi de",
+          "grammarCategory": "verbo `ser` + preposizione"
+        },
+        {
+          "id": "b-y-usted",
+          "target": "¿y usted?",
+          "native": "E lei?",
+          "pronunciationTip": "i us-TE",
+          "grammarCategory": "espressione"
+        }
+      ]
+    },
+    "C": {
+      "label": "Frasi",
+      "items": [
+        {
+          "id": "c-1",
+          "target": "Soy {{papa}}.",
+          "native": "Sono {{papa}}.",
+          "fromLine": "d-2"
+        },
+        {
+          "id": "c-2",
+          "target": "¿De dónde es?",
+          "native": "Di dov'è?",
+          "fromLine": "d-3"
+        },
+        {
+          "id": "c-3",
+          "target": "Soy de {{partenza}}, {{partenza.paese:target}}.",
+          "native": "Sono di {{partenza}}, {{partenza.paese}}.",
+          "fromLine": "d-4"
+        },
+        {
+          "id": "c-4",
+          "target": "Soy {{mamma}}.",
+          "native": "Sono {{mamma}}.",
+          "fromLine": "d-6"
+        },
+        {
+          "id": "c-5",
+          "target": "Soy {{figliaNome}}.",
+          "native": "Sono {{figliaNome}}.",
+          "fromLine": "d-7"
+        },
+        {
+          "id": "c-6",
+          "target": "Tengo {{figliaEta}} años.",
+          "native": "Ho {{figliaEta}} anni.",
+          "fromLine": "d-7"
+        },
+        {
+          "id": "c-7",
+          "target": "Yo soy {{figlioNome}}.",
+          "native": "Io sono {{figlioNome}}.",
+          "fromLine": "d-8"
+        },
+        {
+          "id": "c-8",
+          "target": "Tengo {{figlioEta}} años.",
+          "native": "Ho {{figlioEta}} anni.",
+          "fromLine": "d-8"
+        },
+        {
+          "id": "c-9",
+          "target": "¡Somos la familia {{cognome}}!",
+          "native": "Siamo la famiglia {{cognome}}!",
+          "fromLine": "d-9"
+        }
+      ]
+    },
+    "D": {
+      "label": "Dialogo",
+      "items": [
+        {
+          "id": "d-1",
+          "speaker": "hostess-gate",
+          "role": "staff",
+          "target": "¡Buenos días! Mucho gusto.",
+          "native": "Buongiorno! Piacere di conoscervi.",
+          "whatYouLearn": [
+            {
+              "title": "Buenos días e hola",
+              "body": "\"Buenos días\" lo dice chi lavora, \"hola\" lo dici a un amico — e sono <strong>tutti due corretti</strong>.<br>Nel dialogo lo senti: l'hostess e i genitori dicono \"buenos días\", i figli \"hola\".<br>\"Hola\" va bene sempre, con chiunque: se sei in dubbio, è la scelta sicura.<br>Una cosa da sapere: \"buenos días\" vale <strong>solo fino a mezzogiorno</strong>. Dopo cambia, e lo vedremo più avanti."
+            },
+            {
+              "title": "Mucho gusto",
+              "body": "Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro \"piacere di conoscerti\".<br>Dalla seconda volta che vedi una persona non si usa più: lì basta \"¡Hola!\".<br>Esiste anche \"encantado\", ed è giusto — ma <strong>cambia se lo dice un uomo o una donna</strong>. \"Mucho gusto\" va bene per tutti, e per ora è quella che ti serve."
+            }
+          ]
+        },
+        {
+          "id": "d-2",
+          "speaker": "papa",
+          "role": "family",
+          "target": "¡Buenos días! Soy {{papa}}.",
+          "native": "Buongiorno! Sono {{papa}}."
+        },
+        {
+          "id": "d-3",
+          "speaker": "hostess-gate",
+          "role": "staff",
+          "target": "¿De dónde es, {{papa}}?",
+          "native": "Di dov'è, {{papa}}?",
+          "whatYouLearn": [
+            {
+              "title": "Dare del «lei»: usted",
+              "body": "Per dare del \"lei\" si usa <strong>usted</strong>, e il verbo va alla terza persona — <strong>esattamente come in italiano</strong>.<br>\"¿De dónde es {{papa:target}}?\" è \"Lei di dov'è?\". A un amico l'hostess direbbe \"¿De dónde eres?\", cioè \"Di dove sei?\".<br>Quindi qui non c'è un meccanismo nuovo da imparare: c'è una parola nuova, \"usted\".<br>Si dà del \"usted\" a chi lavora, a chi non conosci, a chi è più grande di te. Fra amici e in famiglia, \"tú\".<br>E al plurale ce ne sono <strong>due</strong>: \"vosotros\" fra amici, \"ustedes\" quando dai del lei a più persone.<br>In italiano diciamo \"voi\" in tutti e due i casi: <strong>è un punto in cui lo spagnolo ha una parola in più di noi</strong>."
+            }
+          ]
+        },
+        {
+          "id": "d-4",
+          "speaker": "papa",
+          "role": "family",
+          "target": "Soy de {{partenza}}, {{partenza.paese:target}}.",
+          "native": "Sono di {{partenza}}, {{partenza.paese}}.",
+          "whatYouLearn": [
+            {
+              "title": "Dire da dove vieni",
+              "body": "\"Soy de {{partenza:target}}\" vuol dire \"sono di {{partenza:native}}\": <strong>identico all'italiano</strong>, anche il verbo.<br>\"De\" significa \"di, da\". La userai tantissimo.<br>Domanda e risposta hanno le stesse parole: \"¿De dónde es?\" → \"Soy de…\". Se impari una, hai già l'altra.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in spagnolo. La tua città a volte cambia un accento: Torino diventa <strong>Turín</strong>. Su questo torniamo per bene più avanti."
+            }
+          ]
+        },
+        {
+          "id": "d-5",
+          "speaker": "hostess-gate",
+          "role": "staff",
+          "target": "¿Y usted?",
+          "native": "E lei?",
+          "whatYouLearn": [
+            {
+              "title": "¿Y usted?",
+              "body": "Vuol dire \"e lei?\", e serve a rimandare la stessa domanda a un'altra persona senza ripeterla tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con \"¿Y usted?\" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.<br>Con un amico diventa \"¿Y tú?\"."
+            }
+          ]
+        },
+        {
+          "id": "d-6",
+          "speaker": "mamma",
+          "role": "family",
+          "target": "¡Buenos días! Soy {{mamma}}.",
+          "native": "Buongiorno! Sono {{mamma}}."
+        },
+        {
+          "id": "d-7",
+          "speaker": "figlia",
+          "role": "family",
+          "target": "¡Hola! Soy {{figliaNome}}. Tengo {{figliaEta}} años.",
+          "native": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
+          "whatYouLearn": [
+            {
+              "title": "Dire quanti anni hai",
+              "body": "\"Tengo {{figliaEta:target}} años\" vuol dire \"ho {{figliaEta:native}} anni\": <strong>uguale all'italiano</strong>, anche il verbo.<br>Una cosa da ricordare: <strong>\"años\" non si può togliere</strong>. \"Tengo dieciséis\" da solo non si dice, mentre in italiano \"ho sedici\" si capirebbe.<br>\"Tener\" è il verbo avere, e lo ritroverai ovunque: \"tengo hambre\", \"tengo un hermano\"."
+            }
+          ]
+        },
+        {
+          "id": "d-8",
+          "speaker": "figlio",
+          "role": "family",
+          "target": "¡Hola! Yo soy {{figlioNome}}. ¡Tengo {{figlioEta}} años!",
+          "native": "Ciao! Io sono {{figlioNome}}. Ho {{figlioEta}} anni!",
+          "whatYouLearn": [
+            {
+              "title": "Quando si mette «yo»",
+              "body": "In spagnolo \"io, tu, lui\" <strong>si saltano</strong>, come in italiano — e quando ci sono, servono a insistere.<br>La figlia dice \"Soy {{figliaNome:target}}\". Il figlio dice \"<strong>Yo</strong> soy {{figlioNome:target}}\": sono tutti due giusti.<br>Il figlio ci mette \"yo\" perché vuole farsi notare — come quando un bambino dice \"<strong>IO</strong> sono {{figlioNome:native}}!\".<br>Quindi, se non hai un motivo per insistere, lascialo fuori: \"soy\" basta."
+            }
+          ]
+        },
+        {
+          "id": "d-9",
+          "speaker": "tutti",
+          "role": "family",
+          "target": "¡Somos la familia {{cognome}}!",
+          "native": "Siamo la famiglia {{cognome}}!"
+        }
+      ]
+    }
+  }
+}

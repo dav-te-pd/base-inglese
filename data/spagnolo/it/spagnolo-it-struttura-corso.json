@@ -1,0 +1,248 @@
+{
+  "speech": {
+    "synthesisLang": "es-ES",
+    "recognitionLang": "es-ES"
+  },
+  "grades": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "gradeNames": {
+    "A": "Parole",
+    "B": "Espressioni",
+    "C": "Frasi",
+    "D": "Dialogo"
+  },
+  "moduleTypes": {
+    "inizio": {
+      "label": "Inizio"
+    },
+    "studio": {
+      "label": "Studio"
+    },
+    "dialogo": {
+      "label": "Studia il dialogo"
+    },
+    "quiz": {
+      "label": "Quiz"
+    },
+    "test": {
+      "label": "Verifica finale"
+    },
+    "fine": {
+      "label": "Fine"
+    }
+  },
+  "moduleLabels": {
+    "personalizzazione": {
+      "name": "Tu historia",
+      "subtitle": "Personalizza la tua storia",
+      "categoria": "inizio"
+    },
+    "meetTheStory": {
+      "name": "Conoce la historia",
+      "subtitle": "Ascolta la storia",
+      "categoria": "studio"
+    },
+    "repeatAloud": {
+      "name": "Repite en voz alta",
+      "subtitle": "Ripeti ad alta voce",
+      "categoria": "studio"
+    },
+    "whyWeSayIt": {
+      "name": "Por qué se dice así",
+      "subtitle": "Perché si dice così",
+      "categoria": "studio"
+    },
+    "matchEngIta": {
+      "name": "Empareja es→it",
+      "subtitle": "Abbina le traduzioni",
+      "categoria": "studio"
+    },
+    "matchItaEng": {
+      "name": "Empareja it→es",
+      "subtitle": "Abbina le traduzioni",
+      "categoria": "studio"
+    },
+    "flashcardAEngIta": {
+      "name": "Tarjetas es→it",
+      "subtitle": "Ripassa quello che hai imparato",
+      "categoria": "studio"
+    },
+    "flashcardAItaEng": {
+      "name": "Tarjetas it→es",
+      "subtitle": "Ripassa quello che hai imparato",
+      "categoria": "studio"
+    },
+    "voicePractice": {
+      "name": "Practica la voz",
+      "subtitle": "Allena la pronuncia",
+      "categoria": "studio"
+    },
+    "dialogoAscoltaRipeti": {
+      "name": "Diálogo: escucha y repite",
+      "subtitle": "Ascolta e ripeti",
+      "categoria": "dialogo"
+    },
+    "dialogoRipetiATempo": {
+      "name": "Diálogo: repite a tiempo",
+      "subtitle": "Ripeti a tempo",
+      "categoria": "dialogo"
+    },
+    "dialogoContinuo": {
+      "name": "Diálogo: sin pausas",
+      "subtitle": "Il dialogo vero",
+      "categoria": "dialogo"
+    },
+    "speedMatchEngIta": {
+      "name": "Contrarreloj es→it",
+      "subtitle": "Traduci a tempo",
+      "categoria": "quiz"
+    },
+    "speedMatchItaEng": {
+      "name": "Contrarreloj it→es",
+      "subtitle": "Traduci a tempo",
+      "categoria": "quiz"
+    },
+    "voiceCoach": {
+      "name": "Prueba de voz",
+      "subtitle": "Metti alla prova la pronuncia",
+      "categoria": "quiz"
+    }
+  },
+  "sequences": {
+    "narrativo-standard": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardAEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardAItaEng",
+        "grade": "A"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "B"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "B"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "B"
+      },
+      {
+        "module": "flashcardAEngIta",
+        "grade": "B"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "B"
+      },
+      {
+        "module": "whyWeSayIt",
+        "grade": "D"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "C"
+      },
+      {
+        "module": "matchItaEng",
+        "grade": "C"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "C"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoRipetiATempo",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoContinuo",
+        "grade": "D"
+      },
+      {
+        "module": "speedMatchEngIta",
+        "grade": "C"
+      },
+      {
+        "module": "speedMatchItaEng",
+        "grade": "C"
+      },
+      {
+        "module": "voiceCoach",
+        "grade": "C"
+      }
+    ],
+    "prova-corta": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchEngIta",
+        "grade": "A"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      }
+    ]
+  },
+  "episodeSequences": {
+    "corso-spagnolo-a1": [
+      "gate",
+      "aircraft-door"
+    ]
+  },
+  "episodeSequence": "corso-spagnolo-a1",
+  "episodioCorrente": "gate",
+  "episodiSpenti": [],
+  "episodes": {
+    "gate": {
+      "nome": "Al gate",
+      "categoria": "storia",
+      "sequence": "narrativo-standard"
+    },
+    "aircraft-door": {
+      "nome": "Sulla porta dell'aereo",
+      "categoria": "storia",
+      "sequence": "narrativo-standard"
+    }
+  }
+}

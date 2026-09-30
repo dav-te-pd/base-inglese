@@ -1,0 +1,5 @@
+{
+  "_LEGGIMI": "APPEND-ONLY, come quello dell'inglese: da questo file si AGGIUNGE, non si toglie. Ogni riga e' una scelta che qualcuno ha salvato e che senza quella riga sparisce in silenzio.",
+  "_PERCHE_E_VUOTO": "Nato vuoto il 2026-09-30, insieme all'edizione: nessuno studente di spagnolo ha ancora salvato un id, quindi nessun id e' mai cambiato. L'app pero' lo chiede sempre (app/dati.js, loadPersonalizationMigrations) e un file che non arriva manda alla schermata d'errore - per questo c'e' anche vuoto. Non si trascrive da un markdown: e' un registro tecnico, e lo scrive Claude Code.",
+  "slot": {}
+}

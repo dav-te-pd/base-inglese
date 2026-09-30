@@ -529,6 +529,24 @@ function episodio(ed, id, gradeNames) {
     fuori.levels[g] = { label: gradeNames[g], items: items };
   });
 
+  // ⚠️ UN SUFFISSO CHE NON E' UN RUOLO FERMA TUTTO — chiesto da chi guida il
+  // progetto il 2026-09-30 (regola 49).
+  //
+  // I suffissi validi sono due, `:target` e `:native`. Un `{{partenza:es}}` —
+  // la forma che il file spagnolo aveva la mattina di quel giorno — nell'app
+  // NON fallisce: `fillTemplate` non trova la colonna e lascia il segnaposto
+  // com'e', **e lo legge lo studente**. Qui invece nessuno lo legge ancora:
+  // e' l'ultimo posto in cui si puo' fermare senza che si veda.
+  const suffissiSbagliati = [];
+  (JSON.stringify(fuori).match(/\{\{\w+(?:\.\w+)?:\w+\}\}/g) || []).forEach((s) => {
+    const ruolo = s.replace(/^.*:(\w+)\}\}$/, '$1');
+    if (ruolo !== 'target' && ruolo !== 'native' && suffissiSbagliati.indexOf(s) === -1) suffissiSbagliati.push(s);
+  });
+  if (suffissiSbagliati.length) {
+    throw new Error(id + ': segnaposto con un suffisso che non e\' un ruolo: ' + suffissiSbagliati.join(', ') +
+      ' — i suffissi validi sono :target (la lingua che si impara) e :native (quella dello studente).');
+  }
+
   // I conti dichiarati si contano sul contenuto vero, e non si scrive niente
   // se non tornano (regola 29).
   const i = t.indexOf('Numeri attesi nel JSON');

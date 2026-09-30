@@ -284,6 +284,22 @@ function quanteStringhe(o) {
   }
   log('[D] Il grassetto della regola generale diventa <strong>, non asterischi a schermo',
     !!json && json.generalRule === 'La voce cade su <strong>dí</strong>-as.', json && json.generalRule);
+
+  // ⚠️ UN SUFFISSO CHE NON E' UN RUOLO FERMA IL TRASCRITTORE (2026-09-30,
+  // chiesto da chi guida il progetto). Nell'app non fallirebbe: resterebbe a
+  // schermo. Si prende lo stesso markdown vero e si guasta UN suffisso in un
+  // segnaposto che c'e' gia'. Il caso piu' diverso (regola 42) e' `:es`, la
+  // forma che il file spagnolo aveva davvero la mattina di quel giorno.
+  const conSuffisso = vero.match(/\{\{\w+(?:\.\w+)?:(target|native)\}\}/);
+  let msgSuffisso = null;
+  if (conSuffisso) {
+    const guasto = vero.replace(conSuffisso[0], conSuffisso[0].replace(/:(target|native)\}\}$/, ':es}}'));
+    fs.readFileSync = function (p) { return String(p) === percorso ? guasto : orig.apply(fs, arguments); };
+    try { T.episodio(ed, id, s.gradeNames); } catch (e) { msgSuffisso = e.message; } finally { fs.readFileSync = orig; }
+  }
+  log('[D] C\'e\' un segnaposto con suffisso da guastare (il test non sta guardando il vuoto)', !!conSuffisso);
+  log('[D] Un suffisso che non e\' un ruolo (`:es`) ferma il trascrittore, e dice quale',
+    !!msgSuffisso && /suffisso che non e' un ruolo/.test(msgSuffisso) && /:es\}\}/.test(msgSuffisso), String(msgSuffisso));
 }
 
 console.log('\n=== TESTI DAL MARKDOWN: ' + passed + '/' + (passed + failed) + ' passed ===');
