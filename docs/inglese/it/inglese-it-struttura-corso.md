@@ -1,4 +1,4 @@
-**Versione: 20260928a**
+**Versione: 20260930d**
 
 # Struttura del corso — inglese per italiani
 
@@ -18,7 +18,7 @@ scritto questo file.**
 **Cerca il titolo per TESTO ESATTO, e il NUMERO è dentro il testo.** `testo.indexOf(titolo)` —
 sottostringa, sensibile a maiuscole e accenti.
 
-**I cinque titoli cercati sono `##` più uno spazio più il testo di questa colonna**, carattere per
+**I SEI titoli cercati sono `##` più uno spazio più il testo di questa colonna**, carattere per
 carattere:
 
 | Il testo dopo `## ` | Cosa ne legge |
@@ -26,21 +26,68 @@ carattere:
 | `2 — I GRADI` | `grades` e `gradeNames` |
 | `3 — LE CATEGORIE DEI MODULI` | `moduleTypes` |
 | `4 — I NOMI DEI MODULI` | `moduleLabels` |
+| `5 — LE SEQUENZE DEI MODULI` | `sequences` |
 | `7 — GLI EPISODI` | `episodes` **e** l'ordine di `episodeSequences` |
 | `8 — LE LINGUE DEL PARLATO` | `speech` |
 
 ⚠️ **IL `## ` QUI SOPRA È STACCATO APPOSTA, e non è pedanteria.** Se questa tabella scrivesse i titoli
 per intero, `indexOf` troverebbe **questa riga** invece della sezione vera — e il parser leggerebbe come
-«tabella dei gradi» il resto di questa tabella, senza lamentarsi. *La prova è ripetibile:
-`grep -c '^## 2'` deve dare **1**.*
+«tabella dei gradi» il resto di questa tabella, senza lamentarsi.
+
+## 🔴 IL 30 SETTEMBRE È SUCCESSO DAVVERO, SCRIVENDO LA CORREZIONE QUI SOTTO
+
+**Una nota di questa stessa sezione conteneva il titolo della sezione 5 PER INTERO, cancelletti
+compresi.** *Il
+trascrittore ha trovato quella riga invece della sezione vera e ha scritto un corso **senza nessuna
+sequenza**: ogni episodio sulla schermata d'errore.*
+
+| | |
+|---|---|
+| **Non si è fermato** | 🔴 **e i test sarebbero rimasti verdi** |
+| **Come se n'è accorto Claude Code** | *il JSON aveva **113 righe in meno*** |
+
+> ⭐ **L'avviso c'era, in questa pagina, tre righe sopra il punto in cui è stato violato.**
+> **Un avviso non è un controllo.**
+
+🔴 **E la prova migliore è che è successo DUE VOLTE: la prima stesura di questa correzione conteneva il
+titolo altre due volte** — *una nel testo che racconta il difetto, una nell'esempio del comando.*
+
+⭐ **Non si riesce a scrivere di questa trappola senza caderci.** *Ed è esattamente il motivo per cui non
+può restare una regola da ricordare: deve essere un test che fallisce.*
+
+⚠️ **E LA PROVA CHE C'ERA NON POTEVA TROVARLO.** *Diceva: «`grep -c '^## 2'` deve dare 1».* 🔴 **Quel
+`^` àncora a inizio riga, e `indexOf` non sa cosa sia una riga:** *l'occorrenza colpevole stava **dentro
+una cella di tabella**, a metà riga, e il grep la saltava.*
+
+**La prova giusta conta la stringa OVUNQUE:**
+
+```
+for T in "${TITOLI[@]}"; do  grep -o "$T" <file> | wc -l  ; done    →  ogni riga deve dare 1
+```
+
+*(l'esempio usa una variabile apposta: **scrivere il titolo qui dentro sarebbe il difetto stesso**)*
+
+*E vale per tutti e sei i titoli letti.* ⭐ **Meglio ancora: è un test, non un comando che qualcuno si
+deve ricordare** — *`R4`, un controllo che non può controllare deve fallire.*
 
 ⚠️ **Il trattino è un trattone `—` (U+2014) con uno spazio prima e uno dopo.** Un trattino normale `-`
 non viene trovato, e il test non dice «trattino sbagliato»: dice «Titolo non trovato».
 
-⚠️ **RINUMERARE UNA SEZIONE ROMPE IL TEST.** È il motivo per cui **qui il 5 e il 6 non esistono**: le
-due sezioni che li portavano sono passate in RAGIONI, e chiudere il buco tirando indietro il 7 farebbe
-fallire tre asserzioni. *Il buco non è un difetto: è il segno visibile che quei numeri sono
-un'interfaccia.*
+⚠️ **RINUMERARE UNA SEZIONE ROMPE IL TEST.** È il motivo per cui **qui il 6 non esiste**: la sezione
+che lo portava è passata in RAGIONI, e chiudere il buco tirando indietro il 7 farebbe fallire tre
+asserzioni. *Il buco non è un difetto: è il segno visibile che quei numeri sono un'interfaccia.*
+
+🔴 **CORRETTO IL 2026-09-30, E PER DUE GIORNI QUESTE DUE RIGHE HANNO DETTO IL FALSO.** *Dicevano «il 5
+e il 6 non esistono» e «i cinque titoli cercati».*
+
+| Cosa diceva | Cosa è vero | Chi l'ha misurato |
+|---|---|---|
+| *«il 5 non esiste»* | 🔴 **il 5 esiste** — `5 — LE SEQUENZE DEI MODULI` | **Claude Code**: *`trascrivi.js:195` e `tests/test_struttura_corso.js:220` lo cercano* |
+| *«cinque titoli»* | ⭐ **sono sei** | *idem* |
+
+⚠️ **E l'errore non era innocuo:** *una sezione letta davvero, che l'indice dichiarava inesistente,
+sarebbe stata la prima candidata a essere spostata o rinumerata da qualcuno che si fidava di questa
+riga.*
 
 **Prende la PRIMA tabella dopo il titolo, e ignora tutto quello che c'è in mezzo.** Righe di prosa,
 avvisi, sottotitoli: saltati, purché non comincino con `|`. La tabella finisce alla prima riga **non
@@ -61,7 +108,7 @@ riga oltre all'intestazione, altrimenti il test esplode invece di diventare ross
 accenti compresi.** *Il 2026-09-21 «Perché si dice così» scritto con gli apostrofi è passato
 inosservato: è testo che legge lo studente.*
 
-**L'ordine delle righe conta in tre sezioni su cinque:**
+**L'ordine delle righe conta in tre sezioni su SEI:**
 
 | Sezione | L'ordine delle righe |
 |---|---|
@@ -81,10 +128,13 @@ la sezione 4 i quindici moduli, e quale modulo stia in quale categoria lo sapeva
 **Era il quarto testo senza fonte**, dopo `generalRule`, le etichette degli slot e le istruzioni dei
 moduli — *e si chiude con quindici celle.*
 
-⚠️ **VA IN FONDO, E NON È INDIFFERENTE:** *il parser legge per posizione — `r[0]`, `r[1]`, `r[2]` —
-quindi una quarta colonna **non viene letta** finché `trascrivi.js` non impara a leggerla.* **Metterla in
-mezzo romperebbe tutto; metterla in fondo non rompe niente**, e il file può aspettare il trascrittore
-senza diventare rosso.
+⚠️ **VA IN FONDO, E NON È INDIFFERENTE:** *il parser legge per posizione, quindi metterla in mezzo
+romperebbe tutto; metterla in fondo non rompe niente*, **e il file poteva aspettare il trascrittore senza
+diventare rosso.**
+
+🔴 **CORRETTO IL 30/09: qui c'era scritto «una quarta colonna NON viene letta finché `trascrivi.js` non
+impara a leggerla».** *Era vero il 27 settembre e falso dal 28: il passo C gliel'ha insegnato.* ⭐ **Oggi
+la `categoria` si legge**, quindici celle su quindici.
 
 ⭐ **E questa colonna sblocca un controllo che prima non si poteva nemmeno formulare:**
 *`studioCompleteMessages` parla di «ascolto ripetuto ad alta voce», ma la categoria `studio` contiene
