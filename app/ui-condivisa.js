@@ -641,9 +641,32 @@
       // loro `it` ed `en` coincidono, quindi il ramo e' indifferente — ma il
       // default va scelto, e questo e' quello che non cambia niente oggi.
       var parte = (campo && picked[campo]) ? picked[campo] : picked;
-      return picked.traducibile === false ? parte.it : parte[lang];
+      return picked.traducibile === false ? parte.it : parte[colonnaDellaLingua(lang)];
     }
     return rawValue;
+  }
+
+  // ⚠️ `en` NEI DATI VUOL DIRE «LA LINGUA CHE SI IMPARA», NON «INGLESE» — dal
+  // 2026-09-30, quando e' arrivata la seconda edizione (spagnolo/it).
+  //
+  // Il nome e' storico: l'app e' nata per l'inglese, e la colonna del magazzino
+  // che porta il valore nella lingua insegnata si chiama `en` in ogni edizione
+  // (il trascrittore la scrive per POSIZIONE, `trascrivi.js`). Il file di
+  // un'edizione di spagnolo invece dice la verita' — `{{partenza.paese:es}}` —
+  // e prima di qui `parte['es']` non esisteva: lo studente leggeva «Soy de
+  // Mondovì, undefined.»
+  //
+  // ⚠️ IL CODICE NON E' UN CAMPO NUOVO: si RICAVA da quello che l'edizione
+  // dichiara gia', la lingua della voce (`es-MX` -> `es`, `en-US` -> `en`).
+  // *Un secondo campo `codice` accanto a `synthesisLang` sarebbe la stessa
+  // cosa scritta due volte (regola 48), e la prima volta che divergono la
+  // voce parlerebbe una lingua e i segnaposto ne cercherebbero un'altra.*
+  function codiceLinguaInsegnata() {
+    return String(CONFIG.speech.synthesisLang || '').split('-')[0].toLowerCase();
+  }
+
+  function colonnaDellaLingua(lang) {
+    return lang === codiceLinguaInsegnata() ? 'en' : lang;
   }
 
   // Fills {{placeholders}} in a dialogue line using the episode's
@@ -660,6 +683,9 @@
   // "vengo da {{partenza}}" deve dare "Turin" nella citazione e "Torino"
   // nella spiegazione. Senza suffisso vale la lingua della chiamata,
   // come prima: nessun testo esistente cambia comportamento.
+  // ⚠️ Il suffisso della lingua insegnata e' il CODICE DELL'EDIZIONE — `:en`
+  // in inglese, `:es` in spagnolo — e `colonnaDellaLingua` lo porta sulla
+  // colonna `en` del magazzino, che in ogni edizione vuol dire quella.
   // ⚠️ LA REGEX HA IMPARATO IL PUNTO — passo 1.8-bis (2), 2026-09-24.
   //
   // `\w` NON contiene il punto, quindi prima `{{partenza.paese:en}}` non veniva
@@ -681,7 +707,18 @@
         return match;
       }
       var rawValue = (values[slotKey] || '').trim() || slotDefault(episode, slotKey);
-      return resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang, campo);
+      var valore = resolveSlotValue(episode, slotKey, rawValue, forcedLang || lang, campo);
+      // ⚠️ UNA LINGUA CHE LA RIGA NON HA NON DIVENTA «undefined» A SCHERMO: si
+      // tratta come un segnaposto sconosciuto — resta com'era, e si dice. E'
+      // quello che succede a `{{partenza:fr}}` in un'edizione di spagnolo, e
+      // prima del 2026-09-30 succedeva a ogni `:es`. *La parola «undefined»
+      // dentro una frase si legge come contenuto; `{{partenza:fr}}` si legge
+      // come un guasto, ed e' quello che e'.*
+      if (valore === undefined) {
+        console.warn('fillTemplate: "' + match + '" chiede una lingua che la riga non ha, nell\'episodio "' + episode.id + '"');
+        return match;
+      }
+      return valore;
     });
   }
 

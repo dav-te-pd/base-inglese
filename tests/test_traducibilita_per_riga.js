@@ -19,6 +19,14 @@
 // spiegazione «La figlia dice "I'm 14 years old"». Nessun rosso, e due frasi
 // inglesi diverse.
 //
+// PROTEGGE ANCHE, dal 2026-09-30 ([S]): che il suffisso di lingua di un
+// segnaposto sia il CODICE DELL'EDIZIONE — `:es` in spagnolo come `:en` in
+// inglese — ricavato da `speech.synthesisLang`. Senza, il file spagnolo di
+// `gate` dava «Soy de Turin, undefined.» (misurato rimettendo il codice
+// vecchio: 5 rossi su 7). E che una lingua che la riga non ha non diventi mai
+// la parola «undefined» a schermo. ⚠️ LIMITE: l'edizione spagnola non esiste
+// ancora, quindi [S] la simula cambiando la sola lingua della voce.
+//
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-20 la risposta si deduceva
 // dal contenitore: `buildSlotFields` guardava `slot.table.indexOf('people.')`
 // e ne ricavava `isPersonName`. Era esatto, e teneva solo finché le famiglie
@@ -560,6 +568,75 @@ async function run() {
     log('[E] Uno slot SENZA elenco vede la tabella intera',
       esito.quantePartenza === 8, String(esito.quantePartenza));
     log('[E] Nessun errore JS', errori.length === 0, errori[0]);
+    await page.close();
+  }
+
+  // ── [S] IL SUFFISSO E' IL CODICE DELL'EDIZIONE — 2026-09-30 ────────────
+  //
+  // Il file spagnolo di `gate` scrive `{{partenza.paese:es}}`, e l'app
+  // conosceva solo `:en`: `parte['es']` non esisteva e lo studente leggeva
+  // «Soy de Mondovì, undefined.» Il codice si ricava da `speech.synthesisLang`.
+  //
+  // ⚠️ L'EDIZIONE SPAGNOLA NON C'E' ANCORA, quindi qui la si SIMULA cambiando
+  // la sola lingua della voce sull'edizione inglese: e' esattamente il dato da
+  // cui il codice viene ricavato, e nient'altro cambia. I valori che escono
+  // sono inglesi (Turin, fourteen) perche' il magazzino e' quello inglese —
+  // quello che si misura e' che arrivino, non in che lingua sono.
+  {
+    const page = await browser.newPage();
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await bloccaFontEsterni(page);
+    await apriMappa(page, 'TradSuffisso', { partenza: 'orig-torino', figliaEta: 'eta-14' });
+
+    const esito = await page.evaluate(function () {
+      const ep = window.BI.episodioCorrente();
+      const v = window.BI.valoriCorrenti();
+      const ft = function (t, l) { return window.BI.fillTemplate(t, ep, v, l); };
+      const speech = window.APP_CONFIG.speech;
+      const prima = speech.synthesisLang;
+      const inglese = {
+        paese: ft('{{partenza.paese:en}}', 'it'),
+        citta: ft('{{partenza:en}}', 'it'),
+        eta: ft('{{figliaEta:en}}', 'it'),
+        // ⚠️ IL CASO PIU' DIVERSO (regola 42): `:es` dove la lingua insegnata
+        // NON e' lo spagnolo. Nessuna colonna lo porta, quindi deve restare un
+        // segnaposto visibile — non diventare «undefined» e non, peggio,
+        // pescare in silenzio la colonna della lingua insegnata.
+        esInInglese: ft('Soy de {{partenza:es}}.', 'it')
+      };
+      speech.synthesisLang = 'es-MX';
+      try {
+        return {
+          inglese: inglese,
+          battuta: ft('Soy de {{partenza}}, {{partenza.paese:es}}.', 'en'),
+          skill: ft('"Soy de {{partenza:es}}" vuol dire "sono di {{partenza:it}}"', 'it'),
+          eta: ft('Tengo {{figliaEta:es}} años.', 'it'),
+          // Un nome proprio non si traduce in nessuna lingua: `:es` deve dare
+          // l'italiano come `:en` lo da' in inglese.
+          nome: ft('{{papa:es}}', 'it'),
+          nomeIt: ft('{{papa}}', 'it')
+        };
+      } finally {
+        speech.synthesisLang = prima;
+      }
+    });
+
+    // ⚠️ QUESTA E' LA RIGA CHE DISTINGUE LE DUE VERSIONI: col codice di prima
+    // diceva «Soy de Turin, undefined.»
+    log('[S] Con la voce es-MX, `.paese:es` porta il paese nella battuta',
+      esito.battuta === 'Soy de Turin, ' + esito.inglese.paese + '.', esito.battuta);
+    log('[S] ...e la skill cita la citta\' in tutte e due le lingue',
+      esito.skill === '"Soy de ' + esito.inglese.citta + '" vuol dire "sono di Torino"', esito.skill);
+    log('[S] ...e l\'eta\' arriva, dalla stessa colonna di `:en`',
+      esito.eta === 'Tengo ' + esito.inglese.eta + ' años.', esito.eta);
+    log('[S] ...e un nome proprio resta italiano', esito.nome === esito.nomeIt && esito.nome.length > 0,
+      esito.nome + ' | ' + esito.nomeIt);
+    log('[S] In inglese `:es` resta un segnaposto visibile, mai «undefined»',
+      esito.inglese.esInInglese === 'Soy de {{partenza:es}}.', esito.inglese.esInInglese);
+    log('[S] Nessuna frase porta «undefined»',
+      JSON.stringify(esito).indexOf('undefined') === -1, JSON.stringify(esito));
+    log('[S] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }
 

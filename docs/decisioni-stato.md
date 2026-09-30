@@ -59,6 +59,7 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | # | Cosa è aperto | Quando si sblocca | Dove sta la scheda |
 |---|---|---|---|
 | **1.12** | **La catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e va fatto **prima di Supabase**. Dentro ci sta la **tendina dell'edizione** nel Pannello Admin: oggi `edizione.lingua`/`edizione.studente` sono due caselle di testo libere, e una tendina ha bisogno dell'elenco delle edizioni **che il browser non può scoprire** (`trascrivi.js` sì) | **appena ci sono le edizioni da validare** — chi guida il progetto sta scrivendo i due episodi di spagnolo. *Deciso il 2026-09-26: «sfiniamo gli episodi, così quando lo farai poi vediamo se è tutto ok»* | qui sotto, «① prima di Supabase» |
+| **Lo spagnolo** | **Quello che nessun file di contenuto può sistemare — misurato il 2026-09-30 sul primo episodio consegnato (`spagnolo-it-gate`).** Ordine deciso da chi guida il progetto, **un passo di codice alla volta** (regola 45): ① ~~i segnaposto `:es` davano «undefined»~~ **fatto il 2026-09-30** · ② **la voce resta inglese**: `pickVoice` prova `preferredVoiceNames` (tutte voci inglesi, globali) **prima** di `synthesisLang`, e il ripiego cerca `'en'` scritto a mano (`app/audio.js`) · ③ **«INGLESE → ITALIANO» scritto nel codice** (`DIRECTION_LABEL`, `app/ui-condivisa.js`): deve venire dal file dell'edizione — *deciso: «devono pescare dal file»* · ④ **la tendina dell'edizione** nel Pannello Admin, con l'elenco scritto dal trascrittore in `data/edizioni.json` — *deciso: A* (è la parte di 1.12 e di 1.20 qui sopra e sotto). Minori, non in fila: `moduleNameHtml` rimpicciolisce solo `en→it`; l'elenco degli episodi `gate`/`aircraft-door` è scritto in `app/catalogo.js:230` | **adesso**, in quest'ordine | `docs/correzioni.md` per ①; qui per il resto |
 | **1.10** | **Il giro dei buchi** | **per definizione ULTIMO** — si fa quando la lista smette di cambiare | qui sotto |
 | **1.18** | **Le asserzioni che cadono sotto contesa.** ⚠️ **Non è più una scheda da aprire: è un GIRO che si ripete.** Otto asserzioni chiuse fra il 24 e il 26 settembre, **con otto cause diverse** — e il nome della scheda («la famiglia che corre contro timer corti») era sbagliato per almeno quattro di loro. Lo strumento c'è: `tests/tools/stress.sh <giri> [parallelismo]`, e **a 40 in parallelo il difetto si compra a comando** (a 20 dà zero, che non vuol dire niente) | **quando si vuole comprarne una**, o quando la CI va rossa senza spiegazione | la scheda intera è nello storico |
 | **F.3** | **Il giro di design sulla mastery**, tre voci: ① i **due colori** che si chiamano tutti e due «colore» · ② la **media di Voice Practice** che nessuno mostra · ③ **report VERDE e mappa ROSSA**, tutti e due corretti | **è una DECISIONE di chi guida il progetto**, non un passo da prendere | qui sotto, «i fuori catena» |
@@ -142,16 +143,19 @@ punti oggi vuol dire cambiarlo due volte.
 
 **CONDIZIONE: con Supabase.** *Deciso da chi guida il progetto il 2026-09-29: «ci saranno ancora altri cambi da fare sicuramente».* La tabella la scrive lui, per cartella; **il giorno che c'è, un test la legge e va rosso su un file che non prevede** — altrimenti resta un documento da confrontare a mano.
 
-## ⚠️ TRE COSE APERTE SUI TESTI CONDIVISI — lasciate fuori dal passo C, 2026-09-28
+## ⚠️ DUE COSE APERTE SUI TESTI CONDIVISI — lasciate fuori dal passo C, 2026-09-28
 
-*Il passo C è stato eseguito (`docs/correzioni.md`). Queste tre sono uscite dalla
-sua misura e **non sono state toccate di proposito**: due sono decisioni di chi
-guida il progetto, una è una misura mia che lui ha messo fuori dal giro.*
+*Il passo C è stato eseguito (`docs/correzioni.md`). Queste due sono uscite dalla
+sua misura e **non sono state toccate di proposito**: sono decisioni di chi
+guida il progetto.* ⚠️ *Erano tre: la terza, `studioCompleteMessages`, era una
+misura mia ed è stata fatta il 2026-09-29 — **lo usano solo Repeat Aloud (sempre)
+e Why We Say It quando un episodio non ha spiegazioni**, non Match né Flash Card.
+Il timore che la teneva aperta era sbagliato, e la riga se n'è andata il
+2026-09-30.*
 
 | | Cosa | Chi decide, e quando |
 |---|---|---|
 | **`episodeFinalMessages.tuttiVerdi.tip`** | lista **vuota**, mentre i suoi due fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno cinque consigli ciascuno. *Può essere voluto — «a chi ha tutto verde non c'è niente da consigliare» — o uno spazio mai riempito.* La lista vuota è dichiarata nella sezione 5 del markdown, quindi non sparisce | **chi guida il progetto.** " + W + " *E la famiglia intera aspetta un lettore: 25 stringhe per il modulo di verifica finale, che non esiste (regola 47)* |
-| **`studioCompleteMessages`** | parla di ascolto e pronuncia, ma la categoria `studio` ha **otto** moduli e in quattro non si apre bocca. 🔴 **Prima di riscrivere serve una misura: compare alla fine di OGNI modulo `studio` o una volta sola alla fine del blocco?** *Se è il secondo, due dei cinque testi si salvano* | **misura mia**, messa fuori dal giro da chi guida il progetto. ⭐ *È la prima domanda che la colonna `categoria`, arrivata col passo C, rende possibile — prima non si poteva nemmeno formulare* |
 | **«Non mostrarmi più questa schermata»** | si può toccare dal **primo** passaggio: oggi si zittisce una spiegazione senza averla letta, **ed è il modo in cui un utente vero si è bloccato**. *Proposta: appare dal secondo in poi — chi ha già visto quella schermata sa cosa sta zittendo* | **chi guida il progetto**, dichiarata nella sezione 7 del markdown delle istruzioni |
 
 ## ⚠️ IL PACCHETTO 1, DECISO PUNTO PER PUNTO — 2026-09-27

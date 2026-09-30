@@ -621,7 +621,7 @@
       'episodes.*.sequence': 'Quale sequenza di passi usa questo episodio. Il menu elenca le sequenze che esistono: sceglierne una ricarica la pagina, perché i passi dell\'episodio si costruiscono all\'avvio. Per crearne una nuova si aggiunge una chiave a &lt;code&gt;sequences&lt;/code&gt; nel file struttura-corso.json dell\'edizione: il pannello sa modificarle, non ancora crearle.',
       'grades': 'Lettere dei gradi dell\'episodio, nell\'ordine in cui il pulsante del grado le fa girare nella vista di riordino.',
       'speech.recognitionLang': 'Lingua usata per riconoscere quello che dici al microfono.',
-      'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi inglesi.',
+      'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi della lingua che si impara. Le sue prime due lettere sono anche il suffisso dei segnaposto in quella lingua (en-US → {{x:en}}, es-MX → {{x:es}}).',
       'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
       'speech.rateOptions': 'Velocità di riproduzione proposte accanto ai pulsanti di ascolto (1 = 100%).',
       'speech.preferredVoiceNames': 'Voci inglesi preferite, in ordine, se il dispositivo le ha disponibili.',
