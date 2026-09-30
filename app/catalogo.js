@@ -2,7 +2,7 @@
 // ⚠️ IL CATALOGO. Passo C1, 2026-09-19.
 //
 // Chi sono gli episodi, quali passi hanno, in che ordine, e con quale grado
-// ciascuno. `MODULE_DESCRIPTORS`, `EPISODES`, `buildEpisodes`,
+// ciascuno. `MODULE_DESCRIPTORS`, `EPISODES`, `costruisciEpisodio`, `popolaEpisodi`,
 // `buildModulesById`, `moduleStepId`, `resolveModuleOrder`.
 //
 // ⚠️ ED È PIÙ SEPARABILE DI QUANTO AVESSI DICHIARATO NELLA VALUTAZIONE.
@@ -40,7 +40,7 @@
 
      Un episodio dichiara SOLO quello che è suo: il badge e il contenuto del
      suo dialogo. Il resto — l'id, il percorso del file dati, i quindici
-     descrittori dei moduli — lo mette buildEpisodes, perché è uguale per
+     descrittori dei moduli — lo mette costruisciEpisodio, perché è uguale per
      tutti e ricavabile.
 
      Perché: fino al 2026-09-09 `modulesById` era scritto per esteso dentro
@@ -74,7 +74,7 @@
      CONFIG.moduleLabels, l'unico posto dove vive il nome mostrato.
 
      `dataFile: true` vuol dire "questo modulo legge il file dell'episodio";
-     buildEpisodes lo sostituisce col percorso vero. Personalizzazione non ce
+     costruisciEpisodio lo sostituisce col percorso vero. Personalizzazione non ce
      l'ha perché non legge contenuto, ed è la stessa assenza che
      moduleUsesGrade guarda per non mostrarle il pulsante del grado.
 
@@ -169,43 +169,38 @@
   // fallito avrebbe rotto la mappa per un titolo. Il file di struttura arriva
   // già prima di qualunque schermata ed è già per edizione: costa zero e resta
   // testo nella lingua dello studente.
-  function buildEpisodes(propri) {
-    var out = {};
-    Object.keys(propri).forEach(function (episodeId) {
-      var episodio = { id: episodeId, dataFile: episodeDataFile(episodeId) };
-      Object.keys(propri[episodeId]).forEach(function (k) { episodio[k] = propri[episodeId][k]; });
-      // ⚠️ NOME E CATEGORIA SI LEGGONO AL MOMENTO DELL'USO, NON QUI, E LA
-      // PRIMA VERSIONE SBAGLIAVA PROPRIO QUESTO.
-      //
-      // `EPISODES` nasce a **tempo di parsing**; `CONFIG.episodes` lo riempie
-      // `applicaStruttura` quando arriva `struttura-corso.json`, cioe' DOPO.
-      // Leggerli qui dava sempre il ripiego: il badge in mappa mostrava `gate`
-      // invece di «Al gate». *Il test l'ha visto subito perche' il ripiego e'
-      // l'id e non una stringa vuota — un riquadro vuoto sarebbe sembrato un
-      // difetto grafico, un id si legge come un dato che non e' arrivato.*
-      //
-      // Con i getter il valore e' sempre quello dell'edizione VIVA: se il
-      // Pannello Admin cambia edizione, il nome la segue senza che nessuno
-      // ricostruisca il catalogo. *Lo stesso motivo per cui `percorsoEdizione`
-      // costruisce il percorso ogni volta invece di congelarlo.*
-      Object.defineProperty(episodio, 'nome', {
-        enumerable: true,
-        get: function () {
-          var suo = (CONFIG.episodes || {})[episodeId] || {};
-          return suo.nome || episodeId;
-        }
-      });
-      Object.defineProperty(episodio, 'categoria', {
-        enumerable: true,
-        get: function () {
-          var suo = (CONFIG.episodes || {})[episodeId] || {};
-          return suo.categoria || null;
-        }
-      });
-      episodio.modulesById = buildModulesById(episodeId);
-      out[episodeId] = episodio;
+  function costruisciEpisodio(episodeId) {
+    var episodio = { id: episodeId, dataFile: episodeDataFile(episodeId) };
+    // ⚠️ NOME E CATEGORIA SI LEGGONO AL MOMENTO DELL'USO, NON QUI, E LA
+    // PRIMA VERSIONE SBAGLIAVA PROPRIO QUESTO.
+    //
+    // `EPISODES` nasce a **tempo di parsing**; `CONFIG.episodes` lo riempie
+    // `applicaStruttura` quando arriva `struttura-corso.json`, cioe' DOPO.
+    // Leggerli qui dava sempre il ripiego: il badge in mappa mostrava `gate`
+    // invece di «Al gate». *Il test l'ha visto subito perche' il ripiego e'
+    // l'id e non una stringa vuota — un riquadro vuoto sarebbe sembrato un
+    // difetto grafico, un id si legge come un dato che non e' arrivato.*
+    //
+    // Con i getter il valore e' sempre quello dell'edizione VIVA: se il
+    // Pannello Admin cambia edizione, il nome la segue senza che nessuno
+    // ricostruisca il catalogo. *Lo stesso motivo per cui `percorsoEdizione`
+    // costruisce il percorso ogni volta invece di congelarlo.*
+    Object.defineProperty(episodio, 'nome', {
+      enumerable: true,
+      get: function () {
+        var suo = (CONFIG.episodes || {})[episodeId] || {};
+        return suo.nome || episodeId;
+      }
     });
-    return out;
+    Object.defineProperty(episodio, 'categoria', {
+      enumerable: true,
+      get: function () {
+        var suo = (CONFIG.episodes || {})[episodeId] || {};
+        return suo.categoria || null;
+      }
+    });
+    episodio.modulesById = buildModulesById(episodeId);
+    return episodio;
   }
 
   // ⚠️ I DUE EPISODI NON PORTANO PIU' NIENTE QUI DENTRO, DAL 2026-09-25.
@@ -227,12 +222,42 @@
   // *Il contenuto della frase non si perde: vive nel grado C del file
   // episodio, che e' la fonte vera. Qui era una SECONDA copia, scomposta per
   // una vista che non esiste piu'.*
-  var EPISODES = buildEpisodes({
-    gate: {},
-    // (docs/inglese/it/inglese-it-aircraft-door.md). Nome e categoria stanno
-    // nel file di struttura dell'edizione, non qui.
-    'aircraft-door': {}
-  });
+  // ⚠️ E DAL 2026-09-30 NON C'E' PIU' NEMMENO L'ELENCO: GLI EPISODI LI DICE LA
+  // STRUTTURA DELL'EDIZIONE, non questo file.
+  //
+  // Qui c'era `buildEpisodes({ gate: {}, 'aircraft-door': {} })`, cioe' i due id
+  // dell'inglese scritti nel codice che serve TUTTE le edizioni. Col primo
+  // corso di spagnolo, che dichiara un episodio solo, `aircraft-door` sarebbe
+  // comparso in coda alla lista col suo id per nome — la sequenza non lo
+  // nomina, e `resolveEpisodeOrder` tiene in coda chi esiste e non e' nominato
+  // — e aprirlo avrebbe dato la schermata d'errore: il suo file non esiste.
+  //
+  // L'oggetto nasce VUOTO e lo riempie `popolaEpisodi`, al momento in cui
+  // `costruisciPassi` lo chiede: cioe' dopo che `struttura-corso.json` e'
+  // arrivato. ⚠️ E resta LO STESSO oggetto: `app/mappa.js` e `app/apertura.js`
+  // ne tengono il riferimento da tempo di parsing, quindi si svuota e si
+  // riempie, non si sostituisce.
+  var EPISODES = {};
+
+  // Gli episodi dell'edizione viva: le chiavi di `CONFIG.episodes`, cioe' la
+  // sezione 7 della struttura. Chi non e' dichiarato esce; chi lo e' e c'e'
+  // gia' resta com'e', col suo `modules`.
+  function popolaEpisodi() {
+    var dichiarati = Object.keys(CONFIG.episodes || {});
+    Object.keys(EPISODES).forEach(function (id) {
+      if (dichiarati.indexOf(id) === -1) delete EPISODES[id];
+    });
+    dichiarati.forEach(function (id) {
+      if (!EPISODES[id]) EPISODES[id] = costruisciEpisodio(id);
+    });
+    // ⚠️ ZERO EPISODI NON E' UN CORSO VUOTO, E' UN GUASTO (regola 49) — e non
+    // si arriva qui dal trascrittore, che si ferma su una sezione 7 senza
+    // righe. Ci si arriva da un JSON scritto a mano o da un override: lo si
+    // dice, invece di disegnare una lista vuota senza spiegazione.
+    if (!dichiarati.length) {
+      console.error('[base-inglese] La struttura del corso non dichiara nessun episodio (CONFIG.episodes e\' vuoto).');
+    }
+  }
 
   // Resolves each episode's own CONFIG.episodes.<id>.moduleOrder — or,
   // when it declares none (every episode today), the shared CONFIG.
@@ -452,6 +477,9 @@
   // legge `episode.modules` fra il caricamento degli script e quella riga —
   // i ventitre file di `app/` a tempo di parsing dichiarano soltanto.
   function costruisciPassi() {
+    // Prima CHI sono gli episodi, poi i loro passi: tutti e due vengono dalla
+    // struttura, e sono le due cose che non si possono sapere prima del fetch.
+    popolaEpisodi();
     Object.keys(EPISODES).forEach(function (episodeId) {
       var episode = EPISODES[episodeId];
       var risolto = resolveModuleOrder(episodeId);

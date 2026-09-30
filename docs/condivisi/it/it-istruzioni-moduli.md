@@ -1,4 +1,4 @@
-**Versione: 20260930a**
+**Versione: 20260930b**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -203,8 +203,18 @@ attacca in coda a dodici spiegazioni.*
 <div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>IL TESTO</div>
 ```
 
-*L'etichetta visibile — «Un consiglio» — **non è scritta in nessun altro posto**: se questo blocco si
-perde, si perde anche lei.*
+🔴 **CORRETTO IL 30/09: qui c'era scritto che l'etichetta «Un consiglio» «non è scritta in nessun altro
+posto». È FALSO.**
+
+⚠️ **La scrive `trascrivi.js:370-371`** — *misurato da Claude Code.* **In nessuna nostra cella c'è quella
+parola: l'involucro qui sopra è DOCUMENTAZIONE di una cosa che produce lui.**
+
+> ⭐ **Ed è `R2` in una forma che non si vede:** *un testo documentato in un posto e prodotto in un
+> altro.* **Se lui cambia l'involucro, questa pagina diventa falsa in silenzio — come è appena
+> successo.**
+
+✅ **Si chiude facendola diventare un dato:** *«Un consiglio» e «Regola generale» diventano due celle di
+questo file, e il trascrittore le legge invece di scriverle.* **176 → 178.**
 
 | id | Quante spiegazioni lo usano | Testo |
 |---|---|---|

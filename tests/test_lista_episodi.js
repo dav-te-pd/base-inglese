@@ -209,6 +209,58 @@ async function run() {
     await page.close();
   }
 
+  // ============ [F] Gli episodi li dice la STRUTTURA, non il codice ============
+  //
+  // Passo 2 dello spagnolo, 2026-09-30. Fino a quel giorno `gate` e
+  // `aircraft-door` erano scritti in `app/catalogo.js`: un'edizione che ne
+  // dichiara uno solo avrebbe mostrato in coda l'altro, col suo id per nome, e
+  // aprirlo avrebbe dato la schermata d'errore.
+  //
+  // Si serve una struttura con `aircraft-door` TOLTO e un episodio che il
+  // codice non ha mai conosciuto AGGIUNTO. ⚠️ IL CASO PIU' DIVERSO (regola 42)
+  // e' il secondo: togliere un episodio lo vedrebbe anche un filtro sull'elenco
+  // di prima; far comparire un id che nessun file di `app/` nomina lo vede solo
+  // un catalogo che legge davvero la struttura.
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(e.message));
+    let intercettata = 0;
+    await page.route(u => String(u).indexOf('struttura-corso.json') !== -1, async (route) => {
+      const risposta = await route.fetch();
+      const s = await risposta.json();
+      const seq = s.episodes.gate.sequence;
+      s.episodes = { gate: s.episodes.gate, 'episodio-nuovo': { nome: 'Episodio nuovo', categoria: s.episodes.gate.categoria, sequence: seq } };
+      Object.keys(s.episodeSequences || {}).forEach(function (k) { s.episodeSequences[k] = ['gate', 'episodio-nuovo']; });
+      intercettata++;
+      await route.fulfill({ response: risposta, json: s });
+    });
+    await apri(page, 'ListaF');
+    const righe = await righeEpisodi(page);
+    const catalogo = await page.evaluate(() => ({
+      ids: Object.keys(window.BI.EPISODES),
+      nome: window.BI.EPISODES['episodio-nuovo'] && window.BI.EPISODES['episodio-nuovo'].nome,
+      file: window.BI.EPISODES['episodio-nuovo'] && window.BI.EPISODES['episodio-nuovo'].dataFile
+    }));
+    const nomeRiga = await page.evaluate(() => {
+      const r = document.querySelector('#episode-list [data-episode="episodio-nuovo"]');
+      return r ? r.textContent : null;
+    });
+    console.log('    lista: ' + righe.map(r => r.id).join(', ') + ' · catalogo: ' + catalogo.ids.join(', '));
+    // Regola 49: una sonda che non intercetta niente misura un'altra cosa.
+    log('[F] La struttura servita e\' quella modificata (la sonda ha intercettato)', intercettata > 0, String(intercettata));
+    log('[F] Un episodio che la struttura NON dichiara non compare',
+      righe.every(r => r.id !== 'aircraft-door') && catalogo.ids.indexOf('aircraft-door') === -1,
+      righe.map(r => r.id).join(','));
+    log('[F] Un episodio che nessun file di app/ nomina compare, col suo nome',
+      righe.length === 2 && righe[1].id === 'episodio-nuovo' && /Episodio nuovo/.test(nomeRiga || ''),
+      righe.map(r => r.id).join(',') + ' | ' + nomeRiga);
+    log('[F] ...e il suo file e\' quello dell\'edizione, ricavato dall\'id',
+      /inglese-it-episodio-nuovo\.json/.test(catalogo.file || ''), String(catalogo.file));
+    log('[F] Nessun errore JS', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
   await browser.close();
   console.log('\n=== LISTA EPISODI SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
   process.exit(failed === 0 ? 0 : 1);
