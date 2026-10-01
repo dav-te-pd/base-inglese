@@ -111,116 +111,14 @@ Il timore che la teneva aperta era sbagliato, e la riga se n'è andata il
 | **`episodeFinalMessages.tuttiVerdi.tip`** | lista **vuota**, mentre i suoi due fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno cinque consigli ciascuno. *Può essere voluto — «a chi ha tutto verde non c'è niente da consigliare» — o uno spazio mai riempito.* La lista vuota è dichiarata nella sezione 5 del markdown, quindi non sparisce | **chi guida il progetto.** " + W + " *E la famiglia intera aspetta un lettore: 25 stringhe per il modulo di verifica finale, che non esiste (regola 47)* |
 | **«Non mostrarmi più questa schermata»** | si può toccare dal **primo** passaggio: oggi si zittisce una spiegazione senza averla letta, **ed è il modo in cui un utente vero si è bloccato**. *Proposta: appare dal secondo in poi — chi ha già visto quella schermata sa cosa sta zittendo* | **chi guida il progetto**, dichiarata nella sezione 7 del markdown delle istruzioni |
 
-## ⚠️ IL PACCHETTO 1, DECISO PUNTO PER PUNTO — 2026-09-27
+## IL PACCHETTO 1 (2026-09-27) — nello storico dal 2026-10-01
 
-*Tutto deciso da chi guida il progetto. **La numerazione è la sua** e si copia
-così com'è: due numerazioni divergono al terzo punto. **Niente di questo è
-ancora eseguito.***
+*La scheda intera è in `decisioni-storico.md`: diceva «niente di questo è ancora eseguito» con i punti 4-8 fatti (`role`/`family`, i titoli derivati, `data/condivisi/it/`, le rinomine). **Due cose di quella scheda restano vive, e stanno qui per non uscire dall'aperto insieme al resto:**
 
-### Cosa NON si fa — e sono tre cose non costruite
-
-| # | Deciso | La ragione, con la misura |
+| # | Cosa | Condizione |
 |---|---|---|
-| **1** | **Le tre colonne nuove NON entrano nel JSON.** `trascrivi.js` non si tocca, i quattro numeri non servono, Match / Speed Match / Flash Card non si toccano | Contate le celle nei due episodi inglesi: **`esercizio` 50 celle tutte «sì»**, **`register` 68 tutte «standard»**, **`non con` 16 id** che prevengono un doppione visibile solo se lo studente dà lo stesso nome a due persone — caso già giudicato accettabile. **Zero usi veri.** ⚠️ **E il nome che era stato proposto era sbagliato: `inExercises` è falso, perché Repeat Aloud È un esercizio. Il giorno che nascerà si chiamerà `inMatching`** |
-| **2** | **L'accento dei personaggi NON entra nel JSON.** `speakerAccents` non serve | Sta in un tabellone di chi scrive il contenuto: **l'accento è del personaggio, non dell'episodio** |
-| **3** | **La copia all'apertura NON si fa adesso, e nemmeno il mix** | *Personalizzazione e mix leggono **la stessa copia**, quindi sono un lavoro solo — e quel lavoro ha bisogno del file dello studente, che si definisce dopo Supabase. Definirlo due volte non conviene.* **Conseguenza accettata: la regola 3.2 non cambia e l'episodio 3 aspetta Supabase.** I due pubblicati girano senza mix. *Per ora cambia solo il testo del pop-up, che diventa vero:* **«Queste scelte valgono per questo episodio.»** |
-
-⚠️ **E una cosa fermata da una misura, registrata perché è il caso d'uso di
-questo giro:** il piano diceva «"non entra negli esercizi" si dice non scrivendo
-la riga». **Falso:** i gradi A/B/C sono letti anche da **Repeat Aloud** (A, B),
-**Voice Practice** (B, C) e **Voice Check** (C) — non scrivere la riga l'avrebbe
-tolta al modulo il cui mestiere è ripeterla.
-
-### Cosa si fa — sei punti, e l'ordine è deciso
-
-| # | Cosa | Note |
-|---|---|---|
-| **4** | **`ruolo` → `role`, `'famiglia'` → `'family'`** | **Passo piccolo e da solo:** cinque punti, e nell'app **uno** (`app/ui-condivisa.js:965`, il lato della bolla). Nessuna migrazione: `ruolo` non entra in nessuna chiave del magazzino |
-| **5** | **I 16 titoli delle spiegazioni derivati da `moduleLabels`** | ⚠️ **Non è una pulizia, è la riparazione di un difetto:** `it-istruzioni-moduli` è **condiviso** fra le edizioni, i nomi dei moduli **no** — in spagnolo il primo si chiama «Tu historia». Con i titoli scritti a mano, un corso di spagnolo mostrerebbe **sedici pop-up intitolati «Your Story»** |
-| **6** | **I 16 titoli dei promemoria → una chiave sola in `condivisi`** | Sono identici fra loro |
-| **5+6** | | **208 stringhe diventano 177** |
-| **7** | **I percorsi: `data/condivisi/it/`** | La cartella perché i file saranno più di due e le lingue più di una; **il nome tiene `it` comunque, perché un file deve dirsi da solo senza dipendere dalla cartella** |
-| **8** | **La rinomina dei due file PER PRIMA** | *Il passo che scrive dentro `it-istruzioni-moduli` e quello che gli cambia nome, in quest'ordine, toccherebbero il file due volte.* **Così ogni file si tocca una volta** |
-| ~~**9**~~ | ✅ **FATTO il 2026-09-28, in un passo suo (A), e sono state TRE non due**: le due con la firma piu' quella che pescava su un oggetto. **Tutte e tre viste cadere su un guasto realistico, e la forma vecchia reggeva entrambi i guasti.** *Il blocco della varieta' e' stato tolto e non riparato: non misurava niente e apriva sei pagine per farlo.* | ✅ |
-
-### Due definizioni
-
-| # | |
-|---|---|
-| **13 · IL REPORT** | **Una riga per target, mai spezzata.** Valore e colore si **SOVRASCRIVONO** col più recente: se lo studente rifà l'episodio, la riga si aggiorna. **La storia dei colori invece si ACCUMULA** (ep.1 verde, ep.4 rosso, ep.10 verde). ⚠️ **E il colore sta attaccato al TARGET, non al testo mostrato:** altrimenti lo stesso target studiato con tre nomi diversi diventa tre voci, e la mastery ricomincia da zero a ogni ripersonalizzazione |
-| **14 · DUE REGOLE** | ① **UN CAMPO NASCE IL GIORNO IN CUI QUALCOSA LO LEGGE.** Prima di quel giorno vive nel file di lavoro di chi scrive il contenuto. *`speedRoundMessages`, `speakerAccents`, `register` e `inExercises` erano tutti e quattro campi progettati prima di avere un lettore.* ② **UN TESTO SI SCRIVE UNA VOLTA SOLA.** Se la fonte esiste già altrove si **deriva**; se non esiste si crea il posto e si deriva da lì |
-
-⚠️ **Le due regole del punto 14 vanno in `CLAUDE.md`, non qui** — governano ogni
-sessione futura, e `decisioni-stato.md` **si svuota**. *Ci vanno col primo commit
-di codice (il punto 4), perché `CLAUDE.md` non è in `paths-ignore` e una corsa di
-CI per due paragrafi è spreco.*
-
-### Le tre misure — 10, 11, 12
-
-**10 · NO, l'app non ha quello sbaglio, e non per caso.** Le pescate a caso in
-`app/` sono **tre**, e tutte e tre ricevono un **array**:
-
-| Dove | Cosa pesca |
-|---|---|
-| `app/ui-condivisa.js:727` | `pickRandom(list)` — il punto unico, usato da 6 chiamanti |
-| `app/storycards.js:102` | `libere[… * libere.length]` |
-| `app/quiz-engine.js:69` | il mescolamento (Fisher-Yates) |
-
-**I sei chiamanti di `pickRandom` passano `pool.titles`, `pool.bodies`, `group`,
-`group.bodies`, `list`, `pool` — array, mai un oggetto — e quattro dei sei hanno
-la guardia `&& X.length`.** ✅ **Quindi lo studente non legge «undefined» da
-nessuna parte.** *Nel caso peggiore — una sotto-chiave mancante nel file — è un
-TypeError dentro una `.then()` che ha già la sua `.catch()` con la schermata
-d'errore (regola 35): un guasto che si vede, non una bugia silenziosa.*
-
-**11 · Il numero è TRE, non quaranta — e ci sono voluti tre giri di misura per
-dirlo.** *Il numero grezzo inganna, quindi vale la pena scrivere come si
-restringe:*
-
-| Misura | Quante | Cosa sono |
-|---|---|---|
-| asserzioni con una condizione leggibile | **1526** | la suite intera |
-| **condizione che NON confronta niente** (solo `.length > N`, `.length`, `!!x`) | **51** su 1526 (3,3%), in 29 file | ⚠️ **la FORMA, non il difetto:** «la lista non è vuota» o «nessun errore di pagina» sono pretese che una lunghezza misura davvero |
-| di queste, con **la firma di `test_batch7`** — il messaggio nomina una fonte che la condizione non guarda | **8** | |
-| di queste, **difetti veri** | **2** | le altre sei verificano la chiave **nel selettore** (`[data-config-path="voiceCoach.silenceTimeoutSeconds"]`), quindi la chiave È guardata — solo non nella condizione |
-
-> **I due veri, più la terza cosa della stessa famiglia:**
-> `test_batch7.js:66` («from `moduleCompleteMessages`»), `test_batch9.js`
-> («comes from `istruzioni-moduli.json`»), e nello stesso `test_batch7` la
-> **pescata su un oggetto** (`data.moduleCompleteMessages[Math.random() *
-> undefined]`), che vale sempre `undefined`. **Tre punti, un giro solo, in coda
-> dopo la validazione delle edizioni.**
-
-**12 · I numeri degli EPISODI sono già ricavati dal markdown; quelli dei due
-file condivisi non esistono ancora — e nascerebbero scritti a mano.**
-
-✅ `tests/test_story_modules.js` → `numeriAttesiDallaFonte()` **legge il
-riquadro «Numeri attesi nel JSON» della fonte** con una regex per grado, e
-*«prendere un numero fisso di righe leggerebbe anche il paragrafo successivo il
-giorno in cui questo si accorcia»* — cioè il difetto era già stato previsto.
-**Nessun test del repository scrive a mano 208 o 141** (le due occorrenze trovate
-sono commenti su altro).
-
-⚠️ **Ma il test di andata e ritorno su `it-istruzioni-moduli` e
-`it-messaggi-feedback` NON ESISTE:** finora l'ho girato come script. **Quindi 177
-non è ancora scritto da nessuna parte, e il difetto si evita alla nascita** —
-quel test conterà le stringhe **rigenerando dal markdown** e confronterà con il
-JSON, senza nessun numero atteso scritto dentro. *Un numero che il test ricava
-non va aggiustato a mano mai più.*
-
-### E la cosa da non fare
-
-**NON TRASCRIVERE NIENTE.** *I due episodi diventano file di lavoro di chi scrive
-il contenuto, con una colonna che dichiara cosa va trascritto; arriverà un file
-di **sole tabelle**, generato da loro, già pulito della prosa. Le sezioni 2-3
-cambiano per il punto 5 e per il testo del pop-up, e **il numero atteso diventa
-177**.*
-
-⚠️ **E una nota di metodo che vale più dei singoli punti: «le lettere A2 e A5 del
-messaggio di ieri non le abbiamo più — vivevano solo nel messaggio».** *Da ora si
-usano i nomi, non le sigle, e quello che si decide finisce in un file. **È la
-regola 43 detta da chi guida il progetto**, ed è per questo che questa sezione
-esiste.*
+| **3** | **La copia all'apertura e il mix** — un lavoro solo, perché leggono la stessa copia | ha bisogno del file dello studente: **dopo Supabase** |
+| **13** | **La definizione del report**: una riga per target, valore e colore si sovrascrivono, la storia dei colori si accumula, il colore sta attaccato al target | **al passo 4.3, i report** |
 
 ## ⚠️ QUATTRO MISURE — 2026-09-27, secondo giro
 
