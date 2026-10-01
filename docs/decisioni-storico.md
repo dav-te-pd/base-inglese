@@ -4610,3 +4610,57 @@ trascrivono più:** `episodeTitle` *(il nome vero è `episodes.<id>.nome` in
 ⚠️ **Due campi restano perché li chiede la regola 4, e oggi non li
 legge nessuno:** `grammarCategory` (gradi A e B) e `fromLine` (grado C). *Si
 scrivono lo stesso; toglierli sarebbe una decisione sulla regola.*
+
+---
+
+# ✅ SCHEDA CHIUSA — «BASE INGLESE», spostata da `decisioni-stato.md` il 2026-10-01
+
+*Chiusa dal passo 4 dello spagnolo (2026-10-01): il nome dell'app è `nomeApp` in `app/config.js`, il nome del corso è `nomiASchermo.corso` dalla §9 della struttura, e `applicaNomi` (`app/mappa.js`) li scrive. **La misura qui sotto è quella che ha deciso i due posti, ed è rimasta vera:** il titolo e la schermata di attesa compaiono prima del file dell'edizione, i badge dopo. Il testo è com'era il giorno in cui è stata scritta — compreso il «non fatto» del titolo.*
+
+## «BASE INGLESE» — E NON È UNA COSA SOLA: SONO DUE — misurato il 2026-09-26, non fatto
+
+⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO, E HA CAMBIATO LA RISPOSTA:**
+*«forse dove adesso vedo base inglese, non è il nome dell'app ma forse il nome
+del corso. io "base inglese" lo vedo solo nella schermata che adesso è impostata
+come iniziale»*.
+
+**Aveva ragione, e la misura lo separa in due.** Il primo giro di questa scheda
+diceva «quattro punti, uno solo in `app/config.js`»: **è sbagliato**, perché
+tratta come un valore solo due cose che vivono in due mondi diversi.
+
+| Riga | Dove | Quando compare | Di chi è il nome |
+|---|---|---|---|
+| `6` | `<title>` | **prima di qualunque JavaScript** | **dell'APP** |
+| `162` | `.app-title` della schermata di **attesa** | mentre `struttura-corso.json` **non è arrivato** | **dell'APP** |
+| `173` | `.badge` dell'**onboarding** | **dopo** che la struttura è arrivata | **del CORSO** |
+| `208` | `.badge` della **home** | **dopo** che la struttura è arrivata | **del CORSO** |
+
+⚠️ **LA RIGA CHE SEPARA I DUE GRUPPI È UNA MISURA, NON UN'OPINIONE:**
+`showView('onboarding')` sta **dentro `accendi()`** (`app/mappa.js:587`), cioè
+nel `.then` di `caricaStrutturaCorso()`; e `goHome()` è la sua alternativa nello
+stesso `if`. **Quindi quelle due schermate non esistono mai prima del file
+dell'edizione** — e un nome che venga da lì arriva sempre in tempo.
+
+*Le altre due no, e per ragioni opposte: `<title>` lo legge il browser prima di
+eseguire una riga, e la schermata di attesa **esiste proprio per coprire quel
+fetch** — prendere il suo titolo dal file che sta aspettando è la regola 35 alla
+lettera.*
+
+**Ne segue la forma, e i due posti sono già quelli giusti per altre cose:**
+
+| | Dove va | Perché lì |
+|---|---|---|
+| **il nome dell'APP** | `app/config.js` | primo `<script>` bloccante, già in memoria quando parte tutto (regola 3); compare da solo nel Pannello Admin; `<title>` si scrive da lì con una riga |
+| **il nome del CORSO** | `data/{lingua}/{studente}/struttura-corso.json` | **è dell'edizione, esattamente come `gradeNames`** (regola 26): un corso di spagnolo vuole il suo nome, e condividerlo farebbe governare lo spagnolo da una scelta presa per l'inglese |
+
+⚠️ **E OGGI IL CORSO HA GIÀ UN NOME, che però non è quello che lo studente
+legge:** `episodeSequence` vale `"corso-inglese-a1"` — *l'id dell'ordine degli
+episodi, non un titolo.* Notato da chi guida il progetto nello stesso giro:
+*«uno è il nome dell'app e uno è il nome del corso?»*. **Sono due cose, e la
+seconda non ha ancora un campo suo.**
+
+**DECISO il 2026-09-26 da chi guida il progetto: si aspetta, e si fa INSIEME
+alla prossima modifica a `config`** — *«mettilo insieme quando faremo un'altra
+modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspettare
+non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
+punti oggi vuol dire cambiarlo due volte.

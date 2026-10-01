@@ -80,54 +80,6 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 il chiuso non si legge per decidere: si legge per ricordare, ed è un altro
 mestiere e un altro file.*
 
-## ⚠️ «BASE INGLESE» — E NON È UNA COSA SOLA: SONO DUE — misurato il 2026-09-26, non fatto
-
-⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO, E HA CAMBIATO LA RISPOSTA:**
-*«forse dove adesso vedo base inglese, non è il nome dell'app ma forse il nome
-del corso. io "base inglese" lo vedo solo nella schermata che adesso è impostata
-come iniziale»*.
-
-**Aveva ragione, e la misura lo separa in due.** Il primo giro di questa scheda
-diceva «quattro punti, uno solo in `app/config.js`»: **è sbagliato**, perché
-tratta come un valore solo due cose che vivono in due mondi diversi.
-
-| Riga | Dove | Quando compare | Di chi è il nome |
-|---|---|---|---|
-| `6` | `<title>` | **prima di qualunque JavaScript** | **dell'APP** |
-| `162` | `.app-title` della schermata di **attesa** | mentre `struttura-corso.json` **non è arrivato** | **dell'APP** |
-| `173` | `.badge` dell'**onboarding** | **dopo** che la struttura è arrivata | **del CORSO** |
-| `208` | `.badge` della **home** | **dopo** che la struttura è arrivata | **del CORSO** |
-
-⚠️ **LA RIGA CHE SEPARA I DUE GRUPPI È UNA MISURA, NON UN'OPINIONE:**
-`showView('onboarding')` sta **dentro `accendi()`** (`app/mappa.js:587`), cioè
-nel `.then` di `caricaStrutturaCorso()`; e `goHome()` è la sua alternativa nello
-stesso `if`. **Quindi quelle due schermate non esistono mai prima del file
-dell'edizione** — e un nome che venga da lì arriva sempre in tempo.
-
-*Le altre due no, e per ragioni opposte: `<title>` lo legge il browser prima di
-eseguire una riga, e la schermata di attesa **esiste proprio per coprire quel
-fetch** — prendere il suo titolo dal file che sta aspettando è la regola 35 alla
-lettera.*
-
-**Ne segue la forma, e i due posti sono già quelli giusti per altre cose:**
-
-| | Dove va | Perché lì |
-|---|---|---|
-| **il nome dell'APP** | `app/config.js` | primo `<script>` bloccante, già in memoria quando parte tutto (regola 3); compare da solo nel Pannello Admin; `<title>` si scrive da lì con una riga |
-| **il nome del CORSO** | `data/{lingua}/{studente}/struttura-corso.json` | **è dell'edizione, esattamente come `gradeNames`** (regola 26): un corso di spagnolo vuole il suo nome, e condividerlo farebbe governare lo spagnolo da una scelta presa per l'inglese |
-
-⚠️ **E OGGI IL CORSO HA GIÀ UN NOME, che però non è quello che lo studente
-legge:** `episodeSequence` vale `"corso-inglese-a1"` — *l'id dell'ordine degli
-episodi, non un titolo.* Notato da chi guida il progetto nello stesso giro:
-*«uno è il nome dell'app e uno è il nome del corso?»*. **Sono due cose, e la
-seconda non ha ancora un campo suo.**
-
-**DECISO il 2026-09-26 da chi guida il progetto: si aspetta, e si fa INSIEME
-alla prossima modifica a `config`** — *«mettilo insieme quando faremo un'altra
-modifica a config così le facciamo insieme»*. ⚠️ **E la ragione per aspettare
-non è il risparmio di un giro: il nome non è deciso**, e cambiarlo in quattro
-punti oggi vuol dire cambiarlo due volte.
-
 ## ⚠️ NESSUNA GUARDIA DICE CHE UNA CARTELLA CHIUSA NON HA FILE IN PIÙ — trovato il 2026-09-29, rimandato
 
 *Trovato facendo l'elenco dei file per la tabella «chi scrive, chi legge» di chi guida il progetto.*
@@ -795,13 +747,7 @@ cosa che non è in nessuna lista è una cosa che non si fa.*
 | **1.18** | ⚠️ **AGGIORNATO IL 2026-09-24 — I NUMERI DEL RUNNER CI SONO, E SMONTANO L'IPOTESI CENTRALE.** Nasce `misura(nome, fn)` (`tests/attese.js`), e `run_full_regression.sh` raccoglie le righe in fondo **sempre**, così arrivano anche nel log della CI. **Container contro runner, corsa `b59fe0d` verde:** `6b avviso-di-silenzio` 107–115 → **118 ms (1,05×)** · `6b stop-verso-conferma` 9–26 → **8 ms (0,9× — il runner è più VELOCE)** · `batch19/qm` 603–607 → **613 ms (1,01×)** · `/sr` 598–604 → **611 ms (1,01×)**. ⚠️ **Quindi su queste tre catene il divario sistematico NON C'È.** *La riga di questa scheda, e la regola 19, dicono «il container è sistematicamente più veloce e la differenza è stabile»: vero nel 2026-09-10, **non vero qui**. Un numero misurato una volta non resta vero perché è scritto.* ⚠️ **E IL MARGINE STRETTO ERA SULLA CATENA SBAGLIATA:** i «485 ms / trentatré volte» riguardano `stop-verso-conferma`, che ne ha 491 (55×). La riga tesa è **`[6b] Still recording just before the (shrunk) silence timeout fires`**: legge a **200 ms** contro un timer che scatta a **~312** — **margine 112 ms, cioè 1,56×** — e non era **mai stata misurata**. ⚠️ **TERZA CATENA DELLA FAMIGLIA, trovata leggendo una corsa rossa che non era stata letta:** la n.291 (`3594fc4`, *un commit di SOLI DOCUMENTI*, quindi la causa non può essere il diff) è caduta su **`test_batch17 [Job1e-bis]` — «Option mini-listen audio is actually playing» e «Answering stops the option's own mini-listen audio»**. *«Un'asserzione a caso per corsa, ogni volta una diversa»: le diverse osservate sono adesso **tre**, e la terza è di una famiglia che il documento non nominava — l'audio delle opzioni.* ⚠️ **FREQUENZA MISURATA SU 30 CORSE: 29 verdi, 1 rossa.** *Il «2 su 3» del 2026-09-22 oggi non si manifesta più — ma non è passato: la rossa è di stamattina.* ✅ **DECISO il 2026-09-24 — la strada è A: NIENTE CORREZIONI AL BUIO.** Si estende `misura()` alla terza catena e alle altre attese sospette, e **si aspetta la prossima rossa col log già strumentato**. *Il difetto è raro, 1 su 30: senza i numeri **della corsa rossa**, qualunque correzione è una scommessa — e «sostituire un numero scelto con un altro numero scelto è la stessa forma, col verde in più per un po'».* *Era:* ⚠️ **LA CI E' DIVENTATA INAFFIDABILE SUL RUNNER: UNA ASSERZIONE A CASO PER CORSA, E OGNI VOLTA UNA DIVERSA.** Misurato il 2026-09-22 su **tre corse consecutive**, due delle quali rosse — e la seconda rossa su un commit che cambia **UNA RIGA DI MARKDOWN**, quindi la causa non puo' essere il contenuto del commit. ⚠️ **Corsa 1 (dba8583): `test_batch19`**, *«[SR Task1] Non lo so resets to enabled on the next question»*, stato alla resa `{contatore: "2 / 9", revealAperto: false, spento: true}` — Speed Match non e' avanzato entro il tetto di 15s di `attendiDomandaSuccessiva`. **Rilancio: VERDE.** ⚠️ **Corsa 2 (7643d85): `test_batch13`**, *«[6b] Normal pending/confirm flow reached instead»* — Voice Coach col timeout di silenzio ridotto a 0,3s: invece dell'avviso di silenzio e' arrivato il giro normale. **E in quella corsa `test_batch19` e' passato 40/40.** *Non e' UN test ballerino: e' una FAMIGLIA — asserzioni che corrono contro timer corti (0,3s di silenzio, la catena pausa+timer di Speed Match), verdi in locale perche' il container e' sistematicamente piu' veloce del runner (regola 19).* ⚠️ **In tutte e due il conteggio era 1672 = baseline: nessun file caduto, UNA riga rossa.** Quindi non e' una regressione: e' il margine che si e' assottigliato. ⚠️ **E il costo e' quello che la regola 37 teme: un verde che non ci si puo' permettere di credere.** Con ~2 corse su 3 rosse a caso, «la CI e' rossa» smette di voler dire qualcosa, e la prossima rossa VERA passa per l'ennesimo ballerino ⚠️ **PRIMA MISURA, 2026-09-22, E SMONTA L'IPOTESI DEL TETTO.** Il chiodo sospettato era la catena di `test_batch13` [6b] — «stop della registrazione → area di conferma visibile» — letta dall'asserzione dopo **500 ms fissi**. **Misurata su cinque giri: 11, 12, 12, 14, 15 ms.** Margine peggiore **485 ms**: il runner dovrebbe essere **trentatre volte** piu' lento. *Non e' il tetto, e non lo e' per un ordine di grandezza — non per poco.* ⚠️ **Quindi NON e' stata toccata nessuna attesa: e' stata aggiunta la DIAGNOSI.** Le due righe di [6b] adesso stampano lo stato intero (`avviso`, `conferma`, `registrando`, `pulsanteNascosto`) quando una delle due e' rossa, perche' sul runner erano cadute in uno stato che **non e' nessuno dei due previsti** e dal log non si capiva quale. *Sistemare un rosso che non si capisce e' fare una misura che non misura.* ⚠️ **`test_batch19` [SR Task1] NON e' stata misurata**: la sua catena e' un'altra e il numero di questa non vale per quella. | ⚠️ **ADESSO — non e' piu' «quando si tocca Speed Match».** Il primo passo e' **misurare**, non alzare i tetti: quanto ci mette davvero ognuna di quelle catene sul runner, prendendo i tempi invece di sceglierli. *Sostituire un numero scelto con un altro numero scelto e' la stessa forma, col verde in piu' per un po'.* Da guardare insieme a **F.2** (i 17 finti sintetizzatori senza `speaking`), che e' la stessa famiglia vista dall'altro lato |
 | ~~**1.19**~~ | ✅ **FATTO il 2026-09-22: l'ordine degli episodi e' libero anche per la SUITE.** I due punti che davano per scontato `gate` primo: ① `test_struttura_corso` **[Episodi]** confrontava `JSON.stringify` dei due oggetti, quindi misurava **anche l'ordine delle chiavi** di `episodes` senza dichiararlo — adesso confronta **chiave per chiave**. ⚠️ **E non e' un controllo in meno: l'ordine ha la sua riga, [Ordine], che lo confronta con `episodeSequences`, cioe' col posto in cui 1.13 ha deciso che vive.** *Prima era misurato due volte, una delle quali per sbaglio e nel posto sbagliato.* ② `test_interruttore_episodio` **[B]/[C]** incollavano i due PERCORSI (`...-aircraft-door.json`, `...-gate.json`), cioe' sapevano quale fosse il secondo: adesso `primaBattuta` parte **dall'id** e costruisce il nome con `fileEdizione`, il gemello di `percorsoEdizione` (regola 24). **Provato scambiando l'ordine: tutti e due restano verdi** — prima cadevano | ✅ |
 
-⚠️ **UNA COSA CHE IL PASSO 1.11 HA APERTO, e va decisa prima di Supabase:
-l'app non disegna NIENTE finché `struttura-corso.json` non arriva.** Oggi è
-un file statico sulla stessa origine, quindi si parla di millisecondi e non
-si vede. **Con i dati sul server no**: su una rete lenta resterebbe una
-pagina vuota senza spiegazione, che è la forma del guasto muto. Serve una
-schermata di attesa — non la si inventa adesso perché oggi non c'è niente da
-attendere abbastanza a lungo da poterla provare.
+✅ **LA SCHERMATA DI ATTESA C'È DAL 2026-09-26** (`docs/correzioni.md`), e qui stava scritto ancora «serve una schermata di attesa, non la si inventa adesso» — *trovato il 2026-10-01 rileggendo la strada fino a Supabase: una riga dell'aperto che era chiusa da cinque giorni.* Resta vero il motivo per cui conta: **con i dati sul server la struttura arriverà più tardi di oggi**, e dal passo 4 la schermata di attesa porta già il nome dell'app (`test_edizione_spagnola` [F]).
 
 ### ⚠️ I CINQUE CHE RESTANO, MISURATI TUTTI — 2026-09-20
 
