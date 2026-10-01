@@ -77,6 +77,12 @@ non le sa scrivere.
 | `etichettaDirezione` | La scritta sopra la domanda di Match, Speed Match e Flash Card — «SPAGNOLO → ITALIANO». **I due nomi vengono da `CONFIG.nomiASchermo`** (§9 della struttura), la freccia e il maiuscolo sono del codice. *Era `DIRECTION_LABEL`, una tabella con «INGLESE → ITALIANO» scritto a mano, fino al 2026-10-01.* **Tre file la usano.** | `('en-it' \| 'it-en')` → stringa | ⚠️ **Che `en-it` voglia dire «target → native» in OGNI edizione:** gli id di direzione non sono stati rinominati perché stanno dentro le chiavi della mastery salvata. Che la struttura sia arrivata: senza `nomiASchermo` torna `''` e scrive in console — si legge al momento dell'uso, non al caricamento, apposta |
 | `moduleNameHtml` | Rimpicciolisce il verso in coda al nome di un modulo («Match es→it») mettendolo in uno `<span class="module-name-direction">`. **Nove file la usano.** | `(nome)` → html | Che il verso sia **l'ultima cosa** del nome, preceduto da uno spazio, e fatto di due codici di due lettere minuscole. *Fino al 2026-10-01 cercava solo `en→it`/`it→en`: i nomi spagnoli restavano grandi* |
 
+## `app/sessione.js` — la scelta multipla
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `buildMultipleChoiceOptions` | Compone le alternative di una domanda di Match o di Speed Match: la risposta giusta più `CONFIG.sceltaMultipla.distrattori` sbagliate, pescate a caso fra **le altre voci dello stesso grado**, e mescola. **Due file la usano** (`app/match.js`, `app/speedmatch.js`). *Fino al 2026-10-01 il numero era un `3` scritto qui.* | `(voce, direzione, vocabolario del grado)` → `[{ text, correct }]` | ⚠️ **Che il grado abbia almeno `distrattori + 1` voci:** se ne ha meno, ne mostra meno **senza dirlo**. Non è un ripiego dimenticato: il caso non arriva qui perché **lo ferma `tests/tools/trascrivi.js`** (`bacinoCorto`), che legge lo stesso numero. *Resta possibile solo alzando il numero dal Pannello Admin, che è una prova.* E non conosce la colonna `non con` di chi scrive gli episodi: esclude soltanto la voce stessa |
+
 ## `app/orchestrazione.js` — chi decide cosa si vede
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |

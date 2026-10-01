@@ -368,6 +368,26 @@
       // "Avanti" — no final ripasso pass for this module.
       maxAttemptsPerPhrase: 3
     },
+    // ---- La scelta multipla: Match e Speed Match, con UNA chiave sola ----
+    // Quante risposte sbagliate accompagnano quella giusta. Le pesca
+    // `buildMultipleChoiceOptions` (app/sessione.js) fra le altre voci DELLO
+    // STESSO GRADO, quindi un grado letto da un modulo a scelta multipla
+    // vuole almeno `distrattori + 1` voci.
+    //
+    // ⚠️ UNA CHIAVE SOLA PER I DUE MODULI, deciso da chi guida il progetto il
+    // 2026-10-01: «il bacino basta?» deve avere una risposta sola. Il giorno
+    // che Speed Match ne vorra' meno, quello e' il giorno in cui la chiave si
+    // spacca — non prima: una chiave nasce quando qualcosa la legge diversa.
+    //
+    // ⚠️ E UN GRADO TROPPO PICCOLO NON ARRIVA ALL'APP: lo ferma
+    // `tests/tools/trascrivi.js`, che legge QUESTO numero. Qui l'app non
+    // ripiega e non mostra un errore allo studente — le due cose che il
+    // controllo in trascrizione esiste per non dover fare. *Un valore alzato
+    // dal Pannello Admin invece non passa dal trascrittore: e' una prova, e
+    // con un grado piccolo mostra meno alternative.*
+    sceltaMultipla: {
+      distrattori: 3
+    },
     // ---- Speed Match quiz (speedMatchEngIta / speedMatchItaEng modules) ----
     speedMatch: {
       // Seconds on the countdown bar before a question times out
@@ -702,6 +722,7 @@
       'voiceCoach.micIssue.restartSuggestionAt': 'Dopo quante registrazioni vuote di fila viene proposto di ricominciare l\'esercizio.',
       'voiceCoach.micIssue.confirmedAt': 'Dopo quante registrazioni vuote di fila il problema viene dato per confermato, con il pulsante per tornare alla mappa.',
       'voicePractice.maxAttemptsPerPhrase': 'Quante volte in tutto si può registrare la stessa frase in Voice Practice ("Esercitati ancora" incluso il primo tentativo), prima che si prosegua senza ripasso finale.',
+      'sceltaMultipla.distrattori': 'Quante risposte sbagliate accompagnano quella giusta, in Match e in Speed Match. Le pesca fra le altre voci dello stesso grado: un grado deve averne almeno questo numero più una.',
       'speedMatch.timeLimitSeconds': 'Secondi a disposizione per rispondere a ogni domanda, prima che scada il tempo.',
       'speedMatch.feedbackPauseMs': 'Millisecondi di pausa dopo una risposta corretta, prima di passare alla domanda successiva.',
       'speedMatch.countdownSeconds': 'Da quale numero parte il conto alla rovescia 3-2-1 prima di iniziare.',

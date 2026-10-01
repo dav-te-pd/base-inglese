@@ -232,7 +232,9 @@
   function buildMultipleChoiceOptions(item, direction, vocabPool) {
     var correctText = itemText(item, direction === 'en-it' ? 'native' : 'target');
     var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
-    var distractors = shuffle(pool).slice(0, 3).map(function (v) {
+    // Quante, lo dice `CONFIG.sceltaMultipla.distrattori` (regola 3): qui
+    // c'era un `3` scritto a mano fino al 2026-10-01.
+    var distractors = shuffle(pool).slice(0, CONFIG.sceltaMultipla.distrattori).map(function (v) {
       return itemText(v, direction === 'en-it' ? 'native' : 'target');
     });
     var options = distractors.map(function (text) { return { text: text, correct: false }; });

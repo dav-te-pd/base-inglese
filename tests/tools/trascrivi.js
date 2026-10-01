@@ -607,6 +607,95 @@ function episodio(ed, id, gradeNames) {
 }
 
 // ── esecuzione ───────────────────────────────────────────────────────────
+// ⚠️ IL BACINO DEI DISTRATTORI — dal 2026-10-01, deciso da chi guida il
+// progetto: UN GRADO TROPPO PICCOLO PER LA SCELTA MULTIPLA FERMA LA
+// TRASCRIZIONE.
+//
+// Match e Speed Match pescano le risposte sbagliate fra le altre voci DELLO
+// STESSO GRADO (`buildMultipleChoiceOptions`, `app/sessione.js`), quante ne
+// dice `CONFIG.sceltaMultipla.distrattori`. Con meno voci l'app mostrerebbe
+// meno alternative **senza dirlo a nessuno**, e le due strade alternative
+// erano le due cose tolte da tutta la settimana: il ripiego silenzioso, o un
+// errore che fa pagare allo studente uno sbaglio nostro.
+//
+// *E non si aggiusta da solo: un grado legittimamente piccolo ferma la
+// trascrizione, e si aggiunge una voce A MANO — e cosi' si scopre anche
+// perche' era piccolo.* E' la seconda rete: la prima e' `controllo-bacino.py`,
+// che gira da chi scrive il contenuto prima di consegnare.
+//
+// ⚠️ QUALI MODULI E QUANTI DISTRATTORI SI LEGGONO DALL'APP, NON SI SCRIVONO
+// QUI. Un elenco di moduli scritto in questo file resterebbe indietro il
+// giorno che nasce un terzo modulo a scelta multipla, e il controllo
+// passerebbe verde senza guardarlo (regola 49). Quindi:
+//   - il numero: `app/config.js` eseguito in un contesto finto, come fa
+//     `configApp()` in `tests/test-env.js` — si legge il valore, non come e'
+//     scritto;
+//   - i moduli: i file di `app/` che CHIAMANO `buildMultipleChoiceOptions`,
+//     i `kind` che quei file registrano, e i passi di `MODULE_DESCRIPTORS`
+//     (`app/catalogo.js`) con quei `kind`. *Il passo e il kind sono la stessa
+//     stringa per tutti e quattro oggi, ed e' proprio per questo che si passa
+//     dai descrittori: Flash Card prova che possono non esserlo.*
+// Se una delle tre letture trova zero, si ferma: un controllo che non sa
+// cosa controllare non deve passare.
+function sceltaMultipla() {
+  const vm = require('vm');
+  const leggi = (n) => fs.readFileSync(path.join(RADICE, 'app', n), 'utf8');
+  const sandbox = { window: {} };
+  vm.createContext(sandbox);
+  vm.runInContext(leggi('config.js'), sandbox);
+  const sm = sandbox.window.APP_CONFIG && sandbox.window.APP_CONFIG.sceltaMultipla;
+  const distrattori = sm && sm.distrattori;
+  if (!Number.isInteger(distrattori) || distrattori < 1) {
+    throw new Error('app/config.js: `sceltaMultipla.distrattori` manca o non e\' un intero positivo (' + distrattori + ')');
+  }
+  const kind = new Set();
+  fs.readdirSync(path.join(RADICE, 'app')).filter((n) => n.endsWith('.js')).forEach((n) => {
+    const t = leggi(n);
+    if (!/buildMultipleChoiceOptions\(/.test(t.replace(/function buildMultipleChoiceOptions\(/g, ''))) return;
+    (t.match(/BI\.registraModulo\('([^']+)'/g) || []).forEach((r) => kind.add(r.match(/'([^']+)'/)[1]));
+  });
+  if (!kind.size) {
+    throw new Error('Nessun modulo di app/ chiama buildMultipleChoiceOptions e registra un kind: il controllo del bacino non saprebbe cosa guardare.');
+  }
+  const catalogo = leggi('catalogo.js');
+  const moduli = [];
+  (catalogo.match(/^\s*(\w+): \{ kind: '([^']+)'/gm) || []).forEach((r) => {
+    const m = r.match(/(\w+): \{ kind: '([^']+)'/);
+    if (kind.has(m[2])) moduli.push(m[1]);
+  });
+  if (!moduli.length) {
+    throw new Error('Nessun descrittore di app/catalogo.js ha un kind fra ' + Array.from(kind).join(', ') +
+      ': il controllo del bacino non saprebbe cosa guardare.');
+  }
+  return { distrattori, moduli };
+}
+
+// Torna l'elenco dei gradi troppo piccoli di UN episodio — vuoto se va bene.
+// Guarda solo i passi della SUA sequenza: un grado che nessun modulo a scelta
+// multipla legge (oggi il D) puo' essere piccolo quanto vuole.
+function bacinoCorto(id, json, nomeSequenza, sequences, sm) {
+  const sequenza = sequences[nomeSequenza];
+  // Una sequenza che non esiste non e' «niente da controllare» (regola 49).
+  if (!Array.isArray(sequenza)) return [id + ': la sequenza «' + nomeSequenza + '» non esiste, il bacino non si puo\' controllare'];
+  // Un grado per riga, coi moduli che lo leggono: lo stesso grado letto da
+  // quattro moduli e' UNA voce da aggiungere, non quattro.
+  const lettori = {};
+  sequenza.forEach((passo) => {
+    if (sm.moduli.indexOf(passo.module) === -1) return;
+    (lettori[passo.grade] = lettori[passo.grade] || []).indexOf(passo.module) === -1 && lettori[passo.grade].push(passo.module);
+  });
+  const corti = [];
+  Object.keys(lettori).forEach((g) => {
+    const grado = json.levels && json.levels[g];
+    const voci = grado && grado.items ? grado.items.length : 0;
+    if (voci - 1 < sm.distrattori) {
+      corti.push(id + ', grado ' + g + ': ' + voci + ' voci, ne servono almeno ' + (sm.distrattori + 1) +
+        ' (' + sm.distrattori + ' distrattori + la giusta) — lo leggono ' + lettori[g].join(', '));
+    }
+  });
+  return corti;
+}
+
 function scrivi(percorso, oggetto, controlla) {
   const testo = JSON.stringify(oggetto, null, 2) + '\n';
   const prima = fs.existsSync(percorso) ? fs.readFileSync(percorso, 'utf8') : '';
@@ -647,6 +736,8 @@ function main() {
   // deve lasciare il primo riscritto e il secondo no: sarebbe di nuovo lo
   // stato intermedio che nessuno dichiara, solo un piano piu' in la'.*
   const daScrivere = [];
+  const sm = sceltaMultipla();
+  const bacini = [];
   trovate.forEach((ed) => {
     daScrivere.push([null, null, null, null, ed.lingua + '/' + ed.studente]);
     const s = struttura(ed);
@@ -690,9 +781,17 @@ function main() {
     daScrivere.push(['tabelle di personalizzazione:', dati(ed, 'tabelle-personalizzazione'), tabelle(ed), null]);
     Object.keys(s.episodes).forEach((id) => {
       const e = episodio(ed, id, s.gradeNames);
+      bacini.push.apply(bacini, bacinoCorto(ed.lingua + '/' + ed.studente + ' ' + id, e.json,
+        s.episodes[id].sequence, s.sequences, sm));
       daScrivere.push([null, dati(ed, id), e.json, '   ' + id + ': ' + JSON.stringify(e.conti)]);
     });
   });
+  // Tutti insieme e prima di scrivere: chi aggiunge le voci le vede tutte in
+  // un giro, e nessun file viene riscritto con un grado che l'app non regge.
+  if (bacini.length) {
+    throw new Error('FERMO — un grado troppo piccolo per la scelta multipla. Va aggiunta una voce A MANO, ' +
+      'non riempito in automatico:\n  ' + bacini.join('\n  '));
+  }
 
   condivisi.forEach((st) => {
     daScrivere.push([null, null, null, null, 'condivisi/' + st]);
@@ -724,4 +823,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
+module.exports = { sceltaMultipla, bacinoCorto, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
