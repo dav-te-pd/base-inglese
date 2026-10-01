@@ -53,6 +53,22 @@
       lingua: 'inglese',
       studente: 'it'
     },
+    // ---- IL NOME DELL'APP — passo 4 dello spagnolo, 2026-10-01 ----
+    //
+    // ⚠️ E' TESTO CHE LO STUDENTE LEGGE, E STA NEL CODICE PER UNA RAGIONE:
+    // SERVE PRIMA CHE QUALUNQUE DATO SIA CARICATO. Il titolo della pagina e
+    // la schermata di attesa compaiono prima che arrivi qualunque file
+    // dell'edizione; questo file e' il primo `<script>` di `<head>`, quindi e'
+    // l'unico posto gia' in memoria in quel momento. *Spostato in un file di
+    // dati (regola 8), il nome comparirebbe in ritardo — e un nome che arriva
+    // dopo la schermata e' peggio del nome sbagliato.* Deciso da chi guida il
+    // progetto, che ha chiesto questa riga apposta.
+    //
+    // Il nome del CORSO e' un'altra cosa e sta nell'edizione (§9 della
+    // struttura, `nomiASchermo.corso`): si mostra dopo che la struttura e'
+    // arrivata. **APPLINGUE e' un nome di lavoro**: quando arriva quello
+    // definitivo si cambia questa cella, e nient'altro.
+    nomeApp: 'APPLINGUE',
     // ---- LA SCHERMATA DI ATTESA: due tempi, e nessuno dei due e' estetico ----
     //
     // Chiesti da chi guida il progetto il 2026-09-26 guardando Pages: *«adesso
@@ -641,6 +657,7 @@
       'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi della lingua che si impara.',
       'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
       'speech.rateOptions': 'Velocità di riproduzione proposte accanto ai pulsanti di ascolto (1 = 100%).',
+      nomeApp: 'Il nome dell’app: titolo della pagina e schermata di attesa. È un nome di lavoro. Il nome del CORSO sta invece nella struttura di ogni edizione (§9).',
       'speech.preferredVoiceNames': 'Voci preferite, in ordine, PER LINGUA (la chiave è il prefisso della lingua dell’edizione: en, es…), se il dispositivo le ha disponibili. Un elenco vuoto vuol dire: decide la lingua — prima quella esatta, poi la stessa lingua in un’altra varietà.',
       // La riga in cima al gruppo `speech`: quale voce sta usando QUESTO
       // dispositivo. Chiesta da chi guida il progetto il 2026-10-01: *«quando la

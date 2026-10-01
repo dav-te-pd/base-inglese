@@ -462,6 +462,32 @@
     if (attesaTimer !== null) { clearTimeout(attesaTimer); attesaTimer = null; }
   }
 
+  // ⚠️ I DUE NOMI A SCHERMO — passo 4 dello spagnolo, 2026-10-01. Qui c'era
+  // «Base Inglese» scritto QUATTRO volte in `index.html`, e non era un nome
+  // solo: erano due.
+  //
+  //   `data-nome="app"`    il nome dell'APP — titolo della pagina e schermata
+  //                        di attesa. Compare PRIMA che arrivi qualunque dato,
+  //                        quindi viene da `CONFIG.nomeApp` (app/config.js).
+  //   `data-nome="corso"`  il nome del CORSO — i badge di onboarding e home.
+  //                        E' dell'edizione: §9 della struttura,
+  //                        `nomiASchermo.corso`, e arriva con lei.
+  //
+  // Si chiama due volte: in `boot`, quando c'e' solo il primo, e in
+  // `accendi`, quando c'e' anche il secondo. *Un elemento il cui nome non e'
+  // ancora arrivato resta vuoto, non con un nome sbagliato.*
+  function applicaNomi() {
+    var nomi = {
+      app: CONFIG.nomeApp || '',
+      corso: (CONFIG.nomiASchermo && CONFIG.nomiASchermo.corso) || ''
+    };
+    if (nomi.app) document.title = nomi.app;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-nome]'), function (el) {
+      var n = nomi[el.getAttribute('data-nome')];
+      if (n) el.textContent = n;
+    });
+  }
+
   function boot() {
     // ⚠️ LE ICONE PRIMA DI TUTTO: il markup statico porta dei segnaposto
     // `data-icon`, e finche' nessuno li riempie le schermate hanno dei buchi.
@@ -469,6 +495,7 @@
     // per posizione; adesso e' la prima riga di `boot()`, che e' dove "l'app
     // si accende" ha un nome.
     hydrateIcons(document);
+    applicaNomi();
 
     // ⚠️ LA SCHERMATA DI ATTESA NON NASCE ACCESA: LA ACCENDE UN TIMER.
     //
@@ -552,6 +579,8 @@
     // disegna la mappa, e una mappa disegnata su `episode.modules` non
     // ancora costruito sarebbe vuota senza dire perche'.
     costruisciPassi();
+    // Il nome del corso arriva con la struttura: e' il momento di scriverlo.
+    applicaNomi();
 
   // ⚠️ QUESTO CALCOLO RESTA QUI, E LO STATO NO. Passo B, 2026-09-19.
   //

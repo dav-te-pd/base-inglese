@@ -195,12 +195,16 @@
     gap: 18px;
   }
 
-  .general-rule {
+  /* `note-box` dal 2026-10-01, era `general-rule`: lo stesso riquadro veste la
+     regola generale di un episodio E i consigli delle spiegazioni, e un nome
+     che dice uno solo dei due mente sull'altro (regola 18). Resta in questo
+     foglio perche' spostarlo cambierebbe la cascata. */
+  .note-box {
     padding: 16px 18px;
     text-align: center;
   }
 
-  .general-rule-label {
+  .note-box-label {
     display: block;
     font-family: var(--font-mono);
     font-weight: 700;

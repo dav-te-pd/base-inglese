@@ -163,7 +163,7 @@ function quanteStringhe(o) {
     // (`episodeSequences`, `episodiSpenti`, ...) lo assembla `main()`, che
     // qui non gira.
     const sulDisco = letto(T.dati(ed, 'struttura-corso'));
-    ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels', 'sequences', 'episodes', 'speech']
+    ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels', 'sequences', 'episodes', 'speech', 'nomiASchermo']
       .forEach(function (chiave) {
         log('[B] ' + nome + ': `' + chiave + '` combacia col markdown',
           testo(s[chiave]) === testo(sulDisco[chiave]));

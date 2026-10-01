@@ -1,4 +1,4 @@
-**Versione: 20260930b**
+**Versione: 20261001a**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -71,13 +71,32 @@ di testi che esistono già altrove.**
 | Promemoria (sezione 3) | 32 — *16 titoli + 16 corpi* | **16** |
 | Consigli condivisi (sezione 4) | 2 — *non sono chiavi del JSON* | **2** — *idem* |
 | Altri testi di modulo (sezione 5) | 69 | **69** |
-| Testi condivisi (sezione 6) | 75 | **75** |
-| **Stringhe in tutto il JSON** | 208 | ⭐ **176** |
+| Testi condivisi (sezione 6) | 75 | ⭐ **77** — *+2 il 1/10* |
+| **Stringhe in tutto il JSON** | 208 | ⭐ **178** |
 
 ⚠️ **E questo numero è DOCUMENTAZIONE, non un valore da far combaciare.** *Il test di andata e ritorno
 conta rigenerando dal markdown, senza nessun numero scritto dentro — così non va aggiustato a mano ogni
-volta che nasce un testo.* **Se il 176 qui è sbagliato non si rompe niente: abbiamo solo scritto una
+volta che nasce un testo.* **Se il numero qui è sbagliato non si rompe niente: abbiamo solo scritto una
 cosa falsa, e la prossima volta ci fidiamo lo stesso.**
+
+### ⭐ 176 → 178 IL 1 OTTOBRE: DUE ETICHETTE RIENTRANO DAL CODICE
+
+| L'etichetta | Dove stava | Chi l'ha trovata |
+|---|---|---|
+| **«Regola generale»** | `app/repeataloud.js` | **Claude Code** |
+| **«Un consiglio»** | 🔴 **`tests/tools/trascrivi.js`** — *la inseriva il trascrittore* | **Claude Code**, *e smentiva una riga di questo file* |
+
+⚠️ **I nomi sono `etichettaRegolaGenerale` e `etichettaConsiglio`, non `regolaGenerale` e `consiglio`** —
+*e il perché è la cosa che Code ha trovato: sono **due elementi diversi con lo stesso aspetto**, e la
+sezione 4 ha già i CORPI dei consigli.* **`etichetta` nel nome dice che questa è la scritta, non il
+testo.**
+
+⭐ **E il motivo vero per cui devono essere dati non è la regola 8: è la terza edizione.**
+*`inglese-per-spagnoli` ha bisogno di «Un consejo» e «Regla general» — nel codice restano italiane per
+sempre.*
+
+⚠️ **IL 178 NON C'ENTRA COL 177 DEL 28 SETTEMBRE.** *Quello era un errore di conteggio. Questi sono due
+testi veri che rientrano.*
 
 ⚠️ **UNA RIGA PER `kind`, NON PER PASSO.** I **22** passi di `narrativo-standard` hanno **15** id
 distinti, e due di quelli — `flashcardAEngIta` e `flashcardAItaEng` — condividono `kind: 'flashcard'`:
@@ -194,20 +213,25 @@ quando l'app si ferma da sola, perché un pulsante è spento.* **Le due righe ch
 
 ## 4 — I DUE CONSIGLI CONDIVISI
 
-*Non sono una chiave del JSON: sono il testo dentro il riquadro `general-rule panel` che la sezione 2
+*Non sono una chiave del JSON: sono il testo dentro il riquadro `note-box panel` che la sezione 2
 attacca in coda a dodici spiegazioni.*
 
 ⚠️ **L'INVOLUCRO ESATTO, che va scritto così e non altrimenti:**
 
 ```html
-<div class="general-rule panel"><span class="general-rule-label">Un consiglio</span>IL TESTO</div>
+<div class="note-box panel"><span class="note-box-label">Un consiglio</span>IL TESTO</div>
 ```
 
 🔴 **CORRETTO IL 30/09: qui c'era scritto che l'etichetta «Un consiglio» «non è scritta in nessun altro
 posto». È FALSO.**
 
-⚠️ **La scrive `trascrivi.js:370-371`** — *misurato da Claude Code.* **In nessuna nostra cella c'è quella
+⚠️ **La scriveva `trascrivi.js`** — *misurato da Claude Code.* **In nessuna nostra cella c'era quella
 parola: l'involucro qui sopra è DOCUMENTAZIONE di una cosa che produce lui.**
+
+✅ **CHIUSO IL 1/10 (passo 4):** *l'etichetta è la cella `condivisi.etichettaConsiglio` della sezione 6, e
+`trascrivi.js` la legge da lì; se manca, si ferma.* **La classe del riquadro è `note-box` e non più
+`general-rule`:** *lo stesso riquadro veste anche la regola generale di un episodio, e un nome che dice
+uno solo dei due mentiva sull'altro.* — *corretto da Claude Code nel commit che l'ha reso falso (regola 33).*
 
 > ⭐ **Ed è `R2` in una forma che non si vede:** *un testo documentato in un posto e prodotto in un
 > altro.* **Se lui cambia l'involucro, questa pagina diventa falsa in silenzio — come è appena
@@ -374,6 +398,8 @@ non tocca quella frase.*
 | `condivisi` | `introStart` | Ho capito, inizia |
 | `condivisi` | `readyTitle` | Pronto? |
 | `condivisi` | `readyStart` | Pronto? Via! |
+| `condivisi` | `etichettaRegolaGenerale` | Regola generale |
+| `condivisi` | `etichettaConsiglio` | Un consiglio |
 | `condivisi` | `spiegazione` | Spiegazione |
 | `condivisi` | `help` | Help |
 | `condivisi` | `tornaAllaMappa` | ← Mappa |

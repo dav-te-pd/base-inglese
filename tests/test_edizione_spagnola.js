@@ -139,7 +139,142 @@ async function run() {
     }
   }
 
+  // ── [E] I testi dell'app che erano nel codice vengono dai file — passo 4 ──
+  //
+  // Prima del 2026-10-01 lo studente di spagnolo leggeva «INGLESE → ITALIANO»
+  // sopra ogni Match e «Base Inglese» nei badge. Gli attesi si leggono dalla
+  // fonte (struttura spagnola e file dei testi), non si scrivono qui.
+  const testiCondivisi = JSON.parse(fs.readFileSync(repoPath('data/condivisi/it/it-istruzioni-moduli.json'), 'utf8'));
+  try {
+    await page.evaluate(() => window.BI.goHome());
+    await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
+    const schermo = await page.evaluate(() => ({
+      badge: (document.querySelector('#view-home [data-nome="corso"]') || {}).textContent,
+      titolo: document.title,
+      nomeApp: window.APP_CONFIG.nomeApp,
+      enIt: window.BI.etichettaDirezione('en-it'),
+      itEn: window.BI.etichettaDirezione('it-en')
+    }));
+    const n = struttura.nomiASchermo;
+    log('[E] Il badge della home dice il nome del CORSO spagnolo',
+      schermo.badge === n.corso, JSON.stringify(schermo.badge));
+    log('[E] Il titolo della pagina è il nome dell\'APP', !!schermo.nomeApp && schermo.titolo === schermo.nomeApp,
+      schermo.titolo + ' | ' + schermo.nomeApp);
+    log('[E] La scritta della direzione usa i nomi spagnoli, in maiuscolo',
+      schermo.enIt === (n.target + ' → ' + n.native).toUpperCase() && schermo.itEn === (n.native + ' → ' + n.target).toUpperCase(),
+      schermo.enIt + ' | ' + schermo.itEn);
+
+    // La mappa: il verso «es→it» nei nomi dei moduli è rimpicciolito come «en→it».
+    await page.evaluate(() => {
+      window.BI.impostaEpisodioCorrente(window.BI.EPISODES.gate);
+      window.BI.openEpisodeMap();
+    });
+    const intro = await page.$('#map-intro-start-btn');
+    if (intro) await intro.click().catch(() => {});
+    await page.waitForSelector('#module-list .module-row', { state: 'visible', timeout: 15000 });
+    const versi = await page.evaluate(() => Array.from(document.querySelectorAll('#module-list .module-name-direction'))
+      .map(e => e.textContent));
+    log('[E] Nella mappa il verso «es→it» è staccato dal nome, come «en→it»',
+      versi.length > 0 && versi.every(v => /^(es→it|it→es)$/.test(v)), versi.join(','));
+
+    // ⚠️ IL CASO PIÙ DIVERSO DEL PASSO (regola 42): l'etichetta della regola
+    // generale. È l'unica scritta che non sta nella struttura dell'edizione ma
+    // nel file condiviso fra le edizioni — e la regola generale spagnola usa il
+    // grassetto, quindi è anche l'unica che passa da `html()`.
+    // ⚠️ SI APRE DAL CODICE, NON DALLA RIGA: Repeat Aloud viene dopo
+    // Personalizza, che qui è aperta e non finita, quindi la riga è spenta
+    // (Sblocco Sequenziale, regola 30). Qui si prova l'etichetta, non lo sblocco.
+    await page.evaluate(() => {
+      const m = window.BI.episodioCorrente().modules.find(x => x.id === 'repeatAloud');
+      window.BI.openModuleFromMap(m);
+    });
+    // L'intro del modulo usa lo STESSO riquadro per «Un consiglio»: si guarda il
+    // corpo del modulo, dove sta la regola generale.
+    await page.waitForSelector('#repeat-aloud-body .note-box-label', { state: 'attached', timeout: 15000 });
+    const regola = await page.evaluate(() => {
+      const box = document.querySelector('#repeat-aloud-body .note-box');
+      return { etichetta: box.querySelector('.note-box-label').textContent, strong: !!box.querySelector('strong') };
+    });
+    log('[E] La regola generale porta l\'etichetta del file dei testi',
+      regola.etichetta === testiCondivisi.condivisi.etichettaRegolaGenerale, JSON.stringify(regola.etichetta));
+    log('[E] ...e il suo grassetto è un <strong>, non asterischi', regola.strong);
+  } catch (e) {
+    log('[E] I testi dell\'app vengono dai file', false, e.message.split('\n')[0]);
+  }
+
   log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));
+  await page.close();
+
+  // ── [F] Il nome dell'APP c'è PRIMA dei dati ──
+  //
+  // È il motivo per cui `nomeApp` sta in `app/config.js` e non in un file di
+  // dati. Si trattiene la struttura per un secondo e mezzo, e si guarda la
+  // pagina mentre aspetta: il titolo c'è già, il nome del corso no.
+  const p2 = await browser.newPage();
+  await bloccaFontEsterni(p2);
+  await p2.addInitScript(mockInit);
+  let trattenuta = 0;
+  await p2.route(u => String(u).indexOf('struttura-corso.json') !== -1, async (route) => {
+    trattenuta++;
+    await new Promise(r => setTimeout(r, 1500)); // ATTESA-LEGITTIMA: il ritardo E' la cosa misurata — la struttura che arriva tardi, come su una rete lenta
+    await route.continue();
+  });
+  await p2.goto(APP_URL);
+  const prima = await p2.evaluate(() => ({
+    titolo: document.title,
+    h1: (document.querySelector('#view-attesa [data-nome="app"]') || {}).textContent,
+    corso: (document.querySelector('[data-nome="corso"]') || {}).textContent,
+    nomeApp: window.APP_CONFIG.nomeApp,
+    struttura: !!(window.APP_CONFIG.nomiASchermo)
+  }));
+  log('[F] La struttura è stata davvero trattenuta (la sonda ha intercettato)', trattenuta > 0, String(trattenuta));
+  log('[F] Mentre la struttura non è arrivata, titolo e schermata di attesa hanno GIÀ il nome dell\'app',
+    !prima.struttura && prima.titolo === prima.nomeApp && prima.h1 === prima.nomeApp, JSON.stringify(prima));
+  log('[F] ...e il nome del corso no: arriva con la struttura, mai sbagliato nel frattempo',
+    prima.corso === '', JSON.stringify(prima.corso));
+  await p2.close();
+
+  // ── [G] L'etichetta della regola generale viene DAVVERO dal file ──
+  //
+  // In [E] il testo atteso e quello che il codice vecchio scriveva a mano sono
+  // la stessa parola, «Regola generale»: quel controllo passerebbe anche col
+  // codice vecchio (regola 14, una verifica che non può fallire non distingue).
+  // Qui la cella del file si sostituisce con un valore che nessun codice
+  // contiene, e lo si cerca a schermo.
+  const SONDA = 'SONDA-ETICHETTA-' + Date.now();
+  const p3 = await browser.newPage();
+  await bloccaFontEsterni(p3);
+  await p3.addInitScript(mockInit);
+  let sostituita = 0;
+  await p3.route(u => String(u).indexOf('it-istruzioni-moduli.json') !== -1, async (route) => {
+    const r = await route.fetch();
+    const j = await r.json();
+    j.condivisi.etichettaRegolaGenerale = SONDA;
+    sostituita++;
+    await route.fulfill({ response: r, body: JSON.stringify(j) });
+  });
+  try {
+    await p3.goto(APP_URL);
+    await p3.evaluate(() => localStorage.clear());
+    await p3.reload();
+    await attendiPrimaSchermata(p3);
+    await p3.fill('#name-input', 'Sonda');
+    await p3.click('#onboarding-form button[type=submit]');
+    await p3.waitForSelector('#go-episodes-list', { state: 'visible', timeout: 15000 });
+    await p3.evaluate(() => {
+      window.BI.impostaEpisodioCorrente(window.BI.EPISODES.gate);
+      const m = window.BI.episodioCorrente().modules.find(x => x.id === 'repeatAloud');
+      window.BI.openModuleFromMap(m);
+    });
+    await p3.waitForSelector('#repeat-aloud-body .note-box-label', { state: 'attached', timeout: 15000 });
+    const letta = await p3.evaluate(() => document.querySelector('#repeat-aloud-body .note-box-label').textContent);
+    log('[G] La sonda ha sostituito il file dei testi', sostituita > 0, String(sostituita));
+    log('[G] Cambiata la cella nel file, cambia l\'etichetta a schermo', letta === SONDA, JSON.stringify(letta));
+  } catch (e) {
+    log('[G] L\'etichetta della regola generale viene dal file', false, e.message.split('\n')[0]);
+  }
+  await p3.close();
+
   await browser.close();
   finisci();
 }

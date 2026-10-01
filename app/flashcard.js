@@ -69,7 +69,7 @@
   var sfxPlayTraguardoSound = BI.sfxPlayTraguardoSound;
   var shuffle = BI.shuffle;
   var percentageBucket = BI.percentageBucket;
-  var DIRECTION_LABEL = BI.DIRECTION_LABEL;
+  var etichettaDirezione = BI.etichettaDirezione;
   var renderListenBlock = BI.renderListenBlock;
   var speakListenBlock = BI.speakListenBlock;
   var renderIntroContent = BI.renderIntroContent;
@@ -479,7 +479,7 @@
     fcDirection = module.flashcardDirection;
     document.getElementById('flashcard-badge').innerHTML = moduleNameHtml(module.label);
     document.getElementById('flashcard-type-badge').textContent = moduleTypeLabel(module);
-    document.getElementById('fc-direction').textContent = DIRECTION_LABEL[fcDirection];
+    document.getElementById('fc-direction').textContent = etichettaDirezione(fcDirection);
     document.getElementById('fc-counter').textContent = '';
     document.getElementById('fc-front-word').textContent = uiText('condivisi.caricamento');
     document.getElementById('fc-back-word').textContent = '';

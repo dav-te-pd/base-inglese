@@ -223,6 +223,7 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
 |---|---|---|---|
+| `applicaNomi()` | Scrive il **nome dell'app** nel `<title>` e negli elementi `[data-nome="app"]`, e il **nome del corso** negli elementi `[data-nome="corso"]`. Gira due volte: in `boot()`, quando c'è solo `app/config.js`, e in `accendi()`, quando è arrivata la struttura. | — → niente | ⚠️ **Che i due nomi abbiano due momenti diversi, ed è la ragione dei due posti:** `nomeApp` sta in `app/config.js` perché serve prima di qualunque file — il titolo della pagina e la schermata di attesa —, `nomiASchermo.corso` sta nella struttura perché è dell'edizione. **Un nome che ancora non c'è lascia l'elemento com'è (vuoto nel markup)**: mai un nome sbagliato nel frattempo |
 | `scriviTestiHome()` | Scrive il saluto e il pulsante della schermata iniziale leggendoli dal file dei testi, col nome dello studente e quello dell'episodio dentro. | — → niente | ⚠️ **Che il markup abbia già qualcosa di sensato da dire.** Non scrive se il testo è vuoto: i testi possono non essere ancora arrivati, e svuotare «Ciao!» e «Inizia» sarebbe peggio di lasciarli. |
 | `goHome()` | Porta alla schermata iniziale: scrive i testi, e **li riscrive quando arrivano** se lo studente è ancora lì. | — → niente | Che `views.home` dica se vale ancora la pena scrivere. *Senza quel controllo si scriverebbe su una schermata già lasciata — invisibile, ma è la forma da cui nascono i guasti di ordine.* |
 

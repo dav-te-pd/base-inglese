@@ -1,4 +1,4 @@
-**Versione: 20260930d**
+**Versione: 20261001a**
 
 # Struttura del corso — spagnolo per italiani
 
@@ -22,7 +22,7 @@ carattere per carattere:
 | `5 — LE SEQUENZE DEI MODULI` | `sequences` |
 | `7 — GLI EPISODI` | `episodes` **e** l'ordine di `episodeSequences` |
 | `8 — LE LINGUE DEL PARLATO` | `speech` |
-| `9 — I NOMI DELLE DUE LINGUE` | ⚠️ *le scritte dei moduli* — **dal passo 3, non ancora letta** |
+| `9 — I NOMI A SCHERMO` | `nomiASchermo` — *le scritte dei moduli e il nome del corso* — **letta dal 2026-10-01 (passo 4)** |
 
 ⚠️ **IL `## ` QUI SOPRA È STACCATO APPOSTA.** *Se questa tabella scrivesse i titoli per intero,
 `indexOf` troverebbe **questa riga** invece della sezione vera, e il parser leggerebbe come «tabella dei
@@ -289,7 +289,7 @@ garantite su ogni dispositivo. `es-MX` può ricadere su `es-ES`, o su niente.*
 
 ---
 
-## 9 — I NOMI DELLE DUE LINGUE
+## 9 — I NOMI A SCHERMO
 
 *Colonne: **ruolo** → la chiave · **nome** → come si scrive a schermo.*
 
@@ -297,19 +297,27 @@ garantite su ogni dispositivo. `es-MX` può ricadere su `es-ES`, o su niente.*
 |---|---|
 | `target` | Spagnolo |
 | `native` | Italiano |
+| `corso` | Spagnolo per italiani |
 
-**L'app ne ricava le scritte dei moduli di abbinamento:** *«SPAGNOLO → ITALIANO» e «ITALIANO →
-SPAGNOLO».* ⚠️ **La freccia e il maiuscolo sono del codice, i due nomi sono dati.**
+**Cosa ne ricava l'app:**
 
-⚠️ **I due nomi sono scritti nella lingua dello STUDENTE**, *e per questo la tabella non è condivisibile
-fra edizioni: nell'edizione inglese-per-spagnoli diranno «Inglés» e «Español».*
+| | |
+|---|---|
+| `target` + `native` | **le scritte dei moduli di abbinamento** — *«SPAGNOLO → ITALIANO» e il contrario.* ⚠️ *La freccia e il maiuscolo sono del codice, i due nomi sono dati* |
+| `corso` | **il nome del corso**, dove serve distinguerlo dal nome dell'app |
+
+🔴 **`corso` ha una cella sua e non si ricava dalle altre due.** *«Spagnolo per italiani» ha una grammatica che
+«Spagnolo» + «Italiano» non danno — e in un'altra lingua dello studente cambia del tutto.*
+
+⚠️ **I tre nomi sono scritti nella lingua dello STUDENTE**, *e per questo la tabella non è condivisibile
+fra edizioni.*
 
 ⭐ **E i due ruoli sono le STESSE due parole delle chiavi del JSON**, *non due vocabolari per la stessa
-idea.* **Se `trascrivi.js` sceglie altri due nomi, cambiano tutti e due i posti insieme.**
+idea.*
 
-⭐ **`native` e non `source`, ed è Claude Code ad averlo trovato:** *in questo progetto «sorgente» è già
-il nome dei file che gli mandiamo — `…-gate-sorgente-…`.* **«La colonna source» e «il file sorgente» si
-sarebbero confuse entro una settimana.**
+⚠️ **IL TITOLO È CAMBIATO IL 1/10: era «I NOMI DELLE DUE LINGUE».** *Con la riga `corso` quel titolo
+diceva una cosa falsa — tre righe, e una non è una lingua.* ⭐ **Cambiato ADESSO, prima che il lettore
+esista:** *un titolo è un'interfaccia, e dopo costa.*
 
-⚠️ **SEZIONE NUOVA IN FONDO, E NON SI RINUMERA NIENTE.** *Il 9 è libero e nessun titolo esistente si
-sposta — rinumerare romperebbe le asserzioni che cercano i titoli carattere per carattere.*
+⚠️ **SEZIONE IN FONDO, E NON SI RINUMERA NIENTE.** *Rinumerare romperebbe le asserzioni che cercano i
+titoli carattere per carattere.*

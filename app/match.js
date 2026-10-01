@@ -42,7 +42,7 @@
   var shuffle = BI.shuffle;
   var percentageBucket = BI.percentageBucket;
   var uiText = BI.uiText;
-  var DIRECTION_LABEL = BI.DIRECTION_LABEL;
+  var etichettaDirezione = BI.etichettaDirezione;
   var renderListenBlock = BI.renderListenBlock;
   var speakListenBlock = BI.speakListenBlock;
   var renderIntroContent = BI.renderIntroContent;
@@ -169,7 +169,7 @@
     document.getElementById('qm-dontknow-btn').disabled = false;
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
     document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
-    document.getElementById('qm-direction').textContent = DIRECTION_LABEL[qmDirection];
+    document.getElementById('qm-direction').textContent = etichettaDirezione(qmDirection);
     var promptText = BI.itemText(qmCurrentItem, qmDirection === 'en-it' ? 'target' : 'native');
     document.getElementById('qm-prompt').textContent = promptText;
 

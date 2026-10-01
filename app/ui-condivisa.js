@@ -717,7 +717,10 @@
   // name, not a second label) — used everywhere a module name is shown
   // (map row, Spiegazione title, module headers/badges).
   function moduleNameHtml(name) {
-    return String(name).replace(/ (en→it|it→en)$/, ' <span class="module-name-direction">$1</span>');
+    // ⚠️ Qualunque coppia di codici, non solo `en→it`: dal 2026-10-01 i nomi
+    // dei moduli spagnoli finiscono con «es→it», e la regola di prima li
+    // lasciava grandi come il resto del nome.
+    return String(name).replace(/ ([a-z]{2}→[a-z]{2})$/, ' <span class="module-name-direction">$1</span>');
   }
 
   // Two-row "Spiegazione" title (CLAUDE.md rule 13): row 1 is the fixed
@@ -1053,7 +1056,7 @@
   //   renderChoiceBox  — Voice, Flash Card, Match, Dialogo Ascolta e Ripeti
   //   startTimerBar    — Speed Match, Dialogo (Ripeti a Tempo e Continuo)
   //   freezeTimerBar   — gli stessi due
-  //   DIRECTION_LABEL  — Flash Card, Speed Match, Match
+  //   etichettaDirezione — Flash Card, Speed Match, Match (era DIRECTION_LABEL)
   //
   // **Escono adesso e non col primo modulo**, per la ragione che questa serie
   // ha già pagato due volte: un pezzo condiviso lasciato dentro viene
@@ -1093,12 +1096,34 @@
     fillEl.style.width = w;
   }
 
-  var DIRECTION_LABEL = { 'en-it': 'INGLESE → ITALIANO', 'it-en': 'ITALIANO → INGLESE' };
+  // ⚠️ LA SCRITTA DELLA DIREZIONE VIENE DALL'EDIZIONE, dal 2026-10-01 (passo
+  // 4 dello spagnolo). Qui c'era `{ 'en-it': 'INGLESE → ITALIANO', ... }`:
+  // lo studente di spagnolo leggeva «INGLESE» sopra ogni domanda di Match,
+  // Speed Match e Flash Card. I due NOMI vengono dalla §9 della struttura
+  // (`nomiASchermo.target`, `.native`, nella lingua dello studente); **la
+  // freccia e il maiuscolo sono del codice** — deciso da chi guida il
+  // progetto. Gli id di direzione `en-it`/`it-en` restano: stanno nelle chiavi
+  // della mastery salvata, e qui vogliono dire «target -> native» e il
+  // contrario, in qualunque edizione.
+  //
+  // Si legge al momento dell'uso, non a tempo di parsing: la struttura arriva
+  // dopo. Un nome che manca da' una scritta vuota e lo dice in console — il
+  // trascrittore non lascia passare una §9 senza le tre righe.
+  function etichettaDirezione(direzione) {
+    var nomi = CONFIG.nomiASchermo || {};
+    if (!nomi.target || !nomi.native) {
+      console.error('[base-inglese] La struttura non porta nomiASchermo.target/native: la scritta della direzione resta vuota.');
+      return '';
+    }
+    var da = direzione === 'en-it' ? nomi.target : nomi.native;
+    var a = direzione === 'en-it' ? nomi.native : nomi.target;
+    return (da + ' → ' + a).toUpperCase();
+  }
   BI.chiudiOverlayAperti = chiudiOverlayAperti;
   BI.renderChoiceBox = renderChoiceBox;
   BI.startTimerBar = startTimerBar;
   BI.freezeTimerBar = freezeTimerBar;
-  BI.DIRECTION_LABEL = DIRECTION_LABEL;
+  BI.etichettaDirezione = etichettaDirezione;
   BI.introDismissPref = introDismissPref;
   BI.dialogueLineAlign = dialogueLineAlign;
   BI.speakerLabel = speakerLabel;

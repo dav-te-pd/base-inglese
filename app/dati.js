@@ -174,9 +174,11 @@ window.BI = window.BI || {};
   // episodio apre l'app appartengono al corso, non all'app. Prima
   // `episodioCorrente` stava in `app/config.js` ed era l'ultimo valore
   // globale della famiglia che il passo 1.11 aveva portato nell'edizione.
+  // `nomiASchermo` dal 2026-10-01 (passo 4): i nomi delle due lingue e del
+  // corso, nella lingua dello studente — §9 della struttura.
   var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels',
     'sequences', 'episodes', 'episodeSequences', 'episodeSequence', 'episodiSpenti',
-    'episodioCorrente'];
+    'episodioCorrente', 'nomiASchermo'];
 
   var strutturaPromise = null;
 

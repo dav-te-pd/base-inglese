@@ -240,7 +240,20 @@ function struttura(ed) {
   const speech = {};
   parlato.forEach((r) => { speech[nb(r[0]).replace('speech.', '')] = nb(r[1]); });
 
-  return { grades, gradeNames, moduleTypes, moduleLabels, sequences, episodes, ordine, speech };
+  // ⚠️ LA SEZIONE 9 — I NOMI A SCHERMO, dal 2026-10-01 (passo 4 dello
+  // spagnolo). Tre righe: `target` e `native` danno le scritte dei moduli di
+  // abbinamento («SPAGNOLO → ITALIANO»), `corso` il nome del corso. *`corso`
+  // ha una cella sua: «Spagnolo per italiani» ha una grammatica che
+  // «Spagnolo» + «Italiano» non danno.* Obbligatoria: un corso senza i suoi
+  // nomi mostrerebbe scritte vuote, e questo e' il posto per dirlo.
+  const schermo = colonne(tabellaSotto(t, '## 9 — I NOMI A SCHERMO', true), 2, 'nomi a schermo');
+  const nomiASchermo = {};
+  schermo.forEach((r) => { nomiASchermo[nb(r[0])] = r[1].trim(); });
+  ['target', 'native', 'corso'].forEach((k) => {
+    if (!nomiASchermo[k]) throw new Error(ed.pref + 'struttura-corso: la sezione 9 non ha la riga `' + k + '`.');
+  });
+
+  return { grades, gradeNames, moduleTypes, moduleLabels, sequences, episodes, ordine, speech, nomiASchermo };
 }
 
 // ── tabelle di personalizzazione ─────────────────────────────────────────
@@ -364,11 +377,28 @@ function istruzioni(st) {
   // per tutti e due, e ricopiarla in due celle vorrebbe dire due copie.*
   // Tre colonne: id | quante spiegazioni lo usano | testo. La seconda e'
   // documentazione e non entra nel JSON.
+  //
+  // ⚠️ L'ETICHETTA «Un consiglio» NON E' PIU' SCRITTA QUI, dal 2026-10-01: e'
+  // la cella `condivisi.etichettaConsiglio` della sezione 6. *Il markdown
+  // diceva che «non e' scritta in nessun altro posto», ed era vero per i suoi
+  // file: la scriveva questo codice — e un corso d'inglese per spagnoli
+  // avrebbe mostrato «Un consiglio» per sempre.* Una cella che manca ferma
+  // tutto (regola 49): un riquadro senza etichetta non si vedrebbe come guasto.
+  //
+  // ⚠️ E LA CLASSE E' `note-box`, non piu' `general-rule`, dallo stesso giorno:
+  // lo stesso riquadro veste la regola generale di un episodio E un consiglio,
+  // e un nome che dice uno solo dei due mente sull'altro (regola 18).
+  const etichettaConsiglio = (colonne(tabellaSotto(t, '## 6 — I TESTI CHE NON SONO DI UN MODULO', true), 3, 'testi condivisi')
+    .find((r) => nb(r[0]) === 'condivisi' && nb(r[1]) === 'etichettaConsiglio') || [])[2];
+  if (!etichettaConsiglio) {
+    throw new Error(st + '-istruzioni-moduli: manca la cella `condivisi.etichettaConsiglio` nella sezione 6 — ' +
+      'e\' l\'etichetta del riquadro di ogni consiglio.');
+  }
   const consigli = {};
   colonne(tabellaSotto(t, '## 4 — I DUE CONSIGLI CONDIVISI', true), 3, 'consigli')
     .forEach((r) => {
-      consigli[nb(r[0])] = '<div class="general-rule panel">' +
-        '<span class="general-rule-label">Un consiglio</span>' + spazi(r[2]) + '</div>';
+      consigli[nb(r[0])] = '<div class="note-box panel">' +
+        '<span class="note-box-label">' + spazi(etichettaConsiglio).trim() + '</span>' + spazi(r[2]) + '</div>';
     });
 
   colonne(tabellaSotto(t, '## 2 — LE SPIEGAZIONI', true), 6, 'spiegazioni').forEach((r) => {
@@ -652,7 +682,8 @@ function main() {
       // saputa. Nessun rosso: il JSON sarebbe restato valido, e l'occhio del
       // pannello avrebbe smesso di partire da \u00abnessuno spento\u00bb.*
       episodiSpenti: [],
-      episodes: s.episodes
+      episodes: s.episodes,
+      nomiASchermo: s.nomiASchermo
     };
     strutturaJson.episodeSequences[nomeSequenza] = s.ordine;
     daScrivere.push(['struttura del corso:', dati(ed, 'struttura-corso'), strutturaJson, null]);

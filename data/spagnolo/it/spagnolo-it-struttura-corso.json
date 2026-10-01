@@ -244,5 +244,10 @@
       "categoria": "storia",
       "sequence": "narrativo-standard"
     }
+  },
+  "nomiASchermo": {
+    "target": "Spagnolo",
+    "native": "Italiano",
+    "corso": "Spagnolo per italiani"
   }
 }

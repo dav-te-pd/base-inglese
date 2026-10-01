@@ -45,7 +45,7 @@
   var shuffle = BI.shuffle;
   var percentageBucket = BI.percentageBucket;
   var uiText = BI.uiText;
-  var DIRECTION_LABEL = BI.DIRECTION_LABEL;
+  var etichettaDirezione = BI.etichettaDirezione;
   var lockModuleHeader = BI.lockModuleHeader;
   var barraAzioniFinale = BI.barraAzioniFinale;
   var startTimerBar = BI.startTimerBar;
@@ -346,7 +346,7 @@
     srPassIndex = 0;
     srInRetryPass = false;
     srRetryPassCount = 0;
-    document.getElementById('sr-direction').textContent = DIRECTION_LABEL[srDirection];
+    document.getElementById('sr-direction').textContent = etichettaDirezione(srDirection);
     srShowScreen('quiz');
     srNextQuestion();
   }

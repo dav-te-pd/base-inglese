@@ -93,7 +93,10 @@
   var currentRepeatAloudModule = null;
   function renderRepeatAloud(data) {
     var ruleHtml = data.generalRule
-      ? '<div class="general-rule panel"><span class="general-rule-label">Regola generale</span>' + data.generalRule + '</div>'
+      // ⚠️ L'ETICHETTA VIENE DAL FILE DEI TESTI, dal 2026-10-01: qui c'era
+      // «Regola generale» scritto a mano, e un corso d'inglese per spagnoli
+      // l'avrebbe mostrato in italiano per sempre (regola 8).
+      ? '<div class="note-box panel"><span class="note-box-label">' + BI.uiText('condivisi.etichettaRegolaGenerale') + '</span>' + data.generalRule + '</div>'
       : '';
     var itemsHtml = episodeGradeRequired(data, currentRepeatAloudModule.grade, currentRepeatAloudModule).map(function (item) {
       return '<div class="repeat-item panel">' +

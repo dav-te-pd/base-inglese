@@ -1,4 +1,4 @@
-**Versione: 20260930d**
+**Versione: 20261001a**
 
 # Struttura del corso — inglese per italiani
 
@@ -18,7 +18,7 @@ scritto questo file.**
 **Cerca il titolo per TESTO ESATTO, e il NUMERO è dentro il testo.** `testo.indexOf(titolo)` —
 sottostringa, sensibile a maiuscole e accenti.
 
-**I SEI titoli cercati sono `##` più uno spazio più il testo di questa colonna**, carattere per
+**I SETTE titoli cercati sono `##` più uno spazio più il testo di questa colonna**, carattere per
 carattere:
 
 | Il testo dopo `## ` | Cosa ne legge |
@@ -29,6 +29,7 @@ carattere:
 | `5 — LE SEQUENZE DEI MODULI` | `sequences` |
 | `7 — GLI EPISODI` | `episodes` **e** l'ordine di `episodeSequences` |
 | `8 — LE LINGUE DEL PARLATO` | `speech` |
+| `9 — I NOMI A SCHERMO` | `nomiASchermo` — *le scritte dei moduli e il nome del corso* — **letta dal 2026-10-01 (passo 4)** |
 
 ⚠️ **IL `## ` QUI SOPRA È STACCATO APPOSTA, e non è pedanteria.** Se questa tabella scrivesse i titoli
 per intero, `indexOf` troverebbe **questa riga** invece della sezione vera — e il parser leggerebbe come
@@ -306,3 +307,38 @@ una battuta non costa niente: la sintesi riceve una stringa e non sa quanti ce n
 
 ⚠️ *Il giorno in cui l'audio diventasse registrato, ogni segnaposto avrebbe un prezzo — e la decisione è
 rimandata con una data: **all'inizio della nuova edizione, dopo il B2**.*
+
+---
+
+## 9 — I NOMI A SCHERMO
+
+*Colonne: **ruolo** → la chiave · **nome** → come si scrive a schermo.*
+
+| Ruolo | Nome |
+|---|---|
+| `target` | Inglese |
+| `native` | Italiano |
+| `corso` | Inglese per italiani |
+
+**Cosa ne ricava l'app:**
+
+| | |
+|---|---|
+| `target` + `native` | **le scritte dei moduli di abbinamento** — *«INGLESE → ITALIANO» e il contrario.* ⚠️ *La freccia e il maiuscolo sono del codice, i due nomi sono dati* |
+| `corso` | **il nome del corso**, dove serve distinguerlo dal nome dell'app |
+
+🔴 **`corso` ha una cella sua e non si ricava dalle altre due.** *«Inglese per italiani» ha una grammatica che
+«Inglese» + «Italiano» non danno — e in un'altra lingua dello studente cambia del tutto.*
+
+⚠️ **I tre nomi sono scritti nella lingua dello STUDENTE**, *e per questo la tabella non è condivisibile
+fra edizioni.*
+
+⭐ **E i due ruoli sono le STESSE due parole delle chiavi del JSON**, *non due vocabolari per la stessa
+idea.*
+
+⚠️ **IL TITOLO È CAMBIATO IL 1/10: era «I NOMI DELLE DUE LINGUE».** *Con la riga `corso` quel titolo
+diceva una cosa falsa — tre righe, e una non è una lingua.* ⭐ **Cambiato ADESSO, prima che il lettore
+esista:** *un titolo è un'interfaccia, e dopo costa.*
+
+⚠️ **SEZIONE IN FONDO, E NON SI RINUMERA NIENTE.** *Rinumerare romperebbe le asserzioni che cercano i
+titoli carattere per carattere.*

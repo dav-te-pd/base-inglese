@@ -411,7 +411,7 @@ async function run() {
         domanda: (document.querySelector('.q-class') || {}).textContent
       };
       d.remove();
-      return { dopoStart: dopoStart, dopoFreeze: dopoFreeze, box: box, direzioni: window.BI.DIRECTION_LABEL };
+      return { dopoStart: dopoStart, dopoFreeze: dopoFreeze, box: box, direzioni: { 'en-it': window.BI.etichettaDirezione('en-it'), 'it-en': window.BI.etichettaDirezione('it-en') } };
       }) : null;
     } catch (e) {
       timer = { errore: String(e).split('\n')[0] };
@@ -425,8 +425,10 @@ async function run() {
     log('[G] renderChoiceBox costruisce i due pulsanti con gli id chiesti e la domanda',
       !!timer && !!timer.box && timer.box.secondario && timer.box.primario && timer.box.domanda === 'Domanda?',
       JSON.stringify(timer && (timer.box || timer.errore)));
-    log('[G] DIRECTION_LABEL ha le due direzioni',
-      !!timer && !!timer.direzioni && !!timer.direzioni['en-it'] && !!timer.direzioni['it-en'],
+    // Dal 2026-10-01 non e' piu' una tabella ma `etichettaDirezione`, che legge i
+    // nomi della §9 dell'edizione: qui l'inglese, quindi le due scritte di sempre.
+    log('[G] etichettaDirezione dà le due direzioni, coi nomi dell\'edizione',
+      !!timer && !!timer.direzioni && timer.direzioni['en-it'] === 'INGLESE → ITALIANO' && timer.direzioni['it-en'] === 'ITALIANO → INGLESE',
       JSON.stringify(timer && (timer.direzioni || timer.errore)));
 
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));

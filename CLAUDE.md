@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20260930c**
+**Versione: 20261001a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -71,7 +71,7 @@ affidabile.
 | `docs/scelte-strategiche-infrastrutturali.md` | **Dove vive il codice, dove vivono i dati, chi serve le pagine, quanto costa.** Le scelte che non riguardano *questa* app ma **il modo in cui le app vengono costruite, pubblicate e protette** — e ne faremo varie, non solo questa. ⚠️ **È un file suo per la stessa ragione di `cyber-security.md`: `decisioni-stato.md` **si svuota**, una scelta infrastrutturale **resta vera per anni** e si rilegge ogni volta che nasce un'app nuova.* |
 | `docs/metodo/FATTI-APP.md` | **I fatti del codice da cui dipendono i testi di chi guida il progetto** — il livello 1, quello che non cambia né con la lingua insegnata né con quella dello studente. ⚠️ **File a due mani:** le prime quattro colonne le scrive Claude Code misurando, la quinta — *«quale nostro testo ne dipende»* — chi guida il progetto. **Un commit che rende falsa una riga la corregge nello stesso commit; se il fatto cambia, la quinta colonna si SEGNALA nella risposta e non si riscrive.** Nella colonna «Dove» vanno file e nomi, **mai numeri di riga**, e `tests/test_fatti_app.js` controlla che ci siano davvero. *Nato il 2026-09-30: sei righe su undici non corrispondevano più al codice il giorno in cui è entrato.* |
 | `docs/{lingua}/` | Il contenuto: tutto ciò che sta qui sotto è di chi guida il progetto (regola 33). |
-| `data/{lingua}/{studente}/struttura-corso.json` | **La struttura del corso, per edizione**: gradi, loro nomi, categorie, sequenze, elenco degli episodi e le due lingue del parlato. L'app la carica **prima di disegnare qualunque schermata** — senza, si vede la schermata d'errore. È l'uscita 1:1 di `docs/{lingua}/{studente}/struttura-corso.md`. |
+| `data/{lingua}/{studente}/struttura-corso.json` | **La struttura del corso, per edizione**: gradi, loro nomi, categorie, sequenze, elenco degli episodi, le due lingue del parlato e — dal 2026-10-01 — **i nomi a schermo** (`nomiASchermo`: le due lingue come le legge lo studente e il nome del corso). L'app la carica **prima di disegnare qualunque schermata** — senza, si vede la schermata d'errore. È l'uscita 1:1 di `docs/{lingua}/{studente}/struttura-corso.md`. |
 | `tests/README.md` | Cosa protegge ogni file di test (regola 32), e **come si lancia la suite**. |
 | `tests/run_full_regression.sh` | Lo script che lancia la suite completa. È questo il comando della regola 38: `bash tests/run_full_regression.sh`. |
 | `tests/tools/attendi.sh` | L'attesa scritta nella forma giusta una volta sola (regola 37). Si usa questo invece di riscriverla a mano: `tests/tools/attendi.sh <log> "ALL FILES GREEN" "SOME FILES FAILED"`. **Si arrende da sola e dice quale dei due guasti ha davanti**: uscita 2 «è vivo e non finisce», 3 «è morto o non è mai partito» — perché un'attesa col solo tetto, davanti a un lavoro morto, direbbe «ho aspettato troppo» invece di «ho aspettato un cadavere». |
@@ -480,7 +480,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
       *Sta sotto la lingua perché i nomi dei gradi sono testo che lo studente legge — "Parole", "Espressioni" — e un'edizione tedesca vuole i suoi.*
 
-      **Il suo gemello è `data/{lingua-che-si-impara}/{lingua-studente}/struttura-corso.json`**, uno per uno: quel markdown spiega e decide, quel JSON esegue. Porta sei cose — `grades`, `gradeNames`, `moduleTypes`, `sequences`, `episodes` e le due lingue di `speech` — che l'app carica prima di disegnare qualunque schermata.
+      **Il suo gemello è `data/{lingua-che-si-impara}/{lingua-studente}/struttura-corso.json`**, uno per uno: quel markdown spiega e decide, quel JSON esegue. Porta la struttura del corso e i nomi che lo studente legge di quel corso — dal 2026-10-01 anche `nomiASchermo`: «Spagnolo», «Italiano», «Spagnolo per italiani» — e l'app la carica prima di disegnare qualunque schermata. ⚠️ **Le chiavi non si elencano qui: le elenca `CHIAVI_STRUTTURA` in `app/dati.js`, più le due lingue di `speech`.** *Qui c'era «porta sei cose», e quel giorno ne portava undici: un elenco dentro una regola invecchia a ogni chiave nuova, come la regola 6 ha imparato sui tag.* **Il nome dell'APP invece non sta qui:** serve prima che qualunque file arrivi, quindi è `nomeApp` in `app/config.js`.
 
       ⚠️ **Qui c'era scritto che quelle voci erano «valori globali singoli» e che il problema andava «risolto prima di aggiungere la seconda lingua». È stato risolto il 2026-09-20 (passo 1.11).** La nota resta, riscritta, perché la ragione vale ancora: **tutto ciò che riguarda la struttura di un corso appartiene all'edizione, senza eccezioni.** Il taglio ragionevole — «fuori solo ciò che è testo, dentro ciò che è struttura» — è stato proposto e scartato: i nomi dei gradi non sono una traduzione, sono una decisione didattica di quel corso, e condividerli farebbe governare il francese da una scelta presa per l'inglese.
 
