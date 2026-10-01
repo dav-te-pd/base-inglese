@@ -161,20 +161,75 @@ window.BI = window.BI || {};
   // *Se un giorno un motore rendesse `pause()` affidabile, si riscrivono in
   // cinque righe — e a quel punto avranno un chiamante che puo' usarle.*
 
-  function pickVoice() {
-    if (!synth) return null;
+  // ⚠️ LA VOCE SEGUE LA LINGUA DELL'EDIZIONE — passo 3 dello spagnolo,
+  // 2026-10-01. Qui c'era un elenco solo di voci inglesi provato PRIMA della
+  // lingua, e un ripiego su `'en'` scritto a mano: lo spagnolo veniva letto da
+  // una voce inglese su ogni Chrome.
+  //
+  // I gradini, nell'ordine, e il secondo e il terzo sono separati APPOSTA
+  // (deciso da chi guida il progetto):
+  //   1. le voci PREFERITE di quella lingua (`preferredVoiceNames[prefisso]`);
+  //   2. la lingua ESATTA dell'edizione — `es-ES`;
+  //   3. solo se non c'e': la stessa lingua in un'altra varieta' — `es-*`.
+  // *Un solo gradino sul prefisso avrebbe preso la prima `es-` che capita:
+  // su un dispositivo lo studente sentirebbe messicano mentre la colonna della
+  // pronuncia gli insegna castigliano — «GRA-sias» contro «GRA-thias».*
+  //
+  // ⚠️ E MAI UN'ALTRA LINGUA. Se non c'e' niente, nessuna voce: parla quella
+  // predefinita del browser con `utterance.lang` dell'edizione, che e' il
+  // meglio che si possa chiedere. Il Pannello Admin lo dice (`sceltaVoce`).
+  //
+  // ⚠️ IL CODICE SI NORMALIZZA: alcuni sistemi scrivono `es_ES` invece di
+  // `es-ES`, e un confronto alla lettera li perderebbe tutti.
+  function codiceVoce(l) { return String(l || '').replace(/_/g, '-').toLowerCase(); }
+
+  // Le preferite di una lingua. Un override salvato dal Pannello Admin prima
+  // del 2026-10-01 e' ancora un ELENCO (le voci inglesi): vale solo per
+  // l'inglese — applicato allo spagnolo, rimetterebbe la voce inglese.
+  function preferiteDi(prefisso) {
+    var p = CONFIG.speech.preferredVoiceNames;
+    if (Array.isArray(p)) return prefisso === 'en' ? p : [];
+    return (p && p[prefisso]) || [];
+  }
+
+  // Quale voce, e COME ci si e' arrivati: `come` vale `preferita`, `esatta`,
+  // `ripiego` o `nessuna`. `pickVoice` ne usa solo la voce; il Pannello Admin
+  // legge tutto il resto.
+  function sceltaVoce() {
+    var chiesta = CONFIG.speech.synthesisLang;
+    var esito = { voce: null, come: 'nessuna', chiesta: chiesta, usata: null, nome: null };
+    if (!synth) return esito;
     if (!voices.length) voices = synth.getVoices();
-    var preferredNames = CONFIG.speech.preferredVoiceNames;
-    for (var k = 0; k < preferredNames.length; k++) {
-      var match = voices.find(function (v) { return v.name === preferredNames[k]; });
-      if (match) return match;
+    var esatta = codiceVoce(chiesta);
+    var prefisso = esatta.split('-')[0];
+    var stessaLingua = function (v) { return codiceVoce(v.lang).split('-')[0] === prefisso; };
+    var trovata = null;
+    var come = 'nessuna';
+    var preferite = preferiteDi(prefisso);
+    for (var k = 0; k < preferite.length && !trovata; k++) {
+      trovata = voices.find(function (v) { return v.name === preferite[k] && stessaLingua(v); }) || null;
+      if (trovata) come = 'preferita';
     }
-    var langVoices = voices.filter(function (v) { return v.lang === CONFIG.speech.synthesisLang; });
-    if (!langVoices.length) {
-      langVoices = voices.filter(function (v) { return v.lang && v.lang.indexOf('en') === 0; });
+    if (!trovata) {
+      var esatte = voices.filter(function (v) { return codiceVoce(v.lang) === esatta; });
+      var varieta = esatte.length ? [] : voices.filter(stessaLingua);
+      var gruppo = esatte.length ? esatte : varieta;
+      if (gruppo.length) {
+        trovata = gruppo.find(looksLikeMaleVoice) || gruppo[0];
+        come = esatte.length ? 'esatta' : 'ripiego';
+      }
     }
-    if (!langVoices.length) return null;
-    return langVoices.find(looksLikeMaleVoice) || langVoices[0];
+    if (trovata) {
+      esito.voce = trovata;
+      esito.come = come;
+      esito.usata = trovata.lang;
+      esito.nome = trovata.name;
+    }
+    return esito;
+  }
+
+  function pickVoice() {
+    return sceltaVoce().voce;
   }
 
   // Shared text-to-speech helper: used by the full-sentence speak button
@@ -227,6 +282,7 @@ window.BI = window.BI || {};
   BI.loadVoices = loadVoices;
   BI.looksLikeMaleVoice = looksLikeMaleVoice;
   BI.pickVoice = pickVoice;
+  BI.sceltaVoce = sceltaVoce;
   BI.vocePossibile = vocePossibile;
   BI.staParlando = staParlando;
   BI.fermaLaVoce = fermaLaVoce;

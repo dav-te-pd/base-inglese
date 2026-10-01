@@ -52,6 +52,7 @@
 const PREDEFINITI = {
   fineVoceMs: 20,              // quanto tarda `onend` dopo `speak()`
   nomeVoce: 'Fake Male Voice', // cosa torna `getVoices()`
+  voci: null,                  // un elenco intero di voci `{ name, lang }` al posto della sola `nomeVoce` (2026-10-01, test_voce_edizione)
   riconoscimento: false,       // vedi FORME sotto
   ritardoRiconoscimentoMs: 15, // quanto tarda `onresult` dopo `start()`
   ritardoFineRiconoscimentoMs: 5, // quanto tarda `onend` dopo `stop()`
@@ -419,7 +420,7 @@ function costruisci(opzioni) {
           u._finePrevista = Date.now() + u._restano;
           u._timer = setTimeout(function () { self._finisci(u); }, u._restano);
         },
-        getVoices: function () { return [{ name: ${JSON.stringify(o.nomeVoce)}, lang: 'en-US' }]; },
+        getVoices: function () { return ${JSON.stringify(o.voci || [{ name: o.nomeVoce, lang: 'en-US' }])}; },
         onvoiceschanged: null
       };
       Object.defineProperty(window, 'speechSynthesis', { value: fakeSynth, configurable: true });

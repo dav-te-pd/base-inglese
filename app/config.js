@@ -105,22 +105,39 @@
       // Playback speed choices offered next to a listen button, as a
       // multiplier of normal rate (1 = 100%). Order here is render order.
       rateOptions: [1, 0.75, 0.5],
-      // Male voices listed first — a male voice is preferred for English
-      // when the system/browser offers one, falling back to whichever
-      // English voice is actually available otherwise (see pickVoice()
-      // and maleVoiceNameHints below for systems whose voice isn't one of
-      // these exact names).
-      preferredVoiceNames: [
-        'Microsoft Guy Online (Natural) - English (United States)',
-        'Microsoft David - English (United States)',
-        'Google UK English Male',
-        'Alex',
-        'Daniel',
-        'Google US English',
-        'Samantha',
-        'Microsoft Aria Online (Natural) - English (United States)',
-        'Microsoft Jenny Online (Natural) - English (United States)'
-      ],
+      // ⚠️ LE VOCI PREFERITE SONO PER LINGUA, dal 2026-10-01 (passo 3 dello
+      // spagnolo). La chiave e' il prefisso della lingua dell'edizione
+      // (`speech.synthesisLang`: `en-US` -> `en`, `es-ES` -> `es`). Prima era un
+      // elenco solo, tutto di voci inglesi, e `pickVoice` lo provava PRIMA di
+      // guardare la lingua: su Chrome «Google US English» c'e' sempre, quindi lo
+      // spagnolo sarebbe stato letto da una voce inglese.
+      //
+      // `en`: male voices listed first — a male voice is preferred for English
+      // when the system/browser offers one, falling back to whichever English
+      // voice is actually available otherwise (see pickVoice() and
+      // maleVoiceNameHints below for systems whose voice isn't one of these
+      // exact names).
+      //
+      // ⚠️ `es` E' VUOTO APPOSTA, e non e' una dimenticanza: deciso da chi guida
+      // il progetto il 2026-10-01. **Si riempie dopo averle ascoltate su tre
+      // dispositivi** — una voce si giudica ascoltandola, e nominarne una crea
+      // una dipendenza da un dispositivo (le voci del browser non sono garantite
+      // su ogni dispositivo, lo dice anche `spagnolo-it-struttura-corso` §8).
+      // Vuoto vuol dire: decide la lingua, prima `es-ES` esatta e poi `es-*`.
+      preferredVoiceNames: {
+        en: [
+          'Microsoft Guy Online (Natural) - English (United States)',
+          'Microsoft David - English (United States)',
+          'Google UK English Male',
+          'Alex',
+          'Daniel',
+          'Google US English',
+          'Samantha',
+          'Microsoft Aria Online (Natural) - English (United States)',
+          'Microsoft Jenny Online (Natural) - English (United States)'
+        ],
+        es: []
+      },
       // Used only when none of the exact names above exist on this system:
       // a lightweight heuristic to still prefer a male-sounding voice among
       // whichever English voices ARE available, before falling back to
@@ -624,7 +641,15 @@
       'speech.synthesisLang': 'Lingua della voce sintetica che legge le frasi della lingua che si impara.',
       'speech.synthesisRate': 'Velocità della voce sintetica (1 = normale, meno di 1 = più lenta).',
       'speech.rateOptions': 'Velocità di riproduzione proposte accanto ai pulsanti di ascolto (1 = 100%).',
-      'speech.preferredVoiceNames': 'Voci inglesi preferite, in ordine, se il dispositivo le ha disponibili.',
+      'speech.preferredVoiceNames': 'Voci preferite, in ordine, PER LINGUA (la chiave è il prefisso della lingua dell’edizione: en, es…), se il dispositivo le ha disponibili. Un elenco vuoto vuol dire: decide la lingua — prima quella esatta, poi la stessa lingua in un’altra varietà.',
+      // La riga in cima al gruppo `speech`: quale voce sta usando QUESTO
+      // dispositivo. Chiesta da chi guida il progetto il 2026-10-01: *«quando la
+      // voce esatta non c'e' e si ripiega, il Pannello Admin lo deve DIRE»*.
+      // Non e' un errore per lo studente: e' una riga per chi collauda.
+      'speech.*voceEsatta': 'Voce su questo dispositivo: chiesta {chiesta}, usata {usata} — {nome}.',
+      'speech.*vocePreferita': 'Voce su questo dispositivo: una delle preferite — {nome} ({usata}).',
+      'speech.*voceRipiego': '⚠️ Voce su questo dispositivo: chiesta {chiesta}, usata {usata} — {nome}. La varietà esatta non c’è: è un ripiego.',
+      'speech.*voceNessuna': '⚠️ Voce su questo dispositivo: chiesta {chiesta}, e nessuna voce di questa lingua è disponibile. Parla la voce predefinita del browser.',
       'matching.similarThreshold': 'Quanto deve essere simile una parola detta a voce per essere segnata "simile" (giallo) invece che "sbagliata" (rosso). Valore tra 0 e 1: più alto è, più severo è il giudizio.',
       'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
       'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',

@@ -1137,6 +1137,27 @@
   // Un gruppo del pannello. Estratta da renderConfigPanel perche' dal
   // 2026-09-15 i gruppi non nascono piu' tutti nello stesso istante: due
   // arrivano dopo, quando il magazzino e' stato caricato.
+  // ⚠️ QUALE VOCE STA PARLANDO SU QUESTO DISPOSITIVO — 2026-10-01, chiesto da
+  // chi guida il progetto: *«quando la voce esatta non c'e' e si ripiega, il
+  // Pannello Admin lo deve DIRE. Non un errore per lo studente — una riga per
+  // noi, tipo "chiesta es-ES, usata es-MX".»* Senza, un ripiego e' esattamente
+  // la cosa che sembra a posto, non lo e', e non lo dice.
+  //
+  // I testi stanno in `configFieldDescriptions` come quelli di ogni campo del
+  // pannello; `come` sceglie quale dei quattro (`sceltaVoce`, app/audio.js).
+  function rigaVoceUsata() {
+    var s = BI.sceltaVoce();
+    var chiave = { preferita: 'vocePreferita', esatta: 'voceEsatta', ripiego: 'voceRipiego', nessuna: 'voceNessuna' }[s.come];
+    var testo = (CONFIG.configFieldDescriptions['speech.*' + chiave] || '')
+      .replace('{chiesta}', s.chiesta || '').replace('{usata}', s.usata || '').replace('{nome}', s.nome || '');
+    var p = document.createElement('p');
+    p.className = 'config-field-description';
+    p.id = 'cfg-voce-usata';
+    p.setAttribute('data-voce', s.come);
+    p.textContent = testo;
+    return p;
+  }
+
   function renderConfigGroup(sectionKey, section) {
     var details = document.createElement('details');
     details.className = 'config-group';
@@ -1154,6 +1175,7 @@
     } else if (Array.isArray(section)) {
       body.appendChild(renderConfigJsonField([sectionKey], section));
     } else if (section !== null && typeof section === 'object') {
+      if (sectionKey === 'speech') body.appendChild(rigaVoceUsata());
       renderConfigFields(body, section, [sectionKey]);
     } else {
       body.appendChild(renderConfigScalarField([sectionKey], section));

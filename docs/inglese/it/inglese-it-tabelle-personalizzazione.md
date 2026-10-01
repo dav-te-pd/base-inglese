@@ -77,8 +77,8 @@ storia.*
 | Colonna | Va in | Cosa vuol dire |
 |---|---|---|
 | **id** | `value` | l'identificativo salvato nei progressi dello studente. ⚠️ **Cambiarlo è una migrazione**, non una correzione |
-| **it** | `it` | come si legge in italiano |
-| **en** | `en` | come si legge in inglese |
+| **it** | `native` | come si legge in italiano |
+| **en** | `target` | come si legge in inglese |
 | **traducibile** | `traducibile` | `sì` → nel dialogo inglese si usa la colonna **en** · `no` → si usa la **it** anche in inglese |
 
 ⚠️ **`traducibile` è una proprietà della RIGA, non della tabella.** *Fino al
@@ -174,8 +174,8 @@ modo di esistere.*
 
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, E LE ALTRE RESTANO A QUATTRO.**
 `trascrivi.js` le accetta tutt'e due e **rifiuta ogni altro numero nominando la
-tabella**: le quattro colonne diventano `value`/`it`/`en`/`traducibile`, le sei
-aggiungono `paese: { it, en }`.
+tabella**: le quattro colonne diventano `value`/`native`/`target`/`traducibile`, le sei
+aggiungono `paese: { native, target }`.
 
 ⚠️ **`places.destinations` NON prende la colonna paese**, ed è una scelta:
 nessuna battuta dice il paese di destinazione. Darebbero due colonne che non
