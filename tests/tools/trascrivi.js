@@ -696,6 +696,21 @@ function bacinoCorto(id, json, nomeSequenza, sequences, sm) {
   return corti;
 }
 
+// ⚠️ L'ELENCO DELLE EDIZIONI — `data/edizioni.json`, dal 2026-10-02 (passo ⑤
+// dello spagnolo). Lo legge il menu dell'edizione nel Pannello Admin.
+//
+// Lo scrive QUESTO strumento perche' e' l'unico che sa quali edizioni ci sono:
+// le SCOPRE da `docs/` (`edizioni()`). Il browser non puo' elencare le cartelle
+// di un sito — deciso da chi guida il progetto il 2026-09-30, strada A.
+//
+// Il nome di ogni edizione non si scrive qui: e' la riga `corso` della §9
+// della sua struttura, la stessa che lo studente legge sul badge (regola 48).
+function elencoEdizioni(perEdizione) {
+  return {
+    edizioni: perEdizione.map((x) => ({ lingua: x.ed.lingua, studente: x.ed.studente, corso: x.corso }))
+  };
+}
+
 function scrivi(percorso, oggetto, controlla) {
   const testo = JSON.stringify(oggetto, null, 2) + '\n';
   const prima = fs.existsSync(percorso) ? fs.readFileSync(percorso, 'utf8') : '';
@@ -738,9 +753,11 @@ function main() {
   const daScrivere = [];
   const sm = sceltaMultipla();
   const bacini = [];
+  const perEdizione = [];
   trovate.forEach((ed) => {
     daScrivere.push([null, null, null, null, ed.lingua + '/' + ed.studente]);
     const s = struttura(ed);
+    perEdizione.push({ ed, corso: s.nomiASchermo.corso });
     // Il nome della sequenza degli episodi non e' nel markdown: e' uno solo
     // per edizione, e il markdown ne porta l'ORDINE (sezione 7). Qui si
     // assembla dall'edizione: la lista viene da li', il nome e l'ingresso
@@ -793,6 +810,9 @@ function main() {
       'non riempito in automatico:\n  ' + bacini.join('\n  '));
   }
 
+  daScrivere.push([null, null, null, null, 'tutte le edizioni']);
+  daScrivere.push(['elenco delle edizioni:', path.join(RADICE, 'data', 'edizioni.json'), elencoEdizioni(perEdizione), null]);
+
   condivisi.forEach((st) => {
     daScrivere.push([null, null, null, null, 'condivisi/' + st]);
     daScrivere.push(['testi dell\'interfaccia:', datiC(st, 'istruzioni-moduli'), istruzioni(st), null]);
@@ -823,4 +843,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { sceltaMultipla, bacinoCorto, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
+module.exports = { sceltaMultipla, bacinoCorto, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };

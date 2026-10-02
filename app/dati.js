@@ -232,6 +232,29 @@ window.BI = window.BI || {};
     return strutturaPromise;
   }
 
+  // ⚠️ L'ELENCO DELLE EDIZIONI — l'unico file di `data/` che non e' di
+  // un'edizione ne' di una lingua dello studente, dal 2026-10-02 (passo ⑤).
+  //
+  // Lo legge SOLO il menu dell'edizione nel Pannello Admin, e per questo si
+  // chiede quando il pannello si apre e non all'avvio: lo studente non lo
+  // aspetta mai. *E non dipende da `CONFIG.edizione`, apposta: il pannello
+  // deve poter cambiare edizione anche quando quella salvata non esiste e
+  // l'app e' sulla schermata d'errore.* Lo scrive `tests/tools/trascrivi.js`,
+  // che e' l'unico a sapere quali edizioni ci sono.
+  var EDIZIONI_FILE = conVersione('data/edizioni.json');
+  var edizioniPromise = null;
+  function caricaEdizioni() {
+    if (edizioniPromise) return edizioniPromise;
+    edizioniPromise = fetch(EDIZIONI_FILE)
+      .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .then(function (dati) {
+        if (!dati || !Array.isArray(dati.edizioni) || !dati.edizioni.length) throw new Error('elenco vuoto');
+        return dati.edizioni;
+      })
+      .catch(function (e) { edizioniPromise = null; throw e; });
+    return edizioniPromise;
+  }
+
   var MODULE_INSTRUCTIONS_FILE = percorsoCondiviso('istruzioni-moduli.json');
 
   // Il quarto file di dati, e l'unico che fino al 2026-09-09 aveva il percorso
@@ -532,6 +555,8 @@ window.BI = window.BI || {};
 
   BI.VERSIONE_FILE = VERSIONE;
   BI.caricaStrutturaCorso = caricaStrutturaCorso;
+  BI.caricaEdizioni = caricaEdizioni;
+  BI.EDIZIONI_FILE = EDIZIONI_FILE;
   BI.STRUTTURA_CORSO_FILE = STRUTTURA_CORSO_FILE;
   BI.loadEpisodeData = loadEpisodeData;
   BI.episodeGrade = episodeGrade;

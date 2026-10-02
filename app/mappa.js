@@ -851,6 +851,61 @@
     return wrap;
   }
 
+  // ⚠️ L'EDIZIONE: UN MENU, NON DUE CASELLE DI TESTO — dal 2026-10-02 (passo ⑤
+  // dello spagnolo), chiesto da chi guida il progetto: *«adesso sono campi
+  // editabili. non va bene. devono essere le solite tendine»*.
+  //
+  // Le due caselle (`lingua`, `studente`) facevano scrivere a mano una coppia
+  // che deve esistere come cartella: una lettera sbagliata murava l'app sulla
+  // schermata d'errore. Il menu elenca solo le edizioni che CI SONO, lette da
+  // `data/edizioni.json` (`BI.caricaEdizioni`), e scrive le due metà insieme —
+  // la coppia e' una scelta sola, e due campi separati permettevano di
+  // salvarne mezza.
+  //
+  // ⚠️ L'ELENCO ARRIVA DOPO, e il menu nasce con la sola edizione corrente: un
+  // <select> vuoto, o pieno di un'edizione presa a caso, mostrerebbe una
+  // scelta che nessuno ha fatto. Se l'elenco non arriva lo dice, e il menu
+  // resta spento: niente casella di testo di ripiego.
+  //
+  // ⚠️ E L'EDIZIONE SALVATA CHE NON ESISTE RESTA NELL'ELENCO, con la scritta
+  // «non esiste», come fa il menu delle sequenze: e' proprio il caso
+  // dell'app murata, in cui questo menu e' l'uscita.
+  function renderEdizioneField() {
+    var corrente = CONFIG.edizione.lingua + '/' + CONFIG.edizione.studente;
+    var wrap = document.createElement('div');
+    wrap.className = 'config-field';
+    var opzione = function (valore, testo, scelta) {
+      var o = document.createElement('option');
+      o.value = valore;
+      o.textContent = testo;
+      if (scelta) o.selected = true;
+      return o;
+    };
+    wrap.innerHTML =
+      '<label class="config-field-label" for="cfg-edizione">edizione</label>' +
+      configFieldDescriptionHtml(['edizione']) +
+      '<select id="cfg-edizione" data-edizione-pick disabled></select>' +
+      '<p class="config-field-error" hidden></p>';
+    var menu = wrap.querySelector('select');
+    menu.appendChild(opzione(corrente, corrente, true));
+    BI.caricaEdizioni().then(function (edizioni) {
+      menu.innerHTML = '';
+      var trovata = false;
+      edizioni.forEach(function (e) {
+        var valore = e.lingua + '/' + e.studente;
+        if (valore === corrente) trovata = true;
+        menu.appendChild(opzione(valore, (e.corso || valore) + ' (' + valore + ')', valore === corrente));
+      });
+      if (!trovata) menu.insertBefore(opzione(corrente, corrente + ' — non esiste', true), menu.firstChild);
+      menu.disabled = false;
+    }).catch(function () {
+      var err = wrap.querySelector('.config-field-error');
+      err.hidden = false;
+      err.textContent = 'Elenco delle edizioni non arrivato (data/edizioni.json): il menu resta spento.';
+    });
+    return wrap;
+  }
+
   function renderConfigFields(container, obj, path) {
     Object.keys(obj).forEach(function (key) {
       var value = obj[key];
@@ -1195,7 +1250,9 @@
     details.appendChild(summary);
     var body = document.createElement('div');
     body.className = 'config-group-body';
-    if (sectionKey === 'episodioCorrente') {
+    if (sectionKey === 'edizione') {
+      body.appendChild(renderEdizioneField());
+    } else if (sectionKey === 'episodioCorrente') {
       body.appendChild(renderEpisodeSwitchField());
     } else if (sectionKey === 'sequences') {
       body.appendChild(renderModuleOrderField());
@@ -1758,6 +1815,18 @@
     if (target.hasAttribute('data-sequence-pick')) {
       sequenzaScelta = target.value;
       ridisegnaGruppoSequenze(target);
+      return;
+    }
+
+    // Il menu dell'edizione scrive DUE valori con un gesto solo, quindi non
+    // porta `data-config-path` (che ne nomina uno). E ricarica: la struttura,
+    // gli episodi e i testi si caricano all'avvio, dall'edizione di allora.
+    if (target.hasAttribute('data-edizione-pick')) {
+      var coppia = target.value.split('/');
+      setConfigPath(['edizione', 'lingua'], coppia[0]);
+      setConfigPath(['edizione', 'studente'], coppia[1]);
+      persistConfigSection('edizione');
+      window.location.reload();
       return;
     }
 

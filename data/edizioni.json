@@ -1,0 +1,14 @@
+{
+  "edizioni": [
+    {
+      "lingua": "inglese",
+      "studente": "it",
+      "corso": "Inglese per italiani"
+    },
+    {
+      "lingua": "spagnolo",
+      "studente": "it",
+      "corso": "Spagnolo per italiani"
+    }
+  ]
+}
