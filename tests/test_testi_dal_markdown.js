@@ -35,6 +35,13 @@
 //    rotto (la versione `b` della struttura inglese): due rossi col nome del
 //    titolo e la riga, uscita 1.**
 //
+// ④ **Dal 2026-10-06 ([F]): due tabelle in una sezione di un file EPISODIO.**
+//    Il trascrittore leggeva la prima e la seconda spariva; con le stesse
+//    colonne e una riga vuota in mezzo si fondevano. Trovato da
+//    `controllo-bacino.py` di chi guida il progetto. **Visto fallire con la
+//    guardia spenta: tre rossi su tre**; e su `spagnolo-it-gate.md` con una
+//    tabella in piu' nel grado C il trascrittore esce con 1.
+//
 // COSA NON PROTEGGE, dichiarato (regola 32): non dice se un TESTO e' buono.
 // Un markdown con una frase sbagliata dentro produce un JSON con la stessa
 // frase sbagliata, e questo file e' verde. Qui si guarda che le due copie
@@ -300,6 +307,38 @@ function quanteStringhe(o) {
   log('[D] C\'e\' un segnaposto con suffisso da guastare (il test non sta guardando il vuoto)', !!conSuffisso);
   log('[D] Un suffisso che non e\' un ruolo (`:es`) ferma il trascrittore, e dice quale',
     !!msgSuffisso && /suffisso che non e' un ruolo/.test(msgSuffisso) && /:es\}\}/.test(msgSuffisso), String(msgSuffisso));
+}
+
+// ── [F] UNA SEZIONE DI UN FILE EPISODIO, UNA TABELLA — 2026-10-06 ─────────
+//
+// Il caso vero l'ha trovato `controllo-bacino.py` di chi guida il progetto: due
+// tabelle in una sezione di grado. Il trascrittore leggeva la prima e la
+// seconda spariva in silenzio; e se le due avevano le stesse colonne e solo
+// una riga vuota in mezzo **si fondevano**, con l'intestazione della seconda
+// diventata una voce con id `id`. I tre modi in cui una seconda tabella arriva,
+// e il quarto caso, quello che NON deve fermare: la §9 della struttura ha
+// davvero una tabella di spiegazione sotto quella dei dati.
+{
+  const sollevato = function (f) { try { f(); return null; } catch (e) { return e.message; } };
+  const titolo = '### Grado C — le frasi';
+  const prima = titolo + '\n\n| id | es | it | da |\n|---|---|---|---|\n| `c-1` | a | b | `d-1` |\n';
+  const casi = {
+    'con una riga di prosa in mezzo': prima + '\nUna nota.\n\n| id | es | it | da |\n|---|---|---|---|\n| `c-9` | x | y | `d-9` |\n\n### Grado B\n',
+    'con colonne diverse e una riga vuota': prima + '\n| id | non con |\n|---|---|\n| `c-1` | `c-4` |\n\n### Grado B\n',
+    'con le STESSE colonne e una riga vuota (prima si fondevano)': prima + '\n| id | es | it | da |\n|---|---|---|---|\n| `c-9` | x | y | `d-9` |\n\n### Grado B\n'
+  };
+  Object.keys(casi).forEach(function (n) {
+    const msg = sollevato(function () { T.tabellaSotto(casi[n], titolo, true, null, true); });
+    log('[F] Una seconda tabella in una sezione di grado, ' + n + ', ferma il trascrittore',
+      !!msg && /ci sono 2 tabelle/.test(msg), String(msg));
+  });
+  log('[F] Il grado della sezione dopo NON è una seconda tabella di questa',
+    sollevato(function () { T.tabellaSotto(prima + '\n### Grado B\n\n| id | es | it | pr | cat |\n|---|---|---|---|---|\n| `b-1` | a | b | c | d |\n', titolo, true, null, true); }) === null);
+  const struttura = '## 9 — X\n\n| Ruolo | Nome |\n|---|---|\n| `corso` | Y |\n\nUna spiegazione.\n\n| | |\n|---|---|\n| `corso` | il nome del corso |\n';
+  let letta = null;
+  const msgS = sollevato(function () { letta = T.tabellaSotto(struttura, '## 9 — X', true); });
+  log('[F] ...ma la struttura, che spiega, con una tabella di spiegazione sotto i dati NON si ferma, e legge i dati',
+    msgS === null && JSON.stringify(letta) === JSON.stringify([['`corso`', 'Y']]), String(msgS) + ' ' + JSON.stringify(letta));
 }
 
 console.log('\n=== TESTI DAL MARKDOWN: ' + passed + '/' + (passed + failed) + ' passed ===');

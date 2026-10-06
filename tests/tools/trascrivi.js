@@ -87,7 +87,7 @@ const dati = (ed, n) => path.join(RADICE, 'data', ed.lingua, ed.studente, ed.pre
 // niente** — un corso senza nessuna sequenza, cioe' ogni episodio sulla
 // schermata d'errore. *E `test_struttura_corso` sarebbe rimasto verde: legge
 // il markdown con lo stesso metodo, e confrontava vuoto con vuoto.*
-function tabellaSotto(testo, titolo, obbligatoria, intestazione) {
+function tabellaSotto(testo, titolo, obbligatoria, intestazione, unaSola) {
   const i = testo.indexOf(titolo);
   if (i === -1) {
     if (obbligatoria) throw new Error('Titolo non trovato: ' + titolo);
@@ -100,7 +100,7 @@ function tabellaSotto(testo, titolo, obbligatoria, intestazione) {
       riga(i) + ' e ' + riga(ancora) + '): il trascrittore leggerebbe la prima, ' +
       'che forse e\' una citazione. Un titolo cercato si scrive una volta sola.');
   }
-  const risultato = tabellaSottoDa(testo, i, titolo, intestazione);
+  const risultato = tabellaSottoDa(testo, i, titolo, intestazione, unaSola);
   if (obbligatoria && !risultato.length) {
     throw new Error('Sotto "' + titolo + '" c\'e\' una tabella senza righe: ' +
       'una tabella obbligatoria vuota non è un corso vuoto, è un guasto.');
@@ -108,7 +108,7 @@ function tabellaSotto(testo, titolo, obbligatoria, intestazione) {
   return risultato;
 }
 
-function tabellaSottoDa(testo, i, titolo, intestazione) {
+function tabellaSottoDa(testo, i, titolo, intestazione, unaSola) {
   const righe = testo.slice(i + titolo.length).split('\n');
   const blocchi = [];
   let corrente = null;
@@ -119,9 +119,26 @@ function tabellaSottoDa(testo, i, titolo, intestazione) {
     // tabella di un'altra sezione \u2014 cioe' darebbe la risposta giusta alla
     // domanda sbagliata.
     if (t.startsWith('## ')) break;
+    // ⚠️ SENZA INTESTAZIONE LA SEZIONE FINISCE AL PRIMO TITOLO DI QUALUNQUE
+    // LIVELLO — dal 2026-10-06. Una sezione di grado e' un `### `, e il
+    // prossimo `### Grado` e' gia' un'altra sezione: le sue tabelle non sono
+    // «una seconda tabella» di questa.
+    if (unaSola && !intestazione && t.startsWith('#')) break;
     if (t.startsWith('|')) {
       const celle = t.split('|').slice(1, -1).map((c) => c.trim());
-      if (celle.every((c) => /^-+$/.test(c))) continue;
+      if (celle.every((c) => /^-+$/.test(c))) {
+        // ⚠️ UN SEPARATORE `|---|` DOPO LA PRIMA RIGA DATI E' L'INIZIO DI UNA
+        // TABELLA NUOVA: la riga appena letta era la sua intestazione. Senza
+        // questo, due tabelle con le stesse colonne separate da una riga
+        // vuota si fondevano, e l'intestazione della seconda diventava una
+        // voce con id `id` — misurato il 2026-10-06.
+        if (corrente && corrente.length > 2) {
+          const testa = corrente.pop();
+          corrente = [testa];
+          blocchi.push(corrente);
+        }
+        continue;
+      }
       // \u26a0\ufe0f UN NUMERO DI COLONNE DIVERSO APRE UNA TABELLA NUOVA, e non e' una
       // furbizia: una riga vuota non chiude una tabella (ci sono tabelle che
       // ne hanno dentro), quindi due tabelle separate da una riga vuota sola
@@ -133,13 +150,31 @@ function tabellaSottoDa(testo, i, titolo, intestazione) {
       if (!corrente) { corrente = []; blocchi.push(corrente); }
       corrente.push(celle);
     } else if (corrente && t !== '') {
-      corrente = null;
       // Una riga di prosa CHIUDE la tabella ma non la sezione: sotto ce ne
-      // puo' essere un'altra, e `intestazione` dice quale si voleva.
-      if (!intestazione) break;
+      // puo' essere un'altra, e `intestazione` dice quale si voleva. Chi
+      // vuole UNA tabella sola continua a guardare fino al titolo dopo, per
+      // poter dire che ce n'e' una seconda.
+      corrente = null;
+      if (!intestazione && !unaSola) break;
     }
   }
   if (!blocchi.length) return [];
+  // ⚠️ DUE TABELLE IN UNA SEZIONE DI UN FILE EPISODIO FERMANO — dal
+  // 2026-10-06, chiesto da chi guida il progetto dopo che `controllo-bacino.py`
+  // ne ha trovate due in una sezione di grado. *Prima si leggeva la prima e la
+  // seconda spariva in silenzio: avrebbe letto quella giusta, e nessuno se ne
+  // sarebbe accorto — fino al giorno in cui la giusta fosse stata la seconda.*
+  //
+  // ⚠️ SOLO DOVE LO CHIEDE CHI CHIAMA (`unaSola`), cioe' i file EPISODIO, che
+  // dal 2026-09-28 portano soli dati (regola 26): li' una seconda tabella e'
+  // sempre un errore. **La struttura e i file condivisi invece spiegano**, e
+  // hanno tabelle di spiegazione sotto quella dei dati — la §9 della struttura
+  // ne ha una, misurato lo stesso giorno: fermarle sarebbe stato un falso rosso.
+  if (unaSola && !intestazione && blocchi.length > 1) {
+    throw new Error('Sotto "' + titolo + '" ci sono ' + blocchi.length + ' tabelle (intestazioni ' +
+      JSON.stringify(blocchi.map((b) => b[0])) + '): il trascrittore ne legge una, ' +
+      'e prenderebbe la prima in silenzio. Una sezione, una tabella.');
+  }
   if (!intestazione) return blocchi[0].slice(1);
   const voluto = intestazione.map((c) => c.toLowerCase());
   const scelto = blocchi.find((b) =>
@@ -474,7 +509,7 @@ function episodio(ed, id, gradeNames) {
 
   fuori.episodeId = id;
 
-  const regola = colonne(tabellaSotto(t, '## 3 — LA REGOLA GENERALE', false), 1, 'regola generale');
+  const regola = colonne(tabellaSotto(t, '## 3 — LA REGOLA GENERALE', false, null, true), 1, 'regola generale');
   // ⚠️ `html()` ANCHE QUI, dal 2026-09-30: `generalRule` entra nella pagina come
   // HTML (Repeat Aloud), esattamente come `pronunciationTip`. La prima regola
   // generale col grassetto — «**dí**-as», spagnolo, `gate` — sarebbe uscita
@@ -483,7 +518,7 @@ function episodio(ed, id, gradeNames) {
   if (regola.length) fuori.generalRule = html(regola[0][0].trim());
 
   // Le tabelle interne: `episode.<nome>.<gruppo>` le raggiunge da qui.
-  const interne = colonne(tabellaSotto(t, "## 8 — LE TABELLE INTERNE ALL'EPISODIO", false), 3, 'tabelle interne');
+  const interne = colonne(tabellaSotto(t, "## 8 — LE TABELLE INTERNE ALL'EPISODIO", false, null, true), 3, 'tabelle interne');
   interne.forEach((r) => {
     const nome = nb(r[0]);
     const gruppo = nb(r[1]);
@@ -491,14 +526,14 @@ function episodio(ed, id, gradeNames) {
     fuori[nome][gruppo] = r[2].split('·').map((v) => nb(v)).filter(Boolean);
   });
 
-  const pers = colonne(tabellaSotto(t, '## 6 — PERSONAGGI ED ETICHETTE', true), 2, 'personaggi');
+  const pers = colonne(tabellaSotto(t, '## 6 — PERSONAGGI ED ETICHETTE', true, null, true), 2, 'personaggi');
   fuori.speakerLabels = {};
   pers.forEach((r) => { fuori.speakerLabels[nb(r[0])] = r[1].trim(); });
 
   // ⚠️ SEI COLONNE DAL 2026-09-24 (passo 1.8-bis (3)): fra `tabella` e
   // `predefinito` e' nata `righe`, che prende un PEZZO di una tabella
   // condivisa. Un punto vuol dire «tutta la tabella».
-  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true), 6, 'slot');
+  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true, null, true), 6, 'slot');
   // Il segnaposto e la chiave dello slot hanno lo stesso nome: la mappa esiste
   // perche' POSSANO divergere, non perche' divergano.
   fuori.placeholderMap = {};
@@ -522,12 +557,12 @@ function episodio(ed, id, gradeNames) {
   // il JSON continua a portarlo — `test_story_modules.js` lo legge — senza
   // che diventi un secondo posto dove scriverlo.
   const gradi = {
-    D: colonne(tabellaSotto(t, '### Grado D — le battute', true), 5, 'grado D'),
-    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true), 4, 'grado C'),
-    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true), 5, 'grado B'),
-    A: colonne(tabellaSotto(t, '### Grado A — le parole', true), 5, 'grado A')
+    D: colonne(tabellaSotto(t, '### Grado D — le battute', true, null, true), 5, 'grado D'),
+    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), 4, 'grado C'),
+    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), 5, 'grado B'),
+    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), 5, 'grado A')
   };
-  const skill = colonne(tabellaSotto(t, '## 5 — LE SKILL', true), 4, 'skill');
+  const skill = colonne(tabellaSotto(t, '## 5 — LE SKILL', true, null, true), 4, 'skill');
   const perBattuta = {};
   skill.forEach((r) => { (perBattuta[nb(r[0])] = perBattuta[nb(r[0])] || []).push({ title: r[2].trim(), body: html(r[3].trim()) }); });
 
