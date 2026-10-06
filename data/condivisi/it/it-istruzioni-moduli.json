@@ -39,18 +39,18 @@
   },
   "matchEngIta": {
     "howItWorks": {
-      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      "body": "<p>Vedi una parola e più traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
-      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
+      "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
     }
   },
   "matchItaEng": {
     "howItWorks": {
-      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
+      "body": "<p>Vedi una parola e più traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Tieni a portata carta e penna: oltre a ripetere ad alta voce, prova a scrivere le parole. Con il tempo, ascoltare e scrivere insieme diventa automatico.</div>"
     },
     "helpReminder": {
-      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
+      "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
     }
   },
   "flashcard": {
@@ -176,18 +176,18 @@
   },
   "speedMatchEngIta": {
     "howItWorks": {
-      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+      "body": "<p>Vedi una parola e più traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
-      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
+      "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte, prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
     }
   },
   "speedMatchItaEng": {
     "howItWorks": {
-      "body": "<p>Vedi una parola e quattro traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
+      "body": "<p>Vedi una parola e più traduzioni — tocca quella giusta prima che scada il tempo, o «Non lo so» se non la ricordi.</p><p><b>L'obiettivo non è la velocità, è la correttezza.</b> Se sbagli ti mostriamo la risposta giusta: leggila e memorizzala, perché ogni errore torna nei ripassi finché non diventa un successo.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consiglio</span>Qui non serve scrivere: l'obiettivo è ascoltare e ripetere a voce alta, restando dentro il tempo.</div>"
     },
     "helpReminder": {
-      "body": "<p>Vedi la parola, tocca la traduzione corretta tra le quattro prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
+      "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte, prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
     }
   },
   "voiceCoach": {
