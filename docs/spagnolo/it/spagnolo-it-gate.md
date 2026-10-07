@@ -26,47 +26,47 @@
 
 ### Grado C — le frasi
 
-| id | es | it | da |
-|---|---|---|---|
-| `c-1` | Soy {{papa}}. | Sono {{papa}}. | `d-2` |
-| `c-2` | ¿De dónde es? | Di dov'è? | `d-3` |
-| `c-3` | Soy de {{partenza}}, {{partenza.paese:target}}. | Sono di {{partenza}}, {{partenza.paese}}. | `d-4` |
-| `c-4` | Soy {{mamma}}. | Sono {{mamma}}. | `d-6` |
-| `c-5` | Soy {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` |
-| `c-6` | Tengo {{figliaEta}} años. | Ho {{figliaEta}} anni. | `d-7` |
-| `c-7` | Yo soy {{figlioNome}}. | Io sono {{figlioNome}}. | `d-8` |
-| `c-8` | Tengo {{figlioEta}} años. | Ho {{figlioEta}} anni. | `d-8` |
-| `c-9` | ¡Somos la familia {{cognome}}! | Siamo la famiglia {{cognome}}! | `d-9` |
+| id | es | it | da | non con |
+|---|---|---|---|---|
+| `c-1` | Soy {{papa}}. | Sono {{papa}}. | `d-2` | `c-4` · `c-5` |
+| `c-2` | ¿De dónde es? | Di dov'è? | `d-3` | · |
+| `c-3` | Soy de {{partenza}}, {{partenza.paese:target}}. | Sono di {{partenza}}, {{partenza.paese}}. | `d-4` | · |
+| `c-4` | Soy {{mamma}}. | Sono {{mamma}}. | `d-6` | `c-1` · `c-5` |
+| `c-5` | Soy {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` | `c-1` · `c-4` |
+| `c-6` | Tengo {{figliaEta}} años. | Ho {{figliaEta}} anni. | `d-7` | `c-8` |
+| `c-7` | Yo soy {{figlioNome}}. | Io sono {{figlioNome}}. | `d-8` | · |
+| `c-8` | Tengo {{figlioEta}} años. | Ho {{figlioEta}} anni. | `d-8` | `c-6` |
+| `c-9` | ¡Somos la familia {{cognome}}! | Siamo la famiglia {{cognome}}! | `d-9` | · |
 
 ### Grado B — le espressioni
 
-| id | es | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `b-buenos-dias` | buenos días | Buongiorno | BUE-nos DI-as | saluto di servizio |
-| `b-mucho-gusto` | mucho gusto | Piacere di conoscerti / conoscervi | MU-cio GUS-to | espressione idiomatica |
-| `b-soy-de` | soy de | Sono di / Vengo da | soi de | verbo `ser` + preposizione |
-| `b-y-usted` | ¿y usted? | E lei? | i us-TE | espressione |
+| id | es | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `b-buenos-dias` | buenos días | Buongiorno | BUE-nos DI-as | saluto di servizio | · |
+| `b-mucho-gusto` | mucho gusto | Piacere di conoscerti / conoscervi | MU-cio GUS-to | espressione idiomatica | · |
+| `b-soy-de` | soy de | Sono di / Vengo da | soi de | verbo `ser` + preposizione | · |
+| `b-y-usted` | ¿y usted? | E lei? | i us-TE | espressione | · |
 
 ### Grado A — le parole
 
-| id | es | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `a-hola` | hola | Ciao / Salve | O-la — **la «h» non si legge**, come in italiano | saluto |
-| `a-dias` | días | giorni | DI-as — *l'accento scritto è sulla «i»* | sostantivo |
-| `a-mucho` | mucho | molto | MU-cio — ⚠️ **la «ch» spagnola è la «c» di «ciao»** | avverbio di quantità |
-| `a-gusto` | gusto | piacere | GUS-to | sostantivo |
-| `a-soy` | soy | (io) sono | soi — *una sillaba* | verbo `ser` |
-| `a-es` | es | (lui/lei) è · (lei) è | es | verbo `ser` |
-| `a-somos` | somos | (noi) siamo | SO-mos | verbo `ser` |
-| `a-tengo` | tengo | (io) ho | TEN-go — *la «g» è dura, come in «gatto»* | verbo `tener` |
-| `a-de` | de | di / da | de | preposizione |
-| `a-donde` | dónde | dove | DON-de — *l'accento scritto è sulla prima* | avverbio interrogativo |
-| `a-y` | y | e | i — **si legge «i», non «ipsilon»** | congiunzione |
-| `a-usted` | usted | lei *(di cortesia)* | us-TE — ⚠️ **la «d» finale non si sente quasi** | pronome di cortesia |
-| `a-yo` | yo | io | **GIO** — ⚠️ *a inizio frase la «y» spagnola somiglia alla nostra «gi» di «gioco»* | pronome soggetto |
-| `a-anos` | años | anni | A-gnos — **la «ñ» è il nostro «gn»** | sostantivo plurale |
-| `a-la` | la | la | la | articolo |
-| `a-familia` | familia | famiglia | fa-MI-lia — *accento come in italiano* | sostantivo |
+| id | es | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `a-hola` | hola | Ciao / Salve | O-la — **la «h» non si legge**, come in italiano | saluto | · |
+| `a-dias` | días | giorni | DI-as — *l'accento scritto è sulla «i»* | sostantivo | · |
+| `a-mucho` | mucho | molto | MU-cio — ⚠️ **la «ch» spagnola è la «c» di «ciao»** | avverbio di quantità | · |
+| `a-gusto` | gusto | piacere | GUS-to | sostantivo | · |
+| `a-soy` | soy | (io) sono | soi — *una sillaba* | verbo `ser` | · |
+| `a-es` | es | (lui/lei) è · (lei) è | es | verbo `ser` | · |
+| `a-somos` | somos | (noi) siamo | SO-mos | verbo `ser` | · |
+| `a-tengo` | tengo | (io) ho | TEN-go — *la «g» è dura, come in «gatto»* | verbo `tener` | · |
+| `a-de` | de | di / da | de | preposizione | · |
+| `a-donde` | dónde | dove | DON-de — *l'accento scritto è sulla prima* | avverbio interrogativo | · |
+| `a-y` | y | e | i — **si legge «i», non «ipsilon»** | congiunzione | · |
+| `a-usted` | usted | lei *(di cortesia)* | us-TE — ⚠️ **la «d» finale non si sente quasi** | pronome di cortesia | · |
+| `a-yo` | yo | io | **GIO** — ⚠️ *a inizio frase la «y» spagnola somiglia alla nostra «gi» di «gioco»* | pronome soggetto | · |
+| `a-anos` | años | anni | A-gnos — **la «ñ» è il nostro «gn»** | sostantivo plurale | · |
+| `a-la` | la | la | la | articolo | · |
+| `a-familia` | familia | famiglia | fa-MI-lia — *accento come in italiano* | sostantivo | · |
 
 ## 5 — LE SKILL
 

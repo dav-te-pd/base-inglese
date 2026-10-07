@@ -219,7 +219,7 @@
 
   /* ============================================================
      SHARED: multiple-choice quiz logic (Speed Match + Match Practice)
-     Direction label, 4-option builder, and mastery/retry-queue
+     Direction label, the options builder, and mastery/retry-queue
      recording are the same mechanics in both module types (CLAUDE.md
      rule 13) — module-specific state (own retryAttempts/retryQueue,
      own mastery unitId prefix) is passed in rather than hardcoded
@@ -231,7 +231,14 @@
 
   function buildMultipleChoiceOptions(item, direction, vocabPool) {
     var correctText = itemText(item, direction === 'en-it' ? 'native' : 'target');
-    var pool = vocabPool.filter(function (v) { return v.id !== item.id; });
+    // ⚠️ FUORI ANCHE LE VOCI DI `nonCon` — dal 2026-10-07. Sono le voci che
+    // chi scrive l'episodio ha dichiarato «non con questa»: frasi che
+    // differiscono solo per un segnaposto («Sono Marco» / «Sono Giulia»), e
+    // fra le quali chi cerca il nome azzecca senza leggere la lingua. La
+    // coppia e' sempre scritta nei due versi (lo impone il trascrittore),
+    // quindi basta guardare la voce della domanda.
+    var esclusi = item.nonCon || [];
+    var pool = vocabPool.filter(function (v) { return v.id !== item.id && esclusi.indexOf(v.id) === -1; });
     // Quante, lo dice `CONFIG.sceltaMultipla.distrattori` (regola 3): qui
     // c'era un `3` scritto a mano fino al 2026-10-01.
     var distractors = shuffle(pool).slice(0, CONFIG.sceltaMultipla.distrattori).map(function (v) {

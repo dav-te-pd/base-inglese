@@ -26,41 +26,41 @@
 
 ### Grado C — le frasi
 
-| id | es | it | da |
-|---|---|---|---|
-| `c-1` | Los billetes, por favor. | I biglietti, per favore. | `d-2` |
-| `c-2` | Ella es mi esposa. | Lei è mia moglie. | `d-4` |
-| `c-3` | Ella es mi hija. | Lei è mia figlia. | `d-5` |
-| `c-4` | Él es mi hijo. | Lui è mio figlio. | `d-5` |
-| `c-5` | ¿La familia {{cognome}}? Por aquí, por favor. | La famiglia {{cognome}}? Da questa parte, prego. | `d-7` |
+| id | es | it | da | non con |
+|---|---|---|---|---|
+| `c-1` | Los billetes, por favor. | I biglietti, per favore. | `d-2` | · |
+| `c-2` | Ella es mi esposa. | Lei è mia moglie. | `d-4` | · |
+| `c-3` | Ella es mi hija. | Lei è mia figlia. | `d-5` | · |
+| `c-4` | Él es mi hijo. | Lui è mio figlio. | `d-5` | · |
+| `c-5` | ¿La familia {{cognome}}? Por aquí, por favor. | La famiglia {{cognome}}? Da questa parte, prego. | `d-7` | · |
 
 ### Grado B — le espressioni
 
-| id | es | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `b-bienvenidos-a-bordo` | bienvenidos a bordo | Benvenuti a bordo | bien-ve-NI-dos a BOR-do | formula di accoglienza |
-| `b-por-favor` | por favor | Per favore / Prego | por fa-VOR | formula di cortesia |
-| `b-aqui-tiene` | aquí tiene | Ecco a lei | a-KI TIE-ne | espressione idiomatica |
-| `b-por-aqui` | por aquí | Da questa parte | por a-KI | indicazione |
-| `b-buen-vuelo` | ¡buen vuelo! | Buon volo! | buen VUE-lo | augurio |
+| id | es | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `b-bienvenidos-a-bordo` | bienvenidos a bordo | Benvenuti a bordo | bien-ve-NI-dos a BOR-do | formula di accoglienza | · |
+| `b-por-favor` | por favor | Per favore / Prego | por fa-VOR | formula di cortesia | · |
+| `b-aqui-tiene` | aquí tiene | Ecco a lei | a-KI TIE-ne | espressione idiomatica | · |
+| `b-por-aqui` | por aquí | Da questa parte | por a-KI | indicazione | · |
+| `b-buen-vuelo` | ¡buen vuelo! | Buon volo! | buen VUE-lo | augurio | · |
 
 ### Grado A — le parole
 
-| id | es | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `a-bienvenidos` | bienvenidos | benvenuti | bien-ve-NI-dos | formula |
-| `a-billetes` | billetes | biglietti | bi-YE-tes — *la «ll» è come la «y»* | sostantivo plurale |
-| `a-los` | los | i / gli | los | articolo plurale |
-| `a-por` | por | per / da | por | preposizione |
-| `a-aqui` | aquí | qui | a-KI — *l'accento scritto è sulla «i»* | avverbio di luogo |
-| `a-gracias` | gracias | grazie | GRA-thias — ⚠️ **la «c» davanti a «i» è il «th» di «think»** | formula |
-| `a-mi` | mi | mio / mia | mi — ⭐ **una forma sola per il maschile e il femminile** | possessivo |
-| `a-ella` | ella | lei | E-ya | pronome soggetto |
-| `a-el` | él | lui | el — *l'accento lo distingue da «el», il* | pronome soggetto |
-| `a-esposa` | esposa | moglie | es-PO-sa | sostantivo |
-| `a-hija` | hija | figlia | I-ja — ⚠️ **la «h» non si legge, la «j» è un raschio** | sostantivo |
-| `a-hijo` | hijo | figlio | I-jo | sostantivo |
-| `a-vuelo` | vuelo | volo | VUE-lo — *la «v» è quasi una «b»* | sostantivo |
+| id | es | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `a-bienvenidos` | bienvenidos | benvenuti | bien-ve-NI-dos | formula | · |
+| `a-billetes` | billetes | biglietti | bi-YE-tes — *la «ll» è come la «y»* | sostantivo plurale | · |
+| `a-los` | los | i / gli | los | articolo plurale | · |
+| `a-por` | por | per / da | por | preposizione | · |
+| `a-aqui` | aquí | qui | a-KI — *l'accento scritto è sulla «i»* | avverbio di luogo | · |
+| `a-gracias` | gracias | grazie | GRA-thias — ⚠️ **la «c» davanti a «i» è il «th» di «think»** | formula | · |
+| `a-mi` | mi | mio / mia | mi — ⭐ **una forma sola per il maschile e il femminile** | possessivo | · |
+| `a-ella` | ella | lei | E-ya | pronome soggetto | · |
+| `a-el` | él | lui | el — *l'accento lo distingue da «el», il* | pronome soggetto | · |
+| `a-esposa` | esposa | moglie | es-PO-sa | sostantivo | · |
+| `a-hija` | hija | figlia | I-ja — ⚠️ **la «h» non si legge, la «j» è un raschio** | sostantivo | · |
+| `a-hijo` | hijo | figlio | I-jo | sostantivo | · |
+| `a-vuelo` | vuelo | volo | VUE-lo — *la «v» è quasi una «b»* | sostantivo | · |
 
 ## 5 — LE SKILL
 

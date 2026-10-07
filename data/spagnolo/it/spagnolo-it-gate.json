@@ -253,7 +253,11 @@
           "id": "c-1",
           "target": "Soy {{papa}}.",
           "native": "Sono {{papa}}.",
-          "fromLine": "d-2"
+          "fromLine": "d-2",
+          "nonCon": [
+            "c-4",
+            "c-5"
+          ]
         },
         {
           "id": "c-2",
@@ -271,19 +275,30 @@
           "id": "c-4",
           "target": "Soy {{mamma}}.",
           "native": "Sono {{mamma}}.",
-          "fromLine": "d-6"
+          "fromLine": "d-6",
+          "nonCon": [
+            "c-1",
+            "c-5"
+          ]
         },
         {
           "id": "c-5",
           "target": "Soy {{figliaNome}}.",
           "native": "Sono {{figliaNome}}.",
-          "fromLine": "d-7"
+          "fromLine": "d-7",
+          "nonCon": [
+            "c-1",
+            "c-4"
+          ]
         },
         {
           "id": "c-6",
           "target": "Tengo {{figliaEta}} años.",
           "native": "Ho {{figliaEta}} anni.",
-          "fromLine": "d-7"
+          "fromLine": "d-7",
+          "nonCon": [
+            "c-8"
+          ]
         },
         {
           "id": "c-7",
@@ -295,7 +310,10 @@
           "id": "c-8",
           "target": "Tengo {{figlioEta}} años.",
           "native": "Ho {{figlioEta}} anni.",
-          "fromLine": "d-8"
+          "fromLine": "d-8",
+          "nonCon": [
+            "c-6"
+          ]
         },
         {
           "id": "c-9",

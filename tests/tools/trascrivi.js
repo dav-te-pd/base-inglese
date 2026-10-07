@@ -503,8 +503,63 @@ function messaggi(st) {
 }
 
 // ── un episodio ──────────────────────────────────────────────────────────
-function episodio(ed, id, gradeNames) {
-  const t = fs.readFileSync(doc(ed, id), 'utf8');
+// `testo` e' facoltativo: senza, si legge il file dell'episodio dalla sua
+// cartella. Con, si trascrive quel testo — e' la strada del MODELLO
+// (`nuovi/...-EPISODIO-VUOTO.md`), che non sta in nessuna edizione e che
+// `test_non_con.js` trascrive dal 2026-10-07.
+// ⚠️ `non con` — dal 2026-10-07, approvato da chi guida il progetto.
+//
+// Una voce dei gradi A, B, C puo' dichiarare quali voci NON devono comparire
+// come sue alternative in Match e Speed Match. Il caso che l'ha fatta nascere,
+// misurato da chi guida il progetto: nel grado C di `spagnolo-it-gate` le
+// frasi c-1, c-4, c-5 differiscono solo per il segnaposto, e per c-1 la
+// probabilita' che fra tre distrattori ci fosse uno dei gemelli era il 64% —
+// «Sono Marco» con «Soy Giulia» accanto a «Soy Marco»: chi cerca il nome
+// azzecca senza leggere spagnolo.
+//
+// La cella porta id fra apici inversi separati da `·`; un `·` da solo vuol
+// dire «nessuna esclusione». Nel JSON il campo `nonCon` c'e' SOLO quando la
+// lista non e' vuota, come `rows` degli slot: assente vuol dire nessuna.
+function conNonCon(voce, cella) {
+  const ids = String(cella == null ? '' : cella).split('·').map((v) => nb(v)).filter(Boolean);
+  if (ids.length) voce.nonCon = ids;
+  return voce;
+}
+
+// I fermi di FORMA di `non con`, su ogni file trascritto — modello compreso.
+// Il bacino no: quello e' una proprieta' del contenuto, e si misura solo sugli
+// episodi veri (`bacinoCorto`).
+//
+//   - un id escluso deve stare NELLO STESSO GRADO dello STESSO episodio:
+//     niente altri gradi, niente altri episodi — confine fissato da chi guida
+//     il progetto il 2026-10-06, ed e' questo fermo a imporlo;
+//   - una voce non esclude se' stessa;
+//   - ⚠️ UNA COPPIA SCRITTA IN UN VERSO SOLO FERMA, NON SI RIPARA (iii):
+//     *«se A differisce da B solo per un segnaposto, allora B differisce da
+//     A: una coppia asimmetrica non e' una scelta, e' una dimenticanza»*.
+//     Riparandola da solo il trascrittore deciderebbe al posto di chi scrive.
+function controllaNonCon(episodio, g, items) {
+  const ids = items.map((v) => v.id);
+  const difetti = [];
+  items.forEach((v) => {
+    (v.nonCon || []).forEach((x) => {
+      if (x === v.id) difetti.push(v.id + ' esclude se\' stessa');
+      else if (ids.indexOf(x) === -1) difetti.push(v.id + ' esclude `' + x + '`, che nel grado ' + g + ' non esiste');
+      else {
+        const altra = items.find((w) => w.id === x);
+        if ((altra.nonCon || []).indexOf(v.id) === -1) {
+          difetti.push(v.id + ' esclude ' + x + ', ma ' + x + ' non esclude ' + v.id + ' — una coppia si scrive nei due versi');
+        }
+      }
+    });
+  });
+  if (difetti.length) {
+    throw new Error(episodio + ', grado ' + g + ', colonna `non con`:\n  ' + difetti.join('\n  '));
+  }
+}
+
+function episodio(ed, id, gradeNames, testo) {
+  const t = testo != null ? testo : fs.readFileSync(doc(ed, id), 'utf8');
   const fuori = {};
 
   fuori.episodeId = id;
@@ -558,9 +613,12 @@ function episodio(ed, id, gradeNames) {
   // che diventi un secondo posto dove scriverlo.
   const gradi = {
     D: colonne(tabellaSotto(t, '### Grado D — le battute', true, null, true), 5, 'grado D'),
-    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), 4, 'grado C'),
-    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), 5, 'grado B'),
-    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), 5, 'grado A')
+    // ⚠️ UNA COLONNA IN PIU' IN A, B e C DAL 2026-10-07: `non con`, ultima.
+    // Il grado D non ce l'ha: nessun modulo presenta una battuta fra delle
+    // alternative.
+    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), 5, 'grado C'),
+    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), 6, 'grado B'),
+    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), 6, 'grado A')
   };
   const skill = colonne(tabellaSotto(t, '## 5 — LE SKILL', true, null, true), 4, 'skill');
   const perBattuta = {};
@@ -584,13 +642,14 @@ function episodio(ed, id, gradeNames) {
         return it;
       });
     } else if (g === 'C') {
-      items = gradi.C.map((r) => ({ id: nb(r[0]), target: r[1].trim(), native: r[2].trim(), fromLine: nb(r[3]) }));
+      items = gradi.C.map((r) => conNonCon({ id: nb(r[0]), target: r[1].trim(), native: r[2].trim(), fromLine: nb(r[3]) }, r[4]));
     } else {
-      items = gradi[g].map((r) => ({
+      items = gradi[g].map((r) => conNonCon({
         id: nb(r[0]), target: r[1].trim(), native: r[2].trim(),
         pronunciationTip: html(r[3].trim()), grammarCategory: r[4].trim()
-      }));
+      }, r[5]));
     }
+    if (g !== 'D') controllaNonCon(id, g, items);
     fuori.levels[g] = { label: gradeNames[g], items: items };
   });
 
@@ -712,8 +771,11 @@ function bacinoCorto(id, json, nomeSequenza, sequences, sm) {
   const sequenza = sequences[nomeSequenza];
   // Una sequenza che non esiste non e' «niente da controllare» (regola 49).
   if (!Array.isArray(sequenza)) return [id + ': la sequenza «' + nomeSequenza + '» non esiste, il bacino non si puo\' controllare'];
-  // Un grado per riga, coi moduli che lo leggono: lo stesso grado letto da
-  // quattro moduli e' UNA voce da aggiungere, non quattro.
+  // ⚠️ IL BACINO SI MISURA PER VOCE, dal 2026-10-07: `voci − 1 − esclusi`.
+  // *Prima era per grado (`voci ≥ distrattori + 1`), e con `non con` non basta
+  // piu': una voce con tre esclusioni in un grado di sei ha due distrattori
+  // possibili, anche se il grado «basta».* Una riga per voce sotto soglia, coi
+  // moduli che leggono il suo grado.
   const lettori = {};
   sequenza.forEach((passo) => {
     if (sm.moduli.indexOf(passo.module) === -1) return;
@@ -722,11 +784,20 @@ function bacinoCorto(id, json, nomeSequenza, sequences, sm) {
   const corti = [];
   Object.keys(lettori).forEach((g) => {
     const grado = json.levels && json.levels[g];
-    const voci = grado && grado.items ? grado.items.length : 0;
-    if (voci - 1 < sm.distrattori) {
-      corti.push(id + ', grado ' + g + ': ' + voci + ' voci, ne servono almeno ' + (sm.distrattori + 1) +
-        ' (' + sm.distrattori + ' distrattori + la giusta) — lo leggono ' + lettori[g].join(', '));
+    const items = grado && grado.items ? grado.items : [];
+    const ids = items.map((v) => v.id);
+    if (!items.length) {
+      corti.push(id + ', grado ' + g + ': nessuna voce — lo leggono ' + lettori[g].join(', '));
+      return;
     }
+    items.forEach((v) => {
+      const esclusi = (v.nonCon || []).filter((x) => ids.indexOf(x) !== -1).length;
+      const bacino = items.length - 1 - esclusi;
+      if (bacino < sm.distrattori) {
+        corti.push(id + ', grado ' + g + ', voce ' + v.id + ': bacino ' + bacino + ' (' + items.length + ' voci − 1 − ' +
+          esclusi + ' esclusi), ne servono ' + sm.distrattori + ' — lo leggono ' + lettori[g].join(', '));
+      }
+    });
   });
   return corti;
 }
@@ -878,4 +949,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { sceltaMultipla, bacinoCorto, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
+module.exports = { sceltaMultipla, bacinoCorto, controllaNonCon, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };

@@ -26,41 +26,41 @@
 
 ### Grado C — le frasi
 
-| id | en | it | da |
-|---|---|---|---|
-| `c-1` | Your tickets, please. | I biglietti, per favore. | `d-2` |
-| `c-2` | She is my wife. | Lei è mia moglie. | `d-4` |
-| `c-3` | She is my daughter. | Lei è mia figlia. | `d-5` |
-| `c-4` | He is my son. | Lui è mio figlio. | `d-5` |
-| `c-5` | {{destinazione}}? This way, please. | {{destinazione}}? Da questa parte, prego. | `d-7` |
+| id | en | it | da | non con |
+|---|---|---|---|---|
+| `c-1` | Your tickets, please. | I biglietti, per favore. | `d-2` | · |
+| `c-2` | She is my wife. | Lei è mia moglie. | `d-4` | · |
+| `c-3` | She is my daughter. | Lei è mia figlia. | `d-5` | · |
+| `c-4` | He is my son. | Lui è mio figlio. | `d-5` | · |
+| `c-5` | {{destinazione}}? This way, please. | {{destinazione}}? Da questa parte, prego. | `d-7` | · |
 
 ### Grado B — le espressioni
 
-| id | en | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `b-good-morning` | good morning | buongiorno | gud MOR-ning | saluto |
-| `b-welcome-aboard` | welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza |
-| `b-here-they-are` | here they are | eccoli | hia dei ar | espressione |
-| `b-thank-you` | thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia |
-| `b-this-way-please` | this way, please | da questa parte, prego | dis UEI pliiz | indicazione di direzione |
-| `b-enjoy-your-flight` | enjoy your flight | buon volo | en-GIOI ior flait | formula di congedo |
+| id | en | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `b-good-morning` | good morning | buongiorno | gud MOR-ning | saluto | · |
+| `b-welcome-aboard` | welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza | · |
+| `b-here-they-are` | here they are | eccoli | hia dei ar | espressione | · |
+| `b-thank-you` | thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia | · |
+| `b-this-way-please` | this way, please | da questa parte, prego | dis UEI pliiz | indicazione di direzione | · |
+| `b-enjoy-your-flight` | enjoy your flight | buon volo | en-GIOI ior flait | formula di congedo | · |
 
 ### Grado A — le parole
 
-| id | en | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `a-morning` | morning | mattina | MOR-ning | sostantivo |
-| `a-welcome` | welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza |
-| `a-tickets` | tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale |
-| `a-here` | here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo |
-| `a-they` | they | loro | dei — la "th" è la lingua fra i denti | pronome |
-| `a-she` | she | lei | scii — lunga | pronome |
-| `a-he` | he | lui | hii — con il soffio davanti | pronome |
-| `a-wife` | wife | moglie | uaif — la "e" finale non si legge | sostantivo, famiglia |
-| `a-daughter` | daughter | figlia | DO-ter — **la "gh" non si legge affatto** | sostantivo, famiglia |
-| `a-son` | son | figlio | san — **non "son" come in italiano** | sostantivo, famiglia |
-| `a-enjoy` | enjoy | godersi | en-GIOI | verbo |
-| `a-flight` | flight | volo | flait — **la "gh" muta, come in daughter** | sostantivo |
+| id | en | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `a-morning` | morning | mattina | MOR-ning | sostantivo | · |
+| `a-welcome` | welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza | · |
+| `a-tickets` | tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale | · |
+| `a-here` | here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo | · |
+| `a-they` | they | loro | dei — la "th" è la lingua fra i denti | pronome | · |
+| `a-she` | she | lei | scii — lunga | pronome | · |
+| `a-he` | he | lui | hii — con il soffio davanti | pronome | · |
+| `a-wife` | wife | moglie | uaif — la "e" finale non si legge | sostantivo, famiglia | · |
+| `a-daughter` | daughter | figlia | DO-ter — **la "gh" non si legge affatto** | sostantivo, famiglia | · |
+| `a-son` | son | figlio | san — **non "son" come in italiano** | sostantivo, famiglia | · |
+| `a-enjoy` | enjoy | godersi | en-GIOI | verbo | · |
+| `a-flight` | flight | volo | flait — **la "gh" muta, come in daughter** | sostantivo | · |
 
 ## 5 — LE SKILL
 

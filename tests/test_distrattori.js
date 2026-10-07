@@ -66,8 +66,11 @@ async function run() {
   const corto = JSON.parse(JSON.stringify(gate));
   corto.levels.C.items = corto.levels.C.items.slice(0, sm.distrattori);
   const rC = trascrivi.bacinoCorto('gate', corto, nomeSeq, struttura.sequences, sm);
-  log('[B] Un grado C con ' + sm.distrattori + ' voci (una meno del necessario) viene nominato, una volta sola',
-    rC.length === 1 && /grado C: 3 voci/.test(rC[0]), rC.join(' | '));
+  // ⚠️ DAL 2026-10-07 IL BACINO E' PER VOCE (`voci − 1 − esclusi`): un grado
+  // troppo piccolo nomina OGNI sua voce, una riga ciascuna — e i moduli che lo
+  // leggono stanno nella riga, non in righe ripetute per modulo.
+  log('[B] Un grado C con ' + sm.distrattori + ' voci (una meno del necessario): ogni sua voce nominata, una riga ciascuna',
+    rC.length === sm.distrattori && rC.every(r => /grado C, voce c-\d+: bacino 2 \(3 voci − 1 − 0 esclusi\)/.test(r)), rC.join(' | '));
 
   const soloD = JSON.parse(JSON.stringify(gate));
   soloD.levels.D.items = soloD.levels.D.items.slice(0, 1);

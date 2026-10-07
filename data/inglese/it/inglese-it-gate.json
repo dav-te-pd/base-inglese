@@ -239,7 +239,12 @@
           "id": "c-1",
           "target": "I am {{papa}}.",
           "native": "Sono {{papa}}.",
-          "fromLine": "d-2"
+          "fromLine": "d-2",
+          "nonCon": [
+            "c-4",
+            "c-5",
+            "c-7"
+          ]
         },
         {
           "id": "c-2",
@@ -257,31 +262,52 @@
           "id": "c-4",
           "target": "I am {{mamma}}.",
           "native": "Sono {{mamma}}.",
-          "fromLine": "d-6"
+          "fromLine": "d-6",
+          "nonCon": [
+            "c-1",
+            "c-5",
+            "c-7"
+          ]
         },
         {
           "id": "c-5",
           "target": "I'm {{figliaNome}}.",
           "native": "Sono {{figliaNome}}.",
-          "fromLine": "d-7"
+          "fromLine": "d-7",
+          "nonCon": [
+            "c-1",
+            "c-4",
+            "c-7"
+          ]
         },
         {
           "id": "c-6",
           "target": "I'm {{figliaEta}} years old.",
           "native": "Ho {{figliaEta}} anni.",
-          "fromLine": "d-7"
+          "fromLine": "d-7",
+          "nonCon": [
+            "c-8"
+          ]
         },
         {
           "id": "c-7",
           "target": "I'm {{figlioNome}}.",
           "native": "Sono {{figlioNome}}.",
-          "fromLine": "d-8"
+          "fromLine": "d-8",
+          "nonCon": [
+            "c-1",
+            "c-4",
+            "c-5"
+          ]
         },
         {
           "id": "c-8",
           "target": "I'm {{figlioEta}}.",
           "native": "Ho {{figlioEta}} anni.",
-          "fromLine": "d-8"
+          "fromLine": "d-8",
+          "nonCon": [
+            "c-6"
+          ]
         },
         {
           "id": "c-9",

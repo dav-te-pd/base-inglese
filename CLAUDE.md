@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261007a**
+**Versione: 20261007b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -113,7 +113,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` espressioni (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`.
 
-     **La lettera è l'identificativo tecnico, il nome è quello che vede lo studente** (Parole, Espressioni, Frasi, Dialogo). I nomi valgono per tutto il corso di un'edizione, quindi stanno in `data/{lingua}/{studente}/struttura-corso.json` — il file di struttura dell'edizione — e vengono da `docs/{lingua}/{studente}/struttura-corso.md` (regola 26), non dal singolo episodio; si mostrano accanto alla categoria — "Studio · Parole" — e il grado si omette quando la categoria lo contiene già ("Studia il dialogo", non "Studia il dialogo · Dialogo"). Le voci di A e B portano `pronunciationTip` e `grammarCategory`; quelle di C portano `fromLine`, cioè da quale battuta sono state ricavate; quelle di D portano `speaker`, `ruolo` e l'eventuale `whatYouLearn`. Le battute NON esistono anche altrove: il grado D *è* il dialogo, non una sua copia.
+     **La lettera è l'identificativo tecnico, il nome è quello che vede lo studente** (Parole, Espressioni, Frasi, Dialogo). I nomi valgono per tutto il corso di un'edizione, quindi stanno in `data/{lingua}/{studente}/struttura-corso.json` — il file di struttura dell'edizione — e vengono da `docs/{lingua}/{studente}/struttura-corso.md` (regola 26), non dal singolo episodio; si mostrano accanto alla categoria — "Studio · Parole" — e il grado si omette quando la categoria lo contiene già ("Studia il dialogo", non "Studia il dialogo · Dialogo"). Le voci di A e B portano `pronunciationTip` e `grammarCategory`; quelle di C portano `fromLine`, cioè da quale battuta sono state ricavate; quelle di D portano `speaker`, `role` e l'eventuale `whatYouLearn` (*la chiave è `role` dal 2026-09-28; la colonna del markdown si chiama ancora `ruolo`, ed è voluto. Qui c'era `ruolo`, scaduto da quel giorno*). ⚠️ **Dal 2026-10-07 le voci di A, B e C possono portare anche `nonCon`**: gli id delle voci **dello stesso grado** che Match e Speed Match non devono mettere accanto a loro come alternative — frasi che differiscono solo per un segnaposto, fra cui chi cerca il nome azzecca senza leggere la lingua. *C'è solo dove la lista non è vuota; la coppia si scrive nei due versi, e il trascrittore si ferma se non è così.* Le battute NON esistono anche altrove: il grado D *è* il dialogo, non una sua copia.
 
      **Il file episodio porta anche `speakerLabels` e `placeholderMap`, e non è un dettaglio tecnico.** `speakerLabels` è l'etichetta che lo studente legge **sopra ogni bolla**; `placeholderMap` dichiara quali segnaposto quell'episodio ammette. Sono contenuto, quindi stanno lì e non in `index.html` — dove sono vissuti fino al 2026-09-09.
 

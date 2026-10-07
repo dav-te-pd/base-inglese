@@ -26,45 +26,45 @@
 
 ### Grado C — le frasi
 
-| id | en | it | da |
-|---|---|---|---|
-| `c-1` | I am {{papa}}. | Sono {{papa}}. | `d-2` |
-| `c-2` | Where are you from? | Di dove sei? | `d-3` |
-| `c-3` | I am from {{partenza}}, {{partenza.paese:target}}. | Vengo da {{partenza}}, in {{partenza.paese}}. | `d-4` |
-| `c-4` | I am {{mamma}}. | Sono {{mamma}}. | `d-6` |
-| `c-5` | I'm {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` |
-| `c-6` | I'm {{figliaEta}} years old. | Ho {{figliaEta}} anni. | `d-7` |
-| `c-7` | I'm {{figlioNome}}. | Sono {{figlioNome}}. | `d-8` |
-| `c-8` | I'm {{figlioEta}}. | Ho {{figlioEta}} anni. | `d-8` |
-| `c-9` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! | `d-9` |
+| id | en | it | da | non con |
+|---|---|---|---|---|
+| `c-1` | I am {{papa}}. | Sono {{papa}}. | `d-2` | `c-4` · `c-5` · `c-7` |
+| `c-2` | Where are you from? | Di dove sei? | `d-3` | · |
+| `c-3` | I am from {{partenza}}, {{partenza.paese:target}}. | Vengo da {{partenza}}, in {{partenza.paese}}. | `d-4` | · |
+| `c-4` | I am {{mamma}}. | Sono {{mamma}}. | `d-6` | `c-1` · `c-5` · `c-7` |
+| `c-5` | I'm {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` | `c-1` · `c-4` · `c-7` |
+| `c-6` | I'm {{figliaEta}} years old. | Ho {{figliaEta}} anni. | `d-7` | `c-8` |
+| `c-7` | I'm {{figlioNome}}. | Sono {{figlioNome}}. | `d-8` | `c-1` · `c-4` · `c-5` |
+| `c-8` | I'm {{figlioEta}}. | Ho {{figlioEta}} anni. | `d-8` | `c-6` |
+| `c-9` | We are the {{cognome}} family! | Siamo la famiglia {{cognome}}! | `d-9` | · |
 
 ### Grado B — le espressioni
 
-| id | en | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `b-i-am` | I am | (io) sono, forma piena | ai am | pronome + verbo essere |
-| `b-im` | I'm | (io) sono, forma corta | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto |
-| `b-we-are` | we are | (noi) siamo | ui ar | pronome + verbo essere |
-| `b-nice-to-meet-you` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica |
-| `b-i-am-from` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione |
-| `b-and-you` | and you? | E tu? / E voi? | and IU — accento su "you" | espressione |
-| `b-years-old` | years old | anni (di età) | i-ars OULD | espressione per l'età |
+| id | en | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `b-i-am` | I am | (io) sono, forma piena | ai am | pronome + verbo essere | · |
+| `b-im` | I'm | (io) sono, forma corta | aim — tutto attaccato, mai "ai-em" | pronome + verbo essere, contratto | · |
+| `b-we-are` | we are | (noi) siamo | ui ar | pronome + verbo essere | · |
+| `b-nice-to-meet-you` | nice to meet you | Piacere di conoscerti / conoscervi | nais tu MIIT iu | espressione idiomatica | · |
+| `b-i-am-from` | I am from | Vengo da / Sono di | ai am fram | pronome + verbo essere + preposizione | · |
+| `b-and-you` | and you? | E tu? / E voi? | and IU — accento su "you" | espressione | · |
+| `b-years-old` | years old | anni (di età) | i-ars OULD | espressione per l'età | · |
 
 ### Grado A — le parole
 
-| id | en | it | pronuncia | categoria |
-|---|---|---|---|---|
-| `a-hello` | hello | Salve | hel-LOU — la "h" è un soffio leggero | saluto |
-| `a-hi` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto |
-| `a-nice` | nice | bello / piacevole | nais | aggettivo |
-| `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo |
-| `a-where` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo |
-| `a-from` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione |
-| `a-and` | and | e | and — la "d" finale si sente appena | congiunzione |
-| `a-years` | years | anni | i-ars — parte con un suono di "i" | sostantivo |
-| `a-old` | old | vecchio (di età) | ould — la "o" è lunga | aggettivo |
-| `a-the` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo |
-| `a-family` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo |
+| id | en | it | pronuncia | categoria | non con |
+|---|---|---|---|---|---|
+| `a-hello` | hello | Salve | hel-LOU — la "h" è un soffio leggero | saluto | · |
+| `a-hi` | hi | Ciao | hai — una sillaba, più lunga dell'italiano | saluto | · |
+| `a-nice` | nice | bello / piacevole | nais | aggettivo | · |
+| `a-meet` | meet | incontrare | miit — la "i" è lunga e tesa, non "mit" | verbo | · |
+| `a-where` | where | dove | UEAR — la "wh" è un soffio, non "vu" | avverbio interrogativo | · |
+| `a-from` | from | da / di | fram — la "o" è aperta, quasi una "a" | preposizione | · |
+| `a-and` | and | e | and — la "d" finale si sente appena | congiunzione | · |
+| `a-years` | years | anni | i-ars — parte con un suono di "i" | sostantivo | · |
+| `a-old` | old | vecchio (di età) | ould — la "o" è lunga | aggettivo | · |
+| `a-the` | the | il / la / i / le | de — la lingua tra i denti, non "ze" | articolo | · |
+| `a-family` | family | famiglia | FA-mi-li — accento sulla prima | sostantivo | · |
 
 ## 5 — LE SKILL
 
