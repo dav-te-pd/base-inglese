@@ -112,6 +112,31 @@ const contatore = () => {
 const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F', riconoscimento: 'manuale' });
 
+// ⚠️ SI APRE E SI ASPETTA L'APERTURA, NON 250 MS — dal 2026-10-07.
+//
+// `openModule` (map-driver) tocca la riga e aspetta 250 ms fissi. Ma
+// `openModuleFromMap` passa da un `Promise.all` di file prima di chiamare
+// `open`, e i listener si agganciano DENTRO `open`: sul runner della CI quei
+// 250 ms non sono bastati, e il 2026-10-07 la corsa di `89fee23` ha contato
+// Flash Card a ZERO listener alla prima apertura — «undefined → 1» in [C],
+// lo stato a meta' di un'apertura letto come un difetto. *Non in locale: il
+// container e' piu' veloce (regola 19).* **Riprodotto qui ritardando il file
+// dell'episodio di un secondo: la forma vecchia cade su tutte le famiglie, la
+// nuova regge.**
+//
+// L'approdo e' l'ULTIMO effetto dell'apertura — una vista diversa dalla
+// mappa diventa attiva — e nessuna asserzione di questo file lo legge
+// (regola 44): qui si contano i listener, non le viste. *In tutti e otto i
+// moduli l'aggancio sta nel corpo sincrono di `open`, prima che la vista
+// cambi: misurato lo stesso giorno.*
+async function apriModulo(page, passo) {
+  await openModule(page, passo);
+  await page.waitForFunction(function () {
+    const v = document.querySelector('.view.is-active');
+    return !!v && v.id !== 'view-map';
+  }, null, { timeout: 15000 });
+}
+
 async function nuovaPagina(browser, utente, completati) {
   const page = await browser.newPage();
   await bloccaFontEsterni(page);
@@ -153,7 +178,7 @@ async function run() {
     // Tutte le famiglie aperte una volta: il baseline è stato misurato così.
     for (const fam of Object.keys(FAMIGLIE)) {
       const pg = await nuovaPagina(browser, 'L1' + fam, stepsBefore(PASSO_DI[fam]));
-      await openModule(pg, PASSO_DI[fam]);
+      await apriModulo(pg, PASSO_DI[fam]);
       const r = await pg.evaluate(() => window.__reg);
       Object.keys(r).forEach(function (k) { osservato[k] = Math.max(osservato[k] || 0, r[k]); });
       await pg.close();
@@ -256,12 +281,12 @@ async function run() {
       const indietro = FAMIGLIE[fam].uscitaVersoMappa;
       // Il riferimento si prende DOPO la prima apertura, non prima: alcuni
       // listener nascono solo quando il modulo si apre la prima volta.
-      await openModule(page, passo);
+      await apriModulo(page, passo);
       const base = await page.evaluate(() => JSON.parse(JSON.stringify(window.__reg)));
       await page.click('#' + indietro);
       await page.waitForSelector('#view-map.is-active', { timeout: 10000 });
       for (let giro = 0; giro < 3; giro++) {
-        await openModule(page, passo);
+        await apriModulo(page, passo);
         let tornato = true;
         await page.click('#' + indietro).catch(function () { tornato = false; });
         await page.waitForSelector('#view-map.is-active', { timeout: 10000 })
@@ -296,7 +321,7 @@ async function run() {
   // DOM. Qui il conto è sull'effetto osservato al gesto.
   {
     const page = await nuovaPagina(browser, 'L3', stepsBefore('speedMatchEngIta'));
-    await openModule(page, 'speedMatchEngIta');
+    await apriModulo(page, 'speedMatchEngIta');
     const colpi = await page.evaluate(() => {
       var el = document.getElementById('speed-match-help-btn');
       if (!el) return null;
@@ -435,7 +460,7 @@ async function run() {
       const page = await nuovaPagina(browser, 'L4' + fam, stepsBefore(passi[passi.length - 1]));
       let base = null; const cresciuti = [];
       for (const passo of passi) {
-        await openModule(page, passo);
+        await apriModulo(page, passo);
         const reg = await page.evaluate(() => window.__reg);
         if (base === null) { base = reg; }
         else {
