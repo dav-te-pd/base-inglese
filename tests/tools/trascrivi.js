@@ -175,7 +175,12 @@ function tabellaSottoDa(testo, i, titolo, intestazione, unaSola) {
       JSON.stringify(blocchi.map((b) => b[0])) + '): il trascrittore ne legge una, ' +
       'e prenderebbe la prima in silenzio. Una sezione, una tabella.');
   }
-  if (!intestazione) return blocchi[0].slice(1);
+  // ⚠️ L'INTESTAZIONE VIAGGIA CON LE RIGHE, come proprieta' `testa` — dal
+  // 2026-10-08. Fino a quel giorno si buttava qui, e il trascrittore non poteva
+  // accorgersi di due colonne SCAMBIATE: il conto restava uguale e il dato
+  // finiva nella chiave sbagliata. La guarda `colonneConIntestazione`.
+  const conTesta = (b) => { const r = b.slice(1); r.testa = b[0]; return r; };
+  if (!intestazione) return conTesta(blocchi[0]);
   const voluto = intestazione.map((c) => c.toLowerCase());
   const scelto = blocchi.find((b) =>
     b[0].length === voluto.length &&
@@ -185,7 +190,7 @@ function tabellaSottoDa(testo, i, titolo, intestazione, unaSola) {
       JSON.stringify(intestazione) + ' \u2014 trovate: ' +
       JSON.stringify(blocchi.map((b) => b[0])));
   }
-  return scelto.slice(1);
+  return conTesta(scelto);
 }
 
 const nb = (c) => String(c == null ? '' : c).replace(/`/g, '').trim();
@@ -218,19 +223,43 @@ function html(testo) {
 
 // Il numero di colonne si CONTROLLA: una cella con un "|" dentro sposterebbe
 // tutto di una posizione, e le colonne si leggono per posizione.
-// ⚠️ QUANTE COLONNE HA OGNI TABELLA, IN UN POSTO SOLO — dal 2026-10-07.
+// ⚠️ LE INTESTAZIONI ATTESE DI OGNI TABELLA, IN UN POSTO SOLO — e il CONTO
+// delle colonne e' la loro LUNGHEZZA, non un numero scritto a parte (regola
+// 48). Dal 2026-10-08, deciso da chi guida il progetto.
 //
-// Erano numeri scritti dentro le chiamate a `colonne(...)`, e la riga
-// `APP_colonne-per-posizione` di `docs/metodo/FATTI-APP.md` li ricopiava in una
-// frase: il giorno di `non con` il codice e' passato a C 5 · B 6 · A 6 e la
-// frase e' rimasta a C 4 · B 5 · A 5 — **col suo test verde**, perche' il test
-// guardava i nomi fra apici e non i numeri. Trovato da chi guida il progetto.
-// Adesso il trascrittore legge queste costanti, e `test_fatti_app.js` confronta
-// con queste la frase di FATTI-APP: un numero solo, controllato (regola 48).
-const COLONNE_GRADI = { D: 5, C: 5, B: 6, A: 6 };
-// Le tabelle di personalizzazione: quattro colonne, o sei con il `paese`.
-const COLONNE_TABELLE = [4, 6];
+// *Il 07/10 qui c'erano due costanti di numeri, `COLONNE_GRADI` e
+// `COLONNE_TABELLE`: proteggevano il conto, non l'ordine. Due colonne
+// scambiate passavano — stesso conto, dato nella chiave sbagliata, nessun
+// errore.* Il caso che questo controllo esiste per fermare e' `en ↔ it`: tutto
+// l'episodio rovesciato, `target` e `native` invertiti.
+//
+// Le parole fisse si scrivono come stanno nel markdown. Le due lingue no:
+// `{studente}` dev'essere il nome della cartella dell'edizione (`it`), e
+// `{insegnata}` cambia con l'edizione (`en`, `es`) — libera, ma una sola per
+// tabella e DIVERSA da quella dello studente. *Un'intestazione insegnata
+// sbagliata ma diversa non fa danno a nessuno: dopo il controllo si butta. Lo
+// scambio con quella dello studente invece rovescia tutto.*
+//
+// ⚠️ Nelle tabelle di personalizzazione l'ordine e' l'OPPOSTO dei gradi —
+// prima lo studente, poi la lingua insegnata. E' come stanno i file, ed e'
+// proprio il genere di cosa che senza un controllo si sbaglia copiando.
+const INSEGNATA = '{insegnata}';
+const STUDENTE = '{studente}';
+const INTESTAZIONI_GRADI = {
+  D: ['id', 'speaker', 'ruolo', INSEGNATA, STUDENTE],
+  C: ['id', INSEGNATA, STUDENTE, 'da', 'non con'],
+  B: ['id', INSEGNATA, STUDENTE, 'pronuncia', 'categoria', 'non con'],
+  A: ['id', INSEGNATA, STUDENTE, 'pronuncia', 'categoria', 'non con']
+};
+// Le tabelle di personalizzazione: quattro colonne, o sei con il `paese` —
+// il ramo di `tabelle()` si sceglie dalla lunghezza dell'intestazione.
+const INTESTAZIONI_TABELLE = [
+  ['id', STUDENTE, INSEGNATA, 'traducibile'],
+  ['id', STUDENTE, INSEGNATA, 'paese ' + STUDENTE, 'paese ' + INSEGNATA, 'traducibile']
+];
 
+// Il numero di colonne si CONTROLLA: una cella con un "|" dentro sposterebbe
+// tutto di una posizione, e le colonne si leggono per posizione.
 function colonne(righe, quante, dove) {
   righe.forEach((r, n) => {
     if (r.length !== quante) {
@@ -239,6 +268,33 @@ function colonne(righe, quante, dove) {
     }
   });
   return righe;
+}
+
+// Il CONTO e l'ORDINE: l'intestazione dev'essere quella attesa, colonna per
+// colonna, e poi ogni riga deve avere quel numero di colonne. Un'intestazione
+// che non c'e' e' un errore, non «niente da controllare» (regola 49).
+function colonneConIntestazione(righe, attese, dove, studente) {
+  const testa = righe.testa;
+  if (!testa) throw new Error(dove + ': intestazione non letta — senza, l\'ordine delle colonne non si puo\' controllare.');
+  const dire = attese.map((a) => a.replace(STUDENTE, studente)).join(' | ');
+  if (testa.length !== attese.length) {
+    throw new Error(dove + ': l\'intestazione ha ' + testa.length + ' colonne invece di ' + attese.length +
+      ' — trovata «' + testa.join(' | ') + '», attesa «' + dire + '».');
+  }
+  const esc = (x) => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  let insegnata = null;
+  attese.forEach((a, n) => {
+    const rx = new RegExp('^' + esc(a).replace(esc(STUDENTE), esc(studente)).replace(esc(INSEGNATA), '(\\S+)') + '$');
+    const m = testa[n].match(rx);
+    const sbagliata = !m || (m[1] !== undefined && (m[1] === studente || (insegnata !== null && m[1] !== insegnata)));
+    if (sbagliata) {
+      throw new Error(dove + ': la colonna ' + (n + 1) + ' si chiama «' + testa[n] + '» e dovrebbe essere «' +
+        (a.indexOf(INSEGNATA) !== -1 ? a.replace(INSEGNATA, insegnata || 'la lingua insegnata, diversa da «' + studente + '»') : a.replace(STUDENTE, studente)) +
+        '» — trovata «' + testa.join(' | ') + '», attesa «' + dire + '». Due colonne scambiate?');
+    }
+    if (m[1] !== undefined) insegnata = m[1];
+  });
+  return colonne(righe, attese.length, dove);
 }
 
 // ── struttura del corso ──────────────────────────────────────────────────
@@ -305,8 +361,11 @@ function struttura(ed) {
 }
 
 // ── tabelle di personalizzazione ─────────────────────────────────────────
-function tabelle(ed) {
-  const t = fs.readFileSync(doc(ed, 'tabelle-personalizzazione'), 'utf8');
+// `testo` e' facoltativo, come in `episodio()`: chi lo passa fa trascrivere un
+// testo che non sta sul disco — `test_intestazioni.js` ci prova le colonne
+// scambiate senza toccare i file veri.
+function tabelle(ed, testo) {
+  const t = testo != null ? testo : fs.readFileSync(doc(ed, 'tabelle-personalizzazione'), 'utf8');
   const indice = colonne(tabellaSotto(t, '## 2 — LE TABELLE CHE ESISTONO', true), 2, 'indice tabelle');
   const out = {};
   indice.forEach((r) => {
@@ -321,26 +380,28 @@ function tabelle(ed) {
     // spagnolo, «Turín» sarebbe finito sotto `en`. *Una chiave che dice una
     // lingua e' vera in un'edizione sola; una che dice il ruolo e' vera in
     // tutte — in un corso d'inglese per spagnoli `es` sarebbe la lingua dello
-    // studente, `native` resta `native`.* Le intestazioni del markdown restano
-    // libere (`it`, `en`, `es`): si legge per posizione.
+    // studente, `native` resta `native`.* Si legge per posizione, e
+    // l'intestazione si controlla prima (`INTESTAZIONI_TABELLE`): libera solo
+    // la cella della lingua insegnata (`en`, `es`).
     //
     // Il numero NON e' una costante unica perche' le tabelle non sono tutte
     // uguali: `places.departures` porta il paese — senza, la battuta di `gate`
     // direbbe «I am from Lugano, Italy» — e `places.destinations` non lo porta,
     // perche' nessuna battuta dice il paese di destinazione.
     //
-    // ⚠️ E si guarda la PRIMA riga, non l'intestazione: `tabellaSotto` butta
-    // l'intestazione, quindi qui arriva gia' solo il contenuto. Un numero
-    // diverso da 4 o 6 si ferma **nominando la tabella**, invece di leggere le
-    // colonne spostate di una posizione e scrivere un JSON plausibile e falso.
+    // ⚠️ IL RAMO SI SCEGLIE DALL'INTESTAZIONE — dal 2026-10-08; fino al 07/10
+    // dalla prima riga, perche' `tabellaSotto` buttava l'intestazione. Un
+    // numero diverso da 4 o 6 si ferma **nominando la tabella**, e cosi' due
+    // colonne scambiate: con sei colonne `riga.paese` si pescherebbe dalla
+    // cella sbagliata, e il JSON uscirebbe plausibile e falso.
     const grezze = tabellaSotto(t, '### `' + nome + '`', true);
-    const quante = grezze.length ? grezze[0].length : 4;
-    if (COLONNE_TABELLE.indexOf(quante) === -1) {
-      throw new Error(nome + ': ' + quante + ' colonne. Le tabelle di ' +
-        'personalizzazione ne vogliono 4 (id|native|target|traducibile) o 6 ' +
-        '(id|native|target|paese native|paese target|traducibile).');
+    const quante = grezze.testa.length;
+    const attese = INTESTAZIONI_TABELLE.find((a) => a.length === quante);
+    if (!attese) {
+      throw new Error(nome + ': ' + quante + ' colonne. Le tabelle di personalizzazione ne vogliono ' +
+        INTESTAZIONI_TABELLE.map((a) => a.length + ' (' + a.join('|').split(STUDENTE).join(ed.studente) + ')').join(' o ') + '.');
     }
-    const righe = colonne(grezze, quante, nome);
+    const righe = colonneConIntestazione(grezze, attese, nome, ed.studente);
     const [gruppo, chiave] = nome.split('.');
     out[gruppo] = out[gruppo] || {};
     out[gruppo][chiave] = righe.map((x) => {
@@ -625,13 +686,13 @@ function episodio(ed, id, gradeNames, testo) {
   // il JSON continua a portarlo — `test_story_modules.js` lo legge — senza
   // che diventi un secondo posto dove scriverlo.
   const gradi = {
-    D: colonne(tabellaSotto(t, '### Grado D — le battute', true, null, true), COLONNE_GRADI.D, 'grado D'),
+    D: colonneConIntestazione(tabellaSotto(t, '### Grado D — le battute', true, null, true), INTESTAZIONI_GRADI.D, 'grado D', ed.studente),
     // ⚠️ UNA COLONNA IN PIU' IN A, B e C DAL 2026-10-07: `non con`, ultima.
     // Il grado D non ce l'ha: nessun modulo presenta una battuta fra delle
     // alternative.
-    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), COLONNE_GRADI.C, 'grado C'),
-    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), COLONNE_GRADI.B, 'grado B'),
-    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), COLONNE_GRADI.A, 'grado A')
+    C: colonneConIntestazione(tabellaSotto(t, '### Grado C — le frasi', true, null, true), INTESTAZIONI_GRADI.C, 'grado C', ed.studente),
+    B: colonneConIntestazione(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), INTESTAZIONI_GRADI.B, 'grado B', ed.studente),
+    A: colonneConIntestazione(tabellaSotto(t, '### Grado A — le parole', true, null, true), INTESTAZIONI_GRADI.A, 'grado A', ed.studente)
   };
   const skill = colonne(tabellaSotto(t, '## 5 — LE SKILL', true, null, true), 4, 'skill');
   const perBattuta = {};
@@ -962,4 +1023,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { COLONNE_GRADI, COLONNE_TABELLE, sceltaMultipla, bacinoCorto, controllaNonCon, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
+module.exports = { INTESTAZIONI_GRADI, INTESTAZIONI_TABELLE, colonneConIntestazione, sceltaMultipla, bacinoCorto, controllaNonCon, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };

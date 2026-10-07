@@ -26,8 +26,10 @@
 // aveva portati a 5 · 6 · 6, e questo file dava 70 su 70 — i numeri stavano
 // nella frase, non fra apici. *Un limite dichiarato dice dove non guardi; non
 // ti impedisce di fidarti* (regola 42). Quindi per le tre righe che portano un
-// numero del codice, il numero si prende dal codice — `COLONNE_GRADI` e
-// `COLONNE_TABELLE` esportati da `tests/tools/trascrivi.js`, `distrattori` da
+// numero del codice, il numero si prende dal codice — la lunghezza di
+// `INTESTAZIONI_GRADI` e di `INTESTAZIONI_TABELLE` (dal 2026-10-08; il 07/10
+// erano `COLONNE_GRADI` e `COLONNE_TABELLE`), esportate da
+// `tests/tools/trascrivi.js`, e `distrattori` da
 // `app/config.js` — e la frase deve contenerlo. Una riga o una forma non
 // trovata e' ROSSO, non «niente da confrontare» (regola 49).
 // E la versione del file non puo' essere piu' vecchia della sua riga misurata
@@ -100,14 +102,19 @@ const conNumero = function (id, atteso, perche) {
   log('[C] ' + id + ': la riga c\'e\'', !!r);
   if (r) log('[C] ' + id + ': porta «' + atteso + '» — ' + perche, r.indexOf(atteso) !== -1, atteso);
 };
-const G = T.COLONNE_GRADI || {};
-log('[C] trascrivi.js esporta COLONNE_GRADI coi quattro gradi',
+// Il conto e' la LUNGHEZZA delle intestazioni attese: non c'e' un numero da
+// leggere, c'e' una lista da contare (regola 48).
+const IG = T.INTESTAZIONI_GRADI || {};
+const G = {};
+['D', 'C', 'B', 'A'].forEach(function (g) { G[g] = Array.isArray(IG[g]) ? IG[g].length : undefined; });
+log('[C] trascrivi.js esporta INTESTAZIONI_GRADI coi quattro gradi',
   ['D', 'C', 'B', 'A'].every(function (g) { return typeof G[g] === 'number'; }), JSON.stringify(G));
 conNumero('APP_colonne-per-posizione', 'D ' + G.D + ' · C ' + G.C + ' · B ' + G.B + ' · A ' + G.A,
-  'i numeri di COLONNE_GRADI');
-log('[C] trascrivi.js esporta COLONNE_TABELLE', Array.isArray(T.COLONNE_TABELLE) && T.COLONNE_TABELLE.length > 0,
-  JSON.stringify(T.COLONNE_TABELLE));
-conNumero('APP_ramo-sul-numero-colonne', (T.COLONNE_TABELLE || []).join(' o '), 'i numeri di COLONNE_TABELLE');
+  'la lunghezza di INTESTAZIONI_GRADI');
+const IT = Array.isArray(T.INTESTAZIONI_TABELLE) ? T.INTESTAZIONI_TABELLE : [];
+log('[C] trascrivi.js esporta INTESTAZIONI_TABELLE', IT.length > 0, JSON.stringify(IT));
+conNumero('APP_ramo-sul-numero-colonne', IT.map(function (a) { return a.length; }).join(' o '),
+  'la lunghezza di INTESTAZIONI_TABELLE');
 const sm = configApp().sceltaMultipla;
 log('[C] app/config.js ha sceltaMultipla.distrattori', !!sm && typeof sm.distrattori === 'number');
 conNumero('APP_bacino-distrattori', 'oggi ' + (sm ? sm.distrattori + 1 : '?'), 'distrattori + 1 da app/config.js');
