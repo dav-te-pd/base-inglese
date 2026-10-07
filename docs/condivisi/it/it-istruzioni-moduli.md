@@ -1,4 +1,4 @@
-**Versione: 20261002a**
+**Versione: 20261007a**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -11,8 +11,14 @@ JSON **esegue** — la stessa coppia che `inglese-it-struttura-corso.md` forma c
 
 **Perché:** *questi testi **non dipendono dalla lingua che si insegna: dipendono dalla lingua dello
 STUDENTE**. «Tocca il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`.*
-**Copiarli per edizione vorrebbe dire 349 stringhe duplicate ogni volta** — *con quattro edizioni per
-italiani, **1047 copie che nessuno riallineerebbe**.*
+**Copiarli per edizione vorrebbe dire duplicare TUTTE le loro stringhe ogni volta** — *e con quattro
+edizioni per italiani, quattro volte tante copie che nessuno riallineerebbe.*
+
+⚠️ **E IL CONTO NON STA PIÙ SCRITTO QUI, DI PROPOSITO.** *Vive in un posto solo, con la sua data:
+`CLAUDE.md`, regola 8.* 🔴 **Il 2026-10-07 il numero vecchio — «349 … 1047» — si è trovato ricopiato in
+DIECI file**, *e nessuno dei dieci sapeva di essere scaduto dal 28 settembre.*
+
+> ⭐ **Un numero ricopiato invecchia in dieci posti. Uno datato invecchia in uno** (regola 48).
 
 ⚠️ **E la cartella, non solo il nome:** *sta **accanto** alle edizioni, mai dentro a una. Il momento in
 cui questo file sta dentro `inglese/` è il momento in cui lo spagnolo lo duplica.* **Il nome tiene `it`
@@ -126,9 +132,9 @@ corretta:Hello» attaccato.* **Il segno si vede, lo spazio no.**
 **«Vedi una parola e quattro traduzioni» → «Vedi una parola e più traduzioni».**
 
 > ⭐ **Un testo che non nomina il numero non può mentire su quel numero.**
-> *E non costa nessun meccanismo: costa quattro frasi riscritte.*
+> *E non costa nessun meccanismo: costa **otto** frasi riscritte — le quattro spiegazioni e i loro quattro promemoria.*
 
-⚠️ **Il conto delle stringhe NON cambia: 178.** *Sono gli stessi otto testi, con quattro parole in meno.*
+⚠️ **Il conto delle stringhe NON cambia: 178.** *Sono gli stessi otto testi: nessuna chiave nasce e nessuna muore.*
 
 ---
 

@@ -1,4 +1,4 @@
-**Versione: 20260928a**
+**Versione: 20261007a**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -12,8 +12,20 @@ regola 8 li tiene in due file da prima che esistesse una fonte per nessuno dei d
 
 **Perché:** *«Va bene così, l'importante è provarci» è identico in un corso di inglese e in uno di
 spagnolo. Questi testi dipendono dalla lingua dello **studente**, non da quella che si insegna.*
-**Insieme alle istruzioni dei moduli sono 349 stringhe: copiarle per edizione vorrebbe dire, con
-quattro edizioni per italiani, 1047 copie che nessuno riallineerebbe.**
+**Insieme alle istruzioni dei moduli sono TUTTE le stringhe che lo studente legge fuori da un
+episodio: copiarle per edizione vorrebbe dire, con quattro edizioni per italiani, quattro volte tante
+copie che nessuno riallineerebbe.**
+
+⚠️ **E IL CONTO NON STA PIÙ SCRITTO QUI, DI PROPOSITO.** *Vive in un posto solo, con la sua data:
+`CLAUDE.md`, regola 8.* 🔴 **Il 2026-10-07 il numero vecchio — «349 … 1047» — si è trovato ricopiato in
+DIECI file**, *e nessuno dei dieci sapeva di essere scaduto: era la somma di due conti, e uno dei due è
+cambiato il 28 settembre.*
+
+🔴 **E la frase qui sopra, nella sua prima stesura, portava dentro quei due conti.** *Scriverli qui
+voleva dire fare — nella nota che spiega perché un numero non si ricopia — **esattamente la cosa che la
+nota vieta**. Uno dei due era anche sbagliato.*
+
+> ⭐ **Un numero ricopiato invecchia in dieci posti. Uno datato invecchia in uno** (regola 48).
 
 ⚠️ **NESSUNO AVEVA MAI RILETTO QUESTI TESTI.** Trovato il 2026-09-26 censendo ciò che lo studente
 legge: **141 stringhe** senza nessuna fonte markdown. *E sono i testi che pesano di più: una
