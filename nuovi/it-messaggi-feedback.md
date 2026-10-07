@@ -18,8 +18,12 @@ copie che nessuno riallineerebbe.**
 
 ⚠️ **E IL CONTO NON STA PIÙ SCRITTO QUI, DI PROPOSITO.** *Vive in un posto solo, con la sua data:
 `CLAUDE.md`, regola 8.* 🔴 **Il 2026-10-07 il numero vecchio — «349 … 1047» — si è trovato ricopiato in
-DIECI file**, *e nessuno dei dieci sapeva di essere scaduto dal 28 settembre: 349 era `208 + 141`, e le
-istruzioni dei moduli sono scese a 178 lo stesso giorno.*
+DIECI file**, *e nessuno dei dieci sapeva di essere scaduto: era la somma di due conti, e uno dei due è
+cambiato il 28 settembre.*
+
+🔴 **E la frase qui sopra, nella sua prima stesura, portava dentro quei due conti.** *Scriverli qui
+voleva dire fare — nella nota che spiega perché un numero non si ricopia — **esattamente la cosa che la
+nota vieta**. Uno dei due era anche sbagliato.*
 
 > ⭐ **Un numero ricopiato invecchia in dieci posti. Uno datato invecchia in uno** (regola 48).
 
