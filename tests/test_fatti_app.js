@@ -19,6 +19,26 @@
 // COSA NON PROTEGGE, dichiarato (regola 32): che il FATTO sia vero. Il test
 // sa che `role === 'family'` e' scritto in `app/ui-condivisa.js`; non sa che
 // quella riga mette la bolla a destra. Protegge l'ancoraggio, non la frase.
+//
+// ⚠️ [C] — I NUMERI CHE DIPENDONO DAL CODICE SI LEGGONO DAL CODICE (dal
+// 2026-10-07). Il limite qui sopra era dichiarato, e il 07/10 e' scattato:
+// `APP_colonne-per-posizione` diceva «C 4 · B 5 · A 5» da quando `non con` li
+// aveva portati a 5 · 6 · 6, e questo file dava 70 su 70 — i numeri stavano
+// nella frase, non fra apici. *Un limite dichiarato dice dove non guardi; non
+// ti impedisce di fidarti* (regola 42). Quindi per le tre righe che portano un
+// numero del codice, il numero si prende dal codice — `COLONNE_GRADI` e
+// `COLONNE_TABELLE` esportati da `tests/tools/trascrivi.js`, `distrattori` da
+// `app/config.js` — e la frase deve contenerlo. Una riga o una forma non
+// trovata e' ROSSO, non «niente da confrontare» (regola 49).
+// E la versione del file non puo' essere piu' vecchia della sua riga misurata
+// piu' di recente (regola 27: il 07/10 era ferma a 20260930c).
+//
+// LIMITE di [C]: copre i numeri che QUESTO file sa ricondurre a una sorgente.
+// Un numero nuovo scritto in una frase senza una riga qui resta scoperto come
+// prima — e un numero nel codice che nessuna frase nomina non serve a nessuno.
+// E il confronto delle date tiene l'anno della versione per tutte le righe: a
+// cavallo di capodanno (versione di gennaio, riga del 30/12) darebbe un rosso
+// falso. Si vede subito e si corregge allora; non e' un verde falso.
 
 const fs = require('fs');
 const path = require('path');
@@ -68,6 +88,44 @@ righe.forEach(function (riga) {
   // Condizione a: niente numeri di riga nella colonna «Dove».
   log('[B] ' + id + ': la colonna «Dove» non porta numeri di riga', !/\.[a-z]+:\d/.test(dove), dove);
 });
+
+// ── [C] I numeri che dipendono dal codice, letti dal codice ──
+const T = require('./tools/trascrivi.js');
+const { configApp } = require('./test-env');
+const riga = function (id) {
+  return righe.find(function (r) { return r.indexOf('`' + id + '`') !== -1; }) || null;
+};
+const conNumero = function (id, atteso, perche) {
+  const r = riga(id);
+  log('[C] ' + id + ': la riga c\'e\'', !!r);
+  if (r) log('[C] ' + id + ': porta «' + atteso + '» — ' + perche, r.indexOf(atteso) !== -1, atteso);
+};
+const G = T.COLONNE_GRADI || {};
+log('[C] trascrivi.js esporta COLONNE_GRADI coi quattro gradi',
+  ['D', 'C', 'B', 'A'].every(function (g) { return typeof G[g] === 'number'; }), JSON.stringify(G));
+conNumero('APP_colonne-per-posizione', 'D ' + G.D + ' · C ' + G.C + ' · B ' + G.B + ' · A ' + G.A,
+  'i numeri di COLONNE_GRADI');
+log('[C] trascrivi.js esporta COLONNE_TABELLE', Array.isArray(T.COLONNE_TABELLE) && T.COLONNE_TABELLE.length > 0,
+  JSON.stringify(T.COLONNE_TABELLE));
+conNumero('APP_ramo-sul-numero-colonne', (T.COLONNE_TABELLE || []).join(' o '), 'i numeri di COLONNE_TABELLE');
+const sm = configApp().sceltaMultipla;
+log('[C] app/config.js ha sceltaMultipla.distrattori', !!sm && typeof sm.distrattori === 'number');
+conNumero('APP_bacino-distrattori', 'oggi ' + (sm ? sm.distrattori + 1 : '?'), 'distrattori + 1 da app/config.js');
+
+// La versione non e' piu' vecchia della riga misurata per ultima.
+const versione = (testo.match(/\*\*Versione: (\d{4})(\d{2})(\d{2})[a-z]\*\*/) || []);
+log('[C] Il file dichiara una versione AAAAMMGG+lettera', versione.length === 4, versione[0] || '(nessuna)');
+const date = righe.map(function (r) {
+  const m = r.match(/\|\s*(\d{2})\/(\d{2})\s*\|\s*$/);
+  return m ? m[2] + m[1] : null;
+});
+log('[C] Ogni riga ha la data di misura nell\'ultima colonna (gg/mm)', date.every(Boolean),
+  righe.filter(function (r, i) { return !date[i]; }).map(function (r) { return r.slice(0, 40); }).join(' · '));
+if (versione.length === 4 && date.every(Boolean)) {
+  const ultima = date.slice().sort().pop();
+  log('[C] La versione (' + versione[3] + '/' + versione[2] + ') non e\' piu\' vecchia della riga misurata piu\' di recente (' +
+    ultima.slice(2) + '/' + ultima.slice(0, 2) + ')', versione[2] + versione[3] >= ultima);
+}
 
 console.log('\n=== FATTI-APP SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');
 process.exit(failed === 0 ? 0 : 1);

@@ -218,6 +218,19 @@ function html(testo) {
 
 // Il numero di colonne si CONTROLLA: una cella con un "|" dentro sposterebbe
 // tutto di una posizione, e le colonne si leggono per posizione.
+// ⚠️ QUANTE COLONNE HA OGNI TABELLA, IN UN POSTO SOLO — dal 2026-10-07.
+//
+// Erano numeri scritti dentro le chiamate a `colonne(...)`, e la riga
+// `APP_colonne-per-posizione` di `docs/metodo/FATTI-APP.md` li ricopiava in una
+// frase: il giorno di `non con` il codice e' passato a C 5 · B 6 · A 6 e la
+// frase e' rimasta a C 4 · B 5 · A 5 — **col suo test verde**, perche' il test
+// guardava i nomi fra apici e non i numeri. Trovato da chi guida il progetto.
+// Adesso il trascrittore legge queste costanti, e `test_fatti_app.js` confronta
+// con queste la frase di FATTI-APP: un numero solo, controllato (regola 48).
+const COLONNE_GRADI = { D: 5, C: 5, B: 6, A: 6 };
+// Le tabelle di personalizzazione: quattro colonne, o sei con il `paese`.
+const COLONNE_TABELLE = [4, 6];
+
 function colonne(righe, quante, dove) {
   righe.forEach((r, n) => {
     if (r.length !== quante) {
@@ -322,7 +335,7 @@ function tabelle(ed) {
     // colonne spostate di una posizione e scrivere un JSON plausibile e falso.
     const grezze = tabellaSotto(t, '### `' + nome + '`', true);
     const quante = grezze.length ? grezze[0].length : 4;
-    if (quante !== 4 && quante !== 6) {
+    if (COLONNE_TABELLE.indexOf(quante) === -1) {
       throw new Error(nome + ': ' + quante + ' colonne. Le tabelle di ' +
         'personalizzazione ne vogliono 4 (id|native|target|traducibile) o 6 ' +
         '(id|native|target|paese native|paese target|traducibile).');
@@ -612,13 +625,13 @@ function episodio(ed, id, gradeNames, testo) {
   // il JSON continua a portarlo — `test_story_modules.js` lo legge — senza
   // che diventi un secondo posto dove scriverlo.
   const gradi = {
-    D: colonne(tabellaSotto(t, '### Grado D — le battute', true, null, true), 5, 'grado D'),
+    D: colonne(tabellaSotto(t, '### Grado D — le battute', true, null, true), COLONNE_GRADI.D, 'grado D'),
     // ⚠️ UNA COLONNA IN PIU' IN A, B e C DAL 2026-10-07: `non con`, ultima.
     // Il grado D non ce l'ha: nessun modulo presenta una battuta fra delle
     // alternative.
-    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), 5, 'grado C'),
-    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), 6, 'grado B'),
-    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), 6, 'grado A')
+    C: colonne(tabellaSotto(t, '### Grado C — le frasi', true, null, true), COLONNE_GRADI.C, 'grado C'),
+    B: colonne(tabellaSotto(t, '### Grado B — le espressioni', true, null, true), COLONNE_GRADI.B, 'grado B'),
+    A: colonne(tabellaSotto(t, '### Grado A — le parole', true, null, true), COLONNE_GRADI.A, 'grado A')
   };
   const skill = colonne(tabellaSotto(t, '## 5 — LE SKILL', true, null, true), 4, 'skill');
   const perBattuta = {};
@@ -949,4 +962,4 @@ function main() {
 // che sta per verificare, e sarebbe verde su qualunque cosa (regola 44).
 if (require.main === module) main();
 
-module.exports = { sceltaMultipla, bacinoCorto, controllaNonCon, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
+module.exports = { COLONNE_GRADI, COLONNE_TABELLE, sceltaMultipla, bacinoCorto, controllaNonCon, elencoEdizioni, edizioni, studentiCondivisi, struttura, tabelle, episodio, istruzioni, messaggi, doc, dati, docC, datiC, tabellaSotto };
