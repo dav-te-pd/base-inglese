@@ -131,9 +131,29 @@ def gradi(testo):
 # ────────────────────────────────────────────────────────────── il controllo
 
 def controlla(nome, distrattori):
-    """Torna il numero di difetti trovati in questo file."""
+    """Torna il numero di difetti trovati in questo file.
+
+    ⚠️ Solo i file `-ragioni` di un episodio VERO. Il modello `-VUOTO` porta una
+    riga per grado, quindi il suo bacino fa 0 — e ha ragione: prova la FORMA, non
+    il contenuto. Un controllo che lo bocciasse direbbe una cosa falsa.
+    🔴 E lo scarto si DICHIARA: se si salta in silenzio, un giorno si salta un
+    episodio vero perché qualcuno gli ha messo VUOTO nel nome.
+    """
     difetti = 0
-    print(f"  {Path(nome).name}")
+    base = Path(nome).name
+    if "VUOTO" in base.upper():
+        print(f"  —   {base}: SALTATO, è il modello. "
+              f"Il bacino si misura sugli episodi veri.\n")
+        return 0
+    if "-ragioni" not in base:
+        raise SystemExit(
+            f"FERMO: «{base}» non è un file `-ragioni`.\n"
+            f"       Il sorgente è GENERATO: controllarlo vorrebbe dire trovare\n"
+            f"       un difetto dopo che ha già viaggiato, e il giorno che i due\n"
+            f"       file divergono si controllerebbe quello sbagliato.\n"
+            f"       Si controlla la fonte, poi si genera."
+        )
+    print(f"  {base}")
 
     for grado, items in gradi(Path(nome).read_text(encoding="utf-8")).items():
         if not items:
