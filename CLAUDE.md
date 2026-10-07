@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261001a**
+**Versione: 20261007a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -201,7 +201,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 8. **I testi di un modulo vivono sempre in `data/condivisi/{lingua-studente}/istruzioni-moduli.json`** (oggi `data/condivisi/it/it-istruzioni-moduli.json`), mai scritti nel codice del componente.
 
-    ⚠️ **IL PERCORSO PORTA UNA LINGUA SOLA, E DAL 2026-09-28 NON È QUELLA DELL'EDIZIONE: è quella dello STUDENTE.** *Qui c'era scritto `data/{lingua-che-si-impara}/{lingua-studente}/`, con la nota «il percorso porta ENTRAMBE le lingue, come ogni file dell'edizione» — ed è stato vero fino a quel giorno.* Questi testi **non dipendono dalla lingua che si insegna**: «tocca il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`. Tenerli dentro l'edizione vorrebbe dire **349 stringhe duplicate a ogni edizione nuova** — con quattro edizioni per italiani, **1047 copie che nessuno riallineerebbe** (regola 48). Si raggiungono con **`percorsoCondiviso(...)`**, non con `percorsoEdizione(...)`.
+    ⚠️ **IL PERCORSO PORTA UNA LINGUA SOLA, E DAL 2026-09-28 NON È QUELLA DELL'EDIZIONE: è quella dello STUDENTE.** *Qui c'era scritto `data/{lingua-che-si-impara}/{lingua-studente}/`, con la nota «il percorso porta ENTRAMBE le lingue, come ogni file dell'edizione» — ed è stato vero fino a quel giorno.* Questi testi **non dipendono dalla lingua che si insegna**: «tocca il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`. Tenerli dentro l'edizione vorrebbe dire **duplicare tutte le loro stringhe a ogni edizione nuova** — **319 il 2026-10-07** (178 + 141), cioè con quattro edizioni per italiani **957 copie che nessuno riallineerebbe** (regola 48). ⚠️ *Qui c'era «349 … 1047», scaduto dal 2026-09-28 (il passo C ha portato le istruzioni da 208 a 177) e ricopiato in dieci posti; l'ha trovato chi guida il progetto il 2026-10-07. **Il conto vive solo qui, con la data**: gli altri posti dicono «tutte le loro stringhe» e rimandano a questa riga — un numero ricopiato invecchia in dieci posti, uno datato in uno.* Si raggiungono con **`percorsoCondiviso(...)`**, non con `percorsoEdizione(...)`.
 
     ⚠️ **E il prefisso del nome segue la cartella: una lingua sola, `it-`, non la coppia.** *Il nome tiene comunque la lingua, perché un file esce dal repository e lì il percorso si perde — la stessa ragione della regola 4.* La convenzione è protetta da `tests/test_nomenclatura_edizione.js`, che tratta `condivisi` come **nome riservato** e non come una lingua.
 

@@ -43,8 +43,8 @@ const RADICI = ['data', 'docs'];
 // `data/condivisi/{lingua-studente}/` tiene i testi dell'interfaccia, che **non
 // dipendono dalla lingua che si insegna ma da quella dello STUDENTE**: «tocca
 // il microfono per registrare» è identico in `inglese/it` e in `spagnolo/it`.
-// *Copiarli per edizione vorrebbe dire 349 stringhe duplicate ogni volta — con
-// quattro edizioni per italiani, 1047 copie che nessuno riallineerebbe.*
+// *Copiarli per edizione vorrebbe dire duplicare ogni volta tutte le loro
+// stringhe (il conto, con la data, sta nella regola 8 di CLAUDE.md).*
 //
 // ⚠️ **Quindi lì il prefisso atteso è UNA lingua sola, non la coppia**:
 // `it-istruzioni-moduli.json`, non `condivisi-it-istruzioni-moduli.json`.

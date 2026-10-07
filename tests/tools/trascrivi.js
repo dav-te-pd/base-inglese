@@ -354,8 +354,8 @@ function tabelle(ed) {
 // ⚠️ NON SONO DI UN'EDIZIONE, E PER QUESTO NON PASSANO DA `edizioni()`.
 // `data/condivisi/{studente}/` tiene i testi dell'interfaccia, che dipendono
 // dalla lingua dello STUDENTE e non da quella insegnata (regola 8, riscritta
-// il 2026-09-28). *Copiarli per edizione vorrebbe dire 349 stringhe duplicate
-// ogni volta.*
+// il 2026-09-28). *Copiarli per edizione vorrebbe dire duplicare ogni volta
+// tutte le loro stringhe (il conto sta nella regola 8 di CLAUDE.md).*
 //
 // Quindi qui il criterio e' un altro, ed e' lo stesso in forma: **una cartella
 // sotto `docs/condivisi/` e' una lingua-studente se contiene il suo

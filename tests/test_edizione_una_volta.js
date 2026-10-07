@@ -18,15 +18,15 @@
 // come una dimenticanza e qualcuno lo «ripara» rimettendolo com'era:**
 // istruzioni e messaggi **non dipendono dalla lingua che si insegna, ma dalla
 // lingua dello STUDENTE**. *«Tocca il microfono per registrare» e' identico in
-// `inglese/it` e in `spagnolo/it`.* Copiarli per edizione vorrebbe dire **349
-// stringhe duplicate ogni volta** — e con quattro edizioni per italiani
-// (inglese, spagnolo, francese, tedesco) **1047 copie che nessuno
-// riallineerebbe.**
+// `inglese/it` e in `spagnolo/it`.* Copiarli per edizione vorrebbe dire **duplicare
+// ogni volta tutte le loro stringhe**, con quattro edizioni per italiani
+// (inglese, spagnolo, francese, tedesco) **tre copie in piu' di ognuna, che
+// nessuno riallineerebbe** — il conto, con la data, sta nella regola 8 di CLAUDE.md.
 //
 // ⚠️ **E LA SECONDA META' E' PIU' FORTE DI QUELLO CHE IL TEST PROVAVA PRIMA:**
 // «questi due seguono l'edizione» cade solo se il percorso sbaglia; «questi due
 // NON si muovono» cade anche il giorno in cui qualcuno aggiunge `ed.lingua` a
-// `percorsoCondiviso` «per simmetria» — che e' il modo in cui quelle 1047 copie
+// `percorsoCondiviso` «per simmetria» — che e' il modo in cui quelle copie
 // tornerebbero.
 //
 // ⚠️ COSA SI PERDE SENZA QUESTO FILE, ed e' un guasto MUTO.

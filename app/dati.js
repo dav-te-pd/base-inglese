@@ -127,8 +127,8 @@ window.BI = window.BI || {};
   // **Perche', e non e' una semplificazione: quei testi non dipendono dalla
   // lingua che si insegna.** *«Tocca il microfono per registrare» e' identico
   // in `inglese/it` e in `spagnolo/it`.* Tenerli dentro l'edizione vorrebbe
-  // dire **349 stringhe duplicate per ogni edizione** — con quattro edizioni
-  // per italiani, **1047 copie che nessuno riallineerebbe**, e una copia che
+  // dire **ogni stringa di quei due file duplicata per ogni edizione** (il
+  // conto, con la data, sta nella regola 8 di CLAUDE.md), e una copia che
   // nessuno riallinea diverge.
   //
   // ⚠️ **QUINDI QUI `ed.lingua` NON COMPARE, E DEVE NON COMPARIRE.** Se un

@@ -289,8 +289,8 @@ function fileEdizione(nome) {
 // `data/condivisi/{lingua-studente}/{lingua-studente}-<nome>`: **una lingua
 // sola, quella di chi studia.** *I testi dell'interfaccia non dipendono dalla
 // lingua che si insegna — «tocca il microfono» e' identico in `inglese/it` e in
-// `spagnolo/it` — e copiarli per edizione vorrebbe dire 349 stringhe duplicate
-// ogni volta.*
+// `spagnolo/it` — e copiarli per edizione vorrebbe dire duplicare ogni volta
+// tutte le loro stringhe (il conto sta nella regola 8 di CLAUDE.md).*
 function fileCondiviso(nome) {
   const ed = configApp().edizione;
   return repoPath('data', 'condivisi', ed.studente, ed.studente + '-' + nome);
