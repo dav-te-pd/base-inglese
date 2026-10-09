@@ -1,4 +1,4 @@
-**Versione: 20260924d**
+**Versione: 20261009a**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -17,7 +17,7 @@ io.** *Misurato: nessun test lo apre per nome, e i soli markdown letti da un
 test sono `inglese-it-struttura-corso.md`, `inglese-it-gate.md` e
 `inglese-it-aircraft-door.md`.*
 
-**Quindi titoli, numeri e nomi delle colonne qui sono liberi.** Li scrivo lo
+**Quindi titoli e numeri qui sono liberi.** ⚠️ *I nomi delle colonne no, dal 2026-10-08: il trascrittore controlla l'intestazione di ogni tabella colonna per colonna (`INTESTAZIONI_TABELLE`), e resta libera solo la cella della lingua insegnata. Corretto da Claude Code (regola 33): reso falso dal commit `e52d213`.* Li scrivo lo
 stesso nella stessa grammatica degli altri due — **una tabella per tabella, le
 colonne sempre nello stesso ordine** — perché il giorno in cui un test lo
 leggerà non ci sia niente da riscrivere. *Una forma decisa quando non serve

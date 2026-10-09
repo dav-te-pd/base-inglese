@@ -1,4 +1,4 @@
-**Versione: 20260930a**
+**Versione: 20261009a**
 
 # Tabelle di personalizzazione — spagnolo per italiani
 
@@ -16,7 +16,7 @@ sono stati scelti stanno nei file RAGIONI.
 pretende **esattamente quattro colonne** per le tabelle della sezione 3 — o sei per quella delle
 partenze — e si ferma con l'errore che le nomina.*
 
-**Titoli, numeri e nomi delle colonne sono liberi. Li scrivo comunque nella stessa grammatica del file
+**Titoli e numeri sono liberi.** ⚠️ *I nomi delle colonne no, dal 2026-10-08: il trascrittore controlla l'intestazione di ogni tabella colonna per colonna (`INTESTAZIONI_TABELLE`), e resta libera solo la cella della lingua insegnata. Corretto da Claude Code (regola 33): reso falso dal commit `e52d213`.* **Li scrivo comunque nella stessa grammatica del file
 inglese:** *una forma decisa quando non serve costa zero; decisa quando serve costa una migrazione.*
 
 ### ② DUE COSE DA SAPERE
