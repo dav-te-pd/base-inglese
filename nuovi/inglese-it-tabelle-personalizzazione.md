@@ -1,4 +1,4 @@
-**Versione: 20261011a**
+**Versione: 20261011b**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -30,8 +30,17 @@ questo file.**
 ⚠️ **E non serviva una misura per smentirla: la smentiva questo file.** *La sezione «LE RIGHE» dice in
 quale chiave del JSON finisce ogni colonna — e solo un parser può farlo.*
 
-⚠️ **I nomi delle colonne non sono liberi dal 2026-10-08. Titoli e numeri sì.** *La correzione di quella
-frase è di Claude Code: regola 33, resa falsa dal commit `e52d213`, corretta in `d530667`.*
+⚠️ **I nomi delle colonne non sono liberi dal 2026-10-08**, e la correzione di quella frase è di Claude
+Code *(regola 33: resa falsa dal commit `e52d213`, corretta in `d530667`)*.
+
+🔴 **MA NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE, e questo nessuno l'aveva misurato.**
+*Misurato l'11/10 su `tabelle()`: l'indice si trova con la stringa esatta*
+`'## 2 — LE TABELLE CHE ESISTONO'` — **numero compreso** — *e ogni tabella con* `` '### `nome`' ``.
+**Rinumerare quella sezione ferma la trascrizione.**
+
+> ⭐ **E «titoli e numeri sono liberi» è sopravvissuta a una riscrittura fatta per togliere le frasi
+> false, perché portava l'attribuzione di chi l'aveva scritta.** *Una frase ricopiata con la sua
+> attribuzione sembra verificata.*
 
 ### ② UNA COSA DA SAPERE
 

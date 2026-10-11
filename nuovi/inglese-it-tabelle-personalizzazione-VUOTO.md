@@ -1,4 +1,4 @@
-**Versione: VUOTO-20261011a**
+**Versione: VUOTO-20261011b**
 
 # Tabelle di personalizzazione — {lingua} per {studente}
 
@@ -47,6 +47,13 @@ l'è tenuto.** *Era il quarto posto dove quel fatto viveva.*
 quella della lingua insegnata** — *diversa da quella dello studente, e uguale in ogni punto in cui
 compare.* ⚠️ **E l'ordine qui è l'OPPOSTO dei gradi di un episodio:** *nei gradi è la lingua insegnata
 prima, qui è lo studente prima.* **Il perché e il resto stanno in `FATTI-APP`.**
+
+🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE DI QUESTO FILE.** *`tabelle()` cerca
+l'indice con la stringa esatta* `'## 2 — LE TABELLE CHE ESISTONO'` — **numero compreso** — *e ogni
+tabella con* `` '### `nome`' ``. **Rinumerare una sezione ferma la trascrizione.**
+
+⚠️ *Misurato l'11/10. Fino a quel giorno tutti e tre questi file dicevano «titoli e numeri sono
+liberi», e nessuno l'aveva verificato.*
 
 ### ③ COSA NON STA QUI, E PERCHÉ
 
