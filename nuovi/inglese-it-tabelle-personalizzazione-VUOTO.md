@@ -1,4 +1,4 @@
-**Versione: VUOTO-20261011b**
+**Versione: VUOTO-20261011c**
 
 # Tabelle di personalizzazione — {lingua} per {studente}
 
@@ -48,9 +48,13 @@ quella della lingua insegnata** — *diversa da quella dello studente, e uguale 
 compare.* ⚠️ **E l'ordine qui è l'OPPOSTO dei gradi di un episodio:** *nei gradi è la lingua insegnata
 prima, qui è lo studente prima.* **Il perché e il resto stanno in `FATTI-APP`.**
 
-🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE DI QUESTO FILE.** *`tabelle()` cerca
-l'indice con la stringa esatta* `'## 2 — LE TABELLE CHE ESISTONO'` — **numero compreso** — *e ogni
-tabella con* `` '### `nome`' ``. **Rinumerare una sezione ferma la trascrizione.**
+🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE DI QUESTO FILE.** *Rinumerare una
+sezione ferma la trascrizione.* ⚠️ **Il come sta in `FATTI-APP`, riga `APP_titolo-una-volta`.**
+
+⚠️ **E QUI I TITOLI NON SI CITANO ALLA LETTERA, MAI.** *Una citazione diventa la seconda occorrenza di
+quel titolo, e il parser trova la seconda.* 🔴 *L'11/10 la prima stesura di questo paragrafo citava
+l'indice per intero: **il paragrafo che spiega la trappola ci era caduto dentro**, e il controllo l'ha
+fermato. Si scrive il nome della sezione senza i cancelletti, come fa questa riga.*
 
 ⚠️ *Misurato l'11/10. Fino a quel giorno tutti e tre questi file dicevano «titoli e numeri sono
 liberi», e nessuno l'aveva verificato.*

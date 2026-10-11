@@ -1,4 +1,4 @@
-**Versione: 20261011b**
+**Versione: 20261011c**
 
 # Tabelle di personalizzazione — spagnolo per italiani
 
@@ -33,10 +33,12 @@ quale chiave del JSON finisce ogni colonna — e solo un parser può farlo.*
 ⚠️ **I nomi delle colonne non sono liberi dal 2026-10-08**, e la correzione di quella frase è di Claude
 Code *(regola 33: resa falsa dal commit `e52d213`, corretta in `d530667`)*.
 
-🔴 **MA NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE, e questo nessuno l'aveva misurato.**
-*Misurato l'11/10 su `tabelle()`: l'indice si trova con la stringa esatta*
-`'## 2 — LE TABELLE CHE ESISTONO'` — **numero compreso** — *e ogni tabella con* `` '### `nome`' ``.
-**Rinumerare quella sezione ferma la trascrizione.**
+🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE** — *misurato l'11/10, e nessuno
+l'aveva verificato prima.* **Rinumerare una sezione di questo file ferma la trascrizione.**
+
+⚠️ **Il come sta in `FATTI-APP`, riga `APP_titolo-una-volta`, e qui NON si cita.** *Perché citare un
+titolo alla lettera lo fa comparire due volte, e la seconda occorrenza è quella che il parser trova:*
+🔴 **la prima stesura di questo paragrafo lo citava, e rompeva la cosa che descrive.**
 
 > ⭐ **E «titoli e numeri sono liberi» è sopravvissuta a una riscrittura fatta per togliere le frasi
 > false, perché portava l'attribuzione di chi l'aveva scritta.** *Una frase ricopiata con la sua
