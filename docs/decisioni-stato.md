@@ -76,7 +76,7 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **Il modello che nessuno legge** | **`docs/metodo/inglese-it-struttura-corso-VUOTO.md` non ha nessun lettore:** zero riferimenti nel repository, nessun test lo trascrive. *Può mentire sulla propria forma senza che niente lo dica — è quello che faceva il modello delle tabelle fino al 09/10 (indice con una tabella che non c'era).* **Spostarlo in `docs/metodo/` l'11/10 non lo ha risolto: lo ha spostato.** Segnalato da chi guida il progetto | **quando si decide se un test lo trascrive** (come `test_non_con` e `test_intestazioni` fanno con gli altri due), o se esce | qui |
 | **Le righe gemelle stato/storico** | Le righe sul modello dell'episodio stanno **identiche** in `decisioni-stato.md` e in `decisioni-storico.md` (la scheda «DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI»): regola 48 su un fatto. *Visto l'11/10 spostando il modello: in `stato` il percorso è stato aggiornato, in `storico` no — ed è giusto, lo storico registra dov'era il file quel giorno. Ma due copie dello stesso fatto si separano proprio così.* Segnalato da chi guida il progetto, **non toccato** | **quando la scheda si chiude** (i due paragrafi corretti nel modello) | qui |
 
-| **I testi che lo studente legge** | ⚠️ **Censiti il 2026-09-26, e due file su sette non hanno una fonte markdown: `istruzioni-moduli.json` (208 stringhe) e `messaggi-feedback.json` (141).** Il primo ha la bozza in `nuovi/`; il secondo **non l'ha mai letto nessuno**, e sono i testi dell'ESITO — *una spiegazione lunga si salta, un messaggio di esito sbagliato si crede*. Piu' **quattro stringhe nel codice**: le tre domande dei Dialogue in `app/config.js` e il messaggio del browser in `index.html` | **il primo e' in corso**; il secondo appena chi guida il progetto lo vuole guardare | qui sotto, «il censimento di tutto cio' che lo studente legge» |
+| **I testi che lo studente legge** | ⚠️ **Restano QUATTRO STRINGHE NEL CODICE**: le tre domande dei Dialogue (`finalBoxQuestion` in `app/config.js`) e il messaggio del browser in `index.html`. *Misurato il 2026-10-11. Qui c'era anche «due file su sette non hanno una fonte markdown: `istruzioni-moduli.json` (208 stringhe) e `messaggi-feedback.json` (141)», con la bozza «in `nuovi/`»: **chiuso dal 2026-09-28** (passo C) — i due file hanno la loro fonte in `docs/condivisi/it/` e stanno in `data/condivisi/it/`. Trovato da chi guida il progetto l'11/10, quattro giorni dopo l'ultima consegna di quelle fonti.* | appena chi guida il progetto lo vuole guardare | qui sotto, «il censimento di tutto cio' che lo studente legge» |
 ⚠️ **E QUELLO CHE NON È IN QUESTA TABELLA È CHIUSO.** *Un elenco che porta anche
 il chiuso non si legge per decidere: si legge per ricordare, ed è un altro
 mestiere e un altro file.*
@@ -109,7 +109,6 @@ Il timore che la teneva aperta era sbagliato, e la riga se n'è andata il
 
 | | Cosa | Chi decide, e quando |
 |---|---|---|
-| **`episodeFinalMessages.tuttiVerdi.tip`** | lista **vuota**, mentre i suoi due fratelli (`gialloNoRosso.tip`, `almenoUnRosso.tip`) hanno cinque consigli ciascuno. *Può essere voluto — «a chi ha tutto verde non c'è niente da consigliare» — o uno spazio mai riempito.* La lista vuota è dichiarata nella sezione 5 del markdown, quindi non sparisce | **chi guida il progetto.** " + W + " *E la famiglia intera aspetta un lettore: 25 stringhe per il modulo di verifica finale, che non esiste (regola 47)* |
 | **«Non mostrarmi più questa schermata»** | si può toccare dal **primo** passaggio: oggi si zittisce una spiegazione senza averla letta, **ed è il modo in cui un utente vero si è bloccato**. *Proposta: appare dal secondo in poi — chi ha già visto quella schermata sa cosa sta zittendo* | **chi guida il progetto**, dichiarata nella sezione 7 del markdown delle istruzioni |
 
 ## IL PACCHETTO 1 (2026-09-27) — nello storico dal 2026-10-01
@@ -369,17 +368,34 @@ NON SAPEVA DI AVERE:** *«questo file non mi ricordavo nemmeno l'esistenza. ci
 sono altri file che dovremmo secondo te rivedere insieme?»*. **Misurato, non
 ricordato.**
 
-### ① I file di dati: tre su sette non hanno una fonte markdown
+### ① I file di dati: tutti hanno una fonte, tranne le migrazioni — e va bene
+
+*Rifatta il 2026-10-11, misurata quel giorno. Le stringhe sono i valori di testo
+di ogni JSON, contati foglia per foglia — lo stesso metodo che dà 178 e 141 per
+i due file condivisi.* ⚠️ **Qui c'era la tabella del 26/09, «tre su sette non
+hanno una fonte markdown»**, con `inglese-it-istruzioni-moduli.json` (208) e
+`inglese-it-messaggi-feedback.json` (141) senza fonte e una bozza in `nuovi/`:
+**falsa dal 28/09** (passo C), coi nomi di prima che diventassero della lingua
+dello studente (`it-`, non la coppia). *La trovata è di chi guida il progetto,
+l'11/10: nessuno l'aveva riletta.*
 
 | File dati | Stringhe | Fonte markdown | Lo studente lo legge? |
 |---|---|---|---|
-| `inglese-it-gate.json` | 261 | ✅ `inglese-it-gate.md` | sì |
-| `inglese-it-tabelle-personalizzazione.json` | 229 | ✅ `...-tabelle-personalizzazione.md` | sì |
-| **`inglese-it-istruzioni-moduli.json`** | **208** | ❌ **NESSUNA** → la bozza e' `nuovi/inglese-it-istruzioni-moduli.md` | **sì, tutto** |
-| `inglese-it-aircraft-door.json` | 185 | ✅ `inglese-it-aircraft-door.md` | sì |
-| **`inglese-it-messaggi-feedback.json`** | **141** | ❌ **NESSUNA** | **sì, tutto** |
-| `inglese-it-struttura-corso.json` | 108 | ✅ `inglese-it-struttura-corso.md` | in parte (`gradeNames`, `moduleLabels`) |
-| `inglese-it-migrazioni-personalizzazione.json` | 62 | ❌ nessuna, **e va bene** | **no** |
+| `data/condivisi/it/it-istruzioni-moduli.json` | → **regola 8** | ✅ `docs/condivisi/it/it-istruzioni-moduli.md` | **sì, tutto** |
+| `data/condivisi/it/it-messaggi-feedback.json` | → **regola 8** | ✅ `docs/condivisi/it/it-messaggi-feedback.md` | **sì, tutto** |
+| `inglese-it-gate.json` · `spagnolo-it-gate.json` | 275 · 277 | ✅ il markdown gemello | sì |
+| `inglese-it-aircraft-door.json` · `spagnolo-it-aircraft-door.json` | 186 · 182 | ✅ il markdown gemello | sì |
+| `…-tabelle-personalizzazione.json` | 229 · 220 | ✅ il markdown gemello | sì |
+| `…-struttura-corso.json` | 126 · 126 | ✅ il markdown gemello | in parte (`gradeNames`, `moduleLabels`, `nomiASchermo`) |
+| `data/edizioni.json` | 6 | ✅ derivato dai `struttura-corso.md` (`elencoEdizioni`) | **no** — è il menu del Pannello Admin |
+| `…-migrazioni-personalizzazione.json` | 62 · 2 | ❌ nessuna, **e va bene** | **no** |
+
+*Il conto dei due file condivisi non si ricopia qui: vive nella regola 8 di
+`CLAUDE.md`, con la data (regola 48). Oggi è lo stesso di quel giorno.*
+
+⚠️ *(Il paragrafo qui sotto è del 26/09, e la sua prima frase è chiusa dal
+28/09: `messaggi-feedback.json` ha la sua fonte. Resta per la parte sulle
+famiglie.)*
 
 ⚠️ **`messaggi-feedback.json` E' IL SECONDO CASO IDENTICO AL PRIMO, E NESSUNO
 L'HA MAI RIVISTO: 141 stringhe in dieci famiglie** — `percentageRule`,

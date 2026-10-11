@@ -11,6 +11,10 @@
 // dice proprio nel momento in cui serve — quando il file è uscito dal
 // repository e il percorso si è perso.
 //
+// ⚠️ E DAL 2026-10-11 ([D]) CHE OGNI EDIZIONE ABBIA IL SUO FILE DI MIGRAZIONI,
+// con `slot` come oggetto: l'app lo chiede sempre, e la sua assenza la
+// scopriva lo studente davanti alla schermata d'errore.
+//
 // COSA NON PROTEGGE, dichiarato (regola 32): non verifica che il CONTENUTO sia
 // dell'edizione giusta. Un file `francese-it-gate.json` pieno di inglese passa
 // questo test. Qui si guarda il nome, che è la cosa che si sbaglia copiando.
@@ -185,6 +189,83 @@ function elencaEdizioni() {
     mancanti.length === 0, mancanti.join(', '));
   console.log('    episodi controllati: ' + episodiControllati +
     ' in ' + Object.keys(edizioni).length + ' edizione/i');
+}
+
+// ── [D] OGNI EDIZIONE HA IL SUO FILE DI MIGRAZIONI, E IL FILE DICE QUALCOSA ──
+//
+// Dal 2026-10-11, deciso da chi guida il progetto. L'app chiede SEMPRE
+// `{L}-{S}-migrazioni-personalizzazione.json` (`loadPersonalizationMigrations`
+// in `app/dati.js`), e se non arriva rifiuta: lo studente vede la schermata
+// d'errore. *Fino a quel giorno l'assenza la scopriva lui, non un test.*
+//
+// ⚠️ E NON BASTA CHE IL FILE CI SIA: DEVE PORTARE `slot` COME OGGETTO. Un file
+// vuoto — `"slot": {}` — DICE una cosa: «per questa edizione nessun id e' mai
+// cambiato». Un file senza `slot` (per esempio `{}`) non dice niente, e l'app
+// lo legge come se dicesse la stessa cosa: `(data && data.slot) || {}`. *Un
+// silenzio letto come un'affermazione.* Questo blocco ferma il file guasto
+// prima della pubblicazione; che l'app lo rifiuti anche dopo e' un passo suo.
+//
+// ⚠️ NON LO SCRIVE IL TRASCRITTORE, di proposito: il trascrittore scrive
+// contenuto, questo file e' storia. Crearlo vuoto in automatico vorrebbe dire
+// che il giorno in cui una migrazione vera serve e nessuno la scrive, il file
+// c'e' ed e' vuoto — cioe' afferma il falso in silenzio. Un controllo che
+// fallisce e' meglio di una riparazione che tace.
+//
+// La funzione e' PURA come `fileFuoriConvenzione`: prende le edizioni e un
+// lettore, e si falsifica con un lettore finto senza toccare il disco.
+function migrazioniGuaste(edizioni, leggi) {
+  const guasti = [];
+  edizioni.forEach(function (ed) {
+    const pezzi = ed.split('/');
+    const nome = 'data/' + ed + '/' + pezzi[0] + '-' + pezzi[1] + '-migrazioni-personalizzazione.json';
+    const testo = leggi(nome);
+    if (testo === null) { guasti.push(nome + ': manca'); return; }
+    let dati;
+    try { dati = JSON.parse(testo); } catch (e) { guasti.push(nome + ': non e\' JSON'); return; }
+    const slot = dati && dati.slot;
+    if (!slot || typeof slot !== 'object' || Array.isArray(slot)) {
+      guasti.push(nome + ': `slot` non e\' un oggetto (trovato ' + JSON.stringify(slot) + ')');
+    }
+  });
+  return guasti;
+}
+
+{
+  const finto = function (contenuti) {
+    return function (nome) { return Object.prototype.hasOwnProperty.call(contenuti, nome) ? contenuti[nome] : null; };
+  };
+  const F = 'data/francese/it/francese-it-migrazioni-personalizzazione.json';
+  [
+    [null, 'il file manca — il caso che oggi scopre lo studente'],
+    ['{}', 'il file c\'e\' ma senza `slot` — il caso che oggi non scopre nessuno'],
+    ['{"slot": []}', '`slot` e\' una lista'],
+    ['{"slot": null}', '`slot` e\' null'],
+    ['{"slot": {', 'il file non e\' JSON']
+  ].forEach(function (c) {
+    const contenuti = {};
+    if (c[0] !== null) contenuti[F] = c[0];
+    const g = migrazioniGuaste(['francese/it'], finto(contenuti));
+    log('[D] Lo becca: ' + c[1], g.length === 1, JSON.stringify(g));
+  });
+  const ok = {}; ok[F] = '{"_LEGGIMI": "vuoto", "slot": {}}';
+  log('[D] ...e lascia passare il file vuoto ma dichiarato (`"slot": {}`)',
+    migrazioniGuaste(['francese/it'], finto(ok)).length === 0);
+
+  // Le edizioni vere: le stesse di [C], cioe' le cartelle di `data/` e `docs/`
+  // fuori da `condivisi`. Regola 49: zero edizioni non e' un verde.
+  const edizioni = {};
+  elencaEdizioni().forEach(function (p) {
+    const pezzi = p.split('/');
+    if (pezzi.length === 4 && pezzi[1] !== CARTELLA_CONDIVISA) edizioni[pezzi[1] + '/' + pezzi[2]] = true;
+  });
+  const elenco = Object.keys(edizioni);
+  log('[D] Ci sono edizioni da guardare', elenco.length > 0, String(elenco.length));
+  const guasti = migrazioniGuaste(elenco, function (nome) {
+    const f = repoPath(nome);
+    return fs.existsSync(f) ? fs.readFileSync(f, 'utf8') : null;
+  });
+  log('[D] Ogni edizione ha il suo file di migrazioni, con `slot` come oggetto (' + elenco.join(', ') + ')',
+    guasti.length === 0, guasti.join(' | '));
 }
 
 console.log('\n=== NOMENCLATURA EDIZIONE: ' + passed + '/' + (passed + failed) + ' passed ===');
