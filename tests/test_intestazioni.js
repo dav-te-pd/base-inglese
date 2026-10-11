@@ -10,9 +10,8 @@
 // COME — i testi veri, letti dal disco e alterati in memoria; i file non si
 // toccano:
 //   [A] tutti i file veri passano: le due edizioni, i quattro episodi, e i due
-//       MODELLI di `nuovi/` — quello dell'episodio trascritto intero, quello
-//       delle tabelle tabella per tabella (intero non si trascrive: il suo
-//       indice elenca una tabella che non c'e');
+//       MODELLI di `nuovi/`, trascritti interi — e quello delle tabelle deve
+//       mostrare tutte e due le forme, 4 e 6 colonne (dal 2026-10-11);
 //   [B] i gradi: `en ↔ it` scambiate in D e in C, due colonne fisse scambiate
 //       in B e in A, una colonna in piu' in fondo, e la lingua insegnata
 //       uguale a quella dello studente — tutti fermano e dicono dove;
@@ -91,21 +90,24 @@ function run() {
   const modTab = leggi('nuovi/inglese-it-tabelle-personalizzazione-VUOTO.md');
   log('[A] Il modello dell\'episodio passa', sollevato(() => T.episodio(ING, 'modello', gradeNames, modEp)) === null,
     String(sollevato(() => T.episodio(ING, 'modello', gradeNames, modEp))));
-  // ⚠️ IL MODELLO DELLE TABELLE NON SI TRASCRIVE INTERO, e non per questo
-  // controllo: il suo indice elenca `people.esempio`, che come sezione non
-  // c'e' (misurato il 2026-10-08). Quindi qui si guardano le sue tabelle una
-  // per una, con la stessa funzione che usa `tabelle()`.
-  const sezioni = (modTab.match(/^### `[^`]+`/gm) || []);
-  log('[A] Il modello delle tabelle ha delle tabelle da guardare', sezioni.length > 0, String(sezioni.length));
-  sezioni.forEach((tit) => {
-    const m = sollevato(() => {
-      const r = T.tabellaSotto(modTab, tit, true);
-      const attese = T.INTESTAZIONI_TABELLE.find((a) => a.length === r.testa.length);
-      if (!attese) throw new Error(r.testa.length + ' colonne');
-      T.colonneConIntestazione(r, attese, tit, 'it');
-    });
-    log('[A] Il modello delle tabelle, ' + tit.replace('### ', '') + ': intestazione attesa', m === null, String(m));
-  });
+  // Il modello delle tabelle si trascrive INTERO, con `tabelle()` — dal
+  // 2026-10-11. Fino a quel giorno il suo indice elencava `people.esempio` che
+  // come sezione non c'era, e qui lo si leggeva tabella per tabella. **E deve
+  // mostrare tutte e due le forme**, 4 e 6 colonne: un modello che ne mostra
+  // una sola non documenta il ramo che `APP_ramo-sul-numero-colonne` chiama
+  // «la mina della prossima colonna».
+  let modello = null;
+  const mTab = sollevato(() => { modello = T.tabelle(ING, modTab); });
+  log('[A] Il modello delle tabelle si trascrive INTERO', mTab === null, String(mTab));
+  if (modello) {
+    const forme = new Set();
+    Object.keys(modello).forEach((g) => Object.keys(modello[g]).forEach((k) => {
+      modello[g][k].forEach((r) => forme.add(r.paese ? 6 : 4));
+    }));
+    const attese = T.INTESTAZIONI_TABELLE.map((a) => a.length);
+    log('[A] ...e mostra TUTTE le forme di `INTESTAZIONI_TABELLE` (' + attese.join(' e ') + ' colonne)',
+      attese.every((n) => forme.has(n)), JSON.stringify(Array.from(forme)));
+  }
 
   // ── [B] I gradi ──
   const gate = leggi('docs/inglese/it/inglese-it-gate.md');

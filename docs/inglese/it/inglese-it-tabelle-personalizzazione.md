@@ -1,4 +1,4 @@
-**Versione: 20261009a**
+**Versione: 20261011c**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -10,36 +10,55 @@
 `data/inglese/it/inglese-it-tabelle-personalizzazione.json`.** I criteri con cui
 un nome o una città sono stati scelti stanno nei file RAGIONI.
 
-### ① QUANTO È RIGIDO IL PARSER — misurato il 2026-09-23
+### ① QUANTO È RIGIDO IL PARSER — e da oggi non si racconta qui
 
-⚠️ **NESSUN PARSER. Zero test e zero codice leggono questo file: lo leggo solo
-io.** *Misurato: nessun test lo apre per nome, e i soli markdown letti da un
-test sono `inglese-it-struttura-corso.md`, `inglese-it-gate.md` e
-`inglese-it-aircraft-door.md`.*
+⚠️ **LA RIGIDITÀ DEL PARSER NON SI DESCRIVE PIÙ IN QUESTO FILE.** *Vive in un posto solo:
+`docs/metodo/FATTI-APP.md`, righe `APP_colonne-per-posizione` e `APP_ramo-sul-numero-colonne`, dove un
+test la confronta col codice vero.*
 
-**Quindi titoli e numeri qui sono liberi.** ⚠️ *I nomi delle colonne no, dal 2026-10-08: il trascrittore controlla l'intestazione di ogni tabella colonna per colonna (`INTESTAZIONI_TABELLE`), e resta libera solo la cella della lingua insegnata. Corretto da Claude Code (regola 33): reso falso dal commit `e52d213`.* Li scrivo lo
-stesso nella stessa grammatica degli altri due — **una tabella per tabella, le
-colonne sempre nello stesso ordine** — perché il giorno in cui un test lo
-leggerà non ci sia niente da riscrivere. *Una forma decisa quando non serve
-costa zero; decisa quando serve costa una migrazione.*
+> ⭐ **È la regola 48 applicata a un FATTO invece che a un numero.** *Un fatto ricopiato in tre file
+> invecchia in tre posti, e ogni copia può smentire le altre senza che nessuno le legga insieme.*
 
-### ② DUE COSE DA SAPERE
+🔴 **E LA PROVA CHE SERVIVA STAVA QUI. Fino al 2026-10-11 questa sezione diceva che nessun parser legge
+questo file.**
+
+| Chi legge questo file | |
+|---|---|
+| **`tests/tools/trascrivi.js`** | *lo trascrive nel suo JSON* |
+| ⭐ **`tests/test_intestazioni.js`** | *dal 2026-10-08: controlla l'intestazione di ogni tabella, colonna per colonna* |
+
+⚠️ **E non serviva una misura per smentirla: la smentiva questo file.** *La sezione «LE RIGHE» dice in
+quale chiave del JSON finisce ogni colonna — e solo un parser può farlo.*
+
+⚠️ **I nomi delle colonne non sono liberi dal 2026-10-08**, e la correzione di quella frase è di Claude
+Code *(regola 33: resa falsa dal commit `e52d213`, corretta in `d530667`)*.
+
+🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE** — *misurato l'11/10, e nessuno
+l'aveva verificato prima.* **Rinumerare una sezione di questo file ferma la trascrizione.**
+
+⚠️ **Il come sta in `FATTI-APP`, riga `APP_titolo-una-volta`, e qui NON si cita.** *Perché citare un
+titolo alla lettera lo fa comparire due volte, e la seconda occorrenza è quella che il parser trova:*
+🔴 **la prima stesura di questo paragrafo lo citava, e rompeva la cosa che descrive.**
+
+> ⭐ **E «titoli e numeri sono liberi» è sopravvissuta a una riscrittura fatta per togliere le frasi
+> false, perché portava l'attribuzione di chi l'aveva scritta.** *Una frase ricopiata con la sua
+> attribuzione sembra verificata.*
+
+### ② UNA COSA DA SAPERE
 
 ⚠️ **Il predefinito NON è una proprietà della tabella: è una proprietà dello SLOT**, e vive nella
-sezione 7 del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti
+sezione «GLI SLOT» del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti
 diversi.*
 
-⚠️ **E due cose sono DECISE ma non ancora trascrivibili: la riga città + paese,
-e le età in parole.** Il contenuto — quale paese per ogni città, quali età, con
-quali colonne — **è scelto e sta nella sezione 4**, in una forma che il
-trascrittore non legge. *Finché i due passi di codice non ci sono, le tabelle
-della sezione 3 restano a quattro colonne.*
+🔴 **E QUI C'ERANO ALTRE DUE COSE, FALSE DAL 2026-09-24:**
 
-⚠️ **E non è un rinvio per pigrizia: il trascrittore le RIFIUTEREBBE.**
-`tests/tools/trascrivi.js` chiede a ogni tabella della sezione 3 **esattamente
-quattro colonne** e si ferma con l'errore che le nomina. *Scriverle nella
-sezione 3 oggi non produrrebbe un JSON sbagliato: produrrebbe un JSON non
-scritto affatto.*
+| Diceva | |
+|---|---|
+| «la riga città + paese e le età in parole sono **decise ma non trascrivibili**» | ⭐ **fatte tutte e due il 24/09**: *`places.departures` ha sei colonne qui sotto, e `ages.anni` è una tabella vera* |
+| «il trascrittore le **RIFIUTEREBBE**: chiede esattamente quattro colonne» | 🔴 **ne accetta quattro o sei** — *e lo dice questo file, cinquanta righe più in basso* |
+
+⚠️ **Erano false da diciassette giorni, e nessuno le aveva scritte sbagliate:** *sono diventate false il
+giorno in cui il lavoro che dichiaravano impossibile è stato fatto.*
 
 ---
 
@@ -49,7 +68,7 @@ scritto affatto.*
 file episodio.*
 
 ⚠️ **LE ETÀ SONO ENTRATE QUI IL 2026-09-24 (passo 1.8-bis ③), e prima stavano
-nella sezione 8 di `gate`** come valori nudi. *Il codice li trasformava in
+nella sezione «LE TABELLE INTERNE ALL'EPISODIO» di `gate`** come valori nudi. *Il codice li trasformava in
 `{value, it, en}` tutti e tre uguali, ed è il motivo per cui si leggeva
 `I'm 16 years old` invece di `I'm sixteen`.* **Una tabella interna a un episodio
 resta possibile** — la forma `episode.<qualcosa>` c'è ancora — ma oggi non la
@@ -72,7 +91,8 @@ storia.*
 
 ## 3 — LE RIGHE
 
-**Ogni tabella ha le stesse quattro colonne, sempre nello stesso ordine:**
+**Una tabella ha QUATTRO colonne, oppure SEI**, *e quale lo dice la sua intestazione.* **Le quattro,
+sempre nello stesso ordine:**
 
 | Colonna | Va in | Cosa vuol dire |
 |---|---|---|
@@ -243,8 +263,8 @@ si tornerebbe a `I'm 16 years old` **senza nessun errore e senza nessun rosso**.
 predefinita.*
 
 **Quattordici righe, una tabella sola: i due slot ne prendono un pezzo** con la
-colonna «righe» della sezione 7 del file episodio — la figlia `eta-12`…`eta-17`,
-il figlio `eta-4`…`eta-11`.
+colonna «righe» della sezione «GLI SLOT» del file episodio — la figlia
+`eta-12`…`eta-17`, il figlio `eta-4`…`eta-11`.
 
 | id | it | en | traducibile |
 |---|---|---|---|
@@ -267,48 +287,13 @@ il figlio `eta-4`…`eta-11`.
 
 ## 4 — DECISO, NON ANCORA TRASCRIVIBILE
 
-⚠️ **QUESTA SEZIONE NON FINISCE NEL JSON, E NON È UNA BOZZA.** Quello che c'è
-qui è **contenuto scelto**, fermo solo perché il codice che lo legge non esiste
-ancora. Quando il passo di codice arriva, queste righe si spostano nella
-sezione 3 **senza ridecidere niente**.
+⚠️ **QUESTA SEZIONE NON FINISCE NEL JSON.** *Quello che ci sta è contenuto scelto, fermo solo perché il
+codice che lo legge non esiste ancora.*
 
-*Sta in una sezione sua e non fra le tabelle vere per una ragione misurata:
-`trascrivi.js` legge le tabelle della sezione 3 per **posizione delle colonne**
-e ne pretende **quattro**. Una riga a sei colonne lassù non darebbe un dato
-sbagliato — fermerebbe la trascrizione di tutto il file. Qui sotto non la
-guarda nessuno.*
+**Oggi è vuota.** 🔴 *Conteneva tre voci — il paese delle partenze, le età, la skill di `d-8` — e tutte
+e tre sono state fatte il 2026-09-24.*
 
----
-
-### ④.1 — IL PAESE DELLE PARTENZE — ✅ **FATTO IL 2026-09-24 (passo ②)**
-
-Le otto righe col paese **sono salite nella sezione 3**, dove sono diventate un
-dato vero. *Questa riga resta al posto della tabella per una ragione sola: dice
-che la sezione 4 si SVUOTA quando un passo arriva, invece di accumulare copie di
-quello che ormai vive altrove.*
-
----
-
-### ④.2 — LE ETÀ — ✅ **FATTO IL 2026-09-24 (passo ③)**
-
-`ages.anni` **è salita nella sezione 3**, e gli slot di `gate` ne prendono un
-pezzo con la colonna «righe». *Questa riga resta al posto della tabella per la
-stessa ragione della ④.1: la sezione 4 si **svuota** quando un passo arriva,
-invece di accumulare copie di quello che ormai vive altrove.*
-
----
-
-### ④.3 — LA SKILL DI `d-8` — ✅ **FATTA IL 2026-09-24 (passo ③)**
-
-Citava la battuta inglese con `{{figliaEta}}` e `{{figlioEta}}` **senza `:en`**:
-il giorno in cui `it` ed `en` divergono, la spiegazione avrebbe detto
-`I'm 16 years old` mentre la battuta sopra dice `I'm sixteen`.
-
-⚠️ **E il sondaggio ha trovato che non era un caso isolato: era la FORMA.** Dei
-sette segnaposto nelle skill di `gate`, **cinque non dichiaravano la lingua, e
-quattro di quei cinque stavano dentro una citazione.** Due sarebbero diventati
-falsi con questo passo; due no — sono nomi propri, che non divergono mai — *ma
-sono la stessa scrittura, e «non fa danno» non è «è giusto».*
-
-**Adesso la regola è una e meccanica: dentro una citazione, un segnaposto
-dichiara sempre la sua lingua.** Fuori, nella prosa italiana, può tacere.
+⭐ **La sezione si SVUOTA quando un passo arriva, invece di accumulare note di cose fatte:** *tre righe
+«✅ FATTO» sono tre righe che fra sei mesi si rileggono come lavoro aperto.* ⚠️ **E il suo preambolo
+diceva che una riga a sei colonne «fermerebbe la trascrizione di tutto il file»** — *falso dal 24/09, e
+smentito dalle sei colonne di `places.departures` nella sezione qui sopra.*

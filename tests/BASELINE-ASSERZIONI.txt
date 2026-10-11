@@ -84,7 +84,7 @@ test_fatti_app.js 82
 test_hidden_guard.js 5
 test_identita_estratta.js 14
 test_interruttore_episodio.js 24
-test_intestazioni.js 28
+test_intestazioni.js 22
 test_lista_episodi.js 23
 test_listener_una_volta.js 28
 test_magazzino.js 8

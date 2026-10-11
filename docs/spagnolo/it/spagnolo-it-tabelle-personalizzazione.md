@@ -1,4 +1,4 @@
-**Versione: 20261009a**
+**Versione: 20261011c**
 
 # Tabelle di personalizzazione — spagnolo per italiani
 
@@ -10,19 +10,49 @@
 `data/spagnolo/it/spagnolo-it-tabelle-personalizzazione.json`.** I criteri con cui un nome o una città
 sono stati scelti stanno nei file RAGIONI.
 
-### ① QUANTO È RIGIDO IL PARSER
+### ① QUANTO È RIGIDO IL PARSER — e da oggi non si racconta qui
 
-⚠️ **NESSUN PARSER LEGGE QUESTO FILE, come per il gemello inglese.** *Lo legge `trascrivi.js`, che
-pretende **esattamente quattro colonne** per le tabelle della sezione 3 — o sei per quella delle
-partenze — e si ferma con l'errore che le nomina.*
+⚠️ **LA RIGIDITÀ DEL PARSER NON SI DESCRIVE PIÙ IN QUESTO FILE.** *Vive in un posto solo:
+`docs/metodo/FATTI-APP.md`, righe `APP_colonne-per-posizione` e `APP_ramo-sul-numero-colonne`, dove un
+test la confronta col codice vero.*
 
-**Titoli e numeri sono liberi.** ⚠️ *I nomi delle colonne no, dal 2026-10-08: il trascrittore controlla l'intestazione di ogni tabella colonna per colonna (`INTESTAZIONI_TABELLE`), e resta libera solo la cella della lingua insegnata. Corretto da Claude Code (regola 33): reso falso dal commit `e52d213`.* **Li scrivo comunque nella stessa grammatica del file
-inglese:** *una forma decisa quando non serve costa zero; decisa quando serve costa una migrazione.*
+> ⭐ **È la regola 48 applicata a un FATTO invece che a un numero.** *Un fatto ricopiato in tre file
+> invecchia in tre posti, e ogni copia può smentire le altre senza che nessuno le legga insieme.*
+
+🔴 **E LA PROVA CHE SERVIVA STAVA QUI. Fino al 2026-10-11 questa sezione diceva che nessun parser legge
+questo file.**
+
+| Chi legge questo file | |
+|---|---|
+| **`tests/tools/trascrivi.js`** | *lo trascrive nel suo JSON* |
+| ⭐ **`tests/test_intestazioni.js`** | *dal 2026-10-08: controlla l'intestazione di ogni tabella, colonna per colonna* |
+
+⚠️ **E non serviva una misura per smentirla: la smentiva questo file.** *La sezione «LE RIGHE» dice in
+quale chiave del JSON finisce ogni colonna — e solo un parser può farlo.*
+
+⚠️ **I nomi delle colonne non sono liberi dal 2026-10-08**, e la correzione di quella frase è di Claude
+Code *(regola 33: resa falsa dal commit `e52d213`, corretta in `d530667`)*.
+
+🔴 **E NON SONO LIBERI NEMMENO I TITOLI E I NUMERI DI SEZIONE** — *misurato l'11/10, e nessuno
+l'aveva verificato prima.* **Rinumerare una sezione di questo file ferma la trascrizione.**
+
+⚠️ **Il come sta in `FATTI-APP`, riga `APP_titolo-una-volta`, e qui NON si cita.** *Perché citare un
+titolo alla lettera lo fa comparire due volte, e la seconda occorrenza è quella che il parser trova:*
+🔴 **la prima stesura di questo paragrafo lo citava, e rompeva la cosa che descrive.**
+
+> ⭐ **E «titoli e numeri sono liberi» è sopravvissuta a una riscrittura fatta per togliere le frasi
+> false, perché portava l'attribuzione di chi l'aveva scritta.** *Una frase ricopiata con la sua
+> attribuzione sembra verificata.*
+
+🔴 **E qui la frase si smentiva dentro sé stessa:** *«NESSUN PARSER LEGGE QUESTO FILE … lo legge
+`trascrivi.js`».* **Due affermazioni opposte in due righe consecutive, copiate dal gemello inglese senza
+rileggerle.**
 
 ### ② DUE COSE DA SAPERE
 
 ⚠️ **Il predefinito NON è una proprietà della tabella: è una proprietà dello SLOT**, e vive nella
-sezione 7 del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti diversi.*
+sezione «GLI SLOT» del file episodio. *Due episodi possono pescare dalla stessa tabella con predefiniti
+diversi.*
 
 ⚠️ **UNO SPAZIO AI BORDI DI UN TESTO SI SCRIVE `␣` (U+2423).** *Chi legge una cella di tabella le toglie
 gli spazi ai lati — deve — quindi uno spazio ai bordi sparirebbe senza un errore.* **In questo file non
@@ -70,7 +100,8 @@ si chiama in ogni lingua.*
 
 ## 3 — LE RIGHE
 
-**Ogni tabella ha le stesse quattro colonne, sempre nello stesso ordine:**
+**Una tabella ha QUATTRO colonne, oppure SEI**, *e quale lo dice la sua intestazione.* **Le quattro,
+sempre nello stesso ordine:**
 
 | Colonna | Va in | Cosa vuol dire |
 |---|---|---|
@@ -89,10 +120,21 @@ sempre.*
 | | |
 |---|---|
 | **Perché le chiavi cambiano** | *con chiavi di lingua, `es` sarebbe **la lingua insegnata** in `spagnolo-it-…` e **quella dello studente** in `inglese-es-…`.* 🔴 **Stessa chiave, ruolo opposto secondo il file** |
-| ⭐ **Perché le intestazioni no** | *`APP_colonne-per-posizione`: ogni parser legge le colonne **per posizione, mai per nome**.* **Le parole dell'intestazione sono libere; l'ordine no** |
+| ⭐ **Perché le intestazioni restano le lingue** | *si leggono bene, e dall'8/10 il controllo le lega alla cartella* |
 
 ⚠️ **Quindi qui sopra si scrive `it` e `es` perché si leggono bene, e nel JSON escono `native` e
 `target`.** *Sono due cose diverse e vanno tenute diverse.*
+
+🔴 **E QUI C'ERA SCRITTO «le parole dell'intestazione sono libere; l'ordine no». DALL'8/10 È IL
+CONTRARIO** — *l'ordine è controllato, e le parole quasi tutte.* ⚠️ **Questa riga è sopravvissuta alla
+correzione del commit `d530667`, che aveva sistemato la frase gemella ottanta righe più su:** *una
+ricerca per testo trova la frase che cerchi, non le sue parafrasi.*
+
+| | |
+|---|---|
+| **`id` · `paese it` · `paese es` · `traducibile`** | *parole fisse, al loro posto* |
+| **`it`** | *si chiama come la cartella* |
+| ⭐ **`es`** | *l'unica libera — ma diversa da `it`, e uguale in ogni punto in cui compare* |
 
 ### `people.papa`
 
@@ -229,7 +271,7 @@ tornerebbe a «Tengo 16 años» **senza nessun errore e senza nessun rosso**.*
 dell'accento, e `gate` la porta come regola generale.*
 
 **Quattordici righe, una tabella sola: i due slot ne prendono un pezzo** con la colonna «righe» della
-sezione 7 del file episodio — *la figlia `eta-12`…`eta-17`, il figlio `eta-4`…`eta-11`.*
+sezione «GLI SLOT» del file episodio — *la figlia `eta-12`…`eta-17`, il figlio `eta-4`…`eta-11`.*
 
 ---
 
