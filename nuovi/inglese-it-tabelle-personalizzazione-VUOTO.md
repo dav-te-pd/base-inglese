@@ -1,4 +1,4 @@
-**Versione: VUOTO-20261009b**
+**Versione: VUOTO-20261011a**
 
 # Tabelle di personalizzazione — {lingua} per {studente}
 
@@ -23,36 +23,30 @@
 `data/{lingua}/{studente}/{lingua}-{studente}-tabelle-personalizzazione.json`.** I criteri con cui un
 nome o una città sono stati scelti stanno nei file RAGIONI.
 
-### ① QUANTO È RIGIDO IL PARSER — misurato il 2026-10-09
+### ① QUANTO È RIGIDO IL PARSER — e un modello non lo racconta
 
-🔴 **FINO AL 2026-10-08 QUI C'ERA SCRITTO «NESSUN PARSER. Zero test e zero codice leggono questo file:
-lo leggo solo io». NON È PIÙ VERO, E LA RIGA SOTTO LO DICEVA GIÀ.**
+⚠️ **LA RIGIDITÀ DEL PARSER NON SI DESCRIVE QUI, e un modello è il posto dove descriverla costa di
+più:** *quello che un modello tiene, lo regala a ogni file che nasce da lui.*
 
-| Chi legge questo file | Da quando |
-|---|---|
-| **`tests/tools/trascrivi.js`** — *lo trascrive nel suo JSON* | *da sempre* |
-| ⭐ **`tests/test_intestazioni.js`** — *controlla l'intestazione di ogni tabella, colonna per colonna* | **2026-10-08** |
+**Vive in un posto solo:** `docs/metodo/FATTI-APP.md`, *righe* `APP_colonne-per-posizione` *e*
+`APP_ramo-sul-numero-colonne` — **dove un test la confronta col codice vero.**
 
-⚠️ **E la contraddizione è nata dentro una correzione.** *Il commit `e52d213` ha corretto la frase sui
-nomi delle colonne e ha lasciato in piedi quella sopra, che la smentiva.* ⭐ **Una correzione si legge
-nel suo paragrafo, non nella sua riga.**
+> ⭐ **Un fatto ricopiato in tre file invecchia in tre posti, e ogni copia può smentire le altre senza
+> che nessuno le legga insieme.**
 
-### ② ⚠️ LE INTESTAZIONI NON SONO LIBERE, DAL 2026-10-08
+🔴 **È già successo tre volte, a questo modello e ai suoi due gemelli.** *Qui c'era scritto «NESSUN
+PARSER. Zero test e zero codice leggono questo file» — mentre il trascrittore lo trascrive da sempre, e
+`test_intestazioni.js` lo legge dall'8/10.*
 
-**`trascrivi.js` confronta l'intestazione di ogni tabella con `INTESTAZIONI_TABELLE`, cella per cella.**
+🔴 **E la prima stesura di questa correzione, il 2026-10-09, ha tolto il fatto dai due file veri e se
+l'è tenuto.** *Era il quarto posto dove quel fatto viveva.*
 
-| | |
-|---|---|
-| **le parole fisse** | `id` · `paese {studente}` · `paese {lingua}` · `traducibile` — **al loro posto** |
-| **la colonna dello STUDENTE** | *si chiama come la cartella: `it` in `inglese/it/`* |
-| ⭐ **la colonna della lingua INSEGNATA** | *l'unica libera — `en`, `es` — ma **diversa** da quella dello studente, e **uguale in ogni punto in cui compare*** |
+**Quello che un modello deve dire del parser è una riga sola:**
 
-⚠️ **E l'ordine qui è l'OPPOSTO dei gradi di un episodio: prima lo studente, poi la lingua insegnata.**
-*Nei gradi è `en | it`; qui è `it | en`.* 🔴 **Non è un'incoerenza da sistemare: è come sono scritti i
-file, e il controllo lo sa.**
-
-⭐ **In una tabella a sei colonne la lingua insegnata compare DUE VOLTE** — `en` e `paese en` — **e devono
-essere la stessa.** *Una tabella `en` con `paese es` si ferma.*
+⚠️ **L'intestazione di ogni tabella è controllata colonna per colonna**, e **l'unica cella libera è
+quella della lingua insegnata** — *diversa da quella dello studente, e uguale in ogni punto in cui
+compare.* ⚠️ **E l'ordine qui è l'OPPOSTO dei gradi di un episodio:** *nei gradi è la lingua insegnata
+prima, qui è lo studente prima.* **Il perché e il resto stanno in `FATTI-APP`.**
 
 ### ③ COSA NON STA QUI, E PERCHÉ
 
