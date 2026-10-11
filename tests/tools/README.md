@@ -4,7 +4,7 @@
 suite.** Si lanciano a mano quando servono, e ognuno risponde a una domanda
 sola.
 
-⚠️ **Il conto non si scrive qui, si conta:** `ls tests/tools/*.js tests/tools/*.sh | wc -l`.
+⚠️ **Il conto non si scrive qui, si conta:** `ls tests/tools/*.js tests/tools/*.sh tests/tools/*.py | wc -l` *(i `.py` dal 2026-10-11: sono i tre della sezione ⑦, che non sono di Claude Code)*.
 *Fino al 2026-09-24 questo file ne descriveva **tre su ventisei** e si
 intitolava «Strumenti di verifica visiva» — che era vero ad agosto, quando qui
 c'erano solo gli screenshot.*
@@ -83,3 +83,22 @@ se un giorno servisse riscriverle su `app/`.
 | `misura-costruiti.js` | ⚠️ i legami costruiti a runtime — una chiave o un percorso che **non esiste mai per intero** nel sorgente, quindi nessuna ricerca lo trova. *L'unica delle sei misure dello spacchettamento che legge anche `app/`, e quindi l'unica rimasta: serve alla forma ⑥ della regola 41* |
 | `misura-finestra-boot.js` | quanto dura la finestra fra «la pagina c'è» e «i testi sono arrivati» |
 | `misura-finestra-apertura.js` | quanto un modulo fa aspettare prima di essere usabile |
+
+## ⑦ I controlli di CHI GUIDA IL PROGETTO — non sono di Claude Code
+
+⚠️ **QUESTI TRE SONO SUOI: li scrive lui, li lancia lui, prima di consegnare un
+file in `nuovi/`.** **Non sono passi della CI e nessun test li chiama, ed è
+voluto.** *Una sessione che li trova qui accanto a `trascrivi.js` non li adotta,
+non li aggiunge alla suite e non li «ripara» per farli girare in CI: un
+cambiamento a questi file si chiede, come per un markdown di contenuto (regola
+33).* Stanno qui dal 2026-10-11 — prima erano in `nuovi/`, che è una cartella di
+passaggio — perché sono strumenti e non documenti.
+
+Si lanciano **dalla radice del repository** (`python3 tests/tools/<nome> …`):
+`controllo-bacino.py` legge `app/config.js` con un percorso relativo.
+
+| Strumento | A cosa risponde |
+|---|---|
+| `controllo-titoli.py` | *un titolo `##` o `###` compare UNA volta sola, anche a metà riga?* È il confronto grezzo di `indexOf`, apposta. **Non sa quali file hanno un parser**: li tratta tutti come se ce l'avessero |
+| `controllo-bacino.py` | *ogni voce di un grado letto dalla scelta multipla ha abbastanza alternative?* Legge `distrattori` da `app/config.js`, e si ferma se non lo trova |
+| `controllo-semina.py` | *le voci nate negli episodi recenti ricompaiono nelle BATTUTE del nuovo?* È la finestra di semina |

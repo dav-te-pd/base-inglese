@@ -579,7 +579,7 @@ function messaggi(st) {
 // ── un episodio ──────────────────────────────────────────────────────────
 // `testo` e' facoltativo: senza, si legge il file dell'episodio dalla sua
 // cartella. Con, si trascrive quel testo — e' la strada del MODELLO
-// (`nuovi/...-EPISODIO-VUOTO.md`), che non sta in nessuna edizione e che
+// (`docs/metodo/...-EPISODIO-VUOTO.md`), che non sta in nessuna edizione e che
 // `test_non_con.js` trascrive dal 2026-10-07.
 // ⚠️ `non con` — dal 2026-10-07, approvato da chi guida il progetto.
 //

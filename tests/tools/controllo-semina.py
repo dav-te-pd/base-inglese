@@ -7,7 +7,7 @@ ultimi N episodi deve ricomparire almeno una volta dentro le BATTUTE.
 🔴 Il difetto che ha creato questa regola: `aircraft-door` inglese riusa ZERO
 target di `gate`. Due episodi di fila scritti senza accorgersene.
 
-Uso:  python3 controllo-semina.py <nuovo-sorgente.md> <precedente.md> [<precedente.md> …]
+Uso:  python3 tests/tools/controllo-semina.py <nuovo-sorgente.md> <precedente.md> [<precedente.md> …]
 """
 import re, sys, unicodedata
 from pathlib import Path
@@ -49,7 +49,7 @@ def battute(testo):
 
 def main():
     if len(sys.argv) < 3:
-        raise SystemExit("Uso: python3 controllo-semina.py <nuovo> <precedente> [...]")
+        raise SystemExit("Uso: python3 tests/tools/controllo-semina.py <nuovo> <precedente> [...]")
 
     nuovo = Path(sys.argv[1])
     testo_battute = normale(battute(nuovo.read_text(encoding="utf-8")))

@@ -22,7 +22,7 @@ qui e fermava la trascrizione. Trovato da Claude Code.
 cosi' com'e', perche' e' quello che fa `indexOf`. Un controllo piu' furbo del
 parser direbbe «a posto» su un file che il parser rifiuta.
 
-Uso:  python3 controllo-titoli.py <file.md> [<file.md> …]
+Uso:  python3 tests/tools/controllo-titoli.py <file.md> [<file.md> …]
 """
 import re
 import sys

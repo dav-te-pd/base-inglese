@@ -16,12 +16,13 @@ on:
     # `test_nomenclatura_edizione.js` solo `data/` e `docs/`. Se un giorno
     # qualcuno la leggesse, vorrebbe dire che i file sono stati promossi e non
     # sono più lì.
-    # 🔴 NON E' PIU' VERO DAL 2026-10-07, ed e' un buco aperto: due test leggono
-    # i modelli `-VUOTO` che stanno in `nuovi/` — `test_non_con.js` quello
-    # dell'episodio, `test_intestazioni.js` quello delle tabelle. Un modello
-    # rotto caricato da solo NON fa partire la CI, e lo scopre il push dopo.
-    # L'esclusione resta, decisione di chi guida il progetto (2026-10-11): sono
-    # i modelli a dover uscire da `nuovi/`, non la CI a guardarci dentro.
+    # ⚠️ E' TORNATO VERO IL 2026-10-11. Dal 07/10 al 10/10 non lo era: due
+    # test leggevano i modelli `-VUOTO` che stavano qui (`test_non_con.js`,
+    # `test_intestazioni.js`), e un modello rotto caricato da solo non faceva
+    # partire la CI. L'esclusione e' rimasta, per decisione di chi guida il
+    # progetto: sono usciti i modelli (in `docs/metodo/`) e i tre
+    # `controllo-*.py` (in `tests/tools/`). Qui resta solo `LEGGIMI.md` piu'
+    # le consegne in transito.
     # ⚠️ E NON È UN BUCO: GitHub salta il workflow solo quando TUTTI i file
     # cambiati cadono nel filtro. Un push che mescola `nuovi/` e codice fa
     # partire la suite lo stesso.

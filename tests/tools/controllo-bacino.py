@@ -17,9 +17,9 @@ posto dove vive davvero. Se non si trova, lo script si ferma: un controllo che
 non può controllare non deve indovinare (regola 4).
 
 Uso:
-    python3 controllo-bacino.py <file-ragioni.md> [...]
-    python3 controllo-bacino.py --config percorso/config.js <file> [...]
-    python3 controllo-bacino.py --distrattori N <file> [...]   # solo «e se»
+    python3 tests/tools/controllo-bacino.py <file-ragioni.md> [...]
+    python3 tests/tools/controllo-bacino.py --config percorso/config.js <file> [...]
+    python3 tests/tools/controllo-bacino.py --distrattori N <file> [...]   # solo «e se»
 """
 import re
 import sys
@@ -228,7 +228,7 @@ def main():
 
     if not argv:
         raise SystemExit(
-            "Uso: python3 controllo-bacino.py [--config <config.js>] "
+            "Uso: python3 tests/tools/controllo-bacino.py [--config <config.js>] "
             "[--distrattori N] <file-ragioni.md> [...]"
         )
 

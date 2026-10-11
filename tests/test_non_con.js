@@ -41,7 +41,7 @@ function log(nome, ok, extra) {
 const sollevato = function (f) { try { f(); return null; } catch (e) { return e.message; } };
 const copia = (o) => JSON.parse(JSON.stringify(o));
 
-const MODELLO = 'nuovi/inglese-it-EPISODIO-VUOTO.md';
+const MODELLO = 'docs/metodo/inglese-it-EPISODIO-VUOTO.md';
 
 async function run() {
   const struttura = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-struttura-corso.json'), 'utf8'));

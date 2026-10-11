@@ -89,14 +89,16 @@ file «ovviamente più nuovo» di quello vero **non lo copia sopra**.
 
 ---
 
-## I file `-VUOTO`
+## I file `-VUOTO` — usciti il 2026-10-11
 
-**Non sono in consegna: sono il MODELLO di un file dati.** Portano le sezioni
-coi titoli esatti, le tabelle, le colonne e **una riga di esempio** — niente
-contenuto vero, apposta.
+**Non stanno più qui: sono in `docs/metodo/`**, perché due test li leggono
+(`test_non_con.js`, `test_intestazioni.js`) e la CI questa cartella la salta —
+un modello rotto caricato qui non faceva partire niente. *Con loro sono usciti i
+tre `controllo-*.py`, in `tests/tools/`: sono permanenti, e questa è una
+cartella di passaggio.* Deciso da chi guida il progetto.
 
-Dentro ognuno, in testa, c'è una cosa che non sta da nessun'altra parte:
-**quanto è rigido il parser** di quel file — cosa cerca, come, e cosa lo rompe.
+**Sono il MODELLO di un file dati**: le sezioni coi titoli esatti, le tabelle,
+le colonne e **una riga di esempio** — niente contenuto vero, apposta.
 
 ⚠️ **IL LIMITE, DICHIARATO DA CHI GUIDA IL PROGETTO IL 2026-09-28, E NON È UNA
 CRITICA AL MODELLO: UN FILE VUOTO DICE MENO DI UNO PIENO.**
@@ -107,5 +109,12 @@ CRITICA AL MODELLO: UN FILE VUOTO DICE MENO DI UNO PIENO.**
 > **Non per pigrizia: un file pieno dice cose che uno vuoto non può dire — che
 > forma ha un id, com'è fatta una cella davvero.**»*
 
-**Restano qui, e la decisione è «per il momento»:** la parte che un file pieno
-non può dare — *quanto è rigido il parser* — vale ancora, e vive solo lì.
+## Perché questo file resta anche quando la cartella è vuota
+
+⚠️ **In git una cartella vuota non esiste: senza questo file, `nuovi/`
+sparirebbe.** *Quando qui non c'è nient'altro, questo file non è inutile: è il
+motivo per cui la cartella c'è.* Non va cancellato.
+
+**E `nuovi/` con il solo `LEGGIMI.md` vuol dire «niente in attesa».** *Fino al
+2026-10-11 ci stavano sei file permanenti, e né «vuota» né «piena» dicevano
+qualcosa.*

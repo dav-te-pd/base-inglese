@@ -13,7 +13,7 @@
 // controllare deve fallire).
 //
 // ⚠️ IL CASO PIU' DIVERSO (regola 42): una cella che cita un file di DATI o un
-// markdown invece di codice (`docs/...`, `nuovi/...`). Il test non distingue:
+// markdown invece di codice (`docs/...`, `docs/metodo/...`). Il test non distingue:
 // un percorso e' un percorso, e il pezzo deve esserci dentro.
 //
 // COSA NON PROTEGGE, dichiarato (regola 32): che il FATTO sia vero. Il test

@@ -148,7 +148,7 @@ sotto `tests/` scrivevano la forma della chiave a mano. Adesso si raggiungono da
 | `ridisegnaGruppoSequenze` | Ridisegna il gruppo `sequences` per intero quando cambia la scelta. | `dentro` (un nodo del gruppo) → niente | Che ridisegnare **solo le righe** non basti: cambiano anche il menu selezionato e l'avviso. |
 | `renderSequenceChoiceField` | Il menu della sequenza **di un episodio**, al posto della casella di testo. | `(percorso, valore)` → il nodo del campo | ⚠️ **Porta `data-config-reload`**: i passi si costruiscono all'avvio, e senza ricaricamento è una manopola muta. ⚠️ **E un nome che non esiste resta nell'elenco** invece di sparire: un `<select>` il cui valore non è fra le opzioni mostra la prima, e al primo salvataggio cambierebbe in silenzio la sequenza dell'episodio. |
 
-## `app/avvio.js` — la fusione
+## La fusione — in `app/avvio.js`
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
 |---|---|---|---|
@@ -184,7 +184,7 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 | `clearVcTimeout()` | Spegne **tutti e tre** i timer insieme. ⚠️ *Diceva «entrambi», ed era vero fino al 2026-09-21: il catalogo aveva scritto che «il giorno che nasce il terzo, questa funzione va toccata o resterebbe acceso». È nato, ed è stata toccata.* | — → niente | Che la chiamino **tutte** le strade con cui una registrazione finisce — e le chiamano tutte e quattro: `onend`, `onerror`, `vcResetRecording`, e l'inizio di una nuova. È questo che garantisce che **nessun timer resti appeso** quando un altro scatta per primo. |
 
 
-## `app/dati.js` — i percorsi dei file di un'edizione
+## I percorsi dei file di un'edizione — in `app/dati.js`
 
 *Catalogati il 2026-09-21 spostando il prefisso dell'edizione in un punto solo.*
 

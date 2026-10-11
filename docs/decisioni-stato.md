@@ -73,6 +73,8 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **L'opzione che nessuno prova** | **Ogni volta che si aggiunge un valore a una tabella di personalizzazione, quel valore non è provato da nessuno:** le prove guidano il **predefinito**, quindi la nona riga di una tabella è coperta come una riga scritta a caso. *Il caso che l'ha scritto: `orig-lugano` avrebbe prodotto «I am from Lugano, Italy».* **E nessun test sceglie Lugano, quindi la suite sarebbe rimasta verde** | **al prossimo giro delle tabelle**, con una guardia che monta la frase per OGNI riga di ogni tabella | qui sotto, sezione omonima |
 | **Gli id posizionali** | Gli id delle voci degli episodi sono diventati **posizionali** (`a-1`, `d-4`), e il modello lo ha insegnato. Un riordino del contenuto cambia gli id, e **gli id sono le chiavi della mastery di chi studia** | **prima che ci sia più di un profilo che conti**, cioè con Supabase | qui sotto, sezione omonima |
 | **Le cose piccole** | Otto famiglie, il dettaglio nello storico: deroghe dichiarate senza scadenza, pulizie rimandate, dati che nessuno può leggere, il volume di `sfxPlayTone` fuori da `APP_CONFIG`, la causa di `test_batch19` mai chiusa, il report per grado | **nessuna ha una condizione propria**: si prendono quando si passa vicino | `# LE COSE PICCOLE`, più sotto |
+| **Il modello che nessuno legge** | **`docs/metodo/inglese-it-struttura-corso-VUOTO.md` non ha nessun lettore:** zero riferimenti nel repository, nessun test lo trascrive. *Può mentire sulla propria forma senza che niente lo dica — è quello che faceva il modello delle tabelle fino al 09/10 (indice con una tabella che non c'era).* **Spostarlo in `docs/metodo/` l'11/10 non lo ha risolto: lo ha spostato.** Segnalato da chi guida il progetto | **quando si decide se un test lo trascrive** (come `test_non_con` e `test_intestazioni` fanno con gli altri due), o se esce | qui |
+| **Le righe gemelle stato/storico** | Le righe sul modello dell'episodio stanno **identiche** in `decisioni-stato.md` e in `decisioni-storico.md` (la scheda «DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI»): regola 48 su un fatto. *Visto l'11/10 spostando il modello: in `stato` il percorso è stato aggiornato, in `storico` no — ed è giusto, lo storico registra dov'era il file quel giorno. Ma due copie dello stesso fatto si separano proprio così.* Segnalato da chi guida il progetto, **non toccato** | **quando la scheda si chiude** (i due paragrafi corretti nel modello) | qui |
 
 | **I testi che lo studente legge** | ⚠️ **Censiti il 2026-09-26, e due file su sette non hanno una fonte markdown: `istruzioni-moduli.json` (208 stringhe) e `messaggi-feedback.json` (141).** Il primo ha la bozza in `nuovi/`; il secondo **non l'ha mai letto nessuno**, e sono i testi dell'ESITO — *una spiegazione lunga si salta, un messaggio di esito sbagliato si crede*. Piu' **quattro stringhe nel codice**: le tre domande dei Dialogue in `app/config.js` e il messaggio del browser in `index.html` | **il primo e' in corso**; il secondo appena chi guida il progetto lo vuole guardare | qui sotto, «il censimento di tutto cio' che lo studente legge» |
 ⚠️ **E QUELLO CHE NON È IN QUESTA TABELLA È CHIUSO.** *Un elenco che porta anche
@@ -90,8 +92,8 @@ mestiere e un altro file.*
 | `data/condivisi/{studente}/` · `docs/condivisi/{studente}/` | i due file |
 | `data/{lingua}/{studente}/` | struttura, tabelle, migrazioni, un JSON per episodio dichiarato |
 | `docs/{lingua}/{studente}/` | struttura, tabelle, un markdown per episodio dichiarato |
-| `docs/metodo/` | *(dal 2026-09-30)* `FATTI-APP.md` — il livello 1, e oggi nient'altro |
-| `nuovi/` | ⚠️ **è una cartella di CONSEGNA, non chiusa:** i file ci passano. **Restano per sempre, ed è un'eccezione dichiarata:** i tre `-VUOTO`, `LEGGIMI.md` e `controllo-titoli.py`, `controllo-semina.py`, `controllo-bacino.py` — *le verifiche di chi guida il progetto prima di caricare, perché la CI lì non guarda* |
+| `docs/metodo/` | *(dal 2026-09-30)* `FATTI-APP.md` — il livello 1 — e *(dal 2026-10-11)* i tre modelli `-VUOTO` |
+| `nuovi/` | ⚠️ **è una cartella di CONSEGNA, non chiusa:** i file ci passano. **Resta per sempre solo `LEGGIMI.md`**, anche perché in git una cartella vuota non esiste. *Dal 2026-10-11 i tre `-VUOTO` stanno in `docs/metodo/` (due test li leggono, e la CI salta `nuovi/`) e i tre `controllo-*.py` in `tests/tools/` (sono permanenti, e questa è una cartella di passaggio).* **Quindi `nuovi/` con il solo `LEGGIMI.md` vuol dire «niente in attesa».** |
 
 **CONDIZIONE: con Supabase.** *Deciso da chi guida il progetto il 2026-09-29: «ci saranno ancora altri cambi da fare sicuramente».* La tabella la scrive lui, per cartella; **il giorno che c'è, un test la legge e va rosso su un file che non prevede** — altrimenti resta un documento da confrontare a mano.
 
@@ -472,13 +474,13 @@ metteremo mano»**. Misurato oggi, non corretto — sono file di contenuto
 (regola 33) e la correzione va fatta quando si toccano.*
 
 ⚠️ **VA FATTA PRIMA SUL MODELLO, altrimenti il prossimo episodio la riporta
-indietro:** `nuovi/inglese-it-EPISODIO-VUOTO.md` è la fotocopia da cui nascono
+indietro:** `docs/metodo/inglese-it-EPISODIO-VUOTO.md` è la fotocopia da cui nascono
 gli episodi nuovi.
 
 | Dove | Cosa dice di falso | Cosa è vero |
 |---|---|---|
-| `nuovi/inglese-it-EPISODIO-VUOTO.md:223` · `docs/inglese/it/inglese-it-aircraft-door.md:225` | «un valore salvato fuori elenco **non ripiega sul predefinito — ripiega sulla PRIMA RIGA**» | ripiega **sul predefinito**; la prima riga è solo l'ultima spiaggia — corretto il 2026-09-24 (passo 1.8-bis ④) |
-| `nuovi/inglese-it-EPISODIO-VUOTO.md:228` · `docs/inglese/it/inglese-it-aircraft-door.md:230` — sezione **8, «LE TABELLE INTERNE ALL'EPISODIO»** | «oggi è il caso delle età di `gate`» (`ageOptions.figlia`, tabelle dentro il file episodio) | le età sono **salite in `ages.anni`**, il magazzino condiviso, lo stesso 2026-09-24 |
+| `docs/metodo/inglese-it-EPISODIO-VUOTO.md:223` · `docs/inglese/it/inglese-it-aircraft-door.md:225` | «un valore salvato fuori elenco **non ripiega sul predefinito — ripiega sulla PRIMA RIGA**» | ripiega **sul predefinito**; la prima riga è solo l'ultima spiaggia — corretto il 2026-09-24 (passo 1.8-bis ④) |
+| `docs/metodo/inglese-it-EPISODIO-VUOTO.md:228` · `docs/inglese/it/inglese-it-aircraft-door.md:230` — sezione **8, «LE TABELLE INTERNE ALL'EPISODIO»** | «oggi è il caso delle età di `gate`» (`ageOptions.figlia`, tabelle dentro il file episodio) | le età sono **salite in `ages.anni`**, il magazzino condiviso, lo stesso 2026-09-24 |
 
 ✅ **E LA FONTE DA CUI COPIARE C'È GIÀ, misurata:** `docs/inglese/it/inglese-it-gate.md`
 ha **entrambi** i paragrafi corretti — riga **265-267** («*ripiega proprio sul
@@ -554,7 +556,7 @@ l'ha deciso in un giro apposta.**
 
 **Il giro di un episodio nuovo, in cinque mosse:**
 
-1. **tu** scrivi `docs/inglese/it/inglese-it-{id}.md` partendo da `nuovi/inglese-it-EPISODIO-VUOTO.md`
+1. **tu** scrivi `docs/inglese/it/inglese-it-{id}.md` partendo da `docs/metodo/inglese-it-EPISODIO-VUOTO.md`
 2. **tu** aggiungi la riga alla sezione 7 di `struttura-corso.md` — *è quella che decide l'ordine, ed è l'unica che un test confronta col JSON*
 3. **io** lancio il trascrittore: se i conti dichiarati non tornano **si ferma invece di scrivere**
 4. **io** lancio la suite completa, poi la CI

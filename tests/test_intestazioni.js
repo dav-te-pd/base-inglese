@@ -10,7 +10,7 @@
 // COME — i testi veri, letti dal disco e alterati in memoria; i file non si
 // toccano:
 //   [A] tutti i file veri passano: le due edizioni, i quattro episodi, e i due
-//       MODELLI di `nuovi/`, trascritti interi — e quello delle tabelle deve
+//       MODELLI di `docs/metodo/`, trascritti interi — e quello delle tabelle deve
 //       mostrare tutte e due le forme, 4 e 6 colonne (dal 2026-10-11);
 //   [B] i gradi: `en ↔ it` scambiate in D e in C, due colonne fisse scambiate
 //       in B e in A, una colonna in piu' in fondo, e la lingua insegnata
@@ -86,8 +86,8 @@ function run() {
     });
   });
   const gradeNames = T.struttura(ING).gradeNames;
-  const modEp = leggi('nuovi/inglese-it-EPISODIO-VUOTO.md');
-  const modTab = leggi('nuovi/inglese-it-tabelle-personalizzazione-VUOTO.md');
+  const modEp = leggi('docs/metodo/inglese-it-EPISODIO-VUOTO.md');
+  const modTab = leggi('docs/metodo/inglese-it-tabelle-personalizzazione-VUOTO.md');
   log('[A] Il modello dell\'episodio passa', sollevato(() => T.episodio(ING, 'modello', gradeNames, modEp)) === null,
     String(sollevato(() => T.episodio(ING, 'modello', gradeNames, modEp))));
   // Il modello delle tabelle si trascrive INTERO, con `tabelle()` — dal
