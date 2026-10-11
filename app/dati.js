@@ -392,11 +392,23 @@ window.BI = window.BI || {};
     if (migrazioniPromise) return migrazioniPromise;
     migrazioniPromise = fetch(MIGRAZIONI_FILE)
       .then(function (res) { if (!res.ok) throw new Error('fetch failed'); return res.json(); })
+      .then(function (data) {
+        // ⚠️ UN FILE SENZA `slot` E' UN GUASTO, NON «NESSUNA MIGRAZIONE» — dal
+        // 2026-10-11, deciso da chi guida il progetto. Qui c'era
+        // `(data && data.slot) || {}`: un file che c'e' ma non dice niente
+        // diventava «nessun id e' mai cambiato», cioe' un'affermazione che
+        // nessuno ha fatto — la stessa bugia del file mancante, solo piu'
+        // difficile da vedere. **Un file vuoto lo dice: `"slot": {}`.**
+        // `test_nomenclatura_edizione` [D] lo ferma prima di pubblicare;
+        // questa riga lo ferma se si guasta dopo.
+        var slot = data && data.slot;
+        if (!slot || typeof slot !== 'object' || Array.isArray(slot)) throw new Error('migrations without slot');
+        return slot;
+      })
       .catch(function () {
         migrazioniPromise = null;
         throw new Error('no personalization migrations available');
-      })
-      .then(function (data) { return (data && data.slot) || {}; });
+      });
     return migrazioniPromise;
   }
 

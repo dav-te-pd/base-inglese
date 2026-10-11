@@ -23,6 +23,10 @@
 // un fetch fallito, e questo test misura il comportamento vero senza doverne
 // spegnere nessun altro.
 //
+// [G], dal 2026-10-11: un file di migrazioni che c'è ma senza `slot` apre la
+// stessa schermata, su Match e su Personalizza — invece di essere letto come
+// «nessun id è mai cambiato».
+//
 // Il file episodio è quello di ogni modulo, quindi la prova si fa su Match
 // Practice: è il primo passo dopo Personalizza che legge un grado, e la sua
 // apertura è la più corta.
@@ -198,6 +202,46 @@ async function run() {
     return document.getElementById('view-error').getClientRects().length > 0;
   });
   log('[E] Senza guasto la schermata d\'errore NON compare', !sano);
+
+  // ---- [G] un file di migrazioni SENZA `slot` è un guasto, non «nessuna migrazione» ----
+  // Dal 2026-10-11 (passo C), deciso da chi guida il progetto. Fino a quel
+  // giorno `loadPersonalizationMigrations` faceva `(data && data.slot) || {}`:
+  // un file che c'è ma non dice niente veniva letto come «per questa edizione
+  // nessun id è mai cambiato» — un'affermazione che nessuno ha fatto, e le
+  // personalizzazioni salvate sarebbero tornate al predefinito in silenzio.
+  // `test_nomenclatura_edizione` [D] ferma un file così prima di pubblicarlo;
+  // questo prova che l'app lo ferma anche dopo.
+  // ⚠️ IL CASO PIÙ DIVERSO (regola 42): Personalizza, l'altro lettore della
+  // mappa. Non passa da `openModuleFromMap` ma da `openCustomize`, con la sua
+  // `.catch` — e non legge il file episodio.
+  const MIGRAZIONI = 'migrazioni-personalizzazione.json';
+  const servi = (corpo) => route => route.fulfill({ status: 200, contentType: 'application/json', body: corpo });
+  for (const passo of [{ id: PASSO }, { id: 'personalizzazione' }]) {
+    await page.route(globDati(MIGRAZIONI), servi('{"_LEGGIMI": "un file che non dice niente"}'));
+    await finoAllaMappa(page, 'ErroreG' + passo.id.length);
+    let intercettato = false;
+    page.on('request', function (r) { if (r.url().indexOf(MIGRAZIONI) !== -1) intercettato = true; });
+    await page.click('[data-module="' + passo.id + '"]');
+    // Si aspetta SOLO la schermata d'errore, e non una gara col modulo:
+    // Personalizza mostra la sua vista PRIMA di caricare la mappa, quindi la
+    // vista attiva non direbbe niente su come è finito il caricamento.
+    const arrivo = await page.waitForSelector('#view-error.is-active', { state: 'attached', timeout: 15000 })
+      .then(() => 'errore', () => 'nessuna schermata d\'errore in 15 s');
+    log('[G] ' + passo.id + ': la richiesta del file di migrazioni è stata intercettata', intercettato);
+    log('[G] ' + passo.id + ': un file di migrazioni senza `slot` apre la schermata d\'errore', arrivo === 'errore', arrivo);
+    await page.unroute(globDati(MIGRAZIONI));
+  }
+  // ...e il file vuoto ma DICHIARATO (`"slot": {}`) è un file buono: è quello
+  // dello spagnolo, e dice una cosa vera.
+  await page.route(globDati(MIGRAZIONI), servi('{"slot": {}}'));
+  await finoAllaMappa(page, 'ErroreGvuoto');
+  await page.click('[data-module="' + PASSO + '"]');
+  const vuoto = await Promise.race([
+    page.waitForSelector('#view-error.is-active', { state: 'attached', timeout: 15000 }).then(() => 'errore'),
+    page.waitForSelector('#view-match.is-active', { state: 'attached', timeout: 15000 }).then(() => 'modulo')
+  ]).catch(() => 'niente');
+  log('[G] Un file con `"slot": {}` apre il modulo: vuoto ma dichiarato non è un guasto', vuoto === 'modulo', vuoto);
+  await page.unroute(globDati(MIGRAZIONI));
 
   log('[F] Nessun errore JS non gestito', errors.length === 0, errors.join(' | '));
 
