@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261011a**
+**Versione: 20261012a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -12,12 +12,12 @@ modifica alza la lettera se è lo stesso giorno, la data se è un altro.*
 
 App di pratica della pronuncia inglese con episodi personalizzabili e progressi salvati per utente.
 
-**L'app vive in VENTIQUATTRO file, e fino al 2026-09-16 ne aveva uno solo.**
+**L'app vive in molti file — `index.html`, `app/*.js`, `stile/*.css` — e fino al 2026-09-16 ne aveva uno solo.**
 `index.html` tiene il markup, il CSS e **una riga sola di JavaScript** —
 `window.BI.boot()` — dal 2026-09-20; il resto è in `app/*.js`, un file per
-strato o per modulo, caricati da ventitré tag `<script src>`.
+strato o per modulo, caricati da un tag `<script src>` ciascuno.
 
-*Il numero dei tag non si legge da qui, si conta:* `grep -c 'src="app/' index.html`. **Nessun passo di build, nessuna dipendenza esterna oltre ai
+*Il numero dei tag non si legge da qui, si conta:* `grep -c '<script src="app/' index.html`. *(⚠️ il prefisso `<script` serve: senza, il comando conta anche le righe di commento di `index.html` che lo citano — il 2026-10-12 dava 26 invece di 24. Non va semplificato.)* *Qui c'erano «VENTIQUATTRO file» e «ventitré tag»: il secondo era falso il 2026-10-12, e il comando che doveva smentirlo contava sé stesso.* **Nessun passo di build, nessuna dipendenza esterna oltre ai
 Google Fonts**: quella parte non è cambiata, e non deve.
 
 *Qui c'era scritto «l'app vive in un file solo», ed è rimasto vero fino al
@@ -90,7 +90,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 2. **Nessun colore fisso nel codice dei componenti.** Usare sempre le variabili del sistema di temi già esistente (blocco `:root` e i selettori `[data-theme="..."]` in cima a `index.html`). Un elemento nuovo deve rispondere correttamente a tutti i temi selezionabili (Viaggio, Notte, Mediterraneo, Moderno, Natura), senza colori hardcoded nel markup o nelle regole dei singoli componenti.
 
-3. **Nessun valore modificabile scritto fisso nel codice** — soglie numeriche, tempi, liste, percentuali. Tutto questo vive in `window.APP_CONFIG`, che sta in **`app/config.js`** — un tag `<script>` bloccante, il primo dei ventitré, quindi già in memoria quando parte tutto il resto. *Qui c'era scritto «in cima a `index.html`», ed è stato vero fino al 2026-09-19.* Aggiungere un nuovo parametro tunabile significa aggiungere una chiave lì, non un numero sparso nel codice. `APP_CONFIG` è la base dati del **Pannello Admin (config)**, che esiste già: si apre digitando `config` fuori da un campo di testo (o con `?config` nell'indirizzo), mostra un gruppo per ogni chiave di primo livello e scrive le modifiche negli override in `localStorage`. Aggiungere un parametro lì significa vederlo comparire nel pannello senza scrivere altro.
+3. **Nessun valore modificabile scritto fisso nel codice** — soglie numeriche, tempi, liste, percentuali. Tutto questo vive in `window.APP_CONFIG`, che sta in **`app/config.js`** — un tag `<script>` bloccante, il primo di tutti, quindi già in memoria quando parte tutto il resto. *Qui c'era scritto «in cima a `index.html`», ed è stato vero fino al 2026-09-19.* Aggiungere un nuovo parametro tunabile significa aggiungere una chiave lì, non un numero sparso nel codice. `APP_CONFIG` è la base dati del **Pannello Admin (config)**, che esiste già: si apre digitando `config` fuori da un campo di testo (o con `?config` nell'indirizzo), mostra un gruppo per ogni chiave di primo livello e scrive le modifiche negli override in `localStorage`. Aggiungere un parametro lì significa vederlo comparire nel pannello senza scrivere altro.
 
 4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni.
 
@@ -176,14 +176,14 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
    ⚠️ **IL NUMERO NON SI SCRIVE QUI, ED È UNA CORREZIONE DEL 2026-09-19.**
    Questa regola diceva «quattordici tag» e «quindici file»; erano quattordici
-   il 19 settembre mattina e sono **ventitré** la sera dello stesso giorno. *Un
+   il 19 settembre mattina ed erano **ventitré** la sera dello stesso giorno. *Un
    numero dentro una regola invecchia a ogni file nuovo, e invecchia in
    silenzio: la regola continua a leggersi bene.* Il conto vero lo dà un
-   comando — `grep -c 'src="app/' index.html` — e il test non lo chiede a
-   nessun documento: lo misura.
+   comando — `grep -c '<script src="app/' index.html` — e il test non lo chiede a
+   nessun documento: lo misura. *(⚠️ il prefisso `<script` serve: senza, il comando conta anche le righe di commento di `index.html` che lo citano — il 2026-10-12 dava 26 invece di 24. Non va semplificato.)*
 
-   **E non si deve ricordare:** `tests/test_versione_cache.js` verifica che i
-   quattordici la portino uguale, e la CI **rifiuta** un push che cambia
+   **E non si deve ricordare:** `tests/test_versione_cache.js` verifica che
+   tutti la portino uguale, e la CI **rifiuta** un push che cambia
    `index.html` o un file sotto `app/` senza alzarla
    (`tests/tools/versione-salita.js`). *La regola non ha un'eccezione: ha un
    caso in più in cui è stata applicata.*

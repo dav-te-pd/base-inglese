@@ -4781,3 +4781,137 @@ messaggio di ieri non le abbiamo più — vivevano solo nel messaggio».** *Da o
 usano i nomi, non le sigle, e quello che si decide finisce in un file. **È la
 regola 43 detta da chi guida il progetto**, ed è per questo che questa sezione
 esiste.*
+
+# ✅ SCHEDA CHIUSA — IL CENSIMENTO DI TUTTO CIÒ CHE LO STUDENTE LEGGE, spostata da `decisioni-stato.md` il 2026-10-12
+
+*Spostata intera, com'era quel giorno, su decisione di chi guida il progetto.
+**Prima di spostarla se ne sono tirati fuori i tre fatti ancora veri**, che
+restano in `decisioni-stato.md` (sezione «I testi dello studente: tre cose
+ancora aperte»): le quattro stringhe nel codice, i 141 testi di esito da
+rileggere, `episodeFinalMessages` senza lettore. **Il resto qui sotto è una
+fotografia**: i numeri di riga, i conti e lo stato dei file valgono per il
+giorno in cui sono stati scritti. ⚠️ In particolare: **`speedRoundMessages`
+qui risulta «senza lettore», ed è chiuso dal 2026-09-28** — la chiave è
+diventata `speedMatchMessages` e la legge `app/speedmatch.js`.*
+
+## ⚠️ IL CENSIMENTO DI TUTTO CIO' CHE LO STUDENTE LEGGE — 2026-09-26
+
+⚠️ **LA DOMANDA L'HA POSTA CHI GUIDA IL PROGETTO DOPO AVER SCOPERTO UN FILE CHE
+NON SAPEVA DI AVERE:** *«questo file non mi ricordavo nemmeno l'esistenza. ci
+sono altri file che dovremmo secondo te rivedere insieme?»*. **Misurato, non
+ricordato.**
+
+### ① I file di dati: tutti hanno una fonte, tranne le migrazioni — e va bene
+
+*Rifatta il 2026-10-11, misurata quel giorno. Le stringhe sono i valori di testo
+di ogni JSON, contati foglia per foglia — lo stesso metodo che dà 178 e 141 per
+i due file condivisi.* ⚠️ **Qui c'era la tabella del 26/09, «tre su sette non
+hanno una fonte markdown»**, con `inglese-it-istruzioni-moduli.json` (208) e
+`inglese-it-messaggi-feedback.json` (141) senza fonte e una bozza in `nuovi/`:
+**falsa dal 28/09** (passo C), coi nomi di prima che diventassero della lingua
+dello studente (`it-`, non la coppia). *La trovata è di chi guida il progetto,
+l'11/10: nessuno l'aveva riletta.*
+
+| File dati | Stringhe | Fonte markdown | Lo studente lo legge? |
+|---|---|---|---|
+| `data/condivisi/it/it-istruzioni-moduli.json` | → **regola 8** | ✅ `docs/condivisi/it/it-istruzioni-moduli.md` | **sì, tutto** |
+| `data/condivisi/it/it-messaggi-feedback.json` | → **regola 8** | ✅ `docs/condivisi/it/it-messaggi-feedback.md` | **sì, tutto** |
+| `inglese-it-gate.json` · `spagnolo-it-gate.json` | 275 · 277 | ✅ il markdown gemello | sì |
+| `inglese-it-aircraft-door.json` · `spagnolo-it-aircraft-door.json` | 186 · 182 | ✅ il markdown gemello | sì |
+| `…-tabelle-personalizzazione.json` | 229 · 220 | ✅ il markdown gemello | sì |
+| `…-struttura-corso.json` | 126 · 126 | ✅ il markdown gemello | in parte (`gradeNames`, `moduleLabels`, `nomiASchermo`) |
+| `data/edizioni.json` | 6 | ✅ derivato dai `struttura-corso.md` (`elencoEdizioni`) | **no** — è il menu del Pannello Admin |
+| `…-migrazioni-personalizzazione.json` | 62 · 2 | ❌ nessuna, **e va bene** | **no** |
+
+*Il conto dei due file condivisi non si ricopia qui: vive nella regola 8 di
+`CLAUDE.md`, con la data (regola 48). Oggi è lo stesso di quel giorno.*
+
+⚠️ *(Il paragrafo qui sotto è del 26/09, e la sua prima frase è chiusa dal
+28/09: `messaggi-feedback.json` ha la sua fonte. Resta per la parte sulle
+famiglie.)*
+
+⚠️ **`messaggi-feedback.json` E' IL SECONDO CASO IDENTICO AL PRIMO, E NESSUNO
+L'HA MAI RIVISTO: 141 stringhe in dieci famiglie** — `percentageRule`,
+`voiceCoachMessages`, `speedRoundMessages`, `valvolaSicurezzaMessages`,
+`moduleCompleteMessages`, `studioCompleteMessages`,
+`storyCardsCompleteMessages`, `dialogoCompleteMessages`, `retryIntroMessages`,
+`episodeFinalMessages`. *Sono i testi che lo studente legge **nel momento
+dell'esito**, cioe' quelli che pesano di piu': una frase troppo lunga in una
+spiegazione la si salta, una frase sbagliata dopo un errore la si crede.*
+
+✅ **`migrazioni-personalizzazione.json` NON serve una fonte, e la ragione e' che
+non e' testo:** sono mappe da id salvato a id di oggi, e le sue chiavi `_LEGGIMI`
+/ `_COSA_E` portano dentro il file la spiegazione di se stesso. *E' il pattern
+giusto per un file che nessuno legge a schermo.*
+
+### ② Fuori dai file di dati: due punti dove il testo dello studente sta nel CODICE
+
+| Dove | Cosa | Perche' e' un caso |
+|---|---|---|
+| **`app/config.js:434, 446, 454`** | le **tre domande** del Box Doppia Scelta dei Dialogue: *«L'hai imparato?»*, *«Sai ripetere le frasi?»*, *«Ce l'hai fatta?»* (`dialogo.profili.*.finalBoxQuestion`) | ⚠️ **Testo che lo studente legge, dentro `APP_CONFIG` invece che in `istruzioni-moduli.json` (regola 8).** *Ci e' finito perche' e' una proprieta' del PROFILO, e il profilo e' configurazione — ma la domanda e' contenuto. E non e' coperto dall'eccezione della regola 35: non parla del meccanismo che lo porta.* |
+| **`index.html:619`** | *«Il tuo browser non supporta il riconoscimento vocale (Web Speech API).»* | ⚠️ **L'ultimo messaggio d'errore dello studente scritto nel markup.** *Non e' la regola 35: quel messaggio non parla di `istruzioni-moduli.json`, quindi il testo da la' arriverebbe benissimo.* |
+
+### ③ Le stringhe del markup: 29, e 22 sono decise di proposito
+
+Misurate con una lettura statica di `index.html` (tag con testo e senza
+`data-testo`). **Nessuna e' una dimenticanza nuova:** sono le tre famiglie gia'
+decise il 2026-09-26 col passo 1.3 — onboarding/home (**devono funzionare quando
+niente funziona**), Pannello Admin (**strumento, non studente**: 7 delle 29), e i
+**nomi dei moduli nelle intestazioni**, che `CONFIG.moduleLabels` **riscrive a
+runtime**.
+
+⚠️ **E il markup porta DUE nomi che a runtime vengono sostituiti da altri: dice
+«Voice Coach» dove `moduleLabels` dice «Voice Check», e «Ascolta e Ripeti» dove
+dice «Dialogue: Listen & Repeat».** *Lo studente vede quello giusto, quindi non
+e' un difetto: e' un nome vecchio che sopravvive in un posto che nessuno rilegge
+— la stessa forma del commento invecchiato, applicata al markup.*
+
+### ⚠️ E DENTRO `messaggi-feedback.json`: QUARANTA STRINGHE SU 141 OGGI NON LE VEDE NESSUNO
+
+*Trovate il 2026-09-26 rispondendo a una domanda di chi guida il progetto — «non
+so cosa sia `tuttiVerdi.tip`» — cercando **chi legge** ogni famiglia in
+`app/*.js` invece di guardare i testi. **Le due ragioni sono opposte, e si
+somigliano solo contando.***
+
+| Famiglia | Stringhe | Perché nessuno la legge | Cosa farne |
+|---|---|---|---|
+| **`speedRoundMessages`** | **15** | ⚠️ **NON HA MAI AVUTO UN LETTORE, verificato in tre modi.** ① `app/speedmatch.js:328` pesca da `moduleCompleteMessages`, **dal commit in cui quel sottotitolo è nato** (`d4dd507`). ② `git log -S'speedRoundMessages['` e `-S'.speedRoundMessages'` su tutta la storia: **zero letture**. ③ Le due sole apparizioni nel codice erano la **copia inline di sicurezza** in `index.html` (`f7298f9` → `97b7d02`), cioè un doppione dei dati. *Il nome è quello di prima della rinomina `speedRound` → `speedMatch`.* ⚠️ **E nessuna delle sei forme della regola 41 l'avrebbe trovata: il nome vive in una CHIAVE JSON.** | **da decidere:** cancellarla, oppure collegarla se Speed Match deve avere messaggi suoi |
+| **`episodeFinalMessages`** | **25** | **Aspetta un modulo che non esiste**: il **Test di verifica finale**, fra i «previsti ma non ancora costruiti» di `CLAUDE.md`. Il blocco che ne guarda i dati si chiama apposta **«Modulo Finale prep»** (`tests/test_batch11.js`) | **si tiene:** è contenuto scritto in anticipo di proposito, non un residuo. *Accorciarlo adesso è lavoro che nessuno può collaudare* |
+
+⚠️ **E QUESTA FAMIGLIA ERA GIÀ STATA TROVATA UNA VOLTA, E LA SCOPERTA È ANDATA
+VIA COL DOCUMENTO CHE LA PORTAVA.** Il censimento di `docs/validazione.md` la
+scriveva alla lettera — *«Mai letta. Unica occorrenza in `index.html`: la copia
+di sicurezza»* — e citava anche `episodeFinalMessages`. Quel documento il
+2026-09-24 è finito in **`docs/archivio/`**, giustamente, perché descriveva un
+`index.html` da 11.000 righe.
+
+⚠️ **L'archivio ha fatto il suo mestiere; è mancato il passo prima.** *Una
+fotografia non si aggiorna — è la regola di `docs/archivio/` e resta giusta — ma
+**prima di archiviare un documento se ne tirano fuori i fatti ancora veri**, che
+non invecchiano insieme alla descrizione che li conteneva.* **E il 2026-09-26 ho
+fatto lo stesso errore in piccolo:** un mio `grep` aveva stampato
+`docs/archivio/validazione.md:631` fra i risultati, e non l'ho aperto — *la
+riga che nominava il difetto era sullo schermo.*
+
+⚠️ **E `tuttiVerdi.tip` VUOTA È VOLUTA, CON UN TEST CHE LA DIFENDE:**
+`tests/test_batch11.js` asserisce `finali.tuttiVerdi.tip.length === 0`. **Il
+disegno è: un complimento SEMPRE, un consiglio SOLO quando c'è qualcosa da
+rivedere.** *Riempirla farebbe due danni — la suite rossa, e a chi ha fatto un
+episodio perfetto l'app direbbe «ripassa i moduli gialli», che è falso.*
+
+⚠️ **QUINDI LA DECISIONE «teniamo cinque dappertutto» HA UN'ECCEZIONE, E VA
+DETTA PRIMA DI ESEGUIRLA** (regola 14-bis): vale per le nove liste che un
+messaggio ce l'hanno, **non** per `tuttiVerdi.tip`, dove il numero giusto è
+**zero** e non è una dimenticanza.
+
+### Cosa vale la pena rivedere insieme, in ordine
+
+| | Cosa | Quante stringhe | Perche' adesso |
+|---|---|---|---|
+| **1** | le **16 spiegazioni** (`howItWorks`) | 16 titoli + 16 corpi | **gia' in corso**: una persona vera le ha provate e le ha dette troppo lunghe |
+| **2** | i **messaggi di esito** (`messaggi-feedback.json`) | **141** | e' il file gemello del primo per natura, e nessuno l'ha mai letto. *Si legge con lo stesso giro: estrarre, guardare, accorciare, mettere sotto fonte* |
+| **3** | i **16 promemoria** (`helpReminder`) | 16 + 16 | stanno nello stesso file delle spiegazioni, quindi costano zero in piu' se si guardano insieme |
+| **4** | le **tre domande** dei Dialogue e il messaggio del browser | 4 | due righe di codice, e chiudono l'ultimo testo dello studente fuori dai file di dati |
+
+⚠️ **E L'ORDINE NON E' PER DIMENSIONE: e' per QUANTO PESA UNA FRASE SBAGLIATA.**
+*Una spiegazione lunga si salta; un messaggio di esito sbagliato si crede.*
