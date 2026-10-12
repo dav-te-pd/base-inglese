@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261012a**
+**Versione: 20261012b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -17,7 +17,7 @@ App di pratica della pronuncia inglese con episodi personalizzabili e progressi 
 `window.BI.boot()` — dal 2026-09-20; il resto è in `app/*.js`, un file per
 strato o per modulo, caricati da un tag `<script src>` ciascuno.
 
-*Il numero dei tag non si legge da qui, si conta:* `grep -c '<script src="app/' index.html`. *(⚠️ il prefisso `<script` serve: senza, il comando conta anche le righe di commento di `index.html` che lo citano — il 2026-10-12 dava 26 invece di 24. Non va semplificato.)* *Qui c'erano «VENTIQUATTRO file» e «ventitré tag»: il secondo era falso il 2026-10-12, e il comando che doveva smentirlo contava sé stesso.* **Nessun passo di build, nessuna dipendenza esterna oltre ai
+*Il numero dei tag non si legge da qui, si conta:* `grep -c '<scrip[t] src="app/' index.html`. *(⚠️ **le parentesi quadre servono, e non vanno tolte**: un comando citato DENTRO il file che conta trova anche la riga che lo cita — `'src="app/'` il 2026-10-12 dava 26 invece di 24. Con `[t]` la riga che lo cita contiene «[t]» e non «t», quindi non si trova in nessun caso. Fino a quel giorno qui c'era il prefisso `<script`: risolveva il caso e lasciava in piedi il meccanismo — citato dentro `index.html`, contava di nuovo sé stesso.)* *Qui c'erano «VENTIQUATTRO file» e «ventitré tag»: il secondo era falso il 2026-10-12, e il comando che doveva smentirlo contava sé stesso.* **Nessun passo di build, nessuna dipendenza esterna oltre ai
 Google Fonts**: quella parte non è cambiata, e non deve.
 
 *Qui c'era scritto «l'app vive in un file solo», ed è rimasto vero fino al
@@ -179,8 +179,8 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
    il 19 settembre mattina ed erano **ventitré** la sera dello stesso giorno. *Un
    numero dentro una regola invecchia a ogni file nuovo, e invecchia in
    silenzio: la regola continua a leggersi bene.* Il conto vero lo dà un
-   comando — `grep -c '<script src="app/' index.html` — e il test non lo chiede a
-   nessun documento: lo misura. *(⚠️ il prefisso `<script` serve: senza, il comando conta anche le righe di commento di `index.html` che lo citano — il 2026-10-12 dava 26 invece di 24. Non va semplificato.)*
+   comando — `grep -c '<scrip[t] src="app/' index.html` — e il test non lo chiede a
+   nessun documento: lo misura. *(⚠️ **le parentesi quadre servono, e non vanno tolte**: un comando citato DENTRO il file che conta trova anche la riga che lo cita — `'src="app/'` il 2026-10-12 dava 26 invece di 24. Con `[t]` la riga che lo cita contiene «[t]» e non «t», quindi non si trova in nessun caso. Fino a quel giorno qui c'era il prefisso `<script`: risolveva il caso e lasciava in piedi il meccanismo — citato dentro `index.html`, contava di nuovo sé stesso.)*
 
    **E non si deve ricordare:** `tests/test_versione_cache.js` verifica che
    tutti la portino uguale, e la CI **rifiuta** un push che cambia

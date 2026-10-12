@@ -21,7 +21,9 @@ su 15 moduli»: vero quel giorno, e scritto nel modo che la regola 4 vieta.*
 invecchia senza che nessun test lo veda:
 
 ```bash
-grep -c '<script src="app/' index.html  # i file dell'app caricati dalla pagina
+grep -c '<scrip[t] src="app/' index.html  # i file dell'app caricati dalla pagina
+#   ⚠️ le parentesi quadre servono: senza, il comando conta anche le righe
+#   di commento di index.html che lo citano
 ls tests/test_*.js | wc -l              # i file della suite
 node -e "const s=require('./data/inglese/it/inglese-it-struttura-corso.json'); \
   for (const k in s.sequences) console.log(k, s.sequences[k].length, 'passi')"
