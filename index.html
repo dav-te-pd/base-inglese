@@ -30,8 +30,15 @@
      poi trentacinque. *Un numero dentro un commento invecchia a ogni file
      nuovo, e invecchia in silenzio: il commento continua a leggersi bene.* Il
      conto vero lo danno due comandi —
-     `grep -c 'src="app/' index.html` e `grep -c 'href="stile/' index.html` —
+     `grep -c '<scrip[t] src="app/' index.html` e
+     `grep -c '<lin[k] rel="stylesheet" href="stile/' index.html` —
      e i test non lo chiedono a nessun documento: lo misurano.
+     ⚠️ LE PARENTESI QUADRE SERVONO, E NON VANNO TOLTE: un comando citato
+     DENTRO il file che conta trova anche la riga che lo cita. Qui c'erano
+     `'src="app/'` e `'href="stile/'`, e il 2026-10-12 davano 26 e 13 invece
+     di 24 e 12 — contavano questo commento. Con `[t]` e `[k]` il comando
+     trova i tag veri e non sé stesso: la riga che lo cita contiene «[t]»,
+     non «t».
 
      SI ALZA A OGNI MODIFICA di `index.html`, di un file sotto `app/` o di un
      foglio sotto `stile/`. Non dipende dal ricordarsene:
@@ -40,17 +47,17 @@
      (`tests/tools/versione-salita.js`).
 
      Forma: AAAAMMGG + lettera, la stessa di CLAUDE.md. -->
-<script src="app/config.js?v=20261011a"></script>
-<script src="app/spazio.js?v=20261011a"></script>
-<script src="app/magazzino.js?v=20261011a"></script>
-<script src="app/identita.js?v=20261011a"></script>
-<script src="app/avvio.js?v=20261011a"></script>
-<script src="app/progressi.js?v=20261011a"></script>
-<script src="app/audio.js?v=20261011a"></script>
-<script src="app/suoni.js?v=20261011a"></script>
-<script src="app/quiz-engine.js?v=20261011a"></script>
-<script src="app/dati.js?v=20261011a"></script>
-<script src="app/catalogo.js?v=20261011a"></script>
+<script src="app/config.js?v=20261012a"></script>
+<script src="app/spazio.js?v=20261012a"></script>
+<script src="app/magazzino.js?v=20261012a"></script>
+<script src="app/identita.js?v=20261012a"></script>
+<script src="app/avvio.js?v=20261012a"></script>
+<script src="app/progressi.js?v=20261012a"></script>
+<script src="app/audio.js?v=20261012a"></script>
+<script src="app/suoni.js?v=20261012a"></script>
+<script src="app/quiz-engine.js?v=20261012a"></script>
+<script src="app/dati.js?v=20261012a"></script>
+<script src="app/catalogo.js?v=20261012a"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -72,18 +79,18 @@
 
      La `?v=` è la stessa dei tag `<script>` e per la stessa ragione: il perché
      sta scritto per esteso sopra i primi. -->
-<link rel="stylesheet" href="stile/base.css?v=20261011a">
-<link rel="stylesheet" href="stile/componenti.css?v=20261011a">
-<link rel="stylesheet" href="stile/condivisi.css?v=20261011a">
-<link rel="stylesheet" href="stile/guscio.css?v=20261011a">
-<link rel="stylesheet" href="stile/schermate.css?v=20261011a">
-<link rel="stylesheet" href="stile/repeataloud.css?v=20261011a">
-<link rel="stylesheet" href="stile/storycards.css?v=20261011a">
-<link rel="stylesheet" href="stile/voice.css?v=20261011a">
-<link rel="stylesheet" href="stile/match.css?v=20261011a">
-<link rel="stylesheet" href="stile/dialogo.css?v=20261011a">
-<link rel="stylesheet" href="stile/speedmatch.css?v=20261011a">
-<link rel="stylesheet" href="stile/flashcard.css?v=20261011a">
+<link rel="stylesheet" href="stile/base.css?v=20261012a">
+<link rel="stylesheet" href="stile/componenti.css?v=20261012a">
+<link rel="stylesheet" href="stile/condivisi.css?v=20261012a">
+<link rel="stylesheet" href="stile/guscio.css?v=20261012a">
+<link rel="stylesheet" href="stile/schermate.css?v=20261012a">
+<link rel="stylesheet" href="stile/repeataloud.css?v=20261012a">
+<link rel="stylesheet" href="stile/storycards.css?v=20261012a">
+<link rel="stylesheet" href="stile/voice.css?v=20261012a">
+<link rel="stylesheet" href="stile/match.css?v=20261012a">
+<link rel="stylesheet" href="stile/dialogo.css?v=20261012a">
+<link rel="stylesheet" href="stile/speedmatch.css?v=20261012a">
+<link rel="stylesheet" href="stile/flashcard.css?v=20261012a">
 </head>
 <body>
   <div class="app">
@@ -1153,20 +1160,23 @@
 
      *I due numeri che stavano qui — «nove strati», «tredici nodi» — erano
      diventati dieci e dodici senza che nessuno li toccasse. Il conto lo danno
-     `grep -c 'src="app/' index.html` e `grep -c 'class="view"' index.html`.* -->
-<script src="app/orchestrazione.js?v=20261011a"></script>
-<script src="app/ui-condivisa.js?v=20261011a"></script>
-<script src="app/sessione.js?v=20261011a"></script>
-<script src="app/mappa.js?v=20261011a"></script>
-<script src="app/storycards.js?v=20261011a"></script>
-<script src="app/personalizza.js?v=20261011a"></script>
-<script src="app/repeataloud.js?v=20261011a"></script>
-<script src="app/flashcard.js?v=20261011a"></script>
-<script src="app/match.js?v=20261011a"></script>
-<script src="app/speedmatch.js?v=20261011a"></script>
-<script src="app/voice.js?v=20261011a"></script>
-<script src="app/dialogo.js?v=20261011a"></script>
-<script src="app/apertura.js?v=20261011a"></script>
+     `grep -c '<scrip[t] src="app/' index.html` e
+     `grep -c 'class="vie[w]"' index.html`.* ⚠️ Con le parentesi quadre, per
+     la ragione scritta nel primo commento: senza, il comando conta anche
+     questa riga (il 2026-10-12, 15 viste invece di 14). -->
+<script src="app/orchestrazione.js?v=20261012a"></script>
+<script src="app/ui-condivisa.js?v=20261012a"></script>
+<script src="app/sessione.js?v=20261012a"></script>
+<script src="app/mappa.js?v=20261012a"></script>
+<script src="app/storycards.js?v=20261012a"></script>
+<script src="app/personalizza.js?v=20261012a"></script>
+<script src="app/repeataloud.js?v=20261012a"></script>
+<script src="app/flashcard.js?v=20261012a"></script>
+<script src="app/match.js?v=20261012a"></script>
+<script src="app/speedmatch.js?v=20261012a"></script>
+<script src="app/voice.js?v=20261012a"></script>
+<script src="app/dialogo.js?v=20261012a"></script>
+<script src="app/apertura.js?v=20261012a"></script>
 
 <script>
 // ============================================================
