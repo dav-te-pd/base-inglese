@@ -1,4 +1,4 @@
-**Versione: 20261013b**
+**Versione: 20261013c**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -372,7 +372,7 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 non hanno una schermata propria da spiegare — `dialogoShared` serve ai tre Dialogue che la schermata ce
 l'hanno, `condivisi` a tutti.*
 
-🔴 **ERANO SEI FINO AL 2026-10-13.** *Sono arrivate `categorie` — le sei etichette delle categorie dei
+🔴 **ERANO SEI FINO AL 2026-10-13.** *Sono arrivate ⭐ `categorie` — le sei etichette delle categorie dei
 moduli — e `nomiASchermo`, con la sola riga `native`.*
 
 ⚠️ **`categorie` NON si chiama `moduleTypes`, che è il nome che aveva nel JSON della struttura:** *quel
@@ -471,20 +471,25 @@ non tocca quella frase.*
 | `condivisi` | `salutoHome` | Ciao, {nome}! |
 | `condivisi` | `iniziaEpisodioNominato` | Inizia {episodio} |
 | `condivisi` | `tuoiEpisodi` | I tuoi episodi |
-| ⭐ `categorie` | `inizio` | Inizio |
-| ⭐ `categorie` | `studio` | Studio |
-| ⭐ `categorie` | `dialogo` | Studia il dialogo |
-| ⭐ `categorie` | `quiz` | Quiz |
-| ⭐ `categorie` | `test` | Verifica finale |
-| ⭐ `categorie` | `fine` | Fine |
-| ⭐ `nomiASchermo` | `native` | Italiano |
+| `categorie` | `inizio` | Inizio |
+| `categorie` | `studio` | Studio |
+| `categorie` | `dialogo` | Studia il dialogo |
+| `categorie` | `quiz` | Quiz |
+| `categorie` | `test` | Verifica finale |
+| `categorie` | `fine` | Fine |
+| `nomiASchermo` | `native` | Italiano |
 
 ---
 
 ## 7 — I SOTTOTITOLI DEI MODULI
 
 *La riga sotto il nome di un modulo, sulla MAPPA dell'episodio. Colonne: **kind** → la stessa chiave
-della sezione 2 · **sottotitolo** → `moduleLabels.<kind>.subtitle`.*
+della sezione 2 · **sottotitolo** → `<kind>.subtitle`, accanto a `howItWorks` e `helpReminder` dello
+stesso kind.*
+
+⚠️ **NON È `moduleLabels.<kind>.subtitle`, e la differenza è il punto di questo passo:** *`moduleLabels` è
+la chiave della `struttura-corso`, indicizzata per **id**.* 🔴 **Usare quel nome qui, dove l'indice è il
+`kind`, darebbe lo stesso nome a due indici diversi — che è esattamente il difetto che stiamo togliendo.**
 
 🔴 **ARRIVATI QUI IL 2026-10-13, DALLE DUE `struttura-corso.md`.** *Erano **identici** nelle due edizioni:
 «Abbina le traduzioni» non descrive il corso, descrive il modulo.* ⭐ **Quindi dipendono solo dalla lingua

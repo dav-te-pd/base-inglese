@@ -1,4 +1,4 @@
-**Versione: 20261013b**
+**Versione: 20261013c**
 
 # Struttura del corso — spagnolo per italiani
 
@@ -6,7 +6,7 @@
 
 | Cosa | Quante | Dove è andata |
 |---|---|---|
-| i **sottotitoli** dei moduli | *15 → **14**, unite per `kind`* | `docs/condivisi/{studente}/it-istruzioni-moduli.md` |
+| i **sottotitoli** dei moduli | *15 → **14**, unite per `kind`* | `docs/condivisi/it/it-istruzioni-moduli.md` |
 | le **etichette delle categorie** | **6** | *lo stesso file, chiave `categorie`* |
 | `nomiASchermo.native` | **1** | *lo stesso file, chiave `nomiASchermo`* |
 
