@@ -15,100 +15,65 @@
     "C": "Frasi",
     "D": "Dialogo"
   },
-  "moduleTypes": {
-    "inizio": {
-      "label": "Inizio"
-    },
-    "studio": {
-      "label": "Studio"
-    },
-    "dialogo": {
-      "label": "Studia il dialogo"
-    },
-    "quiz": {
-      "label": "Quiz"
-    },
-    "test": {
-      "label": "Verifica finale"
-    },
-    "fine": {
-      "label": "Fine"
-    }
-  },
   "moduleLabels": {
     "personalizzazione": {
       "name": "Tu historia",
-      "subtitle": "Personalizza la tua storia",
       "categoria": "inizio"
     },
     "meetTheStory": {
       "name": "Conoce la historia",
-      "subtitle": "Ascolta la storia",
       "categoria": "studio"
     },
     "repeatAloud": {
       "name": "Repite en voz alta",
-      "subtitle": "Ripeti ad alta voce",
       "categoria": "studio"
     },
     "whyWeSayIt": {
       "name": "Por qué se dice así",
-      "subtitle": "Perché si dice così",
       "categoria": "studio"
     },
     "matchTargetNative": {
       "name": "Empareja es→it",
-      "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
     "matchNativeTarget": {
       "name": "Empareja it→es",
-      "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
     "flashcardATargetNative": {
       "name": "Tarjetas es→it",
-      "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
     },
     "flashcardANativeTarget": {
       "name": "Tarjetas it→es",
-      "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
     },
     "voicePractice": {
       "name": "Practica la voz",
-      "subtitle": "Allena la pronuncia",
       "categoria": "studio"
     },
     "dialogoAscoltaRipeti": {
       "name": "Diálogo: escucha y repite",
-      "subtitle": "Ascolta e ripeti",
       "categoria": "dialogo"
     },
     "dialogoRipetiATempo": {
       "name": "Diálogo: repite a tiempo",
-      "subtitle": "Ripeti a tempo",
       "categoria": "dialogo"
     },
     "dialogoContinuo": {
       "name": "Diálogo: sin pausas",
-      "subtitle": "Il dialogo vero",
       "categoria": "dialogo"
     },
     "speedMatchTargetNative": {
       "name": "Contrarreloj es→it",
-      "subtitle": "Traduci a tempo",
       "categoria": "quiz"
     },
     "speedMatchNativeTarget": {
       "name": "Contrarreloj it→es",
-      "subtitle": "Traduci a tempo",
       "categoria": "quiz"
     },
     "voiceCoach": {
       "name": "Prueba de voz",
-      "subtitle": "Metti alla prova la pronuncia",
       "categoria": "quiz"
     }
   },
@@ -247,7 +212,6 @@
   },
   "nomiASchermo": {
     "target": "Spagnolo",
-    "native": "Italiano",
     "corso": "Spagnolo per italiani"
   }
 }

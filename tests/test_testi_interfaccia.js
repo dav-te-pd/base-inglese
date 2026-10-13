@@ -210,57 +210,50 @@ async function run() {
   });
 
   await pagina3.goto(APP_URL);
+
+  // ⚠️ LA GARANZIA E' CAMBIATA DI NUOVO IL 2026-10-13, ED E' ANCORA PIU' FORTE —
+  // e anche stavolta il blocco l'ha seguita, non e' stato cancellato.
+  //
+  // Dal 2026-09-21 la mappa non compariva finche' i testi non c'erano, e la
+  // home si', con le etichette del suo markup. Dal 2026-10-13 `boot()` aspetta
+  // la struttura E il file dei testi condivisi prima di disegnare QUALUNQUE
+  // cosa (decisione (a) di chi guida il progetto: la prima mappa ha bisogno
+  // dei sottotitoli e delle categorie, che stanno in quel file). Quindi col
+  // cancello chiuso **non compare nessuna schermata**: ne' il nome, ne' la
+  // home, ne' la mappa — solo l'attesa.
+  //
+  // ⚠️ L'APPRODO E' LA SCHERMATA DI ATTESA, e nessuna asserzione qui sotto la
+  // legge (regola 44): leggono la prima schermata, l'errore e la mappa. Il
+  // cancello non si apre da solo, quindi aspettarla non e' una corsa.
+  await pagina3.waitForSelector('#view-attesa.is-active', { state: 'attached', timeout: 15000 });
+  const durante = await pagina3.evaluate(() => ({
+    primaSchermata: ['#name-input', '#go-episode'].some(sel => {
+      const el = document.querySelector(sel);
+      return !!el && el.getClientRects().length > 0;
+    }),
+    errore: !!document.querySelector('#view-error.is-active'),
+    mappaAttiva: !!document.querySelector('#view-map.is-active')
+  }));
+  log('[7] DURANTE l\'attesa dei testi non compare nessuna schermata: ne\' il nome, ne\' la home, ne\' la mappa',
+    !durante.primaSchermata && !durante.mappaAttiva, JSON.stringify(durante));
+  log('[7] ...e non e\' un errore: si aspetta, non si cade',
+    durante.errore === false, JSON.stringify(durante));
+
+  // Liberati i testi, si arriva. **Questa riga e' anche la prova che le due
+  // asserzioni qui sopra non erano vere per il motivo sbagliato:** se la
+  // prima schermata non arrivasse nemmeno adesso, il blocco starebbe
+  // misurando un'app rotta invece di un'attesa.
+  apriIlCancello();
   await pagina3.fill('#name-input', UTENTE + '3');
   await pagina3.click('#onboarding-form button[type=submit]');
   await pagina3.waitForSelector('#view-home.is-active', { timeout: 10000 });
 
-  // La home NON e' del giro B: deve avere ancora le sue etichette nel markup.
   const testoHome = await pagina3.evaluate(() => document.getElementById('view-home').innerText);
-  log('[7] La home tiene le sue etichette (e\' la prima cosa che vede chi torna)',
+  log('[7] La home ha le sue etichette (e\' la prima cosa che vede chi torna)',
     testoHome.indexOf('Inizia') !== -1 && testoHome.indexOf('Scegli il tema') !== -1,
     JSON.stringify(testoHome.slice(0, 50)));
 
-  // ⚠️ LA FINESTRA NON SI OSSERVA CORRENDOLE CONTRO: SI RIPRODUCE.
-  //
-  // La prima versione di questo blocco apriva la mappa e guardava subito.
-  // MISURATO: il fetch del JSON aveva gia' risolto al primo istante in cui
-  // Playwright riusciva a leggere qualcosa — quindi le asserzioni erano VERE
-  // PER COSTRUZIONE (regola 44), e il test restava 19/19 anche togliendo il
-  // `disabled` dal codice. Se ne e' accorto solo il guasto iniettato
-  // (regola 32), non la rilettura.
-  //
-  // Adesso la finestra la tiene aperta il cancello installato prima di `goto`:
-  // i testi NON possono essere arrivati, su nessuna macchina.
   await pagina3.click('#go-episode');
-
-  // ⚠️ LA GARANZIA E' CAMBIATA IL 2026-09-21, ED E' PIU' FORTE DI PRIMA —
-  // questo blocco l'ha seguita, non e' stato cancellato.
-  //
-  // Fino a ieri la mappa **compariva subito** e l'intro si riempiva dopo:
-  // quello che si poteva garantire era che il pulsante restasse SPENTO
-  // invece che muto, e questo blocco lo misurava. Col passo 1.3b la mappa
-  // ha le sue stringhe nel file come ogni modulo, quindi **non compare
-  // affatto** finche' i testi non ci sono: la finestra che il pulsante
-  // spento copriva non esiste piu'.
-  //
-  // Le due asserzioni di prima non avevano piu' niente da guardare. Al loro
-  // posto ci sono le due che dicono la garanzia nuova — *«non si vede una
-  // schermata a meta'»* e' piu' di *«il pulsante e' spento»*, e si misura
-  // dallo stesso punto, con la stessa rete rallentata.
-  const durante = await pagina3.evaluate(() => ({
-    vistaAttiva: (document.querySelector('.view.is-active') || {}).id || null,
-    mappaAttiva: !!document.querySelector('#view-map.is-active')
-  }));
-  log('[7] DURANTE l\'attesa la mappa NON compare a meta\'',
-    durante.mappaAttiva === false, JSON.stringify(durante));
-  log('[7] ...e si resta dove si era, senza schermata d\'errore',
-    durante.vistaAttiva === 'view-home', JSON.stringify(durante));
-
-  // Liberati i testi, la mappa arriva. **Questa riga e' anche la prova che le
-  // due asserzioni qui sopra non erano vere per il motivo sbagliato:** se la
-  // mappa non si aprisse nemmeno adesso, il blocco starebbe misurando un'app
-  // rotta invece di un'attesa.
-  apriIlCancello();
   await pagina3.waitForSelector('#view-map.is-active', { timeout: 15000 });
   // e quando arriva, tutto si riempie insieme
   await pagina3.waitForFunction(() => {

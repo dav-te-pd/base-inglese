@@ -178,7 +178,8 @@ async function run() {
   //
   // Dal passo 1.11b **sette** chiavi di `APP_CONFIG` (`grades`, `gradeNames`,
   // `moduleTypes`, `moduleLabels`, `sequences`, `episodes`, le due lingue di
-  // `speech`) arrivano da `struttura-corso.json` — `moduleLabels` e' l'ultima
+  // `speech`) arrivano da `struttura-corso.json` (`moduleTypes` fino al
+  // 2026-10-13: da quel giorno le categorie sono nel file condiviso) — `moduleLabels` e' l'ultima
   // arrivata, col passo 1.3d del 2026-09-21. Leggere la configurazione appena
   // caricata la pagina non darebbe un errore: darebbe un oggetto **con sette
   // chiavi in meno**, e questo file — che verifica «ogni chiave di

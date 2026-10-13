@@ -511,7 +511,8 @@
     // ⚠️ QUI MANCANO SEI COSE, E MANCANO DI PROPOSITO — passo 1.11b, 2026-09-20.
     //
     // `grades`, `gradeNames`, `moduleTypes`, `sequences`, `episodes` e le due
-    // lingue di `speech` stavano qui e adesso stanno in
+    // lingue di `speech` stavano qui (`moduleTypes` dal 2026-10-13 sta nel
+    // file condiviso dei testi, come `categorie`) e adesso stanno in
     // `data/{lingua}/{studente}/struttura-corso.json`: sono la struttura del
     // CORSO, e un corso appartiene a un'edizione. Tenerle qui significava che
     // una decisione didattica presa per l'inglese governava il francese in

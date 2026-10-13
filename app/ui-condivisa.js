@@ -1117,17 +1117,24 @@
   // `en-it` «vuol dire target -> native in qualunque edizione». Un valore la
   // cui documentazione deve tradurlo è un valore col nome sbagliato.*
   //
-  // Si legge al momento dell'uso, non a tempo di parsing: la struttura arriva
+  // ⚠️ E I DUE NOMI VENGONO DA DUE FILE, dal 2026-10-13: `target` dalla
+  // struttura dell'edizione (dipende dalla coppia), `native` dal file
+  // condiviso della lingua dello studente — con la stessa chiave,
+  // `nomiASchermo.native`: cambia il file, non il nome.
+  //
+  // Si legge al momento dell'uso, non a tempo di parsing: i due file arrivano
   // dopo. Un nome che manca da' una scritta vuota e lo dice in console — il
-  // trascrittore non lascia passare una §9 senza le tre righe.
+  // trascrittore non lascia passare una §9 senza `target`, e `boot()` non
+  // disegna niente senza il file condiviso.
   function etichettaDirezione(direzione) {
-    var nomi = CONFIG.nomiASchermo || {};
-    if (!nomi.target || !nomi.native) {
-      console.error('[base-inglese] La struttura non porta nomiASchermo.target/native: la scritta della direzione resta vuota.');
+    var target = CONFIG.nomiASchermo && CONFIG.nomiASchermo.target;
+    var native = uiText('nomiASchermo.native');
+    if (!target || !native) {
+      console.error('[base-inglese] Manca nomiASchermo.target (struttura) o nomiASchermo.native (testi condivisi): la scritta della direzione resta vuota.');
       return '';
     }
-    var da = direzione === 'target-native' ? nomi.target : nomi.native;
-    var a = direzione === 'target-native' ? nomi.native : nomi.target;
+    var da = direzione === 'target-native' ? target : native;
+    var a = direzione === 'target-native' ? native : target;
     return (da + ' → ' + a).toUpperCase();
   }
   BI.chiudiOverlayAperti = chiudiOverlayAperti;

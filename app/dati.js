@@ -156,7 +156,8 @@ window.BI = window.BI || {};
   // l'app deve avere PRIMA di disegnare qualunque cosa. Passo 1.11b.
   //
   // Porta sei cose che stavano in `app/config.js`: `grades`, `gradeNames`,
-  // `moduleTypes`, `sequences`, `episodes` e le due lingue di `speech`. Sono
+  // `moduleTypes` (uscita di nuovo il 2026-10-13, verso il file condiviso),
+  // `sequences`, `episodes` e le due lingue di `speech`. Sono
   // la struttura del CORSO, e un corso appartiene a un'edizione — un corso di
   // francese vuole i suoi nomi dei gradi e le sue sequenze, e la regola 4
   // vieta che una correzione fatta per l'inglese arrivi altrove da sola.
@@ -176,7 +177,13 @@ window.BI = window.BI || {};
   // globale della famiglia che il passo 1.11 aveva portato nell'edizione.
   // `nomiASchermo` dal 2026-10-01 (passo 4): i nomi delle due lingue e del
   // corso, nella lingua dello studente — §9 della struttura.
-  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleTypes', 'moduleLabels',
+  //
+  // ⚠️ `moduleTypes` E' USCITA IL 2026-10-13, e `nomiASchermo` porta una
+  // riga in meno: le etichette delle categorie, i sottotitoli dei moduli e
+  // `nomiASchermo.native` dipendono solo dalla lingua dello STUDENTE, ed erano
+  // identici nelle due edizioni. Stanno nel file condiviso
+  // (`categorie`, `<kind>.subtitle`, `nomiASchermo.native`).
+  var CHIAVI_STRUTTURA = ['grades', 'gradeNames', 'moduleLabels',
     'sequences', 'episodes', 'episodeSequences', 'episodeSequence', 'episodiSpenti',
     'episodioCorrente', 'nomiASchermo'];
 

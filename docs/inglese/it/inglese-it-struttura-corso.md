@@ -1,6 +1,31 @@
-**Versione: 20261013a**
+**Versione: 20261013c**
 
 # Struttura del corso — inglese per italiani
+
+🔴 **VENTIDUE STRINGHE SONO USCITE DA QUESTO FILE IL 2026-10-13, E NON ERANO DELL'EDIZIONE.**
+
+| Cosa | Quante | Dove è andata |
+|---|---|---|
+| i **sottotitoli** dei moduli | *15 → **14**, unite per `kind`* | `docs/condivisi/it/it-istruzioni-moduli.md` |
+| le **etichette delle categorie** | **6** | *lo stesso file, chiave `categorie`* |
+| `nomiASchermo.native` | **1** | *lo stesso file, chiave `nomiASchermo`* |
+
+⭐ **La prova che non erano dell'edizione è una misura:** *erano **identiche** fra `inglese/it` e
+`spagnolo/it`.* **Cambiano con la lingua dello STUDENTE, non con quella insegnata — e quindi vivono
+accanto alle edizioni, non dentro una.**
+
+⚠️ **E quello che NON è uscito, con la sua ragione:**
+
+| Resta qui | Perché |
+|---|---|
+| il **nome** di ogni modulo | *è nella lingua insegnata, e cambia col verso* |
+| i **nomi dei gradi** | 🔴 **regola 26: sono una decisione didattica di QUESTO corso, non una traduzione.** *Condividerli farebbe governare il francese da una scelta presa per l'inglese* |
+| `nomiASchermo.target` e `.corso` | *dipendono dalla coppia* |
+| `episodes.*.nome` | *è il titolo della storia* |
+
+⚠️ **Conseguenza dichiarata: la lingua dello studente resta scritta anche dentro `corso`** — *«per
+italiani»*. **Duplicazione voluta: lingua e demonimo non sono la stessa parola e non si compongono.**
+
 
 🔴 **GLI ID DI SEI PASSI SONO CAMBIATI IL 2026-10-13, E NON È UNA CORREZIONE DI SCRITTURA.**
 *Si chiamavano `matchEngIta`, `matchItaEng`, `flashcardAEngIta`, `flashcardAItaEng`,
@@ -34,7 +59,7 @@ carattere:
 | Il testo dopo `## ` | Cosa ne legge |
 |---|---|
 | `2 — I GRADI` | `grades` e `gradeNames` |
-| `3 — LE CATEGORIE DEI MODULI` | `moduleTypes` |
+| `3 — LE CATEGORIE DEI MODULI` | **niente nel JSON, dal 2026-10-13** — *l'elenco serve al trascrittore per controllare che ogni categoria abbia la sua etichetta in `categorie` del file condiviso. Fino a quel giorno era `moduleTypes`* |
 | `4 — I NOMI DEI MODULI` | `moduleLabels` |
 | `5 — LE SEQUENZE DEI MODULI` | `sequences` |
 | `7 — GLI EPISODI` | `episodes` **e** l'ordine di `episodeSequences` |
@@ -119,12 +144,12 @@ riga oltre all'intestazione, altrimenti il test esplode invece di diventare ross
 accenti compresi.** *Il 2026-09-21 «Perché si dice così» scritto con gli apostrofi è passato
 inosservato: è testo che legge lo studente.*
 
-**L'ordine delle righe conta in tre sezioni su SEI:**
+**L'ordine delle righe conta in DUE sezioni su SEI** *(tre fino al 2026-10-13)*:
 
 | Sezione | L'ordine delle righe |
 |---|---|
 | `2 — I GRADI` | **è** l'ordine di `grades` |
-| `3 — LE CATEGORIE DEI MODULI` | **è** l'ordine delle chiavi di `moduleTypes` |
+| `3 — LE CATEGORIE DEI MODULI` | **non conta più dal 2026-10-13**: *era l'ordine delle chiavi di `moduleTypes`, che è uscito — l'etichetta si cerca per chiave* |
 | `7 — GLI EPISODI` | **è** l'ordine degli episodi del corso — **spostare un episodio è spostare questa riga** |
 | `4 — I NOMI DEI MODULI` | non conta: è un elenco a chiave, nessuno lo scorre |
 | `8 — LE LINGUE DEL PARLATO` | non conta |
@@ -170,17 +195,23 @@ modulo, i 141 messaggi di esito non sono controllabili.**
 
 ## 3 — LE CATEGORIE DEI MODULI
 
-*Colonne: **id** → chiave di `moduleTypes` (i backtick si tolgono) · **etichetta** →
-`moduleTypes.<id>.label`. L'ordine delle righe è l'ordine delle chiavi.*
+*Colonne: **id** → chiave di `categorie` (i backtick si tolgono). L'ordine delle righe non conta: l'etichetta
+si cerca per chiave.*
 
-| Id | Etichetta mostrata | A cosa serve |
-|---|---|---|
-| `inizio` | Inizio | Your Story |
-| `studio` | Studio | si va al proprio ritmo |
-| `dialogo` | Studia il dialogo | i tre Dialogue |
-| `quiz` | Quiz | c'è il tempo o l'avanzamento automatico |
-| `test` | Verifica finale | non ancora costruito |
-| `fine` | Fine | non ancora costruito |
+🔴 **LA COLONNA «ETICHETTA MOSTRATA» È USCITA IL 2026-10-13:** *l'etichetta è nella lingua dello
+studente ed era identica nelle due edizioni, quindi vive nel file condiviso, chiave `categorie`.*
+
+⭐ **Questa sezione resta, col suo numero, perché l'edizione continua a dichiarare QUALI categorie usa** —
+*e il trascrittore si ferma se una categoria dichiarata qui non ha la sua etichetta nel condiviso.*
+
+| Id | A cosa serve |
+|---|---|
+| `inizio` | Your Story |
+| `studio` | si va al proprio ritmo |
+| `dialogo` | i tre Dialogue |
+| `quiz` | c'è il tempo o l'avanzamento automatico |
+| `test` | non ancora costruito |
+| `fine` | non ancora costruito |
 
 ⚠️ **`test` e `fine` restano senza moduli**, ed è giusto: *sono i due che `CLAUDE.md` elenca fra i
 «previsti ma non ancora costruiti».*
@@ -189,9 +220,14 @@ modulo, i 141 messaggi di esito non sono controllabili.**
 
 ## 4 — I NOMI DEI MODULI
 
-*Colonne: **id** → chiave di `moduleLabels` · **nome** → `.name` · **sottotitolo** → `.subtitle` ·
-**categoria** → `.categoria`, e dev'essere uno degli id della sezione 3. Nome e sottotitolo si
-confrontano carattere per carattere.*
+*Colonne: **id** → chiave di `moduleLabels` · **nome** → `.name` · **categoria** → `.categoria`, e
+dev'essere uno degli id della sezione 3. Il nome si confronta carattere per carattere.*
+
+🔴 **LA COLONNA «SOTTOTITOLO» È USCITA IL 2026-10-13**, *nel file condiviso e indicizzata per `kind`:
+quindici diventano quattordici, perché i due versi di Flash Card condividono un kind.*
+
+⭐ **Il nome resta qui perché cambia col verso; il sottotitolo no perché descrive il modulo.** ⚠️ *E non è
+un giudizio sull'esercizio: Match e Speed Match restano due righe ciascuno perché sono due kind.*
 
 ⚠️ **`nome` ADESSO HA UN SECONDO LETTORE:** *è anche il titolo del pop-up «Spiegazione» di quel modulo —
 `howItWorks.title` in `it-istruzioni-moduli` non si scrive più, si deriva da qui.* **Cambiare un nome
@@ -200,23 +236,23 @@ cambia due schermate.**
 ✅ **Le quindici categorie sono MISURATE, non dedotte:** *confermate da Claude Code il 2026-09-27 sul
 campo `type` dei quindici descrittori — **15 su 15 giuste**, nessuna correzione.*
 
-| Id | Nome | Sottotitolo | Categoria |
-|---|---|---|---|
-| `personalizzazione` | Your Story | Personalizza la tua storia | `inizio` |
-| `meetTheStory` | Meet the Story | Ascolta la storia | `studio` |
-| `repeatAloud` | Repeat Aloud | Ripeti ad alta voce | `studio` |
-| `whyWeSayIt` | Why We Say It | Perché si dice così | `studio` |
-| `matchTargetNative` | Match Practice en→it | Abbina le traduzioni | `studio` |
-| `matchNativeTarget` | Match Practice it→en | Abbina le traduzioni | `studio` |
-| `flashcardATargetNative` | Flash Card en→it | Ripassa quello che hai imparato | `studio` |
-| `flashcardANativeTarget` | Flash Card it→en | Ripassa quello che hai imparato | `studio` |
-| `voicePractice` | Voice Practice | Allena la pronuncia | `studio` |
-| `dialogoAscoltaRipeti` | Dialogue: Listen & Repeat | Ascolta e ripeti | `dialogo` |
-| `dialogoRipetiATempo` | Dialogue: Repeat in Time | Ripeti a tempo | `dialogo` |
-| `dialogoContinuo` | Dialogue: Real Dialogue | Il dialogo vero | `dialogo` |
-| `speedMatchTargetNative` | Speed Match en→it | Traduci a tempo | `quiz` |
-| `speedMatchNativeTarget` | Speed Match it→en | Traduci a tempo | `quiz` |
-| `voiceCoach` | Voice Check | Metti alla prova la pronuncia | `quiz` |
+| Id | Nome | Categoria |
+|---|---|---|
+| `personalizzazione` | Your Story | `inizio` |
+| `meetTheStory` | Meet the Story | `studio` |
+| `repeatAloud` | Repeat Aloud | `studio` |
+| `whyWeSayIt` | Why We Say It | `studio` |
+| `matchTargetNative` | Match Practice en→it | `studio` |
+| `matchNativeTarget` | Match Practice it→en | `studio` |
+| `flashcardATargetNative` | Flash Card en→it | `studio` |
+| `flashcardANativeTarget` | Flash Card it→en | `studio` |
+| `voicePractice` | Voice Practice | `studio` |
+| `dialogoAscoltaRipeti` | Dialogue: Listen & Repeat | `dialogo` |
+| `dialogoRipetiATempo` | Dialogue: Repeat in Time | `dialogo` |
+| `dialogoContinuo` | Dialogue: Real Dialogue | `dialogo` |
+| `speedMatchTargetNative` | Speed Match en→it | `quiz` |
+| `speedMatchNativeTarget` | Speed Match it→en | `quiz` |
+| `voiceCoach` | Voice Check | `quiz` |
 
 ⚠️ **`voicePractice` è `studio` e `voiceCoach` è `quiz`, e la differenza non è il microfono:** *in Voice
 Practice si riprova quante volte si vuole, in Voice Check una registrazione sola conta.* **È il criterio
@@ -327,21 +363,23 @@ rimandata con una data: **all'inizio della nuova edizione, dopo il B2**.*
 | Ruolo | Nome |
 |---|---|
 | `target` | Inglese |
-| `native` | Italiano |
 | `corso` | Inglese per italiani |
 
 **Cosa ne ricava l'app:**
 
 | | |
 |---|---|
-| `target` + `native` | **le scritte dei moduli di abbinamento** — *«INGLESE → ITALIANO» e il contrario.* ⚠️ *La freccia e il maiuscolo sono del codice, i due nomi sono dati* |
+| `target` **+ `native`, che dal 13/10 arriva dal condiviso** | **le scritte dei moduli di abbinamento** — *«INGLESE → ITALIANO» e il contrario.* ⚠️ *La freccia e il maiuscolo sono del codice, i due nomi sono dati — ma da due file diversi* |
 | `corso` | **il nome del corso**, dove serve distinguerlo dal nome dell'app |
 
 🔴 **`corso` ha una cella sua e non si ricava dalle altre due.** *«Inglese per italiani» ha una grammatica che
 «Inglese» + «Italiano» non danno — e in un'altra lingua dello studente cambia del tutto.*
 
-⚠️ **I tre nomi sono scritti nella lingua dello STUDENTE**, *e per questo la tabella non è condivisibile
-fra edizioni.*
+⚠️ **ERANO TRE FINO AL 2026-10-13, E `native` È USCITO.** *Qui c'era scritto: «i tre nomi sono scritti
+nella lingua dello STUDENTE, **e per questo** la tabella non è condivisibile fra edizioni».* 🔴 **Quel
+«per questo» era rovesciato:** *essere scritto nella lingua dello studente è esattamente quello che rende
+`native` condivisibile — per lingua dello studente.* ⭐ **`target` e `corso` restano perché dipendono
+dalla COPPIA, non perché siano in italiano.**
 
 ⭐ **E i due ruoli sono le STESSE due parole delle chiavi del JSON**, *non due vocabolari per la stessa
 idea.*

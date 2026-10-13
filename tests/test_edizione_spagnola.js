@@ -155,7 +155,11 @@ async function run() {
       enIt: window.BI.etichettaDirezione('target-native'),
       itEn: window.BI.etichettaDirezione('native-target')
     }));
-    const n = struttura.nomiASchermo;
+    // `native` dal 2026-10-13 sta nel file condiviso (stessa chiave,
+    // `nomiASchermo.native`); `target` e `corso` restano dell'edizione.
+    const n = Object.assign({}, struttura.nomiASchermo, { native: testiCondivisi.nomiASchermo.native });
+    log('[E] `native` viene dal file condiviso, non dalla struttura spagnola',
+      !!n.native && struttura.nomiASchermo.native === undefined, JSON.stringify(struttura.nomiASchermo));
     log('[E] Il badge della home dice il nome del CORSO spagnolo',
       schermo.badge === n.corso, JSON.stringify(schermo.badge));
     log('[E] Il titolo della pagina è il nome dell\'APP', !!schermo.nomeApp && schermo.titolo === schermo.nomeApp,

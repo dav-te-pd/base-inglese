@@ -553,7 +553,22 @@
     // Il rifiuto NON si ingoia: va alla schermata d'errore (regola 35), con
     // il suo «riprova» che rifa' `boot()`. Una mappa vuota al posto di un
     // messaggio sarebbe il guasto muto invece di quello che si vede.
-    caricaStrutturaCorso().then(function () {
+    //
+    // ⚠️ E DAL 2026-10-13 SI ASPETTANO DUE FILE, NON UNO: la struttura e i
+    // testi condivisi. La prima mappa ha bisogno di tutti e due — il nome di
+    // un modulo viene dalla struttura, il suo sottotitolo e la sua categoria
+    // dal file condiviso. Deciso da chi guida il progetto, ed e' scritto con
+    // la sua ragione: **una riga di mappa senza categoria e senza sottotitolo
+    // non e' un disegno parziale, e' un'informazione sbagliata mostrata come
+    // se fosse giusta.** Meglio una schermata che dice «non c'e' ancora» di
+    // una riga incompleta che sembra completa.
+    //
+    // ⚠️ IL CAMBIAMENTO VISIBILE: fino a quel giorno, se il file dei testi
+    // condivisi mancava, la mappa si apriva lo stesso. Adesso ci si ferma
+    // all'avvio con «Riprova». Sta in piedi perche' la valvola c'e' gia':
+    // `LOAD_ERROR_LAST_RESORT`, il caso della regola 35 — il file che manca e'
+    // proprio quello che porta i testi dell'errore.
+    Promise.all([caricaStrutturaCorso(), loadModuleInstructions()]).then(function () {
       spegniAttesa(accendi);
     }).catch(function () {
       annullaAttesa();
@@ -1637,7 +1652,7 @@
   }
 
   // Job 6 (2nd collaudo): the module's own category (Studio/Quiz/ecc.) —
-  // same CONFIG.moduleTypes/typeLabel lookup renderModuleList already
+  // same lookup (moduleTypeLabel) renderModuleList already
   // uses for the map row, reused here (not a second copy) so a module's
   // header can show it too, next to its name, not just the map.
   // "Studio · Parole": la categoria dice cosa aspettarsi, il grado su cosa si
@@ -1669,10 +1684,14 @@
     return testo ? testo + CONFIG.gradeSeparator + gradeName : gradeName;
   }
 
+  // ⚠️ L'ETICHETTA DELLA CATEGORIA VIENE DAL FILE CONDIVISO, dal 2026-10-13
+  // (`categorie.<categoria>`): e' nella lingua dello studente, ed era
+  // identica nelle due edizioni. Prima era `CONFIG.moduleTypes[...].label`,
+  // dalla struttura — e `moduleTypes` era un nome che non diceva cosa
+  // conteneva (regola 18). *Qui c'era anche un `module.typeLabel ||` davanti:
+  // nessuno lo scriveva mai, ed e' uscito con lei.*
   function moduleTypeLabel(module) {
-    var typeInfo = CONFIG.moduleTypes[module.type];
-    var category = module.typeLabel || (typeInfo && typeInfo.label) || '';
-    return withGradeName(category, module.grade);
+    return withGradeName(uiText('categorie.' + module.type), module.grade);
   }
 
   // Fills a title/body pair from istruzioni-moduli.json's howItWorks entry

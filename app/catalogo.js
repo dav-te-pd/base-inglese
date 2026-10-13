@@ -34,6 +34,7 @@
   var CONFIG = window.APP_CONFIG;
 
   var episodeDataFile = BI.episodeDataFile;
+  var istruzioniInMemoria = BI.istruzioniInMemoria;
 
   /* ============================================================
      EPISODES — costruito dalla sequenza, non scritto a mano
@@ -503,7 +504,19 @@
         if (pair.grade) module.grade = pair.grade;
         var labelInfo = CONFIG.moduleLabels[moduleId];
         module.label = (labelInfo && labelInfo.name) || moduleId;
-        module.subtitle = labelInfo && labelInfo.subtitle;
+        // ⚠️ IL SOTTOTITOLO VIENE DAL FILE CONDIVISO, PER `kind`, dal
+        // 2026-10-13 — il NOME resta della struttura, per id. Il sottotitolo
+        // e' nella lingua dello studente ed era identico nelle due edizioni;
+        // il nome cambia col verso e con la lingua insegnata. *Flash Card ha
+        // un kind per due passi, quindi un sottotitolo solo; Match e Speed
+        // Match ne hanno due perche' sono due kind — e' l'indicizzazione,
+        // non un giudizio sull'esercizio.*
+        //
+        // Nessun ripiego: `boot()` arriva qui solo quando il file condiviso
+        // c'e' (aspetta tutti e due i file), e il trascrittore non lascia
+        // passare un kind di modulo senza sottotitolo.
+        var testi = istruzioniInMemoria();
+        module.subtitle = testi && testi[module.kind] && testi[module.kind].subtitle;
         module.off = !!pair.off;
         return module;
       }).filter(function (module) { return !module.off; });

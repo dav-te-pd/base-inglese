@@ -30,6 +30,21 @@ from pathlib import Path
 
 LIVELLI = (r"(?m)^(## [^\n]+)$", r"(?m)^(### [^\n]+)$")
 
+# ⚠️ R4: UN CONTROLLO CHE NON PUO' CONTROLLARE DEVE FALLIRE.
+# Fino al 2026-10-13, lanciato senza file, questo script stampava NIENTE e
+# usciva con 0: dentro una catena di comandi sembrava passato. Trovato da
+# Claude Code (regola 49).
+#
+# ⚠️ La riga d'uso si cerca per il suo prefisso, NON si prende come «ultima
+# riga del docstring»: una riga aggiunta in fondo farebbe stampare quella
+# sbagliata senza che niente si fermi.
+if len(sys.argv) < 2:
+    uso = [r for r in (__doc__ or "").splitlines() if r.startswith("Uso:")]
+    print(uso[0] if uso else "Uso: controllo-titoli.py <file.md> [...]", file=sys.stderr)
+    print("FERMO: nessun file da controllare.", file=sys.stderr)
+    print("       Uno script che non ha guardato niente non puo' dire «a posto».", file=sys.stderr)
+    sys.exit(2)
+
 uscita = 0
 for nome in sys.argv[1:]:
     t = Path(nome).read_text(encoding="utf-8")

@@ -19,7 +19,8 @@
       "cancelButton": "Annulla, torna alla mappa"
     },
     "midEpisodeWarningTitle": "Attenzione",
-    "requestBoxSaved": "✓ Richiesta salvata. Grazie!"
+    "requestBoxSaved": "✓ Richiesta salvata. Grazie!",
+    "subtitle": "Personalizza la tua storia"
   },
   "meetTheStory": {
     "howItWorks": {
@@ -27,7 +28,8 @@
     },
     "helpReminder": {
       "body": "<p>Ascolta le battute con 🔊, alla velocità che preferisci (100/75/50%). La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi «Ho finito».</p>"
-    }
+    },
+    "subtitle": "Ascolta la storia"
   },
   "repeatAloud": {
     "howItWorks": {
@@ -35,7 +37,8 @@
     },
     "helpReminder": {
       "body": "<p>Premi 🔊 per ascoltare ogni parola (velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi «Ho finito, torna alla mappa». Se non vuoi farlo adesso, tocca «Mappa».</p>"
-    }
+    },
+    "subtitle": "Ripeti ad alta voce"
   },
   "matchTargetNative": {
     "howItWorks": {
@@ -43,7 +46,8 @@
     },
     "helpReminder": {
       "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
-    }
+    },
+    "subtitle": "Abbina le traduzioni"
   },
   "matchNativeTarget": {
     "howItWorks": {
@@ -51,7 +55,8 @@
     },
     "helpReminder": {
       "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p>"
-    }
+    },
+    "subtitle": "Abbina le traduzioni"
   },
   "flashcard": {
     "howItWorks": {
@@ -59,7 +64,8 @@
     },
     "helpReminder": {
       "body": "<p>Prova a indovinare la parola prima di girarla, poi tocca la carta per vedere la traduzione.</p><p>Dicci se la sapevi o no. Le carte che non sai tornano finché non le impari.</p>"
-    }
+    },
+    "subtitle": "Ripassa quello che hai imparato"
   },
   "voicePractice": {
     "howItWorks": {
@@ -67,7 +73,8 @@
     },
     "helpReminder": {
       "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. <b>Si ferma anche da solo</b> se resti in silenzio o se superi il tempo massimo. Poi scegli se inviare o cancellare.</p><p>Guarda i colori e le stelle. «Esercitati ancora» per riprovare la stessa frase — il contatore mostra quante volte ti restano, e quando finiscono si va avanti comunque.</p><p>Qui non c'è un ripasso finale: è uno spazio libero per allenarti.</p>"
-    }
+    },
+    "subtitle": "Allena la pronuncia"
   },
   "whyWeSayIt": {
     "howItWorks": {
@@ -148,7 +155,8 @@
     },
     "ruleKicker": "Nuova regola",
     "noRuleHint": "Qui non c'è niente di nuovo: è solo la storia.",
-    "lockedHint": "Prima le regole qui sopra"
+    "lockedHint": "Prima le regole qui sopra",
+    "subtitle": "Perché si dice così"
   },
   "dialogoAscoltaRipeti": {
     "howItWorks": {
@@ -156,7 +164,8 @@
     },
     "helpReminder": {
       "body": "<p>Tocca una battuta per ascoltarla, poi ripetila ad alta voce. Nessun tempo, nessun ordine obbligato.</p><p>La spunta verde ti ricorda quali hai già ascoltato. Il pulsante in alto mostra e nasconde tutte le traduzioni.</p>"
-    }
+    },
+    "subtitle": "Ascolta e ripeti"
   },
   "dialogoRipetiATempo": {
     "howItWorks": {
@@ -164,7 +173,8 @@
     },
     "helpReminder": {
       "body": "<p>Tocca una battuta, ascoltala, poi ripeti ad alta voce mentre scorre la barra. Durante l'ascolto e la barra tutto il resto è bloccato: serve a farti fare davvero l'esercizio.</p><p><b>Scorciatoia:</b> mentre scorre la barra puoi toccare la battuta per passare subito alla successiva, senza aspettare la fine — fa la stessa cosa del pulsante «Prossima frase».</p>"
-    }
+    },
+    "subtitle": "Ripeti a tempo"
   },
   "dialogoContinuo": {
     "howItWorks": {
@@ -172,7 +182,8 @@
     },
     "helpReminder": {
       "body": "<p>Parte da solo e va avanti da solo: ascolta ogni battuta e ripetila ad alta voce mentre scorre la barra. Usa il pulsante di pausa se devi fermarti.</p><p><b>Scorciatoia:</b> mentre scorre la barra puoi toccare la battuta per passare subito alla successiva.</p>"
-    }
+    },
+    "subtitle": "Il dialogo vero"
   },
   "speedMatchTargetNative": {
     "howItWorks": {
@@ -180,7 +191,8 @@
     },
     "helpReminder": {
       "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte, prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
-    }
+    },
+    "subtitle": "Traduci a tempo"
   },
   "speedMatchNativeTarget": {
     "howItWorks": {
@@ -188,7 +200,8 @@
     },
     "helpReminder": {
       "body": "<p>Vedi la parola, tocca la traduzione corretta fra quelle proposte, prima che scada il tempo. «Non lo so» se non la sai — poi guarda sempre la risposta corretta prima di andare avanti.</p>"
-    }
+    },
+    "subtitle": "Traduci a tempo"
   },
   "voiceCoach": {
     "howItWorks": {
@@ -196,7 +209,8 @@
     },
     "helpReminder": {
       "body": "<p>Tocca il microfono per registrare, tocca di nuovo per fermarti. Prima di inviare puoi sempre cancellare e rifare.</p><p>Dopo l'invio guarda i colori e le stelle, poi tocca «Avanti». <b>Una sola registrazione conta per frase:</b> quelle andate meno bene tornano a fine esercizio.</p>"
-    }
+    },
+    "subtitle": "Metti alla prova la pronuncia"
   },
   "listaEpisodi": {
     "howItWorks": {
@@ -307,12 +321,23 @@
     "riprovaAncora": "Riprova ancora",
     "vaiAvanti": "Vai avanti →",
     "iniziaEpisodio": "Inizia l'episodio",
-    "personalizzaSottotitolo": "Personalizza la tua storia o lascia così.",
-    "repeatAloudSottotitolo": "Ascolta ogni parola o frase, ripetila ad alta voce.",
+    "personalizzaIntestazione": "Personalizza la tua storia o lascia così.",
+    "repeatAloudIntestazione": "Ascolta ogni parola o frase, ripetila ad alta voce.",
     "rispostaCorretta": "Risposta corretta: ",
     "nascondiPronuncia": "Nascondi pronuncia",
     "salutoHome": "Ciao, {nome}!",
     "iniziaEpisodioNominato": "Inizia {episodio}",
     "tuoiEpisodi": "I tuoi episodi"
+  },
+  "categorie": {
+    "inizio": "Inizio",
+    "studio": "Studio",
+    "dialogo": "Studia il dialogo",
+    "quiz": "Quiz",
+    "test": "Verifica finale",
+    "fine": "Fine"
+  },
+  "nomiASchermo": {
+    "native": "Italiano"
   }
 }

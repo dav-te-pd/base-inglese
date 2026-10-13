@@ -57,7 +57,7 @@ sette copie del Blocco Ascolto.*
 | `percorsoEdizione` | Il percorso di un file dell'edizione viva, ricavato da `CONFIG.edizione` invece che scritto a mano. **L'unico punto che sa dove stanno i dati.** | `nomeFile` → `data/{lingua}/{studente}/{nomeFile}?v=…` | Che `CONFIG.edizione` esista già (viene da `app/config.js`, tag bloccante). ⚠️ **È il pezzo che si sposterà in `app/fonte.js`** al passo 1.7: quando i dati verranno dal server, cambierà solo lui. |
 | `conVersione` | Attacca a un percorso la stessa `?v=` con cui il browser ha chiesto `app/dati.js`. | `percorso` → percorso con `?v=`, o **nudo** se il tag non porta versione | Che il file sia caricato da un `<script src>` con la sua versione. Si degrada invece di rompersi: senza versione i percorsi restano quelli di ieri. |
 | `episodeDataFile` | Il percorso del file di un episodio, ricavato dall'id. | `episodeId` → percorso completo | Che l'id sia quello congelato (`gate`, `aircraft-door`) e non un numero di posizione. Compone il **prefisso** unendo le due metà della coppia con un trattino: è l'unico dei percorsi che le usa due volte e in due forme. |
-| `applicaStruttura` | Travasa su `APP_CONFIG` le sei chiavi del file di struttura, poi **riapplica gli override** del Pannello Admin. | `dati` (il JSON) → niente | Che giri **prima** di `costruisciPassi()`. L'ordine dei due passaggi non è scambiabile: gli override stanno sopra il file, mai sotto. |
+| `applicaStruttura` | Travasa su `APP_CONFIG` le chiavi del file di struttura elencate in `CHIAVI_STRUTTURA` *(qui c'era «le sei chiavi»: erano undici, e dal 2026-10-13 dieci — `moduleTypes` è uscita)*, poi **riapplica gli override** del Pannello Admin. | `dati` (il JSON) → niente | Che giri **prima** di `costruisciPassi()`. L'ordine dei due passaggi non è scambiabile: gli override stanno sopra il file, mai sotto. |
 
 ## `app/avvio.js`
 
@@ -218,6 +218,24 @@ cui si è visto che dà per scontata **una cosa falsa** — che «aver sentito»
 |---|---|---|
 | `calcolaStatoEpisodi` | Legge **una volta per disegno** il progresso di ogni episodio del corso e ne ricava tre cose: chi è **finito**, chi è stato **cominciato**, e qual è il **primo incompleto**. | `()` → `{ ordine, primoIncompleto }`, più due mappe di modulo | Che leggere il magazzino dentro `episodeStatus` costerebbe una lettura **per riga** invece che una per disegno. ⚠️ **«Finito» è l'ULTIMA POSIZIONE della sequenza, non un modulo per nome e non un conteggio** (regola 30): gli episodi di `grammatica` avranno meno moduli, e un passo aggiunto in mezzo ri-bloccherebbe di colpo tutti quelli finiti. |
 | `episodeStatus` | Lo stato di una riga della lista: `completed`, `current` o `locked`. | `(episodeId, primoIncompleto)` → la stringa dello stato | ⚠️ **Che lo sblocco NON sia un dato salvato: si ricalcola a ogni disegno.** Non esiste nessuna chiave «questo episodio è sbloccato» — *ne segue che un difetto di sblocco non si corregge cancellando meno, ma cambiando questa derivazione.* ⚠️ **E che l'ORDINE dei tre rami conti: `completed` va guardato PRIMA.** Un episodio finito ha progresso, quindi invertendo i primi due la spunta sparirebbe da tutti gli episodi finiti — *e lo prende `[C]` di `test_lista_episodi`, non una riga scritta per questo.* ⚠️ **Il quarto stato non esiste di proposito:** un episodio cominciato e non finito si mostra `current`, perché «corrente» per lo studente vuol dire «qui puoi entrare». |
+
+## `app/catalogo.js` — i passi di ogni episodio
+
+*Catalogato il 2026-10-13, col passo delle 21 stringhe nel file condiviso: letto
+per spostare la fonte del sottotitolo.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `costruisciPassi()` | Per ogni episodio risolve l'ordine dei passi (`resolveModuleOrder`), conta le apparizioni per dare l'id del passo, toglie i passi spenti, e attacca a ogni passo **il nome** (`CONFIG.moduleLabels[id].name`, per id) e **il sottotitolo** (`<kind>.subtitle` del file condiviso, per kind). | `()` → niente; riempie `EPISODES.<id>.modules` | ⚠️ **Che la struttura E il file condiviso siano già in memoria:** la chiama solo `accendi()`, che `boot()` fa partire quando sono arrivati tutti e due. *Chiamata prima, il sottotitolo resterebbe `undefined` senza un errore.* Che il conteggio delle apparizioni (`seen`) si faccia **prima** del filtro dei passi spenti, così spegnere un passo non rinomina il successivo. |
+
+## `app/mappa.js` — la riga di un modulo
+
+*Catalogato il 2026-10-13, stesso passo.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `moduleTypeLabel(module)` | La categoria di un modulo col nome del grado — «Studio · Parole» — per la riga della mappa e l'intestazione del modulo. **L'etichetta viene da `categorie.<categoria>` del file condiviso** dal 2026-10-13 (prima `CONFIG.moduleTypes[...].label`). | il modulo → stringa | Che il file condiviso sia in memoria (`uiText` torna `''` altrimenti). Che `module.type` sia una delle chiavi di `categorie`: lo garantisce il trascrittore, che si ferma se una categoria dell'edizione non ha l'etichetta. *Il `module.typeLabel ||` che c'era davanti è uscito: nessuno lo scriveva.* |
+| `withGradeName(testo, grade)` | Attacca il nome del grado a un'etichetta col separatore condiviso, **e lo omette quando è già contenuto** («Studia il dialogo», non «Studia il dialogo · Dialogo»). Lo usano la categoria di un modulo e il nome di un passo nei pannelli-report. | `(testo, grade)` → stringa | Che il confronto sia testuale e resti testuale: nei pannelli-report «Dialogue: Repeat in Time · Dialogo» non si accorcia, perché nome inglese e grado italiano non combaciano — ed è voluto. |
 
 ## `app/mappa.js` — la schermata iniziale
 

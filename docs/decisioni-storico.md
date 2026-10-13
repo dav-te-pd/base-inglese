@@ -4552,6 +4552,44 @@ era invecchiato e non l'ho riconosciuto**.* La decisione presa è finita in
 | **F.3** · **F.4** | il giro di design sulla mastery · le varianti di `bootAsUser`/`mockInit` nei test |
 | **③ delle sequenze** | il Pannello Admin non sa creare né cancellare una sequenza |
 
+## LE 21 STRINGHE DELLO STUDENTE NEL FILE CONDIVISO — 2026-10-13
+
+*Deciso da chi guida il progetto in due giri: il 12/10 il perimetro (22
+stringhe, e nient'altro — i gradi NON si toccano), il 13/10 la forma.*
+
+**Cosa:** dalle due `struttura-corso.md` escono i 15 sottotitoli, le 6
+etichette delle categorie e `nomiASchermo.native`. Erano **identici** fra
+`inglese/it` e `spagnolo/it`: dipendono solo dalla lingua dello studente.
+
+**Le due ragioni che vanno scritte, perché la prima era sbagliata:**
+
+1. **Il sottotitolo si indicizza per `kind`, e la ragione è l'indicizzazione,
+   non il giudizio sull'esercizio.** La prima stesura diceva «i due Flash Card
+   condividono il sottotitolo perché l'esercizio è lo stesso nei due versi»: ⚠️
+   **quella ragione dimostrava troppo** — vale identica per Match e Speed
+   Match, che restano due righe. *Flash Card si unisce perché ha UN kind per due
+   passi; Match e Speed Match no perché hanno un kind per verso.* **«Sono due
+   righe perché sono due kind.»** E i kind non si uniscono per far tornare il
+   conto: sarebbe un'altra rinomina di id, con un'altra perdita di progressi.
+2. **L'avvio aspetta tutti e due i file (a), invece di ridisegnare la mappa
+   quando i testi arrivano (b).** ⚠️ *Una riga di mappa senza categoria e senza
+   sottotitolo non è un disegno parziale: è un'informazione sbagliata mostrata
+   come se fosse giusta.* Meglio una schermata che dice «non c'è ancora» di una
+   riga incompleta che sembra completa. **Costo dichiarato:** senza il file
+   condiviso, prima la mappa si apriva lo stesso; adesso ci si ferma all'avvio
+   con «Riprova». Sta in piedi perché la valvola c'era già —
+   `LOAD_ERROR_LAST_RESORT`, regola 35.
+
+**Due nomi scelti nello stesso giro:** `categorie` e non `moduleTypes` (un nome
+che non dice cosa contiene non si porta in un file nuovo, regola 18);
+`nomiASchermo.native` e non `condivisi.native` (stessa chiave e stesso percorso
+di prima: cambia solo il file).
+
+**Nel repository: 44 copie → 21.** *Le 22 esistevano in due copie identiche; 15
+sottotitoli diventano 14 righe.*
+
+---
+
 ## Aspettano SUPABASE (o la decidono)
 
 | | Cosa |

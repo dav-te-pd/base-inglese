@@ -221,8 +221,10 @@ async function run() {
     const ids = rows.map(r => r.id);
     // I nomi e le categorie si leggono dalla fonte: ricopiarli qui significa
     // che rinominare un modulo in CONFIG rompe la CI senza che niente sia rotto.
+    // Le categorie dal 2026-10-13 vengono dal file condiviso (`categorie`),
+    // non piu' da `CONFIG.moduleTypes`.
     const etichette = await page.evaluate(() => window.APP_CONFIG.moduleLabels);
-    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
+    const categorie = await page.evaluate(() => window.BI.istruzioniInMemoria().categorie);
     log('[Job7] L\'ordine in mappa e\' quello della sequenza dell\'episodio',
       JSON.stringify(ids) === JSON.stringify(ALL_MODULES));
     // I nomi e le categorie si cercano per id del passo, non per posizione:
@@ -248,7 +250,7 @@ async function run() {
     // categoria dice cosa aspettarsi, il grado su cosa si sta lavorando.
     // Il grado atteso viene dall'ordine, non riscritto qui.
     log('[Job7] I tre Dialogue mostrano la categoria "Studia il dialogo"',
-      ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].every(id => row(id).type.indexOf(categorie.dialogo.label) === 0));
+      ['dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'].every(id => row(id).type.indexOf(categorie.dialogo) === 0));
     log('[Job7] Voice Practice è "Studio"', row('voicePractice').type.indexOf('Studio') === 0);
     log('[Job7] Voice Check è "Quiz"', row('voiceCoach').type.indexOf('Quiz') === 0);
     log('[Job7] Your Story è "Inizio", senza grado (non ne legge uno)', row('personalizzazione').type === 'Inizio');

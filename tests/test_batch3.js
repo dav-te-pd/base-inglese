@@ -76,7 +76,7 @@ async function run() {
     await page.close();
   }
 
-  // ============ 3: moduleTypes categories + Personalizzazione's own label ============
+  // ============ 3: categorie (fino al 2026-10-13 `moduleTypes`) + Personalizzazione's own label ============
   // Job (later turn): six category labels replaced the old four — "Studio
   // libero"/"Quiz con ripasso"/"Studio a tempo"/"Quiz a tempo" are gone;
   // this section now checks the CURRENT six (Inizio/Studio/Studia il
@@ -91,14 +91,14 @@ async function run() {
     // "Inizio" e "Quiz" — erano sfuggite al censimento del passo 15 perche' il
     // filtro cercava stringhe con uno SPAZIO dentro: le etichette di una
     // parola sola non lo hanno. Trovate leggendo, non contando.
-    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
+    const categorie = await page.evaluate(() => window.BI.istruzioniInMemoria().categorie);
     const personalizzaLabel = await page.$eval('[data-module="personalizzazione"] .module-row-type', el => el.textContent);
-    log('[3] Personalizzazione mostra la propria categoria (' + categorie.inizio.label + '), non quella di Studio', personalizzaLabel === categorie.inizio.label);
+    log('[3] Personalizzazione mostra la propria categoria (' + categorie.inizio + '), non quella di Studio', personalizzaLabel === categorie.inizio);
     // ⚠️ QUESTA RESTA UNA COPIA, ED E' UN REQUISITO: e' l'unica riga che
-    // asserisce COSA c'e' scritto in CONFIG. Leggerla dalla fonte la
+    // asserisce COSA c'e' scritto nella fonte. Leggerla dalla fonte la
     // renderebbe `label === label` (CLAUDE.md regola 44 applicata ai valori).
-    const moduleTypesCfg = categorie.dialogo.label;
-    log('[3] CONFIG.moduleTypes.dialogo esiste con etichetta "Studia il dialogo"', moduleTypesCfg === 'Studia il dialogo');
+    // Dal 2026-10-13 la fonte e' `categorie` del file condiviso.
+    log('[3] categorie.dialogo del file condiviso dice "Studia il dialogo"', categorie.dialogo === 'Studia il dialogo');
     log('[3] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -107,16 +107,16 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
-    const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
+    const categorie = await page.evaluate(() => window.BI.istruzioniInMemoria().categorie);
     const srTypeLabel = await page.$eval('[data-module="speedMatchTargetNative"] .module-row-type', el => el.textContent);
-    log('[3] Speed Match mostra la categoria dichiarata in CONFIG (' + categorie.quiz.label + ')', srTypeLabel.indexOf(categorie.quiz.label) === 0);
+    log('[3] Speed Match mostra la categoria dichiarata nel file condiviso (' + categorie.quiz + ')', srTypeLabel.indexOf(categorie.quiz) === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
     // system.
     const dgContinuoLabel = await page.$eval('[data-module="dialogoContinuo"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Continuo mostra la categoria dichiarata in CONFIG (' + categorie.dialogo.label + ')', dgContinuoLabel.indexOf(categorie.dialogo.label) === 0);
+    log('[3] Dialogo Continuo mostra la categoria dichiarata nel file condiviso (' + categorie.dialogo + ')', dgContinuoLabel.indexOf(categorie.dialogo) === 0);
     const dgAscoltaLabel = await page.$eval('[data-module="dialogoAscoltaRipeti"] .module-row-type', el => el.textContent);
-    log('[3] Dialogo Ascolta e Ripeti mostra la stessa categoria', dgAscoltaLabel.indexOf(categorie.dialogo.label) === 0);
+    log('[3] Dialogo Ascolta e Ripeti mostra la stessa categoria', dgAscoltaLabel.indexOf(categorie.dialogo) === 0);
     await page.close();
   }
 

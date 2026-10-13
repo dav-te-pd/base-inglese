@@ -15,100 +15,65 @@
     "C": "Frasi",
     "D": "Dialogo"
   },
-  "moduleTypes": {
-    "inizio": {
-      "label": "Inizio"
-    },
-    "studio": {
-      "label": "Studio"
-    },
-    "dialogo": {
-      "label": "Studia il dialogo"
-    },
-    "quiz": {
-      "label": "Quiz"
-    },
-    "test": {
-      "label": "Verifica finale"
-    },
-    "fine": {
-      "label": "Fine"
-    }
-  },
   "moduleLabels": {
     "personalizzazione": {
       "name": "Your Story",
-      "subtitle": "Personalizza la tua storia",
       "categoria": "inizio"
     },
     "meetTheStory": {
       "name": "Meet the Story",
-      "subtitle": "Ascolta la storia",
       "categoria": "studio"
     },
     "repeatAloud": {
       "name": "Repeat Aloud",
-      "subtitle": "Ripeti ad alta voce",
       "categoria": "studio"
     },
     "whyWeSayIt": {
       "name": "Why We Say It",
-      "subtitle": "Perché si dice così",
       "categoria": "studio"
     },
     "matchTargetNative": {
       "name": "Match Practice en→it",
-      "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
     "matchNativeTarget": {
       "name": "Match Practice it→en",
-      "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
     "flashcardATargetNative": {
       "name": "Flash Card en→it",
-      "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
     },
     "flashcardANativeTarget": {
       "name": "Flash Card it→en",
-      "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
     },
     "voicePractice": {
       "name": "Voice Practice",
-      "subtitle": "Allena la pronuncia",
       "categoria": "studio"
     },
     "dialogoAscoltaRipeti": {
       "name": "Dialogue: Listen & Repeat",
-      "subtitle": "Ascolta e ripeti",
       "categoria": "dialogo"
     },
     "dialogoRipetiATempo": {
       "name": "Dialogue: Repeat in Time",
-      "subtitle": "Ripeti a tempo",
       "categoria": "dialogo"
     },
     "dialogoContinuo": {
       "name": "Dialogue: Real Dialogue",
-      "subtitle": "Il dialogo vero",
       "categoria": "dialogo"
     },
     "speedMatchTargetNative": {
       "name": "Speed Match en→it",
-      "subtitle": "Traduci a tempo",
       "categoria": "quiz"
     },
     "speedMatchNativeTarget": {
       "name": "Speed Match it→en",
-      "subtitle": "Traduci a tempo",
       "categoria": "quiz"
     },
     "voiceCoach": {
       "name": "Voice Check",
-      "subtitle": "Metti alla prova la pronuncia",
       "categoria": "quiz"
     }
   },
@@ -247,7 +212,6 @@
   },
   "nomiASchermo": {
     "target": "Inglese",
-    "native": "Italiano",
     "corso": "Inglese per italiani"
   }
 }

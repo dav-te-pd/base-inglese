@@ -7,8 +7,15 @@
 // COSA CONFRONTA — CINQUE tabelle, tutte con una riga per voce e un id in
 // colonna, quindi leggibili senza interpretare niente:
 //   1. i quattro gradi con il nome mostrato      -> CONFIG.grades/gradeNames
-//   2. le sei categorie con la loro etichetta    -> CONFIG.moduleTypes
-//   3. i quindici moduli con nome e sottotitolo  -> CONFIG.moduleLabels
+//   2. le sei categorie                          -> `categorie` del file condiviso
+//   3. i quindici moduli con nome e categoria    -> CONFIG.moduleLabels
+//
+// ⚠️ DAL 2026-10-13 LE ETICHETTE DELLE CATEGORIE E I SOTTOTITOLI NON SONO PIU'
+// DELLA STRUTTURA: sono nel file condiviso della lingua dello studente
+// (`categorie`, `<kind>.subtitle`). Qui si controlla che ogni categoria
+// dichiarata dal documento ABBIA la sua etichetta nel file che l'app ha
+// caricato davvero; il testo delle etichette lo confronta
+// `test_testi_dal_markdown.js`, col markdown condiviso.
 //   4. gli episodi con la sequenza che chiedono  -> CONFIG.episodes
 //   5. le due lingue del parlato                 -> CONFIG.speech
 //
@@ -101,10 +108,11 @@ async function run() {
   // `accendi()` e' girato — e `accendi()` gira solo DOPO che la struttura e'
   // stata applicata. ⚠️ **E nessuna delle asserzioni di questo file legge
   // quella schermata** (regola 44): leggono `grades`, `gradeNames`,
-  // `moduleTypes` e l'ordine dei passi. Aspettare uno di quelli avrebbe reso
+  // le categorie e l'ordine dei passi. Aspettare uno di quelli avrebbe reso
   // vera per costruzione proprio la riga che li verifica.
   await page.waitForSelector('#name-input', { state: 'visible', timeout: 10000 });
   const config = await page.evaluate(() => window.APP_CONFIG);
+  const condivisi = await page.evaluate(() => window.BI.istruzioniInMemoria());
   await page.close();
   await browser.close();
 
@@ -128,24 +136,19 @@ async function run() {
   }
 
   // ============ 2. Le categorie ============
+  //
+  // ⚠️ DUE COLONNE DAL 2026-10-13: l'etichetta e' uscita verso il file
+  // condiviso. *E l'ordine non si confronta piu': era l'ordine delle chiavi
+  // di `moduleTypes`, che non esiste piu' — l'etichetta si cerca per chiave.*
+  const categorieDoc = tabellaSotto(doc, '## 3 — LE CATEGORIE DEI MODULI').map(r => r[0].replace(/`/g, '').trim());
   {
-    const righe = tabellaSotto(doc, '## 3 — LE CATEGORIE DEI MODULI');
-    const etichette = {};
-    righe.forEach(r => {
-      const chiave = r[0].replace(/`/g, '').trim();
-      etichette[chiave] = r[1].trim();
-    });
-    const daConfig = {};
-    Object.keys(config.moduleTypes).forEach(k => { daConfig[k] = config.moduleTypes[k].label; });
-
-    console.log('[Categorie] documento: ' + Object.keys(etichette).map(k => k + '=' + etichette[k]).join(', '));
-    const okChiavi = JSON.stringify(Object.keys(etichette)) === JSON.stringify(Object.keys(daConfig));
-    if (!okChiavi) diff('chiavi delle categorie', Object.keys(etichette), Object.keys(daConfig));
-    log('[Categorie] Le chiavi, e il loro ordine, combaciano con CONFIG.moduleTypes', okChiavi);
-
-    const okEtichette = JSON.stringify(etichette) === JSON.stringify(daConfig);
-    if (!okEtichette) diff('etichette delle categorie', etichette, daConfig);
-    log('[Categorie] Le etichette mostrate combaciano con CONFIG.moduleTypes', okEtichette);
+    console.log('[Categorie] documento: ' + categorieDoc.join(', '));
+    log('[Categorie] Il documento dichiara delle categorie (non sto guardando il vuoto)', categorieDoc.length > 0);
+    log('[Categorie] La struttura viva NON porta piu\' `moduleTypes`', !('moduleTypes' in config) || config.moduleTypes === undefined);
+    const etichette = (condivisi && condivisi.categorie) || {};
+    const senza = categorieDoc.filter(k => !(typeof etichette[k] === 'string' && etichette[k]));
+    log('[Categorie] Ogni categoria del documento ha la sua etichetta nel file condiviso caricato dall\'app',
+      senza.length === 0, senza.join(', '));
   }
 
   // ============ 3. I nomi dei moduli ============
@@ -157,9 +160,12 @@ async function run() {
     // test non guarda e' una colonna che puo' dire il falso** — e questa dice
     // a quale categoria appartiene un modulo, cioe' quella con cui la mappa
     // scrive «Studio · Parole».
+    //
+    // ⚠️ E LA COLONNA `sottotitolo` E' USCITA IL 2026-10-13, verso il file
+    // condiviso (per kind): da quel giorno le colonne sono tre.
     righe.forEach(r => {
       dalDoc[r[0].replace(/`/g, '').trim()] =
-        { name: r[1].trim(), subtitle: r[2].trim(), categoria: r[3].replace(/`/g, '').trim() };
+        { name: r[1].trim(), categoria: r[2].replace(/`/g, '').trim() };
     });
     console.log('[Nomi] documento: ' + Object.keys(dalDoc).length + ' moduli | APP_CONFIG: ' +
       Object.keys(config.moduleLabels).length);
@@ -171,9 +177,6 @@ async function run() {
     // *Il documento li mette nell'ordine in cui si incontrano, che per chi
     // legge e' il piu' utile; il JSON in un altro. Nessuno dei due sbaglia.*
     //
-    // E' diverso da `moduleTypes` qui sopra, dove l'ordine **si** confronta:
-    // quelle sei categorie hanno una progressione (inizio, studio, ..., fine) e
-    // un ordine diverso vorrebbe dire una decisione diversa.
     const chiaviDoc = Object.keys(dalDoc).slice().sort();
     const chiaviConfig = Object.keys(config.moduleLabels).slice().sort();
     const okChiavi = JSON.stringify(chiaviDoc) === JSON.stringify(chiaviConfig);
@@ -186,19 +189,23 @@ async function run() {
       return out;
     };
     const okValori = JSON.stringify(perChiave(dalDoc)) === JSON.stringify(perChiave(config.moduleLabels));
-    if (!okValori) diff('nomi e sottotitoli', perChiave(dalDoc), perChiave(config.moduleLabels));
+    if (!okValori) diff('nomi e categorie', perChiave(dalDoc), perChiave(config.moduleLabels));
     // ⚠️ QUESTA RIGA GUARDA GLI ACCENTI, e non e' pignoleria: il 2026-09-21 il
     // documento portava «Perche' si dice cosi'» con gli apostrofi, ed e' testo
     // che legge lo STUDENTE. Era l'unico sottotitolo con lettere accentate,
     // quindi l'unico su cui la differenza si vedeva — e nessuno la guardava.
-    log('[Nomi] Nome, sottotitolo e categoria combaciano carattere per carattere', okValori);
+    // *Dal 2026-10-13 i sottotitoli stanno nel file condiviso, e il confronto
+    // carattere per carattere col loro markdown lo fa
+    // `test_testi_dal_markdown.js`; qui restano i nomi, che di accenti ne
+    // portano anche loro (lo spagnolo: «Por qué se dice así»).*
+    log('[Nomi] Nome e categoria combaciano carattere per carattere', okValori);
 
     // ⚠️ E OGNI CATEGORIA DEV'ESSERE UNA DI QUELLE DICHIARATE, come gia' si
     // chiede agli episodi piu' sotto: una categoria inventata non romperebbe
     // niente e la mappa mostrerebbe un'etichetta vuota.
     const catIgnote = Object.keys(dalDoc)
-      .filter(k => !Object.prototype.hasOwnProperty.call(config.moduleTypes, dalDoc[k].categoria));
-    log('[Nomi] Ogni modulo dichiara una categoria che esiste in moduleTypes',
+      .filter(k => categorieDoc.indexOf(dalDoc[k].categoria) === -1);
+    log('[Nomi] Ogni modulo dichiara una categoria che la sezione 3 elenca',
       catIgnote.length === 0, catIgnote.join(', '));
   }
 

@@ -298,17 +298,39 @@ function colonneConIntestazione(righe, attese, dove, studente) {
 }
 
 // ── struttura del corso ──────────────────────────────────────────────────
-function struttura(ed) {
-  const t = fs.readFileSync(doc(ed, 'struttura-corso'), 'utf8');
+//
+// `testo` e `condiviso` sono facoltativi, come in `episodio()`: chi li passa
+// fa trascrivere un testo che non sta sul disco — `test_testi_condivisi.js`
+// ci prova i controlli incrociati senza toccare i file.
+function struttura(ed, testo, condiviso) {
+  const t = testo != null ? testo : fs.readFileSync(doc(ed, 'struttura-corso'), 'utf8');
+  // I testi dell'interfaccia della lingua dello STUDENTE: servono qui solo
+  // per il controllo incrociato delle categorie, qui sotto.
+  const testi = condiviso || istruzioni(ed.studente);
 
   const gradi = colonne(tabellaSotto(t, '## 2 — I GRADI', true), 3, 'gradi');
   const grades = gradi.map((r) => r[0].trim());
   const gradeNames = {};
   gradi.forEach((r) => { gradeNames[r[0].trim()] = r[1].trim(); });
 
-  const cat = colonne(tabellaSotto(t, '## 3 — LE CATEGORIE DEI MODULI', true), 3, 'categorie');
-  const moduleTypes = {};
-  cat.forEach((r) => { moduleTypes[nb(r[0])] = { label: r[1].trim() }; });
+  // ⚠️ DUE COLONNE DAL 2026-10-13: l'ETICHETTA delle categorie e' uscita.
+  // Era nella lingua dello studente e identica nelle due edizioni, quindi sta
+  // nel file condiviso, chiave `categorie`. *Qui l'edizione continua a dire
+  // QUALI categorie usa* — e se una di loro non ha l'etichetta nel condiviso
+  // ci si ferma: la mappa mostrerebbe una riga senza categoria, che e'
+  // un'informazione sbagliata mostrata come se fosse giusta (regola 49).
+  //
+  // Nel JSON della struttura non va niente: `moduleTypes` non c'e' piu', e
+  // l'elenco serve solo a questo controllo (regola 47 — un campo nasce il
+  // giorno in cui qualcosa lo legge).
+  const cat = colonne(tabellaSotto(t, '## 3 — LE CATEGORIE DEI MODULI', true), 2, 'categorie');
+  const categorie = cat.map((r) => nb(r[0]));
+  const etichette = testi.categorie || {};
+  const senza = categorie.filter((c) => !etichette[c]);
+  if (senza.length) {
+    throw new Error(ed.pref + 'struttura-corso: la sezione 3 dichiara ' + senza.map((c) => '`' + c + '`').join(', ') +
+      ' ma il file condiviso `' + ed.studente + '-istruzioni-moduli.md` non ne ha l\'etichetta (sezione 6, chiave `categorie`).');
+  }
 
   // ⚠️ QUATTRO COLONNE DAL 2026-09-28 (passo C): l'ultima e' `categoria`.
   //
@@ -316,10 +338,22 @@ function struttura(ed) {
   // poteva nemmeno formulare. *«`studioCompleteMessages` parla di pronuncia,
   // ma quanti dei moduli che lo mostrano fanno aprire bocca?» — senza questa
   // colonna bisogna contarli a mano ogni volta, e chi conta a mano sbaglia.*
-  const nomi = colonne(tabellaSotto(t, '## 4 — I NOMI DEI MODULI', true), 4, 'nomi dei moduli');
+  //
+  // ⚠️ E TRE COLONNE DAL 2026-10-13: il SOTTOTITOLO e' uscito, nel file
+  // condiviso e indicizzato per `kind` (sezione 7 di quel file). Il NOME resta
+  // qui, per id: cambia col verso e con la lingua insegnata.
+  const nomi = colonne(tabellaSotto(t, '## 4 — I NOMI DEI MODULI', true), 3, 'nomi dei moduli');
   const moduleLabels = {};
   nomi.forEach((r) => {
-    moduleLabels[nb(r[0])] = { name: r[1].trim(), subtitle: r[2].trim(), categoria: nb(r[3]) };
+    const id = nb(r[0]);
+    const categoria = nb(r[2]);
+    // Il markdown lo dice da sempre («dev'essere uno degli id della sezione
+    // 3»); da oggi lo dice anche il trascrittore.
+    if (categorie.indexOf(categoria) === -1) {
+      throw new Error(ed.pref + 'struttura-corso: il modulo `' + id + '` dichiara la categoria `' + categoria +
+        '`, che la sezione 3 non elenca.');
+    }
+    moduleLabels[id] = { name: r[1].trim(), categoria: categoria };
   });
 
   const passi = colonne(tabellaSotto(t, '## 5 — LE SEQUENZE DEI MODULI', true), 3, 'sequenze');
@@ -345,19 +379,31 @@ function struttura(ed) {
   parlato.forEach((r) => { speech[nb(r[0]).replace('speech.', '')] = nb(r[1]); });
 
   // ⚠️ LA SEZIONE 9 — I NOMI A SCHERMO, dal 2026-10-01 (passo 4 dello
-  // spagnolo). Tre righe: `target` e `native` danno le scritte dei moduli di
-  // abbinamento («SPAGNOLO → ITALIANO»), `corso` il nome del corso. *`corso`
-  // ha una cella sua: «Spagnolo per italiani» ha una grammatica che
-  // «Spagnolo» + «Italiano» non danno.* Obbligatoria: un corso senza i suoi
-  // nomi mostrerebbe scritte vuote, e questo e' il posto per dirlo.
+  // spagnolo). `target` da' la meta' delle scritte dei moduli di abbinamento
+  // («SPAGNOLO → ITALIANO»), `corso` il nome del corso. *`corso` ha una cella
+  // sua: «Spagnolo per italiani» ha una grammatica che «Spagnolo» +
+  // «Italiano» non danno.* Obbligatoria: un corso senza i suoi nomi
+  // mostrerebbe scritte vuote, e questo e' il posto per dirlo.
+  //
+  // ⚠️ DUE RIGHE DAL 2026-10-13: `native` e' uscito, nel file condiviso con
+  // la stessa chiave (`nomiASchermo.native`). Dipende solo dalla lingua dello
+  // studente; `target` e `corso` dipendono dalla COPPIA. **E una riga
+  // `native` rimasta qui ferma tutto:** sarebbe una seconda copia che l'app
+  // non legge, cioe' un testo che si corregge qui e non cambia niente.
   const schermo = colonne(tabellaSotto(t, '## 9 — I NOMI A SCHERMO', true), 2, 'nomi a schermo');
   const nomiASchermo = {};
   schermo.forEach((r) => { nomiASchermo[nb(r[0])] = r[1].trim(); });
-  ['target', 'native', 'corso'].forEach((k) => {
+  ['target', 'corso'].forEach((k) => {
     if (!nomiASchermo[k]) throw new Error(ed.pref + 'struttura-corso: la sezione 9 non ha la riga `' + k + '`.');
   });
+  const estranee = Object.keys(nomiASchermo).filter((k) => k !== 'target' && k !== 'corso');
+  if (estranee.length) {
+    throw new Error(ed.pref + 'struttura-corso: la sezione 9 ha ' + estranee.map((k) => '`' + k + '`').join(', ') +
+      ', che qui non va: ammessi solo `target` e `corso`' +
+      (estranee.indexOf('native') !== -1 ? ' — `native` sta nel file condiviso, chiave `nomiASchermo`.' : '.'));
+  }
 
-  return { grades, gradeNames, moduleTypes, moduleLabels, sequences, episodes, ordine, speech, nomiASchermo };
+  return { grades, gradeNames, categorie, moduleLabels, sequences, episodes, ordine, speech, nomiASchermo };
 }
 
 // ── tabelle di personalizzazione ─────────────────────────────────────────
@@ -471,8 +517,10 @@ function infila(oggetto, percorso, valore) {
 // qui sotto. *Scriverli qui vorrebbe dire che un corso di spagnolo mostra
 // sedici pop-up intitolati «Your Story»: questo file e' condiviso, i nomi dei
 // moduli no.*
-function istruzioni(st) {
-  const t = fs.readFileSync(docC(st, 'istruzioni-moduli'), 'utf8');
+//
+// `testo` e' facoltativo, come in `episodio()`.
+function istruzioni(st, testo) {
+  const t = testo != null ? testo : fs.readFileSync(docC(st, 'istruzioni-moduli'), 'utf8');
   const out = {};
 
   // Il corpo del pop-up «Spiegazione». Sei colonne: # | kind | passi | corpo |
@@ -510,8 +558,12 @@ function istruzioni(st) {
         '<span class="note-box-label">' + spazi(etichettaConsiglio).trim() + '</span>' + spazi(r[2]) + '</div>';
     });
 
+  // I kind dei MODULI, per la sezione 7: quelli della sezione 2 tolte le
+  // schermate, che nella colonna «passi» portano `schermata` invece di un numero.
+  const kindDiModulo = [];
   colonne(tabellaSotto(t, '## 2 — LE SPIEGAZIONI', true), 6, 'spiegazioni').forEach((r) => {
     const kind = nb(r[1]);
+    if (nb(r[2]) !== 'schermata') kindDiModulo.push(kind);
     // `—` (U+2014) vuol dire «nessun consiglio», e lo dice il markdown in
     // testa alla sezione 2. Una cella vuota non sarebbe la stessa cosa: si
     // legge come una dimenticanza, e questa e' una scelta.
@@ -532,6 +584,37 @@ function istruzioni(st) {
 
   colonne(tabellaSotto(t, '## 6 — I TESTI CHE NON SONO DI UN MODULO', true), 3, 'testi condivisi')
     .forEach((r) => { infila(out, nb(r[0]) + '.' + nb(r[1]), spazi(r[2])); });
+
+  // ⚠️ LA SEZIONE 7 — I SOTTOTITOLI DEI MODULI, dal 2026-10-13. La riga sotto
+  // il nome di un modulo sulla mappa, accanto agli altri due testi dello
+  // stesso kind: `<kind>.subtitle`.
+  //
+  // ⚠️ INDICIZZATI PER `kind`, E QUESTA E' UNA DECISIONE, NON UNA CONSEGUENZA:
+  // deciso da chi guida il progetto il 2026-10-13. Flash Card ha UNA riga
+  // perche' ha un kind per due passi; Match e Speed Match ne hanno DUE
+  // ciascuno, con lo stesso testo, **perche' sono due kind**. *Non e' un
+  // giudizio sull'esercizio: e' l'indicizzazione.* Non si uniscono i kind per
+  // far sparire le righe doppie: sarebbe un'altra rinomina di id, con
+  // un'altra perdita di progressi salvati.
+  //
+  // E non si chiama `moduleLabels.<kind>.subtitle`: `moduleLabels` e' la
+  // chiave della struttura, indicizzata per ID — lo stesso nome su due indici
+  // diversi e' il difetto che questo passo toglie.
+  //
+  // Ci si ferma nei due versi (regola 49): un kind di modulo senza
+  // sottotitolo darebbe una riga di mappa incompleta che sembra completa; un
+  // kind che la sezione 2 non conosce e' un testo che nessuno leggera' mai.
+  const sottotitoli = colonne(tabellaSotto(t, '## 7 — I SOTTOTITOLI DEI MODULI', true), 2, 'sottotitoli');
+  const visti = sottotitoli.map((r) => nb(r[0]));
+  const mancanti = kindDiModulo.filter((k) => visti.indexOf(k) === -1);
+  const ignoti = visti.filter((k) => kindDiModulo.indexOf(k) === -1);
+  if (mancanti.length || ignoti.length) {
+    throw new Error(st + '-istruzioni-moduli, sezione 7: ' +
+      (mancanti.length ? 'senza sottotitolo ' + mancanti.map((k) => '`' + k + '`').join(', ') : '') +
+      (mancanti.length && ignoti.length ? ' · ' : '') +
+      (ignoti.length ? 'kind che la sezione 2 non conosce ' + ignoti.map((k) => '`' + k + '`').join(', ') : '') + '.');
+  }
+  sottotitoli.forEach((r) => { infila(out, nb(r[0]) + '.subtitle', spazi(r[1])); });
 
   return out;
 }
@@ -949,7 +1032,6 @@ function main() {
       speech: s.speech,
       grades: s.grades,
       gradeNames: s.gradeNames,
-      moduleTypes: s.moduleTypes,
       moduleLabels: s.moduleLabels,
       sequences: s.sequences,
       episodeSequences: {},

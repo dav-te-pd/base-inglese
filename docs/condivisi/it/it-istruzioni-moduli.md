@@ -1,4 +1,4 @@
-**Versione: 20261013a**
+**Versione: 20261013c**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -88,7 +88,7 @@ di testi che esistono già altrove.**
 | Consigli condivisi (sezione 4) | 2 — *non sono chiavi del JSON* | **2** — *idem* |
 | Altri testi di modulo (sezione 5) | 69 | **69** |
 | Testi condivisi (sezione 6) | 75 | ⭐ **77** — *+2 il 1/10* |
-| **Stringhe in tutto il JSON** | 208 | ⭐ **178** |
+| **Stringhe in tutto il JSON** | 208 | ⭐ **199** *(178 fino al 13/10)* |
 
 ⚠️ **E questo numero è DOCUMENTAZIONE, non un valore da far combaciare.** *Il test di andata e ritorno
 conta rigenerando dal markdown, senza nessun numero scritto dentro — così non va aggiustato a mano ogni
@@ -144,7 +144,7 @@ corretta:Hello» attaccato.* **Il segno si vede, lo spazio no.**
 > ⭐ **Un testo che non nomina il numero non può mentire su quel numero.**
 > *E non costa nessun meccanismo: costa **otto** frasi riscritte — le quattro spiegazioni e i loro quattro promemoria.*
 
-⚠️ **Il conto delle stringhe NON cambia: 178.** *Sono gli stessi otto testi: nessuna chiave nasce e nessuna muore.*
+⚠️ **Quel giorno il conto delle stringhe NON cambiò.** *Erano gli stessi otto testi: nessuna chiave nasceva e nessuna moriva.* 🔴 **Il 13 ottobre invece è cambiato: 178 → 199**, *perché sono arrivate 14 + 6 + 1 stringhe dalle due `struttura-corso.md`.*
 
 ---
 
@@ -368,9 +368,21 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 
 ## 6 — I TESTI CHE NON SONO DI UN MODULO
 
-*Le sei chiavi condivise. **Nessuna ha `howItWorks` o `helpReminder`, e non è una dimenticanza:** non
-hanno una schermata propria da spiegare — `dialogoShared` serve ai tre Dialogue che la schermata ce
+*Le **otto** chiavi condivise. **Nessuna ha `howItWorks` o `helpReminder`, e non è una dimenticanza:**
+non hanno una schermata propria da spiegare — `dialogoShared` serve ai tre Dialogue che la schermata ce
 l'hanno, `condivisi` a tutti.*
+
+🔴 **ERANO SEI FINO AL 2026-10-13.** *Sono arrivate ⭐ `categorie` — le sei etichette delle categorie dei
+moduli — e `nomiASchermo`, con la sola riga `native`.*
+
+⚠️ **`categorie` NON si chiama `moduleTypes`, che è il nome che aveva nel JSON della struttura:** *quel
+nome non dice cosa contiene (regola 18), e la struttura le chiamava già «categorie» con un campo
+`categoria` su ogni passo.* ⭐ **Un nome vecchio non si porta in un file nuovo.**
+
+⚠️ **E `nomiASchermo.native` tiene chiave e percorso di prima: cambia solo il file.** *`target` e `corso`
+restano nell'edizione, perché dipendono dalla coppia.* 🔴 **Conseguenza dichiarata: la lingua dello
+studente resta scritta anche dentro `corso` — «Spagnolo per **italiani**».** *Lingua e demonimo non sono
+la stessa parola e non si compongono.*
 
 ⚠️ **`aiuto.titleInstructions` ADESSO HA UN SECONDO LETTORE:** *è il titolo di tutti e sedici i
 promemoria della sezione 3.* **Cambiarla cambia diciassette schermate, non una.**
@@ -452,17 +464,74 @@ non tocca quella frase.*
 | `condivisi` | `riprovaAncora` | Riprova ancora |
 | `condivisi` | `vaiAvanti` | Vai avanti → |
 | `condivisi` | `iniziaEpisodio` | Inizia l'episodio |
-| `condivisi` | `personalizzaSottotitolo` | Personalizza la tua storia o lascia così. |
-| `condivisi` | `repeatAloudSottotitolo` | Ascolta ogni parola o frase, ripetila ad alta voce. |
+| `condivisi` | `personalizzaIntestazione` | Personalizza la tua storia o lascia così. |
+| `condivisi` | `repeatAloudIntestazione` | Ascolta ogni parola o frase, ripetila ad alta voce. |
 | `condivisi` | `rispostaCorretta` | Risposta corretta:␣ |
 | `condivisi` | `nascondiPronuncia` | Nascondi pronuncia |
 | `condivisi` | `salutoHome` | Ciao, {nome}! |
 | `condivisi` | `iniziaEpisodioNominato` | Inizia {episodio} |
 | `condivisi` | `tuoiEpisodi` | I tuoi episodi |
+| `categorie` | `inizio` | Inizio |
+| `categorie` | `studio` | Studio |
+| `categorie` | `dialogo` | Studia il dialogo |
+| `categorie` | `quiz` | Quiz |
+| `categorie` | `test` | Verifica finale |
+| `categorie` | `fine` | Fine |
+| `nomiASchermo` | `native` | Italiano |
 
 ---
 
-## 7 — UNA COSA ANCORA DA DECIDERE
+## 7 — I SOTTOTITOLI DEI MODULI
+
+*La riga sotto il nome di un modulo, sulla MAPPA dell'episodio. Colonne: **kind** → la stessa chiave
+della sezione 2 · **sottotitolo** → `<kind>.subtitle`, accanto a `howItWorks` e `helpReminder` dello
+stesso kind.*
+
+⚠️ **NON È `moduleLabels.<kind>.subtitle`, e la differenza è il punto di questo passo:** *`moduleLabels` è
+la chiave della `struttura-corso`, indicizzata per **id**.* 🔴 **Usare quel nome qui, dove l'indice è il
+`kind`, darebbe lo stesso nome a due indici diversi — che è esattamente il difetto che stiamo togliendo.**
+
+🔴 **ARRIVATI QUI IL 2026-10-13, DALLE DUE `struttura-corso.md`.** *Erano **identici** nelle due edizioni:
+«Abbina le traduzioni» non descrive il corso, descrive il modulo.* ⭐ **Quindi dipendono solo dalla lingua
+dello studente, e vivono accanto alle edizioni invece che dentro ognuna.**
+
+⚠️ **QUINDICI DIVENTANO QUATTORDICI, e non è un accorpamento di comodo:** *i due versi di Flash Card
+condividono `kind: 'flashcard'`.* 🔴 **E Match e Speed Match restano DUE righe ciascuno, pur avendo lo
+stesso testo: perché sono due kind.**
+
+> ⭐ **Non è un giudizio sull'esercizio, è l'indicizzazione.** *Una riga per `kind`: chi ha un kind ha una
+> riga, chi ne ha due ne ha due.*
+
+⚠️ **Non si uniscono i kind per far tornare il conto:** *sarebbe un'altra rinomina di id, con un'altra
+perdita di progressi salvati.*
+
+⭐ **E il NOME del modulo NON è qui:** *resta nella `struttura-corso` di ogni edizione, per id — perché
+cambia col verso e con la lingua insegnata.* **Il nome è l'immersione, il sottotitolo è il mestiere.**
+
+⚠️ **Le due schermate della sezione 2 — `listaEpisodi` e `mappaEpisodio` — NON hanno un sottotitolo**, *e
+non è una dimenticanza: non sono righe di una mappa.* **Il trascrittore si ferma se un kind di modulo non
+ha il suo sottotitolo, o se qui compare un kind che la sezione 2 non conosce.**
+
+| Kind | Sottotitolo |
+|---|---|
+| `personalizzazione` | Personalizza la tua storia |
+| `meetTheStory` | Ascolta la storia |
+| `repeatAloud` | Ripeti ad alta voce |
+| `matchTargetNative` | Abbina le traduzioni |
+| `matchNativeTarget` | Abbina le traduzioni |
+| `flashcard` | Ripassa quello che hai imparato |
+| `voicePractice` | Allena la pronuncia |
+| `whyWeSayIt` | Perché si dice così |
+| `dialogoAscoltaRipeti` | Ascolta e ripeti |
+| `dialogoRipetiATempo` | Ripeti a tempo |
+| `dialogoContinuo` | Il dialogo vero |
+| `speedMatchTargetNative` | Traduci a tempo |
+| `speedMatchNativeTarget` | Traduci a tempo |
+| `voiceCoach` | Metti alla prova la pronuncia |
+
+---
+
+## 8 — UNA COSA ANCORA DA DECIDERE
 
 **«Non mostrarmi più questa schermata» si può toccare dal PRIMO passaggio.** *Oggi si può zittire la
 spiegazione senza averla letta — ed è il modo in cui un utente vero si è bloccato.*
