@@ -35,8 +35,8 @@
 # e' l'unica persona a cui serve.*
 # ##########################################################################
 #
-# Ultimo aggiornamento: 2026-10-12
-# Totale: 2037
+# Ultimo aggiornamento: 2026-10-13
+# Totale: 2053
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -82,6 +82,7 @@ test_episodio2.js 9
 test_errore_caricamento.js 18
 test_fatti_app.js 82
 test_hidden_guard.js 5
+test_id_neutri.js 16
 test_identita_estratta.js 14
 test_interruttore_episodio.js 24
 test_intestazioni.js 22
