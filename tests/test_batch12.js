@@ -229,12 +229,12 @@ async function run() {
     // la posizione cambia a ogni riordino, l'identita' del passo no.
     const row = id => rows[ids.indexOf(id)] || {};
     log('[Job7] Match Practice si chiama cosi\' in entrambe le direzioni',
-      row('matchEngIta').title.indexOf('Match Practice') === 0 && row('matchItaEng').title.indexOf('Match Practice') === 0);
+      row('matchTargetNative').title.indexOf('Match Practice') === 0 && row('matchNativeTarget').title.indexOf('Match Practice') === 0);
     log('[Job7] Voice Practice e Voice Check hanno i loro nomi',
       row('voicePractice').title === etichette.voicePractice.name && row('voiceCoach').title === etichette.voiceCoach.name);
     log('[Job7] Dialogue: Real Dialogue si chiama cosi\' (era "Full Dialogue")', row('dialogoContinuo').title === etichette.dialogoContinuo.name);
     log('[Job7] Speed Match si chiama Speed Match in entrambe le direzioni',
-      row('speedMatchEngIta').title.indexOf('Speed Match') === 0 && row('speedMatchItaEng').title.indexOf('Speed Match') === 0);
+      row('speedMatchTargetNative').title.indexOf('Speed Match') === 0 && row('speedMatchNativeTarget').title.indexOf('Speed Match') === 0);
     // I due moduli nati dal componente della storia: nomi nuovi, stessa
     // categoria Studio.
     log('[Job7] Meet the Story e Why We Say It hanno i loro nomi',
@@ -256,7 +256,7 @@ async function run() {
     // gradi diversi, e le due righe devono dirlo.
     log('[Job7] L\'etichetta porta il nome del grado accanto alla categoria',
       row('repeatAloud').type === 'Studio · Parole' && row('repeatAloud-2').type === 'Studio · Espressioni');
-    log('[Job7] Un quiz sulle frasi lo dice', row('speedMatchEngIta').type === 'Quiz · Frasi');
+    log('[Job7] Un quiz sulle frasi lo dice', row('speedMatchTargetNative').type === 'Quiz · Frasi');
     log('[Job7] No JS errors', errors.length === 0);
     if (errors.length) console.log(errors);
     await page.close();
@@ -489,9 +489,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('flashcardAEngIta');
+    const idx = ALL_MODULES.indexOf('flashcardATargetNative');
     await bootAsUser(page, 'T12FC', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'flashcardAEngIta');
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(300);
     await page.click('#fc-card');
     await page.waitForTimeout(150);

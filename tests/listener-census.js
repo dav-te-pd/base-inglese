@@ -129,7 +129,7 @@ function listenerDi(famiglia) {
 // famiglia non attacchi due volte il suo blocco di listener. L'elenco su cui
 // girava era **scritto a mano** dentro il test:
 //
-//     flashcard: ['flashcardAEngIta', 'flashcardAItaEng']
+//     flashcard: ['flashcardATargetNative', 'flashcardANativeTarget']
 //
 // e quei due NON sono due `kind`: sono due **PASSI** che condividono l'unico
 // kind `flashcard`. Il test apriva due descrittori dello stesso kind e scriveva
@@ -143,7 +143,7 @@ function listenerDi(famiglia) {
 //
 // ⚠️ LA COINCIDENZA CHE L'HA RESO INVISIBILE, e che tornera' a tendere la
 // trappola: per TREDICI descrittori su quindici il nome del passo e il nome del
-// kind sono **la stessa stringa** (`matchEngIta` e' sia l'uno sia l'altro). Solo
+// kind sono **la stessa stringa** (`matchTargetNative` e' sia l'uno sia l'altro). Solo
 // i due Flash Card li separano. Un elenco scritto a mano sembra giusto tredici
 // volte su quindici — e la quattordicesima non somiglia a un errore.
 //

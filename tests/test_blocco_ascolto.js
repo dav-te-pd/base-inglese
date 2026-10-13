@@ -239,7 +239,7 @@ async function apriPasso(page, passo) {
   // ---------------------------------------------------------------
   // ③ IL MINI, che e' l'unica forma diversa e resta diversa apposta
   // ---------------------------------------------------------------
-  await apriPasso(page, 'matchItaEng');
+  await apriPasso(page, 'matchNativeTarget');
   await page.click('#qm-start-btn').catch(() => {});
   // Niente attesa: misurato campionando ogni 5 ms, le quattro righe del Mini
   // ci sono gia' al primo campione dopo il click — il gestore dello start

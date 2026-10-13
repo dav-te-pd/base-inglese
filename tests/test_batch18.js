@@ -16,7 +16,7 @@ const mockInitAsync = mockBrowser({ fineVoceMs: 500, ritardoCancelMs: 15 });
 const bootAsUser = (page, userName, completedModules) =>
   bootUtente(page, { utente: userName, completati: completedModules, introChiuse: INTRO_DI_TUTTI });
 
-const ALL_BEFORE_QM = stepsBefore('matchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchTargetNative');
 const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
 
 async function run() {
@@ -131,8 +131,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInitAsync);
-    await bootAsUser(page, 'T18Job1b', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    await bootAsUser(page, 'T18Job1b', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(200);
     const listenBtn = await page.$('#fc-card [data-say]');
     if (listenBtn) { await listenBtn.click({ force: true }); }
@@ -180,8 +180,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInitAsync);
-    await bootAsUser(page, 'T18Job1d', ALL_BEFORE_QM.concat(['matchEngIta']));
-    await openModule(page, 'matchItaEng');
+    await bootAsUser(page, 'T18Job1d', ALL_BEFORE_QM.concat(['matchTargetNative']));
+    await openModule(page, 'matchNativeTarget');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const miniListenBtns = await page.$$('#qm-options [data-qm-listen-index]');

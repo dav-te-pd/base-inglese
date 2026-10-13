@@ -23,9 +23,9 @@ async function run() {
 
   const checks = [
     ['repeatAloud', '#repeat-aloud-intro-title', 'Repeat Aloud'],
-    ['matchEngIta', '#qm-start-title', 'Match Practice en→it'],
+    ['matchTargetNative', '#qm-start-title', 'Match Practice en→it'],
     ['dialogoAscoltaRipeti', '#dg-start-title', 'Dialogue: Listen & Repeat'],
-    ['speedMatchEngIta', '#sr-start-title', 'Speed Match en→it'],
+    ['speedMatchTargetNative', '#sr-start-title', 'Speed Match en→it'],
     // ⚠️ QUESTA RIGA DICEVA `'Flash Card'`, CON ACCANTO IL SUO STESSO DIFETTO
     // SCRITTO: *«known gap: shared JSON kind -> generic title, no direction»*.
     // **Il passo C del 2026-09-28 l'ha chiuso, e questa riga è andata rossa: è
@@ -33,7 +33,7 @@ async function run() {
     // *Il titolo non viene più dal file condiviso — dove `flashcard` è UN kind
     // per DUE passi, quindi il verso non poteva esserci — ma dal nome del
     // PASSO (`titoloSpiegazione`, `app/ui-condivisa.js`).*
-    ['flashcardAEngIta', '#fc-intro-title', 'Flash Card en→it']
+    ['flashcardATargetNative', '#fc-intro-title', 'Flash Card en→it']
   ];
 
   for (const [moduleId, selector, expected] of checks) {

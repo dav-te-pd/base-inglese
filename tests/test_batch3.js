@@ -21,13 +21,13 @@ const mockInit = mockBrowser({ riconoscimento: 'auto' });
 
 
 const bootAsUser = (page, userName, completedModules, extraStorage) =>
-  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchEngIta', 'speedMatchEngIta'], storage: extraStorage });
+  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchTargetNative', 'speedMatchTargetNative'], storage: extraStorage });
 
 async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
+  const ALL_BEFORE_SR = stepsBefore('speedMatchTargetNative');
 
   // ============ 1: config panel via ?config query param ============
   {
@@ -108,7 +108,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3Types2', ALL_BEFORE_SR);
     const categorie = await page.evaluate(() => window.APP_CONFIG.moduleTypes);
-    const srTypeLabel = await page.$eval('[data-module="speedMatchEngIta"] .module-row-type', el => el.textContent);
+    const srTypeLabel = await page.$eval('[data-module="speedMatchTargetNative"] .module-row-type', el => el.textContent);
     log('[3] Speed Match mostra la categoria dichiarata in CONFIG (' + categorie.quiz.label + ')', srTypeLabel.indexOf(categorie.quiz.label) === 0);
     // All three Dialogo modules now share "Studia il dialogo" (six-label
     // job) — none of the 3 Dialogo modules is actually evaluated by the
@@ -131,11 +131,11 @@ async function run() {
     const d = ISTRUZIONI;
     const flags = {
       repeatAloudWrite: d.repeatAloud.howItWorks.body.indexOf('carta e penna') !== -1,
-      speedMatchNoWrite: d.speedMatchEngIta.howItWorks.body.indexOf('non serve scrivere') !== -1,
+      speedMatchNoWrite: d.speedMatchTargetNative.howItWorks.body.indexOf('non serve scrivere') !== -1,
       voiceCoachNoWrite: d.voiceCoach.howItWorks.body.indexOf('non serve scrivere') !== -1,
       dialogoContinuoNoWrite: d.dialogoContinuo.howItWorks.body.indexOf('non serve scrivere') !== -1,
       dialogoAscoltaWrite: d.dialogoAscoltaRipeti.howItWorks.body.indexOf('carta e penna') !== -1,
-      speedMatchNoCartaPenna: d.speedMatchEngIta.howItWorks.body.indexOf('carta e penna') === -1
+      speedMatchNoCartaPenna: d.speedMatchTargetNative.howItWorks.body.indexOf('carta e penna') === -1
     };
     log('[4b] repeatAloud gets the "carta e penna" tip', flags.repeatAloudWrite);
     log('[4b] dialogoAscoltaRipeti gets the "carta e penna" tip', flags.dialogoAscoltaWrite);
@@ -157,7 +157,7 @@ async function run() {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T4eRetry', ALL_BEFORE_SR);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     // Approdo misurato: l'innerHTML della schermata di ripasso c'e' gia' prima
     // dell'attivazione della vista e non cambia piu' — l'attesa oggi non
     // guarda niente. Convertita come assicurazione: openModuleFromMap e'

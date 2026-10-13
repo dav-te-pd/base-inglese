@@ -315,8 +315,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMDontKnowTester', stepsBefore('matchEngIta'));
-    await openModule(page, 'matchEngIta');
+    await bootAsUser(page, 'QMDontKnowTester', stepsBefore('matchTargetNative'));
+    await openModule(page, 'matchTargetNative');
     await page.click('#qm-start-btn').catch(() => {});
     await page.waitForTimeout(200); // ATTESA-LEGITTIMA: "Non lo so" nasce abilitato su una domanda nuova: lo stato era GIA' vero prima dell'attesa: un'attesa tornerebbe al primo istante
     const beforeDisabled = await page.evaluate(() => document.getElementById('qm-dontknow-btn').disabled);
@@ -346,8 +346,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'QMHeaderTester', stepsBefore('matchItaEng'));
-    await openModule(page, 'matchItaEng');
+    await bootAsUser(page, 'QMHeaderTester', stepsBefore('matchNativeTarget'));
+    await openModule(page, 'matchNativeTarget');
     await page.click('#qm-start-btn').catch(() => {});
     // Una sola attesa per quattro asserzioni: si aspetta che la barra del quiz sia a
     // schermo, poi si leggono i quattro stati in una chiamata sola (regola 19).
@@ -379,13 +379,13 @@ async function run() {
       // Speed up the per-question timer + 3-2-1 so the test stays fast.
       window.__preConfigOverride = true;
     });
-    await bootAsUser(page, 'SRDontKnowTester', stepsBefore('speedMatchEngIta'));
+    await bootAsUser(page, 'SRDontKnowTester', stepsBefore('speedMatchTargetNative'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 30; // long enough that the timeout never fires mid-test
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300); // 3-2-1 countdown
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -434,13 +434,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRHeaderTester', stepsBefore('speedMatchItaEng'));
+    await bootAsUser(page, 'SRHeaderTester', stepsBefore('speedMatchNativeTarget'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchItaEng');
+    await openModule(page, 'speedMatchNativeTarget');
     // Buttons should be visible+enabled on the start screen (before the countdown/timer ever runs).
     const startState = await page.evaluate(() => {
       var w = document.getElementById('speed-match-watch-btn');
@@ -492,13 +492,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRCorrectNoFlickerTester', stepsBefore('speedMatchEngIta'));
+    await bootAsUser(page, 'SRCorrectNoFlickerTester', stepsBefore('speedMatchTargetNative'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -535,13 +535,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRDontKnowUnlocksTester', stepsBefore('speedMatchItaEng'));
+    await bootAsUser(page, 'SRDontKnowUnlocksTester', stepsBefore('speedMatchNativeTarget'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchItaEng');
+    await openModule(page, 'speedMatchNativeTarget');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -561,13 +561,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRTimeoutUnlocksTester', stepsBefore('speedMatchEngIta'));
+    await bootAsUser(page, 'SRTimeoutUnlocksTester', stepsBefore('speedMatchTargetNative'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 0.2; // let it expire quickly
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -584,13 +584,13 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRLeaveMidTimerTester', stepsBefore('speedMatchEngIta'));
+    await bootAsUser(page, 'SRLeaveMidTimerTester', stepsBefore('speedMatchTargetNative'));
     await page.evaluate(() => {
       window.APP_CONFIG.speedMatch.timeLimitSeconds = 30;
       window.APP_CONFIG.speedMatch.countdownSeconds = 1;
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.click('#sr-ready-btn').catch(() => {});
     await page.waitForTimeout(300);
     await page.waitForFunction(() => !document.getElementById('sr-quiz-screen').hidden, { timeout: 3000 });
@@ -600,7 +600,7 @@ async function run() {
     await page.click('#speed-match-back-map');
     await page.waitForTimeout(150); // ATTESA-LEGITTIMA: NON e' una guardia — fra questa attesa e l'asserzione c'e' la chiamata a un AIUTANTE LOCALE che aspetta per conto suo (openModule), e il censimento non lo conosce, quindi conta come guardia un'attesa che non lo e'. Misurato l'11 settembre: casi cosi' sono QUATTRO in tutta la suite, quindi si marcano dove capitano invece di allargare la regola dello strumento
     // Re-open Speed Match fresh: on the start screen the header must NOT be stuck disabled.
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     const freshState = await page.evaluate(() => document.getElementById('speed-match-watch-btn').disabled);
     log('[SR cleanup] Re-opening after leaving mid-timer: Spiegazione is NOT stuck disabled (stopAllModuleActivity cleanup)', freshState === false);
     log('[SR cleanup] No JS errors', errors.length === 0);

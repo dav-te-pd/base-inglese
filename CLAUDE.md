@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261012b**
+**Versione: 20261013a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -152,7 +152,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
      **Un'eccezione non si dichiara come "narrativo-standard meno Flash Card": chi fa eccezione scrive la sua sequenza per intero.** Una sottrazione si legge solo tenendo aperti due documenti, e quando la base cambia le eccezioni cambiano senza che nessuno le abbia toccate.
 
-     Ne segue che **lo stesso modulo può comparire più volte con gradi diversi** (Flash Card sul grado A e sul grado B) riusando un solo descrittore. Gli id restano distinti da soli: `moduleStepId()` lascia alla prima apparizione l'id nudo del modulo — così i progressi già salvati restano validi — e dà alle successive un id proprio (`flashcardAEngIta-2`), invece di sovrascrivere in silenzio i progressi della prima.
+     Ne segue che **lo stesso modulo può comparire più volte con gradi diversi** (Flash Card sul grado A e sul grado B) riusando un solo descrittore. Gli id restano distinti da soli: `moduleStepId()` lascia alla prima apparizione l'id nudo del modulo — così i progressi già salvati restano validi — e dà alle successive un id proprio (`flashcardATargetNative-2`), invece di sovrascrivere in silenzio i progressi della prima.
 
      Il contenuto si prende sempre da `episodeGrade(data, grado)`, mai raggiungendo a mano una chiave del file.
 
@@ -216,7 +216,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     | `howItWorks` — il pop-up «Spiegazione» | **il nome del PASSO**, `CONFIG.moduleLabels[<id del passo>].name` — oppure, per una schermata che in nessuna sequenza sta, il suo `pageTitle` in questo file |
     | `helpReminder` — il pannello Help | **`aiuto.titleInstructions`**, cioè la voce del menu che apre quel pannello: sono lo stesso pannello |
 
-    ⚠️ **L'id è quello del PASSO e non del `kind`, e la differenza si vede su uno solo: `flashcard` ha un kind e DUE passi** (`flashcardAEngIta`, `flashcardAItaEng`). *Col kind, il pop-up direbbe «Flash Card» in tutti e due e il verso sparirebbe — mentre Match e Speed Match, che hanno due kind, lo dicono già.* Il pezzo si chiama **`titoloSpiegazione`** e sta in `app/ui-condivisa.js`.
+    ⚠️ **L'id è quello del PASSO e non del `kind`, e la differenza si vede su uno solo: `flashcard` ha un kind e DUE passi** (`flashcardATargetNative`, `flashcardANativeTarget`). *Col kind, il pop-up direbbe «Flash Card» in tutti e due e il verso sparirebbe — mentre Match e Speed Match, che hanno due kind, lo dicono già.* Il pezzo si chiama **`titoloSpiegazione`** e sta in `app/ui-condivisa.js`.
 
     **Non tutte le chiavi sono moduli, ed è voluto.** `mappaEpisodio` è la mappa dell'episodio: modulo non è, ma ha una schermata sua e quindi i suoi due testi come tutti. `dialogoShared` è il blocco condiviso dai tre Dialogue, e **non ha né `howItWorks` né `helpReminder`**: non è un modulo, non ha una schermata propria da spiegare, e i testi che porta servono ai tre che la schermata ce l'hanno. Nessuna delle due è una dimenticanza da sistemare. Sono condivisi tra gli episodi della stessa edizione — non sono contenuto specifico di un episodio, quindi non vivono nel file episodio della regola 4 — ma non fra edizioni: sono testo che lo studente legge nella propria lingua. Un nuovo modulo aggiunge la propria chiave a questo file, non inventa un altro posto dove tenere questi testi.
 

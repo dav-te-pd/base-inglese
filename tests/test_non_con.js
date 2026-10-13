@@ -137,13 +137,13 @@ async function run() {
     const viste = function (voce) {
       const s = {};
       for (let i = 0; i < 300; i++) {
-        window.BI.buildMultipleChoiceOptions(voce, 'en-it', vocab).forEach(function (o) { s[o.text] = true; });
+        window.BI.buildMultipleChoiceOptions(voce, 'target-native', vocab).forEach(function (o) { s[o.text] = true; });
       }
       return s;
     };
     const con = viste(vocab[0]);
     const senza = viste({ id: 'a', target: 'T-a', native: 'N-a' });
-    return { con: Object.keys(con).sort(), senza: Object.keys(senza).sort(), opzioni: window.BI.buildMultipleChoiceOptions(vocab[0], 'en-it', vocab).length };
+    return { con: Object.keys(con).sort(), senza: Object.keys(senza).sort(), opzioni: window.BI.buildMultipleChoiceOptions(vocab[0], 'target-native', vocab).length };
   });
   log('[D] Su 300 estrazioni la voce con `nonCon` non vede MAI le sue escluse',
     esito.con.indexOf('N-b') === -1 && esito.con.indexOf('N-c') === -1, esito.con.join(','));

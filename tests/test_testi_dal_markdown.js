@@ -214,8 +214,8 @@ function quanteStringhe(o) {
       !!(testi.aiuto && testi.aiuto.titleInstructions), JSON.stringify(testi.aiuto && testi.aiuto.titleInstructions));
 
     // ⚠️ IL CASO PIU' DIVERSO E' NOMINATO, NON CERCATO A CASO (regola 42):
-    // **`flashcard` e' l'unico kind che ha DUE passi** — `flashcardAEngIta` e
-    // `flashcardAItaEng` — quindi l'unico su cui `moduleLabels[kind]` non
+    // **`flashcard` e' l'unico kind che ha DUE passi** — `flashcardATargetNative` e
+    // `flashcardANativeTarget` — quindi l'unico su cui `moduleLabels[kind]` non
     // esiste mentre i suoi passi esistono. *Un test che avesse guidato
     // `repeatAloud` sarebbe stato verde e avrebbe lasciato passare un pop-up
     // senza titolo.* E le due schermate sono il caso opposto: nessun passo,
@@ -227,7 +227,7 @@ function quanteStringhe(o) {
       // passo e' quello che `moduleLabels` conosce.
       const passiDiKind = {};
       Object.keys(labels).forEach(function (id) {
-        const kind = id.replace(/^flashcardA(EngIta|ItaEng)$/, 'flashcard');
+        const kind = id.replace(/^flashcardA(TargetNative|NativeTarget)$/, 'flashcard');
         (passiDiKind[kind] = passiDiKind[kind] || []).push(id);
       });
       const senzaNome = Object.keys(testi).filter(function (kind) {

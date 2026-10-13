@@ -114,9 +114,9 @@ async function nuovaPagina(browser, utente, completati) {
 }
 
 const PASSO_DI = {
-  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchEngIta',
-  speedMatch: 'speedMatchEngIta', dialogo: 'dialogoAscoltaRipeti',
-  storyCards: 'meetTheStory', flashcard: 'flashcardAEngIta', repeatAloud: 'repeatAloud'
+  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchTargetNative',
+  speedMatch: 'speedMatchTargetNative', dialogo: 'dialogoAscoltaRipeti',
+  storyCards: 'meetTheStory', flashcard: 'flashcardATargetNative', repeatAloud: 'repeatAloud'
 };
 
 async function run() {
@@ -225,8 +225,8 @@ async function run() {
   // riga strutturale qui sotto, che verifica che nessuno si sia tenuto la
   // propria copia della vecchia istruzione.
   {
-    const page = await nuovaPagina(browser, 'UFinale', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    const page = await nuovaPagina(browser, 'UFinale', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     // ⚠️ `nuovaPagina` spegne l'introduzione solo per la mappa e per
     // Personalizza, quindi Flash Card si apre sulla SUA introduzione e la
     // carta resta nascosta. Si chiude qui invece che allargare `nuovaPagina`:
@@ -279,7 +279,7 @@ async function run() {
       return {
         magazzino: Object.keys(m).length,
         sospesa: Object.keys(window.BI.masteryInSospeso()).length,
-        completato: (p.completed || []).indexOf('flashcardAEngIta') !== -1
+        completato: (p.completed || []).indexOf('flashcardATargetNative') !== -1
       };
     });
     log('[C] L\'unica uscita rimasta SCRIVE la mastery nel magazzino',

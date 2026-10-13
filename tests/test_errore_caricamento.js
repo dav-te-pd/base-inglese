@@ -35,7 +35,7 @@ const path = require('path');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, globDati, fileCondiviso } = require('./test-env');
 const { stepsBefore } = require('./module-order');
 
-const PASSO = 'matchEngIta';
+const PASSO = 'matchTargetNative';
 const PRIMA = stepsBefore(PASSO);
 const FILE_EPISODIO = 'gate.json'; // il prefisso dell'edizione lo mette globDati/fileEdizione (test-env.js)
 
@@ -84,7 +84,7 @@ async function finoAllaMappa(page, utente) {
   await page.evaluate(function (arg) {
     localStorage.setItem(BI.moduleProgressKey('gate', arg.utente),
       JSON.stringify({ completed: arg.prima }));
-    ['mappaEpisodio', 'personalizzazione', 'matchEngIta'].forEach(function (k) {
+    ['mappaEpisodio', 'personalizzazione', 'matchTargetNative'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + arg.utente, '1');
     });
   }, { utente: utente, prima: PRIMA });

@@ -20,9 +20,9 @@ const { openModule } = require('../map-driver');
 const { stepsBefore } = require('../module-order');
 
 const PASSO_DI = {
-  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchEngIta',
-  speedMatch: 'speedMatchEngIta', dialogo: 'dialogoAscoltaRipeti',
-  storyCards: 'meetTheStory', flashcard: 'flashcardAEngIta', repeatAloud: 'repeatAloud'
+  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchTargetNative',
+  speedMatch: 'speedMatchTargetNative', dialogo: 'dialogoAscoltaRipeti',
+  storyCards: 'meetTheStory', flashcard: 'flashcardATargetNative', repeatAloud: 'repeatAloud'
 };
 
 const contatore = () => {

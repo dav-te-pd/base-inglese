@@ -66,7 +66,7 @@
   var showLoadError = BI.showLoadError;
 
   /* ============================================================
-     MODULES: SPEED MATCH ENG-ITA / SPEED MATCH ITA-ENG
+     MODULES: SPEED MATCH TARGET-NATIVE / SPEED MATCH NATIVE-TARGET
      Two separate map modules sharing one view and this one JS section —
      module.kind fixes the direction and the istruzioni-moduli.json entry
      for the whole session, everything else is identical. Flow: a start
@@ -83,10 +83,10 @@
      on the start/summary screens, Guarda alone hiding again on summary
      (CLAUDE.md rule 10); no Indietro.
      ============================================================ */
-  var SR_DIRECTION_BY_KIND = { speedMatchEngIta: 'en-it', speedMatchItaEng: 'it-en' };
+  var SR_DIRECTION_BY_KIND = { speedMatchTargetNative: 'target-native', speedMatchNativeTarget: 'native-target' };
 
   var srModule = null;
-  var srDirection = 'en-it'; // fixed for the whole module session
+  var srDirection = 'target-native'; // fixed for the whole module session
   var srVocab = [];
   var srQueue = [];
   var srRetryQueue = [];
@@ -234,7 +234,7 @@
     document.getElementById('sr-dontknow-btn').disabled = false;
     document.getElementById('sr-counter').textContent = srPassIndex + ' / ' + srPassTotal;
     document.getElementById('sr-ripasso-badge').hidden = !srInRetryPass;
-    var promptText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'target' : 'native');
+    var promptText = BI.itemText(srCurrentItem, srDirection === 'target-native' ? 'target' : 'native');
     document.getElementById('sr-prompt').textContent = promptText;
     srCurrentOptions = srBuildOptions(srCurrentItem);
     document.getElementById('sr-options').innerHTML = srCurrentOptions.map(function (opt, i) {
@@ -286,7 +286,7 @@
   // answer and wait for an explicit "Avanti" instead of auto-advancing,
   // so the user reads and memorizes it (CLAUDE.md-style deliberate pacing).
   function srShowReveal() {
-    var correctText = BI.itemText(srCurrentItem, srDirection === 'en-it' ? 'native' : 'target');
+    var correctText = BI.itemText(srCurrentItem, srDirection === 'target-native' ? 'native' : 'target');
     document.querySelectorAll('#sr-options .sr-option').forEach(function (b, i) {
       if (srCurrentOptions[i] && srCurrentOptions[i].correct) b.classList.add('is-correct');
     });
@@ -480,8 +480,8 @@
     });
   }
   // Speed Match, nelle due direzioni.
-  BI.registraModulo('speedMatchEngIta', openSpeedMatch);
-  BI.registraModulo('speedMatchItaEng', openSpeedMatch);
+  BI.registraModulo('speedMatchTargetNative', openSpeedMatch);
+  BI.registraModulo('speedMatchNativeTarget', openSpeedMatch);
 
   // ---- I LISTENER DI SPEED MATCH NON STANNO PIU' QUI ----
   //

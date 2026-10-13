@@ -16,7 +16,7 @@ const bootAsUser = (page, userName, completedModules) =>
 
 const dismissAttemptPopupIfOpen = chiudiPopupTentativiSeAperto;
 
-const ALL_BEFORE_QM = stepsBefore('matchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchTargetNative');
 const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
 const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
@@ -232,7 +232,7 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job3', stepsBefore('flashcardAEngIta'));
+    await bootAsUser(page, 'T16Job3', stepsBefore('flashcardATargetNative'));
     // ⚠️ SPOSTATA QUI, PRIMA DELL'APERTURA DEL MODULO, e il posto e' la
     // correzione. Stava dopo `openModule` + 200 ms, come se verificasse
     // qualcosa DENTRO Flash Card: non e' cosi'. `fc-level-label` non esiste in
@@ -243,14 +243,14 @@ async function run() {
     // provava, e si portava dietro un'attesa che non guardava niente.
     const noLevelLabel = await page.evaluate(() => !document.getElementById('fc-level-label'));
     log('[Job3] Nessun elemento con id "fc-level-label" esiste nel documento (il testo di categoria dentro i moduli e\' stato tolto ovunque)', noLevelLabel);
-    await openModule(page, 'flashcardAEngIta');
+    await openModule(page, 'flashcardATargetNative');
     await attendiClasse(page, '#view-flashcard', 'is-active');
     const badgeHiddenAtStart = await page.$eval('#fc-ripasso-badge', el => el.hidden).catch(() => null);
     log('[Job3] "Ripasso" badge exists and starts hidden (main pass)', badgeHiddenAtStart === true);
     // Force every card wrong to trigger a retry pass. Il limite viene dal
     // mazzo vero: scritto a mano era tarato su 15 carte e non bastava piu'
     // ad arrivare al ripasso con 21.
-    const carteRipasso = loadGrade(gradeOf('flashcardAEngIta')).length;
+    const carteRipasso = loadGrade(gradeOf('flashcardATargetNative')).length;
     let reachedRetry = false;
     for (let i = 0; i < carteRipasso * 3 + 10; i++) {
       const summaryVisible = await page.isVisible('#fc-summary-screen').catch(() => false);
@@ -319,10 +319,10 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job5', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    await bootAsUser(page, 'T16Job5', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(200);
-    // Start the front-of-card audio (en-it direction -> front is english, has a listen button).
+    // Start the front-of-card audio (target-native direction -> front is english, has a listen button).
     const listenBtn = await page.$('#fc-front-audio .listen-block-btn');
     if (listenBtn) { await listenBtn.click(); }
     await attendiCheParla(page);
@@ -374,8 +374,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T16Job7', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    await bootAsUser(page, 'T16Job7', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     await attendiClasse(page, '#view-flashcard', 'is-active'); // il gesto e' l'apertura del modulo, non la geometria che l'asserzione misura
     const rects = await page.evaluate(() => {
       var row = document.querySelector('#view-flashcard .header-actions-row');
@@ -423,7 +423,7 @@ async function run() {
     });
     await page.click('#voice-coach-back-map');
     await attendiClasse(page, '#view-map', 'is-active');
-    await openModule(page, 'flashcardAEngIta');
+    await openModule(page, 'flashcardATargetNative');
     await attendiClasse(page, '#view-flashcard', 'is-active');
     const fcStyle = await page.evaluate(() => {
       var el = document.getElementById('fc-counter');

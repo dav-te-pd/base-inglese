@@ -24,8 +24,8 @@
 //     Adesso e' `INTRO_DI_TUTTI`.
 //
 // ⚠️ `INTRO_DI_TUTTI` NON E' `stepIds()`, E NON E' UNA SVISTA. `stepIds()` da'
-// i **22 PASSI** di una sequenza, con i loro suffissi (`matchEngIta-2`,
-// `flashcardAEngIta`); la chiave dell'intro e' invece per **KIND**, e i kind
+// i **22 PASSI** di una sequenza, con i loro suffissi (`matchTargetNative-2`,
+// `flashcardATargetNative`); la chiave dell'intro e' invece per **KIND**, e i kind
 // sono 15. *Misurato: nella lista e non in `stepIds()` ci sono `mappaEpisodio`
 // e `flashcard`; in `stepIds()` e non nella lista ce ne sono nove.* Sono due
 // elenchi di cose diverse, e farne uno solo sarebbe un errore travestito da
@@ -60,8 +60,8 @@ const EPISODIO_PREDEFINITO = 'gate';
 // lista, o `[]`.
 const INTRO_DI_TUTTI = [
   'mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory',
-  'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng',
-  'speedMatchEngIta', 'speedMatchItaEng', 'flashcard',
+  'whyWeSayIt', 'voiceCoach', 'voicePractice', 'matchTargetNative', 'matchNativeTarget',
+  'speedMatchTargetNative', 'speedMatchNativeTarget', 'flashcard',
   'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'
 ];
 

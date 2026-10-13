@@ -24,7 +24,7 @@
 // trova qui la riga che lo spiega.
 //
 // IL CASO PIÙ DIVERSO (regola 42): **`flashcard`, l'unico `kind` condiviso da
-// DUE descrittori** (`flashcardAEngIta` e `flashcardAItaEng`). Non è il modulo
+// DUE descrittori** (`flashcardATargetNative` e `flashcardANativeTarget`). Non è il modulo
 // complicato: è quello che rompe l'assunzione «un descrittore, una chiave». E
 // collide con una guardia scritta due passi prima — `BI.registraModulo` alza
 // un'eccezione sui duplicati — quindi registrarlo per descrittore farebbe
@@ -276,7 +276,7 @@ async function run() {
     // rosso che parla del test invece che dell'app.
     const casi = [
       { id: 'personalizzazione', vista: 'view-customize' },
-      { id: 'flashcardAEngIta', vista: 'view-flashcard' }
+      { id: 'flashcardATargetNative', vista: 'view-flashcard' }
     ];
     for (const caso of casi) {
       const page = await browser.newPage();

@@ -529,7 +529,7 @@ sbagliato: c'è un caso, di solito uno solo, in cui lo era da sempre.
 **I due casi, misurati entrambi, a un giorno di distanza.**
 
 **⑥-zero, 2026-09-16 — `COPPIE` e la coppia passo/kind.** L'elenco di `[E]`
-nominava `flashcardAEngIta` e `flashcardAItaEng` come «i due kind» di Flash
+nominava `flashcardATargetNative` e `flashcardANativeTarget` come «i due kind» di Flash
 Card. Sono due **passi** che condividono **un** kind. Il difetto era invisibile
 perché **per tredici descrittori su quindici il nome del passo e il nome del
 kind sono la stessa stringa**: due nomi diversi per la stessa cosa tredici

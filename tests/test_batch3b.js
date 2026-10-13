@@ -22,9 +22,9 @@ const mockInit = mockBrowser({ riconoscimento: 'auto' });
 
 
 const bootAsUser = (page, userName, completedModules, extraStorage) =>
-  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'speedMatchEngIta', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo'], storage: extraStorage });
+  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'speedMatchTargetNative', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo'], storage: extraStorage });
 
-const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
+const ALL_BEFORE_SR = stepsBefore('speedMatchTargetNative');
 // voiceCoach (job 5: Voice Check) is now LAST in the order — needs every
 // other module completed first.
 const ALL_BEFORE_VC = stepsBefore('voiceCoach');
@@ -177,7 +177,7 @@ async function run() {
     await bootAsUser(page, 'T9Sound', ALL_BEFORE_SR);
     await page.evaluate(() => { window.APP_CONFIG.speedMatch.countdownStepMs = 60; });
     await page.addScriptTag({ content: spiaToni.content });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.waitForTimeout(400);
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });

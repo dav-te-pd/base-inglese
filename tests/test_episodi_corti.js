@@ -85,10 +85,10 @@ async function run() {
     page.on('pageerror', e => errori.push('[A] ' + String(e).slice(0, 140)));
     // Il grado 'Z' non esiste in nessun episodio, ed è il punto: è la forma
     // che avrà un episodio corto a cui si chiede il grado A.
-    await apriConOrdine(page, 'CortoGrado', [{ module: 'matchEngIta', grade: 'Z' }]);
-    await page.click('[data-module="matchEngIta"]');
+    await apriConOrdine(page, 'CortoGrado', [{ module: 'matchTargetNative', grade: 'Z' }]);
+    await page.click('[data-module="matchTargetNative"]');
     await page.waitForTimeout(600); // ATTESA-LEGITTIMA: qui NON c'e' un approdo possibile, e il motivo e' la regola 44. L'ultimo effetto del click e' la schermata d'errore che diventa attiva — ma `erroreVisibile` e' ESATTAMENTE quello che l'asserzione legge: aspettarlo la renderebbe vera per costruzione. E gli altri due effetti sono negativi (non completato, nessun esito), quindi nemmeno loro si possono aspettare. Non resta niente su cui aspettare che non sia gia' letto: l'attesa a tempo e' l'unica forma onesta
-    const s = await statoDopo(page, 'CortoGrado', 'matchEngIta');
+    const s = await statoDopo(page, 'CortoGrado', 'matchTargetNative');
     log('[A] Un passo su un grado assente NON si dichiara completato', s.completato === false);
     log('[A] ...e non registra nessun esito', s.esito === false);
     log('[A] ...e lo studente vede qualcosa invece di una schermata muta',
@@ -125,7 +125,7 @@ async function run() {
     // La bandierina vecchia c'è, ma questo ordine non contiene Personalizza:
     // la migrazione non deve scriverne il completamento.
     await apriConOrdine(page, 'CortoMigra',
-      [{ module: 'repeatAloud', grade: 'A' }, { module: 'matchEngIta', grade: 'A' }],
+      [{ module: 'repeatAloud', grade: 'A' }, { module: 'matchTargetNative', grade: 'A' }],
       [[chiaveMagazzino('gate:customizeSeen:{u}'), '1']]);
     const s = await statoDopo(page, 'CortoMigra', 'personalizzazione');
     log('[C] La migrazione non scrive un passo che l\'episodio non dichiara',
@@ -140,10 +140,10 @@ async function run() {
   {
     const page = await browser.newPage({ viewport: { width: 390, height: 800 } });
     page.on('pageerror', e => errori.push('[D] ' + String(e).slice(0, 140)));
-    await apriConOrdine(page, 'CortoOk', [{ module: 'matchEngIta', grade: 'A' }]);
-    await page.click('[data-module="matchEngIta"]');
+    await apriConOrdine(page, 'CortoOk', [{ module: 'matchTargetNative', grade: 'A' }]);
+    await page.click('[data-module="matchTargetNative"]');
     await page.waitForSelector('#qm-start-screen, #qm-question', { state: 'visible', timeout: 15000 });
-    const s = await statoDopo(page, 'CortoOk', 'matchEngIta');
+    const s = await statoDopo(page, 'CortoOk', 'matchTargetNative');
     log('[D] Controprova: con un grado che esiste il modulo si apre davvero',
         s.erroreVisibile === false);
     await page.close();

@@ -112,14 +112,14 @@
 #               cerca per chiave, e le pulizie girano tutte.
 #   2026-09-19  app/match.js entra come DICIASSETTESIMO script, seconda fila.
 #               Il conto passa da 17 a 18. E' il TERZO modulo, e registra DUE
-#               kind con la stessa open (matchEngIta, matchItaEng): l'ordine
+#               kind con la stessa open (matchTargetNative, matchNativeTarget): l'ordine
 #               dei moduli registrati cambia di conseguenza, ed e' un diff
 #               atteso dello spostamento come per flashcard.
 #   2026-09-19  app/speedmatch.js entra come DICIOTTESIMO script, seconda fila.
 #               Il conto passa da 18 a 19. E' il QUARTO modulo, e il PRIMO che
 #               porta via una PULIZIA: srPulizia si registra quando questo file
 #               viene letto, quindi risale nell'elenco. Registra anche due kind
-#               con la stessa open (speedMatchEngIta, speedMatchItaEng), come
+#               con la stessa open (speedMatchTargetNative, speedMatchNativeTarget), come
 #               match. Tutti e due i diff sono ATTESI dallo spostamento.
 #   2026-09-19  app/voice.js entra come DICIANNOVESIMO script, seconda fila. Il
 #               conto passa da 19 a 20, ed e' L'UNICA riga che cambia.
@@ -200,10 +200,10 @@ modulo 2 whyWeSayIt
 modulo 3 personalizzazione
 modulo 4 repeatAloud
 modulo 5 flashcard
-modulo 6 matchEngIta
-modulo 7 matchItaEng
-modulo 8 speedMatchEngIta
-modulo 9 speedMatchItaEng
+modulo 6 matchTargetNative
+modulo 7 matchNativeTarget
+modulo 8 speedMatchTargetNative
+modulo 9 speedMatchNativeTarget
 modulo 10 voicePractice
 modulo 11 voiceCoach
 modulo 12 dialogoAscoltaRipeti

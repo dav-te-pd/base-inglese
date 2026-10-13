@@ -102,8 +102,8 @@ async function run() {
     const etichetta = caso.distrattori ? 'chiave a ' + caso.distrattori : 'valore di partenza';
     // ⚠️ SI APRE DAL CODICE, NON DALLA RIGA: qui non si prova lo Sblocco
     // Sequenziale (regola 30), si prova quante alternative compaiono.
-    for (const m of [{ id: 'matchEngIta', avvio: '#qm-start-btn', opzioni: '#qm-options .sr-option' },
-                     { id: 'speedMatchEngIta', avvio: '#sr-ready-btn', opzioni: '#sr-options .sr-option' }]) {
+    for (const m of [{ id: 'matchTargetNative', avvio: '#qm-start-btn', opzioni: '#qm-options .sr-option' },
+                     { id: 'speedMatchTargetNative', avvio: '#sr-ready-btn', opzioni: '#sr-options .sr-option' }]) {
       try {
         await page.evaluate((id) => {
           window.BI.impostaEpisodioCorrente(window.BI.EPISODES.gate);

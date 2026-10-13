@@ -152,8 +152,8 @@ async function run() {
       badge: (document.querySelector('#view-home [data-nome="corso"]') || {}).textContent,
       titolo: document.title,
       nomeApp: window.APP_CONFIG.nomeApp,
-      enIt: window.BI.etichettaDirezione('en-it'),
-      itEn: window.BI.etichettaDirezione('it-en')
+      enIt: window.BI.etichettaDirezione('target-native'),
+      itEn: window.BI.etichettaDirezione('native-target')
     }));
     const n = struttura.nomiASchermo;
     log('[E] Il badge della home dice il nome del CORSO spagnolo',

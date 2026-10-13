@@ -12,7 +12,7 @@ const mockInit = componi(mockBrowser({ fineVoceMs: 500, riconoscimento: 'suStop'
 const bootAsUser = (page, userName, completedModules) =>
   bootUtente(page, { utente: userName, completati: completedModules, introChiuse: INTRO_DI_TUTTI });
 
-const ALL_BEFORE_QM = stepsBefore('matchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchTargetNative');
 const ALL_BEFORE_DG = stepsBefore('dialogoAscoltaRipeti');
 const ALL_BEFORE_VC = stepsBefore('voiceCoach');
 
@@ -238,7 +238,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T17Job1e', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const promptListenBtn = await page.$('#qm-prompt-audio [data-say]');
@@ -263,14 +263,14 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 1e-bis: Match Practice it-en — answering stops an option's own mini-listen audio ============
+  // ============ JOB 1e-bis: Match Practice native-target — answering stops an option's own mini-listen audio ============
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1ebis', ALL_BEFORE_QM.concat(['matchEngIta']));
-    await openModule(page, 'matchItaEng');
+    await bootAsUser(page, 'T17Job1ebis', ALL_BEFORE_QM.concat(['matchTargetNative']));
+    await openModule(page, 'matchNativeTarget');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     // ⚠️ SI ASPETTA IL PULSANTE, NON 150 ms — passo 1.18, 2026-09-24.
     //
@@ -332,10 +332,10 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job1f', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    await bootAsUser(page, 'T17Job1f', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(200);
-    // en-it: the listen button lives on the FRONT (English side).
+    // target-native: the listen button lives on the FRONT (English side).
     const listenBtn = await page.$('#fc-card [data-say]');
     if (listenBtn) { await listenBtn.click({ force: true }); }
     await page.waitForTimeout(100); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — i pulsanti di Flash Card NON devono spegnersi durante l'audio della carta (regola 16)
@@ -379,14 +379,14 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'T17Job2', stepsBefore('flashcardAEngIta'));
-    await openModule(page, 'flashcardAEngIta');
+    await bootAsUser(page, 'T17Job2', stepsBefore('flashcardATargetNative'));
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(200);
     // Force through to the summary screen quickly (answer every card). Il
     // limite viene dal mazzo vero (un giro di risposte piu' l'eventuale
     // ripasso, piu' margine): scritto a mano era tarato su 15 carte e si e'
     // rotto in silenzio quando il grado A e' passato a 21.
-    const carte = loadGrade(gradeOf('flashcardAEngIta')).length;
+    const carte = loadGrade(gradeOf('flashcardATargetNative')).length;
     for (let i = 0; i < carte * 3 + 10; i++) {
       const summaryVisible = await page.isVisible('#fc-summary-screen').catch(() => false);
       if (summaryVisible) break;

@@ -36,7 +36,7 @@
   var barraAzioniFinale = BI.barraAzioniFinale;
 
   /* ============================================================
-     MODULES: FLASH CARD (Level A Eng-Ita / Level A Ita-Eng, more
+     MODULES: FLASH CARD (Level A Target-Native / Level A Native-Target, more
      levels later)
      One shared component for every level+direction combo. module.
      module.grade dice quale grado dell'episodio leggere (episodeGrade) e
@@ -93,7 +93,7 @@
   var fcModule = null;
   var fcIntroPending = false;
   var fcGrade = 'A';
-  var fcDirection = 'en-it';
+  var fcDirection = 'target-native';
   var fcVocab = [];
   var fcPassItems = [];
   var fcPassIndex = 0;
@@ -110,8 +110,8 @@
   var fcNavLocked = false;
   var fcNavTimeoutId = null;
 
-  function fcFrontText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'target' : 'native'); }
-  function fcBackText() { return BI.itemText(fcCurrentItem, fcDirection === 'en-it' ? 'native' : 'target'); }
+  function fcFrontText() { return BI.itemText(fcCurrentItem, fcDirection === 'target-native' ? 'target' : 'native'); }
+  function fcBackText() { return BI.itemText(fcCurrentItem, fcDirection === 'target-native' ? 'native' : 'target'); }
 
   function fcShowScreen(name) {
     document.getElementById('fc-intro-screen').hidden = name !== 'intro';
@@ -196,7 +196,7 @@
     // Italian side it would read the user's own native language with an
     // English accent. Which side is English depends on fcDirection, not
     // on front/back, and flips between the two Flash Card directions.
-    var frontIsEnglish = fcDirection === 'en-it';
+    var frontIsEnglish = fcDirection === 'target-native';
     var frontAudioEl = document.getElementById('fc-front-audio');
     var backAudioEl = document.getElementById('fc-back-audio');
     frontAudioEl.hidden = !frontIsEnglish;
@@ -340,7 +340,7 @@
     // ⚠️ LA CHIAVE E' 'flashcard', E QUI LA CHIAVE SBAGLIATA PASSEREBBE VERDE.
     //
     // `openFlashcard` serve UN kind solo (`flashcard`), condiviso da DUE
-    // descrittori (`flashcardAEngIta`, `flashcardAItaEng`): quindi
+    // descrittori (`flashcardATargetNative`, `flashcardANativeTarget`): quindi
     // `BI.unaVoltaSola('flashcard', …)` e `BI.unaVoltaSola(module.kind, …)`
     // passano **la stessa identica stringa**, e nessuna corsa puo'
     // distinguerle. Misurato il 2026-09-16 falsificando apposta: il test resta
@@ -501,8 +501,8 @@
       showLoadError(function () { openFlashcard(module); });
     });
   }
-  // ⚠️ Flash Card: UN SOLO kind per DUE descrittori (flashcardAEngIta e
-  // flashcardAItaEng lo condividono). Si registra una volta sola — e se
+  // ⚠️ Flash Card: UN SOLO kind per DUE descrittori (flashcardATargetNative e
+  // flashcardANativeTarget lo condividono). Si registra una volta sola — e se
   // qualcuno provasse a registrarlo per descrittore, BI.registraModulo
   // alzerebbe un'eccezione al boot invece di lasciar vincere l'ultimo.
   BI.registraModulo('flashcard', openFlashcard);

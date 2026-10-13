@@ -769,7 +769,7 @@
   //
   // ⚠️ **E l'id è quello del PASSO, non del kind — è la metà che si sarebbe
   // persa scrivendo `moduleLabels[module.kind]`.** *Flash Card ha UN kind e
-  // DUE passi (`flashcardAEngIta`, `flashcardAItaEng`): col kind il pop-up
+  // DUE passi (`flashcardATargetNative`, `flashcardANativeTarget`): col kind il pop-up
   // direbbe «Flash Card» in tutti e due e il verso sparirebbe — mentre Match
   // e Speed Match, che hanno due kind, lo dicono già.* `module.label` porta
   // già l'id del passo da `app/catalogo.js`, quindi qui non c'è niente da
@@ -1097,14 +1097,25 @@
   }
 
   // ⚠️ LA SCRITTA DELLA DIREZIONE VIENE DALL'EDIZIONE, dal 2026-10-01 (passo
-  // 4 dello spagnolo). Qui c'era `{ 'en-it': 'INGLESE → ITALIANO', ... }`:
+  // 4 dello spagnolo). Qui c'era `{ 'target-native': 'INGLESE → ITALIANO', ... }`:
   // lo studente di spagnolo leggeva «INGLESE» sopra ogni domanda di Match,
   // Speed Match e Flash Card. I due NOMI vengono dalla §9 della struttura
   // (`nomiASchermo.target`, `.native`, nella lingua dello studente); **la
   // freccia e il maiuscolo sono del codice** — deciso da chi guida il
-  // progetto. Gli id di direzione `en-it`/`it-en` restano: stanno nelle chiavi
-  // della mastery salvata, e qui vogliono dire «target -> native» e il
-  // contrario, in qualunque edizione.
+  // progetto.
+  //
+  // ⚠️ GLI ID DI DIREZIONE SONO `target-native` / `native-target` DAL
+  // 2026-10-13, e fino a quel giorno erano `en-it` / `it-en`. Il commento del
+  // 2026-10-01 diceva «restano: stanno nelle chiavi della mastery salvata» —
+  // e **la ragione è ancora vera**: la direzione sta dentro ogni chiave dei
+  // colori (`unitPrefix:voce:direzione`). **È cambiato il prezzo, non il
+  // fatto:** il 13/10 i colori salvati erano solo di prova, e dopo Supabase la
+  // stessa rinomina avrebbe chiesto uno strumento di migrazione che non c'è.
+  // Quel giorno la mastery di prova si è persa, insieme al progresso dei passi
+  // rinominati — deciso da chi guida il progetto.
+  // *E il commento di allora dimostrava da sé il difetto: doveva spiegare che
+  // `en-it` «vuol dire target -> native in qualunque edizione». Un valore la
+  // cui documentazione deve tradurlo è un valore col nome sbagliato.*
   //
   // Si legge al momento dell'uso, non a tempo di parsing: la struttura arriva
   // dopo. Un nome che manca da' una scritta vuota e lo dice in console — il
@@ -1115,8 +1126,8 @@
       console.error('[base-inglese] La struttura non porta nomiASchermo.target/native: la scritta della direzione resta vuota.');
       return '';
     }
-    var da = direzione === 'en-it' ? nomi.target : nomi.native;
-    var a = direzione === 'en-it' ? nomi.native : nomi.target;
+    var da = direzione === 'target-native' ? nomi.target : nomi.native;
+    var a = direzione === 'target-native' ? nomi.native : nomi.target;
     return (da + ' → ' + a).toUpperCase();
   }
   BI.chiudiOverlayAperti = chiudiOverlayAperti;

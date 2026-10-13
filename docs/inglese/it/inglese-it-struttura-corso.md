@@ -1,6 +1,16 @@
-**Versione: 20261001a**
+**Versione: 20261013a**
 
 # Struttura del corso — inglese per italiani
+
+🔴 **GLI ID DI SEI PASSI SONO CAMBIATI IL 2026-10-13, E NON È UNA CORREZIONE DI SCRITTURA.**
+*Si chiamavano `matchEngIta`, `matchItaEng`, `flashcardAEngIta`, `flashcardAItaEng`,
+`speedMatchEngIta`, `speedMatchItaEng`: **nomi che nominano due lingue, usati anche dal corso di
+spagnolo**.* ⭐ **Ora sono `…TargetNative` e `…NativeTarget`** — *`target` è la lingua insegnata,
+`native` quella dello studente, in qualunque edizione.*
+
+⚠️ **E i nomi neutri non sono una convenzione nuova:** *il codice già convertiva `'en-it'` in
+`target`/`native` due righe dopo averlo letto.* **La rinomina toglie un passaggio di traduzione.**
+
 
 ---
 
@@ -196,16 +206,16 @@ campo `type` dei quindici descrittori — **15 su 15 giuste**, nessuna correzion
 | `meetTheStory` | Meet the Story | Ascolta la storia | `studio` |
 | `repeatAloud` | Repeat Aloud | Ripeti ad alta voce | `studio` |
 | `whyWeSayIt` | Why We Say It | Perché si dice così | `studio` |
-| `matchEngIta` | Match Practice en→it | Abbina le traduzioni | `studio` |
-| `matchItaEng` | Match Practice it→en | Abbina le traduzioni | `studio` |
-| `flashcardAEngIta` | Flash Card en→it | Ripassa quello che hai imparato | `studio` |
-| `flashcardAItaEng` | Flash Card it→en | Ripassa quello che hai imparato | `studio` |
+| `matchTargetNative` | Match Practice en→it | Abbina le traduzioni | `studio` |
+| `matchNativeTarget` | Match Practice it→en | Abbina le traduzioni | `studio` |
+| `flashcardATargetNative` | Flash Card en→it | Ripassa quello che hai imparato | `studio` |
+| `flashcardANativeTarget` | Flash Card it→en | Ripassa quello che hai imparato | `studio` |
 | `voicePractice` | Voice Practice | Allena la pronuncia | `studio` |
 | `dialogoAscoltaRipeti` | Dialogue: Listen & Repeat | Ascolta e ripeti | `dialogo` |
 | `dialogoRipetiATempo` | Dialogue: Repeat in Time | Ripeti a tempo | `dialogo` |
 | `dialogoContinuo` | Dialogue: Real Dialogue | Il dialogo vero | `dialogo` |
-| `speedMatchEngIta` | Speed Match en→it | Traduci a tempo | `quiz` |
-| `speedMatchItaEng` | Speed Match it→en | Traduci a tempo | `quiz` |
+| `speedMatchTargetNative` | Speed Match en→it | Traduci a tempo | `quiz` |
+| `speedMatchNativeTarget` | Speed Match it→en | Traduci a tempo | `quiz` |
 | `voiceCoach` | Voice Check | Metti alla prova la pronuncia | `quiz` |
 
 ⚠️ **`voicePractice` è `studio` e `voiceCoach` è `quiz`, e la differenza non è il microfono:** *in Voice
@@ -232,29 +242,29 @@ altri dati. Erano l'ultimo dato senza fonte.*
 | `narrativo-standard` | `personalizzazione` | |
 | `narrativo-standard` | `meetTheStory` | D |
 | `narrativo-standard` | `repeatAloud` | A |
-| `narrativo-standard` | `matchEngIta` | A |
-| `narrativo-standard` | `matchItaEng` | A |
-| `narrativo-standard` | `flashcardAEngIta` | A |
-| `narrativo-standard` | `flashcardAItaEng` | A |
+| `narrativo-standard` | `matchTargetNative` | A |
+| `narrativo-standard` | `matchNativeTarget` | A |
+| `narrativo-standard` | `flashcardATargetNative` | A |
+| `narrativo-standard` | `flashcardANativeTarget` | A |
 | `narrativo-standard` | `repeatAloud` | B |
-| `narrativo-standard` | `matchEngIta` | B |
-| `narrativo-standard` | `matchItaEng` | B |
-| `narrativo-standard` | `flashcardAEngIta` | B |
+| `narrativo-standard` | `matchTargetNative` | B |
+| `narrativo-standard` | `matchNativeTarget` | B |
+| `narrativo-standard` | `flashcardATargetNative` | B |
 | `narrativo-standard` | `voicePractice` | B |
 | `narrativo-standard` | `whyWeSayIt` | D |
-| `narrativo-standard` | `matchEngIta` | C |
-| `narrativo-standard` | `matchItaEng` | C |
+| `narrativo-standard` | `matchTargetNative` | C |
+| `narrativo-standard` | `matchNativeTarget` | C |
 | `narrativo-standard` | `voicePractice` | C |
 | `narrativo-standard` | `dialogoAscoltaRipeti` | D |
 | `narrativo-standard` | `dialogoRipetiATempo` | D |
 | `narrativo-standard` | `dialogoContinuo` | D |
-| `narrativo-standard` | `speedMatchEngIta` | C |
-| `narrativo-standard` | `speedMatchItaEng` | C |
+| `narrativo-standard` | `speedMatchTargetNative` | C |
+| `narrativo-standard` | `speedMatchNativeTarget` | C |
 | `narrativo-standard` | `voiceCoach` | C |
 | `prova-corta` | `personalizzazione` | |
 | `prova-corta` | `meetTheStory` | D |
 | `prova-corta` | `repeatAloud` | A |
-| `prova-corta` | `matchEngIta` | A |
+| `prova-corta` | `matchTargetNative` | A |
 | `prova-corta` | `dialogoAscoltaRipeti` | D |
 
 ⚠️ **`prova-corta` è una sonda, non contenuto:** *serve a provare i selettori del Pannello Admin, e

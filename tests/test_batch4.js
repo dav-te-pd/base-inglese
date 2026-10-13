@@ -26,12 +26,12 @@ async function run() {
     whyWeSayIt: { name: 'Why We Say It', subtitle: 'Perché si dice così' },
     voicePractice: { name: 'Voice Practice', subtitle: 'Allena la pronuncia' },
     voiceCoach: { name: 'Voice Check', subtitle: 'Metti alla prova la pronuncia' },
-    matchEngIta: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
-    matchItaEng: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
-    speedMatchEngIta: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
-    speedMatchItaEng: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
-    flashcardAEngIta: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
-    flashcardAItaEng: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
+    matchTargetNative: { name: 'Match Practice en→it', subtitle: 'Abbina le traduzioni' },
+    matchNativeTarget: { name: 'Match Practice it→en', subtitle: 'Abbina le traduzioni' },
+    speedMatchTargetNative: { name: 'Speed Match en→it', subtitle: 'Traduci a tempo' },
+    speedMatchNativeTarget: { name: 'Speed Match it→en', subtitle: 'Traduci a tempo' },
+    flashcardATargetNative: { name: 'Flash Card en→it', subtitle: 'Ripassa quello che hai imparato' },
+    flashcardANativeTarget: { name: 'Flash Card it→en', subtitle: 'Ripassa quello che hai imparato' },
     dialogoAscoltaRipeti: { name: 'Dialogue: Listen & Repeat', subtitle: 'Ascolta e ripeti' },
     dialogoRipetiATempo: { name: 'Dialogue: Repeat in Time', subtitle: 'Ripeti a tempo' },
     dialogoContinuo: { name: 'Dialogue: Real Dialogue', subtitle: 'Il dialogo vero' }
@@ -117,10 +117,10 @@ async function run() {
     }
 
     // direction span styling check for one en->it module
-    const dirSpanText = await page.$eval('[data-module="matchEngIta"] .module-row-title .module-name-direction', el => el.textContent).catch(() => null);
+    const dirSpanText = await page.$eval('[data-module="matchTargetNative"] .module-row-title .module-name-direction', el => el.textContent).catch(() => null);
     log('[T2] "en→it" suffix is wrapped in .module-name-direction span', dirSpanText === 'en→it');
-    const dirFontSize = await page.$eval('[data-module="matchEngIta"] .module-row-title .module-name-direction', el => getComputedStyle(el).fontSize).catch(() => null);
-    const parentFontSize = await page.$eval('[data-module="matchEngIta"] .module-row-title', el => getComputedStyle(el).fontSize).catch(() => null);
+    const dirFontSize = await page.$eval('[data-module="matchTargetNative"] .module-row-title .module-name-direction', el => getComputedStyle(el).fontSize).catch(() => null);
+    const parentFontSize = await page.$eval('[data-module="matchTargetNative"] .module-row-title', el => getComputedStyle(el).fontSize).catch(() => null);
     log('[T2] direction suffix renders smaller than parent name (computed font-size)', dirFontSize && parentFontSize && parseFloat(dirFontSize) < parseFloat(parentFontSize));
 
     // typeLabel for personalizzazione is now "Inizio"
@@ -138,10 +138,10 @@ async function run() {
       ['repeatAloud', '#repeat-aloud-title', 'Repeat Aloud'],
       ['meetTheStory', '#story-cards-title', 'Meet the Story'],
       ['whyWeSayIt', '#story-cards-title', 'Why We Say It'],
-      ['matchEngIta', '#match-badge', 'Match Practice en→it'],
+      ['matchTargetNative', '#match-badge', 'Match Practice en→it'],
       ['dialogoAscoltaRipeti', '#dialogo-badge', 'Dialogue: Listen & Repeat'],
-      ['speedMatchEngIta', '#speed-match-badge', 'Speed Match en→it'],
-      ['flashcardAEngIta', '#flashcard-badge', 'Flash Card en→it']
+      ['speedMatchTargetNative', '#speed-match-badge', 'Speed Match en→it'],
+      ['flashcardATargetNative', '#flashcard-badge', 'Flash Card en→it']
     ];
     for (const [moduleId, selector, expected] of checks) {
       const page = await browser.newPage({ viewport: { width: 400, height: 900 } });

@@ -38,10 +38,10 @@ const PUNTI = [
   { nome: '2b-why-we-say-it-bloccata', passo: 'whyWeSayIt', selettore: '#story-cards-body .wws-card.is-ahead' },
   { nome: '3-voice-practice', passo: 'voicePractice', selettore: '#vc-audio-controls' },
   { nome: '4-voice-check', passo: 'voiceCoach', selettore: '#vc-audio-controls' },
-  { nome: '5-match-eng-ita', passo: 'matchEngIta', selettore: '#qm-prompt-audio', prepara: avviaMatch },
+  { nome: '5-match-target-native', passo: 'matchTargetNative', selettore: '#qm-prompt-audio', prepara: avviaMatch },
   // Il "Mini Blocco Ascolto": solo il pulsante, senza le velocità.
-  { nome: '6-match-ita-eng-mini', passo: 'matchItaEng', selettore: '#qm-options .qm-option-row:first-child', prepara: avviaMatch },
-  { nome: '7-flash-card', passo: 'flashcardAEngIta', selettore: '#fc-card', prepara: avviaFlashcard }
+  { nome: '6-match-native-target-mini', passo: 'matchNativeTarget', selettore: '#qm-options .qm-option-row:first-child', prepara: avviaMatch },
+  { nome: '7-flash-card', passo: 'flashcardATargetNative', selettore: '#fc-card', prepara: avviaFlashcard }
 ];
 
 async function avviaMatch(page) {

@@ -56,22 +56,22 @@
       "subtitle": "Perché si dice così",
       "categoria": "studio"
     },
-    "matchEngIta": {
+    "matchTargetNative": {
       "name": "Empareja es→it",
       "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
-    "matchItaEng": {
+    "matchNativeTarget": {
       "name": "Empareja it→es",
       "subtitle": "Abbina le traduzioni",
       "categoria": "studio"
     },
-    "flashcardAEngIta": {
+    "flashcardATargetNative": {
       "name": "Tarjetas es→it",
       "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
     },
-    "flashcardAItaEng": {
+    "flashcardANativeTarget": {
       "name": "Tarjetas it→es",
       "subtitle": "Ripassa quello che hai imparato",
       "categoria": "studio"
@@ -96,12 +96,12 @@
       "subtitle": "Il dialogo vero",
       "categoria": "dialogo"
     },
-    "speedMatchEngIta": {
+    "speedMatchTargetNative": {
       "name": "Contrarreloj es→it",
       "subtitle": "Traduci a tempo",
       "categoria": "quiz"
     },
-    "speedMatchItaEng": {
+    "speedMatchNativeTarget": {
       "name": "Contrarreloj it→es",
       "subtitle": "Traduci a tempo",
       "categoria": "quiz"
@@ -126,19 +126,19 @@
         "grade": "A"
       },
       {
-        "module": "matchEngIta",
+        "module": "matchTargetNative",
         "grade": "A"
       },
       {
-        "module": "matchItaEng",
+        "module": "matchNativeTarget",
         "grade": "A"
       },
       {
-        "module": "flashcardAEngIta",
+        "module": "flashcardATargetNative",
         "grade": "A"
       },
       {
-        "module": "flashcardAItaEng",
+        "module": "flashcardANativeTarget",
         "grade": "A"
       },
       {
@@ -146,15 +146,15 @@
         "grade": "B"
       },
       {
-        "module": "matchEngIta",
+        "module": "matchTargetNative",
         "grade": "B"
       },
       {
-        "module": "matchItaEng",
+        "module": "matchNativeTarget",
         "grade": "B"
       },
       {
-        "module": "flashcardAEngIta",
+        "module": "flashcardATargetNative",
         "grade": "B"
       },
       {
@@ -166,11 +166,11 @@
         "grade": "D"
       },
       {
-        "module": "matchEngIta",
+        "module": "matchTargetNative",
         "grade": "C"
       },
       {
-        "module": "matchItaEng",
+        "module": "matchNativeTarget",
         "grade": "C"
       },
       {
@@ -190,11 +190,11 @@
         "grade": "D"
       },
       {
-        "module": "speedMatchEngIta",
+        "module": "speedMatchTargetNative",
         "grade": "C"
       },
       {
-        "module": "speedMatchItaEng",
+        "module": "speedMatchNativeTarget",
         "grade": "C"
       },
       {
@@ -215,7 +215,7 @@
         "grade": "A"
       },
       {
-        "module": "matchEngIta",
+        "module": "matchTargetNative",
         "grade": "A"
       },
       {

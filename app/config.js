@@ -388,7 +388,7 @@
     sceltaMultipla: {
       distrattori: 3
     },
-    // ---- Speed Match quiz (speedMatchEngIta / speedMatchItaEng modules) ----
+    // ---- Speed Match quiz (speedMatchTargetNative / speedMatchNativeTarget modules) ----
     speedMatch: {
       // Seconds on the countdown bar before a question times out
       // (timeout is treated the same as a wrong answer).
@@ -408,7 +408,7 @@
       // judgment reads the same one) — none of the three is duplicated
       // here.
     },
-    // ---- Match Practice quiz (matchEngIta / matchItaEng modules) ----
+    // ---- Match Practice quiz (matchTargetNative / matchNativeTarget modules) ----
     // Same multiple-choice/retry/mastery mechanics as speedMatch above
     // (shared via recordMultipleChoiceResult/buildMultipleChoiceOptions —
     // see the comment near those), just untimed: no timeLimitSeconds or
@@ -573,12 +573,12 @@
     moduleOutcomeRules: {
       voiceCoach: 'moduleRules',
       voicePractice: 'moduleRules',
-      matchEngIta: 'moduleRules',
-      matchItaEng: 'moduleRules',
-      speedMatchEngIta: 'moduleRules',
-      speedMatchItaEng: 'moduleRules',
-      flashcardAEngIta: 'selfScoreRules',
-      flashcardAItaEng: 'selfScoreRules',
+      matchTargetNative: 'moduleRules',
+      matchNativeTarget: 'moduleRules',
+      speedMatchTargetNative: 'moduleRules',
+      speedMatchNativeTarget: 'moduleRules',
+      flashcardATargetNative: 'selfScoreRules',
+      flashcardANativeTarget: 'selfScoreRules',
       // Meet the Story non compare qui: e' il primo contatto con la
       // storia, non ha skill da autovalutare, quindi resta su
       // completionRules come Repeat Aloud e Your Story.

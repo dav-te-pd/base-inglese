@@ -14,8 +14,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchTargetNative'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchTargetNative'));
 
 // Il gancio della spia dei toni: `batch15` verifica che OGNI nota del
 // Traguardo suoni a schermata finale GIA' visibile, e quel dato esiste solo
@@ -36,10 +36,10 @@ const bootAsUser = (page, userName, completedModules) =>
 // before trying to interact with the quiz itself.
 const dismissAttemptPopupIfOpen = chiudiPopupTentativiSeAperto;
 
-const ALL_BEFORE_QM = stepsBefore('matchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchTargetNative');
 const ALL_BEFORE_VP = stepsBefore('voicePractice');
 const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
-const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
+const ALL_BEFORE_SR = stepsBefore('speedMatchTargetNative');
 
 async function run() {
   const browser = await launchBrowser();
@@ -53,7 +53,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job1', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     var startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
@@ -109,11 +109,11 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job2', []);
-    log('[Job2 config] moduleOutcomeRules has matchEngIta/speedMatchEngIta = moduleRules', await page.evaluate(() =>
-      window.APP_CONFIG.moduleOutcomeRules.matchEngIta === 'moduleRules' &&
-      window.APP_CONFIG.moduleOutcomeRules.speedMatchEngIta === 'moduleRules'));
-    log('[Job2 config] moduleOutcomeRules.flashcardAEngIta = selfScoreRules', await page.evaluate(() =>
-      window.APP_CONFIG.moduleOutcomeRules.flashcardAEngIta === 'selfScoreRules'));
+    log('[Job2 config] moduleOutcomeRules has matchTargetNative/speedMatchTargetNative = moduleRules', await page.evaluate(() =>
+      window.APP_CONFIG.moduleOutcomeRules.matchTargetNative === 'moduleRules' &&
+      window.APP_CONFIG.moduleOutcomeRules.speedMatchTargetNative === 'moduleRules'));
+    log('[Job2 config] moduleOutcomeRules.flashcardATargetNative = selfScoreRules', await page.evaluate(() =>
+      window.APP_CONFIG.moduleOutcomeRules.flashcardATargetNative === 'selfScoreRules'));
     log('[Job2 config] moduleOutcomeRules.whyWeSayIt = selfScoreRules', await page.evaluate(() =>
       window.APP_CONFIG.moduleOutcomeRules.whyWeSayIt === 'selfScoreRules'));
     log('[Job2] No JS errors', errors.length === 0);
@@ -127,7 +127,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job2b', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     var startVisible2 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible2) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
     const vocab2 = await page.evaluate(() => fetch('data/inglese/it/inglese-it-gate.json').then(r => r.json()).then(d => d.levels.A.items));
@@ -149,8 +149,8 @@ async function run() {
     }
     await page.waitForTimeout(300);
     await page.click('#qm-complete-btn');
-    await attendiClasse(page, '[data-module="matchEngIta"]', 'outcome-verde');
-    const rowClass = await page.evaluate(() => document.querySelector('[data-module="matchEngIta"]').className);
+    await attendiClasse(page, '[data-module="matchTargetNative"]', 'outcome-verde');
+    const rowClass = await page.evaluate(() => document.querySelector('[data-module="matchTargetNative"]').className);
     log('[Job2b] Match Practice map row carries outcome-verde after all-correct run', rowClass.indexOf('outcome-verde') !== -1);
     log('[Job2b] No JS errors', errors.length === 0);
     await page.close();
@@ -210,7 +210,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job4', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     // Ogni risposta sbagliata: così ogni voce finisce nella coda di ripasso e
     // si attraversano entrambe le schermate di Ripasso (con maxAttempts = 3
     // sono esattamente due, poi tutto viene accettato d'ufficio). Prima il
@@ -266,7 +266,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job5', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     var startVisible4 = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible4) { await page.click('#qm-start-btn'); await attendiVisibile(page, '#qm-quiz-screen'); } // approdo: la schermata del quiz, non le dimensioni dei caratteri che l'asserzione confronta
     const sizes = await page.evaluate(() => {
@@ -300,7 +300,7 @@ async function run() {
     const raType = await page.$eval('#repeat-aloud-type-badge', el => el.textContent).catch(() => null);
     log('[Job6] Repeat Aloud header shows type badge "Studio · <grado>"', raType.indexOf('Studio') === 0);
     await page.click('#repeat-aloud-back-map');
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     await attendiClasse(page, '#view-match', 'is-active'); // approdo misurato: #match-type-badge nasce VUOTO e si riempie con l'attivazione della vista
     const qmType = await page.$eval('#match-type-badge', el => el.textContent).catch(() => null);
     log('[Job6] Match Practice header shows type badge "Studio · <grado>"', qmType.indexOf('Studio') === 0);
@@ -419,7 +419,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T15Job11', ALL_BEFORE_SR);
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     // Tutto sbagliato al primo giro, tutto giusto al ripasso: il punteggio
     // salvato deve restare quello del primo giro (rosso), non essere gonfiato
     // dal ripasso. Prima il test cliccava alla cieca la prima opzione in
@@ -431,10 +431,10 @@ async function run() {
     });
     await page.locator('#sr-complete-btn').click();
     await page.waitForFunction(() => {
-      var row = document.querySelector('[data-module="speedMatchEngIta"]');
+      var row = document.querySelector('[data-module="speedMatchTargetNative"]');
       return !!row && /outcome-/.test(row.className);
     }, null, { timeout: 20000 });
-    const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedMatchEngIta"]').className);
+    const rowClass11 = await page.evaluate(() => document.querySelector('[data-module="speedMatchTargetNative"]').className);
     log('[Job11] Speed Match: first-pass-all-wrong-then-fixed-in-retry still saves rosso (not inflated by the retry pass)', rowClass11.indexOf('outcome-rosso') !== -1);
     log('[Job11] No JS errors', errors.length === 0);
     await page.close();

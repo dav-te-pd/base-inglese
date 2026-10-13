@@ -29,8 +29,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchTargetNative'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchTargetNative'));
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
@@ -39,12 +39,12 @@ const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs
 
 
 const bootAsUser = (page, userName, completedModules) =>
-  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchEngIta', 'speedMatchEngIta', 'flashcard'] });
+  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchTargetNative', 'speedMatchTargetNative', 'flashcard'] });
 
-const BEFORE_VC = stepsBefore('flashcardAEngIta');
-const BEFORE_QM = stepsBefore('matchEngIta');
-const BEFORE_SR = stepsBefore('speedMatchEngIta');
-const BEFORE_FC = stepsBefore('flashcardAEngIta');
+const BEFORE_VC = stepsBefore('flashcardATargetNative');
+const BEFORE_QM = stepsBefore('matchTargetNative');
+const BEFORE_SR = stepsBefore('speedMatchTargetNative');
+const BEFORE_FC = stepsBefore('flashcardATargetNative');
 
 async function run() {
   const browser = await launchBrowser();
@@ -205,7 +205,7 @@ async function run() {
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T3QMSound', BEFORE_QM);
     await page.addScriptTag({ content: spiaToni.content });
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);

@@ -89,7 +89,7 @@ async function boot(page, utente, passo) {
   await page.evaluate(({ utente, prima }) => {
     localStorage.setItem(BI.moduleProgressKey('gate', utente), JSON.stringify({ completed: prima }));
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt', 'voiceCoach',
-     'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta', 'speedMatchItaEng', 'flashcard',
+     'voicePractice', 'matchTargetNative', 'matchNativeTarget', 'speedMatchTargetNative', 'speedMatchNativeTarget', 'flashcard',
      'dialogoAscoltaRipeti', 'dialogoRipetiATempo', 'dialogoContinuo'
     ].forEach(k => localStorage.setItem('baseinglese:introDismissed:' + k + ':' + utente, '1'));
   }, { utente, prima: stepsBefore(passo) });
@@ -200,7 +200,7 @@ async function run() {
   }
 
   const browser = await launchBrowser();
-  const vocabolario = loadGrade(gradeOf('matchEngIta'));
+  const vocabolario = loadGrade(gradeOf('matchTargetNative'));
 
   // ---------------------------------------------------------------
   // [B] Match Practice: stesse risposte, due uscite, due magazzini.
@@ -211,8 +211,8 @@ async function run() {
     const errori = [];
     page.on('pageerror', e => errori.push(e.message));
     await page.addInitScript(mockVoce);
-    await boot(page, 'GestoMappa', 'matchEngIta');
-    await apri(page, 'matchEngIta', '#qm-start-btn, #qm-quiz-screen');
+    await boot(page, 'GestoMappa', 'matchTargetNative');
+    await apri(page, 'matchTargetNative', '#qm-start-btn, #qm-quiz-screen');
 
     let risposte = 0;
     await playThroughQuiz(page, 'qm', {
@@ -233,7 +233,7 @@ async function run() {
     log('[B] Uscendo da "← Mappa" NON resta nessun colore nel magazzino',
       dopo.mastery.length === 0, 'voci: ' + dopo.mastery.length + ' -> ' + dopo.mastery.join(', '));
     log('[B] ...e nemmeno un esito sulla mappa', Object.keys(dopo.esiti).length === 0, JSON.stringify(dopo.esiti));
-    log('[B] ...e il modulo non risulta fatto', dopo.completati.indexOf('matchEngIta') === -1);
+    log('[B] ...e il modulo non risulta fatto', dopo.completati.indexOf('matchTargetNative') === -1);
     log('[B] Nessun errore JS', errori.length === 0, errori.join(' | '));
     await page.close();
   }
@@ -243,8 +243,8 @@ async function run() {
     const errori = [];
     page.on('pageerror', e => errori.push(e.message));
     await page.addInitScript(mockVoce);
-    await boot(page, 'GestoFinito', 'matchEngIta');
-    await apri(page, 'matchEngIta', '#qm-start-btn, #qm-quiz-screen');
+    await boot(page, 'GestoFinito', 'matchTargetNative');
+    await apri(page, 'matchTargetNative', '#qm-start-btn, #qm-quiz-screen');
 
     await playThroughQuiz(page, 'qm', { vocabulary: vocabolario, answerFor: () => 'correct' });
     const primaDelPulsante = await leggiTutto(page, 'GestoFinito');
@@ -257,10 +257,10 @@ async function run() {
       dopo.mastery.length === vocabolario.length,
       'voci: ' + dopo.mastery.length + ', attese: ' + vocabolario.length);
     log('[B] ...e sono esattamente quelle di questo modulo e di questa direzione',
-      dopo.mastery.length > 0 && dopo.mastery.every(k => k.indexOf('match:') === 0 && /:en-it$/.test(k)),
+      dopo.mastery.length > 0 && dopo.mastery.every(k => k.indexOf('match:') === 0 && /:target-native$/.test(k)),
       dopo.mastery.slice(0, 3).join(', '));
     log('[B] ...con l\'esito e il completamento nello stesso gesto',
-      !!dopo.esiti.matchEngIta && dopo.completati.indexOf('matchEngIta') !== -1);
+      !!dopo.esiti.matchTargetNative && dopo.completati.indexOf('matchTargetNative') !== -1);
     // Il confronto che distingue le due versioni: prima della correzione
     // questi due numeri erano uguali, ed erano entrambi diversi da zero.
     log('[B] Le stesse risposte, due uscite diverse: zero contro tutte',

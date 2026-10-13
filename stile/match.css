@@ -15,7 +15,7 @@
      #qm-*-screen ids (own, since they're different DOM elements) but
      Speed Match's .sr-counter/.sr-direction/.sr-prompt/.sr-options/
      .sr-reveal/.sr-summary CLASSES verbatim — see the markup comment on
-     view-match. Only the Ita-Eng per-option mini listen button
+     view-match. Only the Native-Target per-option mini listen button
      needs a new layout rule. */
   #qm-start-screen,
   #qm-retry-intro-screen,
@@ -25,7 +25,7 @@
     gap: 18px;
   }
 
-  /* Ita-Eng only: pairs each option's answer button with its own compact
+  /* Native-Target only: pairs each option's answer button with its own compact
      icon-only listen button, so tapping the icon plays the audio instead
      of submitting that option as the answer. */
   .qm-option-row {

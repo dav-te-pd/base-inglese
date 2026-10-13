@@ -58,7 +58,7 @@ const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./t
 const { stepsBefore, gradeOf } = require('./module-order');
 const { loadGrade } = require('./quiz-driver');
 
-const PASSO = 'flashcardAEngIta'; // prima apparizione di Flash Card, grado A
+const PASSO = 'flashcardATargetNative'; // prima apparizione di Flash Card, grado A
 const PRIMA = stepsBefore(PASSO);
 const FILE_EPISODIO = globDati('gate.json');
 
@@ -220,7 +220,7 @@ async function run() {
   // L'unitId che Flash Card userà: 'flashcard-<grado>:<idVoce>:<direzione>'.
   // Una voce sola, perché il mazzo è ridotto a una carta (vedi mazzoDiUnaCarta).
   const grado = gradeOf(PASSO);
-  const unitIds = loadGrade(grado).slice(0, 1).map(function (v) { return 'flashcard-' + grado + ':' + v.id + ':en-it'; });
+  const unitIds = loadGrade(grado).slice(0, 1).map(function (v) { return 'flashcard-' + grado + ':' + v.id + ':target-native'; });
   console.log('Passo ' + PASSO + ' (grado ' + grado + '), mazzo ridotto a ' + unitIds.length + ' carta: ' + unitIds[0] + '\n');
 
   // Una prova: semina, dà le risposte previste, completa il modulo, legge la

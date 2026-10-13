@@ -163,9 +163,9 @@ async function nuovaPagina(browser, utente, completati) {
 
 // I passi della mappa che aprono ciascuna famiglia.
 const PASSO_DI = {
-  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchEngIta',
-  speedMatch: 'speedMatchEngIta', dialogo: 'dialogoAscoltaRipeti',
-  storyCards: 'meetTheStory', flashcard: 'flashcardAEngIta', repeatAloud: 'repeatAloud'
+  voice: 'voicePractice', personalizza: 'personalizzazione', match: 'matchTargetNative',
+  speedMatch: 'speedMatchTargetNative', dialogo: 'dialogoAscoltaRipeti',
+  storyCards: 'meetTheStory', flashcard: 'flashcardATargetNative', repeatAloud: 'repeatAloud'
 };
 
 async function run() {
@@ -320,8 +320,8 @@ async function run() {
   // due registrazioni sullo stesso handler identico contano una volta sola nel
   // DOM. Qui il conto è sull'effetto osservato al gesto.
   {
-    const page = await nuovaPagina(browser, 'L3', stepsBefore('speedMatchEngIta'));
-    await apriModulo(page, 'speedMatchEngIta');
+    const page = await nuovaPagina(browser, 'L3', stepsBefore('speedMatchTargetNative'));
+    await apriModulo(page, 'speedMatchTargetNative');
     const colpi = await page.evaluate(() => {
       var el = document.getElementById('speed-match-help-btn');
       if (!el) return null;
@@ -354,7 +354,7 @@ async function run() {
   // La forma vecchia portava dentro il test un oggetto `COPPIE` con sei voci, e
   // una delle sei non conteneva quello che il nome diceva:
   //
-  //     flashcard: ['flashcardAEngIta', 'flashcardAItaEng']   // due PASSI, UN kind
+  //     flashcard: ['flashcardATargetNative', 'flashcardANativeTarget']   // due PASSI, UN kind
   //
   // Il blocco apriva due descrittori dello stesso kind e stampava «aprire i
   // suoi 2 kind non duplica il blocco». **Verificava cinque famiglie e ne

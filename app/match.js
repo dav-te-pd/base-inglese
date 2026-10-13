@@ -61,7 +61,7 @@
   var showLoadError = BI.showLoadError;
 
   /* ============================================================
-     MODULES: MATCH PRACTICE ENG-ITA / MATCH PRACTICE ITA-ENG
+     MODULES: MATCH PRACTICE TARGET-NATIVE / MATCH PRACTICE NATIVE-TARGET
      Same multiple-choice/retry/mastery mechanics as Speed Match below
      (shared via buildMultipleChoiceOptions/recordMultipleChoiceResult
      above — CLAUDE.md rule 13), minus everything timer-related: no
@@ -70,18 +70,18 @@
      ('match:') and own retry-queue/attempts state, so mastery is
      tracked separately per exercise type even for the same vocabulary
      item. No "Mostra traduzione" in either direction — the 4-option
-     answer IS the translation here. Eng-Ita shows a full listen block
+     answer IS the translation here. Target-Native shows a full listen block
      (icon + 100/75/50%) under the English prompt, reusing
-     renderRateButtons/toggleSpeak exactly like Repeat Aloud. Ita-Eng
+     renderRateButtons/toggleSpeak exactly like Repeat Aloud. Native-Target
      instead gives each of the 4 English options its own compact
      icon-only mini listen button (always default rate) via
      .qm-option-row; the Italian prompt has no audio at all, since
      it's the user's own language.
      ============================================================ */
-  var QM_DIRECTION_BY_KIND = { matchEngIta: 'en-it', matchItaEng: 'it-en' };
+  var QM_DIRECTION_BY_KIND = { matchTargetNative: 'target-native', matchNativeTarget: 'native-target' };
 
   var qmModule = null;
-  var qmDirection = 'en-it'; // fixed for the whole module session
+  var qmDirection = 'target-native'; // fixed for the whole module session
   var qmVocab = [];
   var qmQueue = [];
   var qmRetryQueue = [];
@@ -170,11 +170,11 @@
     document.getElementById('qm-counter').textContent = qmPassIndex + ' / ' + qmPassTotal;
     document.getElementById('qm-ripasso-badge').hidden = !qmInRetryPass;
     document.getElementById('qm-direction').textContent = etichettaDirezione(qmDirection);
-    var promptText = BI.itemText(qmCurrentItem, qmDirection === 'en-it' ? 'target' : 'native');
+    var promptText = BI.itemText(qmCurrentItem, qmDirection === 'target-native' ? 'target' : 'native');
     document.getElementById('qm-prompt').textContent = promptText;
 
     var audioEl = document.getElementById('qm-prompt-audio');
-    if (qmDirection === 'en-it') {
+    if (qmDirection === 'target-native') {
       audioEl.hidden = false;
       audioEl.innerHTML = renderListenBlock({ say: 'prompt' });
     } else {
@@ -185,8 +185,8 @@
     qmCurrentOptions = BI.buildMultipleChoiceOptions(qmCurrentItem, qmDirection, qmVocab);
     document.getElementById('qm-options').innerHTML = qmCurrentOptions.map(function (opt, i) {
       var optionBtn = '<button type="button" class="help-option sr-option" data-qm-index="' + i + '">' + opt.text + '</button>';
-      if (qmDirection !== 'it-en') return optionBtn;
-      // Ita-Eng only: pair each English option with its own mini listen
+      if (qmDirection !== 'native-target') return optionBtn;
+      // Native-Target only: pair each English option with its own mini listen
       // button (see .qm-option-row) — data-qm-listen-index keeps this
       // click target distinct from the answer button it sits next to.
       return '<div class="qm-option-row">' +
@@ -283,7 +283,7 @@
     // I listener di questo modulo, una volta sola.
     //
     // ⚠️ LA CHIAVE E' 'match' — il BLOCCO, non il kind. Qui la differenza si
-    // VEDE: questa `open` serve DUE kind (`matchEngIta`, `matchItaEng`), quindi
+    // VEDE: questa `open` serve DUE kind (`matchTargetNative`, `matchNativeTarget`), quindi
     // con `module.kind` per chiave il blocco girerebbe due volte, una per
     // direzione, e ogni listener avrebbe due copie. E' lo stesso caso di
     // Speed Match e di Dialogo. La regola per esteso sta accanto a
@@ -306,7 +306,7 @@
     });
 
     document.getElementById('qm-options').addEventListener('click', function (e) {
-      // Ita-Eng's mini listen button sits inside the same options container —
+      // Native-Target's mini listen button sits inside the same options container —
       // check it first so tapping it plays audio instead of submitting an answer.
       var listenBtn = e.target.closest('[data-qm-listen-index]');
       if (listenBtn) {
@@ -396,8 +396,8 @@
     });
   }
   // Match Practice, nelle due direzioni.
-  BI.registraModulo('matchEngIta', openMatch);
-  BI.registraModulo('matchItaEng', openMatch);
+  BI.registraModulo('matchTargetNative', openMatch);
+  BI.registraModulo('matchNativeTarget', openMatch);
 
   // ---- I LISTENER DI MATCH NON STANNO PIU' QUI ----
   //

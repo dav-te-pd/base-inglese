@@ -77,8 +77,8 @@ async function bootAsUser(page, userName, completedModules) {
       localStorage.setItem(BI.moduleProgressKey('gate', d.userName), JSON.stringify({ completed: d.completedModules }));
     }
     ['mappaEpisodio', 'personalizzazione', 'repeatAloud', 'meetTheStory', 'whyWeSayIt',
-     'voiceCoach', 'voicePractice', 'matchEngIta', 'matchItaEng', 'speedMatchEngIta',
-     'speedMatchItaEng', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo',
+     'voiceCoach', 'voicePractice', 'matchTargetNative', 'matchNativeTarget', 'speedMatchTargetNative',
+     'speedMatchNativeTarget', 'flashcard', 'dialogoAscoltaRipeti', 'dialogoRipetiATempo',
      'dialogoContinuo'].forEach(function (k) {
       localStorage.setItem('baseinglese:introDismissed:' + k + ':' + d.userName, '1');
     });
@@ -95,8 +95,8 @@ async function primaCarta(browser, nome) {
   await bloccaFontEsterni(page);
   await page.addInitScript(mockInit);
   const passi = allSteps();
-  await bootAsUser(page, nome, passi.slice(0, passi.indexOf('flashcardAEngIta')));
-  await openModule(page, 'flashcardAEngIta');
+  await bootAsUser(page, nome, passi.slice(0, passi.indexOf('flashcardATargetNative')));
+  await openModule(page, 'flashcardATargetNative');
   await page.waitForSelector('#fc-card', { timeout: 15000 });
   for (const sel of ['#fc-intro-start-btn', '#fc-start-btn']) {
     if (await page.isVisible(sel).catch(() => false)) { await page.click(sel); await page.waitForTimeout(150); break; }

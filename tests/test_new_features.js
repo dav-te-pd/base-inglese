@@ -117,10 +117,10 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'SRSoundTester', stepsBefore('speedMatchEngIta'));
+    await bootAsUser(page, 'SRSoundTester', stepsBefore('speedMatchTargetNative'));
     await page.evaluate(() => { window.APP_CONFIG.speedMatch.countdownStepMs = 60; });
     await page.addScriptTag({ content: spiaToni.content });
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.waitForTimeout(400);
     await page.click('#sr-ready-btn');
     await page.waitForFunction(() => window.__playedTones && window.__playedTones.length >= 3, { timeout: 3000 });
@@ -321,8 +321,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'FullRegression', stepsBefore('matchEngIta'));
-    await openModule(page, 'matchEngIta');
+    await bootAsUser(page, 'FullRegression', stepsBefore('matchTargetNative'));
+    await openModule(page, 'matchTargetNative');
     const qmVisible = await page.evaluate(() => {
       var view = document.getElementById('view-match');
       return !!view && !view.hidden;

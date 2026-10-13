@@ -90,9 +90,9 @@ async function run() {
   // scritta.
   //
   // Diceva: «[A] e [B] confrontano insiemi, quindi uno scambio fra due moduli
-  // le lascia verdi». **Misurato scambiando `matchEngIta` e `matchItaEng`:
+  // le lascia verdi». **Misurato scambiando `matchTargetNative` e `matchNativeTarget`:
   // cadono tutte e tre.** Le righe portano il numero d'ordine (`modulo 7
-  // matchEngIta`), quindi uno scambio cambia il TESTO di due righe e [A]/[B]
+  // matchTargetNative`), quindi uno scambio cambia il TESTO di due righe e [A]/[B]
   // lo vedono come una sparita e una comparsa.
   //
   // *La conclusione reggeva, la motivazione no: e' la ⓪-quater, e stavolta su
@@ -101,7 +101,7 @@ async function run() {
   // PRIMA: se non l'avessi scritta, avrei letto tre rossi e detto «funziona».*
   //
   // Quello che [C] fa davvero, ed e' il motivo per cui resta: **nomina il
-  // guasto**. Dice «prima differenza: modulo 7 matchItaEng» invece di lasciar
+  // guasto**. Dice «prima differenza: modulo 7 matchNativeTarget» invece di lasciar
   // dedurre un riordino da una coppia sparita/comparsa, che somiglia a una
   // perdita piu' che a uno scambio. E se un giorno le righe perdessero il
   // numero d'ordine, sarebbe l'unica a vederlo.

@@ -120,18 +120,18 @@
     // c'è il ripasso finale.
     voicePractice: { kind: 'voicePractice', dataFile: true, voiceVariant: 'practice', type: 'studio' },
     voiceCoach: { kind: 'voiceCoach', dataFile: true, voiceVariant: 'check', type: 'quiz' },
-    matchEngIta: { kind: 'matchEngIta', dataFile: true, type: 'studio' },
-    matchItaEng: { kind: 'matchItaEng', dataFile: true, type: 'studio' },
+    matchTargetNative: { kind: 'matchTargetNative', dataFile: true, type: 'studio' },
+    matchNativeTarget: { kind: 'matchNativeTarget', dataFile: true, type: 'studio' },
     // Tre moduli, un componente solo: dialogoProfile decide countdown,
     // ripetizione e chi parla.
     dialogoAscoltaRipeti: { kind: 'dialogoAscoltaRipeti', dataFile: true, dialogoProfile: 'ascoltaRipeti', type: 'dialogo' },
     dialogoRipetiATempo: { kind: 'dialogoRipetiATempo', dataFile: true, dialogoProfile: 'ripetiATempo', type: 'dialogo' },
     dialogoContinuo: { kind: 'dialogoContinuo', dataFile: true, dialogoProfile: 'continuo', type: 'dialogo' },
-    speedMatchEngIta: { kind: 'speedMatchEngIta', dataFile: true, type: 'quiz' },
-    speedMatchItaEng: { kind: 'speedMatchItaEng', dataFile: true, type: 'quiz' },
+    speedMatchTargetNative: { kind: 'speedMatchTargetNative', dataFile: true, type: 'quiz' },
+    speedMatchNativeTarget: { kind: 'speedMatchNativeTarget', dataFile: true, type: 'quiz' },
     // Un kind solo, due direzioni: flashcardDirection le distingue.
-    flashcardAEngIta: { kind: 'flashcard', dataFile: true, flashcardDirection: 'en-it', type: 'studio' },
-    flashcardAItaEng: { kind: 'flashcard', dataFile: true, flashcardDirection: 'it-en', type: 'studio' }
+    flashcardATargetNative: { kind: 'flashcard', dataFile: true, flashcardDirection: 'target-native', type: 'studio' },
+    flashcardANativeTarget: { kind: 'flashcard', dataFile: true, flashcardDirection: 'native-target', type: 'studio' }
   };
 
   // Ogni episodio riceve la SUA copia dei descrittori, non quella condivisa:

@@ -3,7 +3,7 @@
 // buttons behave correctly. Closes the gap the censimento audit found —
 // every existing test on these modules checks behavior (locks, disabled
 // states, scoring) but none reads the prompt/answer/front/back text
-// itself, so a swapped en-it/it-en ternary would go completely unnoticed.
+// itself, so a swapped target-native/native-target ternary would go completely unnoticed.
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiClasse, attendiVisibile } = require('./attese');
@@ -36,8 +36,8 @@ async function run() {
     // NOT the intro-dismiss shortcut used elsewhere here — we want a
     // deterministic first card, and the intro-dismiss list already
     // covers flashcard regardless of direction.
-    await bootAsUser(page, 'ContentFCItaEng', stepsBefore('flashcardAItaEng'));
-    await openModule(page, 'flashcardAItaEng');
+    await bootAsUser(page, 'ContentFCNativeTarget', stepsBefore('flashcardANativeTarget'));
+    await openModule(page, 'flashcardANativeTarget');
     await page.waitForTimeout(200);
     const startVisible = await page.isVisible('#fc-intro-start-btn').catch(() => false);
     if (startVisible) { await page.click('#fc-intro-start-btn'); await page.waitForTimeout(150); }
@@ -68,8 +68,8 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    await bootAsUser(page, 'ContentQMItaEng', stepsBefore('matchItaEng'));
-    await openModule(page, 'matchItaEng');
+    await bootAsUser(page, 'ContentQMNativeTarget', stepsBefore('matchNativeTarget'));
+    await openModule(page, 'matchNativeTarget');
     await page.click('#qm-start-btn').catch(() => {});
     await attendiVisibile(page, '#qm-quiz-screen'); // approdo misurato: la direzione e' gia' scritta quando il click torna, ma non puo' essere l'approdo di se stessa — si aspetta la schermata del quiz, che nessuna asserzione qui legge
     const directionLabel = await page.$eval('#qm-direction', el => el.textContent.trim());

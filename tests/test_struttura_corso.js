@@ -67,7 +67,7 @@ function tabellaSotto(testo, titolo) {
   return out.slice(1); // via l'intestazione
 }
 
-// "`matchEngIta` — Match Practice `en→it`" -> "matchEngIta"
+// "`matchTargetNative` — Match Practice `en→it`" -> "matchTargetNative"
 function idModulo(cella) {
   const m = cella.match(/`([A-Za-z][A-Za-z0-9]*)`/);
   return m ? m[1] : null;

@@ -12,13 +12,13 @@ const mockInit = mockBrowser({ riconoscimento: 'suStop', ritardoRiconoscimentoMs
 
 
 const bootAsUser = (page, userName, completedModules, extraStorage) =>
-  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchEngIta', 'speedMatchEngIta', 'flashcard'], storage: extraStorage });
+  bootUtente(page, { utente: userName, completati: completedModules, introChiuse: ['mappaEpisodio', 'personalizzazione', 'voiceCoach', 'matchTargetNative', 'speedMatchTargetNative', 'flashcard'], storage: extraStorage });
 
 async function run() {
   const browser = await launchBrowser();
   const results = [];
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
-  const ALL_BEFORE_SR = stepsBefore('speedMatchEngIta');
+  const ALL_BEFORE_SR = stepsBefore('speedMatchTargetNative');
 
   // ============ TASK 6: Personalizzazione visible in map, first, unlocked ============
   {

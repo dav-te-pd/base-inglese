@@ -37,9 +37,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('matchEngIta');
+    const idx = ALL_MODULES.indexOf('matchTargetNative');
     await bootAsUser(page, 'T9QMAlto', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     await page.waitForTimeout(150);

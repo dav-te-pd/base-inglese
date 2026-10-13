@@ -411,7 +411,7 @@ async function run() {
         domanda: (document.querySelector('.q-class') || {}).textContent
       };
       d.remove();
-      return { dopoStart: dopoStart, dopoFreeze: dopoFreeze, box: box, direzioni: { 'en-it': window.BI.etichettaDirezione('en-it'), 'it-en': window.BI.etichettaDirezione('it-en') } };
+      return { dopoStart: dopoStart, dopoFreeze: dopoFreeze, box: box, direzioni: { 'target-native': window.BI.etichettaDirezione('target-native'), 'native-target': window.BI.etichettaDirezione('native-target') } };
       }) : null;
     } catch (e) {
       timer = { errore: String(e).split('\n')[0] };
@@ -428,7 +428,7 @@ async function run() {
     // Dal 2026-10-01 non e' piu' una tabella ma `etichettaDirezione`, che legge i
     // nomi della §9 dell'edizione: qui l'inglese, quindi le due scritte di sempre.
     log('[G] etichettaDirezione dà le due direzioni, coi nomi dell\'edizione',
-      !!timer && !!timer.direzioni && timer.direzioni['en-it'] === 'INGLESE → ITALIANO' && timer.direzioni['it-en'] === 'ITALIANO → INGLESE',
+      !!timer && !!timer.direzioni && timer.direzioni['target-native'] === 'INGLESE → ITALIANO' && timer.direzioni['native-target'] === 'ITALIANO → INGLESE',
       JSON.stringify(timer && (timer.direzioni || timer.errore)));
 
     log('[D] Nessun errore JS', errori.length === 0, errori.join(' | '));

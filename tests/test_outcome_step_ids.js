@@ -17,7 +17,7 @@
 //
 // Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
 // docs/archivio/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda
-// apparizione in poi è 'matchEngIta-2', invece che con l'id del MODULO),
+// apparizione in poi è 'matchTargetNative-2', invece che con l'id del MODULO),
 // e per quel motivo stava fuori dalla suite: un test che asserisce un difetto
 // diventa rosso proprio quando il difetto viene corretto. Corretto il difetto
 // (index.html: sette letture passate a .moduleId, CONFIG.attemptRule tolta e
@@ -231,8 +231,8 @@ async function run() {
   const log = (msg, ok) => { risultati.push(ok); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
   const ids = stepIds();
-  const passo4 = ids[3];   // matchEngIta   (prima apparizione)
-  const passo9 = ids[8];   // matchEngIta-2 (seconda apparizione)
+  const passo4 = ids[3];   // matchTargetNative   (prima apparizione)
+  const passo9 = ids[8];   // matchTargetNative-2 (seconda apparizione)
   const passo12 = ids[11]; // voicePractice      (prima apparizione)
   const passo16 = ids[15]; // voicePractice-2    (seconda apparizione)
 
@@ -250,12 +250,12 @@ async function run() {
     await doPersonalizzazione(page);            // 1
     await doStory(page, ids[1]);                // 2  meetTheStory
     await doRepeatAloud(page, ids[2]);          // 3  repeatAloud
-    await doMatch(page, ids[3]);           // 4  matchEngIta
-    await doMatch(page, ids[4]);           // 5  matchItaEng
-    await doFlashcard(page, ids[5]);            // 6  flashcardAEngIta
-    await doFlashcard(page, ids[6]);            // 7  flashcardAItaEng
+    await doMatch(page, ids[3]);           // 4  matchTargetNative
+    await doMatch(page, ids[4]);           // 5  matchNativeTarget
+    await doFlashcard(page, ids[5]);            // 6  flashcardATargetNative
+    await doFlashcard(page, ids[6]);            // 7  flashcardANativeTarget
     await doRepeatAloud(page, ids[7]);          // 8  repeatAloud-2
-    await doMatch(page, ids[8]);           // 9  matchEngIta-2
+    await doMatch(page, ids[8]);           // 9  matchTargetNative-2
 
     const r4 = await readRow(page, passo4);
     const r9 = await readRow(page, passo9);

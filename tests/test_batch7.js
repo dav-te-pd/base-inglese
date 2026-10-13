@@ -45,9 +45,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('speedMatchEngIta');
+    const idx = ALL_MODULES.indexOf('speedMatchTargetNative');
     await bootAsUser(page, 'T7Rotate', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'speedMatchEngIta');
+    await openModule(page, 'speedMatchTargetNative');
     await page.waitForTimeout(300);
     const startVisible = await page.isVisible('#sr-ready-btn').catch(() => false);
     if (startVisible) { await page.click('#sr-ready-btn'); await page.waitForTimeout(50); }
@@ -154,9 +154,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('matchEngIta');
+    const idx = ALL_MODULES.indexOf('matchTargetNative');
     await bootAsUser(page, 'T7ValveQM', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     await page.waitForTimeout(300);
     const startVisible = await page.isVisible('#qm-start-btn').catch(() => false);
     if (startVisible) { await page.click('#qm-start-btn'); await page.waitForTimeout(150); }
@@ -198,9 +198,9 @@ async function run() {
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
-    const idx = ALL_MODULES.indexOf('flashcardAEngIta');
+    const idx = ALL_MODULES.indexOf('flashcardATargetNative');
     await bootAsUser(page, 'T7ValveFC', ALL_MODULES.slice(0, idx));
-    await openModule(page, 'flashcardAEngIta');
+    await openModule(page, 'flashcardATargetNative');
     await page.waitForTimeout(300);
     const startVisible = await page.isVisible('#fc-intro-start-btn').catch(() => false);
     if (!startVisible) {

@@ -91,14 +91,14 @@ function statoDelModulo(page) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(a => localStorage.setItem(BI.moduleProgressKey('gate', a.u),
-    JSON.stringify({ completed: a.c })), { u: UTENTE, c: stepsBefore('matchEngIta') });
+    JSON.stringify({ completed: a.c })), { u: UTENTE, c: stepsBefore('matchTargetNative') });
   await page.reload();
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.click('#go-episode');
   const intro = await page.$('#map-intro-start-btn');
   if (intro) await intro.click().catch(() => {});
   await page.waitForSelector('#module-list .module-row', { state: 'visible', timeout: 15000 });
-  await page.click('[data-module="matchEngIta"]');
+  await page.click('[data-module="matchTargetNative"]');
   await page.waitForSelector('#qm-start-btn', { state: 'visible', timeout: 10000 });
   await page.click('#qm-start-btn');
   await page.waitForFunction(() => document.querySelectorAll('#qm-options .sr-option').length > 0, { timeout: 10000 });

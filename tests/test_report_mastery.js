@@ -33,12 +33,12 @@ const UTENTE = 'ReportMastery';
 // prefisso — elenca le chiavi che trova — quindi qui non serve una riga per
 // ogni modulo: serve una riga per ogni FORMA di chiave.
 const COLORI = {
-  'match:a-hello:it-en': { level: 'rosso', streak: 0 },
+  'match:a-hello:native-target': { level: 'rosso', streak: 0 },
   'voicepractice:d-1:1': { level: 'verde', streak: 1 },
-  'match:a-hello:en-it': { level: 'verde', streak: 0 },
-  'flashcard-A:a-hello:en-it': { level: 'giallo', streak: 1 },
+  'match:a-hello:target-native': { level: 'verde', streak: 0 },
+  'flashcard-A:a-hello:target-native': { level: 'giallo', streak: 1 },
   'voicepractice:d-1:0': { level: 'rosso', streak: 0 },
-  'speedmatch:c-1:en-it': { level: 'giallo', streak: 0 }
+  'speedmatch:c-1:target-native': { level: 'giallo', streak: 0 }
 };
 
 async function apriPannello(page, colori) {

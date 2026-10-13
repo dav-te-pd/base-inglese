@@ -1,6 +1,16 @@
-**Versione: 20261001a**
+**Versione: 20261013a**
 
 # Struttura del corso — spagnolo per italiani
+
+🔴 **GLI ID DI SEI PASSI SONO CAMBIATI IL 2026-10-13, E NON È UNA CORREZIONE DI SCRITTURA.**
+*Si chiamavano `matchEngIta`, `matchItaEng`, `flashcardAEngIta`, `flashcardAItaEng`,
+`speedMatchEngIta`, `speedMatchItaEng`: **nomi che nominano due lingue, usati anche dal corso di
+spagnolo**.* ⭐ **Ora sono `…TargetNative` e `…NativeTarget`** — *`target` è la lingua insegnata,
+`native` quella dello studente, in qualunque edizione.*
+
+⚠️ **E i nomi neutri non sono una convenzione nuova:** *il codice già convertiva `'en-it'` in
+`target`/`native` due righe dopo averlo letto.* **La rinomina toglie un passaggio di traduzione.**
+
 
 ---
 
@@ -104,30 +114,42 @@ righe è l'ordine delle chiavi.*
 | `meetTheStory` | Conoce la historia | Ascolta la storia | `studio` |
 | `repeatAloud` | Repite en voz alta | Ripeti ad alta voce | `studio` |
 | `whyWeSayIt` | Por qué se dice así | Perché si dice così | `studio` |
-| `matchEngIta` | Empareja es→it | Abbina le traduzioni | `studio` |
-| `matchItaEng` | Empareja it→es | Abbina le traduzioni | `studio` |
-| `flashcardAEngIta` | Tarjetas es→it | Ripassa quello che hai imparato | `studio` |
-| `flashcardAItaEng` | Tarjetas it→es | Ripassa quello che hai imparato | `studio` |
+| `matchTargetNative` | Empareja es→it | Abbina le traduzioni | `studio` |
+| `matchNativeTarget` | Empareja it→es | Abbina le traduzioni | `studio` |
+| `flashcardATargetNative` | Tarjetas es→it | Ripassa quello che hai imparato | `studio` |
+| `flashcardANativeTarget` | Tarjetas it→es | Ripassa quello che hai imparato | `studio` |
 | `voicePractice` | Practica la voz | Allena la pronuncia | `studio` |
 | `dialogoAscoltaRipeti` | Diálogo: escucha y repite | Ascolta e ripeti | `dialogo` |
 | `dialogoRipetiATempo` | Diálogo: repite a tiempo | Ripeti a tempo | `dialogo` |
 | `dialogoContinuo` | Diálogo: sin pausas | Il dialogo vero | `dialogo` |
-| `speedMatchEngIta` | Contrarreloj es→it | Traduci a tempo | `quiz` |
-| `speedMatchItaEng` | Contrarreloj it→es | Traduci a tempo | `quiz` |
+| `speedMatchTargetNative` | Contrarreloj es→it | Traduci a tempo | `quiz` |
+| `speedMatchNativeTarget` | Contrarreloj it→es | Traduci a tempo | `quiz` |
 | `voiceCoach` | Prueba de voz | Metti alla prova la pronuncia | `quiz` |
 
 ### ⚠️ TRE COSE SU QUESTA TABELLA
 
-**① Gli id restano quelli inglesi — `matchEngIta` in un corso di spagnolo — E DEVE ESSERE COSÌ.**
+**① Gli id dei moduli sono UGUALI IN TUTTE LE EDIZIONI, e non nominano nessuna lingua.**
 *`it-istruzioni-moduli` e `it-messaggi-feedback` sono **condivisi fra le edizioni** e indicizzati per
 `kind`: se qui l'id diventasse `matchEsIta`, il file condiviso non avrebbe una chiave per lui.*
 
-⭐ **Quindi gli id dei moduli sono del METODO, non dell'edizione.**
+⭐ **Quindi gli id dei moduli sono del METODO, non dell'edizione.** *E un id del metodo non può nominare
+una delle due lingue di una coppia: `target` è la lingua insegnata, `native` quella dello studente, in
+qualunque edizione.*
 
-⚠️ **MA `matchEngIta` è un id che NOMINA UNA LINGUA, usato da un'edizione che non la parla** — *ed è
-esattamente la forma di `speedRoundMessages`: un nome vecchio che vive in una chiave e che nessuna
-verifica trova.* **Va reso neutro al terzo pacchetto**, *insieme alle altre migrazioni di id. Non adesso:
-sarebbe una migrazione sull'inglese, che è congelato.*
+🔴 **E FINO AL 2026-10-13 QUESTI ID SI CHIAMAVANO `matchEngIta`, `flashcardAEngIta`,
+`speedMatchEngIta` E I LORO CONTRARI** — *nomi inglesi dentro un corso di spagnolo.* **Rinominati il
+13 ottobre, nello stesso passo che ha reso neutri i valori di direzione.**
+
+⚠️ **E com'era scritto il rinvio, prima, vale più della rinomina:** *«va reso neutro **al terzo
+pacchetto**… sarebbe una migrazione sull'inglese, che è **congelato**».* 🔴 **Nessuna delle due parole
+era definita da nessuna parte: una occorrenza ciascuna in tutto il repository, questa riga.**
+
+> ⭐ **Un rinvio costruito su parole non definite non si può né eseguire né contestare.**
+
+⭐ **E la ragione per cui si è fatto adesso e non dopo:** *gli id dei passi sono le chiavi dei progressi
+salvati, e **non esiste nessuna migrazione per gli id dei passi**.* **Oggi i soli progressi al mondo sono
+di prova e si buttano: costo zero. Dopo Supabase la stessa rinomina richiederebbe prima di costruire lo
+strumento che non c'è.**
 
 **② IL NOME È NELLA LINGUA CHE SI IMPARA, IL SOTTOTITOLO IN ITALIANO — deciso il 2026-09-27.**
 
@@ -172,29 +194,29 @@ il modulo non lavora su un grado).*
 | `narrativo-standard` | `personalizzazione` | |
 | `narrativo-standard` | `meetTheStory` | D |
 | `narrativo-standard` | `repeatAloud` | A |
-| `narrativo-standard` | `matchEngIta` | A |
-| `narrativo-standard` | `matchItaEng` | A |
-| `narrativo-standard` | `flashcardAEngIta` | A |
-| `narrativo-standard` | `flashcardAItaEng` | A |
+| `narrativo-standard` | `matchTargetNative` | A |
+| `narrativo-standard` | `matchNativeTarget` | A |
+| `narrativo-standard` | `flashcardATargetNative` | A |
+| `narrativo-standard` | `flashcardANativeTarget` | A |
 | `narrativo-standard` | `repeatAloud` | B |
-| `narrativo-standard` | `matchEngIta` | B |
-| `narrativo-standard` | `matchItaEng` | B |
-| `narrativo-standard` | `flashcardAEngIta` | B |
+| `narrativo-standard` | `matchTargetNative` | B |
+| `narrativo-standard` | `matchNativeTarget` | B |
+| `narrativo-standard` | `flashcardATargetNative` | B |
 | `narrativo-standard` | `voicePractice` | B |
 | `narrativo-standard` | `whyWeSayIt` | D |
-| `narrativo-standard` | `matchEngIta` | C |
-| `narrativo-standard` | `matchItaEng` | C |
+| `narrativo-standard` | `matchTargetNative` | C |
+| `narrativo-standard` | `matchNativeTarget` | C |
 | `narrativo-standard` | `voicePractice` | C |
 | `narrativo-standard` | `dialogoAscoltaRipeti` | D |
 | `narrativo-standard` | `dialogoRipetiATempo` | D |
 | `narrativo-standard` | `dialogoContinuo` | D |
-| `narrativo-standard` | `speedMatchEngIta` | C |
-| `narrativo-standard` | `speedMatchItaEng` | C |
+| `narrativo-standard` | `speedMatchTargetNative` | C |
+| `narrativo-standard` | `speedMatchNativeTarget` | C |
 | `narrativo-standard` | `voiceCoach` | C |
 | `prova-corta` | `personalizzazione` | |
 | `prova-corta` | `meetTheStory` | D |
 | `prova-corta` | `repeatAloud` | A |
-| `prova-corta` | `matchEngIta` | A |
+| `prova-corta` | `matchTargetNative` | A |
 | `prova-corta` | `dialogoAscoltaRipeti` | D |
 
 ⚠️ **`prova-corta` è una sonda, non contenuto:** *serve a provare i selettori del Pannello Admin, e

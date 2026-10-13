@@ -14,8 +14,8 @@ const BASE = APP_URL;
 // legge DAVVERO, non un grado scritto qui. Con moduleOrder a coppie lo stesso
 // modulo compare su gradi diversi, e prendere sempre il grado A significava
 // cercare la domanda mostrata in un elenco che non la contiene.
-const VOCABULARY = loadGrade(gradeOf('matchEngIta'));
-const VOCABULARY_SR = loadGrade(gradeOf('speedMatchEngIta'));
+const VOCABULARY = loadGrade(gradeOf('matchTargetNative'));
+const VOCABULARY_SR = loadGrade(gradeOf('speedMatchTargetNative'));
 
 const mockInit = mockBrowser({ riconoscimento: 'continuo' });
 
@@ -23,7 +23,7 @@ const bootAsUser = (page, userName, completedModules) =>
   bootUtente(page, { utente: userName, completati: completedModules, introChiuse: INTRO_DI_TUTTI });
 
 const ALL_BEFORE_VP = stepsBefore('voicePractice');
-const ALL_BEFORE_QM = stepsBefore('matchEngIta');
+const ALL_BEFORE_QM = stepsBefore('matchTargetNative');
 const ALL_BEFORE_DG_TEMPO = stepsBefore('dialogoRipetiATempo');
 
 async function run() {
@@ -142,7 +142,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T14Ripasso', ALL_BEFORE_QM);
-    await openModule(page, 'matchEngIta');
+    await openModule(page, 'matchTargetNative');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
     // ATTESA-LEGITTIMA: lo stato verificato qui era GIA' vero prima dell'attesa.
