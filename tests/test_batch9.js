@@ -39,6 +39,17 @@ async function run() {
     await page.addInitScript(mockInit);
     const idx = ALL_MODULES.indexOf('matchTargetNative');
     await bootAsUser(page, 'T9QMAlto', ALL_MODULES.slice(0, idx));
+    // ⚠️ `basso` A 0, E SOLO IN QUESTA PAGINA — dal 2026-10-16. Il percorso qui
+    // sotto risponde a caso al primo giro, quindi PUO' finire allo 0%: e da
+    // quel giorno a 0% non compare nessun messaggio (decisione (a1),
+    // `fasciaMessaggio`). In Speed Match (test_batch7) e'
+    // successo il 2026-10-16; qui la probabilita' e' piu' bassa, non zero.
+    // Questa sezione verifica DA DOVE viene il messaggio, non la regola dello
+    // 0% — quella la protegge `test_zero_per_cento.js` — e con `basso` a 0
+    // ogni percentuale ha una fascia, su qualunque macchina e con qualunque
+    // sorte. *Lasciarla al caso darebbe un rosso ogni tanto: un test che
+    // dipende dalla fortuna non protegge niente (regola 19).*
+    await page.evaluate(() => { window.APP_CONFIG.percentageThresholds.basso = 0; });
     await openModule(page, 'matchTargetNative');
     await page.waitForTimeout(300);
     await page.click('#qm-start-btn');
