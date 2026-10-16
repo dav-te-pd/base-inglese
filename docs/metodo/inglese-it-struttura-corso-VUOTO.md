@@ -1,4 +1,4 @@
-**Versione: VUOTO-20261016b**
+**Versione: VUOTO-20261016c**
 
 # Struttura del corso — {lingua} per {studente}
 
@@ -148,6 +148,7 @@ da una scelta presa per l'inglese.*
 | Lettera | Nome mostrato | Cosa contiene |
 |---|---|---|
 | X | Nome che vede lo studente | descrizione libera, non letta |
+| Y | Un altro nome | descrizione libera, non letta |
 
 ---
 
@@ -169,6 +170,7 @@ inventato non ha l'etichetta nel file condiviso, e il controllo incrociato ferme
 
 | Id | A cosa serve |
 |---|---|
+| `inizio` | descrizione libera, non letta |
 | `studio` | descrizione libera, non letta |
 
 ---
@@ -191,6 +193,7 @@ il modulo.**
 
 | Id | Nome | Categoria |
 |---|---|---|
+| `esempioInizio` | Nome Del Primo Passo | `inizio` |
 | `esempioModulo` | Nome Del Modulo | `studio` |
 
 ---
@@ -209,8 +212,9 @@ fossero.*
 
 | Sequenza | Modulo | Grado |
 |---|---|---|
-| `nome-della-sequenza` | `esempioModulo` | |
-| `nome-della-sequenza` | `unAltroModulo` | X |
+| `nome-della-sequenza` | `esempioInizio` | |
+| `nome-della-sequenza` | `esempioModulo` | X |
+| `nome-della-sequenza` | `esempioModulo` | Y |
 
 ⚠️ **TUTTE le sequenze stanno in QUESTA tabella, una riga per passo, col nome della sequenza ripetuto
 nella prima colonna.** *Non c'è un `###` per sequenza, e non c'è una colonna col numero del passo:
@@ -218,6 +222,24 @@ l'ordine delle righe È l'ordine dei passi.*
 
 ⚠️ **E il grado di un passo che non lavora su un grado è una cella VUOTA, non un trattino.** *Un `—`
 diventa il grado `"—"` nel JSON, e nessun controllo se ne accorge.*
+
+### ⭐ PERCHÉ QUESTO MODELLO HA DUE GRADI, DUE CATEGORIE E DUE MODULI — dal 2026-10-16
+
+**Non per completezza: ognuna delle righe in più è l'unico modo di mostrare un caso vero.**
+
+| La riga | Il caso che mostra |
+|---|---|
+| `esempioInizio` con la cella del grado **vuota** | *un passo che non lavora su un grado — come Your Story* |
+| `esempioModulo` su **X** | *il caso normale* |
+| ⭐ `esempioModulo` su **Y** | **LO STESSO MODULO SU DUE GRADI** — *è quello che fa Repeat Aloud su A, B e C* |
+
+🔴 **E non va confuso con «lo stesso modulo una volta senza grado e una volta con»:** *un modulo lavora
+sui gradi o non ci lavora. Metterlo in entrambi i modi descriverebbe un caso che nessuna edizione ha.*
+
+⚠️ **Ogni riga in più è anche FORZATA da un controllo incrociato:** *la categoria `inizio` deve stare
+nella §3 e avere l'etichetta nel file condiviso · il grado `Y` deve stare nella §2 · i due moduli della
+§5 devono stare nella §4.* ⭐ **Un modello con un modulo e un grado non potrebbe far scattare nessuno di
+questi controlli: sarebbe una forma che non si mette alla prova.**
 
 ### 🔴 LA TABELLA DEI PASSI STA SUBITO DOPO LA PROSA, E NON È UNA SCELTA DI STILE
 

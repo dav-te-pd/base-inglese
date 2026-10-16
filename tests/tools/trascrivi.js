@@ -356,14 +356,33 @@ function struttura(ed, testo, condiviso) {
     moduleLabels[id] = { name: r[1].trim(), categoria: categoria };
   });
 
+  // ⚠️ OGNI PASSO SI CONTROLLA CONTRO LA §2 E LA §4, dal 2026-10-16 — deciso
+  // da chi guida il progetto. Fino a quel giorno un grado che la §2 non ha
+  // (`—`, `Z`) o un modulo che la §4 non ha passavano nel JSON senza fermare
+  // niente: il `—` di «nessun grado» sarebbe diventato il grado "—", e se ne
+  // sarebbe accorta l'app, all'apertura del passo. *Lo prendeva solo il test
+  // del modello, cioe' un caso; qui lo prende ogni edizione.* La cella del
+  // grado VUOTA resta il modo di dire «nessun grado».
   const passi = colonne(tabellaSotto(t, '## 5 — LE SEQUENZE DEI MODULI', true), 3, 'sequenze');
   const sequences = {};
-  passi.forEach((r) => {
+  const passiGuasti = [];
+  passi.forEach((r, i) => {
     const nome = nb(r[0]);
     const passo = { module: nb(r[1]) };
     if (nb(r[2])) passo.grade = nb(r[2]);
+    if (!moduleLabels[passo.module]) {
+      passiGuasti.push('riga ' + (i + 1) + ' (`' + nome + '`): il modulo `' + passo.module + '` non sta nella sezione 4');
+    }
+    if ('grade' in passo && grades.indexOf(passo.grade) === -1) {
+      passiGuasti.push('riga ' + (i + 1) + ' (`' + nome + '`): il grado «' + passo.grade + '» non sta nella sezione 2' +
+        (passo.grade === '\u2014' || passo.grade === '-' ? ' — «nessun grado» si scrive lasciando la cella VUOTA' : ''));
+    }
     (sequences[nome] = sequences[nome] || []).push(passo);
   });
+  // Tutti insieme, non il primo: chi corregge li vede in un giro solo.
+  if (passiGuasti.length) {
+    throw new Error(ed.pref + 'struttura-corso, sezione 5: ' + passiGuasti.join(' · ') + '.');
+  }
 
   const ep = colonne(tabellaSotto(t, '## 7 — GLI EPISODI', true), 4, 'episodi');
   const episodes = {};

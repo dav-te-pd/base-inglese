@@ -20,6 +20,9 @@
 //   [C] le tabelle di personalizzazione: `it ↔ en` scambiate in una tabella a
 //       quattro colonne, i due `paese` scambiati in `places.departures`, una
 //       tabella di cinque colonne;
+//   [E] i passi della §5: un grado fuori dalla §2 o un modulo fuori dalla §4
+//       fermano (dal 2026-10-16), e il modello mostra i tre casi veri — un
+//       passo senza grado, lo stesso modulo su due gradi, due categorie;
 //   [D] ⚠️ IL CASO PIU' DIVERSO (regola 42): `places.departures`, l'unica
 //       tabella dove la lingua insegnata compare DUE volte (`en` e
 //       `paese en`). Li' non basta che la cella sia diversa da `it`: deve
@@ -140,6 +143,41 @@ function run() {
     Object.keys(strutturaModello.sequences).forEach((n) => strutturaModello.sequences[n].forEach((p) => { if ('grade' in p) gradi.push(p.grade); }));
     log('[A] ...e i suoi passi hanno gradi della §2, o nessuna chiave `grade` — mai un «—» trascritto come grado',
       gradi.every((g) => strutturaModello.grades.indexOf(g) !== -1), JSON.stringify(gradi));
+  }
+
+  // ── [E] I passi della §5 contro la §2 e la §4, dal 2026-10-16 ──
+  //
+  // Deciso da chi guida il progetto: un grado che la §2 non ha o un modulo che
+  // la §4 non ha fermano il trascrittore. *Fino a quel giorno passavano nel
+  // JSON in silenzio, e il «—» di «nessun grado» lo prendeva solo il test del
+  // modello qui sopra — un caso; adesso lo prende ogni edizione.* Sul testo
+  // vero dell'inglese, alterato in memoria.
+  const strIng = leggi('docs/inglese/it/inglese-it-struttura-corso.md');
+  const fermaS = (nome, testo, attesi) => {
+    const m = sollevato(() => T.struttura(ING, testo));
+    log(nome, !!m && attesi.every((a) => m.indexOf(a) !== -1), String(m));
+  };
+  const riga = '| `narrativo-standard` | `meetTheStory` | D |';
+  log('[E] (la riga che altero c\'e\' nel testo vero)', strIng.indexOf(riga) !== -1);
+  fermaS('[E] Un passo col grado «—»: ferma, e dice che «nessun grado» e\' la cella VUOTA',
+    strIng.replace(riga, '| `narrativo-standard` | `meetTheStory` | \u2014 |'), ['sezione 5', '«\u2014»', 'cella VUOTA']);
+  fermaS('[E] Un passo con un modulo che la §4 non ha: ferma e lo nomina',
+    strIng.replace(riga, '| `narrativo-standard` | `moduloFantasma` | D |'), ['sezione 5', '`moduloFantasma`', 'sezione 4']);
+  fermaS('[E] Un passo con DUE guasti (modulo e grado): li nomina tutti e due, non il primo',
+    strIng.replace(riga, '| `narrativo-standard` | `moduloFantasma` | Z |'), ['`moduloFantasma`', '«Z»']);
+  // ⚠️ E IL MODELLO E' L'UNICO POSTO DOVE QUESTI CONTROLLI SI METTONO ALLA
+  // PROVA TUTTI INSIEME: deciso da chi guida il progetto, ha due gradi, due
+  // categorie e due moduli, e ogni riga in piu' e' forzata da un controllo.
+  if (strutturaModello) {
+    const passiM = [];
+    Object.keys(strutturaModello.sequences).forEach((n) => strutturaModello.sequences[n].forEach((p) => passiM.push(p)));
+    const perModulo = {};
+    passiM.forEach((p) => { if ('grade' in p) (perModulo[p.module] = perModulo[p.module] || []).push(p.grade); });
+    log('[E] Il modello mostra un passo SENZA grado (come Your Story)', passiM.some((p) => !('grade' in p)));
+    log('[E] ...lo STESSO modulo su due gradi diversi (come Repeat Aloud su A, B e C)',
+      Object.keys(perModulo).some((m) => new Set(perModulo[m]).size >= 2), JSON.stringify(perModulo));
+    const catModello = new Set(Object.keys(strutturaModello.moduleLabels).map((k) => strutturaModello.moduleLabels[k].categoria));
+    log('[E] ...e moduli di due categorie diverse', catModello.size >= 2, JSON.stringify(Array.from(catModello)));
   }
 
   // ── [B] I gradi ──
