@@ -639,8 +639,11 @@ function istruzioni(st, testo) {
 }
 
 // I messaggi di esito: `{studente}-messaggi-feedback.json`.
-function messaggi(st) {
-  const t = fs.readFileSync(docC(st, 'messaggi-feedback'), 'utf8');
+//
+// `testo` e' facoltativo, come in `istruzioni()`: serve a trascrivere in
+// memoria un file consegnato PRIMA di promuoverlo (dal 2026-10-16).
+function messaggi(st, testo) {
+  const t = testo != null ? testo : fs.readFileSync(docC(st, 'messaggi-feedback'), 'utf8');
   const out = {};
 
   // ⚠️ LA SEZIONE 2 — LE FASCE — NON SI LEGGE PIU', dal 2026-10-16. Portava

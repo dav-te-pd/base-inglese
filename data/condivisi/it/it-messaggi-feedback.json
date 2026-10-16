@@ -48,10 +48,10 @@
   "valvolaSicurezzaMessages": {
     "nonRiuscita": {
       "bodies": [
-        "Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale.",
-        "Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l'esercizio, la ritroverai più avanti nei ripassi mirati.",
-        "A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi.",
-        "Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve.",
+        "Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: su una frase così, insistere adesso non aiuta.",
+        "Capita, e non è un problema: questa frase ha bisogno di più tempo del resto. Vai avanti con l'esercizio.",
+        "A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare.",
+        "Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti col resto.",
         "Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell'esercizio."
       ],
       "title": "Tranquillo, capita!"
@@ -69,25 +69,25 @@
   },
   "moduleCompleteMessages": {
     "alto": [
-      "Hai risposto bene quasi a tutto: si vede che il lavoro fatto finora paga.",
-      "Risultato pieno, o quasi — complimenti per la precisione.",
-      "Prova solida dall'inizio alla fine, senza bisogno di ripassi.",
-      "Hai portato a casa quasi tutte le risposte giuste: ottimo lavoro.",
-      "Punteggio alto: le parole di questo blocco le hai già in mano."
+      "Primo colpo, punteggio alto: questo blocco lo sai.",
+      "Bel lavoro — qui sei andato sicuro.",
+      "Quello che hai studiato in questo blocco ti è rimasto.",
+      "Punteggio alto: se qualcosa è tornato indietro, l'hai già chiuso qui.",
+      "Qui hai lavorato bene, e si vede già dal primo passaggio."
     ],
     "medio": [
-      "Buon punteggio, con qualche punto da ripassare quando vuoi.",
-      "Ci sei quasi: un altro passaggio sulle parole più incerte e sarà solido.",
-      "Bel lavoro nel complesso, vale la pena tornare sulle risposte sbagliate.",
-      "Sei sulla strada giusta — un ripasso mirato completa il quadro.",
-      "Discreto risultato, ripassa le parole più difficili e migliorerà ancora."
+      "Buon punteggio al primo passaggio. Il resto l'hai sistemato qui.",
+      "Ci sei: una parte è entrata subito, sul resto hai dovuto tornarci.",
+      "Buona parte al primo colpo, e il resto l'hai chiuso a forza di riprovarci.",
+      "Va bene così: quello su cui hai esitato l'hai rifatto fino a prenderlo.",
+      "Niente da rifare adesso: il giro è completo."
     ],
     "basso": [
-      "Va bene così, ora sai su cosa concentrarti nei prossimi ripassi.",
-      "Nessun problema: è normale all'inizio, il ripasso è pensato apposta per questo.",
-      "Ogni tentativo aiuta a fissare qualcosa in più — vale la pena rivedere queste parole.",
-      "Non è andata benissimo, ma è solo un punto di partenza: ripassiamo insieme.",
-      "Capita, specialmente all'inizio — tornaci sopra con calma quando vuoi."
+      "Questo blocco era in salita, e lo hai portato a termine comunque.",
+      "Molte le hai prese solo tornandoci sopra: vuol dire che non sono ancora tue.",
+      "Punteggio basso al primo colpo, e le hai chiuse tutte riprovando.",
+      "Ne hai mancate più di quante ne hai prese, e le hai chiuse tutte una per una.",
+      "Qui hai faticato, e sei arrivato in fondo comunque. Questo passo si riapre dalla mappa, quando vuoi."
     ]
   },
   "studioCompleteMessages": {
@@ -141,17 +141,17 @@
   "retryIntroMessages": {
     "first": {
       "titles": [
-        "Il quiz è finito",
+        "Primo passaggio finito",
         "Primo giro completato",
         "Hai finito il giro principale",
         "Bene, si passa al ripasso",
-        "Round terminato"
+        "Ora si ripassa"
       ],
       "bodies": [
         "Da qui in poi si ripassano solo le voci che ti sono sfuggite.",
         "Ora torniamo solo su quello che ti serve rivedere.",
         "Ripassiamo insieme solo le voci che non sono ancora andate a segno.",
-        "Il resto è già acquisito: ci concentriamo solo su quello che manca.",
+        "Il resto per adesso va: ci concentriamo su quello che manca.",
         "Ripasso mirato: solo le voci da rivedere, niente di più."
       ]
     },
@@ -164,10 +164,10 @@
         "Ultimo richiamo"
       ],
       "bodies": [
-        "Dopo questo giro si passa all'esercizio successivo.",
-        "Finito questo ripasso, si va avanti con il prossimo esercizio.",
+        "Dopo questo giro l'esercizio è chiuso.",
+        "Finito questo ripasso vedrai com'è andata.",
         "Ancora questo giro, poi si prosegue con il resto del percorso.",
-        "Un'ultima volta su queste voci, poi via al prossimo esercizio.",
+        "Un'ultima volta su queste voci, e hai fatto.",
         "Completa questo giro e si passa oltre."
       ]
     }
