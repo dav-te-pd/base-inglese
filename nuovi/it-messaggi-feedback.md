@@ -1,4 +1,4 @@
-**Versione: 20261016b**
+**Versione: 20261016c**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -122,7 +122,7 @@ rosso e sbagliata. `starsForPercent` decide una, due o tre stelle, e allo zero n
 alle fasce:* 🔴 **se lo facesse `percentageBucket`, il badge e la parola di Voice Check riceverebbero
 «nessuna fascia» invece di un colore, e in silenzio.**
 
-### 🔴 FINO AL 2026-10-13 LO ZERO NON ESISTEVA PER IL MESSAGGIO, E TRE COSE SU QUATTRO DICEVANO IL CONTRARIO
+### 🔴 FINO AL 2026-10-16 LO ZERO NON ESISTEVA PER IL MESSAGGIO, E TRE COSE SU QUATTRO DICEVANO IL CONTRARIO
 
 **A 0 su 20 compariva un testo incoraggiante del gruppo `basso`.** *In Voice Check, sulla stessa
 schermata: **zero stelle** e un messaggio che commentava una prestazione.*
@@ -134,6 +134,14 @@ le stelle davano zero ·* 🔴 **e il messaggio mostrava `basso`.**
 ⭐ **Deciso da chi guida il progetto: allo zero nessun messaggio.** *E la ragione non è didattica:* **il
 comportamento di prima nessuno l'aveva scelto** — *era quello che il codice faceva per caso, mentre tre
 cose scritte dicevano un'altra.*
+
+⚠️ **E le due date non sono la stessa, anche se stavano nella stessa riga:** *il **13/10** è quando
+abbiamo misurato che la regola scritta qui non aveva lettori; il **16/10** è quando lo zero è diventato
+senza messaggio.* 🔴 **Fra i due ci sono tre giorni in cui a 0 su 20 compariva ancora un messaggio
+«basso»** — *e il titolo di questa sezione diceva 13, cioè la data della misura al posto di quella del
+cambiamento.* **Trovato da Claude Code.**
+
+> ⭐ **La data di quando si è capito non è la data di quando è cambiato.**
 
 ### ⏳ E UNA DOMANDA APERTA, CON LA SUA CONDIZIONE
 
