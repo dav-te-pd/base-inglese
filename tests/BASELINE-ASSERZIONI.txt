@@ -4,7 +4,7 @@
 # ieri. Il numero puo' SALIRE (un test nuovo) e non deve CALARE. Quando
 # sale di proposito si riscrive questo file con:
 #
-#   node tests/tools/conta-asserzioni.js --scrivi <elenco dei file>
+#   cd tests && node tools/conta-asserzioni.js --scrivi $(node tools/file-della-suite.js)
 #
 # Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt
 # dell'ultima corsa, quindi va rigenerato solo dopo una corsa completa.

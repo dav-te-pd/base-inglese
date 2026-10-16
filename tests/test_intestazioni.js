@@ -9,9 +9,11 @@
 //
 // COME — i testi veri, letti dal disco e alterati in memoria; i file non si
 // toccano:
-//   [A] tutti i file veri passano: le due edizioni, i quattro episodi, e i due
-//       MODELLI di `docs/metodo/`, trascritti interi — e quello delle tabelle deve
-//       mostrare tutte e due le forme, 4 e 6 colonne (dal 2026-10-11);
+//   [A] tutti i file veri passano: le due edizioni, i quattro episodi, e i TRE
+//       MODELLI di `docs/metodo/`, trascritti interi — quello delle tabelle deve
+//       mostrare tutte e due le forme, 4 e 6 colonne (dal 2026-10-11), e quello
+//       della struttura deve avere le STESSE intestazioni delle edizioni vere
+//       (dal 2026-10-16);
 //   [B] i gradi: `en ↔ it` scambiate in D e in C, due colonne fisse scambiate
 //       in B e in A, una colonna in piu' in fondo, e la lingua insegnata
 //       uguale a quella dello studente — tutti fermano e dicono dove;
@@ -107,6 +109,37 @@ function run() {
     const attese = T.INTESTAZIONI_TABELLE.map((a) => a.length);
     log('[A] ...e mostra TUTTE le forme di `INTESTAZIONI_TABELLE` (' + attese.join(' e ') + ' colonne)',
       attese.every((n) => forme.has(n)), JSON.stringify(Array.from(forme)));
+  }
+
+  // ── [A] Il modello della STRUTTURA, dal 2026-10-16 (il punto (d)) ──
+  //
+  // ⚠️ Fino a quel giorno nessuno lo trascriveva, ed era scaduto in otto punti:
+  // la §5 descriveva `| # | modulo | grado |`, un `###` per sequenza e `—` per
+  // «nessun grado» — una forma che nessuna edizione usa. **E il conto delle
+  // colonne tornava: tre, come le vere.** *Una misura che passa non dice che
+  // la cosa e' giusta: dice che quella misura e' passata.* Per questo qui non
+  // basta che si trascriva: le INTESTAZIONI delle sette tabelle che il
+  // trascrittore legge devono essere le stesse delle edizioni vere, parola per
+  // parola. Si trascrive col file condiviso VERO, senza aiuti: un modello che
+  // ha bisogno di un file su misura sta descrivendo un caso, non la forma.
+  const modStr = leggi('docs/metodo/inglese-it-struttura-corso-VUOTO.md');
+  let strutturaModello = null;
+  const mStr = sollevato(() => { strutturaModello = T.struttura(ING, modStr); });
+  log('[A] Il modello della struttura si trascrive INTERO, col file condiviso vero', mStr === null, String(mStr));
+  const SEZIONI_STRUTTURA = ['## 2 — I GRADI', '## 3 — LE CATEGORIE DEI MODULI', '## 4 — I NOMI DEI MODULI',
+    '## 5 — LE SEQUENZE DEI MODULI', '## 7 — GLI EPISODI', '## 8 — LE LINGUE DEL PARLATO', '## 9 — I NOMI A SCHERMO'];
+  const testa = (testo, titolo) => JSON.stringify((T.tabellaSotto(testo, titolo, true).testa || []).map((c) => c.trim()));
+  eds.forEach((ed) => {
+    const vero = leggi('docs/' + ed.lingua + '/' + ed.studente + '/' + ed.pref + 'struttura-corso.md');
+    const diverse = SEZIONI_STRUTTURA.filter((t) => testa(modStr, t) !== testa(vero, t));
+    log('[A] ...e le intestazioni delle sue ' + SEZIONI_STRUTTURA.length + ' tabelle sono quelle di ' + ed.pref + 'struttura-corso',
+      diverse.length === 0, diverse.map((t) => t + ': ' + testa(modStr, t) + ' contro ' + testa(vero, t)).join(' · '));
+  });
+  if (strutturaModello) {
+    const gradi = [];
+    Object.keys(strutturaModello.sequences).forEach((n) => strutturaModello.sequences[n].forEach((p) => { if ('grade' in p) gradi.push(p.grade); }));
+    log('[A] ...e i suoi passi hanno gradi della §2, o nessuna chiave `grade` — mai un «—» trascritto come grado',
+      gradi.every((g) => strutturaModello.grades.indexOf(g) !== -1), JSON.stringify(gradi));
   }
 
   // ── [B] I gradi ──

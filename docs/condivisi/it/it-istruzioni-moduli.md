@@ -1,4 +1,4 @@
-**Versione: 20261013c**
+**Versione: 20261016b**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -70,7 +70,7 @@ di testi che esistono già altrove.**
 
 | | Il titolo viene da | Perché |
 |---|---|---|
-| **`howItWorks.title`** *(16)* | ⭐ **`moduleLabels.<kind>.name`**, nella struttura dell'edizione | 🔴 **era un difetto, non una duplicazione.** *Questo file è condiviso fra le edizioni, i nomi dei moduli no: in spagnolo il primo modulo si chiama «Tu historia».* **Con i titoli scritti a mano, il giorno dello spagnolo un corso di spagnolo avrebbe mostrato sedici pop-up intitolati «Your Story»** |
+| **`howItWorks.title`** | ⭐ **`moduleLabels[id].name`**, nella struttura dell'edizione — **per ID DEL PASSO, non per kind** | 🔴 **era un difetto, non una duplicazione.** *Questo file è condiviso fra le edizioni, i nomi dei moduli no: in spagnolo il primo modulo si chiama «Tu historia».* **Con i titoli scritti a mano, il giorno dello spagnolo un corso di spagnolo avrebbe mostrato sedici pop-up intitolati «Your Story»** |
 | **`helpReminder.title`** *(16)* | ⭐ **`aiuto.titleInstructions`**, nella sezione 6 di questo file | *erano sedici copie identiche di un testo che era già scritto lì sotto — e è lo **stesso pannello**: la voce del menu Aiuto e il titolo che appare quando la si apre* |
 
 > ⭐ **La regola: un testo si scrive una volta sola. Se la fonte esiste già altrove si deriva; se non
@@ -188,7 +188,29 @@ la prima parte di `howItWorks.body` · **consiglio** → quale riquadro della se
 coda, `—` se nessuno · **video** → il copione del video di questo modulo.*
 
 ⚠️ **NON C'È UNA COLONNA «TITOLO», ED È VOLUTO:** *`howItWorks.title` viene da
-`moduleLabels.<kind>.name`.* **Vedi ① qui sopra.**
+`moduleLabels[id].name`, nella struttura dell'edizione.* **Vedi ① qui sopra.**
+
+🔴 **E FINO AL 2026-10-16 QUI C'ERA SCRITTO `moduleLabels.<kind>.name`, CHE ERA FALSO DUE VOLTE.**
+*Misurato: `titoloSpiegazione(module)` restituisce `module.label`, che viene da `moduleLabels[id].name`.*
+
+*Era falso due volte.* **Diceva «per kind»: è per ID DEL PASSO** — *Flash Card ha un kind e **due
+passi**, con due nomi, «Flash Card en→it» e «it→en».* **E diceva «i 16 titoli»: 16 sono i CORPI, uno per
+kind** — *i titoli si risolvono per passo, e i due passi di Flash Card mostrano due titoli diversi sopra
+lo stesso corpo.*
+
+🔴 **E QUESTA SPIEGAZIONE ERA UNA TABELLA, FINO AL 2026-10-16.** *Stava qui, prima della tabella delle
+spiegazioni — e il trascrittore prende la PRIMA tabella sotto il titolo: leggeva questa.* ⚠️ **È la stessa
+trappola che avevamo appena trovato e scritto nel modello della struttura, commessa nell'altro file della
+stessa consegna.**
+
+> ⭐ **In un file che si trascrive, una spiegazione si scrive in prosa: una tabella in più è un dato in
+> più per chi legge col parser.**
+
+⚠️ **E com'è nato questo errore vale più dell'errore:** *la forma `moduleLabels.<kind>` era già scritta
+qui e alla sezione 1, e scrivendo la sezione dei sottotitoli l'abbiamo letta come la convenzione della
+casa e ricopiata.* ⭐ **Trovata da Claude Code, insieme a quella.**
+
+> 🔴 **Una forma sbagliata già dentro un file non si legge come un errore: si legge come lo stile.**
 
 ⚠️ **IL CORPO È SPEZZATO PERCHÉ IL CONSIGLIO È RIPETUTO DODICI VOLTE**, in due varianti sole, sei
 ciascuna. *Ricopiarlo in ogni riga vorrebbe dire dodici copie da tenere allineate a mano.*

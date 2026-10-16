@@ -99,7 +99,7 @@ function scriviBaseline(conteggi, totale) {
     '# ieri. Il numero puo\' SALIRE (un test nuovo) e non deve CALARE. Quando',
     '# sale di proposito si riscrive questo file con:',
     '#',
-    '#   node tests/tools/conta-asserzioni.js --scrivi <elenco dei file>',
+    '#   cd tests && node tools/conta-asserzioni.js --scrivi $(node tools/file-della-suite.js)',
     '#',
     '# Lo scrive tests/tools/conta-asserzioni.js leggendo i .result.txt',
     '# dell\'ultima corsa, quindi va rigenerato solo dopo una corsa completa.',
@@ -209,7 +209,7 @@ function main(argv) {
       console.error('in silenzio, ed e\' esattamente cio\' contro cui esiste.');
       console.error('');
       console.error('Il caso piu\' comune: il comando va lanciato DA tests/, con i');
-      console.error('nomi nudi — `cd tests && node tools/conta-asserzioni.js --scrivi test_*.js`');
+      console.error('nomi nudi — `cd tests && node tools/conta-asserzioni.js --scrivi $(node tools/file-della-suite.js)`');
       return 2;
     }
     scriviBaseline(conteggi, totale);
@@ -228,7 +228,11 @@ function main(argv) {
   if (!atteso) {
     console.log('Nessun baseline registrato (' + BASELINE + ').');
     console.log('Per registrarlo, dopo una corsa completa e verde:');
-    console.log('  node tests/tools/conta-asserzioni.js --scrivi $FILES');
+    // ⚠️ Il comando che si insegna e' quello che funziona, dal 2026-10-16:
+    // qui c'era `--scrivi $FILES`, e fuori dallo script della suite `$FILES`
+    // non esiste piu'. Le tre righe che lo insegnano — questa, quella del
+    // rifiuto qui sopra e l'intestazione del baseline — dicono lo stesso.
+    console.log('  cd tests && node tools/conta-asserzioni.js --scrivi $(node tools/file-della-suite.js)');
     return 0;
   }
 
