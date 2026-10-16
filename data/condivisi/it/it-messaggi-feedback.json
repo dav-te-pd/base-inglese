@@ -1,24 +1,4 @@
 {
-  "percentageRule": {
-    "0": {
-      "range": "0%",
-      "showMessage": false,
-      "note": "nessun messaggio mostrato"
-    },
-    "1": {
-      "range": "1-49%",
-      "messageKey": "basso"
-    },
-    "2": {
-      "range": "50-79%",
-      "messageKey": "medio"
-    },
-    "3": {
-      "range": "80-100%",
-      "messageKey": "alto"
-    },
-    "rule": "basata sulla percentuale di risposte/parole corrette sul totale"
-  },
   "voiceCoachMessages": {
     "alto": [
       "Perfetto! Pronuncia impeccabile.",

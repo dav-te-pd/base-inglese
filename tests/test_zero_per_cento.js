@@ -63,6 +63,14 @@ function staticoE() {
     /applyOutcomeSubtitle\([^)]*fasciaMessaggio\(vcLastAvgPct\)/.test(voice));
   log('[E] ...e il colore della parola resta su percentageBucket',
     /\{ alto: 'correct', medio: 'similar', basso: 'wrong' \}\[percentageBucket\(pct\)\]/.test(voice));
+  // ⚠️ E LA REGOLA SCRITTA NEL FILE DEI MESSAGGI E' USCITA, il 2026-10-16:
+  // `percentageRule` non la leggeva nessuno, ricopiava le tre soglie e diceva
+  // una cosa che il codice non faceva. Le quattro fasce le spiega la prosa del
+  // markdown, senza numeri. Se tornasse nel JSON sarebbe di nuovo una copia
+  // senza lettore (regola 47).
+  const messaggi = JSON.parse(fs.readFileSync(repoPath('data', 'condivisi', 'it', 'it-messaggi-feedback.json'), 'utf8'));
+  log('[E] Il file dei messaggi non porta piu\' `percentageRule`, e le sue famiglie ci sono',
+    !('percentageRule' in messaggi) && Object.keys(messaggi).length > 0, Object.keys(messaggi).join(', '));
 }
 
 async function run() {

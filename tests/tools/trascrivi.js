@@ -643,16 +643,17 @@ function messaggi(st) {
   const t = fs.readFileSync(docC(st, 'messaggi-feedback'), 'utf8');
   const out = {};
 
-  // ⚠️ `showMessage` E' UN BOOLEANO, e la colonna «tipo» lo dice: una cella
-  // letta come stringa darebbe `"false"`, che e' VERA.
-  colonne(tabellaSotto(t, '## 2 — LE FASCE', true), 3, 'fasce').forEach((r) => {
-    const tipo = nb(r[1]);
-    const grezzo = spazi(r[2]);
-    if (tipo !== 'testo' && tipo !== 'booleano') {
-      throw new Error('fasce: tipo "' + tipo + '" sconosciuto in ' + nb(r[0]));
-    }
-    infila(out, nb(r[0]), tipo === 'booleano' ? grezzo === 'true' : grezzo);
-  });
+  // ⚠️ LA SEZIONE 2 — LE FASCE — NON SI LEGGE PIU', dal 2026-10-16. Portava
+  // `percentageRule`, dieci righe che nessun programma leggeva (regola 47) e
+  // che ricopiavano tre numeri che vivono in `percentageThresholds` — e
+  // dicevano anche una cosa che il codice non faceva. Deciso da chi guida il
+  // progetto: la sezione resta, col suo numero, e SPIEGA in prosa le quattro
+  // fasce, senza numeri e senza tabelle. *Rinumerarla romperebbe i titoli
+  // cercati alla lettera; leggerla fermerebbe tutto, perche' una tabella non
+  // c'e' — «una tabella dentro un file che si trascrive e' un dato».*
+  //
+  // Con lei e' uscito il tipo `booleano` delle celle: serviva solo a
+  // `percentageRule.0.showMessage`.
 
   colonne(tabellaSotto(t, '## 3 — I MESSAGGI', true,
     ['Famiglia', 'Gruppo', '#', 'Testo']), 4, 'messaggi').forEach((r) => {

@@ -1,4 +1,4 @@
-**Versione: 20261007a**
+**Versione: 20261016a**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -100,25 +100,63 @@ documento muore col documento: va estratto in una tabella.**
 
 ## 2 — LE FASCE
 
-*`percentageRule`: la regola che, data la percentuale di risposte giuste, decide QUALE gruppo della
-sezione 3 si pesca. **Non è testo che lo studente legge** — è la logica scritta accanto ai testi che
-governa, e sta qui per questo.*
+⚠️ **IN QUESTA SEZIONE NON C'È NESSUNA TABELLA, E NON È UNA SVISTA.** *Fino al 2026-10-16 ce n'era una,
+`percentageRule`, che finiva nel JSON.* 🔴 **Una tabella dentro un file che si trascrive è un dato, anche
+quando è messa lì per spiegare** — *e questa sezione, da oggi, spiega soltanto.*
 
-⚠️ **`showMessage` è un BOOLEANO, non una parola:** va scritto `false` o `true`, e la colonna «tipo» lo
-dice. *Una cella che dicesse «no» diventerebbe la stringa `"no"`, che è vera.*
+**Le fasce sono QUATTRO, e decidono quale gruppo della sezione 3 si pesca:** *lo **zero**, dove non
+compare nessun messaggio, e poi **`basso`**, **`medio`** e **`alto`**, che pescano dal gruppo col loro
+nome.*
 
-| Percorso | Tipo | Valore |
-|---|---|---|
-| `percentageRule.rule` | testo | basata sulla percentuale di risposte/parole corrette sul totale |
-| `percentageRule.0.range` | testo | 0% |
-| `percentageRule.0.showMessage` | booleano | false |
-| `percentageRule.0.note` | testo | nessun messaggio mostrato |
-| `percentageRule.1.range` | testo | 1-49% |
-| `percentageRule.1.messageKey` | testo | basso |
-| `percentageRule.2.range` | testo | 50-79% |
-| `percentageRule.2.messageKey` | testo | medio |
-| `percentageRule.3.range` | testo | 80-100% |
-| `percentageRule.3.messageKey` | testo | alto |
+🔴 **I NUMERI NON SONO QUI, ED È UNA DECISIONE.** *Le tre soglie vivono in `percentageThresholds`, in
+`app/config.js`, e si girano dal Pannello Admin.* ⚠️ **Una prosa che le ricopiasse invecchierebbe al primo
+giro di manopola, e nessuno se ne accorgerebbe: queste righe non le legge nessun programma.**
+
+### ⭐ CHI LEGGE QUELLE SOGLIE — quattro mestieri, non uno
+
+**`fasciaMessaggio` decide quale gruppo di testi si pesca, e allo zero restituisce «nessuna fascia».**
+*`percentageBucket` decide due colori — il badge sulla mappa e una parola in Voice Check — e allo zero dà
+rosso e sbagliata. `starsForPercent` decide una, due o tre stelle, e allo zero ne dà zero.*
+
+⚠️ **Le prime due funzioni sono separate di proposito.** *Il salto dello zero appartiene al MESSAGGIO, non
+alle fasce:* 🔴 **se lo facesse `percentageBucket`, il badge e la parola di Voice Check riceverebbero
+«nessuna fascia» invece di un colore, e in silenzio.**
+
+### 🔴 FINO AL 2026-10-13 LO ZERO NON ESISTEVA PER IL MESSAGGIO, E TRE COSE SU QUATTRO DICEVANO IL CONTRARIO
+
+**A 0 su 20 compariva un testo incoraggiante del gruppo `basso`.** *In Voice Check, sulla stessa
+schermata: **zero stelle** e un messaggio che commentava una prestazione.*
+
+**Allo zero, prima di quel giorno:** *la regola scritta in questa sezione diceva «nessun messaggio» · la
+manopola della prima soglia **non aveva nessun lettore**, perché la funzione delle fasce non la guardava ·
+le stelle davano zero ·* 🔴 **e il messaggio mostrava `basso`.**
+
+⭐ **Deciso da chi guida il progetto: allo zero nessun messaggio.** *E la ragione non è didattica:* **il
+comportamento di prima nessuno l'aveva scelto** — *era quello che il codice faceva per caso, mentre tre
+cose scritte dicevano un'altra.*
+
+### ⏳ E UNA DOMANDA APERTA, CON LA SUA CONDIZIONE
+
+⭐ **«Lo zero merita testi SUOI?»** *Cioè una quarta serie, scritta per chi non ha azzeccato niente,
+invece del silenzio.*
+
+**Si decide al decimo episodio.** *Con due episodi scritti non abbiamo mai visto uno studente vero fare
+0 su 20, e una serie di testi scritta senza quel dato sarebbe scritta a naso.*
+
+⚠️ **E una cosa che resta aperta anche così: allo zero il badge è ROSSO, come a 45%.** *Se lo zero meriti
+un colore suo appartiene al giro di design sulla mastery, non a questa sezione.*
+
+### ⚠️ COSA SE N'È ANDATO, E PERCHÉ LA SEZIONE RESTA
+
+🔴 **La tabella di dieci righe che stava qui non la leggeva nessun programma:** *misurato il 13/10, zero
+occorrenze di `percentageRule` in `app/` e in `index.html`.* **Era una copia in prosa di tre numeri che
+vivono nel codice, e diceva anche una cosa che il codice non faceva.**
+
+⭐ **Le stringhe del file scendono di nove, e la sezione resta per chi legge: il disegno delle quattro
+fasce non era scritto in nessun altro posto.**
+
+⚠️ **E il numero della sezione NON cambia**, anche se il trascrittore non la legge più: *rinumerare
+romperebbe i controlli che cercano i titoli carattere per carattere.*
 
 ---
 
