@@ -40,7 +40,7 @@
   var sfxPlayWrongSound = BI.sfxPlayWrongSound;
   var sfxPlayTraguardoSound = BI.sfxPlayTraguardoSound;
   var shuffle = BI.shuffle;
-  var percentageBucket = BI.percentageBucket;
+  var fasciaMessaggio = BI.fasciaMessaggio;
   var uiText = BI.uiText;
   var etichettaDirezione = BI.etichettaDirezione;
   var renderListenBlock = BI.renderListenBlock;
@@ -262,7 +262,7 @@
     // message tone here and the ModuleRules map badge (match-complete-btn).
     var pct = qmVocab.length ? Math.round((qmFirstTryCorrectCount / qmVocab.length) * 100) : 0;
     qmLastAvgPct = pct;
-    applyOutcomeSubtitle('qm-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
+    applyOutcomeSubtitle('qm-summary-title-sub', 'moduleCompleteMessages', fasciaMessaggio(pct));
   }
 
   function qmStartQuiz() {

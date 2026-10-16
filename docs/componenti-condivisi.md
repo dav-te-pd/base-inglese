@@ -106,6 +106,17 @@ non le sa scrivere.
 | `icon` | Il markup SVG di un'icona, da inserire dentro un `innerHTML`. **Sei file lo usano.** | `(nome, classeExtra?)` → stringa HTML, **`''` se il nome non esiste** | Che il nome sia una chiave di `ICONS`. ⚠️ **Un nome sbagliato non alza: torna stringa vuota**, quindi il pulsante resta senza icona e nessuno se ne accorge. |
 | `getUserName` | Il nome dello studente corrente. **È il lettore più usato dell'app: dodici file.** | `()` → la stringa, **`''` se non c'è** | Che `''` significhi «non si è ancora presentato» — è la condizione con cui `boot()` sceglie fra la schermata del nome e la casa. |
 
+## `app/quiz-engine.js` — la percentuale diventa una fascia
+
+*Catalogato il 2026-10-16, col passo dello 0% senza messaggio: letti
+`percentageBucket`, `fasciaMessaggio` e `starsForPercent`, e i loro chiamanti.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `percentageBucket` | Una percentuale diventa `alto` / `medio` / `basso`, con `percentageThresholds.medio` e `.alto`. **Tre mestieri, sette chiamanti:** il colore del badge (`moduleRulesLevel`), il colore della parola in Voice Check (`app/voice.js`) e, attraverso `fasciaMessaggio`, il messaggio di fine modulo. | `pct` → `'alto'` \| `'medio'` \| `'basso'`, **sempre** — anche a 0% | ⚠️ **Che non torni mai `null`:** due chiamanti la usano come chiave di una tabella di colori, e un `null` darebbe `undefined` in silenzio. *Per questo lo 0% senza messaggio non sta qui.* Non legge `basso`. |
+| `fasciaMessaggio` | La fascia del **messaggio** di fine modulo: `null` sotto `percentageThresholds.basso` — **a 0% nessun messaggio**, deciso il 2026-10-16 — altrimenti `percentageBucket`. **Cinque file la usano**: Match, Flash Card, Speed Match, Why We Say It, Voice Check. | `pct` → la fascia, o `null` | Che chi la riceve sia `applyOutcomeSubtitle`, che con `null` non trova un gruppo e lascia il sottotitolo **vuoto**. Un chiamante che usasse la fascia come chiave di un colore riceverebbe `undefined`: per i colori c'è `percentageBucket`. |
+| `starsForPercent` | Quante stelle merita una percentuale: 0 sotto `oneStar`, poi 1, 2, 3. Solo Voice Check. | `pct` → `0`..`3` | Che `voiceCoach.starThresholds` abbia la stessa forma di `percentageThresholds`: oggi gli stessi tre numeri, **scritti due volte** (il passo che le unisce è il prossimo). |
+
 ## `app/progressi.js` — quello che lo studente lascia dietro di sé
 
 | Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |

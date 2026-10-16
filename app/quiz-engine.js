@@ -47,6 +47,30 @@ window.BI = window.BI || {};
     return 'basso';
   }
 
+  // ⚠️ LA FASCIA DEL MESSAGGIO DI FINE MODULO — e non e' la stessa domanda di
+  // `percentageBucket`. Dal 2026-10-16, deciso da chi guida il progetto:
+  // **sotto `percentageThresholds.basso` non compare nessun messaggio**
+  // (decisione (a1)). Fino a quel giorno `basso` non lo leggeva nessuno: a 0%
+  // compariva un messaggio «basso», mentre il disegno scritto
+  // (`percentageRule.0`: «0% → nessun messaggio»), la manopola del Pannello e
+  // le stelle (`starsForPercent`: 0 stelle a 0%) dicevano tutti un'altra cosa.
+  // *Non era una scelta: era quello che il codice faceva per caso.*
+  //
+  // ⚠️ PERCHE' UNA FUNZIONE SUA E NON UN `null` DENTRO `percentageBucket`:
+  // quella ha SETTE chiamanti con TRE mestieri. I cinque del messaggio vogliono
+  // «nessuna fascia» a 0%; gli altri due no — il colore del badge
+  // (`MODULE_RULES_LEVEL[...]`, che a 0% deve restare rosso) e il colore della
+  // parola in Voice Check (`{alto, medio, basso}[...]`, che deve restare
+  // `wrong`). Con un `null` li' darebbero `undefined` invece di un colore, in
+  // silenzio. **Il salto appartiene al messaggio, non alle fasce.**
+  //
+  // `applyOutcomeSubtitle` non cambia: con `null` non trova un gruppo e lascia
+  // il sottotitolo vuoto, che e' esattamente «nessun messaggio».
+  function fasciaMessaggio(pct) {
+    if (pct < CONFIG.percentageThresholds.basso) return null;
+    return percentageBucket(pct);
+  }
+
   function starsForPercent(pct) {
     var t = CONFIG.voiceCoach.starThresholds;
     if (pct >= t.threeStars) return 3;
@@ -170,6 +194,7 @@ window.BI = window.BI || {};
   }
 
   BI.percentageBucket = percentageBucket;
+  BI.fasciaMessaggio = fasciaMessaggio;
   BI.starsForPercent = starsForPercent;
   BI.shuffle = shuffle;
   BI.stripForCompare = stripForCompare;

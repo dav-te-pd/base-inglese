@@ -55,6 +55,7 @@
   var alignWords = BI.alignWords;
   var classify = BI.classify;
   var percentageBucket = BI.percentageBucket;
+  var fasciaMessaggio = BI.fasciaMessaggio;
   var starsForPercent = BI.starsForPercent;
   var uiText = BI.uiText;
   var uiTextWith = BI.uiTextWith;
@@ -614,7 +615,7 @@
     vcLastAvgPct = vcScorePercents.length
       ? Math.round(vcScorePercents.reduce(function (a, b) { return a + b; }, 0) / vcScorePercents.length)
       : 0;
-    applyOutcomeSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages', percentageBucket(vcLastAvgPct));
+    applyOutcomeSubtitle('voice-coach-summary-title-sub', 'moduleCompleteMessages', fasciaMessaggio(vcLastAvgPct));
   }
 
   function vcShowScreen(name) {

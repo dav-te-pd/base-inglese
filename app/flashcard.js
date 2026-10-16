@@ -68,7 +68,7 @@
   var sfxPlayCorrectSound = BI.sfxPlayCorrectSound;
   var sfxPlayTraguardoSound = BI.sfxPlayTraguardoSound;
   var shuffle = BI.shuffle;
-  var percentageBucket = BI.percentageBucket;
+  var fasciaMessaggio = BI.fasciaMessaggio;
   var etichettaDirezione = BI.etichettaDirezione;
   var renderListenBlock = BI.renderListenBlock;
   var speakListenBlock = BI.speakListenBlock;
@@ -253,7 +253,7 @@
       // SelfScoreRules map badge.
       var pct = fcVocab.length ? Math.round((fcFirstTryCorrectCount / fcVocab.length) * 100) : 0;
       fcLastAvgPct = pct;
-      applyOutcomeSubtitle('fc-summary-title-sub', 'moduleCompleteMessages', percentageBucket(pct));
+      applyOutcomeSubtitle('fc-summary-title-sub', 'moduleCompleteMessages', fasciaMessaggio(pct));
     } else {
       fcPassItems = shuffle(wrongIds);
       fcPassIndex = 0;

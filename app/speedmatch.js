@@ -43,7 +43,7 @@
   var sfxPlayTraguardoSound = BI.sfxPlayTraguardoSound;
   var sfxPlayReadyCountdownSound = BI.sfxPlayReadyCountdownSound;
   var shuffle = BI.shuffle;
-  var percentageBucket = BI.percentageBucket;
+  var fasciaMessaggio = BI.fasciaMessaggio;
   var uiText = BI.uiText;
   var etichettaDirezione = BI.etichettaDirezione;
   var lockModuleHeader = BI.lockModuleHeader;
@@ -333,7 +333,7 @@
     // altrove. *Nessun rosso: un dato senza lettore non rompe niente, e per
     // questo è nata la regola 47 — un campo nasce il giorno in cui qualcosa
     // lo legge. Oggi è quel giorno.*
-    applyOutcomeSubtitle('sr-summary-title-sub', 'speedMatchMessages', percentageBucket(pct));
+    applyOutcomeSubtitle('sr-summary-title-sub', 'speedMatchMessages', fasciaMessaggio(pct));
   }
 
   function srStartQuiz() {

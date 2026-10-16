@@ -1,4 +1,4 @@
-**Versione: 20261013c**
+**Versione: 20261016a**
 
 # Struttura del corso — spagnolo per italiani
 
@@ -206,7 +206,7 @@ questa edizione.**
 
 | Cosa è stato fatto | |
 |---|---|
-| **`howItWorks.title`** — i 16 titoli delle spiegazioni | ⭐ **non si scrivono più: si derivano da `moduleLabels.<kind>.name`**, cioè dalla tabella qui sopra |
+| **`howItWorks.title`** — i titoli delle spiegazioni | ⭐ **non si scrivono più: si derivano da `moduleLabels[id].name`**, cioè dalla tabella qui sopra. 🔴 *Fino al 2026-10-16 qui c'era `<kind>` e «i 16 titoli»: il titolo è per **id del passo**, e 16 sono i corpi* |
 | **`helpReminder.title`** — i 16 titoli dei promemoria, tutti uguali | ⭐ **si derivano da `aiuto.titleInstructions`**, che diceva già la stessa frase nella sezione 6 dello stesso file |
 | **Il conto** | **208 stringhe → 176** |
 

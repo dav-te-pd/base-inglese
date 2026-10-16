@@ -41,7 +41,7 @@
   var openEpisodeMap = BI.openEpisodeMap;
   var openHelpFor = BI.openHelpFor;
   var openHowItWorksOverlay = BI.openHowItWorksOverlay;
-  var percentageBucket = BI.percentageBucket;
+  var fasciaMessaggio = BI.fasciaMessaggio;
   var renderIntroContent = BI.renderIntroContent;
   var saveModuleOutcome = BI.saveModuleOutcome;
   var saveStoryCardsDeclarations = BI.saveStoryCardsDeclarations;
@@ -317,7 +317,7 @@
       if (storyCardsHasExplanations) {
         var chiaraCount = storyCardsSkillIds.filter(function (id) { return storyCardsSessionAnswers[id] === 'chiara'; }).length;
         storyCardsLastAvgPct = Math.round((chiaraCount / storyCardsSkillIds.length) * 100);
-        applyOutcomeSubtitle('story-cards-summary-title-sub', 'storyCardsCompleteMessages', percentageBucket(storyCardsLastAvgPct));
+        applyOutcomeSubtitle('story-cards-summary-title-sub', 'storyCardsCompleteMessages', fasciaMessaggio(storyCardsLastAvgPct));
       } else {
         applyOutcomeSubtitle('story-cards-summary-title-sub', 'studioCompleteMessages', 'default');
       }

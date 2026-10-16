@@ -691,7 +691,7 @@
       'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
       'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',
       'retryQueue.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa domanda o frase compare il messaggio "capita, tranquillo" (o quello di riconoscimento se l\'hai indovinata).',
-      'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale il messaggio finale usa il tono "basso". Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
+      'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale non compare nessun messaggio finale. Da qui in su il messaggio usa il tono "basso". Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
       'percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
       'percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
       'sound.events.corretto.freq': 'Altezza del suono per una risposta/tentativo corretto, in Hz.',
