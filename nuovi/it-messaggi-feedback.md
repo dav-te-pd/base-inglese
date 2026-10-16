@@ -1,4 +1,4 @@
-**Versione: 20261016c**
+**Versione: 20261016e**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -187,6 +187,66 @@ romperebbe i controlli che cercano i titoli carattere per carattere.*
 | `retryIntroMessages` | **20** | `first.bodies`, `first.titles`, `last.bodies`, `last.titles` |
 | `episodeFinalMessages` | **25** | `almenoUnRosso.compliments`, `almenoUnRosso.tip`, `gialloNoRosso.compliments`, `gialloNoRosso.tip`, `tuttiVerdi.compliments` |
 
+### 🔴 NOVE TESTI PROMETTEVANO UN MECCANISMO CHE L'APP NON HA — corretti il 2026-10-16
+
+**Il «mix 40/30/20/10» — quello che dovrebbe pescare il 30% delle voci dai rossi — NON ESISTE ANCORA.**
+*Misurato: zero occorrenze in `app/`, `data/` e `index.html`.* ⚠️ **È l'obiettivo O-4, e arriva dopo
+Supabase.**
+
+🔴 **E la ragione per cui non si può anticipare non è «Supabase»: è che la mastery è salvata PER
+EPISODIO** — `masteryStorageKey(episodeId, userName)`. *I rossi di un episodio e quelli di un altro stanno
+in due cassetti separati, e il mix ha bisogno di pescare da tutti.*
+
+**Chi lo prometteva:**
+
+| Famiglia | Quanti | Cosa dicevano |
+|---|---|---|
+| `moduleCompleteMessages` | **5** | *«tornano nei prossimi episodi», «le ritroverai spesso», «lo rivedrai più avanti»* |
+| `valvolaSicurezzaMessages` · `nonRiuscita` | **4 su 5** | *«tornerà nei prossimi ripassi», «la ritroverai nei ripassi mirati», «tornerà da sola», «ci tornerai sopra quando serve»* |
+
+⭐ **E il solo futuro che l'app mantiene oggi è un altro:** *un passo già completato **si riapre dalla
+mappa*** — `mappa.js` *(«l'ultimo resta apribile»)* e il blocco D di `test_story_modules.js`.
+**Un testo su nove lo usa; gli altri otto restano al passato.**
+
+> 🔴 **Nei primi quindici riscritti avevamo sostituito un meccanismo falso — «ripassa quando vuoi» — con
+> un altro meccanismo falso, nella stessa modifica in cui spiegavamo perché il primo era falso.**
+> ⭐ **La causa: in questi file «come funziona» e «come funzionerà» stanno nella stessa riga, e si legge
+> il progetto come se fosse l'app.** *Trovato da Claude Code.*
+
+⏳ **E una condizione, per il giorno in cui il mix esiste:** *questi nove testi sono il posto dove dirlo.*
+**Si rileggono quando O-4 è fatto** — *scriverlo prima vorrebbe dire che il mix arriva e per lo studente
+non cambia niente, perché la promessa c'era già e non era vera.*
+
+⚠️ **E un vincolo deciso da chi guida il progetto: il mix NON viaggia insieme a Supabase.** *Prima o dopo,
+non assieme: un mix che va storto mentre i progressi si spostano in un database dà due guasti che non si
+distinguono.*
+
+### 🔴 SEI DEI VENTI DI `retryIntroMessages` SONO STATI CORRETTI IL 2026-10-16
+
+*Su venti, sedici erano buoni. Quattro difetti, e due erano falsi in due modi.*
+
+**① «Il quiz è finito»** *(titolo `first` 1)*. 🔴 **Il quiz NON è finito: il ripasso sta per cominciare e
+lo studente deve ancora rispondere.** *E «quiz» è sbagliato per due dei quattro moduli che mostrano
+questa schermata:* **Match e Flash Card sono `studio`** — *e lo studente vede scritto «Studio» sulla
+mappa, accanto a quel modulo.* ⭐ *Ora dice «Primo passaggio finito».*
+
+**② «Il resto è già acquisito»** *(corpo `first` 4)*. *Misurato: `mastery.promotionStreak` = **2**.*
+🔴 **Una risposta giusta al primo colpo non è «acquisito»:** *servono due giuste di fila per passare
+rosso→giallo, e altre due per giallo→verde.* ⚠️ **E oggi niente le riporta davanti allo studente da sole:** *il mix che le ripescherebbe non esiste
+ancora (**O-4**).* ⭐ *Ora dice «il resto per adesso va» — che è vero in entrambi i casi.*
+
+**③ «poi via al prossimo esercizio»** *(corpi `last` 1, 2 e 4 — tre su cinque)*. 🔴 **Dopo l'ultimo
+ripasso non viene un esercizio: viene la SCHERMATA FINALE, e poi la mappa.** ⚠️ *E può non esserci nessun
+esercizio dopo: quello può essere l'ultimo passo dell'episodio.* ⭐ **E il corpo 2 adesso annuncia la
+schermata che arriva davvero: «Finito questo ripasso vedrai com'è andata».**
+
+**④ «Round terminato»** *(titolo `first` 5)*. *Era l'unica parola inglese del file, e il resto dell'app
+parla italiano.*
+
+⭐ **E un dato del meccanismo che vale scritto, perché tre di questi testi lo sbagliavano:** *i ripassi
+sono al massimo **due** — `first` e `last` — e dopo il secondo la valvola spinge avanti le voci ostinate.*
+**Non esiste un terzo giro, quindi «ultimo» nei titoli `last` è vero.**
+
 ### 🔴 I QUINDICI DI `moduleCompleteMessages` SONO STATI RISCRITTI IL 2026-10-16
 
 **Non per gusto: tre difetti di meccanismo, misurati sul codice.**
@@ -196,8 +256,10 @@ romperebbe i controlli che cercano i titoli carattere per carattere.*
 giro — «this pct is already frozen before the ripasso pass», dice il commento in `app/match.js` — e la
 schermata compare a coda vuota: lo studente ha già rifatto tutto, e non era una scelta sua.**
 
-⭐ **Il futuro vero esiste, ed è un altro:** *una voce sbagliata resta **rossa** nella mastery, e il mix
-pesca il 30% dai rossi.* **Quindi «tornano nei prossimi episodi» è una promessa che l'app mantiene.**
+🔴 **E il futuro che avevamo messo al suo posto era falso a sua volta:** *una voce sbagliata resta
+**rossa** nella mastery — questo è vero — ma **oggi nessun esercizio la ripesca.*** ⚠️ **Il mix che lo
+farà è O-4, e la mastery è salvata per episodio.** ⭐ *L'unico futuro che l'app mantiene è un altro: il
+passo si riapre dalla mappa.*
 
 ⚠️ *E quando la valvola `retryQueue.maxAttempts` scatta, la voce è accettata per quel giro ma registrata
 `rosso`:* **finire l'esercizio non vuol dire averlo imparato, e i testi non lo dicono più.**
@@ -254,10 +316,10 @@ cosa succederà.**
 | `speedMatchMessages` | `basso` | 3 | Ripasseremo insieme le parole più difficili. |
 | `speedMatchMessages` | `basso` | 4 | È solo l'inizio, andrà meglio. |
 | `speedMatchMessages` | `basso` | 5 | Nessun problema, il ripasso è fatto apposta per questo. |
-| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 1 | Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: questa frase tornerà nei prossimi ripassi, e col tempo verrà naturale. |
-| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 2 | Capita, e non è un problema: vuol dire solo che questa frase ha bisogno di un altro giro. Vai avanti con l'esercizio, la ritroverai più avanti nei ripassi mirati. |
-| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 3 | A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare — tornerà da sola nei prossimi ripassi. |
-| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 4 | Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti, ci tornerai sopra quando serve. |
+| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 1 | Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: su una frase così, insistere adesso non aiuta. |
+| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 2 | Capita, e non è un problema: questa frase ha bisogno di più tempo del resto. Vai avanti con l'esercizio. |
+| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 3 | A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare. |
+| `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 4 | Nessuna fretta: certe frasi richiedono più ripetizioni di altre, ed è previsto dal metodo. Vai avanti col resto. |
 | `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 5 | Non ci sei ancora, ma va bene così — è proprio il motivo per cui esistono i ripassi. Continua pure con il resto dell'esercizio. |
 | `valvolaSicurezzaMessages` | `riuscita.bodies` | 1 | Ce l'hai fatta, e si vede che i tentativi hanno aiutato: hai insistito ed è servito. Vai avanti con lo stesso spirito. |
 | `valvolaSicurezzaMessages` | `riuscita.bodies` | 2 | Alla fine ci sei arrivato — i primi tentativi non erano andati benissimo, ma hai corretto la mira. Proprio questo è il modo in cui si impara. |
@@ -267,18 +329,18 @@ cosa succederà.**
 | `moduleCompleteMessages` | `alto` | 1 | Primo colpo, punteggio alto: questo blocco lo sai. |
 | `moduleCompleteMessages` | `alto` | 2 | Bel lavoro — qui sei andato sicuro. |
 | `moduleCompleteMessages` | `alto` | 3 | Quello che hai studiato in questo blocco ti è rimasto. |
-| `moduleCompleteMessages` | `alto` | 4 | Punteggio alto: se qualcosa è tornato indietro, lo ritroverai più avanti senza fretta. |
+| `moduleCompleteMessages` | `alto` | 4 | Punteggio alto: se qualcosa è tornato indietro, l'hai già chiuso qui. |
 | `moduleCompleteMessages` | `alto` | 5 | Qui hai lavorato bene, e si vede già dal primo passaggio. |
 | `moduleCompleteMessages` | `medio` | 1 | Buon punteggio al primo passaggio. Il resto l'hai sistemato qui. |
 | `moduleCompleteMessages` | `medio` | 2 | Ci sei: una parte è entrata subito, sul resto hai dovuto tornarci. |
 | `moduleCompleteMessages` | `medio` | 3 | Buona parte al primo colpo, e il resto l'hai chiuso a forza di riprovarci. |
-| `moduleCompleteMessages` | `medio` | 4 | Va bene così: quello su cui hai esitato torna da solo nei prossimi episodi. |
-| `moduleCompleteMessages` | `medio` | 5 | Niente da rifare adesso. Quello che era incerto lo rivedrai più avanti. |
+| `moduleCompleteMessages` | `medio` | 4 | Va bene così: quello su cui hai esitato l'hai rifatto fino a prenderlo. |
+| `moduleCompleteMessages` | `medio` | 5 | Niente da rifare adesso: il giro è completo. |
 | `moduleCompleteMessages` | `basso` | 1 | Questo blocco era in salita, e lo hai portato a termine comunque. |
 | `moduleCompleteMessages` | `basso` | 2 | Molte le hai prese solo tornandoci sopra: vuol dire che non sono ancora tue. |
-| `moduleCompleteMessages` | `basso` | 3 | Punteggio basso al primo colpo. Niente da rifare adesso: queste voci tornano nei prossimi episodi, ed è lì che si fissano. |
+| `moduleCompleteMessages` | `basso` | 3 | Punteggio basso al primo colpo, e le hai chiuse tutte riprovando. |
 | `moduleCompleteMessages` | `basso` | 4 | Ne hai mancate più di quante ne hai prese, e le hai chiuse tutte una per una. |
-| `moduleCompleteMessages` | `basso` | 5 | Qui hai faticato. Le voci che ti hanno resistito le ritroverai spesso, fino a quando non diventano facili. |
+| `moduleCompleteMessages` | `basso` | 5 | Qui hai faticato, e sei arrivato in fondo comunque. Questo passo si riapre dalla mappa, quando vuoi. |
 | `studioCompleteMessages` | `default` | 1 | Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno. |
 | `studioCompleteMessages` | `default` | 2 | Fatto: continuare a esercitarti così è esattamente il modo giusto. |
 | `studioCompleteMessages` | `default` | 3 | Sessione completata — la pronuncia si allena anche così, un po' alla volta. |
@@ -309,25 +371,25 @@ cosa succederà.**
 | `dialogoCompleteMessages` | `nonAncora` | 3 | Capita di non essere ancora sicuri: tornaci sopra con tranquillità. |
 | `dialogoCompleteMessages` | `nonAncora` | 4 | Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo. |
 | `dialogoCompleteMessages` | `nonAncora` | 5 | Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta. |
-| `retryIntroMessages` | `first.titles` | 1 | Il quiz è finito |
+| `retryIntroMessages` | `first.titles` | 1 | Primo passaggio finito |
 | `retryIntroMessages` | `first.titles` | 2 | Primo giro completato |
 | `retryIntroMessages` | `first.titles` | 3 | Hai finito il giro principale |
 | `retryIntroMessages` | `first.titles` | 4 | Bene, si passa al ripasso |
-| `retryIntroMessages` | `first.titles` | 5 | Round terminato |
+| `retryIntroMessages` | `first.titles` | 5 | Ora si ripassa |
 | `retryIntroMessages` | `first.bodies` | 1 | Da qui in poi si ripassano solo le voci che ti sono sfuggite. |
 | `retryIntroMessages` | `first.bodies` | 2 | Ora torniamo solo su quello che ti serve rivedere. |
 | `retryIntroMessages` | `first.bodies` | 3 | Ripassiamo insieme solo le voci che non sono ancora andate a segno. |
-| `retryIntroMessages` | `first.bodies` | 4 | Il resto è già acquisito: ci concentriamo solo su quello che manca. |
+| `retryIntroMessages` | `first.bodies` | 4 | Il resto per adesso va: ci concentriamo su quello che manca. |
 | `retryIntroMessages` | `first.bodies` | 5 | Ripasso mirato: solo le voci da rivedere, niente di più. |
 | `retryIntroMessages` | `last.titles` | 1 | Ultimo ripasso |
 | `retryIntroMessages` | `last.titles` | 2 | Ultimo giro |
 | `retryIntroMessages` | `last.titles` | 3 | Ci siamo quasi, ultimo passaggio |
 | `retryIntroMessages` | `last.titles` | 4 | Un'ultima ripassata |
 | `retryIntroMessages` | `last.titles` | 5 | Ultimo richiamo |
-| `retryIntroMessages` | `last.bodies` | 1 | Dopo questo giro si passa all'esercizio successivo. |
-| `retryIntroMessages` | `last.bodies` | 2 | Finito questo ripasso, si va avanti con il prossimo esercizio. |
+| `retryIntroMessages` | `last.bodies` | 1 | Dopo questo giro l'esercizio è chiuso. |
+| `retryIntroMessages` | `last.bodies` | 2 | Finito questo ripasso vedrai com'è andata. |
 | `retryIntroMessages` | `last.bodies` | 3 | Ancora questo giro, poi si prosegue con il resto del percorso. |
-| `retryIntroMessages` | `last.bodies` | 4 | Un'ultima volta su queste voci, poi via al prossimo esercizio. |
+| `retryIntroMessages` | `last.bodies` | 4 | Un'ultima volta su queste voci, e hai fatto. |
 | `retryIntroMessages` | `last.bodies` | 5 | Completa questo giro e si passa oltre. |
 | `episodeFinalMessages` | `tuttiVerdi.compliments` | 1 | Episodio completato alla grande — tutti i moduli sono andati bene! |
 | `episodeFinalMessages` | `tuttiVerdi.compliments` | 2 | Ottimo lavoro su tutto l'episodio, davvero solido dall'inizio alla fine. |
