@@ -1,4 +1,4 @@
-**Versione: 20261016a**
+**Versione: 20261016b**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -193,10 +193,18 @@ coda, `—` se nessuno · **video** → il copione del video di questo modulo.*
 🔴 **E FINO AL 2026-10-16 QUI C'ERA SCRITTO `moduleLabels.<kind>.name`, CHE ERA FALSO DUE VOLTE.**
 *Misurato: `titoloSpiegazione(module)` restituisce `module.label`, che viene da `moduleLabels[id].name`.*
 
-| Cosa diceva | Com'è |
-|---|---|
-| per **kind** | 🔴 **per ID DEL PASSO.** *Flash Card ha un kind e **due passi**, con due nomi: «Flash Card en→it» e «it→en»* |
-| «i **16** titoli» | 🔴 **16 sono i CORPI, uno per kind.** *I titoli si risolvono per passo, e i due passi di Flash Card mostrano due titoli diversi sopra lo stesso corpo* |
+*Era falso due volte.* **Diceva «per kind»: è per ID DEL PASSO** — *Flash Card ha un kind e **due
+passi**, con due nomi, «Flash Card en→it» e «it→en».* **E diceva «i 16 titoli»: 16 sono i CORPI, uno per
+kind** — *i titoli si risolvono per passo, e i due passi di Flash Card mostrano due titoli diversi sopra
+lo stesso corpo.*
+
+🔴 **E QUESTA SPIEGAZIONE ERA UNA TABELLA, FINO AL 2026-10-16.** *Stava qui, prima della tabella delle
+spiegazioni — e il trascrittore prende la PRIMA tabella sotto il titolo: leggeva questa.* ⚠️ **È la stessa
+trappola che avevamo appena trovato e scritto nel modello della struttura, commessa nell'altro file della
+stessa consegna.**
+
+> ⭐ **In un file che si trascrive, una spiegazione si scrive in prosa: una tabella in più è un dato in
+> più per chi legge col parser.**
 
 ⚠️ **E com'è nato questo errore vale più dell'errore:** *la forma `moduleLabels.<kind>` era già scritta
 qui e alla sezione 1, e scrivendo la sezione dei sottotitoli l'abbiamo letta come la convenzione della

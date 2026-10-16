@@ -1,4 +1,4 @@
-**Versione: VUOTO-20261016a**
+**Versione: VUOTO-20261016b**
 
 # Struttura del corso — {lingua} per {studente}
 
@@ -161,9 +161,15 @@ usa questa edizione: l'etichetta mostrata sta nel file condiviso, perché è nel
 
 ⚠️ **E il trascrittore si ferma se una categoria elencata qui non ha la sua etichetta là.**
 
+🔴 **PER QUESTO L'ESEMPIO USA UNA CATEGORIA VERA, `studio`, E NON UN `esempio-categoria`.** *Un id
+inventato non ha l'etichetta nel file condiviso, e il controllo incrociato fermerebbe il modello.*
+
+> ⭐ **Un modello si trascrive COM'È, senza che il test gli prepari un file su misura.** *Se ha bisogno di
+> un aiuto per passare, non sta descrivendo la forma: sta descrivendo un caso.*
+
 | Id | A cosa serve |
 |---|---|
-| `esempio-categoria` | descrizione libera, non letta |
+| `studio` | descrizione libera, non letta |
 
 ---
 
@@ -185,22 +191,33 @@ il modulo.**
 
 | Id | Nome | Categoria |
 |---|---|---|
-| `esempioModulo` | Nome Del Modulo | `esempio-categoria` |
+| `esempioModulo` | Nome Del Modulo | `studio` |
 
 ---
 
 ## 5 — LE SEQUENZE DEI MODULI
 
-*Una sequenza è una lista ordinata di coppie `{ module, grade }` → `sequences` nel JSON, una chiave per
-nome. **Il modulo** è un id della §4. **Il grado** è una lettera della §2, oppure `—` quando il passo non
-ne ha uno. L'ordine delle righe è l'ordine dei passi; la colonna `#` è per chi legge, non un dato.*
+*Colonne: **sequenza** → chiave di `sequences` · **modulo** → `module`, un id della §4 · **grado** →
+`grade`, una lettera della §2, **vuoto** dove il passo non lavora su un grado.*
 
-| # | modulo | grado |
+🔴 **FINO AL 2026-10-16 QUESTO MODELLO DESCRIVEVA UNA FORMA CHE NESSUNA EDIZIONE USA:** *`| # | modulo |
+grado |`, un `###` per ogni sequenza e un `—` per «nessun grado».* ⚠️ **Le colonne erano tre, come le
+vere, quindi il conto tornava** — *e il controllo che avevamo fatto contava le colonne, non guardava cosa
+fossero.*
+
+> 🔴 **Una misura che passa non dice che la cosa è giusta: dice che quella misura è passata.**
+
+| Sequenza | Modulo | Grado |
 |---|---|---|
-| 1 | `esempioModulo` | — |
-| 2 | `unAltroModulo` | X |
+| `nome-della-sequenza` | `esempioModulo` | |
+| `nome-della-sequenza` | `unAltroModulo` | X |
 
-*Le sequenze successive si scrivono con un `###` col loro nome e la stessa tabella.*
+⚠️ **TUTTE le sequenze stanno in QUESTA tabella, una riga per passo, col nome della sequenza ripetuto
+nella prima colonna.** *Non c'è un `###` per sequenza, e non c'è una colonna col numero del passo:
+l'ordine delle righe È l'ordine dei passi.*
+
+⚠️ **E il grado di un passo che non lavora su un grado è una cella VUOTA, non un trattino.** *Un `—`
+diventa il grado `"—"` nel JSON, e nessun controllo se ne accorge.*
 
 ### 🔴 LA TABELLA DEI PASSI STA SUBITO DOPO LA PROSA, E NON È UNA SCELTA DI STILE
 
