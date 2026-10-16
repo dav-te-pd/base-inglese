@@ -203,6 +203,14 @@
     // to check inside Speed Match) and an invitation for a second,
     // duplicate set to appear later. Change these three numbers to retune
     // the alto/medio/basso split everywhere at once.
+    //
+    // ⚠️ E DAL 2026-10-16 LA SCALA E' UNA SOLA PER DAVVERO, e fa tre cose:
+    // la fascia del messaggio (`fasciaMessaggio` — sotto `basso` nessun
+    // messaggio), il colore del badge e della parola (`percentageBucket`), e
+    // le stelle di Voice Practice e Voice Check (`starsForPercent`: `basso`
+    // una, `medio` due, `alto` tre). Il «second, duplicate set» qui sopra era
+    // arrivato davvero — `voiceCoach.starThresholds`, gli stessi tre numeri —
+    // ed e' uscito quel giorno.
     percentageThresholds: { basso: 1, medio: 50, alto: 80 },
     // ---- shared sound catalog — EVENTS, not buttons ----
     // Every sound in the app is a reaction to one of these events, never to
@@ -337,10 +345,15 @@
       // In millisecondi e non in secondi, a differenza di `silenceTimeoutSeconds`:
       // è la manopola che si stringe a piccoli passi provando a voce.
       afterSpeechTimeoutMs: 1200,
-      // Minimum % of correct (green) words, out of the whole target
-      // sentence, needed for 1/2/3 stars — mirrors the "range" fields
-      // documented in data/condivisi/it/it-messaggi-feedback.json's percentageRule.
-      starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 },
+      // ⚠️ QUI C'ERA `starThresholds: { oneStar: 1, twoStars: 50, threeStars: 80 }`,
+      // E' USCITA IL 2026-10-16: le stelle leggono `percentageThresholds`, la
+      // stessa scala del messaggio (`starsForPercent`, app/quiz-engine.js).
+      // Deciso da chi guida il progetto: in Voice Check stelle e messaggio
+      // stanno sulla stessa schermata e sulla stessa percentuale, e con due
+      // scale chi ne ritoccava una vedeva «tre stelle» sopra un messaggio
+      // «medio». *Il commento di allora diceva che quei numeri «rispecchiano»
+      // `percentageRule` del file dei messaggi — cioe' citava come
+      // documentazione un file che li aveva copiati dal codice.*
       // Progressive mic-trouble detection: counts CONSECUTIVE recordings
       // where the recognizer heard no words at all — not a wrong word,
       // that's just a mispronunciation and never counts here — and resets
@@ -691,9 +704,9 @@
       'mastery.promotionStreak': 'Quante risposte corrette di fila servono per salire di livello (rosso → giallo → verde).',
       'retryQueue.maxAttempts': 'Dopo quanti tentativi su una stessa domanda o frase la si accetta comunque, così i ripassi non tornano all\'infinito.',
       'retryQueue.attemptsReminderThreshold': 'Dopo quanti tentativi sulla stessa domanda o frase compare il messaggio "capita, tranquillo" (o quello di riconoscimento se l\'hai indovinata).',
-      'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale non compare nessun messaggio finale. Da qui in su il messaggio usa il tono "basso". Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
-      'percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio".',
-      'percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante.',
+      'percentageThresholds.basso': 'Percentuale di risposte corrette (0-100) sotto la quale non compare nessun messaggio finale. Da qui in su il messaggio usa il tono "basso". In Voice Practice e Voice Check è anche la soglia della PRIMA stella. Vale per ogni modulo valutato (quiz, quiz a tempo, Voice Coach).',
+      'percentageThresholds.medio': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale passa al tono "medio". In Voice Practice e Voice Check è anche la soglia delle DUE stelle, cioè del tentativo superato.',
+      'percentageThresholds.alto': 'Percentuale di risposte corrette (0-100) dalla quale il messaggio finale usa il tono "alto", il più incoraggiante. In Voice Practice e Voice Check è anche la soglia delle TRE stelle.',
       'sound.events.corretto.freq': 'Altezza del suono per una risposta/tentativo corretto, in Hz.',
       'sound.events.corretto.durationMs': 'Durata del suono "corretto", in millisecondi.',
       'sound.events.sbagliato.freq': 'Altezza del suono per una risposta/tentativo sbagliato, in Hz.',
@@ -715,9 +728,6 @@
       'voiceCoach.maxRecordingMarginMs': 'Millisecondi extra aggiunti al tempo massimo di registrazione, oltre a quelli calcolati parola per parola.',
       'voiceCoach.silenceTimeoutSeconds': 'Secondi senza rilevare voce dall\'avvio della registrazione dopo i quali si ferma da sola e NON viene inviata (compare un avviso).',
       'voiceCoach.afterSpeechTimeoutMs': 'Millisecondi di silenzio DOPO che hai smesso di parlare, prima che la registrazione si chiuda da sola. Il conto riparte da zero se riprendi a parlare, quindi una pausa per prendere fiato non ti taglia. \u26a0\ufe0f Deve restare sotto i ~3000 ms: oltre, a chiudere la sessione arriva prima il riconoscitore del browser e questo valore non cambia pi\u00f9 niente.',
-      'voiceCoach.starThresholds.oneStar': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere almeno una stella.',
-      'voiceCoach.starThresholds.twoStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere due stelle.',
-      'voiceCoach.starThresholds.threeStars': 'Percentuale minima di parole corrette (da 0 a 100) per ottenere tre stelle, il massimo.',
       'voiceCoach.micIssue.warningAt': 'Dopo quante registrazioni di fila senza nessuna parola riconosciuta compare il primo avviso sul microfono.',
       'voiceCoach.micIssue.restartSuggestionAt': 'Dopo quante registrazioni vuote di fila viene proposto di ricominciare l\'esercizio.',
       'voiceCoach.micIssue.confirmedAt': 'Dopo quante registrazioni vuote di fila il problema viene dato per confermato, con il pulsante per tornare alla mappa.',

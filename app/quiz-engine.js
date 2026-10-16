@@ -71,11 +71,20 @@ window.BI = window.BI || {};
     return percentageBucket(pct);
   }
 
+  // ⚠️ UNA SCALA SOLA DAL 2026-10-16: le stelle leggono `percentageThresholds`,
+  // la stessa del messaggio. `basso` = la prima stella, `medio` = due (e il
+  // tentativo superato: `passed = stars > 1` in app/voice.js), `alto` = tre.
+  // Fino a quel giorno stavano in `voiceCoach.starThresholds`, con gli stessi
+  // tre numeri scritti una seconda volta. Deciso da chi guida il progetto: in
+  // Voice Check stelle e messaggio sono sulla stessa schermata e sulla stessa
+  // percentuale, e due scale potevano dire «tre stelle» sopra un messaggio
+  // «medio». *E' diventato possibile col passo dello 0% (`fasciaMessaggio`):
+  // prima le stelle avevano un gradino — lo zero — che il messaggio non aveva.*
   function starsForPercent(pct) {
-    var t = CONFIG.voiceCoach.starThresholds;
-    if (pct >= t.threeStars) return 3;
-    if (pct >= t.twoStars) return 2;
-    if (pct >= t.oneStar) return 1;
+    var t = CONFIG.percentageThresholds;
+    if (pct >= t.alto) return 3;
+    if (pct >= t.medio) return 2;
+    if (pct >= t.basso) return 1;
     return 0;
   }
 
