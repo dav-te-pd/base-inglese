@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-10-16
-# Totale: 2125
+# Totale: 2126
 test_attendi.js 17
 test_attendi_ci.js 33
 test_attese_condivise.js 25
@@ -128,4 +128,4 @@ test_uscita_dal_muro.js 12
 test_versione_cache.js 15
 test_voce_edizione.js 9
 test_voicecoach.js 26
-test_zero_per_cento.js 13
+test_zero_per_cento.js 14
