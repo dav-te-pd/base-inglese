@@ -88,7 +88,9 @@ jobs:
       - name: Installa Chromium per Playwright
         run: npx playwright install --with-deps chromium
 
-      # Avvia il server, lancia i 32 file, ferma il server. Esce con codice 1
+      # Avvia il server, lancia ogni tests/test_*.js tranne gli esclusi
+      # (tests/esclusi-dalla-suite.txt — dal 2026-10-16; qui c'era «i 32 file»),
+      # ferma il server. Esce con codice 1
       # se anche un solo file fallisce.
       - name: Lancia la suite
         run: npm test

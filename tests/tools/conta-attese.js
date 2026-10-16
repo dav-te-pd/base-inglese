@@ -133,9 +133,12 @@ function fileDaCensire() {
   // strumento percorre, quindi un'aggiunta valida solo sulla strada
   // automatica sarebbe rimasta non misurata per sempre.
   if (espliciti.length) return espliciti.concat(moduliCondivisi(espliciti));
-  const sh = fs.readFileSync(path.join(CARTELLA_TEST, 'run_full_regression.sh'), 'utf8');
-  const m = sh.match(/^FILES="([^"]+)"/m);
-  if (!m) throw new Error('Non trovo la lista FILES in run_full_regression.sh');
+  // ⚠️ I file della suite NON si leggono piu' dalla riga `FILES="…"` dello
+  // script, dal 2026-10-16: quella riga non esiste piu'. La suite lancia ogni
+  // `test_*.js` tranne gli esclusi, e la regola sta in un posto solo,
+  // `tools/file-della-suite.js` — se manca il file degli esclusi, si ferma
+  // anche qui (regola 49).
+  const elenco = require('./file-della-suite.js').fileDellaSuite();
   // ⚠️ test_conta_attese.js e' escluso dal censimento AUTOMATICO, e non e' una
   // scorciatoia: quel file contiene il codice FINTO con cui questo strumento
   // viene misurato — attese scritte dentro una stringa, che non girano mai.
@@ -143,7 +146,7 @@ function fileDaCensire() {
   // suite: fino all'11 settembre tre finte stavano dentro le 186. Passandolo
   // ESPLICITAMENTE sulla riga di comando viene censito lo stesso, ed e' cosi'
   // che il suo test lo esercita.
-  const fileSuite = m[1].split(/\s+/).filter(Boolean).filter(function (f) {
+  const fileSuite = elenco.filter(function (f) {
     return path.basename(f) !== 'test_conta_attese.js';
   });
   return fileSuite.concat(moduliCondivisi(fileSuite));

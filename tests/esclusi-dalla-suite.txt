@@ -1,0 +1,18 @@
+# I file `tests/test_*.js` che la suite completa NON lancia, uno per riga,
+# ciascuno col suo perché:
+#
+#   test_nome.js | perché non gira nella suite
+#
+# Dal 2026-10-16 la suite lancia OGNI `tests/test_*.js` tranne quelli scritti
+# qui (`run_full_regression.sh`). Fino a quel giorno lanciava un elenco
+# scritto a mano, e un file nuovo dimenticato fuori non girava senza che
+# niente lo dicesse — è successo due volte. Deciso da chi guida il progetto:
+# «un difetto impossibile batte un difetto preso».
+#
+# ⚠️ OGGI È VUOTO, ED È UN'INFORMAZIONE: dice «nessun test è escluso». Il file
+# deve esistere anche vuoto — senza, la suite si ferma invece di girare su un
+# elenco che non sa leggere (regola 49).
+#
+# `test_conta_asserzioni.js` [G] controlla che ogni nome scritto qui esista
+# e porti un perché non vuoto: è rimasto l'unico modo per zittire un test, e
+# non può essere muto.

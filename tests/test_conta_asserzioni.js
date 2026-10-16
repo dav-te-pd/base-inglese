@@ -163,36 +163,68 @@ function esegui(args, env) {
     try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
   }
 
-  // ── [G] L'ELENCO DELLA SUITE COPRE OGNI FILE DI TEST CHE ESISTE ─────
+  // ── [G] NESSUN TEST PUO' RESTARE FUORI DALLA SUITE SENZA DIRE PERCHE' ──
   //
-  // ⚠️ TROVATO IL 2026-09-28, ESEGUENDO: `test_testi_dal_markdown.js` era
-  // scritto, committato, verde da solo — **e non girava.** La corsa completa
-  // diceva «80 file» prima e «80 file» dopo, cioè il numero giusto per la
-  // domanda sbagliata.
+  // ⚠️ [G] HA CAMBIATO MESTIERE IL 2026-10-16, E LA STORIA VA LETTA TUTTA.
   //
-  // `FILES` in `tests/run_full_regression.sh` è un elenco scritto a mano, e un
-  // elenco scritto a mano invecchia a ogni file nuovo **senza nessun segnale**:
-  // il file che manca non fallisce, non compare, non esiste. *E' la stessa
-  // forma della regola 41 — un elenco di nomi si legge e si crede di averlo
-  // applicato — e della 49: qui il controllo che non controlla è la suite
-  // stessa.*
+  // **Il 2026-09-28** `test_testi_dal_markdown.js` era scritto, committato,
+  // verde da solo — **e non girava.** La corsa completa diceva «80 file» prima e
+  // «80 file» dopo: il numero giusto per la domanda sbagliata. `FILES` in
+  // `run_full_regression.sh` era un elenco scritto a mano, e un elenco scritto a
+  // mano invecchia a ogni file nuovo **senza nessun segnale**. Nacque questa
+  // guardia: «ogni `test_*.js` sul disco sta nell'elenco».
   //
-  // La difesa non è «ricordarsene»: è questa riga. *Sostituire `FILES` con un
-  // `ls` sarebbe l'altra strada, ed è stata scartata: l'ordine dei file nella
-  // corsa non è casuale, e un file nuovo entrerebbe nella suite senza che
-  // nessuno l'abbia deciso.*
+  // *Quel giorno il glob fu SCARTATO, con due ragioni: «l'ordine dei file nella
+  // corsa non e' casuale» e «un file nuovo entrerebbe nella suite senza che
+  // nessuno l'abbia deciso».*
+  //
+  // **Il 2026-10-13 e' successo di nuovo** (`test_testi_condivisi.js`): la
+  // guardia l'avrebbe preso, ma **a suite finita** — una corsa buttata.
+  //
+  // **Il 2026-10-16 il glob e' stato deciso** da chi guida il progetto — *«un
+  // difetto impossibile batte un difetto preso»* — e le due ragioni del 28/09
+  // sono state MISURATE, e non reggono:
+  //   - l'ordine serve solo a ristampare i blocchi del log alla fine; nessun
+  //     file dipende da un altro (l'isolamento e' scritto nello script);
+  //   - chiamare un file `tests/test_x.js` E' la decisione di metterlo nella
+  //     suite.
+  //
+  // Da quel giorno la suite lancia ogni `test_*.js` tranne quelli scritti in
+  // `esclusi-dalla-suite.txt` (`tools/file-della-suite.js`, un posto solo).
+  // **E [G] cambia mestiere in meglio:** non «la lista combacia», che col glob
+  // e' vero per costruzione, ma **«ogni escluso esiste e porta il suo perche'»**
+  // — l'unico modo che resta per zittire un test, e non puo' essere muto.
+  // Piu' «lo script non torna a un elenco a mano», che e' il difetto di prima.
   {
+    const S = require('./tools/file-della-suite.js');
     const sh = fs.readFileSync(path.join(__dirname, 'run_full_regression.sh'), 'utf8');
-    const m = sh.match(/^FILES="([^"]*)"/m);
-    const elenco = m ? m[1].split(/\s+/).filter(Boolean) : [];
-    const disco = fs.readdirSync(__dirname).filter((f) => /^test_.*\.js$/.test(f));
-    const mancanti = disco.filter((f) => elenco.indexOf(f) === -1);
-    const fantasmi = elenco.filter((f) => disco.indexOf(f) === -1);
-    log('[G] La suite ha un elenco di file da lanciare', elenco.length > 0, 'trovati: ' + elenco.length);
-    log('[G] Ogni file test_*.js sul disco sta nell\'elenco della suite — nessun test che non gira',
-      mancanti.length === 0, mancanti.join(', '));
-    log('[G] E nessun nome nell\'elenco punta a un file che non c\'e\' piu\'',
-      fantasmi.length === 0, fantasmi.join(', '));
+    log('[G] Lo script non porta piu\' un elenco a mano (`FILES="…"`)', !/^FILES="/m.test(sh));
+    log('[G] ...e chiede i file a tools/file-della-suite.js', /FILES=\$\(node tools\/file-della-suite\.js\)/.test(sh));
+    const suite = S.fileDellaSuite();
+    log('[G] La suite ha dei file da lanciare (non sto guardando il vuoto)', suite.length > 0, 'trovati: ' + suite.length);
+    log('[G] Questo stesso file e\' nella suite', suite.indexOf('test_conta_asserzioni.js') !== -1);
+    const disco = S.fileSulDisco();
+    const veri = S.esclusi();
+    const fantasmi = veri.filter((e) => disco.indexOf(e.nome) === -1).map((e) => e.nome);
+    const muti = veri.filter((e) => !e.perche).map((e) => e.nome);
+    log('[G] Ogni escluso nomina un file che esiste', fantasmi.length === 0, fantasmi.join(', '));
+    log('[G] Ogni escluso porta il suo perche\'', muti.length === 0, muti.join(', '));
+    log('[G] Ogni test_*.js sul disco gira, o e\' escluso con un perche\'',
+      disco.every((f) => suite.indexOf(f) !== -1 || veri.some((e) => e.nome === f && e.perche)));
+
+    // ⚠️ E LA GUARDIA SI VEDE CADERE, su un file finto e non su quello vero
+    // (regola 36: il vero non si tocca mentre la suite gira).
+    const finto = path.join(fs.mkdtempSync(path.join(require('os').tmpdir(), 'esclusi-')), 'esclusi.txt');
+    fs.writeFileSync(finto, '# prova\ntest_conta_asserzioni.js |   \ntest_che_non_esiste.js | un perche\'\n');
+    const prova = S.esclusi(finto);
+    log('[G] Su un file finto: un escluso senza perche\' si vede', prova.some((e) => e.nome === 'test_conta_asserzioni.js' && !e.perche));
+    log('[G] ...e un escluso che non esiste si vede', prova.some((e) => e.nome === 'test_che_non_esiste.js' && disco.indexOf(e.nome) === -1));
+    log('[G] ...e l\'escluso esce davvero dalla suite', S.fileDellaSuite(finto).indexOf('test_conta_asserzioni.js') === -1);
+    let fermo = null;
+    try { S.esclusi(finto + '-assente'); } catch (e) { fermo = e.message; }
+    log('[G] Senza il file degli esclusi lo strumento si FERMA, non lancia tutto in silenzio (regola 49)',
+      !!fermo && /esclusi-dalla-suite/.test(fermo), String(fermo));
+    try { fs.rmSync(path.dirname(finto), { recursive: true, force: true }); } catch (e) {}
   }
 
   console.log('\n=== CONTA ASSERZIONI SUMMARY: ' + passed + '/' + (passed + failed) + ' passed ===');

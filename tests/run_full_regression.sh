@@ -91,7 +91,28 @@ fi
 cleanup() { [ -n "$SERVER_PID" ] && kill "$SERVER_PID" 2>/dev/null; }
 trap cleanup EXIT
 
-FILES="test_batch2.js test_batch2b.js test_batch3.js test_batch3b.js test_batch4.js test_batch4b.js test_batch5.js test_batch6.js test_batch7.js test_batch8.js test_batch9.js test_batch10.js test_batch11.js test_batch12.js test_batch13.js test_batch14.js test_batch15.js test_batch16.js test_batch17.js test_batch18.js test_batch19.js test_batch20.js test_dialogo_extra.js test_new_features.js test_voicecoach.js test_story_modules.js test_testi_interfaccia.js test_hidden_guard.js test_outcome_step_ids.js test_config_letta.js test_struttura_corso.js test_scala_colori.js test_errore_caricamento.js test_avviso_microfono.js test_sblocco_sequenziale.js test_attendi.js test_report_mastery.js test_episodi_corti.js test_sequenze.js test_episodio2.js test_interruttore_episodio.js test_match_practice_nonloso.js test_blocco_ascolto.js test_comportamento_audio.js test_versione_cache.js test_mastery_al_gesto.js test_conta_asserzioni.js test_conta_attese.js test_modulo_pronto.js test_attese_condivise.js test_attendi_ci.js test_tabelle_personalizzazione.js test_config_estratto.js test_spazio_nomi.js test_pulizie_registrate.js test_moduli_registrati.js test_listener_una_volta.js test_avvio_invariato.js test_uscita_dal_modulo.js test_progressi_estratto.js test_identita_estratta.js test_audio_estratto.js test_suoni_estratto.js test_quiz_engine_estratto.js test_dati_estratto.js test_dipendenze_dichiarate.js test_orchestrazione_estratta.js test_ui_condivisa_estratta.js test_risposta_una_volta.js test_edizione_una_volta.js test_stile_estratto.js test_magazzino.js test_traducibilita_per_riga.js test_selettori_sequenza.js test_stringhe_markup.js test_uscita_dal_muro.js test_nomenclatura_edizione.js test_lista_episodi.js test_schermata_attesa.js test_ordine_episodi_pannello.js test_testi_dal_markdown.js test_fatti_app.js test_edizione_spagnola.js test_voce_edizione.js test_distrattori.js test_tendina_edizione.js test_non_con.js test_intestazioni.js test_id_neutri.js test_testi_condivisi.js test_zero_per_cento.js test_scala_unica.js"
+# ⚠️ I FILE NON SI ELENCANO PIU' A MANO, DAL 2026-10-16: si lancia OGNI
+# `test_*.js` di questa cartella, tranne quelli scritti in
+# `esclusi-dalla-suite.txt` col loro perche'. Deciso da chi guida il progetto.
+#
+# *Fino a quel giorno qui c'era `FILES="test_batch2.js test_batch2b.js …"`,
+# scritto a mano, e un file nuovo dimenticato fuori non girava senza che
+# niente lo dicesse: `test_testi_dal_markdown.js` il 2026-09-28,
+# `test_testi_condivisi.js` il 2026-10-13. La difesa era una guardia, [G] di
+# `test_conta_asserzioni.js`, che il difetto lo PRENDEVA a suite finita; il
+# glob lo rende IMPOSSIBILE.* Le ragioni con cui il glob era stato scartato il
+# 28/09 — e perche' non reggono — stanno accanto a [G].
+#
+# L'ordine e' quello alfabetico (`sort` di Node), lo stesso su ogni macchina: serve
+# solo a ristampare i blocchi del log alla fine. Nessun file dipende da un
+# altro (l'isolamento e' scritto qui sopra).
+#
+# La regola sta in `tools/file-della-suite.js`, l'unico posto: la leggono
+# anche il censimento delle attese e [G]. Se il file degli esclusi manca, lo
+# strumento esce con 1 e la suite si ferma qui (regola 49).
+if ! FILES=$(node tools/file-della-suite.js); then
+  exit 1
+fi
 OVERALL_OK=1
 
 # I file girano in parallelo, ma IL LOG RESTA QUELLO DI PRIMA, riga per riga.
