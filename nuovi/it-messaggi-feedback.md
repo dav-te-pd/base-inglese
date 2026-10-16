@@ -1,4 +1,4 @@
-**Versione: 20261016e**
+**Versione: 20261016f**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -190,12 +190,18 @@ romperebbe i controlli che cercano i titoli carattere per carattere.*
 ### 🔴 NOVE TESTI PROMETTEVANO UN MECCANISMO CHE L'APP NON HA — corretti il 2026-10-16
 
 **Il «mix 40/30/20/10» — quello che dovrebbe pescare il 30% delle voci dai rossi — NON ESISTE ANCORA.**
-*Misurato: zero occorrenze in `app/`, `data/` e `index.html`.* ⚠️ **È l'obiettivo O-4, e arriva dopo
-Supabase.**
+*Misurato: zero occorrenze in `app/`, `data/` e `index.html`.* **Quando arrivi non si decide qui.**
 
-🔴 **E la ragione per cui non si può anticipare non è «Supabase»: è che la mastery è salvata PER
-EPISODIO** — `masteryStorageKey(episodeId, userName)`. *I rossi di un episodio e quelli di un altro stanno
-in due cassetti separati, e il mix ha bisogno di pescare da tutti.*
+⭐ **E quello che gli manca è UNA cosa, misurata il 16/10: una voce deve portarsi dietro l'episodio da
+cui viene, fino al salvataggio.** *Oggi `recordPendingMastery` legge lo stato dalla mastery
+dell'episodio **corrente**, e il salvataggio al gesto scrive tutto là.* 🔴 **E gli id si ripetono fra
+episodi — 14 in comune fra `gate` e `aircraft-door` — quindi una `c-1` rossa di `gate` mostrata dentro
+`aircraft-door` leggerebbe e scriverebbe quella dell'episodio sbagliato, senza nessun errore.**
+
+⚠️ **La chiave per episodio invece va bene come è**, *e le voci rosse degli episodi prima si leggono già.*
+🔴 **Fino al 16/10 questa sezione diceva il contrario: «la ragione è che la mastery è salvata per
+episodio».** *Era una nostra deduzione, non una misura — ed è caduta appena qualcuno ha guardato il
+codice.*
 
 **Chi lo prometteva:**
 
@@ -217,9 +223,9 @@ mappa*** — `mappa.js` *(«l'ultimo resta apribile»)* e il blocco D di `test_s
 **Si rileggono quando O-4 è fatto** — *scriverlo prima vorrebbe dire che il mix arriva e per lo studente
 non cambia niente, perché la promessa c'era già e non era vera.*
 
-⚠️ **E un vincolo deciso da chi guida il progetto: il mix NON viaggia insieme a Supabase.** *Prima o dopo,
-non assieme: un mix che va storto mentre i progressi si spostano in un database dà due guasti che non si
-distinguono.*
+⚠️ **E l'ordine fra il mix e Supabase non si scrive qui: è una decisione di piano, e un file di testi non
+è il posto dove un domani la si andrebbe a cercare.** *Qui resta solo quello che riguarda queste nove
+frasi.*
 
 ### 🔴 SEI DEI VENTI DI `retryIntroMessages` SONO STATI CORRETTI IL 2026-10-16
 
