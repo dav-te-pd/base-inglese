@@ -1,4 +1,4 @@
-**Versione: 20261016f**
+**Versione: 20261017c**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -227,6 +227,159 @@ non cambia niente, perché la promessa c'era già e non era vera.*
 è il posto dove un domani la si andrebbe a cercare.** *Qui resta solo quello che riguarda queste nove
 frasi.*
 
+### 🔴 DUE DIFETTI DI FAMIGLIA, TROVATI IL 2026-10-17 — e uno era già in `main`
+
+**Misurati leggendo `app/ui-condivisa.js` e `app/speedmatch.js`, non i testi.**
+
+### ① LO STUDENTE NON VEDE NESSUN NUMERO, IN NESSUN MODULO
+
+🔴 **`renderSummaryScreen` costruisce la Schermata Finale di tutti e sette i moduli, e contiene DUE
+righe: un titolo fisso e questo sottotitolo.** *Niente punteggio, niente percentuale, nessun elenco di
+cosa è andato storto.*
+
+⭐ **E misurato: ZERO righe in `app/` scrivono una percentuale a schermo.** *Il punteggio esiste, decide
+quale messaggio appare e colora il bollino sulla mappa — ma non è un numero che si possa leggere.*
+
+**Sei testi parlavano del «punteggio»:** *`speedMatch` `alto` 1 e `medio` 1 · `moduleComplete` `alto` 1,
+`alto` 4, `medio` 1, `basso` 3.*
+
+> 🔴 **Il criterio che lo vietava era scritto dal 13/10: «ogni frase si giudica accanto al COLORE che lo
+> studente vede, non al numero che non vede».** ⚠️ **Tre giorni dopo ne abbiamo scritti due nuovi così.**
+> ⭐ *Non è una forma nuova: è `NUMERI` §9 — «avere lo strumento e non usarlo è peggio che non averlo».*
+> **Il criterio era lo strumento.**
+
+⚠️ **E la domanda «la Schermata Finale deve mostrare il punteggio?» NON è stata decisa qui.** *Va nel
+giro di design sulla mastery, con il bollino rosso a 0%.*
+
+### 🔴 ② «LE HAI CHIUSE TUTTE» NON È VERO, E LA VALVOLA È IL MOTIVO
+
+**La voce che sbaglia tre volte — `CONFIG.retryQueue.maxAttempts` — NON rientra in coda: è accettata per
+quel giro e registrata `rosso`.**
+
+⭐ **Quindi un modulo può finire con voci ancora sbagliate, e il giro di ripasso non garantisce niente.**
+
+**Sei testi lo garantivano:** *`moduleComplete` `alto` 4 («l'hai già chiuso qui»), `medio` 1 («il resto
+l'hai sistemato»), `medio` 3 («l'hai chiuso a forza di riprovarci»), `medio` 4 («l'hai rifatto fino a
+prenderlo»), `basso` 3 e `basso` 4 («le hai chiuse tutte»).*
+
+| | |
+|---|---|
+| 🔴 **Tre erano nostri, scritti il 16/10** | `alto` 4 · `medio` 4 · `basso` 3 |
+| 🔴 **E questo file lo dichiarava risolto** | *«e i testi non lo dicono più», settanta righe sopra* |
+| ⚠️ **La valvola scatta a tre errori sulla stessa voce** | **cioè quasi solo in `basso`:** *la frase era meno vera esattamente dove compare* |
+
+> ⭐ **La correzione è una parola: da «chiuso» a «tornato sopra».** *Tornarci è quello che è successo;
+> prenderla è quello che speriamo.* 🔴 **E la differenza fra le due la sa solo la valvola.**
+
+### ⭐ E I QUINDICI DI `speedMatchMessages`, RISCRITTI TUTTI — 2026-10-17
+
+**Prima lettura di questa famiglia: fino al 28/09 si chiamava `speedRoundMessages` e non aveva lettori.**
+
+| Cosa dicevano | Quanti |
+|---|---|
+| *«ripassa le parole che ti sono sfuggite»* · *«ripasseremo insieme le più difficili»* · *«ora sai quali parole ripassare»* | 🔴 **3** — **il mix, più un elenco che non esiste** |
+| *«la prossima volta verrà più automatico»* · *«un altro giro e migliori ancora»* · *«andrà meglio»* | 🔴 **3** — *promesse* |
+| *«quasi tutte corrette»* · *«sei quasi al massimo»* | 🔴 **2** — **false a 100%** |
+| *«ottimo punteggio»* · *«buon punteggio»* | 🔴 **2** — *vedi ①* |
+
+⭐ **Le due «quasi» sono il caso opposto a `voiceCoach`: là l'elogio si rompeva in fondo alla fascia, qui
+si rompe in cima.** 🔴 **Il metro vale ai due estremi: una frase per `alto` deve essere vera a 80% E a
+100%.**
+
+⚠️ **E «parole» è uscita da tutti e quindici**, *per la ragione già scritta per `moduleComplete`: Speed
+Match non gira su un grado solo, e i gradi si chiamano Parole, Espressioni, Frasi.*
+
+### 🔴 LE ULTIME TRE FAMIGLIE — 2026-10-17, e qui l'app non misura: lo studente DICHIARA
+
+**Misurate su `app/storycards.js`, `app/dialogo.js` e `app/repeataloud.js`.**
+
+#### ⭐ LA PERCENTUALE DI STORY CARDS È UNA AUTODICHIARAZIONE, NON UN PUNTEGGIO
+
+**`chiaraCount / storyCardsSkillIds.length`:** *la quota di spiegazioni che **lo studente** ha segnato
+«chiara».* 🔴 **Nessuna domanda, nessuna risposta giusta o sbagliata.**
+
+> ⭐ **Quindi nessun testo può dirgli cosa ha capito: gliel'ha detto lui.** *Il registro giusto è «hai
+> segnato chiare», non «hai capito».* ⚠️ **E le dichiarazioni si RISCRIVONO a un giro successivo**, *quindi
+> «al primo giro» e «fin da subito» possono essere falsi: quattro testi lo dicevano.*
+
+**Dialogo è lo stesso**: *`level === 'verde' ? 'siLoSo' : 'nonAncora'` — «self-assessment for the whole
+dialogue, not per-word: this module never touches loadMastery/saveMastery».*
+
+#### 🔴 E IL TESTO PEGGIORE DI TUTTA LA RILETTURA STAVA QUI
+
+> *«L'hai fatto tuo: **pronuncia e ritmo erano solidi**.»* — `dialogoCompleteMessages.siLoSo` 4
+
+🔴 **Dialogo NON HA IL MICROFONO.** *Misurato: zero occorrenze di `SpeechRecognition` e `getUserMedia` in
+`app/dialogo.js` — e zero anche in `app/storycards.js`.*
+
+⭐ **Gli altri difetti erano frasi che dicevano più del loro numero. Questa afferma una misura di una cosa
+che l'app non ha mai sentito.** *Dei cinque `siLoSo`, quattro raccontavano allo studente come era andato
+il suo ascolto; l'unica cosa che l'app sa è quante battute ha sentito e che lui ha detto «sì».*
+
+#### 🔴 `studioCompleteMessages`: LA PREMESSA DEL DIFETTO REGISTRATO ERA SBAGLIATA
+
+**In `decisioni-stato.md` la riga aperta diceva «due testi su cinque falsi dopo un Match», e la
+condizione era «prima una misura: compare a fine di ogni modulo `studio` o una volta a fine blocco?».**
+
+🔴 **Misurato: questa famiglia non compare MAI dopo un Match.** *Ha due lettori:*
+
+| Dove | Quando |
+|---|---|
+| `repeataloud.js:182` | **sempre**, alla Schermata Finale di Repeat Aloud |
+| `storycards.js:322` | **solo negli episodi SENZA spiegazioni** — *con le spiegazioni, Story Cards usa la sua famiglia* |
+
+⭐ **E la risposta alla domanda è «a fine modulo», una volta per completamento.** *La domanda si poteva
+chiudere leggendo due righe di codice: è stata in sospeso con una condizione che chiedeva a qualcun altro
+una misura che era qui.*
+
+⚠️ **I due testi falsi però esistono, e il motivo è un altro:** *«ogni **ascolto ripetuto ad alta voce**
+lascia il segno» e «la **pronuncia** si allena anche così» sono veri in Repeat Aloud e **falsi in Story
+Cards**, che non chiede di parlare.*
+
+> 🔴 **È la seconda volta oggi, con lo stesso meccanismo di `voiceCoachMessages`: UNA famiglia, DUE
+> moduli, e il testo nomina quello che fa solo uno dei due.** ⭐ **Il controllo che ne esce: prima di
+> scrivere un testo, contare i suoi lettori. Se sono due, può dire solo quello che vale per entrambi.**
+
+### 🔴 I QUINDICI DI `voiceCoachMessages` RISCRITTI IL 2026-10-17 — sette erano falsi
+
+**Misurati su `app/voice.js`, non sul loro suono.**
+
+| Il meccanismo | |
+|---|---|
+| **La chiave non è una percentuale: sono le STELLE** | `STAR_MESSAGE_KEYS = {1:'basso', 2:'medio', 3:'alto'}` — *stesse soglie (80/50/1), ma qui «medio» vuol dire **due stelle, e tentativo superato**: `passed = stars > 1`* |
+| ✅ **A 0 stelle nessun messaggio** | *`if (stars > 0)`: qui lo 0% era già giusto prima della decisione del 16/10* |
+| 🔴 **I 15 testi sono CONDIVISI fra Voice Practice e Voice Check** | *«everything in this section not explicitly gated on `vcVariant` runs for both»* |
+
+🔴 **E i due moduli differiscono ESATTAMENTE sul meccanismo di cui i testi parlavano:**
+
+| | Voice Practice | Voice Check |
+|---|---|---|
+| **Riprovare la frase** | *pulsante «Esercitati ancora», fino a `voicePractice.maxAttemptsPerPhrase`* | 🔴 **UNA registrazione per frase: la riga del riprova è nascosta** |
+| **Il ripasso finale** | 🔴 **non c'è** | *c'è: a 1 stella la frase entra in coda* |
+| **Cosa colora la voce** | *ogni tentativo* | *solo il primo* |
+
+> ⭐ **Quindi qualunque testo nominasse un tentativo o un ripasso era falso in uno dei due moduli, e non
+> c'era modo di sapere quale.** **Deciso da chi guida il progetto: quindici testi che non nominano
+> nessun meccanismo**, *invece di spaccare la famiglia in due da quindici.* 🔴 *Trenta stringhe per una
+> frase che cambia in una proposizione, e la regola 8 da 331 a 346.*
+
+**I sette falsi:**
+
+| Voce | Cosa diceva | Perché era falso |
+|---|---|---|
+| `alto` **1 · 2 · 4 · 5** | *«impeccabile» · «sembri già un madrelingua» · «hai centrato tutto» · «non c'è nulla da correggere»* | 🔴 **Tre stelle partono da 80%, e sotto il messaggio stanno le righe PAROLA PER PAROLA, dove una può essere rossa.** *La smentita era sulla stessa schermata* |
+| `medio` **4** | *«un altro paio di tentativi e sarà perfetto»* | **in Voice Check non c'è un altro tentativo** |
+| `basso` **3** | *«ogni tentativo ti avvicina di più»* | **niente si accumula**: *Practice ricalcola a ogni tentativo, Check conta solo il primo* |
+| `basso` **4** | *«ripasseremo insieme questa frase»* | **vero in Check, falso in Practice** |
+
+⭐ **E le quattro di `alto` non sono la forma del mix — lì si leggeva un piano come se fosse l'app.
+Qui l'elogio era più forte della misura su cui poggiava**, *e la misura era stampata due centimetri
+sotto.*
+
+> 🔴 **Il criterio che ne esce, e vale per le altre settantadue:** *un testo che commenta un numero non
+> può dire più di quel numero.* **Il minimo della fascia è il metro: se una frase non è vera a 80%, non
+> è una frase per `alto`.**
+
 ### 🔴 SEI DEI VENTI DI `retryIntroMessages` SONO STATI CORRETTI IL 2026-10-16
 
 *Su venti, sedici erano buoni. Quattro difetti, e due erano falsi in due modi.*
@@ -268,7 +421,9 @@ farà è O-4, e la mastery è salvata per episodio.** ⭐ *L'unico futuro che l'
 passo si riapre dalla mappa.*
 
 ⚠️ *E quando la valvola `retryQueue.maxAttempts` scatta, la voce è accettata per quel giro ma registrata
-`rosso`:* **finire l'esercizio non vuol dire averlo imparato, e i testi non lo dicono più.**
+`rosso`:* **finire l'esercizio non vuol dire averlo imparato.** 🔴 *E questa frase, il 16/10,
+finiva con «e i testi non lo dicono più»:* **era falsa nel momento in cui l'ho scritta — sei dei quindici
+lo dicevano ancora.** *Corretti il 17/10, vedi sotto.*
 
 **② Quattro dicevano «parole», e questa famiglia non gira solo sul grado A.** *Match sta su **A B C**,
 Flash Card su **A B**, Voice Check su **C** — e i gradi si chiamano Parole, Espressioni, Frasi.*
@@ -292,36 +447,36 @@ cosa succederà.**
 
 | Famiglia | Gruppo | # | Testo |
 |---|---|---|---|
-| `voiceCoachMessages` | `alto` | 1 | Perfetto! Pronuncia impeccabile. |
-| `voiceCoachMessages` | `alto` | 2 | Wow, sembri già un madrelingua! |
-| `voiceCoachMessages` | `alto` | 3 | Eccellente, continua così! |
-| `voiceCoachMessages` | `alto` | 4 | Fantastico, hai centrato tutto. |
-| `voiceCoachMessages` | `alto` | 5 | Bravissimo, non c'è nulla da correggere. |
-| `voiceCoachMessages` | `medio` | 1 | Bene, ci sei quasi! |
-| `voiceCoachMessages` | `medio` | 2 | Buon lavoro, qualche dettaglio da limare. |
-| `voiceCoachMessages` | `medio` | 3 | Sulla strada giusta, continua a esercitarti. |
-| `voiceCoachMessages` | `medio` | 4 | Non male! Un altro paio di tentativi e sarà perfetto. |
-| `voiceCoachMessages` | `medio` | 5 | Ci sei quasi, un piccolo sforzo in più. |
-| `voiceCoachMessages` | `basso` | 1 | Va bene così, l'importante è provarci. |
-| `voiceCoachMessages` | `basso` | 2 | Ci vuole pratica, e tu la stai facendo — bravo. |
-| `voiceCoachMessages` | `basso` | 3 | Ogni tentativo ti avvicina di più, continua. |
-| `voiceCoachMessages` | `basso` | 4 | Nessun problema, ripasseremo insieme questa frase. |
-| `voiceCoachMessages` | `basso` | 5 | Va tutto bene, è normale all'inizio. |
-| `speedMatchMessages` | `alto` | 1 | Ottimo punteggio, hai davvero le idee chiare! |
-| `speedMatchMessages` | `alto` | 2 | Wow, quasi tutte corrette! |
-| `speedMatchMessages` | `alto` | 3 | Eccellente memoria! |
-| `speedMatchMessages` | `alto` | 4 | Complimenti, sei quasi al massimo! |
-| `speedMatchMessages` | `alto` | 5 | Fantastico lavoro su questo blocco. |
-| `speedMatchMessages` | `medio` | 1 | Buon punteggio, si vede che stai imparando. |
-| `speedMatchMessages` | `medio` | 2 | Bene così, continua a esercitarti. |
-| `speedMatchMessages` | `medio` | 3 | Ci sei quasi: ripassa le parole che ti sono sfuggite. |
-| `speedMatchMessages` | `medio` | 4 | Non male, un altro giro e migliori ancora. |
-| `speedMatchMessages` | `medio` | 5 | Ci stai prendendo la mano: la prossima volta verrà più automatico. |
-| `speedMatchMessages` | `basso` | 1 | Va bene così, ora sai quali parole ripassare. |
-| `speedMatchMessages` | `basso` | 2 | L'importante è essersi messi alla prova. |
-| `speedMatchMessages` | `basso` | 3 | Ripasseremo insieme le parole più difficili. |
-| `speedMatchMessages` | `basso` | 4 | È solo l'inizio, andrà meglio. |
-| `speedMatchMessages` | `basso` | 5 | Nessun problema, il ripasso è fatto apposta per questo. |
+| `voiceCoachMessages` | `alto` | 1 | Tre stelle: questa frase ti è venuta. |
+| `voiceCoachMessages` | `alto` | 2 | Molto buona — si capisce senza esitazione. |
+| `voiceCoachMessages` | `alto` | 3 | Pronuncia solida: questa la hai in mano. |
+| `voiceCoachMessages` | `alto` | 4 | Ottimo su questa frase. |
+| `voiceCoachMessages` | `alto` | 5 | Qui sei andato bene, e si sente. |
+| `voiceCoachMessages` | `medio` | 1 | Due stelle: ci siamo, con qualche suono da limare. |
+| `voiceCoachMessages` | `medio` | 2 | Ti si capisce, con qualche imprecisione. |
+| `voiceCoachMessages` | `medio` | 3 | Buona parte dei suoni è giusta. |
+| `voiceCoachMessages` | `medio` | 4 | Non è ancora pulita, ma funziona. |
+| `voiceCoachMessages` | `medio` | 5 | Questa regge, e si sente dove è incerta. |
+| `voiceCoachMessages` | `basso` | 1 | Una stella: questa frase è ancora da prendere. |
+| `voiceCoachMessages` | `basso` | 2 | Qualcosa è arrivato, il resto no. |
+| `voiceCoachMessages` | `basso` | 3 | Frase difficile, e si vede: succede. |
+| `voiceCoachMessages` | `basso` | 4 | Ancora lontana — i suoni lo dicono uno per uno. |
+| `voiceCoachMessages` | `basso` | 5 | Qui la pronuncia non c'è ancora. |
+| `speedMatchMessages` | `alto` | 1 | Primo giro rapido e preciso. |
+| `speedMatchMessages` | `alto` | 2 | Qui hai risposto senza pensarci troppo — è il segno che le sai. |
+| `speedMatchMessages` | `alto` | 3 | Veloce e sicuro: questo blocco lo riconosci. |
+| `speedMatchMessages` | `alto` | 4 | Ottimo primo giro. |
+| `speedMatchMessages` | `alto` | 5 | Il tempo non ti ha messo in difficoltà. |
+| `speedMatchMessages` | `medio` | 1 | Il primo giro è andato discretamente, poi hai ripassato il resto. |
+| `speedMatchMessages` | `medio` | 2 | Qualcuna è arrivata subito, altre te le sei riprese nel ripasso. |
+| `speedMatchMessages` | `medio` | 3 | Non è filato liscio al primo giro, e il ripasso è servito. |
+| `speedMatchMessages` | `medio` | 4 | A tempo qualcosa ti è sfuggito, e ci sei tornato. |
+| `speedMatchMessages` | `medio` | 5 | Il grosso c'è; su una parte hai avuto bisogno di un secondo giro. |
+| `speedMatchMessages` | `basso` | 1 | Il primo giro è andato male, e hai ripassato tutto quello che mancava. |
+| `speedMatchMessages` | `basso` | 2 | Poche al primo colpo: questo blocco è ancora da assestare. |
+| `speedMatchMessages` | `basso` | 3 | Qui hai faticato, e sei arrivato in fondo. |
+| `speedMatchMessages` | `basso` | 4 | Ne hai mancate più di quante ne hai prese, e il ripasso è stato lungo. |
+| `speedMatchMessages` | `basso` | 5 | Questo blocco ti ha messo in difficoltà, e lo hai finito comunque. |
 | `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 1 | Hai provato già diverse volte questa frase — è normalissimo, capita a tutti quando si impara qualcosa di nuovo. Conviene andare avanti: su una frase così, insistere adesso non aiuta. |
 | `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 2 | Capita, e non è un problema: questa frase ha bisogno di più tempo del resto. Vai avanti con l'esercizio. |
 | `valvolaSicurezzaMessages` | `nonRiuscita.bodies` | 3 | A volte una frase è più ostica delle altre, capita anche a chi va già bene. Meglio proseguire ora e lasciarla decantare. |
@@ -332,51 +487,51 @@ cosa succederà.**
 | `valvolaSicurezzaMessages` | `riuscita.bodies` | 3 | Bel recupero: non era venuta bene subito, ma hai continuato a provarci e ora è a posto. Continua così. |
 | `valvolaSicurezzaMessages` | `riuscita.bodies` | 4 | Hai insistito su questa frase ed è servito: adesso la sai fare meglio di prima. È esattamente il senso del ripasso. |
 | `valvolaSicurezzaMessages` | `riuscita.bodies` | 5 | Ci sei riuscito dopo qualche tentativo in più, e va benissimo così — vuol dire che il ripasso sta funzionando. |
-| `moduleCompleteMessages` | `alto` | 1 | Primo colpo, punteggio alto: questo blocco lo sai. |
+| `moduleCompleteMessages` | `alto` | 1 | Il primo colpo è andato bene: questo blocco lo sai. |
 | `moduleCompleteMessages` | `alto` | 2 | Bel lavoro — qui sei andato sicuro. |
 | `moduleCompleteMessages` | `alto` | 3 | Quello che hai studiato in questo blocco ti è rimasto. |
-| `moduleCompleteMessages` | `alto` | 4 | Punteggio alto: se qualcosa è tornato indietro, l'hai già chiuso qui. |
+| `moduleCompleteMessages` | `alto` | 4 | Il primo passaggio è andato bene, e il poco che è tornato indietro lo hai rivisto. |
 | `moduleCompleteMessages` | `alto` | 5 | Qui hai lavorato bene, e si vede già dal primo passaggio. |
-| `moduleCompleteMessages` | `medio` | 1 | Buon punteggio al primo passaggio. Il resto l'hai sistemato qui. |
+| `moduleCompleteMessages` | `medio` | 1 | Buona parte al primo passaggio, e sul resto sei tornato. |
 | `moduleCompleteMessages` | `medio` | 2 | Ci sei: una parte è entrata subito, sul resto hai dovuto tornarci. |
-| `moduleCompleteMessages` | `medio` | 3 | Buona parte al primo colpo, e il resto l'hai chiuso a forza di riprovarci. |
-| `moduleCompleteMessages` | `medio` | 4 | Va bene così: quello su cui hai esitato l'hai rifatto fino a prenderlo. |
+| `moduleCompleteMessages` | `medio` | 3 | Non è filato tutto liscio, ma il grosso lo hai preso. |
+| `moduleCompleteMessages` | `medio` | 4 | Va bene così: su quello che ti ha fatto esitare sei tornato. |
 | `moduleCompleteMessages` | `medio` | 5 | Niente da rifare adesso: il giro è completo. |
 | `moduleCompleteMessages` | `basso` | 1 | Questo blocco era in salita, e lo hai portato a termine comunque. |
 | `moduleCompleteMessages` | `basso` | 2 | Molte le hai prese solo tornandoci sopra: vuol dire che non sono ancora tue. |
-| `moduleCompleteMessages` | `basso` | 3 | Punteggio basso al primo colpo, e le hai chiuse tutte riprovando. |
-| `moduleCompleteMessages` | `basso` | 4 | Ne hai mancate più di quante ne hai prese, e le hai chiuse tutte una per una. |
+| `moduleCompleteMessages` | `basso` | 3 | Il primo colpo è andato male, e hai rifatto il giro per intero. |
+| `moduleCompleteMessages` | `basso` | 4 | Ne hai mancate più di quante ne hai prese, e ci sei tornato sopra una per una. |
 | `moduleCompleteMessages` | `basso` | 5 | Qui hai faticato, e sei arrivato in fondo comunque. Questo passo si riapre dalla mappa, quando vuoi. |
-| `studioCompleteMessages` | `default` | 1 | Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno. |
+| `studioCompleteMessages` | `default` | 1 | Fatto. Questo tipo di esercizio funziona così: un po' alla volta. |
 | `studioCompleteMessages` | `default` | 2 | Fatto: continuare a esercitarti così è esattamente il modo giusto. |
-| `studioCompleteMessages` | `default` | 3 | Sessione completata — la pronuncia si allena anche così, un po' alla volta. |
-| `studioCompleteMessages` | `default` | 4 | Ottimo: più lo ripeti, più ti resterà naturale. |
+| `studioCompleteMessages` | `default` | 3 | Sessione completata: queste cose si fissano col tempo, non in un colpo. |
+| `studioCompleteMessages` | `default` | 4 | Ottimo: tornarci più volte è quello che le fa restare. |
 | `studioCompleteMessages` | `default` | 5 | Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi. |
-| `storyCardsCompleteMessages` | `alto` | 1 | Le spiegazioni ti sono quasi tutte chiare: le strutture nuove stanno andando a segno. |
-| `storyCardsCompleteMessages` | `alto` | 2 | Ottimo, hai capito quasi tutto al primo giro. |
-| `storyCardsCompleteMessages` | `alto` | 3 | Le costruzioni di questo dialogo ti sono chiare fin da subito, complimenti. |
-| `storyCardsCompleteMessages` | `alto` | 4 | Buon segno: capisci già bene perché le frasi si dicono così. |
-| `storyCardsCompleteMessages` | `alto` | 5 | Quasi tutto chiaro al primo colpo — le strutture stanno entrando bene. |
-| `storyCardsCompleteMessages` | `medio` | 1 | Buona parte delle spiegazioni ti è chiara, qualcuna la ripasserai con calma. |
-| `storyCardsCompleteMessages` | `medio` | 2 | Ci sei quasi: qualche spiegazione va ripresa, il resto è già acquisito. |
-| `storyCardsCompleteMessages` | `medio` | 3 | Bel lavoro nel complesso, con qualche struttura ancora da consolidare. |
-| `storyCardsCompleteMessages` | `medio` | 4 | Sei sulla strada giusta — torna con calma sulle spiegazioni meno chiare. |
-| `storyCardsCompleteMessages` | `medio` | 5 | Discreto risultato, alcune costruzioni meritano un altro sguardo. |
-| `storyCardsCompleteMessages` | `basso` | 1 | Va bene così, capita che le spiegazioni servano più di un passaggio. |
-| `storyCardsCompleteMessages` | `basso` | 2 | Nessun problema: sono concetti nuovi, ci vuole tempo per fissarli. |
-| `storyCardsCompleteMessages` | `basso` | 3 | Non è andata benissimo, ma è un buon punto di partenza per riprenderle. |
-| `storyCardsCompleteMessages` | `basso` | 4 | Capita, specialmente all'inizio — potrai rivederle con calma. |
-| `storyCardsCompleteMessages` | `basso` | 5 | Ogni spiegazione riletta aiuta a fissare qualcosa in più. |
-| `dialogoCompleteMessages` | `siLoSo` | 1 | Hai seguito tutto il dialogo con sicurezza — bel lavoro. |
-| `dialogoCompleteMessages` | `siLoSo` | 2 | Lo conosci bene: si sente che l'hai ascoltato con attenzione. |
-| `dialogoCompleteMessages` | `siLoSo` | 3 | Padronanza netta di questo dialogo, complimenti. |
-| `dialogoCompleteMessages` | `siLoSo` | 4 | L'hai fatto tuo: pronuncia e ritmo erano solidi. |
-| `dialogoCompleteMessages` | `siLoSo` | 5 | Dialogo acquisito — un buon passo avanti nel percorso. |
-| `dialogoCompleteMessages` | `nonAncora` | 1 | Va bene rifarlo con calma: ogni ripasso aiuta a fissarlo meglio. |
-| `dialogoCompleteMessages` | `nonAncora` | 2 | Nessuna fretta — puoi riascoltarlo quando vuoi, senza pressione. |
-| `dialogoCompleteMessages` | `nonAncora` | 3 | Capita di non essere ancora sicuri: tornaci sopra con tranquillità. |
-| `dialogoCompleteMessages` | `nonAncora` | 4 | Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo. |
-| `dialogoCompleteMessages` | `nonAncora` | 5 | Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta. |
+| `storyCardsCompleteMessages` | `alto` | 1 | Hai segnato chiare le spiegazioni, una dopo l'altra. |
+| `storyCardsCompleteMessages` | `alto` | 2 | Le hai date per chiare: è un buon posto da cui ripartire. |
+| `storyCardsCompleteMessages` | `alto` | 3 | Questo dialogo lo dichiari chiaro — e sei tu a saperlo. |
+| `storyCardsCompleteMessages` | `alto` | 4 | Nessun dubbio grosso, a sentire te. |
+| `storyCardsCompleteMessages` | `alto` | 5 | Le strutture di questo dialogo per te tornano. |
+| `storyCardsCompleteMessages` | `medio` | 1 | Buona parte delle spiegazioni le hai segnate chiare; su alcune no. |
+| `storyCardsCompleteMessages` | `medio` | 2 | Qualcuna chiara, qualcuna no — e sei tu che hai detto quali. |
+| `storyCardsCompleteMessages` | `medio` | 3 | Il grosso ti torna; su alcune strutture hai messo il dubbio. |
+| `storyCardsCompleteMessages` | `medio` | 4 | Una parte l'hai segnata chiara, e sulle altre sei stato onesto. |
+| `storyCardsCompleteMessages` | `medio` | 5 | Un po' chiare e un po' no: le incerte restano segnate come tali. |
+| `storyCardsCompleteMessages` | `basso` | 1 | Poche spiegazioni segnate chiare: questo dialogo va ancora digerito. |
+| `storyCardsCompleteMessages` | `basso` | 2 | Hai segnato più dubbi che certezze, e averlo detto serve. |
+| `storyCardsCompleteMessages` | `basso` | 3 | Più no che sì, per come le hai segnate. |
+| `storyCardsCompleteMessages` | `basso` | 4 | Sono costruzioni nuove, e tu hai detto che non sono ancora chiare. |
+| `storyCardsCompleteMessages` | `basso` | 5 | Questo passo si riapre dalla mappa, se vuoi rileggerle. |
+| `dialogoCompleteMessages` | `siLoSo` | 1 | Questo dialogo lo dai per imparato: avanti il prossimo. |
+| `dialogoCompleteMessages` | `siLoSo` | 2 | Hai detto che lo sai, e sei tu a sentirtelo. |
+| `dialogoCompleteMessages` | `siLoSo` | 3 | Segnato come acquisito. Bel passo. |
+| `dialogoCompleteMessages` | `siLoSo` | 4 | Lo hai ascoltato e lo dai per tuo. |
+| `dialogoCompleteMessages` | `siLoSo` | 5 | Un dialogo in meno da rivedere. |
+| `dialogoCompleteMessages` | `nonAncora` | 1 | Non ancora, e averlo detto è la cosa giusta. |
+| `dialogoCompleteMessages` | `nonAncora` | 2 | Puoi riascoltarlo quando vuoi: questo passo si riapre dalla mappa. |
+| `dialogoCompleteMessages` | `nonAncora` | 3 | Capita di non sentirsi sicuri: lo hai segnato, e resta lì. |
+| `dialogoCompleteMessages` | `nonAncora` | 4 | Rifarlo non è un passo indietro. |
+| `dialogoCompleteMessages` | `nonAncora` | 5 | Prenditi il tempo che serve. |
 | `retryIntroMessages` | `first.titles` | 1 | Primo passaggio finito |
 | `retryIntroMessages` | `first.titles` | 2 | Primo giro completato |
 | `retryIntroMessages` | `first.titles` | 3 | Hai finito il giro principale |

@@ -313,8 +313,11 @@
     srShowReveal();
   }
 
-  // Score/percentage/message deliberately not shown here for now (temporary
-  // simplification, per explicit request) — just the completion screen.
+  // Score and percentage deliberately not shown here (temporary
+  // simplification, per explicit request): the completion screen carries
+  // only the outcome message, chosen below from the same pct.
+  // *Qui c'era «Score/percentage/message»: il messaggio lo mostra dal passo C
+  // (2026-09-28), e il commento è rimasto fino al 2026-10-17.*
   function srFinishModule() {
     srClearTimer();
     sfxPlayTraguardoSound();

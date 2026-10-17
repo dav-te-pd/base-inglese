@@ -1,48 +1,48 @@
 {
   "voiceCoachMessages": {
     "alto": [
-      "Perfetto! Pronuncia impeccabile.",
-      "Wow, sembri già un madrelingua!",
-      "Eccellente, continua così!",
-      "Fantastico, hai centrato tutto.",
-      "Bravissimo, non c'è nulla da correggere."
+      "Tre stelle: questa frase ti è venuta.",
+      "Molto buona — si capisce senza esitazione.",
+      "Pronuncia solida: questa la hai in mano.",
+      "Ottimo su questa frase.",
+      "Qui sei andato bene, e si sente."
     ],
     "medio": [
-      "Bene, ci sei quasi!",
-      "Buon lavoro, qualche dettaglio da limare.",
-      "Sulla strada giusta, continua a esercitarti.",
-      "Non male! Un altro paio di tentativi e sarà perfetto.",
-      "Ci sei quasi, un piccolo sforzo in più."
+      "Due stelle: ci siamo, con qualche suono da limare.",
+      "Ti si capisce, con qualche imprecisione.",
+      "Buona parte dei suoni è giusta.",
+      "Non è ancora pulita, ma funziona.",
+      "Questa regge, e si sente dove è incerta."
     ],
     "basso": [
-      "Va bene così, l'importante è provarci.",
-      "Ci vuole pratica, e tu la stai facendo — bravo.",
-      "Ogni tentativo ti avvicina di più, continua.",
-      "Nessun problema, ripasseremo insieme questa frase.",
-      "Va tutto bene, è normale all'inizio."
+      "Una stella: questa frase è ancora da prendere.",
+      "Qualcosa è arrivato, il resto no.",
+      "Frase difficile, e si vede: succede.",
+      "Ancora lontana — i suoni lo dicono uno per uno.",
+      "Qui la pronuncia non c'è ancora."
     ]
   },
   "speedMatchMessages": {
     "alto": [
-      "Ottimo punteggio, hai davvero le idee chiare!",
-      "Wow, quasi tutte corrette!",
-      "Eccellente memoria!",
-      "Complimenti, sei quasi al massimo!",
-      "Fantastico lavoro su questo blocco."
+      "Primo giro rapido e preciso.",
+      "Qui hai risposto senza pensarci troppo — è il segno che le sai.",
+      "Veloce e sicuro: questo blocco lo riconosci.",
+      "Ottimo primo giro.",
+      "Il tempo non ti ha messo in difficoltà."
     ],
     "medio": [
-      "Buon punteggio, si vede che stai imparando.",
-      "Bene così, continua a esercitarti.",
-      "Ci sei quasi: ripassa le parole che ti sono sfuggite.",
-      "Non male, un altro giro e migliori ancora.",
-      "Ci stai prendendo la mano: la prossima volta verrà più automatico."
+      "Il primo giro è andato discretamente, poi hai ripassato il resto.",
+      "Qualcuna è arrivata subito, altre te le sei riprese nel ripasso.",
+      "Non è filato liscio al primo giro, e il ripasso è servito.",
+      "A tempo qualcosa ti è sfuggito, e ci sei tornato.",
+      "Il grosso c'è; su una parte hai avuto bisogno di un secondo giro."
     ],
     "basso": [
-      "Va bene così, ora sai quali parole ripassare.",
-      "L'importante è essersi messi alla prova.",
-      "Ripasseremo insieme le parole più difficili.",
-      "È solo l'inizio, andrà meglio.",
-      "Nessun problema, il ripasso è fatto apposta per questo."
+      "Il primo giro è andato male, e hai ripassato tutto quello che mancava.",
+      "Poche al primo colpo: questo blocco è ancora da assestare.",
+      "Qui hai faticato, e sei arrivato in fondo.",
+      "Ne hai mancate più di quante ne hai prese, e il ripasso è stato lungo.",
+      "Questo blocco ti ha messo in difficoltà, e lo hai finito comunque."
     ]
   },
   "valvolaSicurezzaMessages": {
@@ -69,73 +69,73 @@
   },
   "moduleCompleteMessages": {
     "alto": [
-      "Primo colpo, punteggio alto: questo blocco lo sai.",
+      "Il primo colpo è andato bene: questo blocco lo sai.",
       "Bel lavoro — qui sei andato sicuro.",
       "Quello che hai studiato in questo blocco ti è rimasto.",
-      "Punteggio alto: se qualcosa è tornato indietro, l'hai già chiuso qui.",
+      "Il primo passaggio è andato bene, e il poco che è tornato indietro lo hai rivisto.",
       "Qui hai lavorato bene, e si vede già dal primo passaggio."
     ],
     "medio": [
-      "Buon punteggio al primo passaggio. Il resto l'hai sistemato qui.",
+      "Buona parte al primo passaggio, e sul resto sei tornato.",
       "Ci sei: una parte è entrata subito, sul resto hai dovuto tornarci.",
-      "Buona parte al primo colpo, e il resto l'hai chiuso a forza di riprovarci.",
-      "Va bene così: quello su cui hai esitato l'hai rifatto fino a prenderlo.",
+      "Non è filato tutto liscio, ma il grosso lo hai preso.",
+      "Va bene così: su quello che ti ha fatto esitare sei tornato.",
       "Niente da rifare adesso: il giro è completo."
     ],
     "basso": [
       "Questo blocco era in salita, e lo hai portato a termine comunque.",
       "Molte le hai prese solo tornandoci sopra: vuol dire che non sono ancora tue.",
-      "Punteggio basso al primo colpo, e le hai chiuse tutte riprovando.",
-      "Ne hai mancate più di quante ne hai prese, e le hai chiuse tutte una per una.",
+      "Il primo colpo è andato male, e hai rifatto il giro per intero.",
+      "Ne hai mancate più di quante ne hai prese, e ci sei tornato sopra una per una.",
       "Qui hai faticato, e sei arrivato in fondo comunque. Questo passo si riapre dalla mappa, quando vuoi."
     ]
   },
   "studioCompleteMessages": {
     "default": [
-      "Bel ripasso — ogni ascolto ripetuto ad alta voce lascia il segno.",
+      "Fatto. Questo tipo di esercizio funziona così: un po' alla volta.",
       "Fatto: continuare a esercitarti così è esattamente il modo giusto.",
-      "Sessione completata — la pronuncia si allena anche così, un po' alla volta.",
-      "Ottimo: più lo ripeti, più ti resterà naturale.",
+      "Sessione completata: queste cose si fissano col tempo, non in un colpo.",
+      "Ottimo: tornarci più volte è quello che le fa restare.",
       "Esercizio concluso — puoi sempre tornarci per un altro giro quando vuoi."
     ]
   },
   "storyCardsCompleteMessages": {
     "alto": [
-      "Le spiegazioni ti sono quasi tutte chiare: le strutture nuove stanno andando a segno.",
-      "Ottimo, hai capito quasi tutto al primo giro.",
-      "Le costruzioni di questo dialogo ti sono chiare fin da subito, complimenti.",
-      "Buon segno: capisci già bene perché le frasi si dicono così.",
-      "Quasi tutto chiaro al primo colpo — le strutture stanno entrando bene."
+      "Hai segnato chiare le spiegazioni, una dopo l'altra.",
+      "Le hai date per chiare: è un buon posto da cui ripartire.",
+      "Questo dialogo lo dichiari chiaro — e sei tu a saperlo.",
+      "Nessun dubbio grosso, a sentire te.",
+      "Le strutture di questo dialogo per te tornano."
     ],
     "medio": [
-      "Buona parte delle spiegazioni ti è chiara, qualcuna la ripasserai con calma.",
-      "Ci sei quasi: qualche spiegazione va ripresa, il resto è già acquisito.",
-      "Bel lavoro nel complesso, con qualche struttura ancora da consolidare.",
-      "Sei sulla strada giusta — torna con calma sulle spiegazioni meno chiare.",
-      "Discreto risultato, alcune costruzioni meritano un altro sguardo."
+      "Buona parte delle spiegazioni le hai segnate chiare; su alcune no.",
+      "Qualcuna chiara, qualcuna no — e sei tu che hai detto quali.",
+      "Il grosso ti torna; su alcune strutture hai messo il dubbio.",
+      "Una parte l'hai segnata chiara, e sulle altre sei stato onesto.",
+      "Un po' chiare e un po' no: le incerte restano segnate come tali."
     ],
     "basso": [
-      "Va bene così, capita che le spiegazioni servano più di un passaggio.",
-      "Nessun problema: sono concetti nuovi, ci vuole tempo per fissarli.",
-      "Non è andata benissimo, ma è un buon punto di partenza per riprenderle.",
-      "Capita, specialmente all'inizio — potrai rivederle con calma.",
-      "Ogni spiegazione riletta aiuta a fissare qualcosa in più."
+      "Poche spiegazioni segnate chiare: questo dialogo va ancora digerito.",
+      "Hai segnato più dubbi che certezze, e averlo detto serve.",
+      "Più no che sì, per come le hai segnate.",
+      "Sono costruzioni nuove, e tu hai detto che non sono ancora chiare.",
+      "Questo passo si riapre dalla mappa, se vuoi rileggerle."
     ]
   },
   "dialogoCompleteMessages": {
     "siLoSo": [
-      "Hai seguito tutto il dialogo con sicurezza — bel lavoro.",
-      "Lo conosci bene: si sente che l'hai ascoltato con attenzione.",
-      "Padronanza netta di questo dialogo, complimenti.",
-      "L'hai fatto tuo: pronuncia e ritmo erano solidi.",
-      "Dialogo acquisito — un buon passo avanti nel percorso."
+      "Questo dialogo lo dai per imparato: avanti il prossimo.",
+      "Hai detto che lo sai, e sei tu a sentirtelo.",
+      "Segnato come acquisito. Bel passo.",
+      "Lo hai ascoltato e lo dai per tuo.",
+      "Un dialogo in meno da rivedere."
     ],
     "nonAncora": [
-      "Va bene rifarlo con calma: ogni ripasso aiuta a fissarlo meglio.",
-      "Nessuna fretta — puoi riascoltarlo quando vuoi, senza pressione.",
-      "Capita di non essere ancora sicuri: tornaci sopra con tranquillità.",
-      "Non è un problema rifare il dialogo, anzi è il modo migliore per impararlo.",
-      "Prenditi il tempo che serve: lo riascolterai volentieri la prossima volta."
+      "Non ancora, e averlo detto è la cosa giusta.",
+      "Puoi riascoltarlo quando vuoi: questo passo si riapre dalla mappa.",
+      "Capita di non sentirsi sicuri: lo hai segnato, e resta lì.",
+      "Rifarlo non è un passo indietro.",
+      "Prenditi il tempo che serve."
     ]
   },
   "retryIntroMessages": {
