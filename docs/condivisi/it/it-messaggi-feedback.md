@@ -1,4 +1,4 @@
-**Versione: 20261017c**
+**Versione: 20261017d**
 
 # Messaggi di esito — per chi studia in italiano
 
@@ -316,21 +316,29 @@ dialogue, not per-word: this module never touches loadMastery/saveMastery».*
 che l'app non ha mai sentito.** *Dei cinque `siLoSo`, quattro raccontavano allo studente come era andato
 il suo ascolto; l'unica cosa che l'app sa è quante battute ha sentito e che lui ha detto «sì».*
 
-#### 🔴 `studioCompleteMessages`: LA PREMESSA DEL DIFETTO REGISTRATO ERA SBAGLIATA
+#### 🔴 `studioCompleteMessages`: LA PREMESSA ERA SBAGLIATA, ED ERA NOSTRA
 
-**In `decisioni-stato.md` la riga aperta diceva «due testi su cinque falsi dopo un Match», e la
-condizione era «prima una misura: compare a fine di ogni modulo `studio` o una volta a fine blocco?».**
+**La riga «due testi su cinque falsi dopo un Match», con la condizione «prima una misura: compare a fine
+di ogni modulo `studio` o una volta a fine blocco?», stava nella SEZIONE 6 DI QUESTO FILE.**
 
-🔴 **Misurato: questa famiglia non compare MAI dopo un Match.** *Ha due lettori:*
+🔴 **E il 17/10 abbiamo scritto a Claude Code che la riga sbagliata era nel suo registro.** *Non lo era:
+`docs/decisioni-stato.md` dice la cosa giusta dal 2026-09-30, perché **la misura l'aveva già fatta lui il
+29/09**.* ⚠️ **Noi l'abbiamo rifatta diciotto giorni dopo, con lo stesso risultato, perché la nostra copia
+della domanda era rimasta aperta.** *Vedi la sezione 6, rifatta.*
+
+**Misurato (due volte, ormai): questa famiglia non compare MAI dopo un Match.** *Ha due lettori:*
 
 | Dove | Quando |
 |---|---|
 | `repeataloud.js:182` | **sempre**, alla Schermata Finale di Repeat Aloud |
 | `storycards.js:322` | **solo negli episodi SENZA spiegazioni** — *con le spiegazioni, Story Cards usa la sua famiglia* |
 
-⭐ **E la risposta alla domanda è «a fine modulo», una volta per completamento.** *La domanda si poteva
-chiudere leggendo due righe di codice: è stata in sospeso con una condizione che chiedeva a qualcun altro
-una misura che era qui.*
+⭐ **E la risposta alla domanda è «a fine modulo», una volta per completamento** — *dove «Why We Say It»
+è il nome a schermo di `storycards.js`.*
+
+🔴 **La domanda si poteva chiudere leggendo due righe di codice, ed era già chiusa altrove.** *È stata in
+sospeso diciotto giorni con una condizione che chiedeva a qualcun altro una misura che lui aveva già
+fatto.*
 
 ⚠️ **I due testi falsi però esistono, e il motivo è un altro:** *«ogni **ascolto ripetuto ad alta voce**
 lascia il segno» e «la **pronuncia** si allena anche così» sono veri in Repeat Aloud e **falsi in Story
@@ -610,21 +618,35 @@ decide.**
 
 ## 6 — DA RILEGGERE, E NON IN QUESTO GIRO
 
-⚠️ **`studioCompleteMessages` parla di ascolto e pronuncia, ma la categoria `studio` contiene OTTO
-moduli** — *Meet the Story, Repeat Aloud, Why We Say It, i due Match, le due Flash Card, Voice
-Practice.* **In quattro di questi non si apre bocca.**
+**Una sola voce, e non per scelta nostra: non ha un lettore.**
 
-| # | Il testo | |
-|---|---|---|
-| 1 | *«ogni **ascolto ripetuto ad alta voce** lascia il segno»* | ⚠️ falso dopo un Match |
-| 2 | *«continuare a esercitarti così è esattamente il modo giusto»* | ✅ va bene per tutti |
-| 3 | *«la **pronuncia** si allena anche così»* | ⚠️ falso dopo una Flash Card |
-| 4 | *«più lo **ripeti**, più ti resterà naturale»* | *regge, se «ripetere» vale anche per gli occhi* |
-| 5 | *«puoi sempre tornarci per un altro giro»* | ✅ va bene per tutti |
+| | |
+|---|---|
+| **`episodeFinalMessages` — 25 stringhe** | *tre fasce: `tuttiVerdi`, `gialloNoRosso`, `almenoUnRosso`.* 🔴 **Nessun lettore in `app/` né in `index.html`**: l'unica occorrenza è `tests/test_batch11.js`, che è una guardia. ⚠️ **Per la regola 47 non sono ancora nate: si rileggono quando nasce il modulo «Verifica finale»** |
 
-🔴 **Ma prima di riscrivere serve una misura: quando compare `studioCompleteMessages`?** *Alla fine di
-**ogni** modulo della categoria `studio`, o **una volta sola** alla fine del blocco?* **Se è il secondo,
-lo studente ha davvero appena fatto Repeat Aloud e Voice Practice, e due dei cinque testi si salvano.**
+🔴 **E FINO AL 20261017C QUESTA SEZIONE TENEVA APERTA UNA DOMANDA CHIUSA DICIOTTO GIORNI PRIMA.**
 
-⭐ *È la prima domanda che la colonna `categoria` della sezione 4 di `struttura-corso` rende possibile —
-prima non si poteva nemmeno formulare.*
+*Diceva: «`studioCompleteMessages` parla di ascolto e pronuncia, ma la categoria `studio` contiene OTTO
+moduli… prima di riscrivere serve una misura: compare a fine di ogni modulo `studio` o una volta a fine
+blocco?»*
+
+| | |
+|---|---|
+| **La misura era già fatta** | ⭐ **il 2026-09-29, da Claude Code**, *e la riga aperta era stata chiusa il 30/09: «lo usano solo Repeat Aloud (sempre) e Why We Say It quando un episodio non ha spiegazioni, non Match né Flash Card»* |
+| **Dove viveva** | `docs/decisioni-stato.md` |
+| 🔴 **Cosa ha fatto la copia** | *il 17/10 abbiamo rimisurato la stessa cosa — stesso risultato — e poi abbiamo scritto a Code che la riga del SUO registro era sbagliata.* **Era sbagliata la nostra copia** |
+
+> ⭐ **Regola 48 vista dal lato del danno: un fatto ricopiato non invecchia solo — fa ripetere il lavoro
+> e incolpare l'originale.**
+
+🔴 **E l'errore dentro l'errore era nel ragionamento, non nella pigrizia:** *questa sezione partiva da
+«la famiglia appartiene alla categoria `studio`, che ha otto moduli».* **Una famiglia di testi non
+appartiene a una categoria: appartiene a CHI LA LEGGE.** *Due chiamate, non otto moduli.*
+
+> ⚠️ **È il perimetro sbagliato della §«una misura ha bisogno del suo perimetro»**, *e per il metro delle
+> forme non ne apre una nuova: «categoria» invece di «chiamanti» è un perimetro scelto male.*
+
+⭐ **E i due titoli di `valvolaSicurezzaMessages` sono stati letti il 17/10 e vanno bene:** *«Tranquillo,
+capita!» non nomina nessun meccanismo, e «Ce l'hai fatta!» è vero — quel titolo compare solo quando la
+voce è stata presa.* **Con questi due il conto dei riletti è 107 su 132.**
+
