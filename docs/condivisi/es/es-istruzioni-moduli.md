@@ -1,4 +1,6 @@
-# ISTRUZIONI DEI MODULI — studente SPAGNOLO · `20261017a`
+**Versione: 20261019a**
+
+# ISTRUZIONI DEI MODULI — studente SPAGNOLO
 
 > **Gemello di `it-istruzioni-moduli.md`, nella lingua dello studente spagnolo.**
 > *Nato il 2026-10-17, tradotto dall'italiano appena corretto (`20261017a`, le cinque
@@ -368,13 +370,19 @@ a schermo una frase che non c'è.* **Le coppie di questo file:**
 CATEGORIA della mappa (sezione 6).* 🔴 **Se qualcuno cambia quelle due celle, due testi mentono —
 e nessun test lo nota.**
 
-### ⚠️ ⑤ UNA COSA CHE NON HO DECISO IO
+### ⭐ ⑤ LA RIGA DELLA MAPPA È BILINGUE, ED È LA REGOLA DI TUTTE E TRE LE EDIZIONI
 
 | | |
 |---|---|
-| **Il fatto** | **i NOMI dei moduli di `italiano/es` sono in italiano** — *`Dialogo: reale`, `Abbina it→es` — mentre questi SOTTOTITOLI sono in spagnolo* |
-| **Dove** | §4 della struttura, deciso il 2026-10-17 |
-| **La conseguenza** | ⭐ **sulla mappa una riga è bilingue**: *nome nella lingua insegnata, sottotitolo nella lingua dello studente* |
-| **Perché lo scrivo qui** | 🔴 **`inglese/it` usa la regola OPPOSTA**: *i suoi nomi sono italiani, cioè nella lingua dello STUDENTE* — **due edizioni, due regole** |
+| **Il fatto** | **il NOME del modulo è nella lingua INSEGNATA, il SOTTOTITOLO in quella dello STUDENTE** |
+| **Dove** | §4 della struttura per il nome, la sezione 7 di questo file per il sottotitolo |
+| **Misurato il 2026-10-19 sui JSON di `main`** | `inglese/it` → *Repeat Aloud* / «Ripeti ad alta voce» · ⭐ `italiano/es` → *Ripeti ad alta voce* / «Repite en voz alta» |
 
-⏳ **Da portare al giro di allineamento, non da aggiustare adesso.**
+⭐ **Quindi non c'è nessuna divergenza da allineare: le tre edizioni fanno la stessa cosa.** *Il nome è
+un'etichetta nella lingua che si impara — si legge e si riconosce — e la riga sotto spiega cosa fa, nella
+lingua in cui si capisce.*
+
+> 🔴 **E vale scrivere come è stata scoperta questa riga: una versione precedente di questo paragrafo
+> diceva che `inglese/it` usava la regola opposta, «i suoi nomi sono italiani».** *Era falso, e nessuno
+> l'aveva misurato: i nomi di `inglese/it` sono in INGLESE.* ⚠️ **L'ha corretta chi guida il progetto,
+> dicendo «prima in `inglese/it` mi sembrava corretto» — e aveva ragione.**
