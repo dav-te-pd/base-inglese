@@ -297,6 +297,13 @@ function colonneConIntestazione(righe, attese, dove, studente) {
   return colonne(righe, attese.length, dove);
 }
 
+// Le righe della sezione 7 — gli episodi dell'edizione, in ordine. Fuori da
+// `struttura()` perche' le legge anche `fileMancanti()`, prima di tutto il
+// resto: e' la sezione 7 a dire quali markdown di episodio DEVONO esserci.
+function righeEpisodi(t) {
+  return colonne(tabellaSotto(t, '## 7 — GLI EPISODI', true), 4, 'episodi');
+}
+
 // ── struttura del corso ──────────────────────────────────────────────────
 //
 // `testo` e `condiviso` sono facoltativi, come in `episodio()`: chi li passa
@@ -384,7 +391,7 @@ function struttura(ed, testo, condiviso) {
     throw new Error(ed.pref + 'struttura-corso, sezione 5: ' + passiGuasti.join(' · ') + '.');
   }
 
-  const ep = colonne(tabellaSotto(t, '## 7 — GLI EPISODI', true), 4, 'episodi');
+  const ep = righeEpisodi(t);
   const episodes = {};
   ep.forEach((r) => {
     episodes[nb(r[0])] = { nome: r[1].trim(), categoria: nb(r[2]), sequence: nb(r[3]) };
@@ -997,12 +1004,67 @@ function elencoEdizioni(perEdizione) {
   };
 }
 
+// ⚠️ I FILE OBBLIGATORI SI CONTANO PRIMA DI LEGGERNE UNO — dal 2026-10-19,
+// chiesto da chi guida il progetto insieme all'edizione `italiano/es`.
+//
+// Fino a quel giorno un markdown mancante fermava lo strumento con un
+// `ENOENT` e lo stack trace: si capiva QUALE file, non chi lo chiedeva ne'
+// cosa fare. Il modello e' la fermata dei gradi qui sotto (`bacinoCorto`):
+// **TUTTI** i mancanti insieme, ognuno col suo percorso e con chi lo chiede —
+// chi li aggiunge li vede in un giro solo, e nessun file viene scritto.
+//
+// Chi chiede cosa, e non e' un elenco di nomi (regola 4: la cartella e' il
+// criterio): ogni EDIZIONE chiede le sue tabelle di personalizzazione, un
+// markdown per ogni episodio della sua sezione 7 e i due file condivisi della
+// lingua del suo STUDENTE; ogni cartella CONDIVISA chiede anche i suoi
+// messaggi. *La struttura e le istruzioni no: sono quelle che fanno di una
+// cartella un'edizione o una lingua-studente, quindi se mancano la cartella
+// semplicemente non c'e'.*
+//
+// ⚠️ IL CASO PIU' DIVERSO (regola 42): una lingua-studente SENZA la sua
+// cartella condivisa — `docs/condivisi/es/` assente con `italiano/es`
+// presente. `studentiCondivisi()` non la trova, quindi nessuno la cercava: la
+// chiedeva soltanto la struttura, leggendola per le categorie.
+function fileMancanti(trovate, condivisi) {
+  const chi = new Map();
+  const serve = (percorso, motivo) => {
+    if (fs.existsSync(percorso)) return;
+    if (!chi.has(percorso)) chi.set(percorso, []);
+    if (chi.get(percorso).indexOf(motivo) === -1) chi.get(percorso).push(motivo);
+  };
+  trovate.forEach((ed) => {
+    const nome = ed.lingua + '/' + ed.studente;
+    serve(doc(ed, 'tabelle-personalizzazione'), 'l\'edizione ' + nome + ' — ogni edizione ha le sue tabelle (regola 4)');
+    ['istruzioni-moduli', 'messaggi-feedback'].forEach((n) => {
+      serve(docC(ed.studente, n), 'l\'edizione ' + nome + ' — il suo studente e\' `' + ed.studente +
+        '`, e i testi condivisi stanno sotto la lingua dello studente (regola 8)');
+    });
+    const t = fs.readFileSync(doc(ed, 'struttura-corso'), 'utf8');
+    righeEpisodi(t).forEach((r) => {
+      serve(doc(ed, nb(r[0])), 'la sezione 7 di ' + ed.pref + 'struttura-corso.md — l\'episodio `' + nb(r[0]) + '`');
+    });
+  });
+  condivisi.forEach((st) => {
+    serve(docC(st, 'messaggi-feedback'), 'la cartella docs/condivisi/' + st + '/ — accanto ai testi dell\'interfaccia ' +
+      'ci sono sempre i messaggi di esito (regola 8)');
+  });
+  return Array.from(chi.keys()).map((p) => ({ percorso: path.relative(RADICE, p), chi: chi.get(p) }));
+}
+
 function scrivi(percorso, oggetto, controlla) {
   const testo = JSON.stringify(oggetto, null, 2) + '\n';
   const prima = fs.existsSync(percorso) ? fs.readFileSync(percorso, 'utf8') : '';
   const nome = path.relative(RADICE, percorso);
   if (prima === testo) { console.log('   uguale   ' + nome); return; }
   if (controlla) { console.log('   CAMBIA   ' + nome); return; }
+  // ⚠️ LA CARTELLA SI CREA QUI, E SOLO QUI — dal 2026-10-19 (edizione
+  // `italiano/es`). Fino a quel giorno una cartella nuova — la prima edizione
+  // con uno studente non italiano ne chiedeva due, `data/italiano/es/` e
+  // `data/condivisi/es/` — faceva morire lo strumento con un `ENOENT` A META'
+  // DELLA SCRITTURA: le edizioni prima di lei gia' riscritte, quelle dopo no.
+  // *Sotto `--controlla` non si arriva mai a questa riga, ed e' voluto: una
+  // cartella creata da un controllo e' un controllo che scrive.*
+  fs.mkdirSync(path.dirname(percorso), { recursive: true });
   fs.writeFileSync(percorso, testo);
   console.log('   scritto  ' + nome + '  (' + testo.length + ' caratteri)');
 }
@@ -1029,6 +1091,17 @@ function main() {
     console.error('Nessuna edizione trovata sotto docs/.');
     console.error('Un\'edizione e\' una cartella docs/{lingua}/{studente}/ che');
     console.error('contiene il suo {lingua}-{studente}-struttura-corso.md.');
+    process.exit(1);
+  }
+  const mancanti = fileMancanti(trovate, condivisi);
+  if (mancanti.length) {
+    console.error('FERMO — ' + (mancanti.length === 1 ? 'manca 1 file obbligatorio' : 'mancano ' + mancanti.length +
+      ' file obbligatori') + '. Non e\' stato scritto niente:');
+    mancanti.forEach((m) => {
+      console.error('  ' + m.percorso);
+      m.chi.forEach((c) => console.error('      lo chiede: ' + c));
+    });
+    console.error('Si aggiunge il file, oppure si toglie chi lo chiede. Lo strumento non lo crea: e\' contenuto.');
     process.exit(1);
   }
 
