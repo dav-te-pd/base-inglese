@@ -1,4 +1,4 @@
-**Versione: 20261017a**
+**Versione: 20261019a**
 
 # Struttura del corso — italiano per spagnoli
 
@@ -14,7 +14,7 @@ file dei testi condivisi della lingua dello studente** — *per noi `docs/condiv
 
 | Cosa NON c'è qui | Dove sta |
 |---|---|
-| i **sottotitoli** dei moduli | `docs/condivisi/es/es-istruzioni-moduli.md`, chiave `moduleSubtitles` |
+| i **sottotitoli** dei moduli | `docs/condivisi/es/es-istruzioni-moduli.md`, chiave **`<kind>.subtitle`** |
 | le **etichette delle categorie** | *lo stesso file, chiave `categorie`* |
 | `nomiASchermo.native` | *lo stesso file, chiave `nomiASchermo`* |
 
@@ -50,10 +50,14 @@ carattere per carattere:
 | `8 — LE LINGUE DEL PARLATO` | `speech` |
 | `9 — I NOMI A SCHERMO` | `nomiASchermo` — *le scritte dei moduli e il nome del corso* |
 
-> 🔴 **SETTE, e vale scriverlo: al 2026-10-17 le altre due edizioni dicono «SEI» con questa stessa
-> tabella di sette righe sotto.** *Il numero è fermo a prima del 2026-10-01, quando la §9 ha avuto il suo
-> lettore.* ⭐ **La sezione che spiega quanto è rigido il parser sbagliava il conto della cosa che
+> 🔴 **SETTE, e vale scriverlo: al 2026-10-19 `spagnolo/it` dice ancora «SEI» con questa stessa tabella
+> di sette righe sotto.** *Il suo numero è fermo a prima del 2026-10-01, quando la §9 ha avuto il suo
+> lettore.* ⭐ **La sezione che spiega quanto è rigido il parser sbaglia il conto della cosa che
 > descrive.**
+>
+> ⚠️ **`inglese/it` invece dice già SETTE** — *verificato su `main` il 2026-10-19, dopo che Code ha
+> corretto la versione precedente di questa riga, che diceva «le altre DUE».* 🔴 **Resta da correggere
+> una sola edizione.**
 
 ⚠️ **IL `## ` QUI SOPRA È STACCATO APPOSTA.** *Se questa tabella scrivesse i titoli per intero,
 `indexOf` troverebbe **questa riga** invece della sezione vera, e il parser leggerebbe come «tabella dei
