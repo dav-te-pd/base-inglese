@@ -36,6 +36,10 @@
 //       repository finto col workflow VERO. Falsificato DENTRO il test: tolta
 //       la voce dal filtro, lo stesso commit torna 3. E un pattern che lo
 //       script non sa confrontare da' 6, non un 5 o un 3 tirati a indovinare.
+//   [K] ⚠️ IL 5 NON DICE CHE LA CI E' VIVA (dal 2026-10-19): accanto al 5
+//       si stampa l'ultima corsa del workflow su `main`, con quanto tempo fa.
+//       Di tre ore fa, di dieci giorni fa, nessuna, illeggibile: il codice
+//       resta 5 e la riga dice quale dei quattro. E un 3 non la stampa.
 //   [F] ⚠️ LA PROVA CONTRARIA: una corsa VIVA che non finisce mai deve uscire
 //       con 2 — non 3, non 4. Senza questo caso il rilevatore potrebbe
 //       dichiarare guasto qualunque lavoro lento e il test resterebbe verde.
@@ -57,12 +61,18 @@ function log(nome, ok, extra) {
 // Un finto `curl`: stampa una risposta diversa a ogni chiamata, prendendola da
 // una cartella. L'ultima resta valida per sempre, cosi' si puo' descrivere sia
 // «cambia stato dopo due giri» sia «resta cosi' all'infinito».
-function creaFinto(dir, risposte) {
+// ⚠️ E DAL 2026-10-19 RISPONDE ANCHE IN BASE ALL'INDIRIZZO: se gli si da'
+// `perMain`, la domanda sull'ultima corsa di `main` (quella che accompagna il
+// 5) riceve quella risposta, e le altre continuano la sequenza.
+function creaFinto(dir, risposte, perMain) {
   const elenco = path.join(dir, 'risposte.json');
   fs.writeFileSync(elenco, JSON.stringify(risposte), 'utf8');
+  const main = path.join(dir, 'main.json');
+  if (perMain != null) fs.writeFileSync(main, perMain, 'utf8');
   const finto = path.join(dir, 'finto-curl.sh');
   fs.writeFileSync(finto,
     '#!/bin/bash\n' +
+    (perMain != null ? 'case "$1" in *branch=main*) cat "' + main + '"; exit 0;; esac\n' : '') +
     'C="' + dir + '/contatore"\n' +
     'n=$(cat "$C" 2>/dev/null || echo 0)\n' +
     'echo $((n+1)) > "$C"\n' +
@@ -155,16 +165,16 @@ function repoFinto(cambiati, altera) {
   return { dir, sha: g('rev-parse', 'HEAD') };
 }
 
-async function casoInRepo(cambiati, altera, max) {
+async function casoInRepo(cambiati, altera, max, perMain) {
   const r = repoFinto(cambiati, altera);
-  const esito = await caso('in repo', [NESSUNA], max || 60, { ATTENDI_CI_RADICE: r.dir }, r.sha);
+  const esito = await caso('in repo', [NESSUNA], max || 60, { ATTENDI_CI_RADICE: r.dir }, r.sha, perMain);
   fs.rmSync(r.dir, { recursive: true, force: true });
   return Object.assign(esito, { sha: r.sha });
 }
 
-async function caso(nome, risposte, max, extraEnv, sha) {
+async function caso(nome, risposte, max, extraEnv, sha, perMain) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'attendi-ci-'));
-  const r = await lancia(creaFinto(dir, risposte), max, extraEnv, sha);
+  const r = await lancia(creaFinto(dir, risposte, perMain), max, extraEnv, sha);
   fs.rmSync(dir, { recursive: true, force: true });
   return r;
 }
@@ -252,6 +262,31 @@ async function run() {
     const senzaRepo = await caso('senza repo', [NESSUNA], 60);
     log('[J] Nessun repository: uscita 6, e lo dice', senzaRepo.codice === 6 && /non sono dentro un repository git/.test(senzaRepo.testo),
       senzaRepo.testo.slice(0, 300));
+  }
+
+  // [K] ⚠️ IL 5 E LA CI VIVA — accanto al 5, l'ultima corsa su main
+  {
+    const fa = (ore) => new Date(Date.now() - ore * 3600 * 1000).toISOString().replace(/\.\d+Z$/, 'Z');
+    const suMain = (ore) => JSON.stringify({ total_count: 1, workflow_runs: [{
+      head_sha: 'cafe123' + '0'.repeat(33), created_at: fa(ore), status: 'completed', conclusion: 'success' }] });
+    const fresca = await casoInRepo(['docs/correzioni.md'], null, 60, suMain(3));
+    log('[K] Un 5 con l\'ultima corsa su main di tre ore fa: resta 5', fresca.codice === 5, String(fresca.codice));
+    log('[K] ...e stampa sha, data e «3 ore fa»',
+      /Ultima corsa di regressione\.yml su main: cafe123 del \d{4}-\d\d-\d\dT[\d:]+Z, 3 ore fa \(completed\/success\)/.test(fresca.testo),
+      fresca.testo.split('\n').filter((r) => /main/.test(r)).join(' | '));
+    const vecchia = await casoInRepo(['docs/correzioni.md'], null, 60, suMain(240));
+    log('[K] ⚠️ L\'ultima corsa di dieci giorni fa si VEDE: «10 giorni fa», e il codice resta 5',
+      vecchia.codice === 5 && /, 10 giorni fa \(/.test(vecchia.testo), vecchia.testo.split('\n').filter((r) => /main/.test(r)).join(' | '));
+    const nessuna = await casoInRepo(['docs/correzioni.md'], null, 60, NESSUNA);
+    log('[K] ⚠️ Nessuna corsa su main: la riga dice che il 5 NON e\' confermato',
+      nessuna.codice === 5 && /NESSUNA corsa di regressione\.yml su main: il 5 NON e' confermato/.test(nessuna.testo),
+      nessuna.testo.split('\n').filter((r) => /main/.test(r)).join(' | '));
+    const cieca = await casoInRepo(['docs/correzioni.md'], null, 60, SPAZZATURA);
+    log('[K] ...e un\'API che non risponde lo stesso: «non riesco a leggere»',
+      cieca.codice === 5 && /Non riesco a leggere l'ultima corsa di regressione\.yml su main/.test(cieca.testo),
+      cieca.testo.split('\n').filter((r) => /main/.test(r)).join(' | '));
+    const tre = await casoInRepo(['app/x.js'], null, 60, suMain(3));
+    log('[K] Un 3 NON la stampa: la riga accompagna solo il 5', tre.codice === 3 && !/Ultima corsa/.test(tre.testo), String(tre.codice));
   }
 
   // [E] IL QUARTO DIFETTO: l'API che non si puo' leggere

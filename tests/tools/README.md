@@ -28,7 +28,7 @@ servono, raggruppati per domanda.
 | Strumento | A cosa risponde |
 |---|---|
 | `attendi.sh` | *la suite ha finito?* Si aggancia alla riga conclusiva del log, mai al nome del processo. Esce **2** «vivo e non finisce», **3** «morto o mai partito» |
-| `attendi-ci.sh` | *la corsa CI di QUESTO commit com'è andata?* Il parente del primo: identifica la corsa per file del workflow + commit **intero**. Esce 0 verde · 1 finita male · 2 viva · 3 non esiste **e doveva esserci** · 4 non vedo l'API · **5 nessuna corsa attesa** (tutti i file del commit in `paths-ignore`, letto dal workflow) · **6 non so dire se era attesa** (un pattern che non sa confrontare, un commit che git non conosce). ⚠️ *Il 5 e il 6 dal 2026-10-19: il 3 era uscito su un commit di soli registri ed era stato letto come un guasto.* Il 5 arriva solo dopo l'attesa piena: GitHub filtra sui file di tutta la spinta, non del solo commit |
+| `attendi-ci.sh` | *la corsa CI di QUESTO commit com'è andata?* Il parente del primo: identifica la corsa per file del workflow + commit **intero**. Esce 0 verde · 1 finita male · 2 viva · 3 non esiste **e doveva esserci** · 4 non vedo l'API · **5 nessuna corsa attesa** (tutti i file del commit in `paths-ignore`, letto dal workflow; ⚠️ accanto, l'ultima corsa su `main` con quanto tempo fa — il 5 non dice che la CI è viva) · **6 non so dire se era attesa** (un pattern che non sa confrontare, un commit che git non conosce). ⚠️ *Il 5 e il 6 dal 2026-10-19: il 3 era uscito su un commit di soli registri ed era stato letto come un guasto.* Il 5 arriva solo dopo l'attesa piena: GitHub filtra sui file di tutta la spinta, non del solo commit |
 
 ## ③ Scrivere i dati
 

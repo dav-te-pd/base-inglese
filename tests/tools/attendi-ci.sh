@@ -86,7 +86,9 @@
 #   4   NON RIESCO A VEDERE: l'API non risponde, o risponde una cosa che non so
 #       leggere
 #   5   NESSUNA CORSA ATTESA: tutti i file cambiati dal commit cadono in
-#       `paths-ignore`, e GitHub ha saltato il workflow come doveva
+#       `paths-ignore`, e GitHub ha saltato il workflow come doveva. ⚠️ Accanto
+#       stampa l'ULTIMA corsa del workflow su `main`, con la data: il 5 dice che
+#       questo commit non doveva far partire la CI, non che la CI sia viva
 #   6   NESSUNA CORSA, E NON SO DIRE SE ERA ATTESA: un pattern di `paths-ignore`
 #       che non so confrontare, un workflow che non leggo, un commit che git
 #       non conosce o con piu' di un genitore. *Non si tira a indovinare.*
@@ -276,6 +278,45 @@ print(("FUORI " + " ".join(fuori)) if fuori else ("FILTRATI " + " ".join(files))
 ' "$wf" 2>/dev/null || echo "INDECIDIBILE non sono riuscito a leggere $wf"
 }
 
+# ⚠️ IL 5 DICE «GITHUB HA SALTATO IL WORKFLOW», E NON PUO' DIRE «LA CI E' VIVA».
+#
+# Chiesto da chi guida il progetto il 2026-10-19, prima che servisse: se un
+# giorno Actions fosse spento o la quota finita, su un commit di soli registri
+# lo script aspetterebbe, non vedrebbe niente, classificherebbe e direbbe
+# «nessuna corsa attesa» — cioe' «va tutto bene» — a CI ferma. *Il verdetto
+# sarebbe giusto per il commit e falso per il mondo.*
+#
+# Quindi accanto al 5 si stampa l'ULTIMA corsa di questo workflow su `main`,
+# con la data e quanto tempo fa: se e' di stamattina il 5 e' credibile, se e'
+# di dieci giorni fa chi legge lo vede. *Il codice d'uscita non cambia:* e'
+# una riga in piu', non un verdetto in piu'. E se l'ultima corsa non si puo'
+# leggere, o non ce n'e' nessuna, la riga lo DICE invece di tacere (regola 49).
+ultima_su_main() {
+  $FETCH "https://api.github.com/repos/$REPO/actions/workflows/$WORKFLOW/runs?branch=main&per_page=1" 2>/dev/null | python3 -c '
+import sys, json
+from datetime import datetime, timezone
+wf = sys.argv[1]
+try:
+    corse = json.load(sys.stdin)["workflow_runs"]
+except Exception:
+    print("⚠️ Non riesco a leggere l\x27ultima corsa di " + wf + " su main: il 5 NON e\x27 confermato — controlla che la CI giri."); raise SystemExit
+if not isinstance(corse, list) or not corse:
+    print("⚠️ NESSUNA corsa di " + wf + " su main: il 5 NON e\x27 confermato — la CI potrebbe non girare affatto."); raise SystemExit
+c = corse[0]
+quando = c.get("created_at") or "?"
+fa = ""
+try:
+    d = datetime.now(timezone.utc) - datetime.strptime(quando, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    ore = int(d.total_seconds() // 3600)
+    fa = ", " + (str(ore // 24) + " giorni fa" if ore >= 48 else str(ore) + " ore fa")
+except Exception:
+    pass
+print("Ultima corsa di " + wf + " su main: " + (c.get("head_sha") or "?")[:7] + " del " + quando + fa +
+      " (" + (c.get("status") or "?") + "/" + (c.get("conclusion") or "-") + ")." +
+      " Se e\x27 vecchia, la CI potrebbe essere ferma: il 5 dice solo che questo commit non doveva farla partire.")
+' "$WORKFLOW" 2>/dev/null || echo "⚠️ Non riesco a leggere l'ultima corsa di $WORKFLOW su main: il 5 NON e' confermato."
+}
+
 inizio=$(date +%s)
 ciechi=0
 mai_vista=1
@@ -327,6 +368,7 @@ while :; do
             echo "NESSUNA CORSA ATTESA — dopo ${trascorsi}s non c'e' nessuna corsa di \"$WORKFLOW\" per il commit $SHA, e non doveva esserci:"
             echo "tutti i file cambiati sono in paths-ignore, quindi GitHub ha saltato il workflow come previsto."
             for f in ${verdetto#FILTRATI }; do echo "  $f"; done
+            ultima_su_main
             esito_commit
             exit 5
             ;;
