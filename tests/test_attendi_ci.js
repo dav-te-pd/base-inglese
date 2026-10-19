@@ -21,7 +21,8 @@
 //   [C] cancelled ................... 1, ma con una frase DIVERSA da failure:
 //       una corsa annullata non e' una corsa rossa, e chi legge deve sapere se
 //       cercare un difetto o un pulsante premuto
-//   [D] nessuna corsa ............... 3, non 2 e non 4
+//   [D] nessuna corsa, e doveva esserci 3, non 2 e non 4 — e nomina i file
+//       fuori da `paths-ignore` (dal 2026-10-19, in un repository finto)
 //   [E] API illeggibile ............. 4, E NON ASPETTA PER SEMPRE — e' il
 //       quarto difetto, quello che nessuna delle tre versioni a mano vedeva
 //   [H] ⚠️ OGNI esito nomina il COMMIT, e accanto la riga che dice cosa
@@ -29,12 +30,18 @@
 //       leggere onestamente il campo giusto di **un'altra corsa**. Il giro e'
 //       su tutti e cinque gli esiti, e il caso diverso e' l'uscita 4 — l'unica
 //       che il commit non lo nominava (misurato il 2026-09-17).
+//   [J] ⚠️ NESSUNA CORSA ATTESA (dal 2026-10-19): un commit che tocca solo
+//       file di `paths-ignore` esce con 5, non con 3 — sul commit VERO del
+//       giorno in cui il 3 e' stato letto come un guasto (`f3d4415`), e in un
+//       repository finto col workflow VERO. Falsificato DENTRO il test: tolta
+//       la voce dal filtro, lo stesso commit torna 3. E un pattern che lo
+//       script non sa confrontare da' 6, non un 5 o un 3 tirati a indovinare.
 //   [F] ⚠️ LA PROVA CONTRARIA: una corsa VIVA che non finisce mai deve uscire
 //       con 2 — non 3, non 4. Senza questo caso il rilevatore potrebbe
 //       dichiarare guasto qualunque lavoro lento e il test resterebbe verde.
 //       E' lo stesso controllo che le dodici «gia' vere» del 14b hanno imposto.
 
-const { execFile } = require('child_process');
+const { execFile, execFileSync } = require('child_process');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
@@ -121,6 +128,40 @@ function lancia(finto, max, extraEnv, sha) {
   });
 }
 
+// ⚠️ UN REPOSITORY FINTO, COL WORKFLOW VERO — dal 2026-10-19.
+//
+// Da quel giorno, quando non c'e' nessuna corsa, lo script guarda i file del
+// commit e `paths-ignore` del workflow. Per farlo gli serve un repository: se
+// ne costruisce uno in una cartella temporanea, con DUE commit — il primo crea
+// tutto, il secondo cambia solo `cambiati` — e il workflow copiato da quello
+// vero (o alterato da `altera`). *Il workflow e' quello vero apposta: il
+// giorno in cui qualcuno aggiunge un pattern che lo script non sa leggere,
+// questo test lo vede.*
+function repoFinto(cambiati, altera) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'attendi-ci-repo-'));
+  const g = (...a) => execFileSync('git', a, { cwd: dir, stdio: 'pipe' }).toString().trim();
+  g('init', '-q');
+  g('config', 'user.email', 'test@example.com');
+  g('config', 'user.name', 'test');
+  fs.mkdirSync(path.join(dir, '.github', 'workflows'), { recursive: true });
+  let wf = fs.readFileSync(repoPath('.github', 'workflows', 'regressione.yml'), 'utf8');
+  if (altera) wf = altera(wf);
+  fs.writeFileSync(path.join(dir, '.github', 'workflows', 'regressione.yml'), wf);
+  const tutti = ['app/x.js', 'docs/decisioni-stato.md', 'docs/correzioni.md', 'nuovi/consegna.md'];
+  tutti.forEach((f) => { fs.mkdirSync(path.dirname(path.join(dir, f)), { recursive: true }); fs.writeFileSync(path.join(dir, f), 'uno\n'); });
+  g('add', '-A'); g('commit', '-q', '-m', 'primo');
+  cambiati.forEach((f) => fs.writeFileSync(path.join(dir, f), 'due\n'));
+  g('add', '-A'); g('commit', '-q', '-m', 'secondo');
+  return { dir, sha: g('rev-parse', 'HEAD') };
+}
+
+async function casoInRepo(cambiati, altera, max) {
+  const r = repoFinto(cambiati, altera);
+  const esito = await caso('in repo', [NESSUNA], max || 60, { ATTENDI_CI_RADICE: r.dir }, r.sha);
+  fs.rmSync(r.dir, { recursive: true, force: true });
+  return Object.assign(esito, { sha: r.sha });
+}
+
 async function caso(nome, risposte, max, extraEnv, sha) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'attendi-ci-'));
   const r = await lancia(creaFinto(dir, risposte), max, extraEnv, sha);
@@ -156,13 +197,61 @@ async function run() {
         /pulsante premuto/.test(r.testo), r.testo.slice(0, 120));
   }
 
-  // [D] la corsa non esiste
+  // [D] la corsa non esiste, e doveva esserci: il commit tocca un registro
+  // E una riga di codice — il caso normale della regola 43
   {
-    const r = await caso('assente', [NESSUNA], 60);
+    const r = await casoInRepo(['app/x.js', 'docs/decisioni-stato.md']);
     if (r.codice !== 3) console.log('  ' + r.testo);
-    log('[D] Nessuna corsa per quel commit: uscita 3', r.codice === 3);
+    log('[D] Nessuna corsa per un commit che tocca codice: uscita 3', r.codice === 3);
     log('[D] ...e lo distingue da un guasto dell\'attesa', /NESSUNA CORSA/.test(r.testo));
     log('[D] ...e dice le due cause possibili', /push non ha fatto partire/.test(r.testo));
+    log('[D] ...e nomina il file fuori da paths-ignore, non il registro',
+      /Fuori da paths-ignore:\n  app\/x\.js/.test(r.testo) && !/  docs\/decisioni-stato\.md/.test(r.testo), r.testo.slice(0, 300));
+  }
+
+  // [J] ⚠️ NESSUNA CORSA ATTESA — il 5, e il 6
+  {
+    // Il commit VERO del 2026-10-19, nel repository vero: toccava solo
+    // `docs/decisioni-stato.md`, e il 3 che ne e' uscito e' stato letto come
+    // un guasto. La CI ha la storia intera (`fetch-depth: 0`).
+    const vero = await caso('f3d4415', [NESSUNA], 60, { ATTENDI_CI_RADICE: repoPath() },
+      'f3d4415db449dae2f7788fd2a4a3a874f875bbaa');
+    if (vero.codice !== 5) console.log('  ' + vero.testo);
+    log('[J] Il commit vero f3d4415 (solo docs/decisioni-stato.md): uscita 5, non 3', vero.codice === 5, String(vero.codice));
+    log('[J] ...e dice «nessuna corsa attesa», con il file', /NESSUNA CORSA ATTESA/.test(vero.testo) && /  docs\/decisioni-stato\.md/.test(vero.testo),
+      vero.testo.slice(0, 200));
+    // ⚠️ Il 5 arriva solo DOPO l'attesa piena: GitHub filtra sui file di tutta
+    // la spinta, e una spinta con un commit di codice prima di questo farebbe
+    // partire la corsa lo stesso. ATTENDI_CI_ASSENTE vale 3 secondi qui.
+    log('[J] ...e il 5 arriva solo dopo l\'attesa piena, non al primo sguardo', vero.durataMs >= 3000, vero.durataMs + 'ms');
+
+    const soloRegistri = await casoInRepo(['docs/decisioni-stato.md', 'docs/correzioni.md', 'nuovi/consegna.md']);
+    log('[J] Repository finto, workflow vero: due registri e una consegna in nuovi/ danno 5', soloRegistri.codice === 5, soloRegistri.testo.slice(0, 200));
+
+    // LA FALSIFICAZIONE, DENTRO IL TEST: lo stesso commit, col workflow senza
+    // la voce di decisioni-stato.md. Deve tornare 3 — se tornasse 5, il 5
+    // non dipenderebbe dal filtro.
+    const senzaVoce = await casoInRepo(['docs/decisioni-stato.md'],
+      (wf) => wf.replace(/\n\s+- 'docs\/decisioni-stato\.md'/, ''));
+    log('[J] ⚠️ Tolta la voce dal filtro, lo stesso commit torna 3', senzaVoce.codice === 3, senzaVoce.testo.slice(0, 200));
+
+    // Un pattern che lo script non sa confrontare: 6, e lo nomina.
+    const strano = await casoInRepo(['docs/decisioni-stato.md'],
+      (wf) => wf.replace("      - 'nuovi/**'", "      - 'nuovi/**'\n      - 'docs/*.md'"));
+    log('[J] ⚠️ Un pattern che non sa confrontare (docs/*.md): uscita 6, non 5 e non 3', strano.codice === 6, strano.testo.slice(0, 200));
+    log('[J] ...e nomina il pattern', /«docs\/\*\.md»/.test(strano.testo), strano.testo.slice(0, 300));
+    const negato = await casoInRepo(['docs/decisioni-stato.md'],
+      (wf) => wf.replace("      - 'nuovi/**'", "      - 'nuovi/**'\n      - '!docs/decisioni-stato.md'"));
+    log('[J] ...e lo stesso per un !negato', negato.codice === 6, negato.testo.slice(0, 200));
+
+    // Un commit che il repository vero non ha: 6. E senza nessun repository
+    // (il lancio da una cartella qualunque) lo stesso, con il suo motivo.
+    const fuori = await caso('fuori', [NESSUNA], 60, { ATTENDI_CI_RADICE: repoPath() });
+    log('[J] Un commit che git non conosce: uscita 6, non 3', fuori.codice === 6, fuori.testo.slice(0, 200));
+    log('[J] ...e dice perche\'', /git non conosce il commit/.test(fuori.testo), fuori.testo.slice(0, 300));
+    const senzaRepo = await caso('senza repo', [NESSUNA], 60);
+    log('[J] Nessun repository: uscita 6, e lo dice', senzaRepo.codice === 6 && /non sono dentro un repository git/.test(senzaRepo.testo),
+      senzaRepo.testo.slice(0, 300));
   }
 
   // [E] IL QUARTO DIFETTO: l'API che non si puo' leggere
@@ -224,11 +313,18 @@ async function run() {
       ['0 verde',      [CORSA('completed', 'success')],   30],
       ['1 rossa',      [CORSA('completed', 'failure')],   30],
       ['2 viva',       [CORSA('in_progress', null)],       5],
-      ['3 assente',    [NESSUNA],                         60],
-      ['4 illeggibile',[SPAZZATURA],                      60]
+      ['4 illeggibile',[SPAZZATURA],                      60],
+      ['6 non so',     [NESSUNA],                         60]
     ];
-    for (const [nome, risposte, max] of casi) {
-      const r = await caso(nome, risposte, max);
+    const esiti = [];
+    for (const [nome, risposte, max] of casi) esiti.push([nome, await caso(nome, risposte, max)]);
+    // Il 3 e il 5 vogliono un commit vero in un repository: si guardano col
+    // loro SHA, non con quello finto.
+    for (const [nome, cambiati] of [['3 assente', ['app/x.js']], ['5 non attesa', ['docs/correzioni.md']]]) {
+      const r = await casoInRepo(cambiati);
+      esiti.push([nome, Object.assign(r, { testo: r.testo.split(r.sha).join(SHA_FINTO) })]);
+    }
+    for (const [nome, r] of esiti) {
       log('[H] ' + nome + ': l\'esito NOMINA il commit per intero',
           r.testo.indexOf(SHA_FINTO) !== -1, r.testo.slice(0, 100));
       log('[H] ' + nome + ': ...e dice cosa farsene — «hai letto un\'altra corsa»',

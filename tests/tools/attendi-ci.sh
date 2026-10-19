@@ -69,6 +69,10 @@
 #   ATTENDI_CI_CIECO       dopo quante risposte illeggibili DI SEGUITO si
 #                          arrende (default 5). Una sola puo' essere un
 #                          singhiozzo di rete; cinque di fila no.
+#   ATTENDI_CI_RADICE      la cartella del repository in cui leggere il
+#                          workflow e i file del commit (default: quella di
+#                          `git rev-parse --show-toplevel`). Serve al test, che
+#                          costruisce un repository finto.
 #
 # Codici di uscita — ognuno significa UNA cosa sola:
 #   0   completata con `success`
@@ -76,15 +80,29 @@
 #       timed_out, skipped...). ⚠️ Una corsa ANNULLATA non e' una corsa rossa:
 #       chi legge deve sapere se cercare un difetto o un pulsante premuto.
 #   2   tetto scaduto e la corsa e' ancora in corso: VIVA, non finita
-#   3   la corsa NON ESISTE: il push non ha fatto partire la CI, o il commit e'
-#       sbagliato
+#   3   la corsa NON ESISTE e DOVEVA ESSERCI: almeno un file del commit e'
+#       fuori da `paths-ignore`, quindi il push non ha fatto partire la CI, o
+#       il commit e' sbagliato
 #   4   NON RIESCO A VEDERE: l'API non risponde, o risponde una cosa che non so
 #       leggere
+#   5   NESSUNA CORSA ATTESA: tutti i file cambiati dal commit cadono in
+#       `paths-ignore`, e GitHub ha saltato il workflow come doveva
+#   6   NESSUNA CORSA, E NON SO DIRE SE ERA ATTESA: un pattern di `paths-ignore`
+#       che non so confrontare, un workflow che non leggo, un commit che git
+#       non conosce o con piu' di un genitore. *Non si tira a indovinare.*
 #  64   argomenti passati male (EX_USAGE)
 #
 # ⚠️ Il 3 e il 4 sono separati apposta, ed e' la lezione dei due casi di
 # `attendi.sh`: «il push non ha fatto partire la CI» e «io non vedo GitHub»
 # sono due ricerche diverse.
+#
+# ⚠️ E IL 5 E' SEPARATO DAL 3 DAL 2026-10-19, chiesto da chi guida il progetto.
+# Quel giorno il 3 e' uscito su `f3d4415`, un commit che toccava solo
+# `docs/decisioni-stato.md` — una delle otto voci di `paths-ignore` — ed e'
+# stato letto come un guasto. Non lo era: GitHub aveva saltato il workflow
+# correttamente. *Un codice che vuol dire due cose non si puo' automatizzare:*
+# adesso il 3 vuol dire solo «doveva esserci e non c'e'», il 5 «non doveva
+# esserci», il 6 «non lo so».
 
 set -u
 
@@ -184,6 +202,80 @@ print("STATO", c.get("status") or "?", c.get("conclusion") or "-",
 ' 2>/dev/null || echo ILLEGGIBILE
 }
 
+# ⚠️ LA CORSA ERA ATTESA? Si risponde solo DOPO l'attesa piena, mai prima.
+#
+# GitHub salta il workflow quando TUTTI i file cambiati cadono in
+# `paths-ignore` — ma i file che guarda sono quelli di TUTTA LA SPINTA, non del
+# solo commit che si passa qui. Una spinta con un commit di codice e poi uno di
+# soli registri fa partire la corsa sull'ultimo: concludere «nessuna corsa
+# attesa» guardando solo lui, senza aspettare, la salterebbe — e potrebbe
+# essere rossa. Quindi questa funzione si chiama solo quando `ASSENTE_MAX` e'
+# gia' passato senza nessuna corsa: il 5 non aggiunge attesa, da' il nome giusto
+# alla fine di un'attesa che lo script fa gia'.
+#
+# Il filtro si legge DAL WORKFLOW, non da una copia (regola 48). E si sanno
+# confrontare due forme sole, che sono tutte quelle che ci sono oggi: un
+# percorso esatto e `cartella/**`. *Un `docs/*.md`, un `!negato` o un `paths:`
+# positivo darebbero una risposta sbagliata in silenzio a un confronto
+# ingenuo:* lo script li riconosce e risponde INDECIDIBILE (regola 37).
+#
+# Stampa una riga: `FILTRATI <file...>`, `FUORI <file...>` (quelli fuori dal
+# filtro) o `INDECIDIBILE <motivo>`.
+classifica_commit() {
+  local radice wf files
+  radice="${ATTENDI_CI_RADICE:-$(git rev-parse --show-toplevel 2>/dev/null || true)}"
+  if [ -z "$radice" ]; then echo "INDECIDIBILE non sono dentro un repository git (e ATTENDI_CI_RADICE e' vuota)"; return; fi
+  wf="$radice/.github/workflows/$WORKFLOW"
+  if [ ! -f "$wf" ]; then echo "INDECIDIBILE non trovo il workflow $wf"; return; fi
+  local genitori
+  genitori=$(git -C "$radice" rev-list --parents -n 1 "$SHA" 2>/dev/null | wc -w)
+  if [ "$genitori" -eq 0 ]; then echo "INDECIDIBILE git non conosce il commit $SHA in $radice"; return; fi
+  if [ "$genitori" -ne 2 ]; then echo "INDECIDIBILE il commit ha $((genitori - 1)) genitori: so confrontare solo un commit con un genitore solo"; return; fi
+  files=$(git -C "$radice" diff --name-only "$SHA^" "$SHA" 2>/dev/null)
+  if [ -z "$files" ]; then echo "INDECIDIBILE il commit non cambia nessun file"; return; fi
+  printf '%s\n' "$files" | python3 -c '
+import sys, re
+wf = sys.argv[1]
+files = [f for f in sys.stdin.read().split("\n") if f]
+righe = open(wf, encoding="utf8").read().split("\n")
+# Il blocco `on:` fino al primo `jobs:`: li vivono i filtri del push.
+testa = []
+for r in righe:
+    if re.match(r"^jobs:", r): break
+    testa.append(r)
+senza_commenti = [r for r in testa if not r.strip().startswith("#")]
+if any(re.match(r"^\s+paths:\s*$", r) for r in senza_commenti):
+    print("INDECIDIBILE il workflow ha un filtro `paths:` positivo, che non so confrontare"); raise SystemExit
+pattern, dentro = [], False
+for r in senza_commenti:
+    if re.match(r"^\s+paths-ignore:\s*$", r):
+        dentro = True; continue
+    if dentro:
+        m = re.match(r"^\s+-\s+(.*?)\s*$", r)
+        if m:
+            pattern.append(m.group(1).strip().strip("\x27\x22")); continue
+        if r.strip() == "": continue
+        dentro = False
+if not pattern:
+    print("INDECIDIBILE il workflow non ha `paths-ignore`: un commit senza corsa non e\x27 spiegato da un filtro"); raise SystemExit
+def regola(p):
+    if p.startswith("!"): return None
+    if p.endswith("/**") and not re.search(r"[*?\[\]{}]", p[:-3]): return ("cartella", p[:-3] + "/")
+    if not re.search(r"[*?\[\]{}]", p): return ("esatto", p)
+    return None
+regole = []
+for p in pattern:
+    g = regola(p)
+    if g is None:
+        print("INDECIDIBILE `paths-ignore` contiene «" + p + "», un pattern che non so confrontare (so solo percorsi esatti e cartella/**)"); raise SystemExit
+    regole.append(g)
+def filtrato(f):
+    return any((t == "esatto" and f == v) or (t == "cartella" and f.startswith(v)) for t, v in regole)
+fuori = [f for f in files if not filtrato(f)]
+print(("FUORI " + " ".join(fuori)) if fuori else ("FILTRATI " + " ".join(files)))
+' "$wf" 2>/dev/null || echo "INDECIDIBILE non sono riuscito a leggere $wf"
+}
+
 inizio=$(date +%s)
 ciechi=0
 mai_vista=1
@@ -229,10 +321,30 @@ while :; do
     ASSENTE)
       ciechi=0
       if [ "$mai_vista" -eq 1 ] && [ "$trascorsi" -ge "$ASSENTE_MAX" ]; then
-        echo "NESSUNA CORSA — dopo ${trascorsi}s non esiste nessuna corsa di \"$WORKFLOW\" per il commit $SHA."
-        echo "Il push non ha fatto partire la CI, oppure il commit e' sbagliato. Non c'e' niente da aspettare."
-        esito_commit
-        exit 3
+        verdetto=$(classifica_commit)
+        case "$verdetto" in
+          "FILTRATI "*)
+            echo "NESSUNA CORSA ATTESA — dopo ${trascorsi}s non c'e' nessuna corsa di \"$WORKFLOW\" per il commit $SHA, e non doveva esserci:"
+            echo "tutti i file cambiati sono in paths-ignore, quindi GitHub ha saltato il workflow come previsto."
+            for f in ${verdetto#FILTRATI }; do echo "  $f"; done
+            esito_commit
+            exit 5
+            ;;
+          "FUORI "*)
+            echo "NESSUNA CORSA — dopo ${trascorsi}s non esiste nessuna corsa di \"$WORKFLOW\" per il commit $SHA, e DOVEVA esserci."
+            echo "Il push non ha fatto partire la CI, oppure il commit e' sbagliato. Fuori da paths-ignore:"
+            for f in ${verdetto#FUORI }; do echo "  $f"; done
+            esito_commit
+            exit 3
+            ;;
+          *)
+            echo "NESSUNA CORSA, E NON SO DIRE SE ERA ATTESA — dopo ${trascorsi}s non c'e' nessuna corsa di \"$WORKFLOW\" per il commit $SHA."
+            echo "Non ho potuto confrontare i file del commit con paths-ignore: ${verdetto#INDECIDIBILE }."
+            echo "Non tiro a indovinare: guarda tu se il commit tocca solo file filtrati."
+            esito_commit
+            exit 6
+            ;;
+        esac
       fi
       ;;
     *)
