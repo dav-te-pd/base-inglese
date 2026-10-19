@@ -233,7 +233,12 @@ async function run() {
     // ⚠️ Il 5 arriva solo DOPO l'attesa piena: GitHub filtra sui file di tutta
     // la spinta, e una spinta con un commit di codice prima di questo farebbe
     // partire la corsa lo stesso. ATTENDI_CI_ASSENTE vale 3 secondi qui.
-    log('[J] ...e il 5 arriva solo dopo l\'attesa piena, non al primo sguardo', vero.durataMs >= 3000, vero.durataMs + 'ms');
+    // ⚠️ La soglia e' 2000 ms e non 3000, ed e' la regola 19: lo script conta
+    // il tempo con `date +%s`, che tronca al secondo, quindi «3 secondi» possono
+    // essere 2,1 veri. Con 3000 il test e' andato rosso nella suite del
+    // 2026-10-19 (2349 ms) dopo essere stato verde da solo. Un 5 deciso al
+    // primo sguardo arriva in qualche decina di millisecondi: 2000 lo distingue.
+    log('[J] ...e il 5 arriva solo dopo l\'attesa piena, non al primo sguardo', vero.durataMs >= 2000, vero.durataMs + 'ms');
 
     const soloRegistri = await casoInRepo(['docs/decisioni-stato.md', 'docs/correzioni.md', 'nuovi/consegna.md']);
     log('[J] Repository finto, workflow vero: due registri e una consegna in nuovi/ danno 5', soloRegistri.codice === 5, soloRegistri.testo.slice(0, 200));
