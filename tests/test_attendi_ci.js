@@ -238,6 +238,10 @@ async function run() {
     // essere 2,1 veri. Con 3000 il test e' andato rosso nella suite del
     // 2026-10-19 (2349 ms) dopo essere stato verde da solo. Un 5 deciso al
     // primo sguardo arriva in qualche decina di millisecondi: 2000 lo distingue.
+    // ⚠️ E PER LO STESSO MOTIVO QUESTO TEST NON SI ACCELERA OLTRE: con
+    // ATTENDI_CI_ASSENTE a 3 un secondo di granularita' e' gia' un terzo della
+    // misura; a 1, «dopo l'attesa piena» e «al primo sguardo» non si
+    // distinguerebbero piu', e l'asserzione non proverebbe niente (regola 37).
     log('[J] ...e il 5 arriva solo dopo l\'attesa piena, non al primo sguardo', vero.durataMs >= 2000, vero.durataMs + 'ms');
 
     const soloRegistri = await casoInRepo(['docs/decisioni-stato.md', 'docs/correzioni.md', 'nuovi/consegna.md']);
