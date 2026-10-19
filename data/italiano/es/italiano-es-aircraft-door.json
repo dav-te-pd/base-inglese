@@ -1,0 +1,329 @@
+{
+  "episodeId": "aircraft-door",
+  "generalRule": "La <strong>gl</strong> davanti a *i* non è una «g» più una «l»: è un suono solo, la <strong>ll</strong> della Spagna. Fi-<strong>gli</strong>-a, fi-<strong>gli</strong>-o, mo-<strong>gli</strong>-e.",
+  "speakerLabels": {
+    "hostess-porta": "Hostess alla porta",
+    "papa": "Papà",
+    "tutti": "Tutti"
+  },
+  "placeholderMap": {
+    "cognome": "cognome"
+  },
+  "personalizationTablesUsed": [
+    {
+      "key": "cognome",
+      "label": "Cognome della famiglia",
+      "type": "select",
+      "table": "people.cognome",
+      "default": "cognome-garcia"
+    }
+  ],
+  "levels": {
+    "A": {
+      "label": "Palabras",
+      "items": [
+        {
+          "id": "a-benvenuti",
+          "target": "benvenuti",
+          "native": "bienvenidos",
+          "pronunciationTip": "ben-ve-NU-ti",
+          "grammarCategory": "formula"
+        },
+        {
+          "id": "a-biglietti",
+          "target": "biglietti",
+          "native": "billetes",
+          "pronunciationTip": "bi-GLIET-ti — ⚠️ <strong>«gl» è un suono solo, la «ll» della Spagna</strong>",
+          "grammarCategory": "sostantivo plurale"
+        },
+        {
+          "id": "a-i",
+          "target": "i",
+          "native": "los",
+          "pronunciationTip": "i",
+          "grammarCategory": "articolo plurale"
+        },
+        {
+          "id": "a-per",
+          "target": "per",
+          "native": "por / para",
+          "pronunciationTip": "per — ⚠️ *una sola preposizione dove lo spagnolo ne ha due*",
+          "grammarCategory": "preposizione"
+        },
+        {
+          "id": "a-prego",
+          "target": "prego",
+          "native": "pase, adelante",
+          "pronunciationTip": "PRE-go",
+          "grammarCategory": "formula di cortesia"
+        },
+        {
+          "id": "a-da",
+          "target": "da",
+          "native": "de, desde",
+          "pronunciationTip": "da",
+          "grammarCategory": "preposizione"
+        },
+        {
+          "id": "a-ecco",
+          "target": "ecco",
+          "native": "aquí está, he aquí",
+          "pronunciationTip": "EC-co",
+          "grammarCategory": "avverbio presentativo"
+        },
+        {
+          "id": "a-grazie",
+          "target": "grazie",
+          "native": "gracias",
+          "pronunciationTip": "GRA-tsie — ⚠️ <strong>la «z» italiana è «ts», non «th»</strong>",
+          "grammarCategory": "formula"
+        },
+        {
+          "id": "a-mia",
+          "target": "mia",
+          "native": "mi",
+          "pronunciationTip": "MI-a",
+          "grammarCategory": "possessivo femminile",
+          "nonCon": [
+            "a-mio"
+          ]
+        },
+        {
+          "id": "a-mio",
+          "target": "mio",
+          "native": "mi",
+          "pronunciationTip": "MI-o",
+          "grammarCategory": "possessivo maschile",
+          "nonCon": [
+            "a-mia"
+          ]
+        },
+        {
+          "id": "a-lei",
+          "target": "lei",
+          "native": "ella",
+          "pronunciationTip": "LEI — ⚠️ <strong>minuscolo è «ella»; con la maiuscola, «Lei», è «usted»</strong>",
+          "grammarCategory": "pronome soggetto"
+        },
+        {
+          "id": "a-lui",
+          "target": "lui",
+          "native": "él",
+          "pronunciationTip": "LU-i",
+          "grammarCategory": "pronome soggetto"
+        },
+        {
+          "id": "a-moglie",
+          "target": "moglie",
+          "native": "esposa",
+          "pronunciationTip": "MO-glie — ⚠️ *«gl» come in `figlia`*",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-figlia",
+          "target": "figlia",
+          "native": "hija",
+          "pronunciationTip": "FI-glia",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-figlio",
+          "target": "figlio",
+          "native": "hijo",
+          "pronunciationTip": "FI-glio",
+          "grammarCategory": "sostantivo"
+        },
+        {
+          "id": "a-volo",
+          "target": "volo",
+          "native": "vuelo",
+          "pronunciationTip": "VO-lo",
+          "grammarCategory": "sostantivo"
+        }
+      ]
+    },
+    "B": {
+      "label": "Expresiones",
+      "items": [
+        {
+          "id": "b-benvenuti-a-bordo",
+          "target": "benvenuti a bordo",
+          "native": "bienvenidos a bordo",
+          "pronunciationTip": "ben-ve-NU-ti a BOR-do",
+          "grammarCategory": "formula di accoglienza"
+        },
+        {
+          "id": "b-per-favore",
+          "target": "per favore",
+          "native": "por favor",
+          "pronunciationTip": "per fa-VO-re",
+          "grammarCategory": "formula di cortesia"
+        },
+        {
+          "id": "b-ecco-a-lei",
+          "target": "ecco a Lei",
+          "native": "aquí tiene",
+          "pronunciationTip": "EC-co a LEI",
+          "grammarCategory": "espressione idiomatica"
+        },
+        {
+          "id": "b-da-questa-parte",
+          "target": "da questa parte",
+          "native": "por aquí",
+          "pronunciationTip": "da QUE-sta PAR-te",
+          "grammarCategory": "indicazione"
+        },
+        {
+          "id": "b-buon-volo",
+          "target": "buon volo!",
+          "native": "¡buen vuelo!",
+          "pronunciationTip": "buon VO-lo",
+          "grammarCategory": "augurio"
+        }
+      ]
+    },
+    "C": {
+      "label": "Frases",
+      "items": [
+        {
+          "id": "c-1",
+          "target": "I biglietti, per favore.",
+          "native": "Los billetes, por favor.",
+          "fromLine": "d-2"
+        },
+        {
+          "id": "c-2",
+          "target": "Lei è mia moglie.",
+          "native": "Ella es mi esposa.",
+          "fromLine": "d-4"
+        },
+        {
+          "id": "c-3",
+          "target": "Lei è mia figlia.",
+          "native": "Ella es mi hija.",
+          "fromLine": "d-5"
+        },
+        {
+          "id": "c-4",
+          "target": "Lui è mio figlio.",
+          "native": "Él es mi hijo.",
+          "fromLine": "d-5"
+        },
+        {
+          "id": "c-5",
+          "target": "La famiglia {{cognome}}? Da questa parte, prego.",
+          "native": "¿La familia {{cognome}}? Por aquí, por favor.",
+          "fromLine": "d-7"
+        }
+      ]
+    },
+    "D": {
+      "label": "Diálogo",
+      "items": [
+        {
+          "id": "d-1",
+          "speaker": "hostess-porta",
+          "role": "staff",
+          "target": "Buongiorno! Benvenuti a bordo.",
+          "native": "¡Buenos días! Bienvenidos a bordo.",
+          "whatYouLearn": [
+            {
+              "title": "Benvenuti, e perché finisce in «-i»",
+              "body": "\"Benvenuti\" vuol dire \"bienvenidos\", e la fine cambia con chi stai salutando: a un gruppo <strong>benvenuti</strong>, a una sola donna <strong>benvenuta</strong>, a un uomo <strong>benvenuto</strong>.<br>È la stessa cosa che fa la tua lingua: \"bienvenido, bienvenida, bienvenidos\".<br>Qui l'hostess parla a quattro persone, quindi dice \"benvenuti\".<br>Non devi impararle tutte adesso: quando arriveranno gli aggettivi, questa sarà già una faccia conosciuta."
+            }
+          ]
+        },
+        {
+          "id": "d-2",
+          "speaker": "hostess-porta",
+          "role": "staff",
+          "target": "I biglietti, per favore.",
+          "native": "Los billetes, por favor.",
+          "whatYouLearn": [
+            {
+              "title": "Biglietti, e il plurale che cambia la vocale",
+              "body": "\"I biglietti\" sono \"los billetes\".<br>E guarda la fine: uno è un <strong>biglietto</strong>, due sono <strong>biglietti</strong>. L'italiano non aggiunge una \"s\": cambia l'ultima vocale, come hai visto con \"anno\" e \"anni\".<br>Anche l'articolo cambia: <strong>il</strong> biglietto, <strong>i</strong> biglietti.<br>La \"gl\" di \"biglietti\" è un suono solo, come la \"ll\" spagnola di \"calle\": <strong>bi-GLIET-ti</strong>."
+            }
+          ]
+        },
+        {
+          "id": "d-3",
+          "speaker": "papa",
+          "role": "family",
+          "target": "Ecco a Lei.",
+          "native": "Aquí tiene.",
+          "whatYouLearn": [
+            {
+              "title": "Ecco a Lei",
+              "body": "Vuol dire \"aquí tiene\", ed è quello che si dice porgendo qualcosa a qualcuno.<br>Non ha senso tradotta a pezzi: <strong>funziona tutta insieme</strong>.<br>\"Lei\" qui è il \"Lei\" di cortesia che hai visto al gate — il papà dà del Lei all'hostess.<br>A un amico diresti \"Ecco a te\"."
+            }
+          ]
+        },
+        {
+          "id": "d-4",
+          "speaker": "papa",
+          "role": "family",
+          "target": "Lei è mia moglie.",
+          "native": "Ella es mi esposa.",
+          "whatYouLearn": [
+            {
+              "title": "«lei» e «Lei»: la stessa parola, due significati",
+              "body": "Attenzione, perché questa è importante: in italiano <strong>\"lei\" vuol dire \"ella\", e \"Lei\" vuol dire \"usted\"</strong>. È la stessa parola.<br>A voce non c'è nessuna differenza: le distingue solo la frase.<br>Qui il papà dice \"<strong>Lei</strong> è mia moglie\" indicando la moglie: è \"ella es mi esposa\". Al gate l'hostess chiedeva \"E <strong>Lei</strong>?\": lì era \"¿y usted?\".<br>Scritto, il \"Lei\" di cortesia prende la <strong>maiuscola</strong>, e quello è l'unico segno che hai.<br>Non è una cosa da imparare a memoria: quando parli di qualcuno è \"ella\", quando parli <em>a</em> qualcuno è \"usted\"."
+            },
+            {
+              "title": "Mia e mio: due forme dove tu ne hai una",
+              "body": "\"Mia moglie\", \"mia figlia\", \"mio figlio\": <strong>in italiano il possessivo cambia col genere</strong> della persona.<br>Tu dici \"mi\" per tutti. Qui devi scegliere: <strong>mia</strong> davanti a una parola femminile, <strong>mio</strong> davanti a una maschile.<br>E una cosa che ti farà comodo: con i nomi di famiglia al singolare <strong>non si mette l'articolo</strong>. Si dice \"mia moglie\", non \"la mia moglie\".<br>Con le altre parole invece l'articolo ci vuole: \"la mia casa\", \"il mio volo\". Per adesso ti basta la famiglia."
+            }
+          ]
+        },
+        {
+          "id": "d-5",
+          "speaker": "papa",
+          "role": "family",
+          "target": "Lei è mia figlia, e lui è mio figlio.",
+          "native": "Ella es mi hija, y él es mi hijo.",
+          "whatYouLearn": [
+            {
+              "title": "Quando si dice «lei» e «lui»",
+              "body": "Come \"io\", anche \"lei\" e \"lui\" <strong>si possono saltare</strong>: \"è mia figlia\" da solo si capisce.<br>Il papà li mette perché sta <strong>indicando due persone diverse</strong>: prima una, poi l'altro. Senza i pronomi, l'hostess non saprebbe chi è chi.<br>Quindi la regola è sempre quella: il pronome si mette quando serve a distinguere o a insistere.<br>Funziona esattamente come \"ella\" e \"él\" nella tua lingua."
+            }
+          ]
+        },
+        {
+          "id": "d-6",
+          "speaker": "hostess-porta",
+          "role": "staff",
+          "target": "Grazie.",
+          "native": "Gracias."
+        },
+        {
+          "id": "d-7",
+          "speaker": "hostess-porta",
+          "role": "staff",
+          "target": "La famiglia {{cognome}}? Da questa parte, prego.",
+          "native": "¿La familia {{cognome}}? Por aquí, por favor."
+        },
+        {
+          "id": "d-8",
+          "speaker": "tutti",
+          "role": "family",
+          "target": "Grazie!",
+          "native": "¡Gracias!"
+        },
+        {
+          "id": "d-9",
+          "speaker": "hostess-porta",
+          "role": "staff",
+          "target": "Buon volo!",
+          "native": "¡Buen vuelo!",
+          "whatYouLearn": [
+            {
+              "title": "Buon volo, e la parola che si accorcia",
+              "body": "\"Buon volo!\" è \"¡buen vuelo!\", e funziona come da te: <strong>\"buono\" diventa \"buon\"</strong> davanti a un nome maschile.<br>Lo spagnolo fa la stessa identica cosa: \"bueno\" diventa \"buen\".<br>Lo sentirai spesso: \"buon viaggio\", \"buon giorno\", \"buon appetito\".<br>E chi la riceve sorride e passa: <strong>non serve rispondere \"altrettanto\"</strong>."
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

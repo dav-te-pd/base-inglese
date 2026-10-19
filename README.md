@@ -6,8 +6,9 @@ card, dialogo) che parte da una schermata di personalizzazione, dove sceglie i
 nomi e i luoghi della storia, e finisce con un riepilogo. I progressi sono
 salvati per utente, nel browser.
 
-**Al 2026-10-12 ci sono due edizioni** — *Inglese per italiani* e *Spagnolo per
-italiani* — **con due episodi ciascuna**, `gate` e `aircraft-door`, e cinque
+**Al 2026-10-19 ci sono tre edizioni** — *Inglese per italiani*, *Spagnolo per
+italiani* e *Italiano para españoles*, la prima con uno studente non italiano —
+**con due episodi ciascuna**, `gate` e `aircraft-door`, e cinque
 temi grafici (Viaggio, Notte, Mediterraneo, Moderno, Natura). L'edizione si
 sceglie dal Pannello Admin (`?config` nell'indirizzo, gruppo `edizione`).
 

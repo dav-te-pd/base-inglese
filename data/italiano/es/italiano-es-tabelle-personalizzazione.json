@@ -1,0 +1,462 @@
+{
+  "people": {
+    "papa": [
+      {
+        "value": "papa-carlos",
+        "native": "Carlos",
+        "target": "Carlo",
+        "traducibile": false
+      },
+      {
+        "value": "papa-juan",
+        "native": "Juan",
+        "target": "Giovanni",
+        "traducibile": false
+      },
+      {
+        "value": "papa-jose",
+        "native": "José",
+        "target": "Giuseppe",
+        "traducibile": false
+      },
+      {
+        "value": "papa-antonio",
+        "native": "Antonio",
+        "target": "Antonio",
+        "traducibile": false
+      },
+      {
+        "value": "papa-manuel",
+        "native": "Manuel",
+        "target": "Emanuele",
+        "traducibile": false
+      },
+      {
+        "value": "papa-francisco",
+        "native": "Francisco",
+        "target": "Francesco",
+        "traducibile": false
+      },
+      {
+        "value": "papa-jorge",
+        "native": "Jorge",
+        "target": "Giorgio",
+        "traducibile": false
+      },
+      {
+        "value": "papa-miguel",
+        "native": "Miguel",
+        "target": "Michele",
+        "traducibile": false
+      },
+      {
+        "value": "papa-david",
+        "native": "David",
+        "target": "Davide",
+        "traducibile": false
+      },
+      {
+        "value": "papa-pablo",
+        "native": "Pablo",
+        "target": "Paolo",
+        "traducibile": false
+      }
+    ],
+    "mamma": [
+      {
+        "value": "mamma-maria",
+        "native": "María",
+        "target": "Maria",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-carmen",
+        "native": "Carmen",
+        "target": "Carmen",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-ana",
+        "native": "Ana",
+        "target": "Anna",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-isabel",
+        "native": "Isabel",
+        "target": "Isabella",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-lucia",
+        "native": "Lucía",
+        "target": "Lucia",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-laura",
+        "native": "Laura",
+        "target": "Laura",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-marta",
+        "native": "Marta",
+        "target": "Marta",
+        "traducibile": false
+      },
+      {
+        "value": "mamma-clara",
+        "native": "Clara",
+        "target": "Chiara",
+        "traducibile": false
+      }
+    ],
+    "figlia": [
+      {
+        "value": "figlia-sofia",
+        "native": "Sofía",
+        "target": "Sofia",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-valentina",
+        "native": "Valentina",
+        "target": "Valentina",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-camila",
+        "native": "Camila",
+        "target": "Camilla",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-lucia",
+        "native": "Lucía",
+        "target": "Lucia",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-martina",
+        "native": "Martina",
+        "target": "Martina",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-daniela",
+        "native": "Daniela",
+        "target": "Daniela",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-paula",
+        "native": "Paula",
+        "target": "Paola",
+        "traducibile": false
+      },
+      {
+        "value": "figlia-julia",
+        "native": "Julia",
+        "target": "Giulia",
+        "traducibile": false
+      }
+    ],
+    "figlio": [
+      {
+        "value": "figlio-mateo",
+        "native": "Mateo",
+        "target": "Matteo",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-santiago",
+        "native": "Santiago",
+        "target": "Giacomo",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-diego",
+        "native": "Diego",
+        "target": "Diego",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-lucas",
+        "native": "Lucas",
+        "target": "Luca",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-daniel",
+        "native": "Daniel",
+        "target": "Daniele",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-sebastian",
+        "native": "Sebastián",
+        "target": "Sebastiano",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-nicolas",
+        "native": "Nicolás",
+        "target": "Nicola",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-tomas",
+        "native": "Tomás",
+        "target": "Tommaso",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-alejandro",
+        "native": "Alejandro",
+        "target": "Alessandro",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-pablo",
+        "native": "Pablo",
+        "target": "Paolo",
+        "traducibile": false
+      },
+      {
+        "value": "figlio-hugo",
+        "native": "Hugo",
+        "target": "Ugo",
+        "traducibile": false
+      }
+    ],
+    "cognome": [
+      {
+        "value": "cognome-garcia",
+        "native": "García",
+        "target": "García",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-rodriguez",
+        "native": "Rodríguez",
+        "target": "Rodríguez",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-gonzalez",
+        "native": "González",
+        "target": "González",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-fernandez",
+        "native": "Fernández",
+        "target": "Fernández",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-lopez",
+        "native": "López",
+        "target": "López",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-martinez",
+        "native": "Martínez",
+        "target": "Martínez",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-perez",
+        "native": "Pérez",
+        "target": "Pérez",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-gomez",
+        "native": "Gómez",
+        "target": "Gómez",
+        "traducibile": false
+      },
+      {
+        "value": "cognome-silva",
+        "native": "Silva",
+        "target": "Silva",
+        "traducibile": false
+      }
+    ]
+  },
+  "places": {
+    "departures": [
+      {
+        "value": "orig-mexico",
+        "native": "Ciudad de México",
+        "target": "Città del Messico",
+        "traducibile": true,
+        "paese": {
+          "native": "México",
+          "target": "Messico"
+        }
+      },
+      {
+        "value": "orig-bogota",
+        "native": "Bogotá",
+        "target": "Bogotá",
+        "traducibile": true,
+        "paese": {
+          "native": "Colombia",
+          "target": "Colombia"
+        }
+      },
+      {
+        "value": "orig-lima",
+        "native": "Lima",
+        "target": "Lima",
+        "traducibile": true,
+        "paese": {
+          "native": "Perú",
+          "target": "Perù"
+        }
+      },
+      {
+        "value": "orig-santiago",
+        "native": "Santiago",
+        "target": "Santiago del Cile",
+        "traducibile": true,
+        "paese": {
+          "native": "Chile",
+          "target": "Cile"
+        }
+      },
+      {
+        "value": "orig-buenos-aires",
+        "native": "Buenos Aires",
+        "target": "Buenos Aires",
+        "traducibile": true,
+        "paese": {
+          "native": "Argentina",
+          "target": "Argentina"
+        }
+      },
+      {
+        "value": "orig-montevideo",
+        "native": "Montevideo",
+        "target": "Montevideo",
+        "traducibile": true,
+        "paese": {
+          "native": "Uruguay",
+          "target": "Uruguay"
+        }
+      },
+      {
+        "value": "orig-caracas",
+        "native": "Caracas",
+        "target": "Caracas",
+        "traducibile": true,
+        "paese": {
+          "native": "Venezuela",
+          "target": "Venezuela"
+        }
+      },
+      {
+        "value": "orig-quito",
+        "native": "Quito",
+        "target": "Quito",
+        "traducibile": true,
+        "paese": {
+          "native": "Ecuador",
+          "target": "Ecuador"
+        }
+      }
+    ]
+  },
+  "ages": {
+    "anni": [
+      {
+        "value": "eta-4",
+        "native": "4",
+        "target": "quattro",
+        "traducibile": true
+      },
+      {
+        "value": "eta-5",
+        "native": "5",
+        "target": "cinque",
+        "traducibile": true
+      },
+      {
+        "value": "eta-6",
+        "native": "6",
+        "target": "sei",
+        "traducibile": true
+      },
+      {
+        "value": "eta-7",
+        "native": "7",
+        "target": "sette",
+        "traducibile": true
+      },
+      {
+        "value": "eta-8",
+        "native": "8",
+        "target": "otto",
+        "traducibile": true
+      },
+      {
+        "value": "eta-9",
+        "native": "9",
+        "target": "nove",
+        "traducibile": true
+      },
+      {
+        "value": "eta-10",
+        "native": "10",
+        "target": "dieci",
+        "traducibile": true
+      },
+      {
+        "value": "eta-11",
+        "native": "11",
+        "target": "undici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-12",
+        "native": "12",
+        "target": "dodici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-13",
+        "native": "13",
+        "target": "tredici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-14",
+        "native": "14",
+        "target": "quattordici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-15",
+        "native": "15",
+        "target": "quindici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-16",
+        "native": "16",
+        "target": "sedici",
+        "traducibile": true
+      },
+      {
+        "value": "eta-17",
+        "native": "17",
+        "target": "diciassette",
+        "traducibile": true
+      }
+    ]
+  }
+}

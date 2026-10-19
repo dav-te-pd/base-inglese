@@ -1,0 +1,217 @@
+{
+  "speech": {
+    "synthesisLang": "it-IT",
+    "recognitionLang": "it-IT"
+  },
+  "grades": [
+    "A",
+    "B",
+    "C",
+    "D"
+  ],
+  "gradeNames": {
+    "A": "Palabras",
+    "B": "Expresiones",
+    "C": "Frases",
+    "D": "Diálogo"
+  },
+  "moduleLabels": {
+    "personalizzazione": {
+      "name": "La tua storia",
+      "categoria": "inizio"
+    },
+    "meetTheStory": {
+      "name": "Conosci la storia",
+      "categoria": "studio"
+    },
+    "repeatAloud": {
+      "name": "Ripeti ad alta voce",
+      "categoria": "studio"
+    },
+    "whyWeSayIt": {
+      "name": "Perché si dice così",
+      "categoria": "studio"
+    },
+    "matchTargetNative": {
+      "name": "Abbina it→es",
+      "categoria": "studio"
+    },
+    "matchNativeTarget": {
+      "name": "Abbina es→it",
+      "categoria": "studio"
+    },
+    "flashcardATargetNative": {
+      "name": "Carte it→es",
+      "categoria": "studio"
+    },
+    "flashcardANativeTarget": {
+      "name": "Carte es→it",
+      "categoria": "studio"
+    },
+    "voicePractice": {
+      "name": "Esercita la voce",
+      "categoria": "studio"
+    },
+    "dialogoAscoltaRipeti": {
+      "name": "Dialogo: ascolta e ripeti",
+      "categoria": "dialogo"
+    },
+    "dialogoRipetiATempo": {
+      "name": "Dialogo: ripeti a tempo",
+      "categoria": "dialogo"
+    },
+    "dialogoContinuo": {
+      "name": "Dialogo: reale",
+      "categoria": "dialogo"
+    },
+    "speedMatchTargetNative": {
+      "name": "Contro il tempo it→es",
+      "categoria": "quiz"
+    },
+    "speedMatchNativeTarget": {
+      "name": "Contro il tempo es→it",
+      "categoria": "quiz"
+    },
+    "voiceCoach": {
+      "name": "Prova di voce",
+      "categoria": "quiz"
+    }
+  },
+  "sequences": {
+    "narrativo-standard": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "A"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardATargetNative",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardANativeTarget",
+        "grade": "A"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "B"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "B"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "B"
+      },
+      {
+        "module": "flashcardATargetNative",
+        "grade": "B"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "B"
+      },
+      {
+        "module": "whyWeSayIt",
+        "grade": "D"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "C"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "C"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "C"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoRipetiATempo",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoContinuo",
+        "grade": "D"
+      },
+      {
+        "module": "speedMatchTargetNative",
+        "grade": "C"
+      },
+      {
+        "module": "speedMatchNativeTarget",
+        "grade": "C"
+      },
+      {
+        "module": "voiceCoach",
+        "grade": "C"
+      }
+    ],
+    "prova-corta": [
+      {
+        "module": "personalizzazione"
+      },
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "A"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      }
+    ]
+  },
+  "episodeSequences": {
+    "corso-italiano-a1": [
+      "gate",
+      "aircraft-door"
+    ]
+  },
+  "episodeSequence": "corso-italiano-a1",
+  "episodioCorrente": "gate",
+  "episodiSpenti": [],
+  "episodes": {
+    "gate": {
+      "nome": "En la puerta de embarque",
+      "categoria": "storia",
+      "sequence": "narrativo-standard"
+    },
+    "aircraft-door": {
+      "nome": "En la puerta del avión",
+      "categoria": "storia",
+      "sequence": "narrativo-standard"
+    }
+  },
+  "nomiASchermo": {
+    "target": "Italiano",
+    "corso": "Italiano para españoles"
+  }
+}

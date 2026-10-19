@@ -1,0 +1,219 @@
+{
+  "voiceCoachMessages": {
+    "alto": [
+      "Tres estrellas: esta frase te ha salido.",
+      "Muy buena — se entiende sin titubeos.",
+      "Pronunciación sólida: esta la tienes.",
+      "Muy bien en esta frase.",
+      "Aquí has ido bien, y se nota."
+    ],
+    "medio": [
+      "Dos estrellas: vamos bien, con algún sonido por pulir.",
+      "Se te entiende, con alguna imprecisión.",
+      "Buena parte de los sonidos está bien.",
+      "Todavía no está limpia, pero funciona.",
+      "Esta aguanta, y se nota dónde flaquea."
+    ],
+    "basso": [
+      "Una estrella: esta frase aún se te resiste.",
+      "Algo ha llegado, el resto no.",
+      "Frase difícil, y se nota: pasa.",
+      "Aún lejos — los sonidos lo dicen uno por uno.",
+      "Aquí la pronunciación todavía no está."
+    ]
+  },
+  "speedMatchMessages": {
+    "alto": [
+      "Primera vuelta rápida y precisa.",
+      "Aquí has respondido sin pensarlo demasiado — señal de que las sabes.",
+      "Rápido y seguro: este bloque lo reconoces.",
+      "Muy buena primera vuelta.",
+      "El tiempo no te ha puesto en apuros."
+    ],
+    "medio": [
+      "La primera vuelta ha ido regular, y luego has repasado el resto.",
+      "Alguna ha llegado enseguida, otras las has recuperado en el repaso.",
+      "La primera vuelta no ha sido fluida, y el repaso ha servido.",
+      "Con el tiempo en contra se te ha escapado algo, y has vuelto sobre ello.",
+      "Lo esencial está; en una parte has necesitado una segunda vuelta."
+    ],
+    "basso": [
+      "La primera vuelta ha ido mal, y has repasado todo lo que faltaba.",
+      "Pocas al primer intento: este bloque aún no está asentado.",
+      "Aquí te ha costado, y has llegado al final.",
+      "Has fallado más de las que has acertado, y el repaso ha sido largo.",
+      "Este bloque te ha puesto en apuros, y lo has terminado igualmente."
+    ]
+  },
+  "valvolaSicurezzaMessages": {
+    "nonRiuscita": {
+      "bodies": [
+        "Ya has intentado esta frase varias veces — es normalísimo, le pasa a todo el mundo cuando aprende algo nuevo. Conviene seguir: con una frase así, insistir ahora no ayuda.",
+        "Pasa, y no es un problema: esta frase necesita más tiempo que el resto. Sigue con el ejercicio.",
+        "A veces una frase es más dura que las demás, le pasa incluso a quien va bien. Mejor seguir ahora y dejarla reposar.",
+        "Sin prisa: algunas frases piden más repeticiones que otras, y está previsto en el método. Sigue con el resto.",
+        "Todavía no te sale, pero está bien así — es justo para eso que existen los repasos. Continúa con el resto del ejercicio."
+      ],
+      "title": "¡No pasa nada!"
+    },
+    "riuscita": {
+      "bodies": [
+        "Lo has conseguido, y se nota que los intentos han ayudado: has insistido y ha servido. Sigue con el mismo ánimo.",
+        "Al final has llegado — los primeros intentos no fueron del todo bien, pero has ajustado la puntería. Así es como se aprende.",
+        "Buena recuperación: no salió bien a la primera, pero has seguido intentándolo y ahora está. Sigue así.",
+        "Has insistido en esta frase y ha servido: ahora la haces mejor que antes. Es exactamente el sentido del repaso.",
+        "Lo has logrado tras algún intento más, y está perfecto así — significa que el repaso está funcionando."
+      ],
+      "title": "¡Lo has conseguido!"
+    }
+  },
+  "moduleCompleteMessages": {
+    "alto": [
+      "El primer intento ha ido bien: este bloque lo sabes.",
+      "Buen trabajo — aquí has ido con seguridad.",
+      "Lo que has estudiado en este bloque se te ha quedado.",
+      "La primera pasada ha ido bien, y lo poco que ha vuelto lo has revisado.",
+      "Aquí has trabajado bien, y ya se ve en la primera pasada."
+    ],
+    "medio": [
+      "Buena parte en la primera pasada, y sobre el resto has vuelto.",
+      "Ya estás: una parte ha entrado enseguida, sobre el resto has tenido que volver.",
+      "No ha ido todo fluido, pero lo esencial lo tienes.",
+      "Está bien así: sobre lo que te ha hecho dudar has vuelto.",
+      "Nada que rehacer ahora: la vuelta está completa."
+    ],
+    "basso": [
+      "Este bloque era cuesta arriba, y lo has terminado igualmente.",
+      "Muchas las has acertado solo volviendo sobre ellas: significa que aún no son tuyas.",
+      "El primer intento ha ido mal, y has repetido la vuelta entera.",
+      "Has fallado más de las que has acertado, y has vuelto sobre ellas una por una.",
+      "Aquí te ha costado, y has llegado al final igualmente. Este paso se reabre desde el mapa, cuando quieras."
+    ]
+  },
+  "studioCompleteMessages": {
+    "default": [
+      "Hecho. Este tipo de ejercicio funciona así: poco a poco.",
+      "Hecho: seguir practicando así es exactamente lo correcto.",
+      "Sesión completada: estas cosas se fijan con el tiempo, no de golpe.",
+      "Muy bien: volver más veces es lo que hace que se queden.",
+      "Ejercicio terminado — siempre puedes volver para otra vuelta cuando quieras."
+    ]
+  },
+  "storyCardsCompleteMessages": {
+    "alto": [
+      "Has marcado como claras las explicaciones, una tras otra.",
+      "Las has dado por claras: es un buen punto de partida.",
+      "Este diálogo lo declaras claro — y eres tú quien lo sabe.",
+      "Ninguna duda grande, según tú.",
+      "Las estructuras de este diálogo te cuadran."
+    ],
+    "medio": [
+      "Buena parte de las explicaciones las has marcado claras; algunas no.",
+      "Alguna clara, alguna no — y eres tú quien ha dicho cuáles.",
+      "Lo esencial te cuadra; en algunas estructuras has puesto la duda.",
+      "Una parte la has marcado clara, y en las otras no has disimulado.",
+      "Un poco claras y un poco no: las dudosas quedan marcadas como tales."
+    ],
+    "basso": [
+      "Pocas explicaciones marcadas como claras: este diálogo aún hay que digerirlo.",
+      "Has marcado más dudas que certezas, y decirlo sirve.",
+      "Más no que sí, según cómo las has marcado.",
+      "Son construcciones nuevas, y has dicho que aún no están claras.",
+      "Este paso se reabre desde el mapa, si quieres releerlas."
+    ]
+  },
+  "dialogoCompleteMessages": {
+    "siLoSo": [
+      "Este diálogo lo das por aprendido: adelante con el siguiente.",
+      "Has dicho que lo sabes, y eres tú quien lo siente.",
+      "Marcado como adquirido. Buen paso.",
+      "Lo has escuchado y lo das por tuyo.",
+      "Un diálogo menos por revisar."
+    ],
+    "nonAncora": [
+      "Todavía no, y decirlo es lo correcto.",
+      "Puedes volver a escucharlo cuando quieras: este paso se reabre desde el mapa.",
+      "Pasa no sentirse seguro: lo has marcado, y ahí queda.",
+      "Rehacerlo no es un paso atrás.",
+      "Tómate el tiempo que necesites."
+    ]
+  },
+  "retryIntroMessages": {
+    "first": {
+      "titles": [
+        "Primera pasada terminada",
+        "Primera vuelta completada",
+        "Has terminado la vuelta principal",
+        "Bien, pasamos al repaso",
+        "Ahora toca repasar"
+      ],
+      "bodies": [
+        "De aquí en adelante se repasan solo las que se te han escapado.",
+        "Ahora volvemos solo sobre lo que necesitas revisar.",
+        "Repasamos juntos solo las que aún no han salido.",
+        "El resto por ahora va bien: nos centramos en lo que falta.",
+        "Repaso dirigido: solo las que hay que revisar, nada más."
+      ]
+    },
+    "last": {
+      "titles": [
+        "Último repaso",
+        "Última vuelta",
+        "Ya casi, última pasada",
+        "Un último repaso",
+        "Última llamada"
+      ],
+      "bodies": [
+        "Después de esta vuelta el ejercicio está cerrado.",
+        "Al terminar este repaso verás cómo ha ido.",
+        "Esta vuelta más, y luego seguimos con el resto del recorrido.",
+        "Una última vez sobre estas, y ya está.",
+        "Completa esta vuelta y pasamos adelante."
+      ]
+    }
+  },
+  "episodeFinalMessages": {
+    "tuttiVerdi": {
+      "compliments": [
+        "¡Episodio completado a lo grande — todos los módulos han ido bien!",
+        "Muy buen trabajo en todo el episodio, sólido de principio a fin.",
+        "Lo has conseguido en todos los módulos: enhorabuena por la constancia.",
+        "Episodio superado de pleno, sin puntos débiles.",
+        "Un episodio impecable — controlas todo lo que has aprendido."
+      ],
+      "tip": []
+    },
+    "gialloNoRosso": {
+      "compliments": [
+        "¡Has completado el episodio entero, enhorabuena!",
+        "Buen trabajo: has terminado todos los módulos del episodio.",
+        "Episodio terminado, con buenos resultados en gran parte de los módulos.",
+        "Mucho esfuerzo en todo el episodio, se ve que has trabajado bien.",
+        "Enhorabuena por haber completado el episodio entero."
+      ],
+      "tip": [
+        "Si quieres, un repaso rápido de los módulos amarillos nunca viene mal.",
+        "Cuando te apetezca, échale otro vistazo a los módulos por revisar.",
+        "Sin prisa, pero un repaso de los módulos amarillos puede ayudar.",
+        "Los módulos por revisar se quedan ahí para cuando tengas ganas de repasarlos.",
+        "Un repaso de los módulos marcados en amarillo, cuando toque, los deja aún más sólidos."
+      ]
+    },
+    "almenoUnRosso": {
+      "compliments": [
+        "¡Has completado el episodio entero, enhorabuena por llegar hasta el final!",
+        "Buen trabajo: has terminado todos los módulos, de principio a fin.",
+        "Episodio terminado — llegar hasta el final no es nada obvio.",
+        "Enhorabuena por haber completado todo el episodio.",
+        "Mucho esfuerzo: has cerrado el episodio entero."
+      ],
+      "tip": [
+        "Vale la pena rehacer los módulos marcados en rojo: te ayudarán a fijar mejor estas partes.",
+        "Los módulos en rojo merecen otra vuelta: están ahí justo para retomarlos.",
+        "Conviene volver sobre los módulos rojos cuando puedas: ayuda más de lo que parece.",
+        "Dale otra oportunidad a los módulos rojos: rehacerlos es la forma más rápida de mejorarlos.",
+        "Los módulos rojos son un buen punto desde el que retomar con un repaso."
+      ]
+    }
+  }
+}

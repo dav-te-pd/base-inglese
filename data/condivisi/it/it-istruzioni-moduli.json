@@ -109,7 +109,7 @@
           "Nessun problema: certe regole si capiscono dopo averle incontrate qualche volta negli esercizi.",
           "Va bene così. Spesso è la pratica a far scattare la cosa, non la spiegazione.",
           "Capita a tutti. Prosegui: quando la ritroverai in una frase vera avrà più senso.",
-          "Non fermarti qui. Questa regola tornerà, e la seconda volta è sempre più facile.",
+          "Non fermarti qui: una struttura nuova raramente è chiara al primo sguardo.",
           "Tranquillo: segnalarla come poco chiara serve proprio a ritrovarla dopo.",
           "Va benissimo dirlo. Le regole difficili sono quelle che poi si ricordano meglio.",
           "Nessuna fretta: continua con gli esercizi e rileggila tra qualche modulo.",
@@ -122,7 +122,7 @@
           "Capita, e non vuol dire niente su come stai andando: vai avanti.",
           "Tranquillo. Certe cose hanno senso solo dopo che le hai dette a voce.",
           "Va bene. Torna a questa card quando avrai fatto qualche esercizio in più.",
-          "Nessuna fretta: questa regola tornerà negli episodi successivi.",
+          "Nessuna fretta: puoi riaprire questa card dalla mappa quando vuoi.",
           "Succede, ed è utile saperlo: ora sai cosa ripassare.",
           "Va bene così. Meglio dirlo adesso che far finta di aver capito."
         ]
@@ -130,9 +130,9 @@
       "nonAncora": {
         "title": "Nessun problema",
         "bodies": [
-          "Capita, tornaci con calma quando vuoi: la ripasserai più avanti.",
+          "Capita: questo passo si riapre dalla mappa, quando vuoi.",
           "Va bene: sai dov'è, e puoi tornarci quando ti serve.",
-          "Nessun problema. Segnata come da ripassare.",
+          "Nessun problema: la tua risposta è registrata.",
           "Perfetto così: ripassare è parte del lavoro, non un ritardo.",
           "D'accordo. La ritroverai qui quando vorrai rivederla.",
           "Va bene, la lasciamo in sospeso: resta a disposizione.",
@@ -143,7 +143,7 @@
           "Certo, con calma: nessuno ha fretta qui.",
           "Va bene così: metterla da parte è meglio che passarci sopra.",
           "D'accordo. Rileggerla tra qualche giorno funziona benissimo.",
-          "Nessun problema: la ripasserai quando la ritroverai in un esercizio.",
+          "Nessun problema: le regole si sistemano mentre fai gli esercizi, anche senza rileggerle.",
           "Va bene. Riconoscere cosa serve rivedere è già metà del lavoro.",
           "Perfetto. Continua, e torna qui quando ti va.",
           "Segnata. Puoi rivederla ogni volta che riapri questo modulo.",

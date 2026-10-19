@@ -1,4 +1,4 @@
-**Versione: 20261016b**
+**Versione: 20261017a**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -181,6 +181,41 @@ rosso, il testo non deve più descriverlo.* **Questi sedici testi si riaprono al
 
 ---
 
+## 🔴 IL 17 OTTOBRE CINQUE TESTI DELL'AUTOVALUTAZIONE SONO STATI CORRETTI
+
+**Prima rilettura di questo file contro il CODICE.** *I 132 testi di esito l'hanno avuta il 16 e 17
+ottobre; questi 199 no — erano stati lavorati per il taglio delle spiegazioni (28/09) e per gli otto
+testi che dicevano «quattro» (2/10), mai verificati sui meccanismi.*
+
+⭐ **Il perimetro è stato misurato prima di leggere: delle 174 righe di testo, ~25 nominano un meccanismo
+dell'app** — *il ripasso 10, la mappa 8, il microfono 4, i tentativi, la velocità, la coda, lo sblocco.*
+**Il resto sono etichette: «Chiudi», «Avanti →», «Pausa».**
+
+| Voce | Cosa diceva | Perché era falso |
+|---|---|---|
+| `nonChiara` **4** | *«questa regola **tornerà**»* | 🔴 **nessun meccanismo ripresenta una regola** |
+| `nonChiara` **17** | *«tornerà **negli episodi successivi**»* | 🔴 *idem, e gli episodi scritti sono due* |
+| `nonAncora` **13** | *«la ripasserai quando la **ritroverai in un esercizio**»* | 🔴 **le regole stanno solo in Why We Say It**: gli esercizi girano su parole e frasi |
+| `nonAncora` **0** | *«la **ripasserai più avanti**»* | ⚠️ *metà vero: «tornaci quando vuoi» sì, il resto no* |
+| `nonAncora` **2** | *«Segnata **da ripassare**»* | 🔴 **l'unico posto che mostra quella dichiarazione è il Pannello Admin** |
+
+⭐ **E il `nonAncora` 2 è il caso più fine: la dichiarazione È salvata, e un effetto lo studente lo vede —
+il COLORE del bollino, che viene da `chiaraCount / storyCardsSkillIds.length`.** 🔴 *Quello che non
+esiste è una lista «da ripassare».* **Quindi la correzione non è «non è segnata»: è dire cosa succede
+davvero.**
+
+### ✅ E TRE AFFERMAZIONI CHE SONO RISULTATE VERE
+
+| Il testo | La misura |
+|---|---|
+| *«Completa un episodio per sbloccare il successivo»* | ✅ **vero come effetto** — ⚠️ *e `app/mappa.js` dice una cosa che vale saperla: «**non esiste nessun dato “questo episodio è sbloccato”**». Lo stato si DERIVA: finito · primo incompleto · bloccato* |
+| *«Completa i moduli in ordine per avanzare nella storia»* | ✅ **vero**: *`clickable = status !== 'locked'`* |
+| *«Ripassa quello che hai imparato»* *(sottotitolo di Flash Card)* | ✅ **vero**: *nella sequenza Flash Card viene dopo i due Match sullo stesso grado* |
+
+> ⭐ **Il criterio, lo stesso dei 132: un testo che nomina un meccanismo si legge accanto al codice, non
+> al suo suono.** 🔴 **E un testo che nomina un'ETICHETTA non ha bisogno di nessuna verifica — per questo
+> il perimetro si misura prima: 25 righe invece di 174.**
+
 ## 2 — LE SPIEGAZIONI
 
 *Il popup «Spiegazione», in alto in ogni modulo. Colonne: **kind** → la chiave del JSON · **corpo** →
@@ -341,7 +376,7 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[1]` | Nessun problema: certe regole si capiscono dopo averle incontrate qualche volta negli esercizi. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[2]` | Va bene così. Spesso è la pratica a far scattare la cosa, non la spiegazione. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[3]` | Capita a tutti. Prosegui: quando la ritroverai in una frase vera avrà più senso. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[4]` | Non fermarti qui. Questa regola tornerà, e la seconda volta è sempre più facile. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[4]` | Non fermarti qui: una struttura nuova raramente è chiara al primo sguardo. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[5]` | Tranquillo: segnalarla come poco chiara serve proprio a ritrovarla dopo. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[6]` | Va benissimo dirlo. Le regole difficili sono quelle che poi si ricordano meglio. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[7]` | Nessuna fretta: continua con gli esercizi e rileggila tra qualche modulo. |
@@ -354,13 +389,13 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[14]` | Capita, e non vuol dire niente su come stai andando: vai avanti. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[15]` | Tranquillo. Certe cose hanno senso solo dopo che le hai dette a voce. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[16]` | Va bene. Torna a questa card quando avrai fatto qualche esercizio in più. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[17]` | Nessuna fretta: questa regola tornerà negli episodi successivi. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[17]` | Nessuna fretta: puoi riaprire questa card dalla mappa quando vuoi. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[18]` | Succede, ed è utile saperlo: ora sai cosa ripassare. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[19]` | Va bene così. Meglio dirlo adesso che far finta di aver capito. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.title` | Nessun problema |
-| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[0]` | Capita, tornaci con calma quando vuoi: la ripasserai più avanti. |
+| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[0]` | Capita: questo passo si riapre dalla mappa, quando vuoi. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[1]` | Va bene: sai dov'è, e puoi tornarci quando ti serve. |
-| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[2]` | Nessun problema. Segnata come da ripassare. |
+| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[2]` | Nessun problema: la tua risposta è registrata. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[3]` | Perfetto così: ripassare è parte del lavoro, non un ritardo. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[4]` | D'accordo. La ritroverai qui quando vorrai rivederla. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[5]` | Va bene, la lasciamo in sospeso: resta a disposizione. |
@@ -371,7 +406,7 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[10]` | Certo, con calma: nessuno ha fretta qui. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[11]` | Va bene così: metterla da parte è meglio che passarci sopra. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[12]` | D'accordo. Rileggerla tra qualche giorno funziona benissimo. |
-| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[13]` | Nessun problema: la ripasserai quando la ritroverai in un esercizio. |
+| `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[13]` | Nessun problema: le regole si sistemano mentre fai gli esercizi, anche senza rileggerle. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[14]` | Va bene. Riconoscere cosa serve rivedere è già metà del lavoro. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[15]` | Perfetto. Continua, e torna qui quando ti va. |
 | `whyWeSayIt` | `selfCheckMessages.nonAncora.bodies[16]` | Segnata. Puoi rivederla ogni volta che riapri questo modulo. |

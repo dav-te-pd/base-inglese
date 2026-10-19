@@ -1,0 +1,343 @@
+{
+  "personalizzazione": {
+    "howItWorks": {
+      "body": "<p>Aquí eliges los nombres de los personajes de la historia — o dejas los que te proponemos: ninguna elección es obligatoria.</p><p>Toca un campo para cambiarlo.</p><p><b>Estas elecciones valen para este episodio.</b> Si quieres cambiarlas después de haberlo empezado, el episodio se repite desde el principio.</p><p>Cuando estés listo, pulsa «Empieza el episodio».</p>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca un campo para personalizarlo, o déjalo como está. «Reset» vuelve a los valores de partida.</p><p>Las elecciones valen para este episodio: para cambiarlas después de haberlo empezado, el episodio se repite desde el principio.</p><p>Al final de la página puedes sugerirnos nombres o palabras que no encuentres en las listas.</p>"
+    },
+    "pageDescription": "Personaliza los episodios con las palabras, los nombres y los lugares de tu vida real — cuanto más cerca estén de ti, mejor los recordarás. Elige entre las opciones propuestas, o deja los valores por defecto.",
+    "requestBoxLabel": "¿No encuentras el nombre, la ciudad o la palabra que necesitas?",
+    "requestBoxExample": "Ejemplo: si en las listas de arriba falta un nombre o una ciudad que te gustaría ver en la historia, escríbela aquí abajo — valoraremos adaptar el curso.",
+    "requestBoxDuplicateWarning": "Esta palabra ya está entre las opciones disponibles — prueba a seleccionarla directamente en el campo de arriba.",
+    "midEpisodeWarning": {
+      "title": "Estás a punto de borrar tu progreso",
+      "body": "<p>Ya has empezado este episodio. Si cambias ahora los nombres y los lugares de la historia, todo lo que has hecho hasta aquí deja de tener sentido: se refería a las palabras que estás a punto de sustituir.</p><p>Para continuar, <b>perderás todo el progreso hecho en este episodio</b> — tendrás que repetir desde el principio los ejercicios que ya habías completado.</p><p>Si estás seguro, escribe aquí abajo exactamente la frase indicada y pulsa el botón.</p>",
+      "confirmPhrase": "borrar episodio",
+      "confirmLabel": "Escribe \"borrar episodio\" para confirmar",
+      "confirmButton": "Borra el progreso y modifica",
+      "cancelButton": "Cancela, volver al mapa"
+    },
+    "midEpisodeWarningTitle": "Atención",
+    "requestBoxSaved": "✓ Solicitud guardada. ¡Gracias!",
+    "subtitle": "Personaliza tu historia"
+  },
+  "meetTheStory": {
+    "howItWorks": {
+      "body": "<p>Es tu primer encuentro con la historia: aquí se escucha, no se estudia.</p><p>Toca 🔊 en cada frase para oírla. La traducción ya está debajo, siempre visible — todavía no has estudiado nada, así que no tiene sentido esconderla.</p><p>Escucha las veces que quieras. <b>No tienes que recordar nada ahora:</b> las palabras, las frases y las reglas llegan después.</p><p>Cuando te hayas hecho una idea de la historia, pulsa «He terminado».</p>"
+    },
+    "helpReminder": {
+      "body": "<p>Escucha las frases con 🔊, a la velocidad que prefieras (100/75/50%). La traducción está siempre visible: aquí hay que entender la historia, no adivinarla.</p><p>Cuando te baste, pulsa «He terminado».</p>"
+    },
+    "subtitle": "Escucha la historia"
+  },
+  "repeatAloud": {
+    "howItWorks": {
+      "body": "<p>Escucha cada palabra con 🔊, lee la traducción y el consejo de pronunciación.</p><p>Repite en voz alta hasta que te parezca igual. <b>Si te parece distinto es normal:</b> más adelante hay ejercicios que te dicen si la pronunciación es correcta.</p><p>Cuando hayas repasado todas las palabras, pulsa «He terminado, volver al mapa».</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Pulsa 🔊 para escuchar cada palabra (velocidad 100/75/50%), y después repítela en voz alta. Lee la traducción y el consejo de pronunciación si te hace falta.</p><p>Cuando hayas hecho toda la lista, pulsa «He terminado, volver al mapa». Si no quieres hacerlo ahora, toca «Mapa».</p>"
+    },
+    "subtitle": "Repite en voz alta"
+  },
+  "matchTargetNative": {
+    "howItWorks": {
+      "body": "<p>Ves una palabra y varias traducciones — toca la correcta.</p><p><b>Aquí no hay tiempo límite:</b> tómate el momento que necesites para pensarlo.</p><p>Las palabras que falles vuelven al final del ejercicio, hasta que estén todas bien.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Ves la palabra, toca la traducción correcta entre las propuestas. Sin tiempo límite.</p><p>Las preguntas falladas vuelven al final del ejercicio, hasta que estén todas correctas.</p>"
+    },
+    "subtitle": "Empareja las traducciones"
+  },
+  "matchNativeTarget": {
+    "howItWorks": {
+      "body": "<p>Ves una palabra y varias traducciones — toca la correcta.</p><p><b>Aquí no hay tiempo límite:</b> tómate el momento que necesites para pensarlo.</p><p>Las palabras que falles vuelven al final del ejercicio, hasta que estén todas bien.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Ves la palabra, toca la traducción correcta entre las propuestas. Sin tiempo límite.</p><p>Las preguntas falladas vuelven al final del ejercicio, hasta que estén todas correctas.</p>"
+    },
+    "subtitle": "Empareja las traducciones"
+  },
+  "flashcard": {
+    "howItWorks": {
+      "body": "<p>Mira la palabra en la carta, y escúchala si quieres.</p><p>Antes de darle la vuelta intenta adivinarla — sin agobiarte: si no estás seguro toca «Todavía no», que volverá.</p><p>Después toca la carta para darle la vuelta, y dinos si te acordabas.</p><p><b>Las cartas que no sabes vuelven hasta que te las aprendes de verdad.</b></p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Intenta adivinar la palabra antes de darle la vuelta, y después toca la carta para ver la traducción.</p><p>Dinos si la sabías o no. Las cartas que no sabes vuelven hasta que te las aprendes.</p>"
+    },
+    "subtitle": "Repasa lo que has aprendido"
+  },
+  "voicePractice": {
+    "howItWorks": {
+      "body": "<p>Lee la frase en español, escucha el modelo con 🔊, y después toca el micrófono para grabar.</p><p>Toca otra vez para parar, y elige si enviar la grabación o borrarla y repetirla.</p><p>Después de enviarla cada palabra se colorea: <b>verde</b> si está correcta, <b>amarillo</b> si se parece, <b>rojo</b> si hay que revisarla, con una puntuación en estrellas.</p><p><b>Aquí te entrenas, no te evaluamos:</b> puedes repetir la misma frase varias veces.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca el micrófono para grabar, toca otra vez para parar. <b>Se para también solo</b> si te quedas en silencio o si pasas del tiempo máximo. Después elige si enviar o borrar.</p><p>Mira los colores y las estrellas. «Practica otra vez» para repetir la misma frase — el contador muestra cuántas veces te quedan, y cuando se acaban se sigue adelante igualmente.</p><p>Aquí no hay un repaso final: es un espacio libre para entrenarte.</p>"
+    },
+    "subtitle": "Entrena la pronunciación"
+  },
+  "whyWeSayIt": {
+    "howItWorks": {
+      "body": "<p>El diálogo ya lo conoces: aquí se mira <em>por qué</em> se dice así.</p><p>En casi cada frase encuentras uno o más botones con el nombre de una regla. Se abren en orden, una a una: léela y después di si te queda clara — <b>no hay una respuesta correcta</b>, sirve solo para saber qué merece la pena repasar.</p><p>Cuando las hayas visto todas, pulsa «He terminado».</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Abre las reglas una a una, en el orden en que se presentan, y después de cada una di si te queda clara. El botón final se activa cuando has contestado a todas.</p><p>Cuando las hayas visto todas, pulsa «He terminado». Si tienes que interrumpir, «Sal y continúa después» guarda el punto al que has llegado.</p>"
+    },
+    "completeHint": "Se activa cuando hayas contestado a todas las reglas.",
+    "selfCheck": {
+      "question": "¿Has entendido la explicación?",
+      "answers": [
+        {
+          "value": "nonChiara",
+          "button": "No me queda clara"
+        },
+        {
+          "value": "nonAncora",
+          "button": "Todavía no, la repasaré"
+        },
+        {
+          "value": "chiara",
+          "button": "Sí, me queda clara"
+        }
+      ]
+    },
+    "selfCheckMessages": {
+      "nonChiara": {
+        "title": "Está bien así",
+        "bodies": [
+          "Es normal no entenderlo todo de golpe: sigue con los ejercicios y vuelve aquí más tarde.",
+          "Ningún problema: algunas reglas se entienden después de haberlas encontrado unas cuantas veces en los ejercicios.",
+          "Está bien así. A menudo es la práctica la que hace que encaje, no la explicación.",
+          "Nos pasa a todos. Sigue: cuando la vuelvas a encontrar en una frase de verdad tendrá más sentido.",
+          "No te pares aquí: una estructura nueva pocas veces queda clara a la primera.",
+          "Tranquilo: marcarla como poco clara sirve justamente para volver a encontrarla después.",
+          "Está muy bien decirlo. Las reglas difíciles son las que luego se recuerdan mejor.",
+          "Sin prisa: sigue con los ejercicios y vuelve a leerla dentro de unos módulos.",
+          "Pasa. A veces solo hace falta oír la frase unas cuantas veces más.",
+          "Está bien. Prueba a escuchar otra vez la frase: a menudo la regla se oye antes de entenderla.",
+          "No es un problema: nadie aprende una estructura nueva a la primera.",
+          "Es normal. Si sigue poco clara incluso después de los ejercicios, usa el botón Help de arriba.",
+          "Está bien así: lo importante es que sepas que aquí hay algo que recuperar.",
+          "Ningún problema. Las reglas se colocan solas a medida que las usas.",
+          "Pasa, y no dice nada de cómo lo estás haciendo: sigue adelante.",
+          "Tranquilo. Algunas cosas tienen sentido solo después de haberlas dicho en voz alta.",
+          "Está bien. Vuelve a esta tarjeta cuando hayas hecho algunos ejercicios más.",
+          "Sin prisa: puedes volver a abrir esta tarjeta desde el mapa cuando quieras.",
+          "Pasa, y es útil saberlo: ahora sabes qué repasar.",
+          "Está bien así. Mejor decirlo ahora que hacer como si lo hubieras entendido."
+        ]
+      },
+      "nonAncora": {
+        "title": "Ningún problema",
+        "bodies": [
+          "Pasa: este paso se vuelve a abrir desde el mapa, cuando quieras.",
+          "Está bien: sabes dónde está, y puedes volver cuando te haga falta.",
+          "Ningún problema: tu respuesta queda registrada.",
+          "Perfecto así: repasar es parte del trabajo, no un retraso.",
+          "De acuerdo. La volverás a encontrar aquí cuando quieras revisarla.",
+          "Está bien, la dejamos pendiente: sigue disponible.",
+          "Sin prisa: vuelves cuando tengas la cabeza más despejada.",
+          "Muy bien que lo hayas notado: ahora sabes qué revisar.",
+          "Está bien. Mientras tanto sigue adelante, y luego repasas.",
+          "Anotado. Esta tarjeta te espera cuando quieras volver.",
+          "Claro, con calma: aquí nadie tiene prisa.",
+          "Está bien así: dejarla a un lado es mejor que pasarla por alto.",
+          "De acuerdo. Volver a leerla dentro de unos días funciona muy bien.",
+          "Ningún problema: las reglas se colocan mientras haces los ejercicios, incluso sin volver a leerlas.",
+          "Está bien. Reconocer qué hay que revisar ya es la mitad del trabajo.",
+          "Perfecto. Sigue, y vuelve aquí cuando te apetezca.",
+          "Anotada. Puedes revisarla cada vez que vuelvas a abrir este módulo.",
+          "Está bien: mejor repasar una vez más que una menos.",
+          "De acuerdo, la ponemos en la lista. Adelante con el siguiente.",
+          "Ningún problema: vuelves con calma, cuando quieras."
+        ]
+      }
+    },
+    "ruleKicker": "Regla nueva",
+    "noRuleHint": "Aquí no hay nada nuevo: es solo la historia.",
+    "lockedHint": "Primero las reglas de aquí arriba",
+    "subtitle": "Por qué se dice así"
+  },
+  "dialogoAscoltaRipeti": {
+    "howItWorks": {
+      "body": "<p>Este es el diálogo entero del episodio, de principio a fin.</p><p>Toca una frase para escucharla, y después repítela en voz alta. Las veces que quieras, en el orden que prefieras.</p><p>El botón de arriba abre todas las traducciones a la vez: <b>úsalo cuando te haga falta, e intenta usarlo cada vez menos</b> — así es como el cerebro aprende a leer sin apoyarse en el español.</p><p>Cuando hayas escuchado todas las frases, al final encontrarás la pregunta final.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Ten a mano papel y lápiz: además de repetir en voz alta, prueba a escribir las palabras. Con el tiempo, escuchar y escribir a la vez se vuelve automático.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca una frase para escucharla, y después repítela en voz alta. Sin tiempo, sin orden obligado.</p><p>La marca verde te recuerda cuáles ya has escuchado. El botón de arriba muestra y esconde todas las traducciones.</p>"
+    },
+    "subtitle": "Escucha y repite"
+  },
+  "dialogoRipetiATempo": {
+    "howItWorks": {
+      "body": "<p>El mismo diálogo de antes, esta vez con tiempo.</p><p>Toca una frase: la oyes, y después arranca una barra. <b>Esa barra es tu turno</b> — repite en voz alta mientras avanza.</p><p>Aquí no hay traducciones: a estas alturas el diálogo ya deberías entenderlo. Si no es así, vuelve a «Escucha y repite».</p><p>Pasas a la frase siguiente cuando tú quieras.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca una frase, escúchala, y después repite en voz alta mientras avanza la barra. Durante la escucha y la barra todo lo demás está bloqueado: sirve para que hagas de verdad el ejercicio.</p><p><b>Atajo:</b> mientras avanza la barra puedes tocar la frase para pasar directamente a la siguiente, sin esperar el final — hace lo mismo que el botón «Frase siguiente».</p>"
+    },
+    "subtitle": "Repite a tiempo"
+  },
+  "dialogoContinuo": {
+    "howItWorks": {
+      "body": "<p>Este es el ensayo general: el diálogo corre solo, de principio a fin, como lo oirás en una conversación de verdad.</p><p>Después de una breve cuenta atrás arranca la primera frase. La escuchas, repites en voz alta mientras avanza la barra, y en cuanto termina arranca sola la siguiente.</p><p>Si tienes que parar, usa el botón de pausa.</p><p><b>Si consigues seguirlo sin pararte, estás listo para la Prueba final.</b></p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Arranca solo y sigue solo: escucha cada frase y repítela en voz alta mientras avanza la barra. Usa el botón de pausa si tienes que parar.</p><p><b>Atajo:</b> mientras avanza la barra puedes tocar la frase para pasar directamente a la siguiente.</p>"
+    },
+    "subtitle": "El diálogo de verdad"
+  },
+  "speedMatchTargetNative": {
+    "howItWorks": {
+      "body": "<p>Ves una palabra y varias traducciones — toca la correcta antes de que se acabe el tiempo, o «No lo sé» si no te acuerdas.</p><p><b>El objetivo no es la velocidad, es acertar.</b> Si fallas te mostramos la respuesta correcta: léela y memorízala, porque cada error vuelve en los repasos hasta que se convierte en un acierto.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Ves la palabra, toca la traducción correcta entre las propuestas, antes de que se acabe el tiempo. «No lo sé» si no la sabes — y después mira siempre la respuesta correcta antes de seguir adelante.</p>"
+    },
+    "subtitle": "Traduce a tiempo"
+  },
+  "speedMatchNativeTarget": {
+    "howItWorks": {
+      "body": "<p>Ves una palabra y varias traducciones — toca la correcta antes de que se acabe el tiempo, o «No lo sé» si no te acuerdas.</p><p><b>El objetivo no es la velocidad, es acertar.</b> Si fallas te mostramos la respuesta correcta: léela y memorízala, porque cada error vuelve en los repasos hasta que se convierte en un acierto.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Ves la palabra, toca la traducción correcta entre las propuestas, antes de que se acabe el tiempo. «No lo sé» si no la sabes — y después mira siempre la respuesta correcta antes de seguir adelante.</p>"
+    },
+    "subtitle": "Traduce a tiempo"
+  },
+  "voiceCoach": {
+    "howItWorks": {
+      "body": "<p>Lee la frase en español, escucha el modelo con 🔊, y después toca el micrófono para grabar.</p><p>Toca otra vez para parar, y elige si enviar o borrar y repetir.</p><p>Después de enviarla cada palabra se colorea — verde, amarillo o rojo — con una puntuación en estrellas.</p><p><b>Aquí cuenta una sola grabación por frase: es una verificación, no un entrenamiento.</b> Las frases que te hayan salido peor vuelven al final del ejercicio.</p><div class=\"note-box panel\"><span class=\"note-box-label\">Un consejo</span>Aquí no hace falta escribir: el objetivo es escuchar y repetir en voz alta, sin salirte del tiempo.</div>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca el micrófono para grabar, toca otra vez para parar. Antes de enviar siempre puedes borrar y repetir.</p><p>Después de enviar mira los colores y las estrellas, y después toca «Siguiente». <b>Una sola grabación cuenta por frase:</b> las que te hayan salido peor vuelven al final del ejercicio.</p>"
+    },
+    "subtitle": "Pon a prueba tu pronunciación"
+  },
+  "listaEpisodi": {
+    "howItWorks": {
+      "body": "<p>Esta es la lista de los episodios del curso, en el orden en que se hacen.</p><p>Puedes abrir el episodio actual, o volver a uno que ya hayas terminado.</p><p>El siguiente se desbloquea cuando completas <b>el último paso</b> del que estás haciendo.</p>"
+    },
+    "helpReminder": {
+      "body": "<p>Abre el episodio actual, o uno ya terminado para repasarlo. El siguiente llega cuando cierras el último paso de este.</p>"
+    },
+    "pageTitle": "Tus episodios",
+    "pageSubtitle": "Completa un episodio para desbloquear el siguiente."
+  },
+  "mappaEpisodio": {
+    "howItWorks": {
+      "body": "<p>Este es el mapa del episodio: todos los pasos que vas a hacer, en orden.</p><p>Puedes tocar el paso actual, el que está destacado, o volver a uno ya completado. <b>No puedes saltar hacia delante.</b></p>"
+    },
+    "helpReminder": {
+      "body": "<p>Toca el paso actual para empezarlo, o uno ya completado para repasarlo. Nada de saltos hacia delante.</p>"
+    },
+    "pageTitle": "Mapa del episodio",
+    "pageSubtitle": "Completa los módulos en orden para avanzar en la historia."
+  },
+  "dialogoShared": {
+    "choiceBoxHint": "Se activa cuando hayas escuchado todas las frases del diálogo.",
+    "nextLineLabel": "Frase siguiente",
+    "pauseLabel": "Pausa",
+    "choiceNotYet": "Todavía no",
+    "choiceKnown": "Sí, lo sé",
+    "resumeLabel": "Continúa",
+    "showTranslations": "Muestra traducciones",
+    "hideTranslations": "Esconde traducciones"
+  },
+  "erroreCaricamento": {
+    "title": "No conseguimos cargar el contenido",
+    "body": "<p>Los contenidos de este ejercicio no han llegado. Casi siempre es la conexión: espera un momento y vuelve a probar.</p><p>Si al volver a probar no cambia nada, vuelve al mapa — tu progreso está guardado y no has perdido nada.</p>",
+    "retryLabel": "Vuelve a probar",
+    "backLabel": "Volver al mapa",
+    "resetLabel": "Restablece los valores de partida"
+  },
+  "aiuto": {
+    "menuTitle": "¿Necesitas ayuda?",
+    "titolo": "Ayuda",
+    "optionInstructions": "Repasa cómo funciona el ejercicio",
+    "optionClarify": "Querría entender esto",
+    "optionUrgent": "Estoy realmente atascado, Davide necesito tu ayuda",
+    "formHintUrgent": "Escribe qué te bloquea: tu solicitud se guardará como urgente.",
+    "formHintClarify": "Escribe qué no te queda claro.",
+    "formPlaceholder": "Escribe aquí...",
+    "formBack": "← Atrás",
+    "formSubmit": "Enviar",
+    "confirmationText": "✓ Solicitud guardada. ¡Gracias!",
+    "confirmationBack": "← Volver al menú",
+    "titleInstructions": "Cómo funciona, en breve",
+    "titleUrgent": "Solicitud urgente",
+    "titleClarify": "Querría entender esto"
+  },
+  "bloccoAscolto": {
+    "listenLabel": "Escucha",
+    "rateGroupLabel": "Velocidad de reproducción",
+    "rateButtonLabel": "Escucha a velocidad {pct}"
+  },
+  "voceShared": {
+    "recordStart": "Toca para grabar",
+    "recordStop": "Toca para parar",
+    "silenceWarning": "No te hemos oído: prueba a hablar dentro de los {secondi} segundos siguientes al inicio de la grabación.",
+    "retryPractice": "Practica otra vez",
+    "retryCheck": "Vuelve a probar",
+    "transcriptPrefix": "Has dicho:",
+    "transcriptEmpty": "(ningún texto reconocido)",
+    "micNotice": {
+      "level1": {
+        "title": "No conseguimos oírte",
+        "body": "Las últimas grabaciones no han detectado ninguna palabra. Comprueba que el micrófono esté conectado y que el navegador tenga permiso para usarlo, y vuelve a probar.",
+        "actionLabel": ""
+      },
+      "level2": {
+        "title": "Todavía sin audio",
+        "body": "El micrófono sigue sin grabar nada. Prueba a empezar de nuevo el ejercicio: a veces basta con volver a abrirlo para que el navegador pida otra vez el permiso.",
+        "actionLabel": "Empieza de nuevo el ejercicio"
+      },
+      "level3": {
+        "title": "El micrófono no está funcionando",
+        "body": "Después de varios intentos todavía no hemos oído nada: lo más probable es que sea un problema del micrófono o de los permisos, no de tu pronunciación. Puedes volver al mapa y probar más tarde.",
+        "actionLabel": "Volver al mapa"
+      }
+    },
+    "attemptLabel": "INTENTO {n} DE {tot}"
+  },
+  "condivisi": {
+    "introDontShowAgain": "No me muestres más esta pantalla",
+    "introStart": "Lo he entendido, empieza",
+    "readyTitle": "¿Listo?",
+    "readyStart": "¿Listo? ¡Vamos!",
+    "etichettaRegolaGenerale": "Regla general",
+    "etichettaConsiglio": "Un consejo",
+    "spiegazione": "Explicación",
+    "help": "Help",
+    "tornaAllaMappa": "← Mapa",
+    "tornaAllaHome": "← Home",
+    "hoFinito": "He terminado",
+    "esciRiprendiDopo": "Sal y continúa después",
+    "nonLoSo": "No lo sé",
+    "avanti": "Siguiente →",
+    "attesa": "Estoy preparando el curso…",
+    "ripasso": "Repaso",
+    "caricamento": "Cargando...",
+    "chiudi": "Cerrar",
+    "mostraPronuncia": "Muestra pronunciación",
+    "riprovaAncora": "Inténtalo otra vez",
+    "vaiAvanti": "Sigue adelante →",
+    "iniziaEpisodio": "Empieza el episodio",
+    "personalizzaIntestazione": "Personaliza tu historia o déjala así.",
+    "repeatAloudIntestazione": "Escucha cada palabra o frase, repítela en voz alta.",
+    "rispostaCorretta": "Respuesta correcta: ",
+    "nascondiPronuncia": "Esconde pronunciación",
+    "salutoHome": "¡Hola, {nome}!",
+    "iniziaEpisodioNominato": "Empieza {episodio}",
+    "tuoiEpisodi": "Tus episodios"
+  },
+  "categorie": {
+    "inizio": "Inicio",
+    "studio": "Estudio",
+    "dialogo": "Estudia el diálogo",
+    "quiz": "Quiz",
+    "test": "Prueba final",
+    "fine": "Fin"
+  },
+  "nomiASchermo": {
+    "native": "Español"
+  }
+}

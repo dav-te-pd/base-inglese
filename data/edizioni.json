@@ -6,6 +6,11 @@
       "corso": "Inglese per italiani"
     },
     {
+      "lingua": "italiano",
+      "studente": "es",
+      "corso": "Italiano para españoles"
+    },
+    {
       "lingua": "spagnolo",
       "studente": "it",
       "corso": "Spagnolo per italiani"
