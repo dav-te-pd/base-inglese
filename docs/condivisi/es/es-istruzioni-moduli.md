@@ -1,4 +1,4 @@
-**Versione: 20261020a**
+**Versione: 20261020b**
 
 # ISTRUZIONI DEI MODULI — studente SPAGNOLO
 
@@ -73,7 +73,7 @@ non sedici: una schermata non ha un sottotitolo sulla mappa.*
 
 ## 3 — I PROMEMORIA
 
-*Il testo breve dietro «Help → Cómo funciona, en breve». Colonne: **#** · **kind** · **corpo** →
+*Il testo breve dietro «Ayuda → Cómo funciona, en breve». Colonne: **#** · **kind** · **corpo** →
 `<kind>.helpReminder.body`.*
 
 | # | kind | corpo |
@@ -148,7 +148,7 @@ nel JSON.*
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[8]` | Pasa. A veces solo hace falta oír la frase unas cuantas veces más. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[9]` | Está bien. Prueba a escuchar otra vez la frase: a menudo la regla se oye antes de entenderla. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[10]` | No es un problema: nadie aprende una estructura nueva a la primera. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[11]` | Es normal. Si sigue poco clara incluso después de los ejercicios, usa el botón Help de arriba. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[11]` | Es normal. Si sigue poco clara incluso después de los ejercicios, usa el botón Ayuda de arriba. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[12]` | Está bien así: lo importante es que sepas que aquí hay algo que recuperar. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[13]` | Ningún problema. Las reglas se colocan solas a medida que las usas. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[14]` | Pasa, y no dice nada de cómo lo estás haciendo: sigue adelante. |
@@ -250,7 +250,7 @@ singolo modulo: i pulsanti condivisi, l'aiuto, la voce, le categorie della mappa
 | `condivisi` | `etichettaRegolaGenerale` | Regla general |
 | `condivisi` | `etichettaConsiglio` | Un consejo |
 | `condivisi` | `spiegazione` | Explicación |
-| `condivisi` | `help` | Help |
+| `condivisi` | `help` | Ayuda |
 | `condivisi` | `tornaAllaMappa` | ← Mapa |
 | `condivisi` | `tornaAllaHome` | ← Home |
 | `condivisi` | `hoFinito` | He terminado |
@@ -370,7 +370,7 @@ a schermo una frase che non c'è.* **Le coppie di questo file:**
 | **«Sal y continúa después»** | `condivisi.esciRiprendiDopo` | *il promemoria di `whyWeSayIt`* |
 | **«Escucha y repite»** | *il sottotitolo di `dialogoAscoltaRipeti`* | ⚠️ **la spiegazione di `dialogoRipetiATempo`**, *che ci rimanda* |
 | **«Prueba final»** | `categorie.test` | ⚠️ **la spiegazione di `dialogoContinuo`**, *che dice «estás listo para la Prueba final»* |
-| **«Help»** | `condivisi.help` | *un corpo dell'autovalutazione* |
+| **«Ayuda»** | `condivisi.help` | *un corpo dell'autovalutazione* |
 
 ⚠️ **Le ultime due sono le fragili:** *la prima cita un SOTTOTITOLO (sezione 7), la seconda una
 CATEGORIA della mappa (sezione 6).* 🔴 **Se qualcuno cambia quelle due celle, due testi mentono —

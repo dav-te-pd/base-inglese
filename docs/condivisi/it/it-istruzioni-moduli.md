@@ -1,4 +1,4 @@
-**Versione: 20261020a**
+**Versione: 20261020b**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -54,7 +54,7 @@ dopo.
 | Il testo dopo `## ` | Cosa ne nasce |
 |---|---|
 | `2 — LE SPIEGAZIONI` | `<kind>.howItWorks` — il popup «Spiegazione» |
-| `3 — I PROMEMORIA` | `<kind>.helpReminder` — il pannello Help |
+| `3 — I PROMEMORIA` | `<kind>.helpReminder` — il pannello Aiuto |
 | `4 — I DUE CONSIGLI CONDIVISI` | il riquadro in coda alle spiegazioni, **non una chiave del JSON** |
 | `5 — GLI ALTRI TESTI DI UN MODULO` | tutto il resto dentro una chiave di modulo |
 | `6 — I TESTI CHE NON SONO DI UN MODULO` | le sei chiavi condivise |
@@ -273,7 +273,7 @@ ciascuna. *Ricopiarlo in ogni riga vorrebbe dire dodici copie da tenere allineat
 
 ## 3 — I PROMEMORIA
 
-*Il pannello Help, voce «Rivedi come funziona l'esercizio». Stesse chiavi della sezione 2. Colonne:
+*Il pannello Aiuto, voce «Rivedi come funziona l'esercizio». Stesse chiavi della sezione 2. Colonne:
 **kind** → la chiave del JSON · **corpo** → `helpReminder.body`.*
 
 ⚠️ **NON C'È UNA COLONNA «TITOLO», ED È VOLUTO:** *`helpReminder.title` viene da
@@ -383,7 +383,7 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[8]` | Succede. A volte serve solo sentire la frase qualche volta in più. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[9]` | Va bene. Prova ad ascoltare di nuovo la battuta: spesso la regola si sente prima di capirla. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[10]` | Non è un problema: nessuno impara una struttura nuova al primo colpo. |
-| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[11]` | Ci sta. Se resta poco chiara anche dopo gli esercizi, usa il tasto Help in alto. |
+| `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[11]` | Ci sta. Se resta poco chiara anche dopo gli esercizi, usa il tasto Aiuto in alto. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[12]` | Va bene così: l'importante è che tu sappia che qui c'è qualcosa da recuperare. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[13]` | Nessun problema. Le regole si sistemano da sole man mano che le usi. |
 | `whyWeSayIt` | `selfCheckMessages.nonChiara.bodies[14]` | Capita, e non vuol dire niente su come stai andando: vai avanti. |
@@ -506,7 +506,7 @@ non tocca quella frase.*
 | `condivisi` | `etichettaRegolaGenerale` | Regola generale |
 | `condivisi` | `etichettaConsiglio` | Un consiglio |
 | `condivisi` | `spiegazione` | Spiegazione |
-| `condivisi` | `help` | Help |
+| `condivisi` | `help` | Aiuto |
 | `condivisi` | `tornaAllaMappa` | ← Mappa |
 | `condivisi` | `tornaAllaHome` | ← Home |
 | `condivisi` | `hoFinito` | Ho finito |
