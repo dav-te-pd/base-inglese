@@ -118,7 +118,7 @@ Il timore che la teneva aperta era sbagliato, e la riga se n'è andata il
 
 | # | Cosa | Condizione |
 |---|---|---|
-| **3** | **La copia all'apertura e il mix** — un lavoro solo, perché leggono la stessa copia. ⚠️ **Misurato il 2026-10-16: al mix NON serve una chiave di mastery diversa né niente di Supabase** — la chiave per episodio va bene, e le voci rosse degli episodi prima si leggono già con `loadMastery` episodio per episodio. **Gli manca una cosa: una voce deve portarsi dietro l'episodio da cui viene fino al salvataggio** — oggi `recordPendingMastery` legge dalla mastery dell'episodio corrente e il salvataggio al gesto scrive tutto lì, e gli id si ripetono fra episodi (**14 in comune** fra `gate` e `aircraft-door`): una `c-1` rossa di `gate` mostrata in `aircraft-door` leggerebbe e scriverebbe quella sbagliata, in silenzio. *Il legame con Supabase è la decisione del 27/09, non una necessità tecnica: riaprirla è di chi guida il progetto.* ⏳ **E la regola 40/30/20/10 non è nel repository:** prima che il mix si scriva va in `docs/` (regola 28), coi gradi e i moduli da cui pesca — fino ad allora questo conto è un minimo, non una misura. | ha bisogno del file dello studente: **dopo Supabase** (decisione del 27/09, che resta in piedi finché chi guida il progetto non la riapre) |
+| **3** | **La copia all'apertura e il mix** — un lavoro solo, perché leggono la stessa copia. ⚠️ **Misurato il 2026-10-16: al mix NON serve una chiave di mastery diversa né niente di Supabase** — la chiave per episodio va bene, e le voci rosse degli episodi prima si leggono già con `loadMastery` episodio per episodio. **Gli manca una cosa: una voce deve portarsi dietro l'episodio da cui viene fino al salvataggio** — oggi `recordPendingMastery` legge dalla mastery dell'episodio corrente e il salvataggio al gesto scrive tutto lì, e gli id si ripetono fra episodi (**14 in comune** fra `gate` e `aircraft-door`): una `c-1` rossa di `gate` mostrata in `aircraft-door` leggerebbe e scriverebbe quella sbagliata, in silenzio. *Il legame con Supabase è la decisione del 27/09, non una necessità tecnica: riaprirla è di chi guida il progetto.* ⏳ **E la regola 40/30/20/10 non è nel repository:** prima che il mix si scriva va in `docs/` (regola 28), coi gradi e i moduli da cui pesca — fino ad allora questo conto è un minimo, non una misura. | ha bisogno del file dello studente, che **si definisce al passo 3.3**: dopo Supabase (decisione del 27/09). ⚠️ **Riletta il 2026-10-20 da chi guida il progetto e confermata: nessuna misura nuova la riapre.** *Solo la regola 40/30/20/10 scritta in `docs/` potrebbe farlo — e nel repository oggi non c'è per niente: il «30%» che vi compare sta dentro la nota che dice che il mix non esiste.* |
 | **13** | **La definizione del report**: una riga per target, valore e colore si sovrascrivono, la storia dei colori si accumula, il colore sta attaccato al target | **al passo 4.3, i report** |
 
 ## ⚠️ QUATTRO MISURE — 2026-09-27, secondo giro
@@ -1211,7 +1211,7 @@ falla da trovare, è lo stato dichiarato.
 |---|---|---|
 | **3.1** | **La prova della CI a 4 CPU** | Se il runner ne ha quattro, la suite costa la metà. È una misura, non una speranza |
 | **3.2** | **Supabase + repository privato, INSIEME** | ⚠️ **Sono due minacce diverse e il repo privato NON tocca la seconda:** il sito resta pubblico e i suoi file si scaricano lo stesso |
-| **3.3** | **I progressi vanno sul server** | Oggi vivono **solo** nel `localStorage`: cambiare telefono li cancella. Nessun attacco serve |
+| **3.3** | **I progressi vanno sul server** | Oggi vivono **solo** nel `localStorage`: cambiare telefono li cancella. Nessun attacco serve. ⚠️ **Al 3.3 si definisce il file dello studente** (la copia che l'episodio fa all'apertura) — *scritto il 2026-10-20 col sì di chi guida il progetto: fino a quel giorno la decisione del 27/09 diceva solo «dopo Supabase», e nessuna riga diceva in quale passo. Della sua forma non c'è ancora niente di scritto.* |
 | **3.4** | **La correzione delle risposte** | Oggi il browser riceve domanda e risposta giusta insieme. Tre strade nello storico; la riga *«le regole stanno sul server»* esclude quella «tutto nel browser» |
 | **3.5** | **Il pannello Admin dietro login, e `config` che sparisce** | Finché il pannello è locale non è un buco; quando scriverà sul server lo diventa |
 | **3.6** | **Le due analisi + i loro test** | Penetrazione e scaricamento abusivo: stanno in [`cyber-security.md`](cyber-security.md), con la cadenza da decidere quando i test esistono |
@@ -1240,7 +1240,7 @@ serio significherebbe farlo due volte.
 |---|---|
 | **4.1** | **I moduli nuovi**: Scrittura e il Test di verifica finale (previsti, mai costruiti) |
 | **4.2** | **Il Modulo Finale**, che usa `episodeFinalOutcomeCase` |
-| **4.3** | **I report** e le tabelle di interscambio fra episodi (la regola 40/30/20/10) |
+| **4.3** | **I report** e le tabelle di interscambio fra episodi (la regola 40/30/20/10) — ⚠️ **legge il file del 3.3**, non lo definisce *(dal 2026-10-20)* |
 | **4.4** | **Il contratto del modulo** — deciso: *«lo metterei quando è tutto fatto»* |
 | **4.5** | **ElevenLabs**: si registra una volta, si paga una volta, l'app pesca. ⚠️ **Non aspetta Supabase** — la chiave sta fuori dall'app, in `tools/` |
 | **4.6** | **La modalità offline**, dopo l'analisi di Babbel e Duolingo |
