@@ -1,4 +1,4 @@
-**Versione: 20261011c**
+**Versione: 20261020a**
 
 # Tabelle di personalizzazione — inglese per italiani
 
@@ -84,7 +84,6 @@ storia.*
 | `people.figlio` | i nomi del figlio |
 | `people.cognome` | i cognomi della famiglia |
 | `places.departures` | le città di partenza |
-| `places.destinations` | le città di destinazione |
 | `ages.anni` | le età, da 4 a 17 |
 
 ---
@@ -191,6 +190,8 @@ modo di esistere.*
 | `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
 | `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
 | `orig-nizza` | Nizza | Nice | Francia | France | sì |
+| `orig-firenze` | Firenze | Florence | Italia | Italy | sì |
+| `orig-venezia` | Venezia | Venice | Italia | Italy | sì |
 
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, E LE ALTRE RESTANO A QUATTRO.**
 `trascrivi.js` le accetta tutt'e due e **rifiuta ogni altro numero nominando la
@@ -232,14 +233,6 @@ parte degli studenti incontra nella storia non è una parola dell'episodio, e
 **`Italy` torna come voce quando ci sarà l'episodio dei nomi propri** (R.1, parte
 3.6 di `inglese-it-edizione.md`) — lì i toponimi sono il contenuto, non un
 contorno.
-
-### `places.destinations`
-
-| id | it | en | traducibile |
-|---|---|---|---|
-| `dest-pechino` | Pechino | Beijing | sì |
-| `dest-shanghai` | Shanghai | Shanghai | sì |
-| `dest-hong-kong` | Hong Kong | Hong Kong | sì |
 
 ### `ages.anni`
 

@@ -595,9 +595,11 @@
   //
   // ⚠️ E UN CAMPO CHE NON C'E' NON DA' `undefined` A SCHERMO: si torna alla
   // riga. Serve perche' le tabelle non sono tutte uguali — `places.departures`
-  // porta il paese, `places.destinations` no — e un `{{destinazione.paese}}`
-  // scritto per sbaglio deve dare la citta', non un buco. *Un buco a schermo
-  // non si vede nei test e si vede allo studente.*
+  // porta il paese, `ages.anni` e le tabelle `people.*` no — e un
+  // `{{figliaEta.paese}}` scritto per sbaglio deve dare l'eta', non un buco.
+  // *Un buco a schermo non si vede nei test e si vede allo studente.* (Qui
+  // c'era `places.destinations` come esempio: e' uscita dal magazzino il
+  // 2026-10-20.)
   function resolveSlotValue(episode, key, rawValue, lang, campo) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {

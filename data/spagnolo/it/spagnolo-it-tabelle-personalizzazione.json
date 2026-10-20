@@ -368,6 +368,26 @@
           "native": "Francia",
           "target": "Francia"
         }
+      },
+      {
+        "value": "orig-firenze",
+        "native": "Firenze",
+        "target": "Florencia",
+        "traducibile": true,
+        "paese": {
+          "native": "Italia",
+          "target": "Italia"
+        }
+      },
+      {
+        "value": "orig-venezia",
+        "native": "Venezia",
+        "target": "Venecia",
+        "traducibile": true,
+        "paese": {
+          "native": "Italia",
+          "target": "Italia"
+        }
       }
     ]
   },

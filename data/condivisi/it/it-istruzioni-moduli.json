@@ -8,7 +8,7 @@
     },
     "pageDescription": "Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default.",
     "requestBoxLabel": "Non trovi il nome, la città o la parola che ti serve?",
-    "requestBoxExample": "Esempio: se vai a Parigi invece che in Cina, scrivi \"Parigi\" nel campo Destinazione qui sotto — valuteremo di adattare il corso.",
+    "requestBoxExample": "Esempio: se nelle liste qui sopra manca un nome o una città che vorresti nella storia, scrivila qui sotto — valuteremo di adattare il corso.",
     "requestBoxDuplicateWarning": "Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra.",
     "midEpisodeWarning": {
       "title": "Stai per cancellare i tuoi progressi",

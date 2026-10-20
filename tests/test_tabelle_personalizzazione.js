@@ -25,18 +25,22 @@
 // stessa strada di `test_modulo_pronto.js` e `test_testi_interfaccia.js`.
 //
 // IL CASO PIÙ DIVERSO (regola 42): `aircraft-door`. Non il più complicato —
-// quello a cui MANCA qualcosa che l'altro ha: è l'unico episodio che non usa
-// NESSUNA tabella `people.*`, solo `places.destinations`. Un caricamento che
-// scaldasse solo i nomi, o un `isPersonName` che desse per scontata una
-// tabella di persone, lo lascerebbe rotto mentre `gate` resta verde — e `gate`
-// è il caso comodo, quello che si ha già montato.
+// quello a cui MANCA qualcosa che l'altro ha: dal 2026-10-20 è l'unico episodio
+// che non usa NESSUNA tabella `places.*` né `ages.*`, solo `people.cognome`.
+// Un caricamento che scaldasse solo i luoghi, o uno slot che desse per
+// scontata una tabella col paese, lo lascerebbe rotto mentre `gate` resta
+// verde — e `gate` è il caso comodo, quello che si ha già montato.
+// ⚠️ *Fino a quel giorno era il rovescio: nessuna tabella `people.*`, solo
+// `places.destinations`. La tabella è uscita dal magazzino, e il caso diverso è
+// rimasto lo stesso episodio con la mancanza opposta — il test lo guida uguale,
+// è il motivo che è cambiato.*
 //
 // LIMITE DICHIARATO: questo file NON verifica che il contenuto del magazzino
-// sia quello di `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`. Oggi NON lo è,
-// ed è una scelta scritta (sei destinazioni invece di undici, id vecchi): il
-// passo che ha creato il file è una conversione pura. Il confronto col
-// magazzino vero è il test rovesciato ⑤ del markdown, e nasce col passo che
-// porta il contenuto.
+// sia quello di `docs/inglese/it/inglese-it-tabelle-personalizzazione.md`: quel
+// confronto lo fa `test_testi_dal_markdown.js`, che rigenera i JSON col
+// trascrittore. *Qui c'era «Oggi NON lo è (sei destinazioni invece di
+// undici, id vecchi)»: scaduto da quando il file si trascrive dal markdown, e
+// le destinazioni sono uscite il 2026-10-20.*
 //
 // ⚠️ LA TERZA DIFFERENZA È CHIUSA dal 2026-09-20 (passo 1.8): la
 // traducibilità non è più dedotta dalla tabella, la dichiara la riga. A
@@ -210,7 +214,7 @@ async function run() {
     await page.close();
   }
 
-  // ── [C] IL CASO PIÙ DIVERSO: aircraft-door, zero tabelle people ──────
+  // ── [C] IL CASO PIÙ DIVERSO: aircraft-door, zero tabelle places ──────
   {
     for (const caso of [
       { ep: 'gate', utente: 'TabGate', slot: 8, primaOpz: 8 },

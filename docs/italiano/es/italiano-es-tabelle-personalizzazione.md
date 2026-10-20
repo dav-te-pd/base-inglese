@@ -1,4 +1,4 @@
-**Versione: 20261017b**
+**Versione: 20261020a**
 
 # Tabelle di personalizzazione — italiano per spagnoli
 
@@ -54,8 +54,9 @@ giorno che questa edizione entra nel repository.**
 `places.departures`.* ⭐ **La lingua dello studente resta `es-ES`: rotta e varietà sono due decisioni
 diverse, e lo spagnolo lo fa già al rovescio.**
 
-⚠️ **Da correggere nei due file gemelli (regola 33), quando si toccano:** *«la famiglia è ITALIANA in ogni
-edizione» → «la famiglia è dello STUDENTE».* **Lì era vero perché lo studente era sempre italiano.**
+✅ **Corretta nei due file gemelli il 2026-10-20, col giro di allineamento:** *«la famiglia è ITALIANA in
+ogni edizione» → «la famiglia è dello STUDENTE».* **Lì era vero perché lo studente era sempre italiano,
+e la ragione scritta accanto — «è la tua famiglia che parte» — lo diceva già.**
 
 | Colonna | Cosa succede qui |
 |---|---|
@@ -241,10 +242,15 @@ varietà è lingua: due decisioni, non una.*
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, e le altre restano a quattro.** *`trascrivi.js` le accetta
 tutte due e rifiuta ogni altro numero nominando la tabella.*
 
-⭐ **E qui le colonne `paese` LAVORANO: otto città, otto paesi diversi.** 🔴 **Nelle altre due edizioni no,
-e dal giorno in cui `orig-lugano` e `orig-nizza` escono porteranno lo stesso valore su ogni riga** — *il
-meccanismo del 24/09, città e paese sulla stessa riga, resterà giustificato da questa edizione e dal
-modello.*
+⭐ **E qui le colonne `paese` LAVORANO davvero: otto città, otto paesi diversi.** ⚠️ **Nelle altre due
+sono quasi costanti** — *di dieci righe, otto dicono Italia* — **e il meccanismo del 24/09, città e paese
+sulla stessa riga, regge grazie a `orig-lugano` e `orig-nizza`: le due righe che portano un paese
+diverso.**
+
+🔴 **Il 2026-10-20 abbiamo valutato di toglierle e abbiamo deciso di NO.** *Entrano Firenze e Venezia e
+le dieci righe restano dieci: la lista delle partenze è aperta per progetto — lo studente può proporre
+quello che non trova — quindi non è un insieme da curare, è un insieme che cresce.* ⭐ **E così la ragione
+del 24/09 — «uno studente di Lugano non deve dichiarare un paese che non è il suo» — resta viva.**
 
 ⚠️ **E il paese arriva alla frase con un segnaposto suo** — `{{partenza.paese:target}}` — *non composto
 dentro la colonna: la città da sola serve, perché `Bogotá` è una voce del grado A.*

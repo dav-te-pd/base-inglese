@@ -100,18 +100,18 @@
       "label": "Parole",
       "items": [
         {
-          "id": "a-hello",
-          "target": "hello",
-          "native": "Salve",
-          "pronunciationTip": "hel-LOU — la \"h\" è un soffio leggero",
-          "grammarCategory": "saluto"
-        },
-        {
           "id": "a-hi",
           "target": "hi",
           "native": "Ciao",
           "pronunciationTip": "hai — una sillaba, più lunga dell'italiano",
           "grammarCategory": "saluto"
+        },
+        {
+          "id": "a-morning",
+          "target": "morning",
+          "native": "mattina",
+          "pronunciationTip": "MOR-ning — la \"g\" finale non si sente",
+          "grammarCategory": "sostantivo"
         },
         {
           "id": "a-nice",
@@ -182,6 +182,13 @@
       "label": "Espressioni",
       "items": [
         {
+          "id": "b-good-morning",
+          "target": "good morning",
+          "native": "Buongiorno",
+          "pronunciationTip": "gud MOR-ning",
+          "grammarCategory": "saluto di servizio"
+        },
+        {
           "id": "b-i-am",
           "target": "I am",
           "native": "(io) sono, forma piena",
@@ -242,8 +249,7 @@
           "fromLine": "d-2",
           "nonCon": [
             "c-4",
-            "c-5",
-            "c-7"
+            "c-5"
           ]
         },
         {
@@ -265,8 +271,7 @@
           "fromLine": "d-6",
           "nonCon": [
             "c-1",
-            "c-5",
-            "c-7"
+            "c-5"
           ]
         },
         {
@@ -276,8 +281,7 @@
           "fromLine": "d-7",
           "nonCon": [
             "c-1",
-            "c-4",
-            "c-7"
+            "c-4"
           ]
         },
         {
@@ -291,18 +295,13 @@
         },
         {
           "id": "c-7",
-          "target": "I'm {{figlioNome}}.",
-          "native": "Sono {{figlioNome}}.",
-          "fromLine": "d-8",
-          "nonCon": [
-            "c-1",
-            "c-4",
-            "c-5"
-          ]
+          "target": "I am {{figlioNome}}.",
+          "native": "Io sono {{figlioNome}}.",
+          "fromLine": "d-8"
         },
         {
           "id": "c-8",
-          "target": "I'm {{figlioEta}}.",
+          "target": "I'm {{figlioEta}} years old.",
           "native": "Ho {{figlioEta}} anni.",
           "fromLine": "d-8",
           "nonCon": [
@@ -324,16 +323,16 @@
           "id": "d-1",
           "speaker": "hostess-gate",
           "role": "staff",
-          "target": "Hello! Nice to meet you.",
-          "native": "Ciao! Piacere di conoscervi.",
+          "target": "Good morning! Nice to meet you.",
+          "native": "Buongiorno! Piacere di conoscervi.",
           "whatYouLearn": [
             {
-              "title": "Hello e Hi",
-              "body": "Sono i due modi normali di salutare.<br>\"Hello\" è un po' più educato — in italiano è più vicino a \"Salve\". \"Hi\" è più amichevole: è il nostro \"Ciao\". Nel dialogo lo senti: il papà e la mamma dicono \"Hello\", i figli dicono \"Hi\".<br>Nessuno dei due è sbagliato. Se sei in dubbio, \"Hello\" va bene sempre, con chiunque."
+              "title": "Good morning e Hi",
+              "body": "\"Good morning\" lo dice chi lavora, \"Hi\" lo dici a un amico — e sono <strong>tutti due corretti</strong>.<br>Nel dialogo lo senti: l'hostess e i genitori dicono \"Good morning\", i figli \"Hi\".<br>Una cosa da sapere: \"good morning\" vale <strong>solo fino a mezzogiorno</strong>. Dopo cambia, e lo vedremo più avanti.<br>E se sei in dubbio con qualcuno che non conosci, \"Hello\" va bene sempre: è a metà strada fra i due."
             },
             {
               "title": "Nice to meet you",
-              "body": "Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro \"piacere di conoscerti\".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta \"Hello!\"."
+              "body": "Si dice quando incontri qualcuno per la <strong>prima volta</strong>, ed è il modo normale di farlo: né troppo formale né troppo informale.<br>Non tradurla parola per parola — funziona tutta insieme, come il nostro \"piacere di conoscerti\".<br>Dalla seconda volta che vedi una persona non si usa più. Lì basta \"Hi!\"."
             }
           ]
         },
@@ -341,8 +340,8 @@
           "id": "d-2",
           "speaker": "papa",
           "role": "family",
-          "target": "Hello! I am {{papa}}.",
-          "native": "Ciao! Sono {{papa}}."
+          "target": "Good morning! I am {{papa}}.",
+          "native": "Buongiorno! Sono {{papa}}."
         },
         {
           "id": "d-3",
@@ -387,8 +386,8 @@
           "id": "d-6",
           "speaker": "mamma",
           "role": "family",
-          "target": "Hello! I am {{mamma}}.",
-          "native": "Ciao! Sono {{mamma}}."
+          "target": "Good morning! I am {{mamma}}.",
+          "native": "Buongiorno! Sono {{mamma}}."
         },
         {
           "id": "d-7",
@@ -399,7 +398,7 @@
           "whatYouLearn": [
             {
               "title": "I am e I'm",
-              "body": "Il papà dice \"I am {{papa:target}}\", la figlia dice \"I'm {{figliaNome:target}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\"."
+              "body": "Il papà dice \"I am {{papa:target}}\", la figlia dice \"I'm {{figliaNome:target}}\". Sono la stessa cosa: \"I'm\" è solo la forma corta.<br>Vuol dire \"io sono\", ed è così che ci si presenta in inglese: non \"mi chiamo\", ma \"io sono\".<br><strong>La forma corta vale sempre, non solo con i nomi:</strong> \"I'm from Turin\" è uguale a \"I am from Turin\".<br>Sentirai \"I'm\" quasi sempre nel parlato. \"I am\" è più lento e un po' più formale — ma è giusto anche quello.<br>Una cosa da sapere: in italiano dici \"sono Marco\" e il \"io\" lo salti. <strong>In inglese non si può:</strong> \"I\" ci deve essere sempre. Non esiste dire \"am Marco\".<br>E c'è un caso in cui la forma piena dice una cosa in più: lo senti nella battuta del figlio, qui sotto."
             }
           ]
         },
@@ -407,12 +406,16 @@
           "id": "d-8",
           "speaker": "figlio",
           "role": "family",
-          "target": "Hi! I'm {{figlioNome}}. I'm {{figlioEta}}.",
-          "native": "Ciao! Sono {{figlioNome}}. Ho {{figlioEta}} anni.",
+          "target": "Hi! I am {{figlioNome}}! I'm {{figlioEta}} years old.",
+          "native": "Ciao! Io sono {{figlioNome}}! Ho {{figlioEta}} anni.",
           "whatYouLearn": [
             {
+              "title": "Quando «I am» insiste",
+              "body": "Le due forme le hai già viste: \"I'm\" è la corta, \"I am\" la piena. Qui la piena fa una cosa in più.<br>La figlia dice \"<strong>I'm</strong> {{figliaNome:target}}\". Il figlio dice \"<strong>I am</strong> {{figlioNome:target}}\": <strong>sta insistendo</strong> — come quando un bambino dice \"<strong>IO</strong> sono {{figlioNome:native}}!\".<br>Non è una regola di grammatica, è il tono: la forma lunga pesa di più, e si sente.<br>Quindi, se non hai un motivo per insistere, usa la corta: \"I'm\" basta."
+            },
+            {
               "title": "Dire quanti anni hai",
-              "body": "La figlia dice \"I'm {{figliaEta:target}} <strong>years old</strong>\". Il figlio dice solo \"I'm {{figlioEta:target}}\".<br>Sono tutti e due giusti: la seconda è più corta, e si usa moltissimo.<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano."
+              "body": "\"I'm {{figlioEta:target}} <strong>years old</strong>\" vuol dire \"ho {{figlioEta:native}} anni\".<br>Attenzione a una cosa: in inglese <strong>non si usa il verbo avere</strong> per l'età. Non si dice \"I have ten years\" — si dice \"I am ten\", cioè letteralmente \"io sono dieci\".<br>Ricordatelo, perché è la differenza più grande con l'italiano.<br>E \"years old\" si può togliere: \"I'm ten\" da solo si dice, ed è molto comune."
             }
           ]
         },

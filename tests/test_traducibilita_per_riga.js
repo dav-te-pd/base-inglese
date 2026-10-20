@@ -375,7 +375,9 @@ async function run() {
   //
   // Misurato sui nove slot dei due episodi: il predefinito coincide con la
   // prima riga **su sette**. `papa` → `papa-marco` è sia def sia `opts[0]`;
-  // idem `partenza`, `cognome`, `destinazione`. Su quei sette le due forme
+  // idem `partenza` e `cognome`, in tutti e due gli episodi (dal 2026-10-20
+  // `aircraft-door` ha `cognome` al posto di `destinazione`, uscita dal
+  // magazzino: i sette restano sette). Su quei sette le due forme
   // danno la stessa risposta, cioè sarebbero vere per costruzione (regola 44).
   //
   // Gli unici due che divergono sono `figliaEta` (def `16`, prima riga `12`) e
@@ -480,8 +482,8 @@ async function run() {
     // ⚠️ IL CASO PIU' DIVERSO (regola 42): una riga SENZA quel campo.
     //
     // Le tabelle non sono tutte uguali — `places.departures` porta il paese,
-    // `people.papa` no, e `places.destinations` non lo prendera' mai perche'
-    // nessuna battuta dice il paese di destinazione. Un'implementazione che
+    // `people.papa` no. *Qui c'era anche `places.destinations`, uscita dal
+    // magazzino il 2026-10-20.* Un'implementazione che
     // desse per scontato `picked[campo]` lascerebbe `undefined` a schermo:
     // **un buco non si vede nei test e si vede allo studente.**
     //
@@ -523,12 +525,17 @@ async function run() {
       const ep = window.BI.episodioCorrente();
       const v = window.BI.valoriCorrenti();
       const dati = await window.BI.loadEpisodeData({ dataFile: window.BI.episodeDataFile(ep.id) });
-      // ⚠️ `d-7` E' LA BATTUTA DELLA FIGLIA, `d-8` QUELLA DEL FIGLIO — e la
-      // skill di `d-8` cita TUTTE E DUE. Le prime due asserzioni guardavano
-      // `d-8` credendo fosse la figlia: leggevano «I'm eight» e cercavano
-      // «fourteen». *Il seme era giusto, il soggetto no.*
+      // ⚠️ `d-7` E' LA BATTUTA DELLA FIGLIA, `d-8` QUELLA DEL FIGLIO. Le prime
+      // due asserzioni guardavano `d-8` credendo fosse la figlia: leggevano
+      // «I'm eight» e cercavano «fourteen». *Il seme era giusto, il soggetto no.*
       const figliaLinea = dati.levels.D.items.find(function (i) { return i.id === 'd-7'; });
       const d8 = dati.levels.D.items.find(function (i) { return i.id === 'd-8'; });
+      // ⚠️ LA SKILL DELL'ETA' SI CERCA, NON SI INDOVINA LA POSIZIONE — dal
+      // 2026-10-20. Qui c'era `d8.whatYouLearn[0]`, che fino a quel giorno
+      // citava l'eta' della FIGLIA; da allora `d-8` porta due skill, l'eta'
+      // sta nella seconda e cita quella del FIGLIO. Si prende la skill che
+      // cita un segnaposto d'eta', e la battuta del figlio con cui confrontarla.
+      const skillEta = d8.whatYouLearn.find(function (s) { return /\{\{figli[oa]Eta/.test(s.body); });
       const figlia = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
       const figlio = ep.slotFields.find(function (f) { return f.key === 'figlioEta'; });
       const partenza = ep.slotFields.find(function (f) { return f.key === 'partenza'; });
@@ -542,9 +549,12 @@ async function run() {
         quantePartenza: partenza.options.length,
         battutaEn: window.BI.fillTemplate(figliaLinea.target, ep, v, 'target'),
         battutaIt: window.BI.fillTemplate(figliaLinea.native, ep, v, 'native'),
-        // La skill è prosa ITALIANA che cita la battuta INGLESE: senza `:en`
-        // direbbe «I'm 14 years old» mentre la battuta sopra dice «fourteen».
-        skill: window.BI.fillTemplate(d8.whatYouLearn[0].body, ep, v, 'native')
+        // La skill è prosa ITALIANA che cita la battuta INGLESE: senza
+        // `:target` direbbe «I'm 8 years old» mentre la battuta dice «eight».
+        skill: skillEta ? window.BI.fillTemplate(skillEta.body, ep, v, 'native') : '',
+        battutaFiglio: window.BI.fillTemplate(d8.target, ep, v, 'target'),
+        etaFiglioParola: window.BI.fillTemplate('{{figlioEta:target}}', ep, v, 'native'),
+        etaFiglioCifra: window.BI.fillTemplate('{{figlioEta}}', ep, v, 'native')
       };
     });
 
@@ -559,16 +569,22 @@ async function run() {
     // ⚠️ L'ASSERZIONE CHE VALE PIÙ DEL PASSO: la skill cita la battuta, e le
     // due devono dire la STESSA frase inglese. Senza `:en` nella citazione
     // sarebbero due frasi diverse nella stessa schermata, e nessun rosso.
-    log('[E] La skill cita la battuta con la STESSA parola inglese',
-      esito.skill.indexOf('fourteen') !== -1 && /I'm 14/.test(esito.skill) === false,
-      esito.skill);
+    log('[E] La skill cita la battuta con la STESSA parola inglese (l\'eta\' del figlio, «' + esito.etaFiglioParola + '»)',
+      !!esito.skill && /^[a-z]+$/.test(esito.etaFiglioParola) &&
+      esito.battutaFiglio.indexOf(esito.etaFiglioParola) !== -1 &&
+      esito.skill.indexOf("I'm " + esito.etaFiglioParola) !== -1 &&
+      esito.skill.indexOf("I'm " + esito.etaFiglioCifra) === -1,
+      JSON.stringify({ parola: esito.etaFiglioParola, cifra: esito.etaFiglioCifra, battuta: esito.battutaFiglio, skill: esito.skill.slice(0, 120) }));
 
     log('[E] La figlia vede solo il suo pezzo di tabella',
       esito.quanteFiglia === 6 && esito.primaFiglia === 'eta-12',
       JSON.stringify({ n: esito.quanteFiglia, prima: esito.primaFiglia }));
     log('[E] ...e il figlio il suo', esito.quanteFiglio === 8, String(esito.quanteFiglio));
-    log('[E] Uno slot SENZA elenco vede la tabella intera',
-      esito.quantePartenza === 8, String(esito.quantePartenza));
+    // Il numero si legge dal magazzino, non si scrive qui: era `8` fino al
+    // 2026-10-20, quando le partenze sono diventate dieci (Firenze e Venezia).
+    const partenzeNelFile = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8')).places.departures.length;
+    log('[E] Uno slot SENZA elenco vede la tabella intera (' + partenzeNelFile + ' righe nel file)',
+      partenzeNelFile > 0 && esito.quantePartenza === partenzeNelFile, String(esito.quantePartenza));
     log('[E] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }

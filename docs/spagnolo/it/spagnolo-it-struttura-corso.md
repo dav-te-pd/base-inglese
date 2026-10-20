@@ -1,4 +1,4 @@
-**Versione: 20261016a**
+**Versione: 20261020a**
 
 # Struttura del corso — spagnolo per italiani
 
@@ -46,7 +46,7 @@ spagnolo**.* ⭐ **Ora sono `…TargetNative` e `…NativeTarget`** — *`target
 
 ### ① QUANTO È RIGIDO IL PARSER
 
-**Il lettore cerca SEI titoli per TESTO ESATTO**, `##` più uno spazio più il testo di questa colonna,
+**Il lettore cerca SETTE titoli per TESTO ESATTO**, `##` più uno spazio più il testo di questa colonna,
 carattere per carattere:
 
 | Il testo dopo `## ` | Cosa ne legge |
@@ -76,7 +76,7 @@ non viene letta: le sue parole sono libere, l'ordine delle colonne no.*
 ⚠️ **E i backtick si tolgono in alcune colonne e in altre no:** *tolti dagli id e dalle sequenze, **non
 tolti** da lettera e nome del grado, nome e sottotitolo del modulo, nome dell'episodio.*
 
-**L'ordine delle righe conta in DUE sezioni su SEI** *(tre fino al 2026-10-13, con le categorie)*: *i gradi e gli
+**L'ordine delle righe conta in DUE sezioni su SETTE** *(tre fino al 2026-10-13, con le categorie)*: *i gradi e gli
 episodi — dove spostare un episodio è spostare la sua riga.*
 
 ### ② ⚠️ COSA SI COPIA DALL'INGLESE, E PERCHÉ

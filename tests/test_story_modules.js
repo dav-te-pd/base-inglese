@@ -427,9 +427,15 @@ async function run() {
   log('[dati] I nomi dei gradi sono quelli mostrati allo studente',
     JSON.stringify(['A', 'B', 'C', 'D'].map(g => loadEpisode().levels[g].label)) === JSON.stringify(['Parole', 'Espressioni', 'Frasi', 'Dialogo']));
   log('[dati] whatYouLearn è una lista su ogni battuta che ne ha', battute.every(l => !l.whatYouLearn || Array.isArray(l.whatYouLearn)));
+  // ⚠️ Qui c'era «con UNA SOLA battuta che ne porta due», e il numero non
+  // veniva dalla fonte: era il contenuto di prima. Dal 2026-10-20 sono due
+  // (`d-1` e `d-8`). La fonte dichiara il TOTALE delle skill, non quante
+  // battute ne portano due — quindi qui si verifica quello che la regola 4
+  // chiede davvero: che il conto sia per VOCI e non per battute, cioe' che
+  // almeno una battuta ne porti piu' di una e il conto per battute dia meno.
   log('[dati] Le skill sono quelle che la fonte dichiara (' + attesi.skill + '), e sono ' + skillIds.length +
-    ', con una sola battuta che ne porta due',
-    skillIds.length === attesi.skill && battuteConDueSkill.length === 1);
+    ' su ' + battuteConSkill.length + ' battute — ' + battuteConDueSkill.length + ' ne portano due',
+    skillIds.length === attesi.skill && battuteConDueSkill.length >= 1 && battuteConSkill.length < skillIds.length);
   log('[dati] Ogni skill ha titolo e corpo separati', battute.every(l => (l.whatYouLearn || []).every(s => !!s.title && !!s.body)));
 
   // ============ A: Meet the Story — primo contatto ============

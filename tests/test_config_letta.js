@@ -46,7 +46,9 @@ const ESCLUDI_DESCRIZIONI = true;
 // Conteneva 'places.destinations': un magazzino di paesi che nessuno nominava,
 // in attesa dell'episodio 2. L'attesa è finita il 2026-09-08 —
 // data/inglese/it/inglese-it-aircraft-door.json dichiara lo slot `destinazione` con
-// `table: "places.destinations"` — e la chiave è tornata viva.
+// `table: "places.destinations"` — e la chiave è tornata viva. *Il 2026-10-20
+// è uscita di nuovo, questa volta dal magazzino stesso: `aircraft-door` usa
+// `people.cognome`.*
 //
 // La riga non è stata tolta a mano: **è stato questo test a chiederlo**.
 // L'asserzione "nessuna eccezione superflua" è diventata rossa da sola nella
@@ -248,8 +250,10 @@ async function run() {
   // si vede — mentre l'asserzione qui sopra resterebbe verde su un inventario
   // dimagrito, che e' esattamente il difetto da cui nasce questa riga.
   const foglieMagazzino = percorsiFoglia({ people: magazzino.people, places: magazzino.places }).length;
+  // ⚠️ 6 e non 7 dal 2026-10-20: `places.destinations` e' uscita dal
+  // magazzino. Qui si contano solo `people` e `places` (cinque + una).
   log('Il magazzino della personalizzazione è dentro l\'inventario (' + foglieMagazzino + ' tabelle)',
-    foglieMagazzino >= 7);
+    foglieMagazzino >= 6);
 
   // Un'eccezione che ha smesso di essere tale va tolta: altrimenti la lista
   // cresce e nessuno la ripulisce più.

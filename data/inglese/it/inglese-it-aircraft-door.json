@@ -7,15 +7,15 @@
     "tutti": "Tutti"
   },
   "placeholderMap": {
-    "destinazione": "destinazione"
+    "cognome": "cognome"
   },
   "personalizationTablesUsed": [
     {
-      "key": "destinazione",
-      "label": "Destinazione del viaggio",
+      "key": "cognome",
+      "label": "Cognome della famiglia",
       "type": "select",
-      "table": "places.destinations",
-      "default": "dest-pechino"
+      "table": "people.cognome",
+      "default": "cognome-costa"
     }
   ],
   "levels": {
@@ -184,8 +184,8 @@
         },
         {
           "id": "c-5",
-          "target": "{{destinazione}}? This way, please.",
-          "native": "{{destinazione}}? Da questa parte, prego.",
+          "target": "The {{cognome}} family? This way, please.",
+          "native": "La famiglia {{cognome}}? Da questa parte, prego.",
           "fromLine": "d-7"
         }
       ]
@@ -253,8 +253,8 @@
           "id": "d-5",
           "speaker": "papa",
           "role": "family",
-          "target": "She is my daughter, he is my son.",
-          "native": "Lei è mia figlia, lui è mio figlio.",
+          "target": "She is my daughter, and he is my son.",
+          "native": "Lei è mia figlia, e lui è mio figlio.",
           "whatYouLearn": [
             {
               "title": "La famiglia",
@@ -273,8 +273,8 @@
           "id": "d-7",
           "speaker": "hostess-porta",
           "role": "staff",
-          "target": "{{destinazione}}? This way, please.",
-          "native": "{{destinazione}}? Da questa parte, prego.",
+          "target": "The {{cognome}} family? This way, please.",
+          "native": "La famiglia {{cognome}}? Da questa parte, prego.",
           "whatYouLearn": [
             {
               "title": "Indicare la direzione",

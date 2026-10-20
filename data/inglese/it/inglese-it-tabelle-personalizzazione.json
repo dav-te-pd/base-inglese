@@ -368,26 +368,26 @@
           "native": "Francia",
           "target": "France"
         }
-      }
-    ],
-    "destinations": [
-      {
-        "value": "dest-pechino",
-        "native": "Pechino",
-        "target": "Beijing",
-        "traducibile": true
       },
       {
-        "value": "dest-shanghai",
-        "native": "Shanghai",
-        "target": "Shanghai",
-        "traducibile": true
+        "value": "orig-firenze",
+        "native": "Firenze",
+        "target": "Florence",
+        "traducibile": true,
+        "paese": {
+          "native": "Italia",
+          "target": "Italy"
+        }
       },
       {
-        "value": "dest-hong-kong",
-        "native": "Hong Kong",
-        "target": "Hong Kong",
-        "traducibile": true
+        "value": "orig-venezia",
+        "native": "Venezia",
+        "target": "Venice",
+        "traducibile": true,
+        "paese": {
+          "native": "Italia",
+          "target": "Italy"
+        }
       }
     ]
   },

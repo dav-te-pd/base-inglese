@@ -1,4 +1,4 @@
-**Versione: 20261011c**
+**Versione: 20261020a**
 
 # Tabelle di personalizzazione — spagnolo per italiani
 
@@ -63,8 +63,13 @@ ce n'è nessuno.**
 **Questo file è stato scritto copiando il gemello inglese e riscrivendo UNA colonna.** *Non da zero, ed
 è una scoperta del 2026-09-27:*
 
-**LA FAMIGLIA È ITALIANA IN OGNI EDIZIONE.** *È «la tua famiglia che parte», e lo studente è italiano —
-**quindi i nomi restano Marco, Giulia, Emma, Tommaso**.*
+⭐ **LA FAMIGLIA È DELLO STUDENTE.** *È «la tua famiglia che parte» — e in questa edizione lo studente è
+italiano, **quindi i nomi restano Marco, Giulia, Emma, Tommaso**.*
+
+🔴 **Fino al 2026-10-19 questa riga diceva «LA FAMIGLIA È ITALIANA IN OGNI EDIZIONE», ed era vera finché
+lo studente era sempre italiano.** *Il 17/10 è nata `italiano/es`, dove la famiglia è ispanofona e parte
+da Città del Messico: la ragione scritta accanto — «è la tua famiglia che parte» — lo diceva già.*
+⚠️ **Corretta nel giro di allineamento del 20/10, insieme al gemello inglese.**
 
 | Colonna | Cosa è successo |
 |---|---|
@@ -223,6 +228,8 @@ fatto che assomigli a una parola non lo rende traducibile.**
 | `orig-palermo` | Palermo | Palermo | Italia | Italia | sì |
 | `orig-lugano` | Lugano | Lugano | Svizzera | Suiza | sì |
 | `orig-nizza` | Nizza | Niza | Francia | Francia | sì |
+| `orig-firenze` | Firenze | Florencia | Italia | Italia | sì |
+| `orig-venezia` | Venezia | Venecia | Italia | Italia | sì |
 
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, e le altre restano a quattro.** *`trascrivi.js` le accetta
 tutte due e rifiuta ogni altro numero nominando la tabella.*

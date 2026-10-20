@@ -130,9 +130,9 @@
   }
 
   // ---- Request Box: one small free-text field per personalization group
-  // already shown above (papà, mamma, figlia, figlio, partenza,
-  // destinazione — the same groupSlotFields() grouping renderSlotGrid()
-  // uses), for a name/place not in the predefined lists. The field to
+  // already shown above (papà, mamma, figlia, figlio, cognome, partenza —
+  // the same groupSlotFields() grouping renderSlotGrid() uses; `destinazione`
+  // was here until 2026-10-20, when places.destinations left the store), for a name/place not in the predefined lists. The field to
   // compare against for a given group is its non-"narrow" field (the
   // name/place select, not an age) — same data already driving that
   // group's own dropdown, so no group->table mapping is hardcoded here. ----

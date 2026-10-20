@@ -18,9 +18,9 @@
 | `d-2` | `hostess-porta` | `staff` | Your tickets, please. | I biglietti, per favore. |
 | `d-3` | `papa` | `family` | Here they are. | Eccoli. |
 | `d-4` | `papa` | `family` | She is my wife. | Lei è mia moglie. |
-| `d-5` | `papa` | `family` | She is my daughter, he is my son. | Lei è mia figlia, lui è mio figlio. |
+| `d-5` | `papa` | `family` | She is my daughter, and he is my son. | Lei è mia figlia, e lui è mio figlio. |
 | `d-6` | `hostess-porta` | `staff` | Thank you. | Grazie. |
-| `d-7` | `hostess-porta` | `staff` | {{destinazione}}? This way, please. | {{destinazione}}? Da questa parte, prego. |
+| `d-7` | `hostess-porta` | `staff` | The {{cognome}} family? This way, please. | La famiglia {{cognome}}? Da questa parte, prego. |
 | `d-8` | `tutti` | `family` | Thank you! | Grazie! |
 | `d-9` | `hostess-porta` | `staff` | Enjoy your flight! | Buon volo! |
 
@@ -32,7 +32,7 @@
 | `c-2` | She is my wife. | Lei è mia moglie. | `d-4` | · |
 | `c-3` | She is my daughter. | Lei è mia figlia. | `d-5` | · |
 | `c-4` | He is my son. | Lui è mio figlio. | `d-5` | · |
-| `c-5` | {{destinazione}}? This way, please. | {{destinazione}}? Da questa parte, prego. | `d-7` | · |
+| `c-5` | The {{cognome}} family? This way, please. | La famiglia {{cognome}}? Da questa parte, prego. | `d-7` | · |
 
 ### Grado B — le espressioni
 
@@ -87,6 +87,6 @@
 
 | chiave | etichetta | tipo | tabella | righe | predefinito |
 |---|---|---|---|---|---|
-| `destinazione` | Destinazione del viaggio | `select` | `places.destinations` | · | `dest-pechino` |
+| `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-costa` |
 
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO

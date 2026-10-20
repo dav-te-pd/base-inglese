@@ -458,8 +458,8 @@ function tabelle(ed, testo) {
     //
     // Il numero NON e' una costante unica perche' le tabelle non sono tutte
     // uguali: `places.departures` porta il paese — senza, la battuta di `gate`
-    // direbbe «I am from Lugano, Italy» — e `places.destinations` non lo porta,
-    // perche' nessuna battuta dice il paese di destinazione.
+    // direbbe «I am from Lugano, Italy». *Qui c'era «e `places.destinations`
+    // non lo porta»: quella tabella e' uscita dal magazzino il 2026-10-20.*
     //
     // ⚠️ IL RAMO SI SCEGLIE DALL'INTESTAZIONE — dal 2026-10-08; fino al 07/10
     // dalla prima riga, perche' `tabellaSotto` buttava l'intestazione. Un

@@ -1,4 +1,4 @@
-**Versione: 20261017a**
+**Versione: 20261020a**
 
 # Istruzioni dei moduli — per chi studia in italiano
 
@@ -353,7 +353,7 @@ un'autovalutazione, le righe che spiegano perché un pulsante è spento, le etic
 |---|---|---|
 | `personalizzazione` | `pageDescription` | Personalizza gli episodi con le parole, i nomi e i luoghi legati alla tua vita reale — più sono vicini a te, più li ricorderai. Scegli tra le opzioni proposte, o lascia i valori di default. |
 | `personalizzazione` | `requestBoxLabel` | Non trovi il nome, la città o la parola che ti serve? |
-| `personalizzazione` | `requestBoxExample` | Esempio: se vai a Parigi invece che in Cina, scrivi "Parigi" nel campo Destinazione qui sotto — valuteremo di adattare il corso. |
+| `personalizzazione` | `requestBoxExample` | Esempio: se nelle liste qui sopra manca un nome o una città che vorresti nella storia, scrivila qui sotto — valuteremo di adattare il corso. |
 | `personalizzazione` | `requestBoxDuplicateWarning` | Questa parola è già tra le opzioni disponibili — prova a selezionarla direttamente dal campo sopra. |
 | `personalizzazione` | `midEpisodeWarning.title` | Stai per cancellare i tuoi progressi |
 | `personalizzazione` | `midEpisodeWarning.body` | <p>Hai già iniziato questo episodio. Se cambi ora i nomi e i luoghi della storia, tutto quello che hai fatto finora smette di avere senso: si riferiva alle parole che stai per sostituire.</p><p>Per continuare, <b>perderai tutti i progressi fatti in questo episodio</b> — dovrai rifare da capo gli esercizi che avevi già completato.</p><p>Se sei sicuro, scrivi qui sotto esattamente la frase indicata e premi il pulsante.</p> |
