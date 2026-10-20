@@ -1,4 +1,4 @@
-**Versione: 20261019a**
+**Versione: 20261020a**
 
 # ISTRUZIONI DEI MODULI — studente SPAGNOLO
 
@@ -327,17 +327,23 @@ la seconda edizione è lo strumento di misura della prima.*
 mostra la regola:** *in un file di livello 2 il nome di una lingua è sempre un RUOLO, mai un nome —
 e si traduce come ruolo, non come parola.*
 
-### 🔴 ② UN TESTO ITALIANO NOMINA UNA DESTINAZIONE, E NON È ROBA DI LIVELLO 2
+### ✅ ② UN TESTO ITALIANO NOMINAVA UNA DESTINAZIONE — CHIUSO IL 2026-10-20
 
 | | |
 |---|---|
 | **La cella** | `personalizzazione.requestBoxExample` |
-| **Dice** | *«se vai a Parigi invece che **in Cina**, scrivi "Parigi" nel campo **Destinazione**»* |
-| **Perché non va** | ⭐ **la Cina è la destinazione di UN'EDIZIONE**, *e il campo «Destinazione» non esiste in tutte: `italiano/es` non lo ha, perché le destinazioni non si scelgono* |
+| **Diceva** | *«se vai a Parigi invece che **in Cina**, scrivi "Parigi" nel campo **Destinazione**»* |
+| **Perché non andava** | ⭐ **la Cina è la destinazione di UN'EDIZIONE**, *e il campo «Destinazione» non esisteva in tutte: `italiano/es` non l'ha mai avuto, perché le destinazioni non si scelgono* |
+| **Adesso dice** | *«se nelle liste qui sopra manca un nome o una città che vorresti nella storia, scrivila qui sotto — valuteremo di adattare il corso»* |
 
-⚠️ **Qui l'ho scritta generica** — *«si en las listas de arriba falta un nombre o una ciudad…»* —
-**così è vera per ogni edizione per spagnoli.** 🔴 **La cella italiana va corretta nel giro di
-allineamento:** *è lo stesso difetto delle destinazioni, visto da un altro file.*
+⭐ **E il 2026-10-20 il difetto è sparito alla radice, non solo dal testo:** *la tabella
+`places.destinations` e lo slot `destinazione` sono stati tolti, quindi il campo «Destinazione» **non
+esiste in nessuna edizione**.* ⚠️ **Per questo la frase «non esiste in tutte: `italiano/es` non lo
+ha» è stata riscritta al passato:** *era vera il 2026-10-17 e l'ha resa falsa il commit del 20/10.*
+
+⚠️ **Lo spagnolo l'aveva scritta generica dall'inizio, e la cella italiana è stata corretta nel giro
+di allineamento** — *è la seconda edizione che ha trovato il difetto della prima, che è il motivo per
+cui questa sezione 8 esiste.*
 
 ### ⚠️ ③ TRE COSE CHE LO SPAGNOLO FA DIVERSE PERCHÉ È SPAGNOLO
 
