@@ -23,13 +23,6 @@
       "label": "Parole",
       "items": [
         {
-          "id": "a-morning",
-          "target": "morning",
-          "native": "mattina",
-          "pronunciationTip": "MOR-ning",
-          "grammarCategory": "sostantivo"
-        },
-        {
           "id": "a-welcome",
           "target": "welcome",
           "native": "benvenuto",
@@ -111,13 +104,6 @@
     "B": {
       "label": "Espressioni",
       "items": [
-        {
-          "id": "b-good-morning",
-          "target": "good morning",
-          "native": "buongiorno",
-          "pronunciationTip": "gud MOR-ning",
-          "grammarCategory": "saluto"
-        },
         {
           "id": "b-welcome-aboard",
           "target": "welcome aboard",

@@ -1,6 +1,6 @@
 ## 2 — I NUMERI ATTESI
 
-**Numeri attesi nel JSON:** 12 voci in A, 6 in B, 5 in C, 9 battute in D, 8 skill, 1 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
+**Numeri attesi nel JSON:** 11 voci in A, 5 in B, 5 in C, 9 battute in D, 8 skill, 1 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
 
 ## 3 — LA REGOLA GENERALE
 
@@ -38,7 +38,6 @@
 
 | id | en | it | pronuncia | categoria | non con |
 |---|---|---|---|---|---|
-| `b-good-morning` | good morning | buongiorno | gud MOR-ning | saluto | · |
 | `b-welcome-aboard` | welcome aboard | benvenuti a bordo | UEL-com a-BORD | formula di accoglienza | · |
 | `b-here-they-are` | here they are | eccoli | hia dei ar | espressione | · |
 | `b-thank-you` | thank you | grazie | THENK iu — la "th" fra i denti | formula di cortesia | · |
@@ -49,7 +48,6 @@
 
 | id | en | it | pronuncia | categoria | non con |
 |---|---|---|---|---|---|
-| `a-morning` | morning | mattina | MOR-ning | sostantivo | · |
 | `a-welcome` | welcome | benvenuto | UEL-com — la "e" finale non si legge | espressione di accoglienza | · |
 | `a-tickets` | tickets | biglietti | TI-chets — la "ck" è una "c" dura sola | sostantivo plurale | · |
 | `a-here` | here | qui | hia — la "h" è un soffio, la "e" finale muta | avverbio di luogo | · |
