@@ -72,7 +72,6 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **I file fermi** | Un **giro** che si ripete, non un passo: i file che nessun commit tocca da più di una settimana | **quando lo si vuole rifare** | qui sotto |
 
 | **1.16 residuo** | **`wipeEpisodeProgress` conosce meno chiavi di quante ne esistano**, e l'elenco è scritto a mano dentro la funzione. *Misurato il 2026-09-26: due prefissi nominati alla lettera (`introDismissed`, `repeatAloudIntroDismissed`).* ⚠️ **Il difetto non è il numero: è che l'elenco non cresce col mondo che descrive** — quando nasce una chiave nuova per episodio, la cancellazione resta indietro **senza un errore** | **al prossimo passo che tocca i progressi** | qui sotto, «trovato catalogando» |
-| **L'opzione che nessuno prova** | **Ogni volta che si aggiunge un valore a una tabella di personalizzazione, quel valore non è provato da nessuno:** le prove guidano il **predefinito**, quindi la nona riga di una tabella è coperta come una riga scritta a caso. *Il caso che l'ha scritto: `orig-lugano` avrebbe prodotto «I am from Lugano, Italy».* **E nessun test sceglie Lugano, quindi la suite sarebbe rimasta verde** | **al prossimo giro delle tabelle**, con una guardia che monta la frase per OGNI riga di ogni tabella | qui sotto, sezione omonima |
 | **Gli id posizionali** | Gli id delle voci degli episodi sono diventati **posizionali** (`a-1`, `d-4`), e il modello lo ha insegnato. Un riordino del contenuto cambia gli id, e **gli id sono le chiavi della mastery di chi studia** | **prima che ci sia più di un profilo che conti**, cioè con Supabase | qui sotto, sezione omonima |
 | **Le cose piccole** | Otto famiglie, il dettaglio nello storico: deroghe dichiarate senza scadenza, pulizie rimandate, dati che nessuno può leggere, il volume di `sfxPlayTone` fuori da `APP_CONFIG`, la causa di `test_batch19` mai chiusa, il report per grado | **nessuna ha una condizione propria**: si prendono quando si passa vicino | `# LE COSE PICCOLE`, più sotto |
 | **Le righe gemelle stato/storico** | Le righe sul modello dell'episodio stanno **identiche** in `decisioni-stato.md` e in `decisioni-storico.md` (la scheda «DUE PARAGRAFI SCADUTI NEL MODELLO DEGLI EPISODI»): regola 48 su un fatto. *Visto l'11/10 spostando il modello: in `stato` il percorso è stato aggiornato, in `storico` no — ed è giusto, lo storico registra dov'era il file quel giorno. Ma due copie dello stesso fatto si separano proprio così.* Segnalato da chi guida il progetto, **non toccato** | **quando la scheda si chiude** (i due paragrafi corretti nel modello) | qui |
@@ -1520,7 +1519,9 @@ e una suite, non un lavoro.*
 
 ---
 
-# ⚠️ IL DIFETTO CHE VIVE DENTRO UN'OPZIONE CHE NESSUNO PROVA — aperto il 2026-09-23
+# ✅ IL DIFETTO CHE VIVE DENTRO UN'OPZIONE CHE NESSUNO PROVA — aperto il 2026-09-23, CHIUSO il 2026-10-20
+
+✅ **Chiuso da `tests/test_ogni_riga.js`**, al giro delle tabelle che la condizione aspettava (partenze da otto a dieci): per ogni edizione, ogni episodio, ogni slot e **ogni riga**, monta ogni testo che usa quello slot e verifica che sia completo, che dica la riga scelta e che non nomini il paese di un'altra riga. *Falsificato rimettendo `Italy` a mano: «I am from Lugano, Italy.» e «I am from Nice, Italy.» rossi.* La riga della tabella dell'aperto è uscita; la scheda resta qui sotto per memoria. *E la forma probabile scritta qui sotto era giusta: la verifica è sul testo prodotto.*
 
 **Il caso che l'ha scritto:** `places.departures` doveva guadagnare
 `orig-lugano` e `orig-nizza`, e la battuta `d-4` di `gate` scrive **`Italy` a
