@@ -1,3 +1,14 @@
+// PROTEGGE: Che un'attesa condivisa dai test esista in **un posto solo**, e
+// che aspetti lo stato vero invece di contare millisecondi. Oggi:
+// `attendiSottotitoloEsito` (un testo che arriva da un fetch), `attendiVisibile`
+// / `attendiNascosto` (una schermata che compare o sparisce), `attendiAbilitato`
+// / `attendiDisabilitato` / `attendiClasse` (un pulsante o una classe che cambia
+// stato), `attendiCheParla` e `attendiTono` (un suono o la voce), e `misura`
+// (stampa quanto ci mette una catena, senza aspettare niente di suo). Le attese
+// **ritornano `true`/`false` invece di sollevare**, così lo scadere del tempo
+// diventa l'asserzione che fallisce, con il suo testo, invece di un
+// `TimeoutError` muto. *(Non è un test: è il magazzino delle attese.)*
+//
 // Le attese dei test che NON sono a tempo: aspettano lo stato vero.
 //
 // Non è un file di test — è un pezzo condiviso, e sta in un modulo suo per la

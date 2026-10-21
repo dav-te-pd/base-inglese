@@ -1,3 +1,20 @@
+// PROTEGGE: che il Traguardo suoni a Schermata Finale GIA' visibile (Match
+// Practice); che le due riserve di messaggi del Ripasso (primo giro e ultimo)
+// siano diverse; che il contatore «TENTATIVO N DI 3» di Voice Practice non sia
+// piu' in ritardo di uno; che **Speed Match congeli il punteggio al primo
+// giro** e il ripasso non lo gonfi (tutto sbagliato e poi corretto al ripasso
+// resta rosso); che Meet the Story, che non mostra skill, ricada sul messaggio
+// neutro `studioCompleteMessages` invece che su uno con un punteggio.
+//
+// Il file guarda anche, un blocco ciascuno: le regole di esito in
+// configurazione (`moduleRules` per Match e Speed Match, `selfScoreRules` per
+// Flash Card e Why We Say It — Job2), Match tutto giusto che colora la riga
+// in mappa di verde (Job2b), il badge del Ripasso grande quanto l'etichetta
+// della direzione (Job5), la categoria «Studio · <grado>» nell'intestazione
+// di Repeat Aloud e di Match (Job6), «Help» che non cambia larghezza quando
+// «Spiegazione» sparisce (Job7), «Prossima frase» cliccabile solo durante il
+// countdown (Job8), la barra del Dialogo `sticky` (Job9).
+//
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni } = require('./mock-browser');

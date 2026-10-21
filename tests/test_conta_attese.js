@@ -1,13 +1,22 @@
-// PROTEGGE: che il censimento delle attese sappia distinguere una GUARDIA da
-// un'attesa di NAVIGAZIONE, e che identifichi ogni punto con l'asserzione
-// intera invece che con un pezzo.
+// PROTEGGE: che il censimento delle attese a tempo
+// (`tests/tools/conta-attese.js`) sappia distinguere una GUARDIA — un'attesa
+// da cui dipende il verde di un'asserzione — da un'attesa di NAVIGAZIONE,
+// qualunque sia la funzione di `tests/attese.js` che la ferma; che identifichi
+// ogni punto con l'asserzione INTERA invece che con un pezzo; che tenga a
+// parte le attese marcate `ATTESA-LEGITTIMA` col loro motivo, segnalando
+// quella che il motivo non ce l'ha; e che censisca anche un'attesa che vive in
+// un modulo CONDIVISO, fuori dai file che la suite lancia (blocco [F]).
 //
 // Perché un test per uno strumento che conta righe: la stessa ragione di
 // `test_conta_asserzioni.js` e di `test_attendi.js`. Uno strumento di misura,
 // se si guasta, non lo dice — continua a stampare un numero, e il numero
 // somiglia a un risultato (CLAUDE.md regola 37). Qui pesa di più del solito:
 // il documento che questo strumento genera è quello su cui si PIANIFICA, e
-// abbiamo già pagato una volta l'aver pianificato su un censimento morto.
+// abbiamo già pagato una volta l'aver pianificato su un censimento morto:
+// `ATTESE-FISSE.md` era scritto a mano per numero di riga, dichiarava 141
+// punti, e il 2026-09-10 si è scoperto che **140 dei 141 numeri erano
+// sbagliati, 4 righe non esistevano più e le guardie vere erano 180.** La
+// fase 3 era stata pianificata su quel documento.
 //
 // COME: si costruisce un file di test FINTO in una cartella temporanea, con
 // dentro i casi che contano, e lo si passa allo strumento come argomento.
@@ -36,7 +45,36 @@
 // **la seconda sì**, perché è l'ultima cosa fra l'azione e l'asserzione. Chi
 // scrive il test si aspettava due guardie e ne sono uscite tre: aveva torto
 // lui, non lo strumento. *È esattamente il motivo per cui uno strumento di
-// misura va esercitato invece che riletto.*
+// misura va esercitato invece che riletto.* Visto fallire su due guasti: lo
+// strumento che smette di riconoscere le attese vere, e l'etichetta che torna
+// a fermarsi al primo pezzo.
+//
+// ⚠️ L'11 SETTEMBRE QUESTA TESTATA SI È RIVELATA VERA SOLO A METÀ, ed è un
+// caso di regola 42: il guasto era guidato con `waitForSelector` — il caso
+// comodo, quello già in mano — mentre lo strumento aveva smesso di
+// riconoscere **cinque delle otto funzioni di `tests/attese.js`**, e il
+// censimento contava 79 guardie dove il vero era 56. Il limite non era
+// dichiarato: la riga prometteva il comportamento intero. Ora il file finto
+// porta **un blocco per ogni export di `attese.js`, generato leggendoli**,
+// quindi una funzione nuova del magazzino porta qui il suo caso il giorno
+// stesso — un comando invece di un elenco (regola 41).
+//
+// ⚠️ IL BLOCCO [F], DAL 15 SETTEMBRE, protegge il punto cieco appena chiuso:
+// la lista `FILES` nomina i file che la suite LANCIA, quindi un'attesa portata
+// FUORI da un file di test — dentro un modulo condiviso — girava a ogni corsa
+// senza entrare in nessun conto. Finché i moduli condivisi non ne contenevano
+// nessuna il punto cieco era **vuoto**, e non aveva mai mentito: la prima ad
+// atterrarci è quella di `openModule`, unificata in `map-driver.js`. *Un
+// punto cieco vuoto non è un punto cieco chiuso — è lo stesso difetto che
+// aspetta l'occasione.* Senza [F] il totale **scende** a ogni unificazione
+// mentre le attese continuano a girare, cioè il numero migliora proprio
+// quando lo strumento smette di misurare. Il caso guidato è il più **diverso**
+// (regola 42): un modulo condiviso che sta **fuori** da `tests/` — i moduli
+// veri stanno tutti accanto ai file che li richiedono, quindi una risoluzione
+// ancorata a `tests/` passerebbe su tutti loro e proverebbe zero. **Visto
+// fallire davvero:** scritta l'asserzione, è uscita rossa perché la scoperta
+// dei moduli condivisi non veniva applicata ai file passati a mano — cioè
+// proprio la strada che questo test percorre.
 //
 // LIMITE DICHIARATO: non si prova che la classificazione per FAMIGLIA
 // ("cosa aspetta") sia giusta su ogni caso vero — è un'euristica sul testo,

@@ -1,3 +1,15 @@
+// PROTEGGE: che dal Pannello Admin si possano provare varianti dell'episodio
+// senza chiedere modifiche. Nella vista di riordino ogni passo e' una coppia
+// modulo+grado con l'etichetta dichiarata in CONFIG; la freccia scambia due
+// passi; il pulsante del grado passa al grado successivo di `CONFIG.grades`
+// (e manca su Personalizza, che non legge contenuto); l'interruttore spegne e
+// riaccende un passo — e ogni modifica finisce negli override in
+// `localStorage`, cioe' sopravvive al ricaricamento. Un passo spento SPARISCE
+// dalla mappa invece di restare grigio: si vede l'episodio come lo vedra' lo
+// studente. In piu', che Match Practice suoni il Traguardo arrivando alla
+// Schermata Finale e che la sua schermata di ripasso venga dal componente
+// condiviso `renderRetryIntroScreen`.
+//
 // ⚠️ I SELETTORI DELLE RIGHE DI RIORDINO SONO AMBITI DAL LORO CONTENITORE, dal
 // 2026-09-26, e non e' uno stile di scrittura: dal passo della lista degli
 // EPISODI la classe `.config-module-order-row` la portano DUE liste — quella

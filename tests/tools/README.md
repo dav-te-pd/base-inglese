@@ -22,6 +22,7 @@ servono, raggruppati per domanda.
 | `versione-salita.js` | *il `?v=` è salito?* La CI lo lancia **prima** della suite: un push che tocca `index.html`, `app/*.js` o `stile/*.css` senza alzarlo viene fermato |
 | `conta-attese.js` | *il censimento delle attese a tempo dice ancora il vero?* Tiene onesto `tests/ATTESE-FISSE.md` |
 | `file-della-suite.js` | *quali file lancia la suite completa?* **Ogni `tests/test_*.js`, tranne quelli scritti in `tests/esclusi-dalla-suite.txt` col loro perché** — dal 2026-10-16; prima era un elenco scritto a mano, e un file dimenticato fuori non girava senza che niente lo dicesse. **Un posto solo:** lo leggono `run_full_regression.sh`, `conta-attese.js` e [G] di `test_conta_asserzioni.js`. Senza il file degli esclusi si ferma (regola 49) |
+| `tabella-protegge.js` | *la tabella «Cosa protegge ogni file» di `tests/README.md` è ancora quella delle testate?* **La SCRIVE lui** (`--scrivi`), leggendo il paragrafo `// PROTEGGE:` in testa a ogni `tests/*.js`; senza argomenti controlla ed esce 1 nominando le righe diverse. **Un file di test senza testata lo ferma** (regola 49). Dal 2026-10-21 (regola 32): prima la tabella era una copia a mano, e dei 69 file che l'avevano accanto alla testata nessuno l'aveva uguale. Lo mette nella suite `tests/test_tabella_protegge.js` |
 
 ## ② Le attese — si usano invece di riscriverle a mano
 

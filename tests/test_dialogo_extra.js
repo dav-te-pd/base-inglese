@@ -1,7 +1,26 @@
 // PROTEGGE: che il suono di fine barra suoni UNA volta sola, a barra finita e
-// piu' piano; che Ascolta e Ripeti resti a tocco libero; l'eccezione della
-// regola 16 (un tocco a vuoto non interrompe l'audio col countdown, toccare la
-// battuta si'); e da 2026-09-19 L'ETICHETTA SOPRA LA BOLLA del Dialogo.
+// piu' piano, mai durante; che Ascolta e Ripeti resti a tocco libero; l'eccezione
+// della regola 16 (un tocco a vuoto non interrompe l'audio col countdown,
+// toccare la battuta si' — e con la barra in corso e' la BOLLA intera, non la
+// sola barra, a chiudere il countdown e passare alla battuta dopo); e dal
+// 2026-09-19 L'ETICHETTA SOPRA LA BOLLA del Dialogo, con le due decisioni
+// didattiche della regola 4: porta il CONTORNO e non il solo mestiere, e NON
+// porta il nome scelto.
+//
+// ⚠️ IL BLOCCO `[Etichetta]` (4 asserzioni) E' NATO DA UN BUCO MISURATO, non da
+// un difetto: facendo tornare a `speakerLabel` l'id tecnico, `test_story_modules`
+// andava 92/93 e questo file restava 20/20 — la funzione ha due lettori, Meet
+// the Story e i tre Dialogue, e solo il primo ne guardava l'effetto visibile.
+// Le tre righe non sono ridondanti: la prima cade su tutti e tre i guasti, la
+// seconda e la terza dicono QUALE delle due decisioni si e' rotta. Visto
+// fallire su tutti e tre: l'id tecnico (9 bolle nominate), il solo mestiere
+// («Hostess» invece di «Hostess al gate», 3 bolle), il nome scelto («Marco»
+// invece di «Papa'», 2 bolle). ⚠️ E una cosa trovata scrivendolo: `.dg-name`
+// NON e' figlia di `.dg-bubble` — la bolla e' un `<button>` e il nome sta
+// fuori, cosi' non finisce nel testo del bersaglio del tocco; il contenitore
+// e' `.dg-item`. Il primo giro cercava `.dg-bubble .dg-name` e trovava zero con
+// nove nomi a schermo: l'ha detto il `try` con la diagnosi, che senza avrebbe
+// fatto morire il file con un `TimeoutError` invece di stampare righe rosse.
 //
 // COME, sull'etichetta, perche' la strada ovvia non basta: il confronto NON
 // usa un elenco scritto qui. Le etichette attese si derivano da

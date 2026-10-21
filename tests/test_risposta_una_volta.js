@@ -1,5 +1,13 @@
 // PROTEGGE: che una carta di Flash Card si risponda UNA VOLTA SOLA, anche se
-// il dito preme tre volte di seguito sullo stesso pulsante.
+// il dito preme tre volte di seguito sullo stesso pulsante — «Lo so» o «Non
+// ancora»: il contatore avanza di una carta, la voce si registra una volta
+// sola e col livello che la regola 39 le dà. Senza, una voce mai vista salta
+// a verde alla sua prima risposta, e quella mastery sbagliata non la vede
+// nessuno. Che la guardia stia nella FUNZIONE che esegue la risposta, alzata
+// prima di registrare (regola 20), e non nei listener. E che Match e Speed
+// Match continuino a spegnere le opzioni e il «Non lo so» appena si risponde:
+// sono protetti dal markup, e togliere quel `disabled` li riporterebbe
+// esposti.
 //
 // COSA SI PERDE SENZA QUESTO FILE, e non e' la carta saltata. Misurato il
 // 2026-09-20 sulla prima carta di un profilo nuovo, tre click rapidi contro
@@ -27,8 +35,8 @@
 //
 // IL CASO PIU' DIVERSO (regola 42), e qui non e' una scelta fra tre moduli
 // uguali: **Flash Card e' l'unico dei tre quiz i cui pulsanti di risposta NON
-// si disabilitano.** Match e Speed Match chiamano `qmDisableOptions` /
-// `srDisableOptions` appena si risponde, e un pulsante `disabled` non emette
+// si disabilitano.** Match e Speed Match mettono `disabled` alle opzioni e al
+// «Non lo so» appena si risponde, e un pulsante `disabled` non emette
 // click — sono protetti dal MARKUP, non dal codice. I pulsanti di Flash Card
 // invece scivolano via con la carta, restando premibili per tutta l'animazione.
 // Quindi il blocco `[B]` verifica che quella difesa ci sia ancora negli altri
@@ -41,6 +49,11 @@
 // (regola 19). L'approdo e' la fine dell'animazione (`is-sliding-out` sparito),
 // che **nessuna delle due asserzioni legge** (regola 44): leggono il contatore
 // e il magazzino in sospeso.
+//
+// IL BLOCCO `[C]` E' STRUTTURALE, e serve perche' `[A]` resterebbe verde anche
+// rimettendo la guardia DENTRO I DUE LISTENER: funzionerebbe, ed e' la forma
+// che la regola 20 vieta. Visto fallire togliendo la guardia: 4 rosse, e
+// stampano i numeri veri (`1 / 12 -> 3 / 12`, `livello: verde`).
 //
 // LIMITE DICHIARATO: guida i due pulsanti di Flash Card, non ogni pulsante
 // dell'app. Un doppio click su «Ho finito» o su una battuta del Dialogo non e'

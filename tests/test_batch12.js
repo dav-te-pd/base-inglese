@@ -1,3 +1,28 @@
+// PROTEGGE: il catalogo dei suoni per evento — `CONFIG.sound.events`, in un
+// posto solo, con Traguardo e Ready un'ottava sopra — e che Flash Card
+// «Si', la so» suoni il Corretto; che `--accent` del CSS e `themes.options.dot`
+// di `APP_CONFIG` concordino su ogni tema; che i tre sfondi di stato in mappa
+// siano distinguibili; l'ordine, i nomi e le categorie dei moduli in mappa (e
+// che "Story Cards" in mappa non compaia piu'); Voice Practice e Voice Check
+// al completo — contatore visibile, nessun ripasso finale, esito salvato,
+// mastery alimentata, per battuta e per parola. **E dal 2026-09-10 la C.1:**
+// che **Voice Check scriva**, in voci sue (`voicecheck:`) e mai dentro quelle
+// di Voice Practice — le due varianti hanno regole diverse su quale tentativo
+// conta, e sulla stessa chiave nessun lettore saprebbe quale delle due ha
+// prodotto il colore che vede — e che lo faccia con la **strada B**, cioe'
+// contando solo il primo tentativo. E' anche il file dove vive il caso «Voice
+// Check + ← Mappa» della regola del gesto: rispondere non scrive, e uscendo da
+// «← Mappa» non resta nessuna voce.
+//
+// ⚠️ La strada B si misura sulla STRISCIA, non sul livello: con
+// `promotionStreak` a 2 una sola risposta giusta non promuove, quindi
+// guardando il solo livello la riga sarebbe verde anche sotto la strada A —
+// misurato, non dedotto (il dettaglio sta accanto all'asserzione).
+//
+// Il caso «Voice Check + ← Mappa» sta qui e non in test_mastery_al_gesto.js
+// perche' la macchina del microfono (mockInit + vcAnswerLine) e' in questo
+// file, e ricopiarla sarebbe la duplicazione che la regola 13 vieta.
+
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');

@@ -1,11 +1,19 @@
 // PROTEGGE: che lo studente abbia una LISTA DEGLI EPISODI, nell'ordine del
 // corso, e che il successivo si sblocchi quando e' completata **l'ULTIMA
 // POSIZIONE** della sequenza — non un modulo chiamato per nome, non un
-// conteggio.
+// conteggio. Anche: che un episodio GIA' COMINCIATO non torni bloccato quando
+// si ripersonalizza quello prima (blocco [E]), e che gli episodi della lista
+// li dica la STRUTTURA del corso, non il codice (blocco [F]).
 //
-// PROTEGGE ANCHE, dal 2026-09-24 (S.1): che un episodio GIA' COMINCIATO non
-// torni bloccato quando si ripersonalizza quello prima — blocco [E]. Visto su
-// Pages: `aircraft-door` tornava `locked` con dentro i suoi moduli fatti.
+// [E] e' dal 2026-09-24 (S.1). Visto su Pages: `aircraft-door` tornava
+// `locked` con dentro i suoi moduli fatti.
+//
+// [F] e' dal 2026-09-30: si serve una struttura con `aircraft-door` tolto e un
+// episodio che nessun file di `app/` nomina aggiunto — il primo sparisce, il
+// secondo compare col suo nome e col suo file. *Il caso piu' diverso e' il
+// secondo: togliere lo vedrebbe anche un filtro sull'elenco scritto a mano.*
+// La sonda dichiara di aver intercettato (regola 49). **Visto fallire col
+// catalogo di prima: 3 rossi.**
 //
 // COSA SI PERDE SENZA QUESTO FILE. Prima del passo 1.13-bis l'unica strada
 // per raggiungere un episodio diverso dal primo era l'interruttore del
@@ -24,7 +32,10 @@
 //   - con «ultima posizione»  -> l'episodio successivo si SBLOCCA
 //   - con «tutti i moduli»    -> resterebbe BLOCCATO
 // E' il blocco [C], ed e' la sola riga di questo file che dice quale dei due
-// disegni e' vivo.
+// disegni e' vivo. **Visto cadere** rimettendo la forma a conteggio: 2 rosse
+// su 14, e [D] resta verde. [D] e' il suo rovescio — manca solo l'ultimo, e il
+// successivo resta bloccato — e serve: senza, [C] sarebbe verde anche con uno
+// sblocco che apre sempre tutto.
 //
 // ⚠️ IL CASO PIU' DIVERSO (regola 42): non il piu' complicato, ma quello a
 // cui manca qualcosa. Qui e' **l'episodio senza nessun passo completato** —

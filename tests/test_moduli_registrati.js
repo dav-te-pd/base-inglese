@@ -1,6 +1,14 @@
 // PROTEGGE: che ogni modulo si apra passando dal registro, e che un `kind`
 // che nessuno ha registrato finisca sulla schermata d'errore invece che nel
-// silenzio.
+// silenzio — con la causa distinguibile in console, e anche quando il
+// descrittore porta una proprietà (`dialogoProfile`…) che prima bastava ad
+// aprirlo. Che al boot si registrino ESATTAMENTE i `kind` dei descrittori,
+// quattordici, né uno in meno né uno di troppo: un modulo che smettesse di
+// registrarsi non farebbe diventare rosso nessun altro test. Che `flashcard`,
+// un `kind` per due descrittori, sia registrato una volta sola e che entrambe
+// le sue apparizioni nella sequenza lo risolvano. E che l'id di Personalizza
+// non sia scritto a mano fuori dal catalogo: chi ne ha bisogno lo chiede alla
+// costante dichiarativa `ID_PERSONALIZZA`.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Il 2026-09-16 (passo 21-ter)
 // `openModuleByKind` è passata da otto `else if` a `BI.moduli[module.kind]`.
@@ -34,6 +42,31 @@
 // LIMITE DICHIARATO: non verifica che ogni modulo FUNZIONI una volta aperto —
 // quello è il mestiere dei file per modulo. Qui si guarda solo che la
 // risoluzione arrivi alla funzione giusta.
+//
+// VISTO FALLIRE SU QUATTRO GUASTI: un kind che non si registra (2 rosse, col
+// nome), `flashcard` registrato due volte (l'app non parte, e il test lo DICE
+// invece di morire), il ramo `showLoadError` tolto (2 rosse), la causa resa
+// indistinguibile in console (1 rossa). ⚠️ Tre attese sono catturate apposta:
+// il guasto cercato è sempre «qualcosa non si apre», quindi l'attesa nuda
+// farebbe MORIRE il test invece di farlo fallire.
+//
+// ⚠️ IL BLOCCO `[E]`, nato il 2026-09-18 PROVVISORIO: la premessa del passo 23
+// — «un modulo non è nominato da fuori» — nell'unica forma in cui è vera, cioè
+// non «zero riferimenti» ma «uno solo, e dichiarativo». Il catalogo lo nomina,
+// il modulo si dichiara; altre funzioni non scrivono il suo id a mano. Era
+// provvisorio perché cercava solo in `index.html`: col primo modulo fuori
+// sarebbe rimasto verde verificando una cosa sempre vera — *l'asserzione
+// vacua*. La condizione è scaduta bene: adesso cerca in tutte le sorgenti, e
+// una funzione non trovata è rossa.
+//
+// ⚠️ E LA STESSA PREVISIONE SI È AVVERATA SU `[A]`, il 2026-09-19: leggeva
+// `openModuleByKind` da `index.html`, e col passo C2 la funzione è uscita in
+// `app/apertura.js`. Esito misurato: due asserzioni rosse («risolve dal
+// registro», «il ramo `showLoadError` è conservato») e dodici verdi per
+// costruzione — le «non nomina più X», che cercavano dentro il pezzo
+// sbagliato. *La stessa rottura, i due esiti opposti della regola 44.* Adesso
+// il sorgente si cerca dove sta (`sorgenteChe`, in `test-env.js`), e non
+// trovarlo alza.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, sorgenteChe } = require('./test-env');

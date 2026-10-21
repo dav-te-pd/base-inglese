@@ -15,7 +15,8 @@
 //   [C] la manopola funziona: con `basso` a 30, 20% non ha messaggio e 30% si';
 //   [D] `applyOutcomeSubtitle` con la fascia `null` lascia il sottotitolo
 //       VUOTO anche se prima c'era un testo — sull'app vera, dopo che i
-//       messaggi sono arrivati;
+//       messaggi sono arrivati — con la controprova all'1%, dove un messaggio
+//       «basso» compare;
 //   [E] statico, sul codice: nessuna chiamata ad `applyOutcomeSubtitle` passa
 //       `percentageBucket(...)`, e le chiamate che passano una percentuale
 //       passano `fasciaMessaggio(...)`.
@@ -24,6 +25,10 @@
 // chiamanti di mestieri diversi — il messaggio (deve usare
 // `fasciaMessaggio`) e il colore della parola (deve restare su
 // `percentageBucket`). [E] li guarda tutti e due.
+//
+// Visto cadere in due modi realistici: col codice di prima ([E] rosso su tre
+// righe) e con la scorciatoia sbagliata, un `null` dentro `percentageBucket`
+// ([B] rosso sul badge e sulla parola).
 //
 // LIMITE: non guida un modulo fino a una Schermata Finale a 0% — non c'e' un
 // modo stabile di sbagliare tutto senza conoscere le risposte. [D] prova la

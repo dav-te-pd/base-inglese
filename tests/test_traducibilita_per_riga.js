@@ -1,5 +1,20 @@
 // PROTEGGE: che sia la RIGA del magazzino a dire se il suo valore si traduce,
-// e non il nome della tabella che la contiene.
+// e non il nome della tabella che la contiene — altrimenti un cognome che si
+// traduce, o una citta' che non si traduce, non avrebbero modo di esistere se
+// non spostando la riga in un'altra tabella. E con lei: che ogni riga lo
+// DICHIARI e nessuna porti piu' le colonne `fr`/`es`/`de` ([A]); che ogni
+// tabella nominata da un episodio esista e ogni valore predefinito esista
+// dentro la sua tabella ([A2]); che una personalizzazione salvata non sparisca
+// quando un id viene rinominato, che la mappa delle migrazioni resti
+// append-only e che un id mai esistito cada sul PREDEFINITO dello slot e non
+// sulla prima riga ([M1], [M2], [M3]); che le eta' escano in PAROLE nella
+// battuta inglese e in CIFRE in italiano e nella tendina, che un'eta' salvata
+// col formato vecchio venga migrata, che uno slot possa prendere un pezzo di
+// una tabella condivisa, e che la skill citi una battuta con la STESSA frase
+// inglese della battuta ([C], [E]); che un campo che la riga non ha non
+// diventi «undefined» ([P]); e che il suffisso di un segnaposto sia un RUOLO
+// (`:target`, `:native`), con un suffisso vecchio che resta segnaposto
+// visibile e mai «undefined» ([S]).
 //
 // PROTEGGE ANCHE, dal 2026-09-24 (passo 1.8-bis ④): che una personalizzazione
 // gia' salvata non sparisca quando un id viene rinominato — ne' in silenzio
@@ -55,15 +70,20 @@
 // una riga di `places.departures` — quindi «tabella di toponimi», che la
 // regola vecchia traduce sempre — che dichiara `traducibile: false`. La
 // forma vecchia risponde "Turin", la nuova "Torino". **Una sola riga, e le
-// due versioni si separano.**
+// due versioni si separano.** Vista fallire rimettendo la forma vecchia: cade
+// SOLO la [B], con `torino → "Turin"` invece di `"Torino"`.
 //
-// IL CASO PIÙ DIVERSO (regola 42): la riga NUDA, cioè un'età. Le età non
-// vivono nel magazzino condiviso: stanno dentro il file dell'episodio
-// (`ageOptions`) come numeri, e `slotOptions` le normalizza. Sono le uniche
-// opzioni dell'app che **non dichiarano `traducibile` affatto** — a tutte le
-// altre manca un campo, a queste manca la riga intera. La [C] le guida, ed è
-// il caso che un'implementazione che desse per scontata la colonna
-// lascerebbe rotto mentre tutto il resto resta verde.
+// IL CASO PIÙ DIVERSO (regola 42) ERA la riga NUDA, cioè un'età: le età
+// stavano dentro il file dell'episodio (`ageOptions`) come numeri, senza
+// riga. ⚠️ Dal 2026-09-24 (passo 1.8-bis ③) quella riga non esiste più: le
+// età sono nel magazzino, e il caso più diverso è cambiato sotto — adesso è
+// UNA TABELLA SENZA QUEL CAMPO, non la riga che manca, e lo guida la [P]. Il
+// blocco [C] si chiamava «il caso più diverso: la riga che non esiste» ed è
+// stato riscritto: lasciarlo avrebbe dichiarato guardato un caso che non c'è.
+//
+// [S], 2026-09-30: il seme è Torino, una riga in cui le due colonne
+// DIFFERISCONO. Vista fallire col codice della mattina di quel giorno: 4
+// rossi, fra cui [S] sul nome proprio.
 //
 // LIMITE DICHIARATO: questo file non verifica che il valore di `traducibile`
 // su ogni riga sia quello GIUSTO dal punto di vista didattico — quello è

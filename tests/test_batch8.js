@@ -1,3 +1,14 @@
+// PROTEGGE: che in Voice Check, con il microfono dato per guasto (raggiunta
+// la soglia `confirmedAt` di registrazioni senza parole), "Avanti" resti
+// bloccato **anche forzando il click**, il pulsante di registrazione sparisca
+// e "Torna alla mappa" resti come uscita — e che uscire da li' non segni il
+// modulo come completato. E il rovescio: una registrazione riconosciuta prima
+// della soglia azzera il conto, e "Avanti" resta disponibile.
+//
+// Il click forzato e' un `click()` lanciato dal codice, che scavalca il
+// `disabled` del pulsante: e' la prova che il blocco vive anche nella
+// funzione che avanza, non solo nel pulsante (regola 20).
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

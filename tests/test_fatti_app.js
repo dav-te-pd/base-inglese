@@ -1,7 +1,15 @@
 // PROTEGGE: che `docs/metodo/FATTI-APP.md` dica il vero sul codice. Ogni cosa
 // scritta fra apici inversi nella colonna «Dove sta nel codice» dev'esserci
 // davvero: un percorso dev'essere un file che esiste, ogni altro pezzo dev'essere
-// scritto ALLA LETTERA in uno dei file citati nella stessa cella.
+// scritto ALLA LETTERA in uno dei file citati nella stessa cella — e la colonna
+// non porta numeri di riga. Le tre righe che citano un numero del codice lo
+// devono portare uguale a quello che il codice dice oggi ([C]), e la versione
+// del file non puo' essere piu' vecchia della sua riga misurata piu' di recente.
+//
+// VISTO FALLIRE rinominando un nome citato e rimettendo un numero di riga: 4
+// rossi, uscita 1. E [C] visto fallire quattro volte: numeri vecchi nella
+// frase, versione 20260930c, `COLONNE_TABELLE` cambiata senza toccare la
+// frase, riga rinominata.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Quel file lo leggono i testi di chi guida il
 // progetto: dice su quali fatti del codice i loro testi si appoggiano. Il giorno
@@ -10,7 +18,8 @@
 // tutte per un numero di riga. Senza un test, la regola «nella colonna Dove si
 // scrivono nomi, non numeri» dipende da chi se la ricorda, e un nome rinominato
 // rende falsa una riga in silenzio (regola 49: un controllo che non puo'
-// controllare deve fallire).
+// controllare deve fallire). E' la condizione d, voluta da chi guida il
+// progetto: *«senza un test, la condizione a dipende da chi si ricorda»*.
 //
 // ⚠️ IL CASO PIU' DIVERSO (regola 42): una cella che cita un file di DATI o un
 // markdown invece di codice (`docs/...`, `docs/metodo/...`). Il test non distingue:

@@ -1,3 +1,19 @@
+// PROTEGGE: che passando da una battuta all'altra di Ascolta e Ripeti
+// l'evidenziazione resti sulla nuova — la vecchia non se la riprende con un
+// `onEnd` in ritardo, nemmeno dopo una catena rapida di tocchi — mentre il
+// profilo con countdown (Ripeti a Tempo) arriva al suo timer con Spiegazione
+// ancora bloccata; che Spiegazione e Help fermino l'audio (il punto unico
+// della regola 16); che un secondo pulsante di ascolto — anche il Mini Blocco
+// Ascolto di Match Practice — **sostituisca** l'audio invece di fermarlo.
+//
+// COME: il finto sintetizzatore risolve `cancel()` in modo ASINCRONO (vedi il
+// commento su `mockInitAsync`), come quello vero: un mock sincrono
+// nasconderebbe proprio la corsa sull'evidenziazione.
+//
+// LIMITE DICHIARATO: [Job2b], [Job1c] e [Job1d] scrivono OK senza guardare
+// se la schermata non offre almeno tre bolle o due pulsanti di ascolto — su
+// dati piu' corti quelle righe resterebbero verdi avendo provato zero.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

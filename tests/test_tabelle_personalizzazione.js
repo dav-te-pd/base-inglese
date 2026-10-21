@@ -1,6 +1,13 @@
 // PROTEGGE: che il magazzino della personalizzazione — nomi, città, paesi —
 // resti FUORI dal codice e arrivi da un file, e che nessuno torni a leggerlo
-// come se fosse già in memoria.
+// come se fosse già in memoria: `APP_CONFIG` non contiene più quelle tabelle,
+// quindi una lettura sincrona non è sbagliata, è impossibile. Più: il file non
+// viene nemmeno chiesto alla rete prima del login; gli slot di ogni episodio
+// si risolvono dal file senza restare vuoti, anche con la rete lenta; il
+// Pannello Admin si apre col magazzino in ritardo e i suoi gruppi arrivano
+// dopo, aggiunti e non ridisegnati; e l'override salvato dal Pannello Admin —
+// anche nella forma di prima del 2026-09-30, `it`/`en` — sopravvive allo
+// spostamento, invece di restare scritto in un magazzino che nessuno legge.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-15 `people` e `places`
 // stavano dentro `APP_CONFIG`, cioè erano lì per costruzione: chiunque poteva
@@ -41,6 +48,27 @@
 // trascrittore. *Qui c'era «Oggi NON lo è (sei destinazioni invece di
 // undici, id vecchi)»: scaduto da quando il file si trascrive dal markdown, e
 // le destinazioni sono uscite il 2026-10-20.*
+//
+// ⚠️ IL BLOCCO `[F]` ESISTE PERCHÉ SENZA DI LUI QUESTO FILE MENTIVA:
+// rimettendo la forma ingenua — magazzino caricato «per conto suo» e letto
+// senza aspettarlo — su rete normale cadeva SOLO l'asserzione strutturale,
+// mentre quelle di comportamento restavano verdi, perché il fetch torna prima
+// che Playwright possa guardare. Dentro la finestra invece consegna 6 slot
+// vuoti su 8: è la regola 19 vista da dentro, e la differenza fra proteggere
+// un comportamento e proteggere una stringa.
+//
+// ⚠️ `[A]` ROSSA UNA SECONDA VOLTA IL 2026-09-20 PER UNA DECISIONE, seguita
+// invece che tolta: cercava `PERSONALIZATION_TABLES_FILE = '`, cioè un percorso
+// LETTERALE, e col passo 1.11 la costante vale `percorsoEdizione(...)`.
+// L'invariante — il percorso sta in una costante e non dentro la riga di
+// `fetch` — non è cambiato. La riga nuova chiede la costante, vieta il `fetch`
+// nudo su entrambi i file e in più vieta che il percorso dell'edizione torni
+// scritto a mano lì dentro.
+//
+// ⚠️ DAL 2026-09-30 `[E]` PROVA ANCHE LA CONVERSIONE `righeCoiRuoli`
+// (app/dati.js): l'override che inietta è nella forma di prima, quella che un
+// browser vero ha salvato. Visto fallire togliendo la conversione: la tendina
+// mostra `undefined`.
 //
 // ⚠️ LA TERZA DIFFERENZA È CHIUSA dal 2026-09-20 (passo 1.8): la
 // traducibilità non è più dedotta dalla tabella, la dichiara la riga. A

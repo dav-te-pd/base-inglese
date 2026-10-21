@@ -1,6 +1,9 @@
 // PROTEGGE: che si possa avere PIÙ DI UNA sequenza di moduli, sceglierne una
 // per episodio e modificarne una qualsiasi dal Pannello Admin — e che una
 // sequenza aggiunta al file non sparisca per colpa di un override salvato prima.
+// Protegge anche che un nome di sequenza che non esiste resti selezionato e lo
+// dica, invece di cambiare da solo al primo salvataggio, e che il riordino
+// finisca sulla sequenza SCELTA e non su quella dell'episodio aperto.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Il meccanismo «un episodio dichiara la sua
 // sequenza per nome» esiste dal passo 1.11b, ma fino al 2026-09-20 era
@@ -27,7 +30,13 @@
 // e l'episodio che chiedesse `prova-corta` finirebbe sulla schermata d'errore
 // **con il file giusto sul disco**. La forma nuova fonde, e tutte e due
 // restano. *Il test installa esattamente quell'override con `addInitScript`,
-// cioè prima che l'app parta: è l'unico istante in cui si può.*
+// cioè prima che l'app parta: è l'unico istante in cui si può.* **Vista
+// fallire rimettendo la sostituzione: 1 rossa**, e nomina le due liste a
+// confronto.
+//
+// LA [B2] guida il caso del nome che non esiste: un `<select>` fuori elenco
+// mostra la prima opzione, e al primo salvataggio cambierebbe la sequenza in
+// silenzio. La [C2] verifica che il riordino tocchi la sequenza scelta.
 //
 // IL CASO PIÙ DIVERSO (regola 42): `speech`. Non è la chiave più complicata —
 // è **l'unica scritta da DUE sorgenti**: `app/config.js` le dà velocità e voci,

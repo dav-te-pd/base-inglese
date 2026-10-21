@@ -1,7 +1,14 @@
-// PROTEGGE: che il motore che CALCOLA un esito arrivi — e che si sappia
-// quanto tardi si vede la sua assenza.
+// PROTEGGE: che il motore che CALCOLA un esito (`app/quiz-engine.js`)
+// arrivi — con un tag suo, bloccante, dopo `app/spazio.js` — e che calcoli
+// giusto: quattro risposte note, una per famiglia (distanza `similarity`,
+// conteggio `tokenize`, soglia `percentageBucket` letta da `CONFIG`, giudizio
+// `classify`), perche' un motore che c'e' e risponde sbagliato e' peggio di
+// uno che manca. E il suo confine: dentro le funzioni che restituiscono un
+// VALORE, fuori quelle che restituiscono MARKUP — niente markup nel file,
+// `starsForPercent` dentro, `renderStars` fuori.
 //
-// ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-18:
+// ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-18 — una
+// misura fatta una volta, non un'asserzione di questo file:
 //
 //     login .......... SI        mappa ............. SI
 //     casa ........... SI        un modulo si apre . SI (Meet the Story)
@@ -27,7 +34,7 @@
 // IL CASO PIU' DIVERSO (regola 42): **`renderStars`, cioe' la funzione che ho
 // LASCIATO FUORI.** Sta una riga sotto `starsForPercent`, si chiama quasi
 // uguale, ed e' l'unico pezzo che il piano nominava e che la misura ha
-// respinto. *Portarla fuori non avrebbe rotto niente — l'app funzionerebbe
+// respinto. *Portarla dentro non avrebbe rotto niente — l'app funzionerebbe
 // identica — e sarebbe stato il primo file di strato con dentro del markup.
 // Un confine sbagliato che non produce nessun rosso e' quello che si eredita.*
 

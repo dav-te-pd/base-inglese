@@ -1,3 +1,12 @@
+// PROTEGGE: che Your Story (Personalizza, categoria «Inizio») sia il primo
+// passo della mappa e blocchi tutto il resto finché non è fatto, e che
+// completarla sblocchi il passo dopo; che riaprirla a episodio iniziato chieda
+// la frase di conferma — pulsante spento finché la frase non è esatta — e
+// cancelli davvero i progressi, mentre «Annulla» torna alla mappa senza
+// cancellare niente e chi ha fatto solo Personalizza non vede l'avviso; e che
+// il vecchio flag `customizeSeen` continui a migrare, segnando Personalizza
+// completata senza toccare i progressi già fatti.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata, chiaveMagazzino } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiAbilitato, attendiClasse, attendiVisibile } = require('./attese');

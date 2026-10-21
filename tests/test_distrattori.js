@@ -18,9 +18,15 @@
 //       pesca sul grado C — il codice vecchio, col `3` scritto a mano, lì ne
 //       mostrava quattro.
 //
+// VISTO FALLIRE DUE VOLTE: col `3` rimesso a mano, [C] dà 4 alternative
+// invece di 3 nei due moduli; e togliendo una riga dal grado B di
+// `spagnolo-it-gate.md` (col numero atteso abbassato insieme) il trascrittore
+// esce con 1, nomina il grado e i due moduli e non scrive niente.
+//
 // ⚠️ LIMITE DICHIARATO: [B] prova la funzione, non che `main()` la chiami. Se
-// la chiamata sparisse da `main()`, questo file resterebbe verde. Lo copre la
-// lettura del codice, non un test: lanciare il trascrittore su una cartella
+// la chiamata sparisse da `main()`, questo file resterebbe verde. Che la
+// chiami l'ha provato la seconda falsificazione qui sopra, a mano; e lo copre
+// la lettura del codice, non un test: lanciare il trascrittore su una cartella
 // finta vorrebbe dire renderlo capace di scrivere fuori dal repository.
 
 'use strict';

@@ -1,5 +1,19 @@
 // PROTEGGE: che OGNI file di un'edizione porti il prefisso `{lingua}-{studente}-`,
-// e che quel prefisso sia quello DELLA SUA CARTELLA.
+// e che quel prefisso sia quello DELLA SUA CARTELLA; che ogni episodio
+// dichiarato nella struttura abbia SIA il markdown SIA il JSON; che i file di
+// `condivisi/{studente}/` portino la loro convenzione — una lingua sola,
+// `it-istruzioni-moduli.json` — perché `condivisi` è un nome riservato e non
+// una lingua; e che ogni edizione abbia il suo
+// `{L}-{S}-migrazioni-personalizzazione.json` con `slot` come OGGETTO: l'app
+// lo chiede sempre, e senza lo studente si trova davanti la schermata
+// d'errore.
+//
+// ⚠️ `condivisi`, DAL 2026-09-28: due cose distinte, e restano distinte. La
+// cartella è **esclusa dal giro delle edizioni** — non le si chiede un file di
+// struttura né degli episodi, perché non ne ha — **ma NON dalla convenzione
+// dei nomi**: ha la sua, e un nome sbagliato là dentro è rosso come altrove.
+// Il nome riservato è scritto in una costante (`CARTELLA_CONDIVISA`) e non
+// dedotto.
 //
 // COSA SI PERDE SENZA QUESTO FILE, ed è il motivo per cui nasce adesso e non
 // dopo: fra poco `docs/inglese/it/` e `data/inglese/it/` verranno COPIATE per
@@ -13,7 +27,15 @@
 //
 // ⚠️ E DAL 2026-10-11 ([D]) CHE OGNI EDIZIONE ABBIA IL SUO FILE DI MIGRAZIONI,
 // con `slot` come oggetto: l'app lo chiede sempre, e la sua assenza la
-// scopriva lo studente davanti alla schermata d'errore.
+// scopriva lo studente davanti alla schermata d'errore. E un file senza
+// `slot` l'app lo leggeva come «nessun id è mai cambiato», un'affermazione che
+// nessuno ha fatto (oggi `loadPersonalizationMigrations` lo tratta come un
+// guasto; questo file lo ferma prima di pubblicare). *Non lo scrive il trascrittore, di proposito: un file
+// creato vuoto in automatico affermerebbe il falso il giorno in cui una
+// migrazione vera serve.* Falsificato con un lettore finto (manca, `{}`,
+// `slot` lista, `slot` null, non JSON) **e sul file vero**: spostato lo
+// spagnolo → «manca», sostituito con un file senza `slot` → «`slot` non è un
+// oggetto».
 //
 // COSA NON PROTEGGE, dichiarato (regola 32): non verifica che il CONTENUTO sia
 // dell'edizione giusta. Un file `francese-it-gate.json` pieno di inglese passa

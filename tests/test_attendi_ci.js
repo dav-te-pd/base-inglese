@@ -1,5 +1,18 @@
 // PROTEGGE: che `tests/tools/attendi-ci.sh` dica il VERO sulla CI, e che
-// quando non lo sa lo DICA invece di aspettare per sempre.
+// quando non lo sa lo DICA invece di aspettare per sempre. Cioè: il verde solo
+// dopo aver ASPETTATO la fine; una corsa **annullata** distinta da una rossa
+// (stessa uscita, frase diversa: *un pulsante premuto non è un difetto*); la
+// corsa che non esiste e doveva esserci (3) distinta dall'API illeggibile (4),
+// che **non aspetta per sempre**; una corsa viva e lenta che esce con 2, non
+// con 3 né con 4; un commit abbreviato che è un errore d'uso (64) e non una
+// corsa assente; un commit di soli file di `paths-ignore` che esce con 5 e
+// non con 3 — con accanto l'ultima corsa del workflow su `main`, perché **il 5
+// non dice che la CI è viva** — e un pattern, un commit o un repository che lo
+// script non sa leggere che danno 6, mai un 5 o un 3 tirati a indovinare.
+// ⚠️ E un difetto non dello script ma di CHI LO USA: **ogni esito nomina il
+// commit per intero**, con la riga «se non è quello che hai appena spinto, hai
+// letto un'altra corsa». E il numero stampato è la durata della CORSA, non
+// dell'attesa dello script.
 //
 // E' l'unico strumento fra «la CI e' finita» e quello che poi racconto a chi
 // guida il progetto. La regola 38 dice che la CI si LEGGE, non si da' per
@@ -15,7 +28,7 @@
 // risposte preparate, e lo script non sa la differenza. Stessa scelta di
 // `tests/test-env.js` (regola 24).
 //
-// I SEI CASI, e il sesto vale piu' degli altri cinque:
+// I CASI, e la prova contraria [F] vale piu' degli altri:
 //   [A] in corso -> success ......... 0, e ha ASPETTATO
 //   [B] failure ..................... 1, e la frase nomina la conclusione
 //   [C] cancelled ................... 1, ma con una frase DIVERSA da failure:
@@ -28,18 +41,37 @@
 //   [H] ⚠️ OGNI esito nomina il COMMIT, e accanto la riga che dice cosa
 //       farsene. Protegge un difetto che NON e' dello script ma di chi lo usa:
 //       leggere onestamente il campo giusto di **un'altra corsa**. Il giro e'
-//       su tutti e cinque gli esiti, e il caso diverso e' l'uscita 4 — l'unica
-//       che il commit non lo nominava (misurato il 2026-09-17).
+//       su tutti gli esiti, non su quello comodo, e il caso diverso e'
+//       l'uscita 4 — l'unica che il commit non lo nominava (misurato il
+//       2026-09-17).
 //   [J] ⚠️ NESSUNA CORSA ATTESA (dal 2026-10-19): un commit che tocca solo
 //       file di `paths-ignore` esce con 5, non con 3 — sul commit VERO del
 //       giorno in cui il 3 e' stato letto come un guasto (`f3d4415`), e in un
 //       repository finto col workflow VERO. Falsificato DENTRO il test: tolta
 //       la voce dal filtro, lo stesso commit torna 3. E un pattern che lo
-//       script non sa confrontare da' 6, non un 5 o un 3 tirati a indovinare.
+//       script non sa confrontare (`docs/*.md`, un `!negato`), un commit che
+//       git non conosce o nessun repository danno 6, non un 5 o un 3 tirati a
+//       indovinare. Il repository finto usa il workflow VERO apposta: un
+//       pattern nuovo che lo script non sa leggere lo vede questo test. E il 5
+//       arriva solo dopo l'attesa piena. Contro lo script di prima: 10 rossi.
 //   [K] ⚠️ IL 5 NON DICE CHE LA CI E' VIVA (dal 2026-10-19): accanto al 5
 //       si stampa l'ultima corsa del workflow su `main`, con quanto tempo fa.
 //       Di tre ore fa, di dieci giorni fa, nessuna, illeggibile: il codice
 //       resta 5 e la riga dice quale dei quattro. E un 3 non la stampa.
+//       *Chiesto da chi guida il progetto: senza, ad Actions spento un commit
+//       di soli registri darebbe «nessuna corsa attesa», cioe' un verde giusto
+//       per il commit e falso per il mondo.* Falsificato togliendo la
+//       chiamata: 4 rossi.
+//   [G] commit ABBREVIATO ........... 64, non 3 e non 0: l'API confronta
+//       `head_sha` per intero, e un prefisso risponde come una corsa che non
+//       esiste — lo script diceva «il push non ha fatto partire la CI» su una
+//       corsa che stava girando (2026-09-11)
+//   [I] ⚠️ IL NUMERO STAMPATO E' QUELLO DELLA CORSA, NON DELL'ATTESA (dal
+//       2026-09-19): nasce da «completata con success (1s)» su una corsa
+//       durata 585 secondi — il verdetto giusto, letto dall'API, e accanto il
+//       tempo che lo script aveva aspettato. Il caso finge una corsa gia'
+//       completed che dichiara 300 secondi. Visto fallire rimettendo il
+//       numero vecchio: il rosso stampa proprio `success (0s)`.
 //   [F] ⚠️ LA PROVA CONTRARIA: una corsa VIVA che non finisce mai deve uscire
 //       con 2 — non 3, non 4. Senza questo caso il rilevatore potrebbe
 //       dichiarare guasto qualunque lavoro lento e il test resterebbe verde.

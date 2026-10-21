@@ -1,14 +1,28 @@
 // PROTEGGE: che il meccanismo delle viste viva fuori da index.html, e che il
-// suo tag stia DOVE DEVE — in fondo a <body>, non in <head> con gli altri.
+// suo tag stia DOVE DEVE — in fondo a <body>, dopo il markup delle viste e
+// prima dello script che accende l'app, non in <head> con gli altri. Spostato
+// in <head> — dove uno andrebbe a metterlo per simmetria — i nodi delle viste
+// diventano `null` e l'app non arriva alla schermata del nome: un guasto
+// grosso che nasce da una modifica che sembra un riordino innocuo. E che lo
+// strato tenga NOMI senza chiamare funzioni di modulo, con gli id delle viste
+// scritti per intero, e che `BI.views` porti tutti i nodi veri, nessuno null,
+// con una sola vista accesa alla volta.
 //
 // COSA SI PERDE SENZA QUESTO FILE. `app/orchestrazione.js` e' il primo strato
-// della SECONDA FILA: prende i dodici nodi delle viste con `getElementById`
-// **a tempo di parsing**. Spostato in <head> — dove stanno tutti gli altri
-// nove, e dove uno andrebbe a metterlo per simmetria — i dodici diventano
-// `null` e il primo `showView()` muore. **Non e' un guasto sottile: l'app non
+// della SECONDA FILA: prende i nodi delle viste (quattordici oggi) con
+// `getElementById` **a tempo di parsing**. Spostato in <head> — dove stanno
+// gli strati della prima fila, e dove uno andrebbe a metterlo per simmetria —
+// diventano `null` e il primo `showView()` muore. **Non e' un guasto sottile: l'app non
 // arriva alla schermata del nome.** Ma e' un guasto che nasce da una modifica
 // che sembra un riordino innocuo, ed e' esattamente il caso che un test deve
 // tenere fermo.
+//
+// COME: le tre righe [A] fissano la posizione in tre modi che NON si coprono
+// a vicenda — dopo il markup, prima dello script principale (senza questa, il
+// tag in fondo alla pagina passerebbe), e non in <head>. [C] CONTA i nodi di
+// `BI.views` invece di navigare. Visto fallire su due guasti: tag in <head>
+// (6 rosse, e il `pageerror` dice `Cannot read properties of null`), una vista
+// tolta dall'elenco (2 rosse, e dicevano 12 — quando le viste erano tredici).
 //
 // ⚠️ E IL LIMITE, dichiarato perche' e' il rovescio della stessa medaglia:
 // questo file verifica che il tag stia DOPO il markup delle viste, non che

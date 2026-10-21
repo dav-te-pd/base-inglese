@@ -1,6 +1,13 @@
 // PROTEGGE: che l'edizione — la coppia `{lingua-che-si-impara}/{lingua-studente}`
-// della regola 4 — sia dichiarata in UN PUNTO SOLO, e che i percorsi dei dati
-// stiano ognuno dalla parte giusta di un confine.
+// della regola 4 — sia dichiarata in UN PUNTO SOLO (`app/config.js`, come due
+// campi), e che i percorsi dei dati stiano ognuno dalla parte giusta di un
+// confine: cambiata l'edizione, il file EPISODIO e le TABELLE la seguono
+// insieme, cartella e prefisso, mentre istruzioni e messaggi di feedback NON
+// si muovono — dipendono dalla lingua dello studente. E che `app/avvio.js` sia
+// caricato prima di `app/dati.js`, e che, puntata a un'edizione che non
+// esiste, l'app lo DICA con la schermata d'errore invece di partire a meta'.
+// Senza, il guasto e' muto: un'app che legge meta' edizione vecchia e meta'
+// nuova.
 //
 // ⚠️ L'INVARIANTE SI E' RISTRETTO IL 2026-09-28 (passo B), E NON E' UNA SVISTA:
 // FINO A QUEL GIORNO DICEVA «TUTTI E QUATTRO SEGUONO L'EDIZIONE».
@@ -40,21 +47,32 @@
 //
 // COME si misura, e perche' non nel modo ovvio: non basta che i quattro
 // percorsi siano giusti oggi — lo erano anche prima. Si CAMBIA l'edizione e si
-// guarda se la seguono tutti e quattro. La forma vecchia non ne muoveva
-// nessuno; questa li muove insieme.
+// guarda chi la segue e chi no. La forma vecchia non ne muoveva nessuno;
+// questa muove insieme i due che devono muoversi e lascia fermi gli altri due.
 //
 // IL CASO PIU' DIVERSO (regola 42): **`episodeDataFile`, l'unico dei quattro
-// che non e' un nome di file fisso.** Gli altri tre incollano un nome noto
-// dietro la cartella; questo compone il PREFISSO (`inglese-it-`) unendo le due
-// meta' della coppia con un trattino invece che con una barra. E' l'unico che
-// usa i due campi due volte e in due forme diverse, quindi l'unico che una
-// scorciatoia («tengo una stringa sola `'inglese/it'`») avrebbe rotto.
+// che non e' un nome di file fisso** — il nome lo da' l'episodio. Fino al
+// 2026-09-21 era anche l'unico che componeva il PREFISSO (`inglese-it-`)
+// unendo le due meta' della coppia con un trattino invece che con una barra,
+// quindi l'unico che una scorciatoia («tengo una stringa sola
+// `'inglese/it'`») avrebbe rotto; da quel giorno un prefisso lo portano tutti
+// e quattro, attraverso `percorsoEdizione` e `percorsoCondiviso` di
+// `app/dati.js`.
 //
 // [C] guarda una cosa che nessuna delle altre vede: l'ORDINE DEI TAG. Gli
 // override del Pannello Admin si applicano in `app/avvio.js`; i tre percorsi
 // condivisi si calcolano a tempo di parsing in `app/dati.js`. Se `dati.js`
 // salisse sopra `avvio.js`, cambiare edizione dal pannello muoverebbe gli
 // episodi e NON i tre file condivisi — di nuovo meta' e meta', in silenzio.
+//
+// MISURATO il 2026-09-28: iniettando il guasto che rimette i due file
+// condivisi dentro l'edizione
+// (`data/francese/it/francese-it-istruzioni-moduli.json`), la forma vecchia
+// del test era VERDE — era esattamente quello che chiedeva — e la nuova da'
+// tre rossi. E' il guasto da temere, perche' e' quello che qualcuno farebbe
+// «riparando».
+//
+// LIMITE DICHIARATO: guarda i percorsi, non il CONTENUTO di un'altra edizione.
 
 const fs = require('fs');
 const path = require('path');

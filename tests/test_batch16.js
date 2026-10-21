@@ -1,3 +1,22 @@
+// PROTEGGE: che un nome di persona scelto in Personalizza non venga tradotto
+// nel dialogo (scelto `papa-francesco`, nel dialogo non compare «Francis»);
+// che in Dialogo Continuo «Pausa» sia acceso mentre la battuta parla, la fermi
+// senza far partire il countdown della battuta dopo, e che «Riprendi» la
+// risuoni da capo senza piantare il dialogo; che il badge «Ripasso» di Flash
+// Card resti nascosto nel giro principale e compaia nel ripasso; che «Prossima
+// frase» in Ripeti a Tempo faccia partire davvero la battuta dopo invece di
+// limitarsi a suggerirla; che girare la carta di Flash Card fermi l'audio; che
+// il suono Uscita esista, sia più piano del volume di default (0.15) e più
+// grave delle note del Traguardo, e suoni su
+// «Ho finito, torna alla mappa»; le tre colonne dell'intestazione («← Mappa» a
+// sinistra, «Spiegazione» al centro, «Help» a destra); e che il contatore di
+// avanzamento sia lo stesso, stessa classe e stesso carattere, in Voice Coach
+// e in Flash Card.
+//
+// ⚠️ Fino al 2026-09-25 «Pausa» era SPENTO mentre la battuta parlava, e questo
+// file lo verificava (male: leggeva durante il 3-2-1 di avvio). Da quel giorno
+// e' acceso — il racconto e' accanto al blocco [Job2].
+
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');

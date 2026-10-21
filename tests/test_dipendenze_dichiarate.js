@@ -1,6 +1,12 @@
 // PROTEGGE: che l'ordine dei tag `<script>` in index.html resti un vincolo
 // DICHIARATO invece che scoperto. Ogni file di `app/` dice in testa da chi
-// dipende e a che titolo, e questo file confronta la dichiarazione col codice.
+// dipende e a che titolo — a tempo di PARSING (che obbliga l'ordine) o di
+// CHIAMATA (che non lo obbliga) — e questo file confronta la dichiarazione col
+// codice (`[A]`). Più tre vincoli sulla forma: nessun file dipende A TEMPO DI
+// PARSING da uno caricato dopo di lui (`[C]`); nessun file di `app/` dipende
+// ALL'INSU' da `index.html` (`[B]`, zero, ed e' un invariante); nessun file di
+// `app/` ALIASA un nome che viene da `index.html`, che e' l'ultimo script e
+// farebbe congelare `undefined` per sempre (`[E]`).
 //
 // COSA SI PERDE SENZA. `app/avvio.js` legge `BI.THEME_KEY`, che appartiene a
 // `app/identita.js`, e funziona SOLO perche' identita e' caricato prima.
@@ -19,15 +25,48 @@
 // confronta quella con quella scritta. Uno strato nuovo entra nel giro il
 // giorno stesso.
 //
+// E il blocco `[B]` non e' un elenco ma tre controlli sulla forma: che
+// `magazzino.js` sia il fondo della pila e non dipenda da nessuno, che le
+// dipendenze all'insu' verso `index.html` siano zero, che quelle a tempo di
+// parsing siano la maggioranza (cioe' che l'ordine dei tag sia davvero un
+// vincolo). *I numeri stanno accanto alle asserzioni, dove cambiano insieme al
+// codice, e non qui: ricopiarli qui li farebbe invecchiare in silenzio.*
+//
+// ⚠️ DAL 2026-09-19 (passo C2) L'ALL'INSU' E' ZERO, E DA TRAGUARDO DIVENTA
+// INVARIANTE: `index.html` puo' chiedere ad `app/`, non essere chiesto. Se quella
+// riga torna a uno, qualcuno ha scritto un `BI.qualcosa` in `index.html` e un
+// `app/*.js` glielo chiede — *non si alza il numero, si sposta il nome.*
+//
+// Visto fallire su TRE GUASTI DISTINTI: dichiarazione vecchia (1 rossa, e dice
+// il vecchio e il nuovo), tag riordinati (1 rossa, `[C]`), una dipendenza
+// nuova all'insu' (3 rosse insieme).
+//
 // ⚠️ IL MOMENTO FA PARTE DELLA DICHIARAZIONE. Una dipendenza a tempo di
 // PARSING obbliga l'ordine dei tag; una a tempo di CHIAMATA no. Verificare
 // solo «da quale file» perderebbe esattamente la differenza per cui la
 // dichiarazione esiste.
 //
-// LIMITE DICHIARATO: verifica la dipendenza fra FILE, non che l'ordine dei tag
-// la rispetti. Oggi le due dipendenze vere sono all'indietro e non c'e' niente
-// da far cadere; il giorno che ne nasce una in avanti a tempo di parsing,
-// questo file lo DICE (riga [C]) ma non e' lui a impedirla.
+// ⚠️ E IL BLOCCO [C] ERA DOPPIO SENZA SAPERLO, scoperto il 2026-09-19
+// (famiglia ⓪-decies). Diceva «nessun file dipende da uno caricato DOPO di
+// lui», e il suo commento spiegava un'altra cosa: la differenza fra parsing e
+// chiamata. Col passo C2 le due domande divergono, e non per una svista:
+// `app/dati.js` chiama `BI.applyEpisodeDialogue`, e chi carica i dati e' letto
+// prima di chi la possiede. Quindi due righe: in avanti a PARSING → zero,
+// sempre, ed e' quella che tiene l'ordine; in avanti a CHIAMATA → si contano e
+// si NOMINANO, perche' restano una cosa da sapere anche quando sono legittime.
+//
+// ⚠️ E IL BLOCCO [E], dal 2026-09-19, nasce da un guasto vero: `app/repeataloud.js`
+// aliasava `itemText` da `index.html` e il modulo restava fermo su
+// «Caricamento...», con un `TypeError` ingoiato dal `.catch` del caricamento.
+// `tests/tools/buchi.js` non poteva vederlo: guarda SE un nome e' definito o
+// aliasato, non QUANDO arriva. Visto fallire rimettendo l'alias — e cadono
+// DUE righe, `[E]` che nomina il file e il nome, e `[A]` che vede `index.html`
+// passare da `[chiamata]` a `[parsing]`.
+//
+// LIMITE DICHIARATO: le dipendenze in avanti a tempo di CHIAMATA non obbligano
+// l'ordine dei tag, quindi `[C]` non le vieta: le nomina una per una, e una
+// nuova fa rossa quella riga perche' qualcuno la guardi, non perche' sia un
+// guasto.
 
 const { repoPath } = require('./test-env');
 const {

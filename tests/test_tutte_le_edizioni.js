@@ -23,6 +23,9 @@
 //   [E] la mappa del primo episodio ha tante righe quanti passi ha la sua
 //       sequenza nella struttura dell'edizione.
 //
+// Falsificato forzando `percorsoCondiviso` su `it`: rossi `[B]` e `[D]` di
+// `italiano/es`, e solo quelli.
+//
 // LIMITE: non apre nessun modulo — quindi non vede arrivare i MESSAGGI DI
 // ESITO, che l'app chiede solo alla prima Schermata Finale
 // (`loadFeedbackMessages`), non all'avvio. Che i moduli girino su un'edizione lo prova

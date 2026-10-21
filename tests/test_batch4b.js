@@ -1,3 +1,10 @@
+// PROTEGGE: che la schermata "Spiegazione" di un modulo mostri il nome di
+// **quel** modulo, non di un altro — compreso il verso, che viene dal nome del
+// PASSO e non dal `kind` (Flash Card: un kind, due passi, «Flash Card en→it»).
+//
+// Limite: guida cinque passi — Repeat Aloud, Match Practice en→it, Dialogue:
+// Listen & Repeat, Speed Match en→it, Flash Card en→it — non tutti i moduli.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiVisibile } = require('./attese');

@@ -1,33 +1,37 @@
-// PROTEGGE: che `data/inglese/it/inglese-it-aircraft-door.json` continui a dire quello che
-// dichiara la sua fonte, `docs/inglese/it/inglese-it-aircraft-door.md`. I due file cambiano insieme
-// una volta ogni tanto, e quando divergono non crolla niente: i moduli si
-// aprono pieni e hanno l'aria giusta: semplicemente insegnano una cosa che il
-// documento non dice più.
+// PROTEGGE: che `data/inglese/it/inglese-it-aircraft-door.json` continui a
+// dire quello che dichiara la sua fonte, `docs/inglese/it/inglese-it-aircraft-door.md`:
+// i numeri del riquadro «Numeri attesi nel JSON» (voci per grado, skill contate
+// su tutte le liste, slot), e le cose che un conteggio non vede — che ogni
+// `fromLine` del grado C punti a una battuta vera, che ogni skill abbia titolo
+// e corpo separati (regola 25), che nessun id si ripeta. Quando i due file
+// divergono non crolla niente: i moduli si aprono pieni e hanno l'aria giusta,
+// semplicemente insegnano una cosa che il documento non dice più.
 //
 // COME, e perché non come per l'episodio 1: `test_story_modules.js` confronta
 // il JSON dell'episodio 1 **carattere per carattere** con le tabelle del suo
-// markdown. Qui non si può: i due markdown hanno una forma diversa — il grado A
-// dell'episodio 2 è una lista in prosa, il vocabolario sta in una sezione a
-// parte e il dialogo in un'altra ancora. Scrivere un secondo lettore di tabelle
-// significherebbe mantenere due parser di markdown per due file che cambiano
-// insieme una volta ogni tanto: più codice fragile di quanto ne protegga.
+// markdown. Quando questo file è nato i due markdown avevano una forma diversa
+// — il grado A dell'episodio 2 era una lista in prosa, il vocabolario stava in
+// una sezione a parte e il dialogo in un'altra ancora — e scrivere un secondo
+// lettore di tabelle avrebbe voluto dire mantenere due parser di markdown per
+// due file che cambiano insieme una volta ogni tanto. ⚠️ *Quel motivo è
+// SCADUTO: oggi i due markdown hanno la stessa forma (registrato come F.7 in
+// `docs/decisioni-stato.md`, che ha deciso di aspettare il quinto episodio).*
 //
 // Si confrontano invece **i numeri dichiarati** — che nei due file sono scritti
-// nella stessa forma — più le due cose che un conteggio non vede: che ogni
-// skill stia su una battuta che esiste, e che ogni `fromLine` del grado C punti
-// a una battuta vera. Sono i due modi in cui una trascrizione si rompe restando
+// nella stessa forma — più le due cose che un conteggio non vede: che le skill
+// abbiano titolo e corpo, e che ogni `fromLine` del grado C punti a una
+// battuta vera. Sono i modi in cui una trascrizione si rompe restando
 // numericamente perfetta.
 //
-// LIMITE DICHIARATO: il TESTO non è confrontato. Se qualcuno cambia una parola
-// nel markdown e non nel JSON, questo test resta verde. Il limite era stato
-// scritto con una scadenza — «quando l'episodio 2 entrerà in `EPISODES`» — e
-// quel giorno è arrivato (2026-09-08, CONFIG.episodioCorrente e l'interruttore
-// del Pannello Admin). **Il limite però resta, e la scadenza si è spostata**:
-// estendere il confronto testuale vuol dire un secondo lettore di markdown per
-// una forma diversa da quella dell'episodio 1, che è esattamente il costo che
-// questo file aveva deciso di non pagare. La riga è registrata in
-// `docs/decisioni-stato.md` con la sua condizione, invece di restare qui come una
-// promessa scaduta.
+// LIMITE DICHIARATO: il TESTO non è confrontato QUI. Se qualcuno cambia una
+// parola nel markdown e non nel JSON, questo file resta verde — il confronto
+// lo fa `test_testi_dal_markdown.js`, che rigenera il JSON col trascrittore e
+// lo confronta con quello su disco. Il limite era stato scritto con una
+// scadenza — «quando l'episodio 2 entrerà in `EPISODES`» — e quel giorno è
+// arrivato (2026-09-08, CONFIG.episodioCorrente e l'interruttore del Pannello
+// Admin). **Il limite però è rimasto, e la scadenza si è spostata**: la riga
+// con la sua condizione è in `docs/decisioni-storico.md` (2026-09-08), invece
+// di restare qui come una promessa scaduta.
 
 const fs = require('fs');
 const { repoPath } = require('./test-env');

@@ -1,3 +1,15 @@
+// PROTEGGE: il giro completo di Voice Check: «Avanti» bloccato finche' non si
+// registra (spento sulla prima frase, acceso subito dopo la valutazione, di
+// nuovo spento sulla frase da ripassare), nessun pulsante «Indietro», una
+// frase andata male (0 stelle) che finisce nel ripasso con la schermata
+// condivisa `.retry-intro` — e ripetuta bene prende almeno due stelle —, la
+// Schermata Finale col pulsante esplicito «Ho finito, torna alla mappa», il
+// suono Traguardo e Spiegazione nascosta, e il modulo NON completato prima di
+// quel pulsante (regola 7): toccato, torna alla mappa e segna il modulo.
+//
+// Testata scritta il 2026-10-21 dalla riga di `tests/README.md`, completata
+// con le asserzioni del file.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { spiaToni } = require('./mock-browser');

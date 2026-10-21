@@ -1,3 +1,10 @@
+// PROTEGGE: i tre scalini dell'avviso microfono di Voice Check (2 / 4 / 6
+// registrazioni vuote di fila: l'avviso, poi «Ricomincia esercizio», poi
+// «Torna alla mappa»), il reset dello streak alla prima registrazione
+// riconosciuta, il blocco a problema confermato (registrazione nascosta,
+// «Avanti» spento: l'unica uscita e' la mappa), e che una risposta **sbagliata
+// ma sentita** non venga mai scambiata per un guasto del microfono.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

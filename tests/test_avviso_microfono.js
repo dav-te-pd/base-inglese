@@ -1,9 +1,12 @@
 // PROTEGGE: l'avviso "non riusciamo a sentirti" dei due moduli di voce —
-// che compaia per ENTRAMBE le strade con cui un microfono rotto si manifesta,
-// che salga di livello nell'ordine giusto, che al terzo livello impedisca di
-// andare avanti, e che sparisca da solo appena il microfono torna a
-// funzionare. Senza questo file, uno studente col microfono rotto puo' restare
-// a fissare zero stelle credendo di pronunciare male.
+// che compaia per ENTRAMBE le strade con cui un microfono rotto si manifesta
+// (premere e non parlare; parlare senza che venga riconosciuta una parola),
+// che salga di livello nell'ordine delle soglie di `CONFIG`, che al livello
+// confermato blocchi "Avanti" lasciando "Torna alla mappa" come unica uscita,
+// e che sparisca appena una parola viene riconosciuta. E che il pannello stia
+// FUORI da `#vc-result` (vedi sotto). Senza questo file, uno studente col
+// microfono rotto puo' restare a fissare zero stelle credendo di pronunciare
+// male.
 //
 // LE DUE STRADE, e sono la ragione per cui questo file esiste:
 //   [A] premi e non parli — il timeout di silenzio chiude la registrazione e

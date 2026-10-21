@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261019c**
+**Versione: 20261021a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -520,7 +520,9 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 32. **Ogni test dichiara in testa cosa protegge.** La prima riga di un file di test è un commento `// PROTEGGE:` che dice **quale comportamento si romperebbe se quel file sparisse** — non cosa il test fa, che si legge dal codice, ma cosa si perde senza. Se serve, sotto ci va anche il *come*: quale strada si è scelta per misurarlo e perché non quella ovvia.
 
-    Lo stesso testo va nella tabella "Cosa protegge ogni file" di `tests/README.md`, che è l'unico posto dove la mappa vive: una seconda copia altrove si disallineerebbe.
+    **La testata è la fonte · la tabella si deriva · un test fallisce se divergono.** La tabella «Cosa protegge ogni file» di `tests/README.md` la scrive `node tests/tools/tabella-protegge.js --scrivi`, leggendo il **paragrafo** `PROTEGGE:` di ogni file — dalla prima riga alla prima riga di commento vuota; il resto della testata (il come, i limiti, la storia) resta nel file. `tests/test_tabella_protegge.js` diventa rosso se la tabella non è quella generata, o se un `tests/test_*.js` non ha la testata. **Una correzione si scrive nella testata, mai nella tabella**: lì sparirebbe alla prossima rigenerazione, e la prima riga della tabella lo dice. *Dove chi scrive la testata ha dovuto indovinare l'intenzione, la prima riga è `// PROTEGGE (da confermare):`, e la tabella la mostra marcata finché chi guida il progetto non l'ha guardata: un PROTEGGE inventato è peggio di uno assente — quello assente si vede, quello inventato no.*
+
+    ⚠️ *Riscritta il 2026-10-21. Qui c'era: «Lo stesso testo va nella tabella "Cosa protegge ogni file" di `tests/README.md`, che è l'unico posto dove la mappa vive: una seconda copia altrove si disallineerebbe.» **Prescriveva lo stesso testo in due posti, cioè una copia a mano: era una regola contro la regola 48.** Misurato quel giorno: dei 69 file che avevano sia la testata sia la riga, **zero** le avevano uguali e 16 dicevano cose diverse — e 26 file di test la testata non l'avevano affatto. Le due copie sono state UNITE nella testata, non scelte: quello che il README diceva in più era contenuto che alla testata mancava.*
 
     **Un test che non sa dire cosa protegge non va scritto.** Se la riga esce come "verifica che la funzione X funzioni", il test sta ricopiando l'implementazione invece di difendere un comportamento, e passerà anche quando l'app è rotta.
 

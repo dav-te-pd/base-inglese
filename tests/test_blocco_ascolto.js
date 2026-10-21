@@ -1,5 +1,11 @@
 // PROTEGGE: che il Blocco Ascolto sia UN PEZZO SOLO, e che "bloccato" voglia
-// dire la stessa cosa dovunque compaia.
+// dire la stessa cosa dovunque compaia. Il markup del pulsante "ascolta" + le
+// velocita' deve avere UNA SOLA sorgente in tutto il codice dell'app
+// (index.html piu' tutti i file sotto app/): l'ottava copia scritta a mano, in
+// qualunque file la si metta, fa fallire la CI subito. E nel browser: dentro
+// una card bloccata il blocco si vede SPENTO (opacita' e pointer-events, non
+// il silenzio), e le due varianti dello Sblocco Sequenziale — Why We Say It e
+// il Dialogo — sono inerti allo stesso modo, con la stessa .is-tap-locked.
 //
 // Cosa si perde senza questo file. Il Blocco Ascolto (il pulsante "ascolta" +
 // le velocita') lo mostrano sei moduli. Fino al 2026-09-09 il suo markup era
@@ -16,11 +22,12 @@
 //    uno: si risponde guardando che il markup abbia UNA SOLA sorgente. Se
 //    esiste in un posto solo, l'uguaglianza non e' una cosa da verificare, e'
 //    una cosa che non puo' non essere vera. Quindi la prima asserzione legge
-//    index.html COME TESTO e conta le occorrenze del markup del pulsante:
-//    dev'essere una, dentro renderListenBlock.
+//    il codice dell'app COME TESTO — index.html e tutti i file sotto app/, dal
+//    2026-09-19 (vedi il commento sul blocco ①) — e conta le occorrenze del
+//    markup del pulsante: dev'essere una, dentro renderListenBlock.
 //
 //    ⚠️ LIMITE E COSTO DICHIARATI. Questa asserzione aggiunge una terza
-//    dipendenza da index.html letto come testo (le altre due sono registrate
+//    dipendenza dal codice dell'app letto come testo (le altre due sono registrate
 //    in docs/decisioni-stato.md), ed e' una scelta, non una distrazione: e' l'unica
 //    forma che impedisce all'OTTAVA copia di nascere. Un test che aprisse i
 //    sei moduli e li confrontasse proverebbe meno — direbbe che i sei di oggi
@@ -42,6 +49,10 @@
 // ALLO STESSO MODO — stessa classe, stesso pointer-events. Quello che resta
 // diverso apposta e' l'aspetto, e infatti qui non si asserisce nulla sulle
 // opacita' esatte: solo che il blocco sia piu' spento del suo stato normale.
+//
+// VISTO FALLIRE su tre guasti: la riga che spegne il blocco tolta; un modulo
+// che torna a ricopiare il markup; e, dopo il 2026-09-19, una copia del markup
+// aggiunta dentro app/storycards.js → 18/19, e la riga dice 2.
 //
 // LIMITE DICHIARATO: dei sei moduli qui se ne aprono due (Why We Say It per il
 // blocco pieno e lo stato spento, Match Practice it→en per il Mini). Gli altri

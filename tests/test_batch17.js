@@ -1,3 +1,27 @@
+// PROTEGGE: la Regola Azione Critica nella sua forma corretta (regola 16):
+// fuori dai profili con countdown NIENTE si blocca mentre l'audio suona —
+// Spiegazione, Help, «Ho finito», Avanti, Registra, le opzioni di risposta,
+// «Sì la so»/«Non ancora» restano attivi — e un'azione critica FERMA l'audio
+// invece di esserne bloccata: «Ho finito», Registra (niente voce del modello
+// nel microfono), rispondere in Match (anche all'audio di un'opzione),
+// girare la carta. Verificato modulo per modulo su sei moduli: Dialogo
+// Ascolta e Ripeti, Repeat Aloud, Meet the Story, Voice Check, Match
+// Practice, Flash Card. E l'eccezione resta tale: in Ripeti a Tempo
+// (countdown) Spiegazione si blocca, e ritoccare la bolla che parla non fa
+// nascere un secondo countdown.
+//
+// ⚠️ LIMITE, trovato leggendo il codice il 2026-10-21: il blocco JOB 2
+// («"← Mappa" a sinistra, "Help" a destra quando Spiegazione e' nascosta»,
+// sulla Schermata Finale di Flash Card) NON misura piu' le posizioni. Dal
+// 2026-09-20 `barraAzioniFinale` nasconde l'intera `.header-actions-row`
+// sulla Schermata Finale (regola 10): riga e pulsanti hanno rettangoli a
+// zero, e le due righe di posizione sono vere per costruzione (0 − 0 < 2).
+// Restano vere «arriva alla Schermata Finale» e «Spiegazione nascosta».
+//
+// ⚠️ E in JOB 1a-bis e JOB 1e, se il pulsante cercato non c'e' (una sola
+// bolla, nessun ascolto della domanda), le righe passano con `true` invece
+// di cadere: lo dice il ramo `else`, non un'asserzione.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni } = require('./mock-browser');

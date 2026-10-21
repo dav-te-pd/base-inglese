@@ -1,6 +1,12 @@
 // PROTEGGE: che i testi dell'interfaccia arrivino DAVVERO da
 // data/condivisi/it/it-istruzioni-moduli.json (regola 8), e non tornino di
-// nascosto nel codice — e che la riga che lo rende possibile non sparisca.
+// nascosto nel codice — e che la riga che lo rende possibile non sparisca
+// (`loadModuleInstructions()` nel `Promise.all` di `openModuleFromMap`):
+// senza, l'app non crolla, mostra stringhe VUOTE. Protegge anche che
+// Personalizza, l'unico dei sedici moduli senza `dataFile`, si apra lo stesso;
+// e che finche' il file dei testi non arriva non compaia NESSUNA schermata —
+// ne' il nome, ne' la home, ne' la mappa, e nemmeno l'errore: si aspetta — e
+// che, arrivato, la home e l'intro della mappa abbiano le loro etichette.
 //
 // COSA SI PERDE SENZA: il passo 18 ha spostato i testi scritti su richiesta
 // (Blocco Ascolto, microfono, pannello Help, Dialogo) dal codice al file. Il
@@ -18,6 +24,9 @@
 // l'app prende il testo dalla cache del fetch, il test dal file su disco, e
 // fra i due c'e' tutto il meccanismo che stiamo proteggendo — la chiave
 // giusta, il segnaposto sostituito, la cache calda al momento giusto.
+// **Visto fallire sul guasto vero:** tolta quella riga dal `Promise.all`,
+// 10/14 — e i quattro che cadono sono esattamente i punti SINCRONI, mentre il
+// pannello Help resta verde perche' gira dopo.
 //
 // ⚠️ IL CASO PIU' DIVERSO, e non e' teorico (regola 42): **Personalizza, il
 // solo dei sedici moduli senza `dataFile`**. E' il caso che ando' rosso su
@@ -29,6 +38,26 @@
 // coperti dal fatto che uiText() e' una sorgente unica — ma un modulo che
 // smettesse di CHIAMARLA, tornando a scrivere il testo nel codice, qui non si
 // vedrebbe.
+//
+// ⚠️ IL BLOCCO [7] HA CAMBIATO GARANZIA DUE VOLTE, e tutte e due in meglio:
+// seguita, non cancellata. E' nato col giro B per dire che l'attesa della
+// schermata di intro copre TUTTO quello che mostra — il pulsante restava
+// SPENTO finche' il JSON non c'era, invece di restare muto accanto a un
+// «Caricamento...» — e guida la MAPPA di proposito, il solo percorso in cui
+// il JSON non e' gia' caricato. La prima versione guardava subito, e il fetch
+// aveva gia' risolto al primo istante osservabile: verde anche togliendo il
+// `disabled`, cioe' vero per costruzione (regola 44) — *una finestra che si
+// chiude piu' in fretta di un round-trip non si osserva correndole contro: si
+// riproduce*. Rallentata la rete, e' stato visto fallire su due guasti:
+// tolto il `disabled` → 17/21, rimessa una copia dell'etichetta nel codice →
+// 20/21. **Il 2026-09-21 (passo 1.3b)** la mappa ha smesso di comparire
+// finche' i testi non ci sono, e la finestra si tiene con un CANCELLO invece
+// che con un tempo: gli 800 ms di prima avevano smesso di funzionare perche'
+// `goHome` chiede i testi gia' sulla schermata iniziale — un tempo e' sempre
+// una corsa contro la macchina, un cancello no. **Il 2026-10-13** `boot()`
+// aspetta anche il file dei testi condivisi (decisione (a)), quindi col
+// cancello chiuso non compare nessuna schermata; l'approdo e'
+// `#view-attesa`, che nessuna asserzione legge (regola 44).
 const fs = require('fs');
 const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath, fileEdizione, globDati, fileCondiviso, globCondivisi } = require('./test-env');
 const { stepsBefore } = require('./module-order');

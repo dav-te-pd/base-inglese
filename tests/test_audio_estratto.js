@@ -1,4 +1,13 @@
-// PROTEGGE: che la voce dell'app arrivi, e arrivi prima di chi la chiama.
+// PROTEGGE: che la voce dell'app (`app/audio.js`) arrivi, e arrivi prima di
+// chi la chiama — senza, il login compare ma il primo pulsante non fa niente
+// e non si arriva a casa. E che l'epoca che scarta i callback audio tardivi
+// salga davvero quando si lascia una vista, invece di restare una copia
+// congelata che nessuno vede ferma.
+//
+// COME: `[A]` verifica che `synth` non sia più nominato in `index.html` e che
+// l'epoca non sia più una variabile usata lì; `[B]` guida l'app — nome,
+// casa, mappa coi suoi passi — e fa salire l'epoca due volte, dalla console e
+// passando dall'app.
 //
 // ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-18 bloccando la
 // richiesta — ed e' un terzo caso, diverso dagli altri due:
@@ -29,7 +38,8 @@
 // contro i callback tardivi sarebbe diventata inerte **senza alzare niente**.
 // Per questo e' diventata due funzioni, ed e' guardata apposta qui sotto
 // guidando l'app: non basta che `nuovaEpoca` esista, deve far salire il numero
-// che `epocaCorrente` legge.
+// che `epocaCorrente` legge — e salire PASSANDO DALL'APP: falsificando, è
+// l'unica asserzione che cade.
 //
 // LIMITE DICHIARATO, e vale piu' degli altri: **la suite prova che le funzioni
 // sono raggiungibili e che l'epoca avanza, NON che esca un suono.** La sintesi

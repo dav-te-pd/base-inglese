@@ -1,5 +1,12 @@
 // PROTEGGE: che uscire da un modulo fermi davvero tutto, adesso che
-// `stopAllModuleActivity` non nomina più nessuna famiglia di moduli.
+// `stopAllModuleActivity` non nomina più nessuna famiglia di moduli: al boot
+// si registrano ESATTAMENTE 5 pulizie, le tre che non appartengono a nessun
+// modulo (`fermaLaVoce`, `closeAttemptPopup`, `clearPendingMastery`) restano
+// nominate, e uscendo da Ripeti a Tempo non sopravvive nessun timer e
+// l'audio è fermo. E che una pulizia che esplode non chiuda lo studente dentro
+// l'app — si apre un modulo, si torna alla mappa, le pulizie dopo quella
+// rotta girano — senza diventare silenziosa: il fallimento viene riportato
+// col nome della pulizia, e in una sessione normale nessuna pulizia fallisce.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Il 2026-09-16 (passo 21-bis) quella
 // funzione è passata da «dieci istruzioni scritte a mano» a «tre condivise +
@@ -39,6 +46,13 @@
 // perché è l'unico in cui un timer sopravvissuto si misura senza ambiguità (il
 // countdown parte dalla fine dell'audio). Gli altri quattro li prende
 // l'asserzione strutturale `[A]`, che vale per tutti.
+//
+// VISTO FALLIRE SU QUATTRO GUASTI: un modulo che non si registra (2 rosse,
+// col nome), `moduleEpoch++` (oggi `nuovaEpoca()`) spostato dopo la pulizia,
+// il `catch` reso muto, e il `try/catch` tolto (5 rosse). ⚠️ Due delle
+// asserzioni catturano l'attesa apposta, perché il guasto cercato è proprio
+// «non si naviga più»: lasciandola nuda il test MORIVA con un `TimeoutError`
+// invece di FALLIRE dicendo cosa era successo.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');

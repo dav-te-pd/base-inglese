@@ -1,5 +1,11 @@
-// Verifica che l'attributo hidden nasconda DAVVERO, per ogni regola del
-// foglio di stile — comprese quelle che verranno scritte domani.
+// PROTEGGE: che un elemento con `hidden` sparisca DAVVERO qualunque `display`
+// gli dia una regola d'autore — la guardia della regola 12 — comprese le
+// regole scritte domani: senza questo file una classe che rompesse la guardia
+// (per esempio con un proprio `!important` su un `#id`) riporterebbe a schermo
+// elementi nascosti, e lo si scoprirebbe solo guardando quella schermata
+// invece che in CI. Protegge anche che la prova copra **tutti** i fogli locali
+// di `stile/`: un foglio diventato illeggibile non può lasciare il test girare
+// sulle regole rimaste e dire verde.
 //
 // Il bug che questo test rende impossibile: [hidden]{display:none} arriva
 // dal foglio predefinito del browser, il livello più debole della cascata.
@@ -10,7 +16,8 @@
 // "display: flex" su una classe non poteva sapere che quella classe sarebbe
 // stata nascosta altrove.
 //
-// index.html ha ora una guardia unica in cima al foglio:
+// Il CSS ha ora una guardia unica, in cima a `stile/base.css` (fino allo
+// spacchettamento stava in cima al foglio dentro index.html):
 //
 //   [hidden]:not([hidden="until-found"]) { display: none !important; }
 //
@@ -22,6 +29,14 @@
 // riportasse il problema — per esempio con un proprio !important — fa
 // fallire la CI il giorno in cui viene scritta, non il giorno in cui
 // qualcuno guarda quella schermata.
+//
+// ⚠️ Dal 2026-09-20 (passo 1.1) SI CONTANO ANCHE I FOGLI LETTI. Il `catch`
+// che ignora un foglio illeggibile era innocuo finché il CSS era uno solo e
+// dentro la pagina; con i fogli in `stile/`, uno che diventasse
+// irraggiungibile lascerebbe il test girare sulle regole rimaste e dire verde.
+// Non si chiede «zero saltati» — uno lo è sempre, il foglio dei Google Fonts,
+// che è di un'altra origine — si chiede che i fogli locali, contati sui tag di
+// `index.html` e non scritti qui, siano stati letti tutti.
 //
 //   node tests/test_hidden_guard.js     (con il server attivo)
 

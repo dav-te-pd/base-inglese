@@ -1,6 +1,16 @@
 // PROTEGGE: che i JSON che l'app carica siano ESATTAMENTE quello che i loro
-// markdown generano, e che i 32 titoli che non sono piu' scritti da nessuna
-// parte SI SAPPIANO DERIVARE — tutti e trentadue, per ogni chiave.
+// markdown generano (regola 26) — una modifica fatta a mano nel JSON
+// sparirebbe in silenzio al prossimo giro del trascrittore —, e che i 32
+// titoli di ogni file dei testi condivisi, che non sono piu' scritti da
+// nessuna parte, SI SAPPIANO DERIVARE — tutti, per ogni chiave, compreso
+// `flashcard`, l'unico kind con due passi: una derivazione che non risolve
+// apre il pop-up col titolo vuoto, senza eccezioni e senza rossi. E che il
+// trascrittore SI FERMI invece di scrivere un vuoto o una cosa sbagliata: su
+// un titolo cercato che compare due volte, su una tabella obbligatoria senza
+// righe, su un suffisso che non e' un ruolo (`:es`), su una seconda tabella
+// in una sezione di un file episodio; che ogni titolo `##`/`###` di ogni
+// markdown di contenuto compaia una volta sola; e che il grassetto della
+// regola generale diventi `<strong>` invece di asterischi a schermo.
 //
 // COSA SI PERDE SENZA QUESTO FILE, e sono due cose diverse:
 //
@@ -33,7 +43,11 @@
 //    che un corso e' uscito senza sequenze. Si guarda OGNI titolo `##`/`###`,
 //    non solo quelli che il trascrittore cerca oggi. **Visto fallire sul file
 //    rotto (la versione `b` della struttura inglese): due rossi col nome del
-//    titolo e la riga, uscita 1.**
+//    titolo e la riga, uscita 1.** Sta in testa al file perche' sul file
+//    rotto il trascrittore alza un'eccezione, e [B] la scrive come rosso col
+//    nome. *Proposto da chi guida il progetto con `controllo-titoli.py`: [D]
+//    guarda solo i titoli che il trascrittore cerca oggi, [E] anche quelli
+//    che leggera' domani.*
 //
 // ④ **Dal 2026-10-06 ([F]): due tabelle in una sezione di un file EPISODIO.**
 //    Il trascrittore leggeva la prima e la seconda spariva; con le stesse
@@ -41,6 +55,19 @@
 //    `controllo-bacino.py` di chi guida il progetto. **Visto fallire con la
 //    guardia spenta: tre rossi su tre**; e su `spagnolo-it-gate.md` con una
 //    tabella in piu' nel grado C il trascrittore esce con 1.
+//
+// ⑤ **Dal 2026-09-30 ([D]): il trascrittore SI FERMA invece di scrivere un
+//    vuoto.** *Quel giorno una tabella nella §1 di `struttura-corso.md`
+//    citava per intero `## 5 — LE SEQUENZE DEI MODULI`: il trascrittore ha
+//    letto la citazione e scritto `sequences: {}` senza dire niente — e [B]
+//    sarebbe rimasto verde, perche' rigenera con lo stesso metodo e confronta
+//    vuoto con vuoto.* Per questo [D] prova le guardie su un testo costruito
+//    apposta. **Visto fallire togliendo le guardie: 3 rossi su 4.** Il fermo
+//    sul suffisso (`:es`) l'ha chiesto chi guida il progetto: nell'app non
+//    fallirebbe, resterebbe a schermo. Visto fallire togliendo la guardia.
+//
+// ⚠️ LIMITE di [E]: guarda i markdown delle edizioni e dei testi condivisi,
+// NON i modelli in `docs/metodo/`.
 //
 // COSA NON PROTEGGE, dichiarato (regola 32): non dice se un TESTO e' buono.
 // Un markdown con una frase sbagliata dentro produce un JSON con la stessa

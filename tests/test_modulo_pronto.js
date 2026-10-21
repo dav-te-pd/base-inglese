@@ -1,5 +1,10 @@
 // PROTEGGE: che un modulo non mostri una schermata che si può toccare prima di
-// avere il contenuto su cui lavorare.
+// avere il contenuto su cui lavorare: `openModuleFromMap`, il punto unico da
+// cui passano tutti i moduli, aspetta la personalizzazione e il file
+// dell'episodio PRIMA di aprirli, e Voice Coach non aspetta più un file di
+// testi che non legge. E il rovescio (`[C]`): chi un file episodio non lo
+// legge — Personalizza, l'unico senza `dataFile` — non lo aspetta, e si apre
+// senza la schermata d'errore.
 //
 // Cosa si perde senza questo file. Il 2026-09-10 `openVoiceCoach` disegnava la
 // schermata e ACCENDEVA il microfono, mentre la battuta arrivava solo dentro un
@@ -22,6 +27,8 @@
 //    guasto realistico della regola 32 — rompere il fetch del tutto proverebbe
 //    solo che l'asserzione sa morire, non che la correzione serve. Misurato:
 //    con la forma vecchia esplode 3 volte su 3, con questa regge.
+//    Visto fallire su due guasti: il precaricamento rimesso (5 rosse) e
+//    l'attesa tolta da `openModuleFromMap` (2 rosse).
 //
 // ② «Il modulo aspetta i suoi dati?» è strutturale, e si guarda in
 //    `openModuleFromMap`: è il punto unico da cui passano tutti e otto i
@@ -34,6 +41,13 @@
 // nella finestra ESPLODE — gli altri sette accettano un gesto che non fa
 // niente, che è più silenzioso e non per questo migliore. Quel caso qui non si
 // vede: lo prende l'asserzione strutturale ②, che vale per tutti.
+//
+// ⚠️ E PORTA DENTRO IL BUCO CHE SI È APERTO DA SOLO (blocco [C]): la prima
+// versione di questa correzione chiedeva il file episodio anche a
+// Personalizza, l'unico modulo che non ne ha uno — e la schermata d'errore
+// compariva su un modulo perfettamente funzionante, cinque file di test
+// rossi. Il test di allora non se ne accorgeva perché guidava solo Voice
+// Coach: `[C]` è quel buco chiuso.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, sorgenteChe, attendiPrimaSchermata, globDati, globCondivisi } = require('./test-env');

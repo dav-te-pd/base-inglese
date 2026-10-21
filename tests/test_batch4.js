@@ -1,3 +1,11 @@
+// PROTEGGE: Che il Pannello Admin mostri la descrizione dei parametri che ne
+// hanno una — e **nessuna riga vuota** per quelli che non ce l'hanno — e non
+// mostri `configFieldDescriptions` come se fosse un gruppo di parametri; che in
+// mappa ogni passo porti il suo nome e il suo sottotitolo, col suffisso di
+// direzione (`en→it`) in uno span suo e piu' piccolo del nome, e Personalizza la
+// categoria «Inizio»; e che lo stesso nome compaia nell'intestazione dei moduli
+// aperti.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { attendiVisibile } = require('./attese');

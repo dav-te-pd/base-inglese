@@ -1,25 +1,38 @@
-// PROTEGGE: che ogni pulsante di ogni modulo abbia il proprio listener
-// ESATTAMENTE UNA VOLTA — né zero né due — per tutta una sessione, comprese le
-// riaperture dello stesso modulo.
+// PROTEGGE: che ogni pulsante di ogni modulo abbia il proprio listener col
+// NUMERO giusto — né zero né uno di troppo — per tutta una sessione, comprese
+// le riaperture dello stesso modulo e l'apertura di un altro kind servito
+// dalla stessa `open`. I due guasti sono ENTRAMBI SILENZIOSI: attaccato due
+// volte, l'azione parte due volte; non attaccato, il pulsante non fa niente.
+// Il numero viene dal baseline (`tests/BASELINE-LISTENER.txt`), non dal
+// sorgente: sui sette `*-complete-btn`, che ne hanno due (il suono d'uscita
+// di `renderSummaryScreen` e il completamento), un pulsante che SUONA E NON
+// COMPLETA è rosso.
 //
-// ⚠️ NASCE PRIMA DEL PASSO 21-QUATER, ED È VOLUTO.
+// ⚠️ LA RIGA CHE VALE OLTRE IL 21-QUATER, tenuta qui perché è il caso che
+// l'ha insegnata: *un test che nasce INSIEME al refactor che dovrebbe
+// proteggere non protegge niente — la prima volta che il meccanismo viene
+// messo alla prova è anche la prima volta che qualcuno lo guarda.*
 //
-// Quel passo sposta ~79 listener dentro l'`open` del proprio modulo, e i suoi
-// DUE guasti sono ENTRAMBI SILENZIOSI:
+// ⚠️ È NATO PRIMA DEL PASSO 21-QUATER, ED ERA VOLUTO.
+//
+// Quel passo ha spostato ~79 listener dentro l'`open` del proprio modulo, e i
+// suoi DUE guasti sono ENTRAMBI SILENZIOSI:
 //
 //     attaccato due volte → l'azione parte due volte, nessun errore
 //     non attaccato più   → il pulsante non fa niente, nessun errore
 //
-// Nessuno dei due alza un'eccezione, nessuno dei due si vede in console. Se il
-// test nascesse insieme alla conversione, la prima volta che il meccanismo
-// viene messo alla prova sarebbe anche la prima volta che qualcuno lo guarda.
+// Nessuno dei due alza un'eccezione, nessuno dei due si vede in console.
 //
-// **Il test è verde su questo codice, ed è giusto così**: oggi il
-// comportamento è corretto, i listener si attaccano una volta sola a tempo di
-// parsing. Un test di regressione per un refactor deve essere verde prima e
-// verde dopo — se fosse rosso prima starebbe chiedendo una funzionalità, non
-// proteggendo un comportamento. Quello che conta è che sia stato **falsificato
-// su tutte e due le direzioni PRIMA che un solo listener venisse spostato**.
+// **Il test era verde sul codice di prima, ed era giusto così**: allora i
+// listener si attaccavano una volta sola a tempo di parsing. Un test di
+// regressione per un refactor deve essere verde prima e verde dopo — se fosse
+// rosso prima starebbe chiedendo una funzionalità, non proteggendo un
+// comportamento. Quello che conta è che sia stato **falsificato su tutte e
+// due le direzioni PRIMA che un solo listener venisse spostato**. Alla
+// chiusura del 21-quater (2026-09-17, 8 famiglie su 8, 79 listener)
+// `tests/BASELINE-LISTENER.txt` non era cambiato in otto giri: è l'unica prova
+// che nessuna delle otto conversioni abbia aggiustato il conto invece del
+// codice.
 //
 // ⚠️ SI CONTANO I COLPI, NON GLI EFFETTI — e questa è la parte che qualcuno
 // «semplificherebbe» trovandola pedante.
@@ -31,22 +44,58 @@
 // **quante volte** ogni coppia (elemento, tipo) viene registrata: 0, 1 e 2
 // diventano tre risultati distinti invece di due.
 //
+// ⚠️ E IL CONFRONTO È COL BASELINE, NON COL SORGENTE. La prima forma derivava
+// le attese dallo stesso file che controllava: togliendo la riga di un
+// listener spariva anche l'attesa, e il test restava verde — si misurava
+// contro sé stesso. E il baseline porta il NUMERO e si misura guidando l'app:
+// con un «non zero», il pulsante che suona e non completa sarebbe passato —
+// provato, e prima passava.
+//
 // COME, e perché serve `addInitScript`. L'istrumentazione deve essere in piedi
 // prima della PRIMA riga dell'app, altrimenti i listener attaccati a tempo di
-// parsing — cioè oggi tutti — non verrebbero contati e il test direbbe zero su
-// un'app che funziona.
+// parsing non verrebbero contati e il test direbbe zero su un'app che
+// funziona.
 //
 // IL CASO PIÙ DIVERSO (regola 42): **la riapertura**. Non un modulo
-// complicato: lo stesso modulo aperto tre volte. Oggi è innocuo — i listener
-// non stanno dentro `open` — e dopo il 21-quater è *il* guasto: misurato, il
-// gesto più banale (apri → mappa → riapri) chiama `open` **tre volte**.
+// complicato: lo stesso modulo aperto tre volte. Prima del 21-quater era
+// innocuo — i listener non stavano dentro `open` — e dopo è *il* guasto:
+// misurato, il gesto più banale (apri → mappa → riapri) chiama `open`
+// **tre volte**.
 //
-// LIMITE DICHIARATO, e va letto insieme al verde: copre solo i listener il cui
-// bersaglio è un `getElementById(...)` sulla stessa riga — 103 su 113. Restano
-// fuori quelli attaccati a una variabile (`speakBtn` di Repeat Aloud, `micBtn`
-// di Voice, `configPanelBodyEl`) e quelli su `document`/`window`. **Due di
-// quelli scoperti sono di un modulo**, quindi il 21-quater li tocca senza che
-// questo file li guardi: vanno convertiti con un'attenzione in più.
+// ⚠️ `[C]` GIRA SU OTTO FAMIGLIE, NON SETTE, dal 2026-09-17: filtrava su
+// `tornaAllaMappa`, che è `null` per Personalizza perché quel modulo non ha un
+// «← Mappa» (categoria Inizio, regola 17). Il campo è stato separato in
+// `uscitaVersoMappa` (`start-episode` per Personalizza), e Personalizza è
+// entrata nel ciclo delle riaperture — l'unica famiglia il cui blocco non
+// sarebbe protetto da nient'altro. Falsificato nelle due direzioni: un
+// listener senza guardia dentro `openCustomize` fa `1 → 4` con la forma nuova
+// e resta verde con quella vecchia.
+//
+// ⚠️ L'ELENCO SU CUI GIRA `[E]` SI DERIVA, dal 2026-09-16: prima era scritto a
+// mano, e una delle sue sei voci non conteneva quello che il nome diceva —
+// `flashcard: ['flashcardATargetNative','flashcardANativeTarget']` sono due
+// PASSI che condividono UN kind. Il blocco verificava cinque famiglie e ne
+// dichiarava sei. Adesso la coppia passo↔kind viene dai descrittori e il
+// raggruppamento per blocco da `BI.moduli` dell'app viva. `[F]` controlla la
+// derivazione stessa — una derivazione che torna meno del dovuto fa saltare
+// famiglie in silenzio — incrociando le due fonti e congelando il conto (5
+// famiglie a più kind, 3 a kind singolo). Su quelle 3 la chiave sbagliata
+// passa verde, ma non per la stessa ragione: su Flash Card e Repeat Aloud il
+// nome di famiglia e il `kind` sono la stessa stringa, su Personalizza sono
+// diversi (`personalizza` / `personalizzazione`) e la chiave sbagliata
+// funziona solo perché il kind è uno. Lì la chiave la protegge solo la regola
+// scritta accanto a `BI.unaVoltaSola`, e `[F]` è l'unico avviso se una di
+// loro prendesse un secondo kind.
+//
+// ⚠️ DAL 2026-10-07 SI APRE CON `apriModulo`, che aspetta la vista del modulo
+// e non i 250 ms di `map-driver`: la CI di `89fee23` aveva contato Flash Card a
+// zero listener a metà apertura. Riprodotto ritardando di un secondo il file
+// dell'episodio: la forma vecchia cade su tutte le famiglie, la nuova regge.
+//
+// LIMITE DICHIARATO, e va letto insieme al verde: il baseline copre i listener
+// il cui bersaglio è un `getElementById(...)`, più quelli osservati guidando.
+// Restano fuori quelli attaccati a una variabile (`configPanelBodyEl`) e
+// quelli su `document`/`window`.
 
 const { launchBrowser, APP_URL, bloccaFontEsterni } = require('./test-env');
 const { openModule } = require('./map-driver');

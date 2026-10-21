@@ -1,7 +1,15 @@
 // PROTEGGE: che ogni episodio dichiari la propria sequenza di passi, che le
-// due strade per dichiararla non si sovrappongano in silenzio, e — la cosa
-// che pesa di più — che passare alle sequenze NON abbia mosso nessun id di
-// passo.
+// due strade per dichiararla (`sequence` per nome, `moduleOrder` per intero)
+// non si sovrappongano in silenzio — dichiararle entrambe, o nessuna, è un
+// errore detto e non risolto scegliendone una, e non esiste più un
+// `moduleOrderDefault` da ereditare — e, la cosa che pesa di più, che passare
+// alle sequenze NON abbia mosso nessun id di passo: se un id si muove ogni
+// studente riparte da zero senza che niente si rompa a schermo. E, dal
+// 2026-09-09 (passo 8), che i due episodi mostrino gli STESSI passi con la
+// stessa categoria: i descrittori di `modulesById` sono uno solo e ogni
+// episodio ne riceve una copia, e se un episodio ne perdesse uno l'app non si
+// romperebbe — mostrerebbe una riga senza categoria, e nessuno saprebbe quale
+// dei due episodi è quello giusto.
 //
 // Perché quell'ultima è la più importante: i progressi salvati sono
 // indicizzati per id di passo (`baseinglese:modules:...`, `moduleOutcome:`,
@@ -22,9 +30,18 @@
 // sbagliarsi per sempre.
 //
 // COME: gli id attesi si leggono da `tests/module-order.js`, cioè dalla
-// sequenza vera in `index.html`, non da una lista ricopiata qui — una lista
+// sequenza vera in `data/{lingua}/{studente}/struttura-corso.json` (fino al
+// 2026-09-20 stava in `index.html`), non da una lista ricopiata qui — una lista
 // scritta a mano sarebbe una fotografia dell'ordine di oggi, che è il difetto
 // che quel file esiste per togliere.
+//
+// E PER `[A2]` si confrontano i due elenchi FRA LORO, non contro una lista
+// scritta qui: l'invariante non è «sono questi», è «sono gli stessi». ⚠️ La
+// prima versione guardava i soli id ed era vuota: gli id vengono dalla
+// SEQUENZA, non da `modulesById`, quindi la riga resta in mappa anche senza
+// descrittore. Dichiarava verde un episodio con un modulo mancante, e l'ha
+// rivelato solo l'iniezione del guasto. Adesso confronta la riga come si vede
+// — id più categoria.
 
 const { launchBrowser, APP_URL } = require('./test-env');
 const { stepIds } = require('./module-order');

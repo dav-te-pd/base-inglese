@@ -1,4 +1,4 @@
-// PROTEGGE: che dal 2026-10-13 nessun id di passo e nessuna direzione nominino una lingua — `matchTargetNative` e non `matchEngIta`, `target-native` e non `en-it` — e che un profilo salvato con i nomi di prima apra l'app senza rompere niente, PERDENDO il progresso di quei passi e i colori di quelle voci.
+// PROTEGGE: che dal 2026-10-13 nessun id di passo e nessuna direzione nominino una lingua — `matchTargetNative`, non l'id di prima con «Eng» e «Ita» dentro; `target-native`, non la direzione con «en» e «it» — nelle strutture di `inglese/it` e `spagnolo/it`, nei testi condivisi italiani e in `app/*.js`; e che un profilo salvato coi nomi di prima apra l'app senza errori, PERDENDO il progresso di quei passi e i colori di quelle voci (mentre lo stesso profilo coi nomi nuovi li tiene).
 //
 // ⚠️ IL PROGRESSO NON MIGRA, E QUESTO FILE LO DICE APERTAMENTE. Non esiste una
 // migrazione per gli id dei PASSI (c'è solo per quelli di personalizzazione),
@@ -21,9 +21,15 @@
 //   [C] ⚠️ il contrario, perché [B] sappia vedere: lo stesso profilo scritto
 //       coi nomi NUOVI tiene il passo completato e il colore.
 //
+// Visto fallire rimettendo una direzione vecchia in `app/match.js` e un id
+// vecchio nella struttura spagnola.
+//
 // ⚠️ LIMITE: [A] guarda le forme che il 2026-10-13 c'erano (`EngIta`,
 // `ItaEng`, le direzioni fra apici). Un id nuovo che nominasse un'altra lingua
 // in un'altra forma — `matchEsIt` — passerebbe.
+// ⚠️ E [A] legge le strutture di `inglese/it` e `spagnolo/it` e i testi
+// condivisi `it`: l'edizione `italiano/es` e i testi condivisi `es`, nati il
+// 2026-10-19, non li guarda (misurato il 2026-10-21 leggendo `staticoA`).
 
 'use strict';
 

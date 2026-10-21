@@ -1,3 +1,17 @@
+// PROTEGGE: che l'avviso distruttivo di Your Story usi il pannello rosso
+// dedicato (icona, bordo spesso) e parli di «progressi» ed «esercizi», non di
+// colori né di mastery; che "Mostra pronuncia" di Voice Check compaia solo
+// dove la battuta ha una `pronunciationTip`, tenga nascosto il testo finché
+// non lo si chiede e lo riveli; che la scatola "L'hai imparato?" del Dialogo
+// resti bloccata finché ogni battuta non è stata sentita (in Ascolta e
+// Ripeti; in Ripeti a Tempo si guarda solo che nasca bloccata); che il 3-2-1
+// di Speed Match usi le frequenze alte dichiarate in `CONFIG`, l'ultima
+// diversa dalle prime due, e non più quelle basse di prima (440/523).
+//
+// COME, per "Mostra pronuncia": la `pronunciationTip` si aggiunge
+// intercettando la richiesta del file episodio, non toccando il file su
+// disco — quello è la fonte condivisa da tutti i test.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { spiaToni } = require('./mock-browser');

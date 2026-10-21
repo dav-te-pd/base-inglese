@@ -1,3 +1,23 @@
+// PROTEGGE: il Pannello Admin per intero — si apre digitando `config` solo
+// FUORI dai campi di testo, mostra la configurazione in gruppi, modifica
+// `APP_CONFIG` in diretta, salva negli override e li riapplica dopo un
+// ricaricamento, rifiuta il JSON non valido senza applicarlo, si chiude con
+// Escape, si azzera col reset (che ricarica e torna al valore di partenza);
+// che la mappa segua l'ordine della sequenza e che **riordinarla dagli
+// override in `localStorage` — la strada vera con cui un riordino arriva in
+// mappa — riordini davvero la mappa**; e i due conti alla rovescia 3-2-1
+// (Speed Match e Dialogo Continuo) con un tono per cifra, l'ultimo su
+// `ready.finalFreq`.
+//
+// ⚠️ IL BLOCCO DEL RIORDINO ERA UNA RIGA CHE NON POTEVA ACCORGERSI DI
+// NIENTE, ed e' stato riscritto il 2026-09-20 seguendo la rossa del passo
+// 1.11b. Scambiava i primi due passi mutando `window.APP_CONFIG.sequences`
+// DOPO il caricamento, quando `episode.modules` era gia' costruito — e la sua
+// asserzione lo ammetteva: verificava solo che il NUMERO dei passi non
+// cambiasse. Adesso lo scambio passa dagli override, e la riga verifica lo
+// scambio per davvero; gli id attesi si ricalcolano con la regola di
+// `moduleStepId` invece di essere scritti a mano.
+//
 const { launchBrowser, APP_URL, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { spiaToni } = require('./mock-browser');

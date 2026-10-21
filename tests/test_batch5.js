@@ -1,3 +1,12 @@
+// PROTEGGE: che uscire da un Dialogo mentre parla fermi l'audio e non lasci
+// proseguire la sequenza — né dentro il Dialogo lasciato (Dialogo Continuo),
+// né nel modulo aperto dopo (da Ripeti a Tempo a Repeat Aloud, nessuna
+// battuta residua); che in Ripeti a Tempo e Dialogo Continuo «Spiegazione» e
+// «Help» ci siano nell'intestazione e si disabilitino durante il countdown
+// 3-2-1 (Dialogo Continuo) e mentre una battuta parla (tutti e due); e che
+// sulla Schermata Finale spariscano tutti e due — anche «Help», dalla
+// regola 10 riscritta il 2026-09-20.
+//
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

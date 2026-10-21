@@ -1,6 +1,13 @@
-// PROTEGGE: che il Blocco Ascolto parli SUBITO al tocco, e che il microfono di
-// Voice Practice parta al primo click, si FERMI al secondo, e non superi il
-// tetto di durata configurato.
+// PROTEGGE: che il Blocco Ascolto parli SUBITO al tocco — nello stesso
+// gestore, una volta sola, con la velocità del pulsante — e che un secondo
+// tocco mentre parla fermi la voce; e che il microfono di Voice Practice parta
+// al primo click, si FERMI al secondo, si spenga da solo quando non sente
+// niente (il taglio per silenzio, con l'avviso a schermo), e con i tre timer
+// e il loro riarmo: chi comincia a parlare tardi non viene tagliato e la sua
+// registrazione è tenuta, chi ha finito di parlare non aspetta il tetto, una
+// pausa per prendere fiato non taglia. Cioè il *comportamento*, non la
+// presenza: senza questo file un'estrazione che lascia tutto raggiungibile e
+// cambia l'ordine in cui le cose girano passerebbe verde.
 //
 // ⚠️ COSA SI PERDE SENZA, ED È UN CASO VERO DEL 2026-09-19.
 //
@@ -48,6 +55,23 @@
 //   *Un limite dichiarato bene dice dove non guardi. Questo diceva anche
 //   perché, e il perché era falso — cioè chiudeva la porta a chi avesse
 //   provato.*
+//
+// ⚠️ DAL 2026-09-21 PROTEGGE ANCHE I TRE TIMER E IL LORO RIARMO: `[E]` che chi
+// ha finito di parlare non aspetti il tetto, `[F]` che una pausa per prendere
+// fiato NON tagli. *Il tetto è messo irraggiungibile apposta in `[E]`, al
+// rovescio di `[C]`: se restasse basso a fermare la registrazione sarebbe lui,
+// e la riga sarebbe verde per il motivo sbagliato.* `[F]` aspetta un effetto
+// POSITIVO — l'orologio a schermo che arriva a `1s`, sei volte i 150 ms del
+// timer — invece di dormire un tempo scelto a occhio per dire «non si è
+// fermata».
+//
+// VISTO FALLIRE SU TRE GUASTI REALISTICI, ognuno con la sua previsione
+// scritta prima: il Blocco Ascolto rinviato di un tick (4 righe rosse), il
+// `recognition.stop()` tolto dal secondo click (1 riga), il taglio per
+// silenzio disattivato (2 righe). E VISTO NON FALLIRE DOVE DOVEVA: con gli
+// stessi guasti, quel giorno, `test_blocco_ascolto.js` restava 19/19,
+// `test_voicecoach.js` 26/26 e `test_avviso_microfono.js` 31/31 — è questa la
+// prova che il file aggiunge qualcosa invece di ripetere.
 
 const { launchBrowser, APP_URL, bloccaFontEsterni } = require('./test-env');
 const { openModule } = require('./map-driver');

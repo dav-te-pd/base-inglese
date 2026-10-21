@@ -1,5 +1,6 @@
-// PROTEGGE: la scala dei colori per voce (applyMasteryResult) — sale solo con
-// la costanza, scende di un gradino solo, non salta, onora
+// PROTEGGE: la scala rosso→giallo→verde dei colori per voce
+// (applyMasteryResult) — sale solo con la costanza, scende di un gradino
+// solo, non salta, onora
 // CONFIG.mastery.promotionStreak invece di avere il numero cablato dentro, e
 // dà alla PRIMA risposta il colore che quella risposta merita invece di
 // parcheggiare tutto su rosso.
@@ -8,11 +9,12 @@
 // schermata — si vede solo dopo settimane, in colori sbagliati che nessuno
 // sa più da dove vengono.
 //
-// COME. La funzione sta dentro la chiusura di index.html e da fuori non si
-// chiama. Invece di esporla apposta per il test (cioè cambiare il codice per
-// farlo misurare), si semina lo stato di partenza in
+// COME. La funzione sta dentro la chiusura di `app/sessione.js` (fino allo
+// spacchettamento, di index.html) e da fuori non si chiama. Invece di
+// esporla apposta per il test (cioè cambiare il codice per farlo misurare),
+// si semina lo stato di partenza in
 // baseinglese:mastery:<episodio>:<utente> e si risponde in Flash Card, che è
-// il modulo con la scala più diretta ("Sì, la so" = correct, "Non ancora" =
+// il modulo con la scala più diretta ("Sì, lo so" = correct, "Non ancora" =
 // wrong). Sei transizioni, sei profili puliti: nessuna dipende dall'esito
 // della precedente.
 //

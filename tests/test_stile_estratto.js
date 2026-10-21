@@ -1,5 +1,7 @@
 // PROTEGGE: che il CSS resti in `stile/` — dodici fogli, caricati NELL'ORDINE
-// dichiarato — e che quell'ordine continui a produrre la stessa cascata.
+// dichiarato — e che quell'ordine continui a produrre la stessa cascata: un
+// foglio che manca, vuoto o non caricato, e un token dei temi che non arriva ai
+// componenti degli altri fogli, non alzano nessun errore nell'app.
 //
 // ⚠️ COSA SI PERDE SENZA, ed è un guasto che non alza niente.
 //
@@ -30,7 +32,17 @@
 // *definisce* invece di *usare* — le variabili dei temi e la guardia `[hidden]`
 // — e quindi l'unico per cui la posizione non è una preferenza. Gli altri
 // undici si possono scambiare fra loro e quasi sempre non succede niente;
-// questo no, e infatti è l'unico su cui `[C]` asserisce una posizione.
+// questo no, e infatti è l'unico su cui `[C]` asserisce una posizione. Visto
+// fallire spostandolo in fondo: **1 rossa**.
+//
+// I BLOCCHI: `[A]` vieta il ritorno di un tag di stile in `index.html`; `[B]`
+// che un foglio dichiarato manchi, sia senza regole o sia sul disco senza che
+// nessuno lo carichi; `[C]` che un 404 tolga un foglio da
+// `document.styleSheets` senza alzare niente, che la guardia `[hidden]` stia in
+// `base.css`, il primo, e che nessun selettore viva in due fogli; `[D]` che la
+// cascata ATTRAVERSI i file — un token di `base.css` deve arrivare a un
+// pulsante di `componenti.css`, altrimenti resta trasparente senza nessun
+// errore.
 //
 // LIMITE DICHIARATO: guarda la cascata fra file, non ogni singola regola. Due
 // fogli di mezzo scambiati fra loro, se non hanno selettori in comune, qui non

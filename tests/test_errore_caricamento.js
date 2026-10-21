@@ -3,7 +3,12 @@
 // o che si apre vuoto. Se questo file sparisse, il ramo d'errore tornerebbe
 // a essere codice che non gira mai in nessuna prova: si romperebbe alla
 // prima modifica e nessuno se ne accorgerebbe, perché su Pages i file ci
-// sono sempre — e quando non ci sono è già troppo tardi per scoprirlo.
+// sono sempre — e quando non ci sono è già troppo tardi per scoprirlo. Dopo la
+// rimozione delle copie `window.FALLBACK_*` è l'unica rete rimasta sul
+// percorso di caricamento. E, dal 2026-10-11 (`[G]`): che un file di
+// migrazioni che c'è ma senza `slot` apra la stessa schermata — su Match e su
+// Personalizza — invece di essere letto come «nessun id è mai cambiato», e
+// che un file con `"slot": {}` apra invece il modulo.
 //
 // Protegge anche le due cose che rendono la schermata utile invece che
 // decorativa: il testo viene dal JSON (regola 8) e "Riprova" rifà davvero
@@ -25,7 +30,11 @@
 //
 // [G], dal 2026-10-11: un file di migrazioni che c'è ma senza `slot` apre la
 // stessa schermata, su Match e su Personalizza — invece di essere letto come
-// «nessun id è mai cambiato».
+// «nessun id è mai cambiato». Personalizza è il caso più diverso (regola 42):
+// l'altro lettore della mappa, che passa da `openCustomize` e mostra la sua
+// vista PRIMA di caricare. E il contrario: `"slot": {}` apre il modulo, vuoto
+// ma dichiarato non è un guasto. *La richiesta intercettata è un'asserzione
+// (regola 49).* **Visto fallire sul codice di prima: 2 rossi su 18.**
 //
 // Il file episodio è quello di ogni modulo, quindi la prova si fa su Match
 // Practice: è il primo passo dopo Personalizza che legge un grado, e la sua

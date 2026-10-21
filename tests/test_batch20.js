@@ -1,3 +1,12 @@
+// PROTEGGE: che nella direzione it→en il testo mostrato sia davvero ITALIANO
+// davanti e INGLESE dietro: in Flash Card il fronte è una voce italiana
+// dell'episodio e il retro la sua traduzione inglese, in Match Practice la
+// domanda è italiana e l'opzione giusta è la sua traduzione inglese, e in
+// tutti e due l'etichetta della direzione dice «ITALIANO → INGLESE». Un
+// ternario target/native invertito qui si vede subito.
+//
+// Limite: guarda solo la direzione it→en, non en→it.
+//
 // Content checks (not just behavior): verifies the TEXT shown for a
 // direction is actually in the expected language, not just that the
 // buttons behave correctly. Closes the gap the censimento audit found —

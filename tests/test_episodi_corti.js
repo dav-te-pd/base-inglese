@@ -1,6 +1,12 @@
 // PROTEGGE: che un episodio con una FORMA DIVERSA dal primo non produca
-// silenzio. Tre difetti della stessa famiglia — tutti e tre non crollano, e
-// per questo erano rimasti: sembrano funzionare.
+// silenzio: che un passo con un `kind` sconosciuto non diventi un vicolo cieco
+// muto che blocca per sempre quelli dopo; che un passo puntato su un grado
+// assente non si dichiari COMPLETATO senza far fare niente, registrando pure
+// l'esito; e che la migrazione di `customizeSeen` non scriva in episodi che
+// Personalizza non ce l'hanno. Tre difetti della stessa famiglia — tutti e tre
+// non crollano, e per questo erano rimasti: sembrano funzionare. Diventano
+// urgenti con gli EPISODI CORTI (solo gradi C e D): è lì che tutti e tre
+// mordono.
 //
 //   1. un passo il cui `kind` non corrisponde a niente diventava una riga
 //      cliccabile che NON FA NULLA. Lo stato di un passo è derivato ("il primo

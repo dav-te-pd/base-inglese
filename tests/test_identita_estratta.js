@@ -1,6 +1,12 @@
-// PROTEGGE: che chi-sei e come-vedi-l'app arrivino, e arrivino PRIMA di
-// `app/avvio.js` — che ha bisogno della chiave del tema per applicarlo prima
-// del primo disegno.
+// PROTEGGE: che chi-sei e come-vedi-l'app (`app/identita.js`) arrivino, con
+// un tag suo e bloccante, e arrivino PRIMA di `app/avvio.js` — che ha bisogno
+// della chiave del tema per applicarlo prima del primo disegno; che quella
+// chiave viva in un punto solo (`avvio.js` la legge da `BI.THEME_KEY`, e nel
+// codice di tutta l'app il letterale compare una volta sola); e, guidando
+// l'app, che il selettore dei temi e le icone siano disegnati (la tabella
+// `ICONS` ha traslocato) e che il tema salvato sopravviva alla ricarica —
+// la prova che i due file leggono la stessa chiave e non due stringhe uguali
+// per caso.
 //
 // ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-17 bloccando la
 // richiesta — ed e' l'OPPOSTO dello strato `progressi`:

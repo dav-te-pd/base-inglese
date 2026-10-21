@@ -1,4 +1,4 @@
-// PROTEGGE: che OGNI riga di OGNI tabella di personalizzazione produca frasi giuste in ogni testo dell'episodio che la usa — non solo il predefinito, che è l'unica riga che il resto della suite guida. Senza questo file, la nona riga di una tabella è coperta come una riga scritta a caso: «I am from Lugano, Italy» uscirebbe a schermo con la suite verde.
+// PROTEGGE: che OGNI riga di OGNI tabella di personalizzazione, in ogni edizione, produca frasi giuste in ogni testo dell'episodio che la usa — non solo il predefinito, che è l'unica riga che il resto della suite guida. Senza questo file, la nona riga di una tabella è coperta come una riga scritta a caso: «I am from Lugano, Italy» uscirebbe a schermo con la suite verde.
 //
 // È la voce «L'opzione che nessuno prova» di `docs/decisioni-stato.md`, con la
 // sua condizione: «al prossimo giro delle tabelle». Il giro è stato quello del
@@ -26,7 +26,11 @@
 // partenze — quelle che portano un paese diverso da quello del predefinito.
 // Sono le uniche dove una frase sbagliata e una giusta divergono: per le
 // città italiane «Italy» scritto a mano sarebbe vero per caso. Il test le
-// nomina (Lugano, Nizza) e le conta, così un elenco che le perdesse si vede.
+// nomina (Lugano e Nizza nelle due edizioni per italiani, sette città in
+// `italiano/es`) e le conta, così un elenco che le perdesse si vede.
+//
+// FALSIFICATO: `Italy` rimesso a mano in `gate` → «I am from Lugano, Italy.»
+// e «I am from Nice, Italy.» rossi; una riga svuotata → [B] rosso.
 //
 // LIMITE: [B] non riconosce un nome predefinito scritto a mano ACCANTO al
 // segnaposto («I am {{papa}}, Marco's son» resterebbe verde). E guarda solo i

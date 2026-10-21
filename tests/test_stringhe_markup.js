@@ -1,6 +1,11 @@
-// PROTEGGE: che le stringhe che lo studente legge dentro un modulo NON siano
-// scritte in `index.html`, e che il markup le riceva davvero invece di restare
-// vuoto.
+// PROTEGGE: che le stringhe che lo studente legge dentro un modulo e nella
+// mappa NON siano scritte in `index.html` né dentro `app/*.js`, e che il
+// markup le riceva davvero invece di restare vuoto: ogni `data-testo` punta a
+// un testo che esiste nel file — una chiave sbagliata non alza e non lascia
+// un rosso, `uiText` torna stringa vuota e il pulsante resta senza scritta —,
+// a modulo aperto nessun elemento resta vuoto, la Spiegazione aperta DALLA
+// MAPPA prima di qualunque modulo ha già titolo e «Chiudi», e la mappa
+// raggiunta a freddo da casa non compare prima dei suoi testi.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-20 «Spiegazione», «Help»,
 // «← Mappa», «Non lo so», «Avanti →», «Ripasso», «Caricamento...» e altri
@@ -24,6 +29,10 @@
 // riempimento all'apertura di un modulo lo avrebbe lasciato vuoto proprio lì.
 // Non è il caso più complicato — è quello a cui MANCA il passaggio che tutti
 // gli altri hanno (nessun modulo aperto prima). La [D] lo guida.
+//
+// La [B] chiude il buco che [A] e [C] lasciano insieme: una chiave che non
+// esiste. **Vista fallire togliendo la chiamata a `hydrateTesti`: 4 rosse**,
+// e nominano i percorsi rimasti vuoti.
 //
 // ⚠️ E LA MAPPA È COPERTA DAL 2026-09-21 (passo 1.3b). Qui c'era scritto che
 // non lo era, «perché `openEpisodeMap` è sincrona e non aspetta i testi»:

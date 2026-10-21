@@ -1,3 +1,34 @@
+// PROTEGGE: che la Schermata Finale di Speed Match abbia il titolo fisso
+// («Round completato!») e il sottotitolo pescato dalla SUA famiglia,
+// `speedMatchMessages`, confrontato con le frasi vere lette dal file; che
+// ogni fascia di `moduleCompleteMessages` e di `speedMatchMessages` abbia
+// almeno due frasi distinte, cosi' la rotazione e' possibile; e che la
+// valvola di sicurezza si apra in Match Practice dopo ripetuti sbagli sulla
+// stessa voce, senza offrire «Riprova ancora» (li' non c'e' niente da
+// ritentare subito). Su Flash Card: che il giro si lasci percorrere e arrivi
+// a uno stato noto — riepilogo, ripasso o valvola — invece di restare fermo
+// su una carta.
+//
+// ⚠️ DAL 2026-09-28 IL SOTTOTITOLO SI CONFRONTA CON LE FRASI VERE, lette dal
+// file: la riga contava i caratteri (`subtitle.length > 5`) e il suo
+// messaggio nominava `moduleCompleteMessages` — cioe' cambiare la famiglia da
+// cui Speed Match pesca l'avrebbe lasciata verde. *Trovata cercando cosa
+// sarebbe diventato rosso al passo del collegamento: niente.* Vista cadere
+// puntando Speed Match a `speedRoundMessages`: rossa, col testo letto
+// stampato accanto.
+//
+// ⚠️ E il blocco della «varieta'» e' stato TOLTO, non riparato: pescava con
+// `oggetto[Math.random() * undefined]` — sempre `undefined` — e chiedeva
+// `seen.size >= 1`, vero per costruzione, aprendo sei pagine per non misurare
+// niente. Nessuna copertura si perde perche' non ce n'era. Al suo posto la
+// cosa affermabile sul dato (JOB 2-bis).
+//
+// LIMITI: il titolo della valvola in Match Practice passa con qualunque testo
+// piu' lungo di tre caratteri, non solo con la famiglia «Tranquillo»; il
+// numero esatto di tentativi dopo cui la valvola si apre non e' guardato; e
+// su Flash Card la variante «riuscita» della valvola non si vede mai — il
+// giro risponde «Sì, la so» a ogni carta (vedi il commento accanto al blocco).
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockInit: mockInitCondiviso } = require('./mock-browser');

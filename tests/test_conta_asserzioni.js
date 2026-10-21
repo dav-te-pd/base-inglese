@@ -1,7 +1,17 @@
 // PROTEGGE: che il contatore delle asserzioni SI ACCORGA di un calo. E' lo
 // strumento che difende ogni verde della suite da un test che ha smesso di
 // girare — e come ogni strumento di misura, se si guasta non lo dice: continua
-// a stampare un numero, e il numero somiglia a un risultato.
+// a stampare un numero, e il numero somiglia a un risultato. Distingue i tre
+// casi con conseguenze opposte — uguale, in aumento (un test nuovo: va bene),
+// in calo (deve fallire e dire QUALE file) — piu' il caso che li confonde
+// tutti: un `.result.txt` mancante, che non e' zero asserzioni ma un file non
+// eseguito. E che `--scrivi` si RIFIUTI quando anche un solo file non ha il
+// suo `.result.txt` ([F]), invece di riscrivere un baseline monco o vuoto che
+// da li' in poi accetta qualunque calo. E ([G]) che nessun test possa restare
+// fuori dalla suite in silenzio: ogni `test_*.js` sul disco gira o e' escluso
+// in `esclusi-dalla-suite.txt` con il suo perche', ogni escluso esiste, lo
+// script non torna a un `FILES="…"` scritto a mano, e senza il file degli
+// esclusi lo strumento si FERMA invece di lanciare tutto in silenzio.
 //
 // Perche' un test per una funzione che conta righe: la stessa ragione di
 // test_attendi.js. Una rete che nessuno esercita si sfilaccia in silenzio, e
@@ -26,7 +36,24 @@
 // trovava nessuno e scriveva «0 asserzioni in 0 file» stampando un successo:
 // un baseline vuoto che da li' in poi accetta qualunque numero, zero compreso.
 // E' la guardia contro «un verde che prova meno di ieri» che si lasciava
-// azzerare in silenzio.
+// azzerare in silenzio: 79 righe cancellate, il giorno in cui e' successo.
+// **Visto fallire davvero:** tolta la guardia cadono esattamente le 4 righe
+// `[F]` e nessun'altra, e l'output della terza nomina il danno — «Baseline
+// scritto: 5 asserzioni in 1 file».
+//
+// Il caso che ha fatto nascere il contatore non e' teorico: `test_batch19` e'
+// caduto eseguendo 39 asserzioni invece di 40, perche' la quarantesima vive
+// in un ramo che, quando il ciclo si esaurisce, non gira.
+//
+// [G] DAL 2026-09-28, E CON UN ALTRO MESTIERE DAL 2026-10-16: prima
+// controllava che ogni `test_*.js` stesse nell'elenco scritto a mano `FILES`
+// di `run_full_regression.sh` (trovato eseguendo: `test_testi_dal_markdown.js`
+// era committato, verde da solo, e non girava — la corsa diceva «80 file»
+// prima e dopo). Da quando la suite lancia ogni `test_*.js` tranne gli
+// esclusi (`tools/file-della-suite.js`), «la lista combacia» e' vero per
+// costruzione, e [G] guarda gli esclusi. La storia intera, con le ragioni per
+// cui il glob era stato scartato il 28/09 e perche' non reggono, sta nel
+// commento di [G].
 //
 // LIMITE DICHIARATO: non si prova che il conteggio sia GIUSTO su ogni file
 // vero della suite — si prova che sappia contare le forme che i test usano e

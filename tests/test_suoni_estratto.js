@@ -1,5 +1,9 @@
 // PROTEGGE: che i toni dell'app arrivino — e che si sappia che la loro
-// assenza NON somiglia a un guasto.
+// assenza NON somiglia a un guasto: senza `app/suoni.js` l'app si apre,
+// arriva alla mappa e non da' errori, e il guasto compare solo al primo
+// Corretto, dentro un esercizio. Lo strato dichiara l'`AudioContext` (che
+// `index.html` non nomina piu') e porta con se' i due listener del risveglio;
+// chiamare un suono davvero non solleva, e il contesto esiste davvero.
 //
 // ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-18 bloccando la
 // richiesta — ed e' il QUARTO tipo della serie, e il piu' silenzioso di tutti:
@@ -35,6 +39,13 @@
 // Corretto. **I due `addEventListener` sono venuti nel file con lei**, e la
 // ragione e' che separare una difesa dal suo innesco lascia due pezzi che
 // nessuno dei due spiega.
+//
+// ⚠️ E UN LIMITE TROVATO DA UNA FALSIFICAZIONE CHE NON HA MORSO DOVE DOVEVA:
+// l'asserzione «chiamare un suono non solleva» resta verde anche con
+// l'`AudioContext` introvabile — i sei suoni escono senza fare niente e senza
+// errore. *«Non solleva» non distingue «il suono e' uscito» da «non e' uscito
+// in silenzio».* Da li' la riga che chiede che il contesto ESISTA; che ne
+// esca un'onda udibile resta fuori dalla portata di un browser di test.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi } = require('./test-env');

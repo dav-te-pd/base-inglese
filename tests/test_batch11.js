@@ -1,3 +1,23 @@
+// PROTEGGE: che l'esito di un modulo segua davvero la sua regola. Con
+// ModuleRules (Voice Check) il primo giro al 100% salva «verde», allo 0%
+// «rosso», un punteggio misto «giallo» dentro la banda di
+// `percentageThresholds`, e la riga in mappa porta classe e badge giusti
+// («Completato», «Da riprovare», «Da rivedere»); un rifacimento SOVRASCRIVE
+// l'esito in entrambe le direzioni (verde → rosso → verde). E insieme: che
+// `moduleOutcomeRules` dichiari la regola di ogni modulo (`moduleRules` per
+// Voice Check, `selfAssessment` per i tre Dialogo, `selfScoreRules` per Why
+// We Say It, nessuna voce per Repeat Aloud); che `--accent` non sia piu' lo
+// stesso colore del rosso di errore (`--wrong-ink`), cosi' l'icona «Attuale»
+// in mappa non si legge come un errore; che l'autovalutazione del Dialogo
+// scriva l'esito SOLO col pulsante di uscita, nella stessa forma `{ level }`
+// di ModuleRules; e che `episodeFinalMessages` abbia i tre casi coi loro
+// complimenti e il consiglio solo dove serve.
+//
+// Testata scritta il 2026-10-21 unendo la riga di `tests/README.md` con le
+// asserzioni del file: la riga nominava solo l'esito di ModuleRules, il
+// rifacimento e `--accent`; i blocchi [Config] e [Modulo Finale prep]
+// c'erano gia' ed erano protetti senza essere dichiarati.
+
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');

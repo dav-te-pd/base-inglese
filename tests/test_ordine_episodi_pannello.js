@@ -1,28 +1,28 @@
 // PROTEGGE: che la lista degli episodi del Pannello Admin sappia fare le due
 // cose per cui esiste — SPOSTARE un episodio e SPEGNERLO — e che l'effetto
 // arrivi allo studente dopo una ricarica, non solo alla riga del pannello.
-//
 // Senza questo file il pannello continuerebbe a disegnare frecce e occhi che
 // si ridisegnano correttamente sotto le dita e non salvano niente: il difetto
 // peggiore di questa famiglia, perche' la schermata risponde e sembra andata.
+// PROTEGGE ANCHE che non esista nessun posto dove SCRIVERE un id di episodio:
+// la lista mostra tutti gli episodi che ESISTONO, col loro nome e non col loro
+// id, quindi un id inesistente non si puo' inserire. PROTEGGE ANCHE che
+// spegnere NON sia cancellare: i progressi di un episodio spento restano nel
+// magazzino e tornano quando lo si riaccende — l'unica parte di questo passo
+// che, se cade, cade sui dati di qualcuno. E che spegnerli TUTTI non lasci la
+// lista dello studente vuota in silenzio: `resolveEpisodeOrder` li tiene tutti
+// e lo dice in console.
 //
-// PROTEGGE ANCHE che non esista nessun posto dove SCRIVERE un id di episodio.
-// E' il requisito che ha deciso la forma della lista (2026-09-26): la lista
-// mostra tutti gli episodi che ESISTONO — chi non e' nominato dall'ordine
-// compare in coda — quindi un id inesistente non si puo' inserire. Se un
-// giorno tornasse la textarea JSON al posto delle righe, il pannello
-// ricomincerebbe ad accettare `episodio-che-non-esiste` senza dire niente, e
-// il risultato sarebbe una lista di episodi con un buco.
+// IL REQUISITO CHE HA DECISO LA FORMA DELLA LISTA (2026-09-26): chi non e'
+// nominato dall'ordine compare in coda. Se un giorno tornasse la textarea
+// JSON al posto delle righe, il pannello ricomincerebbe ad accettare
+// `episodio-che-non-esiste` senza dire niente, e il risultato sarebbe una
+// lista di episodi con un buco.
 //
-// PROTEGGE ANCHE che spegnere NON sia cancellare: i progressi di un episodio
-// spento restano nel magazzino e tornano quando lo si riaccende. E' la
-// promessa scritta nella descrizione del parametro, ed e' l'unica parte di
-// questo passo che, se cade, cade sui dati di qualcuno.
-//
-// PROTEGGE ANCHE che spegnerli TUTTI non lasci la lista dello studente vuota
-// in silenzio: `resolveEpisodeOrder` li tiene tutti e lo dice. Una lista
-// vuota e' la schermata che sembra rotta senza spiegare perche', e la ragione
-// sarebbe una manopola del pannello — non un dato mancante.
+// Spegnere senza cancellare e' la promessa scritta nella descrizione del
+// parametro. E una lista vuota e' la schermata che sembra rotta senza spiegare
+// perche', e la ragione sarebbe una manopola del pannello — non un dato
+// mancante.
 //
 // COME: nessun id di episodio e' scritto qui dentro. Gli id si leggono da
 // `struttura-corso.json` su disco e dall'app stessa, quindi un terzo episodio
@@ -30,6 +30,16 @@
 // salvataggio leggono gli OVERRIDE nel magazzino, non `window.APP_CONFIG`:
 // quello cambia in memoria appena si tocca il pulsante e direbbe "salvato"
 // anche con `persistConfigSection` rotta.
+//
+// VISTO CADERE SU TRE GUASTI REALISTICI, e cadono righe diverse: togliendo
+// `persistConfigSection('episodeSequences')` cadono 3 di [B] — e lo scambio
+// della riga resta VERDE, che e' la prova che il ridisegno da solo non prova
+// niente; togliendo il filtro degli spenti da `resolveEpisodeOrder` cadono 2
+// di [C] e 2 di [D]; togliendo il ramo `episodeSequences` dal pannello cadono
+// 3 di [A], fra cui «non c'e' nessun campo dove scrivere un id». ⚠️ E l'attesa
+// della lista si ARRENDE tornando `false` invece di uccidere il file: col
+// terzo guasto un `waitForSelector` nudo moriva su un TimeoutError e non
+// diceva quale blocco fosse caduto.
 //
 // LIMITE DICHIARATO: si sposta e si spegne UN episodio per volta, su due
 // episodi. Che l'ordine regga un rimescolamento completo di dieci episodi non

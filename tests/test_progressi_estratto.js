@@ -1,11 +1,22 @@
-// PROTEGGE: che il magazzino dei progressi dello studente arrivi, e arrivi
-// PRIMA di chi lo usa.
+// PROTEGGE: che il magazzino dei progressi dello studente (`app/progressi.js`)
+// arrivi, e arrivi PRIMA di chi lo usa — senza, l'app parte ma la mappa non si
+// apre, senza nessuna schermata d'errore. E, dal 2026-09-24 (passo 1.16), che
+// OGNI chiave per episodio sia dichiarata in `CHIAVI_EPISODIO` e che la
+// ripersonalizzazione cancelli passando da quel registro — blocco [D].
 //
-// PROTEGGE ANCHE, dal 2026-09-24 (passo 1.16): che OGNI chiave per episodio
-// sia dichiarata in `CHIAVI_EPISODIO` — blocco [D]. L'elenco delle chiavi che
-// la ripersonalizzazione cancella era scritto a mano, ed era passato da «tre
-// su sette» a «tre su nove» senza che nessuno se ne accorgesse. Adesso una
-// chiave nuova non dichiarata fa diventare rossa la suite.
+// L'elenco delle chiavi che la ripersonalizzazione cancella era scritto a
+// mano, ed era passato da «tre su sette» a «tre su nove» senza che nessuno se
+// ne accorgesse. Adesso una chiave nuova non dichiarata fa diventare rossa la
+// suite.
+//
+// COME: `[S]` (le righe comuni agli strati estratti, `tests/strati.js`) dove
+// sta e quando arriva — tag bloccante, dopo `spazio.js` — e il divieto di
+// ritorno dentro `index.html`; `[A]` piu' di trenta nomi esposti, e il tag
+// prima dello script che accende l'app; `[C]` guidando l'app; `[D]` il
+// registro delle chiavi. ⚠️ `[C]` ha una guardia contro il MORIRE invece di
+// fallire, misurata: con un `defer` sul tag la mappa non si apre,
+// `waitForSelector` scade, e senza guardia il file esplodeva senza stampare
+// niente.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Il 2026-09-17 trentotto funzioni sono
 // uscite in `app/progressi.js`, caricato con un `<script src>` bloccante.

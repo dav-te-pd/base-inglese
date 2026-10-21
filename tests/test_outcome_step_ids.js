@@ -2,10 +2,11 @@
 // apparizione di un modulo nell'ordine, non solo alla prima. Senza, la mappa
 // torna a colorare il passo 4 e a lasciare grigio il passo 9 a parità di
 // risposte, in silenzio — che è com'era prima della correzione del 2026-09-05.
-//
 // E, dal 2026-09-09 (blocco [D]): che nei due pannelli-report due apparizioni
-// dello stesso modulo si DISTINGUANO. Sono due difetti diversi nella stessa
-// riga, e il secondo è nato dopo che il primo era chiuso: prima il nome del
+// dello stesso modulo si DISTINGUANO.
+//
+// Sono due difetti diversi nella stessa riga, e il secondo è nato dopo che il
+// primo era chiuso: prima il nome del
 // passo non si risolveva affatto ("voicePractice-2"), poi si risolveva
 // benissimo ma i due Voice Practice avevano il nome IDENTICO, perché la label
 // di un passo non portava il grado. Due righe indistinguibili in un pannello
@@ -14,6 +15,12 @@
 // L'asserzione sta sulla distinguibilità (riga[0] !== riga[1]), non su una
 // stringa attesa: è quello che il pannello deve garantire, e una stringa
 // attesa ricopierebbe l'implementazione invece di difendere il comportamento.
+// Visto fallire togliendo il grado da `stepLabel`.
+//
+// LIMITE DICHIARATO: la latente — il pannello dei salti di battuta — si
+// verifica solo controllando che passi dalla stessa composizione, perché oggi
+// nessuna sequenza ripete un Dialogue: la collisione vera lì dentro non è
+// esercitata da nessuno.
 //
 // Storia di questo file: è nato per DIMOSTRARE il difetto del § 4.1 di
 // docs/archivio/validazione.md (la regola cercata con l'id del PASSO, che dalla seconda

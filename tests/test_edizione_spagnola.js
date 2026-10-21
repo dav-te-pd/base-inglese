@@ -1,7 +1,16 @@
 // PROTEGGE: che la SECONDA edizione — `spagnolo/it`, trascritta il 2026-09-30 —
-// si apra davvero: l'app puntata a lei parte senza schermata d'errore, mostra
-// gli episodi che la SUA struttura dichiara col loro nome, legge i SUOI file,
-// e riempie ogni battuta e ogni skill senza lasciare segnaposto o «undefined».
+// si apra davvero: l'app puntata a lei (override `edizione`) parte senza
+// schermata d'errore, mostra gli episodi che la SUA struttura dichiara, in
+// quell'ordine e col loro nome, chiede alla voce la lingua dell'edizione,
+// legge i SUOI file, e riempie ogni testo dei quattro gradi e ogni skill dei
+// due episodi senza lasciare segnaposto o «undefined». E che i testi
+// dell'app che erano nel codice vengano dai file: il badge col nome del
+// CORSO spagnolo, il titolo della pagina col nome dell'APP, la scritta della
+// direzione coi nomi spagnoli, il verso «es→it» staccato in mappa,
+// l'etichetta della regola generale dal file condiviso — cambiata la cella,
+// cambia a schermo — col suo grassetto come `<strong>`; `native` dal file
+// condiviso e non dalla struttura; e il nome dell'app GIA' a schermo mentre
+// la struttura non e' ancora arrivata, quello del corso no.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Tutto quello che il progetto ha scritto sui
 // livelli e sulle cartelle — le chiavi-ruolo, i suffissi-ruolo, gli episodi
@@ -18,7 +27,21 @@
 // COSA NON PROTEGGE, dichiarato (regola 32): la voce. Il finto sintetizzatore
 // non sa parlare spagnolo; che la voce del browser sia spagnola lo dice il
 // passo 3 della coda, non questo file. Qui si guarda solo che la lingua
-// chiesta sia quella dell'edizione.
+// chiesta sia quella dell'edizione. E un suffisso sbagliato su un NOME
+// PROPRIO non si vede nemmeno qui — `traducibile: false` da' sempre la
+// colonna dello studente —: per quello c'e' la guardia del trascrittore.
+//
+// VISTO FALLIRE due volte all'origine: senza il file delle migrazioni (due
+// rossi col nome, «schermata d'errore») e con `{{partenza:es}}` scritto a
+// mano nel JSON (rosso che mostra la frase).
+//
+// DAL 2026-10-01 (passo 4) `[E]`, `[F]`, `[G]`: `[F]` trattiene la struttura
+// un secondo e mezzo — e' il motivo per cui `nomeApp` sta in `app/config.js`
+// —; `[G]` sostituisce la cella `etichettaRegolaGenerale` con una sonda e la
+// cerca a schermo, perche' «Regola generale» scritta a mano e letta dal file
+// sono la stessa parola e `[E]` da sola non le distingue. **Visti rossi
+// tutti e tre col codice vecchio rimesso a mano** (scritta della direzione,
+// nomi in `applicaNomi`, etichetta in Repeat Aloud).
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, attendiPrimaSchermata } = require('./test-env');

@@ -1,4 +1,16 @@
-// PROTEGGE: che il trascrittore si fermi quando due colonne di una tabella dei gradi o di una tabella di personalizzazione sono SCAMBIATE — e non solo quando ne manca o ne avanza una. Senza questo file, `en ↔ it` scambiate passano: stesso conto di colonne, e tutto l'episodio esce rovesciato, `target` e `native` invertiti, senza nessun errore.
+// PROTEGGE: che il trascrittore si fermi quando due colonne di una tabella
+// dei gradi o di una tabella di personalizzazione sono SCAMBIATE — e non solo
+// quando ne manca o ne avanza una. Senza questo file, `en ↔ it` scambiate
+// passano: stesso conto di colonne, e tutto l'episodio esce rovesciato,
+// `target` e `native` invertiti, senza nessun errore. E dal 2026-10-16 che
+// ogni passo della §5 della struttura si controlli contro la §2 e la §4: un
+// grado «—» (o `Z`) o un modulo che la §4 non ha fermano il trascrittore, e
+// due guasti nella stessa riga si nominano tutti e due; che i tre modelli di
+// `docs/metodo/` si trascrivano interi — quello delle tabelle con tutte e due
+// le forme, 4 e 6 colonne, quello della struttura col file condiviso vero, con
+// le intestazioni delle sue tabelle uguali parola per parola a quelle delle
+// edizioni vere, e i tre casi veri (un passo senza grado, lo stesso modulo su
+// due gradi, due categorie).
 //
 // Fino al 2026-10-07 il trascrittore controllava il CONTO (`COLONNE_GRADI`,
 // `COLONNE_TABELLE`) e buttava via l'intestazione. Dal 2026-10-08, deciso da
@@ -9,7 +21,7 @@
 //
 // COME — i testi veri, letti dal disco e alterati in memoria; i file non si
 // toccano:
-//   [A] tutti i file veri passano: le due edizioni, i quattro episodi, e i TRE
+//   [A] tutti i file veri passano: tutte le edizioni coi loro episodi, e i TRE
 //       MODELLI di `docs/metodo/`, trascritti interi — quello delle tabelle deve
 //       mostrare tutte e due le forme, 4 e 6 colonne (dal 2026-10-11), e quello
 //       della struttura deve avere le STESSE intestazioni delle edizioni vere
@@ -29,6 +41,17 @@
 //       essere la STESSA nelle due colonne. Un `paese es` in una tabella `en`
 //       ferma. E lo spagnolo, dove la cella libera vale `es`: gli scambi
 //       fermano anche li'.
+//
+// ⚠️ LE PROVE DI FALSIFICAZIONE. *Il caso che ha fatto nascere il file: col
+// trascrittore di prima del 2026-10-08, «Sono {{papa}}.» finiva in `target`
+// senza nessun errore.* [A] visto fallire col modello del 09/10 («Titolo non
+// trovato») e con `places.esempio` ridotta a 4 colonne («[4]»); fino al
+// 2026-10-11 il modello delle tabelle si leggeva tabella per tabella, perché
+// il suo indice elencava `people.esempio` che non c'era. Il modello della
+// struttura del 16 mattina aveva una §5 a tre colonne come le vere ma in
+// un'altra forma, e il conto passava: il confronto delle intestazioni è
+// visto cadere su quel modello. [E] visto cadere col trascrittore di prima
+// sulle tre righe degli arresti.
 //
 // ⚠️ LIMITE: la cella della lingua insegnata e' libera di proposito. Un `fr`
 // al posto di `en` in un corso d'inglese passa: dopo il controllo

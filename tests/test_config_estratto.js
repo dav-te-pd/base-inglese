@@ -1,5 +1,10 @@
 // PROTEGGE: che APP_CONFIG viva fuori da index.html e sia già in memoria
-// quando il primo lettore lo cerca.
+// quando il primo lettore lo cerca: `app/config.js` caricato con un tag
+// BLOCCANTE e PRIMA di `app/avvio.js`, e il blocco d'avvio che non torna in
+// linea in `index.html`. Più due difetti veri del Pannello Admin: che si apra
+// anche da un profilo che ha già risposto una volta a «Hai capito la
+// spiegazione?» (`[D]`), e che il gruppo che l'utente ha aperto resti aperto
+// quando arriva la struttura del corso (`[E]`).
 //
 // COSA SI PERDE SENZA QUESTO FILE. Il 2026-09-15 la configurazione è uscita in
 // `app/config.js`, caricato con un `<script src>` bloccante. Funziona per una
@@ -14,12 +19,16 @@
 // riga che non parla di configurazione.
 //
 // IL CASO PIÙ DIVERSO (regola 42), e qui non è un modulo: è il LETTORE PIÙ
-// PRECOCE. I 162 `CONFIG.` dell'app girano tutti dentro funzioni, cioè molto
+// PRECOCE. I `CONFIG.` dell'app girano tutti dentro funzioni, cioè molto
 // dopo; l'unico che legge APP_CONFIG mentre lo script viene ancora letto è
 // l'IIFE del tema, che applica il tema salvato PRIMA DEL PRIMO DISEGNO
 // leggendo `APP_CONFIG.themes.defaultTheme`. È il primo a rompersi e l'unico
-// che si rompe in modo invisibile — gli altri 162 almeno esplodono dentro un
+// che si rompe in modo invisibile — gli altri almeno esplodono dentro un
 // gesto dell'utente. Quindi è lui che si guida, non un modulo comodo.
+// Visto fallire su due guasti realistici: `defer` sul tag (cade l'asserzione
+// strutturale E muore la pagina) e il tag spostato dopo lo script in linea
+// (`tema: null`, `defaults: false`, e l'errore `"undefined" is not valid
+// JSON`, cioè `JSON.stringify(undefined)`).
 //
 // COME SI OSSERVA, visto che «prima del primo disegno» non si fotografa: si
 // salva un tema DIVERSO dal predefinito e si guarda l'attributo `data-theme`
@@ -31,6 +40,42 @@
 // LIMITE DICHIARATO: non verifica il CONTENUTO della configurazione — quello è
 // `test_config_letta.js`, che controlla che ogni chiave sia letta da qualcuno.
 // Qui si guarda solo dove sta e quando arriva.
+//
+// ⚠️ DAL 2026-09-17 (passo 22) PROTEGGE ANCHE L'ORDINE FRA DUE FILE ESTRATTI,
+// che prima non poteva esistere. Il primo lettore di APP_CONFIG a tempo di
+// parsing era un blocco IN LINEA, e il suo venire dopo `config.js` non era una
+// scelta: era la forma del file — una cosa in linea sta necessariamente dopo i
+// tag sopra di lei. Uscito in `app/avvio.js`, sono due righe che si possono
+// scambiare. **Misurato scambiandole: il tema non si applica,
+// `APP_CONFIG_DEFAULTS` non si crea, e c'è un errore JS** — il modo invisibile
+// qui sopra. Più l'asserzione che vieta il RITORNO (il blocco rimesso in
+// linea): senza, rimettercelo passerebbe verde, perché i due tag ci sarebbero
+// ancora e nell'ordine giusto. *Falsificate separatamente: scambiare i tag
+// lascia verde il divieto, rimettere il blocco in linea lascia verde l'ordine.*
+//
+// ⚠️ [D], DAL 2026-09-20, NASCE DA UN GUASTO VIVO SU PAGES: il Pannello Admin
+// non si apriva più appena un profilo aveva risposto una volta a «Hai capito
+// la spiegazione?». `STORY_CARDS_ANSWER_LABEL` era rimasta nell'IIFE di
+// `index.html` quando la sua unica lettrice è uscita in `app/mappa.js` — due
+// IIFE diverse, quindi `is not defined`, e spariva l'unico modo di cambiare la
+// configurazione a caldo. Il caso più diverso (regola 42) qui non è un altro
+// pannello: è un altro PROFILO — le asserzioni che aprivano il pannello lo
+// aprivano da profilo nuovo, dove il ciclo che legge quelle etichette non gira
+// mai. Visto fallire rimettendo la costante dov'era: **3 rosse su 3**, e la prima
+// nomina l'errore. Il come sta nel commento del blocco.
+//
+// ⚠️ [E], DAL 2026-09-24, PROTEGGE UN DIFETTO VERO DELL'APP — il primo trovato
+// dal censimento sotto stress di 1.18 (`tests/tools/stress.sh`): all'arrivo
+// della struttura del corso il pannello si ridisegnava per intero e richiudeva
+// il `<details>` che l'utente aveva appena aperto. Nessuno l'aveva visto
+// perché su una macchina veloce la struttura arriva prima che qualcuno apra
+// un gruppo: il ritardo su `struttura-corso.json` è la condizione del
+// difetto, non un tetto. *Riprodotto 3 volte su 3 prima di correggere, e visto
+// fallire 1 su 1 dopo, togliendo la correzione.* **Limite dichiarato:**
+// verifica che il gruppo sia ancora APERTO, non che sia lo STESSO NODO — non si
+// accorgerebbe di un ridisegno che perde lo scorrimento, il fuoco o un menu
+// aperto a metà. Copre il sintomo riportato, «il gruppo si richiude sotto le
+// dita», e lo dice.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, globDati } = require('./test-env');

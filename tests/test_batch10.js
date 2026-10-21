@@ -1,3 +1,18 @@
+// PROTEGGE: che i segnaposto dell'episodio siano tutti risolti — aperto Why
+// We Say It sul file vero, zero avvisi in console — e che uno sconosciuto
+// (`{{nonExistentSlot}}` iniettato nel file in volo) faccia un avviso in
+// console che lo nomina invece di rompere l'app; le spunte «sentita» in
+// Dialogo, visibili e vuote dall'inizio e piene (con l'icona) solo sulla
+// battuta ascoltata; il suono Traguardo su «Ho finito» di Repeat Aloud e di
+// Why We Say It, e **non** su «← Mappa», sull'uscita per microfono guasto di
+// Voice Check e su «Non ancora» in Dialogo. E che le soglie percentuali stiano
+// in `CONFIG.percentageThresholds`, al primo livello, e non più dentro
+// `speedMatch` (spostate, non copiate).
+//
+// Il nome dei segnaposto e' quello degli slot (`{{papa}}`, `{{partenza}}`):
+// il blocco [Job2b] guarda anche che nel file dell'episodio non resti nessun
+// nome vecchio (`{{papaName}}`, `{{cittaPartenza}}`...).
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni, catturaAvvisi } = require('./mock-browser');

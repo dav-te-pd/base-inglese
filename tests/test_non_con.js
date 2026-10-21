@@ -1,4 +1,4 @@
-// PROTEGGE: che una voce dichiarata «non con» un'altra non le compaia MAI accanto come alternativa in Match e Speed Match, che la colonna `non con` arrivi dai markdown degli episodi al JSON senza che una coppia scritta in un verso solo o un id fuori dal grado passino, che il bacino si misuri PER VOCE togliendo gli esclusi, e che il MODELLO degli episodi si trascriva davvero.
+// PROTEGGE: che una voce dichiarata «non con» un'altra non le compaia MAI accanto come alternativa in Match e Speed Match (su 300 estrazioni, mentre la stessa voce senza `nonCon` le vede), che la colonna `non con` arrivi dai markdown degli episodi al JSON (`nonCon`) senza che passino una coppia scritta in un verso solo, un id fuori dal grado o una voce che esclude sé stessa, che il bacino si misuri PER VOCE (`voci − 1 − esclusi`) — una voce con troppe esclusioni ferma anche se il grado «basta», e il grado B di `spagnolo-it-gate`, a margine zero, si ferma alla prima coppia — e che il MODELLO degli episodi si trascriva davvero, coi fermi di forma, senza il controllo del bacino che lì direbbe rosso.
 //
 // Il caso che l'ha fatto nascere, misurato da chi guida il progetto: nel grado
 // C di `spagnolo-it-gate` c-1, c-4, c-5 differiscono solo per il segnaposto
@@ -20,6 +20,14 @@
 //       un'eccezione controllata, non solo scritta;
 //   [D] l'app: su 300 estrazioni, una voce con `nonCon` non vede mai le sue
 //       escluse; la stessa voce senza `nonCon` le vede (il test sa vedere).
+//
+// VISTO FALLIRE TRE VOLTE: con l'esclusione tolta dall'app `[D]` vede tutte
+// le voci; col fermo sulla simmetria spento `[A]` cade; con una coppia rotta
+// in `spagnolo-it-gate.md` il trascrittore esce con 1 e nomina la coppia.
+//
+// ⚠️ LIMITE: gli «episodi veri» di [A] e [B] sono i due `gate`, inglese e
+// spagnolo — non `aircraft-door` né l'edizione `italiano/es`. *La riga di [A]
+// dice «I quattro episodi veri» e ne guarda due (misurato il 2026-10-21).*
 //
 // ⚠️ LIMITE: [D] guida `buildMultipleChoiceOptions` con voci costruite qui,
 // senza segnaposto. Che Match e Speed Match le passino il vocabolario del

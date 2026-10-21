@@ -1,4 +1,4 @@
-// PROTEGGE: che dal 2026-10-16 le stelle di Voice Practice e Voice Check e il messaggio di fine modulo leggano UNA scala sola, `percentageThresholds` — così ritoccarne una soglia dal Pannello sposta insieme stelle, messaggio e colori, e Voice Check non può mostrare «tre stelle» sopra un messaggio «medio».
+// PROTEGGE: che dal 2026-10-16 le stelle di Voice Practice e Voice Check e il messaggio di fine modulo leggano UNA scala sola, `percentageThresholds` — così ritoccarne una soglia dal Pannello sposta insieme stelle, messaggio e colori (spostato `medio` a 60, al 55% una stella, «basso», «rosso»), e Voice Check non può mostrare «tre stelle» sopra un messaggio «medio». E che la seconda scala, `voiceCoach.starThresholds`, non torni: né in `APP_CONFIG`, né nel codice, né fra le descrizioni del Pannello.
 //
 // Fino a quel giorno le stelle leggevano `voiceCoach.starThresholds`: gli
 // stessi tre numeri (1, 50, 80) scritti una seconda volta, e niente li
@@ -19,6 +19,9 @@
 // mestieri — il tono del messaggio, il colore, la seconda stella e il
 // tentativo superato (`passed = stars > 1` in app/voice.js). [B] sposta
 // proprio quella.
+//
+// VISTO CADERE col codice di prima: [B] da' due stelle sopra un messaggio
+// «basso», [C] e' rosso su tre righe.
 //
 // LIMITE: non guida Voice Check fino alle stelle a schermo; prova la funzione
 // che le calcola, sull'app vera.

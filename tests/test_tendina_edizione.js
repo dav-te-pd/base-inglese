@@ -15,7 +15,11 @@
 //       non esiste. È l'unico in cui la struttura non arriva, quindi il
 //       pannello si apre senza `nomiASchermo`, senza episodi e senza testi —
 //       e il menu deve funzionare lo stesso: mostra l'edizione salvata come
-//       «non esiste», e sceglierne una vera fa ripartire l'app.
+//       «non esiste», e sceglierne una vera fa ripartire l'app. La prova usa
+//       `inglese/zz`.
+//
+// Visto fallire due volte: col menu tolto (il codice vecchio) cadono `[B]` e
+// `[D]`; con un'edizione tolta dal file cade `[A]`, su tre righe.
 
 'use strict';
 

@@ -1,5 +1,14 @@
 // PROTEGGE: che quello che lo studente ha fatto dentro un modulo si salvi SOLO
-// se lui lo chiede, premendo il pulsante di uscita.
+// se lui lo chiede, premendo il pulsante di uscita: «Ho finito» salva esito,
+// voci e completamento nello stesso gesto; «← Mappa» non salva niente — né i
+// colori della mastery (Match Practice), né l'esito dell'autovalutazione
+// (Dialogo), né le dichiarazioni e i conteggi editoriali (Why We Say It, che
+// aveva due magazzini con due regole). E, a guardia di tutti i moduli
+// insieme, che in tutta l'app esista UN SOLO punto che scrive il magazzino
+// della mastery (`saveMastery`, dentro `commitPendingMastery`; nessun altro
+// passa la sua chiave a `scriviMagazzino`), uno solo che applica la scala dei
+// colori (dentro `recordPendingMastery`), e che il pending si azzeri in
+// `stopAllModuleActivity`.
 //
 // Cosa si perde senza questo file. Fino al 2026-09-10 otto moduli scrivevano i
 // colori della mastery a ogni risposta, direttamente in localStorage. Chi
@@ -27,12 +36,21 @@
 //    moduli uno per uno: si risponde guardando che esista UN SOLO punto in
 //    tutta l'app che scrive il magazzino. Se il punto è uno, l'uguaglianza fra
 //    i moduli non è una cosa da verificare, è una cosa che non può non essere
-//    vera. Quindi [A] legge index.html COME TESTO e conta le chiamate a
-//    saveMastery(: dev'essere una, dentro commitPendingMastery. La NONA
-//    scrittura diretta, il giorno che qualcuno la aggiunge, fa cadere la CI.
+//    vera. Quindi [A] legge il codice dell'app (index.html e app/*.js) COME
+//    TESTO e conta le chiamate a saveMastery(: dev'essere una, dentro
+//    commitPendingMastery. La NONA scrittura diretta, il giorno che qualcuno
+//    la aggiunge, fa cadere la CI.
 //
-//    ⚠️ LIMITE E COSTO DICHIARATI. È una dipendenza da index.html letto come
-//    testo (ce ne sono altre, registrate in docs/decisioni-stato.md), e il conto si
+//    ⚠️ DAL 2026-09-17 L'INVARIANTE È SEGUITO DOVE È ANDATO A STARE (famiglia
+//    ⓪-undecies): la scrittura vera non è più dentro saveMastery ma dentro
+//    scriviMagazzino, condiviso da nove scrittori — quindi c'è una riga in
+//    più che vieta a chiunque altro di passare masteryStorageKey a quel punto
+//    unico. Senza, un decimo scrittore non toccherebbe saveMastery e le due
+//    righe sul conto resterebbero verdi a invariante rotto: misurato, cade
+//    solo la riga nuova.
+//
+//    ⚠️ LIMITE E COSTO DICHIARATI. È una dipendenza dal codice dell'app letto
+//    come testo (ce ne sono altre, registrate in docs/decisioni-stato.md), e il conto si
 //    fa sulle righe con i commenti tolti: una riga che contenesse "//" dentro
 //    una stringa verrebbe troncata e potrebbe nascondere una chiamata. Oggi
 //    non ce ne sono; se un giorno servisse, questo conto va rifatto con un
@@ -42,7 +60,10 @@
 //    guardare che il magazzino sia pieno dopo "Ho finito": era pieno anche
 //    prima della correzione. Quello che distingue le due versioni è il
 //    CONFRONTO fra le due uscite — stesse risposte, due pulsanti diversi, due
-//    magazzini diversi. Per questo [B] misura due numeri, non uno.
+//    magazzini diversi. Per questo [B] misura due numeri, non uno. Visto
+//    fallire su tre guasti: Match Practice che torna a scrivere subito, il
+//    Dialogo che riscrive all'autovalutazione, i conteggi editoriali che
+//    tornano a ogni risposta.
 //
 // LIMITE DICHIARATO: dei moduli che scrivono voci qui se ne guida uno
 // (Match Practice en→it). Gli altri sono coperti da [A], che è più forte di un

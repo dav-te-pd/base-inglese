@@ -1,3 +1,15 @@
+// PROTEGGE: che parlare a lungo non faccia scattare il taglio per silenzio
+// (la registrazione continua e arriva alla conferma); che "Ho finito" apra la
+// Schermata Finale e **non** completi il modulo — lo completa solo il pulsante
+// della Schermata Finale (Repeat Aloud e Why We Say It); il badge Ripasso,
+// nascosto nel primo giro e visibile nel ripasso; lo Sblocco Sequenziale per
+// ascolto in Ripeti a Tempo — la battuta tre non si raggiunge prima della due;
+// "Prossima frase", che chiude il countdown, conta l'uso una volta sola e resta
+// spento mentre parla l'audio; la scelta finale di Ripeti a Tempo, che si
+// accende alla fine della barra dell'ultima battuta e non alla fine del suo
+// audio; e che "← Mappa" non cambi larghezza né posizione quando
+// "Spiegazione" si nasconde (regola 9: colonne fisse, non redistribuite).
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

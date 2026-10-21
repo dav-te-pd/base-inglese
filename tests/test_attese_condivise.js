@@ -1,11 +1,24 @@
 // PROTEGGE: che le forme condivise di `tests/attese.js` misurino davvero, e —
-// soprattutto — **che si veda quando NON misurano**.
+// soprattutto — **che si veda quando NON misurano**. `[A]` aspettano davvero
+// (la durata lo prova); `[B]` sanno tornare `false` — compreso un selettore
+// che non esiste, che NON e' «stato raggiunto»; `[C]` la prova contraria: su
+// uno stato GIA' vero una forma torna `true` subito — in meno della meta' di
+// un'attesa vera — **senza aver verificato niente**; `[D]` il suono: una voce
+// che si spegne DA SOLA, senza nessun tocco, rende vera lo stesso un'attesa
+// «finche' non parla piu'». Se una forma tornasse `true` senza aspettare,
+// decine di asserzioni diventerebbero verdi per finta senza che nessun rosso
+// lo dica.
 //
-// Non protegge un comportamento dell'app: protegge lo strumento con cui
-// quarantasei file la verificano. Se una di queste forme tornasse `true` senza
-// aver aspettato niente, decine di asserzioni diventerebbero verdi per finta e
-// **nessun rosso lo direbbe** — la suite continuerebbe a passare, solo che non
-// proverebbe piu' niente.
+// Non protegge un comportamento dell'app: protegge lo strumento con cui la
+// verificano gli altri file di test — ventisette il 2026-10-21, e si contano
+// invece di ricopiarli: `grep -lE "require\(.*attese" tests/test_*.js`, meno
+// questo. La suite continuerebbe a passare, solo che non proverebbe piu'
+// niente.
+//
+// ⚠️ E IL BLOCCO [D] E' QUELLO DA LEGGERE PRIMA DI SEMPLIFICARE: nove punti
+// della regola 16 restano a tempo per lui — i 50 ms sono la distanza fra
+// «l'ha fermato il tocco» e «e' finito da solo» — e senza quella prova, fra
+// sei mesi, sembrerebbero attese pigre da convertire.
 //
 // ⚠️ LA META' CHE CONTA DI PIU' E' LA PROVA CONTRARIA (blocco [C]).
 //

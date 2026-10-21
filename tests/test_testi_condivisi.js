@@ -1,4 +1,4 @@
-// PROTEGGE: che dal 2026-10-13 i sottotitoli dei moduli, le etichette delle categorie e `nomiASchermo.native` vivano UNA volta sola, nel file condiviso della lingua dello studente, e che l'app li legga da lì. Senza questo file, una seconda copia nella struttura di un'edizione tornerebbe senza rumore — e la mappa mostrerebbe il testo di un file mentre chi scrive corregge l'altro.
+// PROTEGGE: che dal 2026-10-13 i sottotitoli dei moduli, le etichette delle categorie e `nomiASchermo.native` vivano UNA volta sola, nel file condiviso della lingua dello studente, e che l'app li legga da lì. Senza questo file, una seconda copia nella struttura di un'edizione tornerebbe senza rumore — e la mappa mostrerebbe il testo di un file mentre chi scrive corregge l'altro. Il trascrittore si ferma se ne manca uno o ne ricompare una copia; e senza il file condiviso l'app si ferma all'avvio sulla schermata d'errore, con la frase di ultima istanza, e «Riprova» col file tornato arriva alla prima schermata.
 //
 // Fino a quel giorno erano 22 stringhe in ogni `struttura-corso.md`, IDENTICHE
 // nelle due edizioni: 44 nel repository per 21 testi. Deciso da chi guida il
@@ -28,6 +28,10 @@
 // per DUE passi — le due righe della mappa devono mostrare lo STESSO
 // sottotitolo alterato. E Your Story, l'unico in `inizio` e senza grado: la
 // sua riga mostra la sola categoria, senza «· Parole».
+//
+// VISTO CADERE col codice e i dati di prima: [B] rosso su quattro righe, [C]
+// su quattro — la sonda non intercettava niente, perché l'avvio di prima non
+// chiedeva il file.
 //
 // LIMITE: [B] guarda l'edizione inglese. Per lo spagnolo il `native` del
 // condiviso lo verifica `test_edizione_spagnola.js` [E]; sottotitoli e

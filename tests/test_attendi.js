@@ -1,7 +1,9 @@
 // PROTEGGE: che tests/tools/attendi.sh riporti il codice GIUSTO — 0 quando il
 // lavoro e' finito bene, 1 quando e' finito male — e che, quando si arrende,
 // dica QUALE dei due guasti ha davanti: 2 se il lavoro e' vivo e non finisce,
-// 3 se e' morto o non e' mai partito. E' l'unico strumento che sta fra "la
+// 3 se e' morto o non e' mai partito — con due frasi distinte, perche' "cerca
+// il processo" e "controlla il percorso del log" sono due ricerche diverse —
+// e 64 se gli argomenti erano sbagliati. E' l'unico strumento che sta fra "la
 // suite e' finita" e quello che poi racconto: se sbaglia codice, un rosso passa
 // per verde e nessuno se ne accorge, perche' il suo output somiglia a un
 // risultato in entrambi i casi.
@@ -27,6 +29,10 @@
 //     dichiarare morto qualunque lavoro lento, e il test resterebbe verde.
 //     Non basta vedere che un'asserzione sa morire: serve vedere che non
 //     uccide quello che deve sopravvivere.
+//   Le due meta' si provano separatamente, e cadono su insiemi DISGIUNTI:
+//   togliendo il rilevatore di silenzio cadono 6 asserzioni (il guasto
+//   realistico); con un rilevatore troppo zelante cadono esattamente le 3 del
+//   lavoro vivo e lento. Nessuna delle due meta' copre l'altra.
 //
 // Le soglie sono pilotabili (ATTENDI_SILENZIO, e il tetto e' il 4o argomento),
 // quindi i due casi costano secondi invece dei minuti che costavano prima: e'

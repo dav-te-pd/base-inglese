@@ -1,6 +1,12 @@
 // PROTEGGE: che il passo 22 SPOSTI il codice in file separati senza cambiare
 // COSA l'app fa all'avvio — quali moduli si registrano e in che ordine, quali
-// pulizie, con quanti file, e su quale schermata si arriva.
+// pulizie, quali script, e su quale schermata si arriva — e che di blocchi
+// inline in `index.html` ce ne sia UNO SOLO, la riga che accende l'app: un
+// secondo sarebbe la forma con cui il codice torna dentro `index.html` un
+// pezzo per volta. I guasti che prende sono silenziosi al boot: un modulo
+// registrato dopo il boot (la mappa apre e non trova il kind), uno perso del
+// tutto (un passo muto), l'ordine cambiato. L'app parte, il login compare, e
+// il guasto aspetta il primo studente.
 //
 // ⚠️ NASCE PRIMA DELLA PRIMA ESTRAZIONE, ED E' VOLUTO — la stessa ragione per
 // cui test_listener_una_volta.js e' nato prima della prima conversione del
@@ -16,13 +22,27 @@
 //   - perderne uno del tutto             → un passo della mappa muto;
 //   - cambiare l'ORDINE                  → oggi innocuo, domani no, e nessun
 //                                          test guarderebbe.
-// Nessuno dei quattro fa rumore al boot: l'app parte, la schermata di login
+// Gli altri tre non fanno rumore al boot: l'app parte, la schermata di login
 // compare, e il guasto aspetta il primo studente che tocca quel passo.
 //
 // LA FONTE E' IL BASELINE, NON IL SORGENTE (regola 44 sull'elenco): le attese
 // stanno in tests/BASELINE-AVVIO.txt, un file a parte. Derivarle da index.html
 // significherebbe misurarsi contro se stessi — togliendo una registrazione
 // sparirebbe anche dall'attesa, e il test resterebbe verde.
+//
+// ⚠️ E IL BASELINE DELL'AVVIO E' DIVERSO DA QUELLO DEI LISTENER: quello non
+// doveva cambiare MAI; questo PUO' cambiare, ma solo per una DECISIONE
+// STRUTTURALE DICHIARATA, e allora si riscrive nel commit di quella decisione
+// — mai come effetto collaterale di uno spostamento. *Se si riscrive quando fa
+// comodo, torna a essere un rapporto.*
+//
+// ⚠️ DAL 2026-09-20 `[D]` NON CONTA PIU' GLI SCRIPT. Quel totale era stato
+// riscritto undici volte (la storia sta accanto alla riga), e ogni passo che
+// aggiungeva un file lo faceva rosso per il motivo sbagliato: non «uno script
+// e' sparito», ma «ne e' nato uno che doveva nascere». Quello che il totale
+// voleva proteggere lo proteggono gia' `[A]`, `[B]` e `[C]`, che confrontano
+// l'elenco intero col baseline, coi nomi; al suo posto `[D]` guarda l'unico
+// blocco inline.
 //
 // LIMITE DICHIARATO: dice cosa succede all'avvio, NON cosa puo' stare in quale
 // strato. La domanda «se sposto X, cosa gli manca» la serve

@@ -1,3 +1,11 @@
+// PROTEGGE: Che i tre parametri di registrazione (`voiceCoach.silenceTimeoutSeconds`,
+// `maxRecordingMsPerWord`, `maxRecordingMarginMs`) stiano in `APP_CONFIG` e si
+// possano modificare nel Pannello Admin; che il taglio per silenzio scarti la
+// registrazione **senza offrirla** per l'invio e **senza contarla** nei secondi
+// inviati; che un parlato riconosciuto prima del timeout **non** venga scartato
+// per errore; e che una registrazione davvero inviata i secondi invece li conti,
+// per modulo, e il pannello li mostri.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { mockBrowser } = require('./mock-browser');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');

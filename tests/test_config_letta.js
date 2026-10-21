@@ -1,8 +1,10 @@
-// PROTEGGE: che ogni parametro di APP_CONFIG sia nominato da qualcuno.
+// PROTEGGE: che ogni parametro di APP_CONFIG — e ogni tabella del magazzino
+// della personalizzazione — sia nominato da qualcuno.
 // Senza, una manopola smette di muovere qualcosa e resta nel Pannello Admin:
 // si gira, non succede niente, e non c'è modo di accorgersene guardando
-// l'app. È già successo con speedMatch.pointsPerCorrect (decisione D4,
-// docs/correzioni.md).
+// l'app. È il difetto che ha tenuto in vita `pointsPerCorrect` (decisione D4,
+// docs/correzioni.md). E che la lista delle eccezioni non tenga voci che non
+// servono più: coprirebbero in silenzio la chiave che un giorno muore davvero.
 //
 // COME CERCA, e perché non nel modo ovvio.
 // Il modo ovvio sarebbe cercare il percorso puntato letterale
@@ -25,8 +27,7 @@
 // un parametro morto passi il test. Verificato reintroducendo
 // pointsPerCorrect: senza descrizione viene segnalato in entrambi i modi, con
 // una descrizione sfugge se le descrizioni restano nella regione. Oggi il
-// risultato è identico (una sola chiave segnalata, l'eccezione qui sotto):
-// cambia solo cosa succede domani. Si torna indietro invertendo
+// risultato è identico nei due modi: cambia solo cosa succede domani. Si torna indietro invertendo
 // ESCLUDI_DESCRIZIONI qui sotto.
 //
 // LIMITE DICHIARATO: una foglia con un nome generico ("name", "label",

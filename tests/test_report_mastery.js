@@ -3,13 +3,16 @@
 // BASTA. È uno strumento per guardare un dato che a schermo non compare da
 // nessun'altra parte: se mostrasse un numero sbagliato nessuno potrebbe
 // accorgersene confrontandolo con qualcosa, perché non c'è nient'altro con
-// cui confrontarlo.
+// cui confrontarlo. Protegge anche che ogni riga porti il livello che ha nel
+// magazzino, che il conto per livello sia quello vero, e che senza colori il
+// pannello non mostri righe ma lo dica a parole.
 //
-// L'asserzione che conta di più è la terza: aprire il pannello non deve
-// cambiare un solo byte della mastery. Un report che modifica quello che
-// misura è peggio di nessun report — e qui il rischio è concreto, perché la
-// funzione carica lo store con la stessa loadMastery() che usano i tre
-// scrittori, a un carattere di distanza da un saveMastery().
+// L'asserzione che conta di più è quella sul magazzino intatto: aprire il
+// pannello non deve cambiare un solo byte della mastery. Un report che
+// modifica quello che misura è peggio di nessun report — e qui il rischio è
+// concreto, perché la funzione carica lo store con la stessa loadMastery() del
+// travaso (commitPendingMastery, l'unico che scrive), a un carattere di
+// distanza da un saveMastery().
 //
 // ORDINE PER CHIAVE: non è estetica, è il punto del pannello. Le righe della
 // stessa voce (a-hello in Match Practice en→it, in it→en, in Flash Card)

@@ -1,6 +1,13 @@
-// PROTEGGE: che l'interfaccia condivisa — i due overlay, i testi letti dal
-// file delle istruzioni, il sottotitolo d'esito, le stelle — viva fuori da
-// index.html, e che NON si porti dietro lo stato di sessione.
+// PROTEGGE: che l'interfaccia che un modulo INDOSSA — i due overlay, i testi
+// letti dal file delle istruzioni, il sottotitolo d'esito, le stelle, il
+// popup dei tentativi, il pannello Help, la barra del tempo — viva fuori da
+// index.html, e che NON si porti dietro lo stato di sessione: il file non deve
+// nominare `currentEpisode`, `currentValues`, `pendingMastery`. Si romperebbe
+// in silenzio anche: che i listener dello strato ci siano (senza, gli overlay
+// non si chiudono e nessun errore lo dice); che i pulsanti DENTRO il pannello
+// Help funzionino e che una richiesta d'aiuto inviata arrivi nel magazzino;
+// che la barra del tempo porti la durata chiesta; e che il pannello Help,
+// aperto prima che i suoi testi arrivino, non si mostri VUOTO.
 //
 // COSA SI PERDE SENZA QUESTO FILE. `uiText()` legge i testi dell'interfaccia
 // dalla cache SENZA aspettare, ed e' chiamata da cinque regioni-modulo su
@@ -16,20 +23,92 @@
 // e' che il file **non nomini lo stato di sessione**. `itemText` e' rimasta
 // fuori proprio per questo — una riga sola, che pero' lega `currentEpisode` e
 // `currentValues` — mentre `fillTemplate` e' entrata, perche' li prende come
-// parametri. *Se un giorno qualcuno ci portasse dentro `itemText` "perche' e'
-// di interfaccia", questa riga cade prima che il danno si veda.*
+// parametri. *La differenza fra le due e' tutta li': una li riceve, l'altra
+// li va a prendere. Se un giorno qualcuno ci portasse dentro `itemText`
+// "perche' e' di interfaccia", questa riga cade prima che il danno si veda.*
+//
+// ⚠️ IL GUASTO MUTO, [C]: i `addEventListener` sono venuti col file. Erano
+// quattro (le chiusure dei due overlay); il 2026-09-19 sei, col popup dei
+// tentativi e i suoi «Riprova» e «Vai avanti» — *un pezzo non e' solo le sue
+// funzioni: sono le funzioni, lo stato che tengono e i listener che le
+// chiamano*; poi sette col pannello Aiuto e otto col pulsante «Ho finito»
+// della Schermata Finale (il conto e la storia stanno accanto a [C]). Il
+// numero e' stato SEGUITO, mai alzato per farlo tornare. Senza di loro
+// **nessun errore JS**: gli overlay semplicemente non si chiudono. Visto
+// fallire su tre guasti: tag spostato in `<head>`, cioe' prima di `dati.js`
+// (1 rossa in `test_dipendenze_dichiarate`, che nomina le due dipendenze
+// rotte); `itemText` portata dentro (2 rosse); i quattro listener di chiusura
+// tolti (1 rossa, e dice 0). ⚠️ La terza falsificazione ha dovuto essere
+// rifatta: la prima volta non aveva tolto niente — il `sed` cercava due spazi
+// di rientro dove ce n'erano quattro — e il test restava verde per l'assenza
+// del guasto, non per debolezza. *Presa perche' il rosso era stato previsto*
+// (⓪-nonies).
 //
 // ⚠️ IL LIMITE CHE AVEVO DICHIARATO QUI ERA UN BUCO, E LA SUITE L'HA PRESO.
 // La prima versione di questo file diceva: «non verifica che i due overlay si
 // chiudano con Escape — quel listener non e' di questo file». Vero, e
-// irrilevante: il listener resta in index.html ma LEGGEVA `helpOverlayEl`, che
-// con l'estrazione e' finito qui dentro. Ogni Escape dava
+// irrilevante: il listener restava in index.html ma LEGGEVA `helpOverlayEl`,
+// che con l'estrazione e' finito qui dentro. Ogni Escape dava
 // `helpOverlayEl is not defined`, e nessuna delle diciannove righe lo vedeva.
 //
 // **Un limite dichiarato dice dove non guardi; non rende innocuo il fatto che
 // non guardi** (regola 42). Qui il confine passava esattamente dove il test
 // aveva smesso di guardare — che e' il posto dove i confini si rompono.
 // Adesso [E] guida Escape sull'app vera.
+//
+// ⚠️ [F], DAL 2026-09-19, da un guasto VIVO su Pages che nessuna delle 1458
+// asserzioni vedeva: `activeHelpModule` vive in questo strato ed e'
+// RIASSEGNATA, ma i tre punti che la leggevano erano listener rimasti in
+// `index.html` — «Promemoria», «Indietro» e l'invio di una richiesta d'aiuto
+// davano `activeHelpModule is not defined`. Il pannello Help **si apriva e
+// moriva al primo pulsante**. Un alias non puo' funzionare (copierebbe
+// `null` per sempre): si chiede con `moduloDiAiutoAttivo()`. *Le righe che
+// c'erano non lo prendevano perche' nessuna premeva un pulsante DENTRO il
+// menu.* `[F]` lo preme, e legge l'effetto nella stessa chiamata sincrona del
+// click (regola 19).
+//
+// ⚠️ E IL LIMITE DI [F] SI E' CHIUSO IL 2026-09-20, ROMPENDOLO. Diceva: «dei
+// tre punti che leggevano quel nome `[F]` ne guida uno — Promemoria». Il passo
+// ① ha portato quei gestori dentro lo strato, e nel farlo ne ha rotto uno:
+// `saveHelpRequest` non era raggiungibile, quindi l'invio di una richiesta
+// d'aiuto moriva con `saveHelpRequest is not defined` — la conferma non
+// compariva e **la richiesta non veniva salvata**. *Un limite dichiarato dice
+// dove non guardi; non ti impedisce di romperlo proprio li' (regola 42).*
+// Trovato guidandolo, non rileggendolo. Ora `[F]` guida il percorso intero —
+// «non mi e' chiaro», scrivi, invia — e la riga che conta non e' «la conferma
+// e' comparsa», che comparirebbe anche se il salvataggio fallisse a valle: e'
+// **il magazzino cresciuto**. Visto fallire togliendo l'alias di allora: 2
+// rosse, e la seconda nomina il nome. Il `submit` del pannello non entra nel
+// conto di [C] — la riga cerca `addEventListener('click'` apposta — e lo
+// guarda `[F]`, che lo preme. **Limite:** `[F]` non verifica il CONTENUTO
+// della richiesta salvata (episodio, modulo, testo), solo che ne sia
+// arrivata una.
+//
+// ⚠️ [G] NASCE DA UNA FALSIFICAZIONE CHE NON HA MORSO: spostando la barra del
+// tempo in questo strato, portarne la durata a `9999s` lasciava
+// `test_batch9`, `test_batch16` e `test_dialogo_extra` tutti verdi, e togliere
+// perfino l'esposizione di `startTimerBar` lasciava `test_batch9` a 22/22.
+// *La barra del tempo non aveva nessuna rete.* `[G]` guida i quattro pezzi del
+// pre-passo (`startTimerBar`, `freezeTimerBar`, `renderChoiceBox`,
+// `DIRECTION_LABEL` — dal 2026-10-01 `etichettaDirezione`, che compone la
+// scritta dai nomi a schermo della struttura) su un elemento vero, tutto
+// dentro una chiamata sincrona: la durata finisce nella stringa `transition`,
+// e leggerla subito non dipende dalla velocita' della macchina. Visto fallire
+// su tre guasti (durata sbagliata, esposizione tolta, un pulsante che
+// sparisce). Il `try` attorno alla `evaluate` non e' prudenza generica: senza,
+// togliendo l'esposizione il file MUORE invece di fallire (⓪-septies).
+//
+// ⚠️ [H], DAL 2026-09-20, da uno screenshot: il pannello Help si apriva VUOTO
+// — titolo vuoto e tre pulsanti vuoti — se lo si apriva prima che
+// `istruzioni-moduli.json` fosse arrivato, cioe' subito dopo un ricaricamento
+// forzato. *Non era un fallimento, era una FINESTRA, ed e' per questo che la
+// regola 35 non lo copriva.* Solo dalla mappa, perche' un modulo aspetta gia'
+// i testi prima di aprirsi. La finestra dura 1 ms su rete normale, quindi non
+// si guarda — si RIPRODUCE, ritardando quel solo file di 2,5 secondi; un test
+// che aprisse l'Help e basta sarebbe verde sempre, su codice rotto. L'approdo
+// e' il pannello aperto, che nessuna asserzione legge (regola 44). Visto
+// fallire rimettendo il disegno sincrono: la riga stampa
+// `{"vuoti":3,"bottoni":3}`, cioe' lo screenshot.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, globDati, globCondivisi } = require('./test-env');

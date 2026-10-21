@@ -1,20 +1,58 @@
-// I due moduli nati dallo stesso componente della storia: Meet the Story
-// (primo contatto) e Why We Say It (le regole).
+// PROTEGGE: che Meet the Story e Why We Say It — i due moduli del componente
+// della storia — mostrino allo studente l'episodio giusto nel modo giusto.
+// Senza questo file nessuno guarderebbe: che il JSON dell'episodio `gate`
+// coincida carattere per carattere con le tabelle di
+// `docs/inglese/it/inglese-it-gate.md` e porti i numeri che quel file
+// dichiara (voci per grado, skill, slot); che ogni skill sia una voce di una
+// LISTA, con titolo e corpo separati, anche quando una battuta ne porta
+// due; che Meet the Story mostri il dialogo con le traduzioni e senza skill,
+// con «Ho finito» subito libero; che Why We Say It al primo giro imponga la
+// sequenza — una regola alla volta, le successive attenuate e col lucchetto,
+// «Ho finito» bloccato finché non sono dichiarate tutte — con le tre
+// risposte, la frase di supporto, «Esci e riprendi dopo» che salva e riprende
+// dalla prima non dichiarata mentre «← Mappa» non salva; che al ripasso tutte
+// le regole siano raggiungibili e il punteggio autodichiarato diventi l'esito
+// (tutte chiare → 100% → verde). E che il magazzino dell'autovalutazione tenga
+// la risposta CORRENTE e non la somma dei tocchi — una battuta vale un voto in
+// tutto — e che le etichette sopra le bolle siano quelle del file episodio:
+// senza il nome scelto (sopra la bolla «Papà», non «Marco») e col contorno
+// («Hostess al gate», non «Hostess»).
 //
 // Prima erano un modulo solo, "Speak Easy". Quel nome non descriveva più
-// nessuno dei due, e le due esigenze erano opposte: nel primo contatto
-// nascondere la traduzione non allena nessuno — non c'è ancora niente di
-// studiato da cui dedurre il senso — mentre nel modulo delle regole la
-// traduzione dietro il pulsante è proprio l'esercizio.
+// nessuno dei due, e le due esigenze erano opposte: il primo contatto si
+// ascolta e si guarda, il modulo delle regole le fa studiare una alla volta.
+// *Qui c'era scritto che la differenza era la traduzione — sempre visibile
+// nel primo, dietro un pulsante nel secondo — e che i profili portavano
+// `translations: 'always' | 'onDemand'`: non e' piu' vero. La traduzione sta
+// dentro la bolla e sempre visibile in tutti e due, e la chiave e' stata tolta
+// (vedi `CONFIG.story` in `app/config.js`); [B] verifica che non ci sia nessun
+// pulsante «Mostra traduzione».*
 //
 // I due profili stanno in CONFIG.story.profiles e il componente legge di lì
-// (translations: 'always' | 'onDemand', skills: false | true), quindi qui si
-// verifica il COMPORTAMENTO dei due profili, non che esistano due funzioni.
+// (skills: false | true), quindi qui si verifica il COMPORTAMENTO dei due
+// profili, non che esistano due funzioni.
 //
 // Le skill sono quelle vere dell'episodio, non iniettate: whatYouLearn è una
-// LISTA, e la prima battuta ne porta due ("Hello e Hi", "Nice to meet you").
-// È il caso che la struttura a lista esiste per reggere, quindi è quello che
-// il test deve attraversare davvero.
+// LISTA, e la prima battuta ne porta due ("Good morning e Hi", "Nice to meet
+// you"). È il caso che la struttura a lista esiste per reggere, quindi è
+// quello che il test deve attraversare davvero.
+//
+// IL MAGAZZINO DELL'AUTOVALUTAZIONE (dal 2026-09-09, C.2). Prima ogni risposta
+// faceva `+1` senza togliere quella di prima: una card del collaudo è arrivata
+// a «chiara 3 · non chiara 3», cioè sei voti da una persona sola — e il
+// pannello dice di sé che quel numero segnala le spiegazioni da riscrivere,
+// quindi decideva un lavoro editoriale contando i ripensamenti. Si legge il
+// magazzino, non il pannello: un pannello che mostra bene un dato sbagliato
+// passerebbe. L'asserzione più forte è l'ultima — una battuta vale un voto in
+// tutto, comunque la si tocchi — perché regge anche a una forma futura
+// diversa. Viste fallire rimettendo il `+1`.
+//
+// LE ETICHETTE SOPRA LE BOLLE (dal 2026-09-09, passo 9, blocco [B0]): prima
+// di quel giorno la copertura non era debole, era zero. L'atteso si legge dal
+// file episodio, mai ricopiato qui. La prova del nome è costruita: si sceglie
+// un nome riconoscibile e si guarda che NON compaia come etichetta e che
+// compaia dentro le battute. Viste fallire reintroducendo la risoluzione sul
+// nome scelto.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');

@@ -2,9 +2,13 @@
 // viva dicano la stessa cosa. Il markdown e' la fonte (regola 26) e
 // `APP_CONFIG` l'esecuzione: se divergono, si legge un documento che descrive
 // un'app diversa da quella che gira — ed e' il caso in cui non se ne accorge
-// nessuno, perche' il documento resta plausibile.
+// nessuno, perche' il documento resta plausibile. Si confrontano i gradi coi
+// loro nomi, le categorie (ognuna con la sua etichetta nel file condiviso), i
+// nomi e le categorie dei moduli, le sequenze dei moduli passo per passo, gli
+// episodi con la sequenza che chiedono e il loro ORDINE, l'episodio
+// d'ingresso, le due lingue del parlato.
 //
-// COSA CONFRONTA — CINQUE tabelle, tutte con una riga per voce e un id in
+// COSA CONFRONTA — SEI tabelle, tutte con una riga per voce e un id in
 // colonna, quindi leggibili senza interpretare niente:
 //   1. i quattro gradi con il nome mostrato      -> CONFIG.grades/gradeNames
 //   2. le sei categorie                          -> `categorie` del file condiviso
@@ -16,27 +20,37 @@
 // dichiarata dal documento ABBIA la sua etichetta nel file che l'app ha
 // caricato davvero; il testo delle etichette lo confronta
 // `test_testi_dal_markdown.js`, col markdown condiviso.
+//   3-bis. le sequenze dei moduli, passo per passo -> CONFIG.sequences
 //   4. gli episodi con la sequenza che chiedono  -> CONFIG.episodes
+//      e il loro ORDINE                          -> CONFIG.episodeSequences
 //   5. le due lingue del parlato                 -> CONFIG.speech
 //
-// ⚠️ **NON CONFRONTA PIU' I 22 PASSI, E NON E' UNA RINUNCIA: E' UNA DECISIONE
-// PRESA IL 2026-09-21, E VA SAPUTA.**
-//
-// Il documento nuovo NON elenca i passi delle sequenze, di proposito
+// ⚠️ **DAL 2026-09-21 AL 2026-09-23 NON HA CONFRONTATO I 22 PASSI.** Il
+// documento di allora non elencava i passi delle sequenze, di proposito
 // (`STRUTTURA-CORSO_017`): *«due elenchi sugli stessi passi divergono al primo
-// riordino»*. Quindi la tabella che questo test confrontava **non esiste piu'**.
+// riordino»* — e per quei giorni niente ha verificato che i passi vivi fossero
+// quelli voluti: le tre tabelle nuove (nomi dei moduli, episodi, lingue del
+// parlato) non sostituivano quella persa. **Dal 2026-09-23 la sezione 5 del
+// documento li elenca di nuovo, e [Sequenze] li confronta passo per passo**,
+// insieme al controllo che ogni passo nomini un modulo e un grado che
+// esistono (il perche' sta accanto al blocco).
 //
-// ⚠️ **LIMITE DICHIARATO, ed e' il piu' importante di questo file: da oggi
-// NIENTE verifica che i 22 passi vivi siano quelli voluti.** Il file di
-// struttura resta l'unica fonte, e una riga cambiata per sbaglio dentro
-// `sequences` non fa rosso da nessuna parte. *Il documento porta i PRINCIPI
-// dell'ordine (_020.._025) invece dei passi, e un principio scritto in prosa
-// non si confronta con un programma.*
+// ⚠️ L'ORDINE SI CONFRONTA SOLO DOVE SIGNIFICA QUALCOSA: no per
+// `moduleLabels` (un elenco a chiave, che nessuno scorre) — la prima versione
+// lo pretendeva anche li' ed e' andata rossa su una differenza che non era un
+// difetto. *Si confrontava anche per `moduleTypes`, fino al 2026-10-13: da
+// quel giorno le etichette delle categorie sono nel file condiviso.* Dal passo
+// 1.13 [Ordine] confronta `episodeSequences.<nome>` con l'ordine delle RIGHE
+// della tabella della sezione 7 — le righe e non un elenco scritto a parte,
+// per non averne due; senza, riordinare gli episodi nel JSON e non nel
+// documento non romperebbe niente. **Visto cadere** riordinando il JSON e
+// lasciando il documento. Dal passo 1.19 [Episodi] confronta CHIAVE PER
+// CHIAVE, non `JSON.stringify` dei due oggetti, che dipende dall'ordine delle
+// chiavi: l'ordine era misurato due volte, una nel posto sbagliato.
 //
-// **In cambio il file guarda tre tabelle in piu' di prima** — nomi dei moduli,
-// episodi, lingue del parlato. Il conto delle cose protette sale, **ma quella
-// che se n'e' andata non e' sostituita da nessuna di loro**, ed e' per questo
-// che sta scritta qui e non solo nel messaggio di un commit.
+// Dal 2026-09-20 il test ASPETTA prima di leggere (gradi, nomi e sequenze
+// arrivano da `struttura-corso.json`), e l'approdo e' la schermata del nome
+// visibile, che nessuna asserzione di questo file legge (regola 44).
 //
 // La tabella «Le regole di esito» resta fuori di proposito: nomina i moduli
 // con il nome mostrato allo studente e li raggruppa a prosa, quindi per

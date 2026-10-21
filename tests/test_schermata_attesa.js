@@ -1,6 +1,9 @@
 // PROTEGGE: che fra l'apertura della pagina e l'arrivo di `struttura-corso.json`
 // lo studente veda una FRASE e non il bianco — e che quella schermata se ne vada
-// da sola quando i dati arrivano.
+// da sola quando i dati arrivano, lasciando accesa solo la schermata giusta. E
+// i DUE TEMPI di `APP_CONFIG.attesa`: con la soglia alta e i dati veloci la
+// schermata non compare MAI, e una volta comparsa resta almeno il minimo
+// chiesto.
 //
 // Cosa si perde senza questo file: la vista dell'attesa e' l'UNICA dell'app che
 // nasce con `is-active` nel markup. Togliere quella classe, o togliere la sua
@@ -33,6 +36,17 @@
 // test resta verde e sembra aver provato qualcosa. *E' costato un giro il
 // 2026-09-25: `intercettati: 0`.* Per questo il conto degli intercettati e' una
 // riga verificata e non un commento.
+//
+// VISTO FALLIRE su entrambi i guasti della vista, e cadono righe diverse:
+// senza l'accensione cade [A]; fuori dall'elenco `views` cadono [B] ×2 e [C].
+//
+// ⚠️ [E] SORVEGLIA invece di aspettare, e la differenza l'ha trovata la
+// falsificazione: con un `waitForFunction` su `#view-attesa` il guasto «il
+// minimo non si rispetta» faceva morire il file con un TimeoutError — la
+// schermata compare e sparisce dentro un frame. *Un file morto e' un rosso
+// che non dice quale riga.* Sorvegliando si ottengono due righe rosse col loro
+// nome (misurato: `144ms contro 3000 chiesti`). Il confronto e' col MINIMO
+// CHIESTO, non con un numero scelto: il margine cresce col parametro.
 'use strict';
 
 const { launchBrowser, APP_URL } = require('./test-env');

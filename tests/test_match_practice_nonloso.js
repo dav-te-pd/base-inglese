@@ -1,5 +1,5 @@
-// PROTEGGE: che in Match Practice il pulsante "Non lo so" torni ATTIVO sulla
-// domanda successiva dopo una risposta giusta. Si spegne insieme alle opzioni
+// PROTEGGE: che in Match Practice il pulsante "Non lo so" torni ATTIVO (e
+// visibile) sulla domanda successiva dopo una risposta giusta. Si spegne insieme alle opzioni
 // al momento della risposta (qmDisableOptions) e lo riaccende chi disegna la
 // domanda nuova (qmRenderQuestion): se quella riga sparisce, dalla seconda
 // domanda in poi lo studente ha davanti un pulsante spento e nessun modo di
@@ -7,9 +7,10 @@
 // c'e' piu'. Non crolla niente, e per questo nessuno se ne accorgerebbe.
 //
 // COME, ed e' il motivo per cui questo file esiste come file suo.
-// La stessa asserzione vive gia' in test_batch19.js ([QM Task1]) nella forma
+// La stessa asserzione viveva in test_batch19.js ([QM Task1]) nella forma
 // sbagliata: `await page.waitForTimeout(800)` e subito dopo la lettura dello
-// stato. Ottocento millisecondi sono la somma a mente di feedbackPauseMs (600)
+// stato. *(Oggi non piu': test_batch19 l'ha riscritta su questo modello, con
+// `attendiDomandaSuccessiva`.)* Ottocento millisecondi sono la somma a mente di feedbackPauseMs (600)
 // piu' un margine — cioe' una scommessa sulla velocita' della macchina, non
 // una misura (CLAUDE.md regola 19). Su un runner lento la domanda nuova non
 // c'e' ancora e il test dichiara rotto un pulsante che sta benissimo; su uno
@@ -22,8 +23,8 @@
 // aspetta, non con un secondo giro: fra un'attesa e una lettura separate la
 // domanda puo' cambiare ancora.
 //
-// E' il modello con cui vanno riscritte le diciannove attese fisse di
-// test_batch19.js (docs/decisioni-stato.md): non "togliere il numero", ma **dire
+// E' stato il modello con cui sono state riscritte le attese fisse di
+// test_batch19.js sulla domanda successiva: non "togliere il numero", ma **dire
 // cosa si sta aspettando**.
 //
 // Il giro di domande non si guida a caso fino a indovinare: sull'ULTIMA

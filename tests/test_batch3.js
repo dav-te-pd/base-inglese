@@ -1,3 +1,17 @@
+// PROTEGGE: che `?config` nell'indirizzo apra il Pannello Admin al boot (e
+// senza resti chiuso); che il titolo del pop-up «Spiegazione» resti su due
+// righe — «Spiegazione» fissa sopra, il nome del modulo dichiarato in
+// CONFIG sotto, senza trattino lungo; che le categorie mostrate siano quelle
+// del file condiviso (Inizio per Personalizzazione, Quiz per Speed Match,
+// Studia il dialogo per i Dialogo); e che i testi di
+// `istruzioni-moduli.json` non promettano piu' un video, portino il
+// consiglio giusto per tipo di modulo («carta e penna» dove si scrive, «non
+// serve scrivere» dove no), spieghino Dialogo Continuo come «prova generale»
+// e non dicano piu' «finché non...» nel ripasso di Match Practice.
+//
+// Testata scritta il 2026-10-21 dalla riga di `tests/README.md`, completata
+// con le asserzioni del file ([4d], [4e]).
+
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, fileEdizione, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');

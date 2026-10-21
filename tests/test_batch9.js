@@ -1,3 +1,20 @@
+// PROTEGGE: Che le soglie percentuali (`percentageThresholds`: basso, medio,
+// alto) esistano; che i messaggi di fine modulo siano divisi per esito con
+// cinque varianti ciascuno, che il tono «alto» (e il «Si', lo so» del Dialogo)
+// non suggerisca di riprovare, e che la Schermata Finale del Dialogo mostri
+// un messaggio dell'esito scelto; che Repeat Aloud e la storia abbiano una Schermata
+// Finale con un pulsante di completamento esplicito; e che nel Dialogo la riga
+// che spiega perche' la scatola della scelta e' spenta compaia — **col testo di
+// `dialogoShared.choiceBoxHint` letto dal file**, non uno qualunque — finche'
+// non si sono ascoltate tutte le battute, e sparisca quando la scatola si
+// accende.
+//
+// ⚠️ La riga del suggerimento si confronta con `dialogoShared.choiceBoxHint`
+// dal 2026-09-28: prima era `hintText.length > 5`, col messaggio che nominava
+// `istruzioni-moduli.json` (vedi il commento accanto all'asserzione). **Vista
+// cadere** sostituendo la lettura con una stringa letterale in
+// `app/dialogo.js`: rossa, col letto e l'atteso accanto.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');

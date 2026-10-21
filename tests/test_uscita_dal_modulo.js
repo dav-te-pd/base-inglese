@@ -1,6 +1,16 @@
 // PROTEGGE: che uscire da un modulo lo PULISCA davvero — timer, registrazioni,
 // sequenze — adesso che la pulizia non e' piu' dentro `showView` ma dentro
-// `leaveModule` (passo 22, 2026-09-17; CLAUDE.md regola 21).
+// `leaveModule` (passo 22, 2026-09-17; CLAUDE.md regola 21): i chiamanti
+// diretti di `showView` restano esattamente quelli dichiarati in
+// `tests/BASELINE-USCITA.txt`, i punti che lasciano un modulo passano da
+// `leaveModule` e sono 12, e uscendo da ognuna delle famiglie di `FAMIGLIE`
+// le pulizie di `BI.pulizie` girano davvero. E che sulla Schermata Finale
+// l'unica uscita rimasta SALVI: la riga delle azioni e' vuota, e «Ho finito»
+// scrive la mastery in sospeso nel magazzino e segna il modulo completato —
+// prima «← Mappa» li' buttava via l'esercizio in silenzio. Tutti e sette i
+// moduli con Schermata Finale chiamano `barraAzioniFinale` e nessuno si e'
+// tenuto la sua copia della vecchia riga; Voice Coach blocca ancora la riga
+// mentre registra (`lockModuleHeader`).
 //
 // ⚠️ DUE BLOCCHI, E NESSUNO COPRE L'ALTRO. Sono due guasti diversi:
 //
@@ -37,6 +47,30 @@
 // modulo che non si pulisce non alza eccezioni: i suoi timer continuano a
 // girare su una schermata che non c'e' piu', e lo studente lo scopre come un
 // audio che parte da solo o un countdown che riparte dove non dovrebbe.
+//
+// LIMITE DICHIARATO (scritto anche in testa al baseline): [A] vede solo le
+// chiamate LETTERALI nel sorgente; una chiamata indiretta le sfugge, e il
+// giorno in cui e' stato scritto non ne esisteva nessuna (misurato).
+//
+// ⚠️ E DAL 2026-09-20 UN BLOCCO [C], DA UN GUASTO CHE PERDEVA I DATI DELLO
+// STUDENTE: sulla Schermata Finale di Flash Card, con l'esito gia' a schermo,
+// c'erano dodici voci di mastery in sospeso — e «← Mappa» le portava a ZERO,
+// senza nemmeno segnare il modulo completato. *Lo studente legge «Tutte le
+// carte ripassate!» col suo punteggio, tocca il pulsante che in ogni altra
+// schermata significa «esci di qui», e perde tutto in silenzio.* La
+// correzione toglie la riga delle azioni INTERA da quella schermata (regola
+// 10 riscritta); la strada alternativa — far salvare «← Mappa» solo li' — la
+// scarta la regola 17: sarebbe lo stesso pulsante con due mestieri.
+// **Due asserzioni guidate, e la seconda e' quella che conta:** «la riga e'
+// vuota» proverebbe solo che qualcosa e' sparito; quello che protegge lo
+// studente e' che l'uscita rimasta SCRIVE. Senza la seconda si potrebbe
+// togliere la riga e rompere il salvataggio restando verdi.
+// IL CASO PIU' DIVERSO (regola 42): Voice Coach, l'unico che tocca quella
+// stessa riga con un SECONDO meccanismo (`lockModuleHeader`) — verificato
+// sul sorgente, perche' guidarlo fino alla Schermata Finale chiede un
+// microfono finto. LIMITE: [C] guida Flash Card; gli altri cinque li copre
+// la riga strutturale. Visto fallire rimettendo il vecchio comportamento: la
+// riga stampa `{"pulsantiVisibiliInBarra":2,"sospesa":12}`, cioe' il guasto.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, bloccaFontEsterni, repoPath } = require('./test-env');

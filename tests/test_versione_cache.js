@@ -1,10 +1,15 @@
-// PROTEGGE: che i quattordici tag di `index.html` portino TUTTI LA STESSA
-// versione, e che la guardia che la fa salire sappia dire di no.
+// PROTEGGE: che TUTTI i tag di `index.html` — gli script di `app/` e i fogli
+// di `stile/` — portino LA STESSA versione (`?v=`, nella forma AAAAMMGG +
+// lettera), che con quei tag l'app arrivi al login senza nessun file in 404,
+// che anche i file di DATI portino la stessa versione dei tag, e che la
+// guardia che la fa salire (`tests/tools/versione-salita.js`) sappia dire di
+// no. Senza, un browser puo' tenere `index.html` nuovo e un file di `app/`
+// vecchio: un'app che nessuno ha mai scritto, e che nessun test riproduce.
 //
 // ⚠️ COSA SI PERDE SENZA, ED È UN CASO VERO DEL 2026-09-19.
 //
 // Finché l'app era un file solo, «hai la pagina vecchia» era tutto-o-niente.
-// Da quando è quindici file con cache indipendenti, un browser può tenere
+// Da quando è molti file con cache indipendenti, un browser può tenere
 // `index.html` nuovo e `app/ui-condivisa.js` vecchio: il risultato è un'app
 // che nessuno ha mai scritto, e che nessun test può riprodurre — in locale e
 // in CI i file si leggono sempre tutti insieme dal disco.
@@ -15,8 +20,8 @@
 // «le funzioni sono identiche carattere per carattere e il comportamento è
 // cambiato».
 //
-// PERCHÉ «LA STESSA» È L'INVARIANTE, e non «c'è una versione»: se i quattordici
-// la portano uguale, un `index.html` vecchio chiede i quattordici all'indirizzo
+// PERCHÉ «LA STESSA» È L'INVARIANTE, e non «c'è una versione»: se tutti
+// la portano uguale, un `index.html` vecchio li chiede tutti all'indirizzo
 // vecchio e ottiene un insieme COERENTE. È il caso MISTO che va reso
 // impossibile, non il caso vecchio.
 //
@@ -26,9 +31,25 @@
 // versione NON è salita, nessuno se ne accorgerebbe: la CI resterebbe verde,
 // come sempre.
 //
-// LIMITE DICHIARATO: i quattro `fetch` dei file di dati (`app/dati.js`) NON
-// portano versione, quindi un JSON vecchio con codice nuovo resta possibile.
-// È registrato in `docs/decisioni-stato.md` con la sua condizione. Qui non si vede.
+// COME: [A] legge i tag; [B] GUIDA l'app vera — un `?v=` scritto male non
+// darebbe nessun errore leggendo il file, darebbe una pioggia di 404 e un'app
+// morta, quindi si guarda anche il codice di ogni risposta; [C] costruisce
+// repo git VERI in una cartella temporanea e lancia `versione-salita.js` su
+// quattro casi: versione ferma → 1, versione salita → 0, solo documenti → 0,
+// base illeggibile → 64. *Il terzo caso non è decorativo: una guardia che
+// chiede di alzare la versione anche per un commit di soli documenti è
+// corretta e insopportabile, e la prima cosa che si fa con una guardia
+// insopportabile è toglierla.*
+//
+// ⚠️ E [C] HA TROVATO UN DIFETTO NELLO STRUMENTO AL PRIMO GIRO:
+// `versione-salita.js` guardava SEMPRE il repository in cui vive, qualunque
+// cartella gli si desse — quindi le prove sul repo finto misuravano quello
+// vero e tornavano verdi per il motivo sbagliato (⓪-nonies). Da lì `--repo`.
+//
+// ⚠️ Qui c'era un LIMITE DICHIARATO: «i `fetch` dei file di dati non portano
+// versione, quindi un JSON vecchio con codice nuovo resta possibile». Non è
+// più vero dal 2026-09-20 (passo 1.9): la portano, la stessa dei tag, e [B]
+// lo verifica.
 
 'use strict';
 const fs = require('fs');

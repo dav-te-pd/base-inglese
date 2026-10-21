@@ -1,5 +1,10 @@
 // PROTEGGE: che una configurazione sbagliata non possa MURARE l'app — che
-// resti sempre almeno una strada per disfarla.
+// resti sempre almeno una strada per disfarla: con l'app murata da un
+// override su `edizione`, il Pannello Admin si apre dalla sequenza da
+// tastiera e da `?config` nell'indirizzo, senza cadere, coi report che dicono
+// perché non ci sono; la terza uscita della schermata d'errore compare solo
+// se ci sono override salvati; e il ripristino toglie l'override e smura
+// l'app.
 //
 // COSA SI PERDE SENZA QUESTO FILE, e non è un'ipotesi: è successo il
 // 2026-09-21 a chi guida il progetto, provando l'app su Pages. Un override del
@@ -32,6 +37,11 @@
 // dentro `boot()` e sopravvive solo se sta nel punto giusto. **È l'unica
 // porta che i telefoni hanno**, dove digitare «config» vorrebbe dire aprire
 // la tastiera.
+//
+// L'attesa sul pannello NON ALZA (vedi `pannelloAperto` qui sotto): un
+// `waitForSelector` scaduto porterebbe via i blocchi successivi, e [C] e [D]
+// non direbbero come sono andati. **Visto fallire togliendo le quattro
+// guardie: 4 rosse, e nominano il `TypeError` esatto.**
 //
 // LIMITE DICHIARATO: questo file non verifica che il ripristino RIPARI ogni
 // configurazione sbagliata possibile — verifica che la strada per disfarla

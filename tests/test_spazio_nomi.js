@@ -1,20 +1,26 @@
 // PROTEGGE: che un file che arriva DOPO possa registrarsi da sé nello spazio
-// dei nomi, e che le due collezioni non si azzerino quando qualcuno si
-// ricarica.
+// dei nomi — e che la pulizia e il modulo che registra vengano davvero usati —,
+// e che le due collezioni non si azzerino quando qualcuno si ricarica. Il
+// guasto che conta: `window.BI = {}` al posto di `window.BI = window.BI || {}`
+// non dà nessun errore e cancella in silenzio quello che gli altri hanno
+// registrato. E il caso più diverso (`[C]`): un `kind` mai registrato è
+// `undefined`, non un guasto, mentre registrare due volte lo stesso `kind` o
+// qualcosa che non è una funzione esplode subito.
 //
 // ⚠️ NON PROTEGGE CHE L'OGGETTO ESISTA. Quello sarebbe ricopiare
 // l'implementazione, e la regola 32 lo vieta: un test che dice «verifica che
 // `BI` sia definito» passa anche quando il meccanismo è rotto.
 //
-// COSA SI PERDE SENZA QUESTO FILE. Il passo 21 (2026-09-16) crea uno spazio
-// dei nomi che **oggi non ha utenti**: i primi arrivano al 21-bis
-// (`stopAllModuleActivity` che chiama le pulizie registrate) e al 21-ter
-// (`openModuleByKind` che risolve dal registro). Senza una prova adesso, la
-// prima volta che il meccanismo verrà davvero usato sarà anche la prima volta
-// che qualcuno lo mette alla prova — e a quel punto un rosso avrà due
-// sospettati: la conversione appena scritta e la nascita dello spazio dei nomi.
+// COSA SI PERDE SENZA QUESTO FILE. Lo spazio dei nomi è nato al passo 21
+// (2026-09-16) senza utenti, e questo file è nato con lui: senza una prova
+// allora, la prima volta che il meccanismo veniva usato sarebbe stata anche la
+// prima volta che qualcuno lo metteva alla prova, e un rosso avrebbe avuto due
+// sospettati. Oggi gli utenti ci sono: ogni modulo registra il proprio `kind`
+// con `BI.registraModulo`, alcuni la propria pulizia con `BI.registraPulizia`,
+// `openModuleByKind` (`app/apertura.js`) risolve da `BI.moduli` e
+// `stopAllModuleActivity` (`app/mappa.js`) chiama `BI.pulizie`.
 //
-// ⚠️ E IL GUASTO CHE CONTA NON SI VEDE OGGI, SI VEDREBBE AL 21-TER.
+// ⚠️ E IL GUASTO CHE CONTA È UNA RIGA SOLA.
 //
 //     window.BI = window.BI || {};     ← regge un file che arriva dopo
 //     window.BI = {};                  ← lo azzera, IN SILENZIO
@@ -47,19 +53,19 @@
 //     comportamento, e dicono cosa è successo («il file tardivo ha RICREATO
 //     lo spazio dei nomi invece di riusarlo»);
 //   - `{}` in `app/spazio.js` STESSO → cade **solo** l'asserzione strutturale
-//     `[A]`. E non è una debolezza del test: oggi `spazio.js` è il primo dei
-//     due file a caricarsi, quindi azzerare un oggetto che non esiste ancora
-//     non rompe niente. **Diventerà un guasto vero al passo 22**, quando altri
-//     file si registreranno prima di lui — e a quel punto `[B]` coprirà anche
-//     quella direzione senza che nessuno debba toccare il test.
+//     `[A]`. E non è una debolezza del test: oggi `spazio.js` è il primo file
+//     che tocca `BI` (subito dopo `config.js`, che non lo tocca), quindi
+//     azzerare un oggetto che non esiste ancora non rompe niente. Diventerebbe
+//     un guasto vero il giorno in cui un file che si registra caricasse prima
+//     di lui.
 //
 // *Finché quel giorno non arriva, `[A]` è l'unica guardia su quella riga, ed è
 // scritto qui perché chi legge il verde sappia quanto vale.*
 //
-// LIMITE DICHIARATO: non c'è nessuna asserzione sul COMPORTAMENTO dell'app,
-// perché a oggi lo spazio dei nomi non ne governa nessuno. Quando al 21-bis
-// `stopAllModuleActivity` comincerà a leggerlo, quella copertura nasce lì e
-// non qui.
+// LIMITE DICHIARATO: non c'è nessuna asserzione sul COMPORTAMENTO dell'app.
+// Lo spazio dei nomi oggi governa l'apertura dei moduli e la pulizia quando li
+// si lascia, e quella copertura sta nei test che li aprono e li lasciano (per
+// le pulizie, `test_pulizie_registrate.js`), non qui.
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni } = require('./test-env');

@@ -1,4 +1,10 @@
-// PROTEGGE: che chi va a prendere i file arrivi — e arrivi prestissimo.
+// PROTEGGE: che chi va a prendere i file arrivi — e arrivi prestissimo: senza
+// `app/dati.js` non parte niente, ne' login ne' casa ne' mappa, perche'
+// `episodeDataFile(id)` gira mentre `MODULE_DESCRIPTORS` viene costruito. E il
+// confine dello strato: `dati.js` non nomina `EPISODES` e non possiede
+// `applyEpisodeDialogue` — l'unica delle quindici funzioni che SCRIVE il
+// catalogo — ma la CHIEDE a chi la possiede; e i `fetch` dell'app stanno tutti
+// in `app/dati.js`, nessuno in un altro file di `app/` ne' in `index.html`.
 //
 // ⚠️ COSA SI ROMPE SE IL FILE NON ARRIVA, misurato il 2026-09-18:
 //
@@ -12,7 +18,7 @@
 // script principale, prima di qualunque gesto. *Su Pages basta aprire: se la
 // schermata del nome c'e', questo file c'e'.*
 //
-// I cinque casi della serie, perche' si leggano insieme:
+// I sei casi della serie, perche' si leggano insieme:
 //   `dati` ........ non parte niente, subito ................. RUMOROSO
 //   `identita` .... pagina bianca .............................. RUMOROSO
 //   `audio` ....... si vede il login e il primo tasto e' morto
@@ -26,7 +32,14 @@
 // strada comoda era esporre `EPISODES` su `BI` — due righe, suite verde, e
 // il catalogo scrivibile da qualunque file per sempre. *Seconda volta in due
 // giorni che la misura respinge un confine che non avrebbe prodotto nessun
-// rosso: la prima era `renderStars`.*
+// rosso: la prima era `renderStars`.* Oggi sta in `app/apertura.js` (passo
+// C2) e il caricatore gliela CHIEDE. Tre asserzioni di [A] lo proteggono,
+// falsificate insieme → 11/14.
+//
+// [A] guarda anche dove stanno i `fetch`: diceva «i quattro fetch» ed e'
+// andata rossa il 2026-09-20 per una decisione (col passo 1.11b sono cinque).
+// L'invariante non era il numero, era che stessero tutti nello stesso posto:
+// adesso il numero si misura e non si scrive (vedi il commento sul blocco).
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, righeDiCodiceDi, sorgenteChe } = require('./test-env');

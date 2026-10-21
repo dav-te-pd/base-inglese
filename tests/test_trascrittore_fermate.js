@@ -1,4 +1,10 @@
-// PROTEGGE: che il trascrittore, davanti a un file obbligatorio che manca, si FERMI PRIMA DI SCRIVERE e dica TUTTI i mancanti con percorso e chi li chiede — invece di morire con un `ENOENT` e lo stack trace, magari a meta' della scrittura — e che crei da solo le cartelle di `data/` che un'edizione nuova chiede, ma solo quando scrive davvero.
+// PROTEGGE: che il trascrittore, davanti a un markdown obbligatorio che
+// manca, si FERMI PRIMA DI SCRIVERE e dica TUTTI i mancanti con percorso e chi
+// li chiede — compresi i due file condivisi di una lingua-studente che non ha
+// la sua cartella — invece di morire con un `ENOENT` e lo stack trace, magari
+// a meta' della scrittura; e che crei da solo le cartelle di `data/` che
+// un'edizione nuova chiede, ma solo quando scrive davvero, mai sotto
+// `--controlla`.
 //
 // Chiesto da chi guida il progetto il 2026-10-19, insieme all'edizione
 // `italiano/es`: la prima con uno studente non italiano, cioe' la prima che
@@ -24,6 +30,8 @@
 //   [D] le cartelle di `data/` tolte: `--controlla` NON le crea (un controllo
 //       che crea una cartella e' un controllo che scrive), la scrittura si' — e
 //       i file che rimette sono identici a quelli che c'erano.
+//
+// FALSIFICATO: col trascrittore di prima, 13 asserzioni su 23 rosse.
 //
 // LIMITE: non prova un markdown presente ma illeggibile (permessi): resta un
 // errore di sistema, con lo stack trace.

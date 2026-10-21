@@ -1,3 +1,25 @@
+// PROTEGGE: le domande STRUTTURALI che ogni strato estratto si fa, scritte
+// una volta sola — *aiutante, non un test: le asserzioni le esegue il file
+// che lo chiama, col suo `log`*. Che `index.html` carichi lo strato con un
+// tag suo, BLOCCANTE, nell'ordine dichiarato; **il divieto di ritorno**
+// (niente di estratto ridefinito dentro `index.html`); dal 2026-09-18 **il
+// divieto di esporre un nome che lo strato RIASSEGNA** — un nome che cambia
+// esce come funzione, non come valore; e che ogni nome esposto abbia almeno
+// un lettore. Se sparisse, i test di strato che lo richiedono non
+// partirebbero; se perdesse una domanda, la perderebbero tutti insieme.
+//
+// ⚠️ IL DIVIETO DI RIASSEGNAZIONE E' NATO DA UN ROSSO, e la riga che c'era
+// prima non poteva vederlo: chiedeva che ogni nome esposto AVESSE il suo
+// alias in `index.html`, cioe' esattamente la cosa sbagliata da fare per una
+// variabile che cambia. `app/dati.js` ne ha esposte tre, l'alias ne ha
+// congelato il `null` iniziale, `uiText()` legge la cache senza aspettare, e
+// **ogni testo dell'interfaccia e' uscito stringa vuota: sette file rossi su
+// una suite che nove strati avevano passato**. *Nove strati sono passati
+// senza toccarla perche' nessuno aveva ancora esposto una variabile che
+// cambia — un confine sbagliato che non produce nessun rosso e' quello che si
+// eredita.* Il ponte degli alias non c'e' piu' dal 2026-09-20 (passo ③): la
+// domanda «ha l'alias» e' diventata «ha almeno un lettore».
+//
 // Le verifiche STRUTTURALI che ogni strato estratto ha in comune, scritte una
 // volta sola.
 //

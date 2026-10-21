@@ -1,12 +1,19 @@
-// PROTEGGE: la promessa dello Sblocco Sequenziale — un passo più avanti della
-// sequenza NON risponde a niente. Senza questo file la sequenza torna a essere
-// solo un effetto grafico: la card sembra spenta, ma il pulsante dentro
-// funziona ancora e l'audio parte lo stesso, che è esattamente il difetto
-// trovato al collaudo nella variante per dichiarazione (Why We Say It) mentre
-// quella per ascolto (Ripeti a Tempo) era già a posto.
+// PROTEGGE: la promessa dello Sblocco Sequenziale nelle due varianti fra i
+// passi di un modulo — per dichiarazione (Why We Say It) e per ascolto
+// (Ripeti a Tempo): un passo più avanti della sequenza NON risponde a niente —
+// nessun audio, nessun cambiamento, la sequenza non avanza — mentre il passo
+// raggiungibile continua a rispondere. E il COLORE in Why We Say It:
+// l'accento compare una volta sola nella colonna, sulla card corrente, e
+// nessuna regola bloccata lo usa. Senza questo file la
+// sequenza torna a essere solo un effetto grafico: la card sembra spenta, ma
+// il pulsante dentro funziona ancora e l'audio parte lo stesso, che è
+// esattamente il difetto trovato al 6° collaudo nella variante per
+// dichiarazione mentre quella per ascolto era già a posto.
 //
-// Le due varianti restano separate apposta (CLAUDE.md regola 30): markup e CSS
-// diversi, stessa idea. Questo file le prova ENTRAMBE nello stesso modo, ed è
+// Le varianti restano separate apposta (CLAUDE.md regola 30): markup e CSS
+// diversi, stessa idea. La regola ne conta tre; la terza, per completamento
+// fra gli EPISODI, la prova `test_lista_episodi.js`. Questo file prova le due
+// fra i passi di un modulo ENTRAMBE nello stesso modo, ed è
 // il posto in cui il "chi ne tocca una guardi l'altra" diventa una misura
 // invece che una raccomandazione.
 //
@@ -15,7 +22,7 @@
 // proteggerebbe i pulsanti di oggi e lascerebbe scoperto il primo che qualcuno
 // aggiunge domani, che è come il difetto è nato.
 //
-// PROTEGGE ANCHE il COLORE, ed e' una misura non uno screenshot: l'accento
+// IL COLORE è una misura, non uno screenshot: l'accento
 // deve comparire una volta sola nella colonna, sulla card corrente. Quando lo
 // usava anche ogni regola futura, il disegno era completo in ogni sua voce e
 // non funzionava lo stesso — nove segnali "non ancora" contro un segnale "sei

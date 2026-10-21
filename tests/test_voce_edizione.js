@@ -2,7 +2,10 @@
 // i gradini decisi da chi guida il progetto il 2026-10-01 — prima le preferite
 // di quella lingua, poi la varietà ESATTA (`es-ES`), solo dopo un'altra
 // varietà della stessa lingua (`es-MX`), e MAI un'altra lingua — e che il
-// Pannello Admin DICA quale voce sta usando, ripiego compreso.
+// Pannello Admin DICA quale voce sta usando, ripiego compreso. Anche
+// `es_ES` col trattino basso è la varietà esatta; l'inglese tiene la sua
+// preferita; un elenco di voci salvato dal pannello prima del 2026-10-01 vale
+// solo per l'inglese e non trascina lo spagnolo su una voce inglese.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Fino al passo 3 l'app provava un elenco di
 // voci inglesi PRIMA di guardare la lingua, e ripiegava su `'en'` scritto a
@@ -13,6 +16,9 @@
 // ⚠️ IL CASO PIU' DIVERSO (regola 42): il dispositivo che NON HA nessuna voce
 // della lingua dell'edizione. È l'unico in cui la risposta giusta è «niente»,
 // e il codice di prima ci rispondeva con la voce inglese.
+//
+// COME: usa il campo `voci` di `mock-browser.js`, nato per lui. Visto fallire
+// col codice di prima: 8 rossi su 9, tutti con «Google US English».
 //
 // COSA NON PROTEGGE, dichiarato (regola 32): che la voce SUONI bene. Le voci
 // sono finte — nome e lingua — e la scelta fra due voci della stessa varietà

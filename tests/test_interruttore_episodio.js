@@ -2,7 +2,14 @@
 // con il suo contenuto. E' l'unica strada che esiste oggi per raggiungere un
 // episodio diverso dal primo: se smette di funzionare, l'app continua a
 // funzionare benissimo — mostrando sempre lo stesso episodio — e nessuno se ne
-// accorge finche' non prova a collaudare il secondo.
+// accorge finche' non prova a collaudare il secondo. Protegge anche che
+// l'episodio 2 sia collegato al SUO file dati; che un id inesistente non lasci
+// una pagina bianca ma lo DICA in console; che il pulsante di casa e il badge
+// in mappa nominino lo STESSO episodio, e che il badge ne mostri il NOME — non
+// «Episodio N» ne' l'id; e che il menu segua l'ordine degli episodi dichiarato
+// dal corso (`episodeSequences`), togliendo un id elencato che non esiste e
+// mettendo in coda, invece di farlo sparire, un episodio che esiste e non e'
+// elencato — dicendolo in console in tutti e due i casi.
 //
 // PROTEGGE ANCHE che l'episodio 2 sia collegato: le battute che si vedono sono
 // quelle del SUO file dati, non quelle dell'episodio 1. Un episodio "collegato"
@@ -25,6 +32,20 @@
 // "Episodio 1" mentre la mappa, un tocco dopo, diceva "Episodio 2".
 // L'asserzione confronta le due schermate FRA LORO, non con un testo atteso
 // scritto qui: e' il requisito vero, e un badge ricopiato invecchierebbe.
+// Vista fallire rimettendo il difetto.
+//
+// PROTEGGE ANCHE, dal 2026-09-21 (blocco [E]): quello che legge lo studente.
+// Il badge in mappa mostra il NOME dell'episodio, e non «Episodio N» ne' l'id
+// (STRUTTURA-CORSO_031). Le due asserzioni servono tutte e due: la prima dice
+// che il nome giusto arriva, la seconda che quello sbagliato non c'e' — un nome
+// che arriva con l'id accanto passerebbe la prima. Il nome atteso si legge dal
+// file di struttura, mai ricopiato qui.
+//
+// L'ORDINE DEGLI EPISODI (blocchi [O] e [P], dal passo 1.13) e il perche'
+// `primaBattuta` parte dall'id (passo 1.19) sono spiegati accanto al codice,
+// col limite di [P]. Le prove di falsificazione: [O] e' vista cadere
+// rimettendo `Object.keys(EPISODES)`; [B] e [C], col passo 1.19, provati al
+// rovescio — con l'ordine degli episodi scambiato restano verdi.
 //
 // LIMITE DICHIARATO: si guarda UN modulo (Meet the Story, il primo che mostra
 // contenuto dell'episodio). Che tutti gli altri ventuno passi leggano il file

@@ -1,5 +1,10 @@
 // PROTEGGE: che **un solo file tocchi il posto dove si salva** quello che lo
-// studente lascia dietro di sé, e che quel file **ingoi** invece di alzare.
+// studente lascia dietro di sé — nessun `localStorage.` in un altro file di
+// `app/` né in `index.html`, e ogni chiamata di `magazzino.js` dentro un
+// `try` — e che quel file **ingoi** invece di alzare: con ogni chiamata al
+// magazzino che alza (navigazione privata, dati del sito bloccati, quota
+// piena) l'app arriva comunque alla prima schermata, senza errori JS non
+// gestiti, e una lettura impossibile torna il valore vuoto.
 //
 // ⚠️ COSA SI PERDE SENZA, ed è il passo 1.7 intero.
 //
@@ -14,7 +19,7 @@
 // `setItem` non protetto lì fermerebbe il disegno di una schermata per una
 // preferenza non salvata: l'app diventerebbe inutilizzabile per non aver
 // ricordato un tema. `[B]` fa alzare ogni chiamata e verifica che l'app arrivi
-// comunque alla mappa — *è la prova che il `catch` vuoto di `magazzino.js` non
+// comunque alla prima schermata — *è la prova che il `catch` vuoto di `magazzino.js` non
 // è una distrazione ma la scelta che rende l'app usabile in privata.*
 //
 // IL CASO PIÙ DIVERSO (regola 42): fra le tre famiglie di chiavi, **gli
@@ -22,6 +27,18 @@
 // l'unica letta **a tempo di parsing**, prima che esista qualunque schermata.
 // Se il magazzino alzasse lì, non fallirebbe una preferenza: non partirebbe
 // l'app. È il caso che `[B]` mette alla prova per primo.
+//
+// `[A]` SEGUE LE GRAFFE: la prima forma guardava la parola `try` sulla stessa
+// riga ed era rossa su `magLeggiJson`, dove il `try {` sta tre righe sopra.
+// **E le due righe coprono insiemi diversi:** `[B]` prende le chiamate che il
+// boot attraversa, `[A]` anche quelle che partono solo a esercizio finito
+// (`magScriviTesto`, `magCancella`). Visto fallire togliendo il `try` da
+// `magScriviTesto`: **1 rossa**, e nomina la riga.
+//
+// ⚠️ `[C]` («ogni chiave comincia per "baseinglese:"») e' vera per
+// costruzione: raccoglie solo le stringhe che cominciano gia' per
+// `'baseinglese:` e poi controlla che comincino cosi'. Una chiave nuda non
+// la farebbe cadere — trovato leggendo il codice il 2026-10-21.
 //
 // LIMITE DICHIARATO: guarda che il magazzino sia uno e che ingoi. **Non**
 // verifica che i dati salvati siano giusti — quello lo fanno i test dei

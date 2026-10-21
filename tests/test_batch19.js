@@ -1,3 +1,13 @@
+// PROTEGGE: Che in Match Practice e in Speed Match «Non lo so» si spenga
+// insieme alle opzioni subito dopo una risposta giusta — cosi' non puo'
+// sovrascriverla — e torni attivo sulla domanda successiva invece di restare
+// spento; che Spiegazione e Help restino **visibili** anche durante il quiz
+// (in Match Practice, che non ha timer, anche attivi), e in Speed Match si
+// disabilitino solo mentre la barra scorre, riabilitandosi nei tre casi in cui
+// c'e' qualcosa da leggere (risposta sbagliata, «Non lo so», tempo scaduto) e
+// restando spenti — senza sfarfallio — nella pausa dopo una risposta giusta;
+// e che uscire a meta' timer non li lasci spenti alla riapertura.
+
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser } = require('./mock-browser');
