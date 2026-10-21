@@ -35,8 +35,8 @@
 # e' l'unica persona a cui serve.*
 # ##########################################################################
 #
-# Ultimo aggiornamento: 2026-10-20
-# Totale: 2249
+# Ultimo aggiornamento: 2026-10-21
+# Totale: 2264
 test_attendi.js 17
 test_attendi_ci.js 55
 test_attese_condivise.js 25
@@ -117,6 +117,7 @@ test_story_modules.js 95
 test_stringhe_markup.js 15
 test_struttura_corso.js 19
 test_suoni_estratto.js 13
+test_tabella_protegge.js 15
 test_tabelle_personalizzazione.js 25
 test_tendina_edizione.js 12
 test_testi_condivisi.js 36
