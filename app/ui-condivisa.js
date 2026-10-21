@@ -913,9 +913,9 @@
   // ⚠️ I DUE LISTENER SI AGGANCIANO A TEMPO DI PARSING, quindi questo file
   // deve restare nella SECONDA FILA. Era già vero per i due overlay; adesso lo
   // è per un secondo motivo, e vale la pena che siano due.
-  // Shared safety-valve nudge popup (jobs 3+4) — Voice Coach today, Speed
-  // Round/Match Practice/Flash Card reuse this same function+markup, never a
-  // copy each. wasCorrect picks the message group from
+  // Shared safety-valve nudge popup (jobs 3+4) — Voice Practice, Speed
+  // Match, Match Practice and Flash Card all use this same function+markup,
+  // never a copy each. wasCorrect picks the message group from
   // messaggi-feedback.json's valvolaSicurezzaMessages: nonRiuscita (still
   // hasn't gotten it right at the max attempt) vs riuscita (got it right
   // despite needing several tries) — same reassuring-vs-recognition split
@@ -1009,7 +1009,7 @@
   //
   // È il motivo per cui il passo trasversale esiste, e non è cambiato: questi
   // tre sono **pezzi condivisi che stavano in un modulo per POSIZIONE**, e i
-  // sei moduli ancora da estrarre li erediterebbero così — cioè uno strato
+  // sei moduli allora ancora da estrarre li avrebbero ereditati così — cioè uno strato
   // finirebbe a chiedere a un modulo, il verso che questa serie esiste per
   // eliminare. *Un confine sbagliato che non produce nessun rosso è quello che
   // si eredita.*

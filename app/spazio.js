@@ -5,13 +5,15 @@
 // ============================================================
 // LO SPAZIO DEI NOMI — passo 21 dello spacchettamento.
 //
-// ⚠️ QUESTO OGGETTO NON HA ANCORA UTENTI, ED E' VOLUTO.
+// Chi lo usa: i moduli registrano qui le loro pulizie (`BI.registraPulizia`
+// in `dialogo.js`, `flashcard.js`, `speedmatch.js`, `storycards.js`,
+// `voice.js`) e `stopAllModuleActivity` in `app/mappa.js` le chiama tutte; il
+// registro dei kind (`BI.moduli`) lo legge `openModuleByKind` in
+// `app/apertura.js`.
 //
-// Il primo arriva al passo 21-bis, quando `stopAllModuleActivity` smettera' di
-// nominare sei famiglie di moduli e chiamera' invece le pulizie registrate
-// qui. Il secondo al 21-ter, con `openModuleByKind`. Fino ad allora questo
-// file e' un meccanismo senza chiamanti — **non e' codice morto, e non va
-// tolto.**
+// *Qui c'era «⚠️ QUESTO OGGETTO NON HA ANCORA UTENTI, ED E' VOLUTO»: vero
+// quando il file e' nato al passo 21, falso dal 21-bis (le pulizie) e dal
+// 21-ter (`openModuleByKind`). Corretto il 2026-10-21.*
 //
 // Sta da solo, invece che insieme al suo primo utente, per una ragione sola:
 // se nascesse insieme alla conversione della pulizia, il primo rosso avrebbe
@@ -185,7 +187,7 @@ window.BI = window.BI || {};
   // riga.*
   //
   // Il nome da usare e' quello della FAMIGLIA, perche' e' cio' che resta
-  // stabile quando al passo 22 ogni famiglia avra' il suo file: 'speedMatch',
+  // stabile ora che, dal passo 22, ogni famiglia ha il suo file: 'speedMatch',
   // 'dialogo', 'storyCards', 'voice', 'match', 'flashcard', 'repeatAloud',
   // 'personalizza'.
   //

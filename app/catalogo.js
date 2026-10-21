@@ -476,7 +476,7 @@
   //
   // Chi chiama: `boot()`, prima di scegliere l'episodio iniziale. Nessuno
   // legge `episode.modules` fra il caricamento degli script e quella riga —
-  // i ventitre file di `app/` a tempo di parsing dichiarano soltanto.
+  // i file di `app/` a tempo di parsing dichiarano soltanto.
   function costruisciPassi() {
     // Prima CHI sono gli episodi, poi i loro passi: tutti e due vengono dalla
     // struttura, e sono le due cose che non si possono sapere prima del fetch.
