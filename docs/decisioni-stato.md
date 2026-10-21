@@ -61,7 +61,7 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 | **1.12** | **La catena di validazione delle edizioni — CINQUE, due episodi ciascuna.** È il collaudo che dice se il modello regge, e va fatto **prima di Supabase**. La **tendina dell'edizione** nel Pannello Admin c'è dal 2026-10-02 (passo ⑤): l'elenco lo scrive il trascrittore in `data/edizioni.json` | **appena ci sono le edizioni da validare** — chi guida il progetto sta scrivendo i due episodi di spagnolo. *Deciso il 2026-09-26: «sfiniamo gli episodi, così quando lo farai poi vediamo se è tutto ok»* ⚠️ **Al 2026-10-19 sono DUE su cinque: `spagnolo/it` (dal 2026-09-30) e `italiano/es` (dal 2026-10-19)**, la prima con uno studente non italiano — promossa intera, si raggiunge dal Pannello Admin. Prima di andare avanti: **il giro di allineamento fra le tre**, riga qui sotto | qui sotto, «① prima di Supabase» |
 | **Il giro di allineamento fra le tre edizioni** | **I testi fuori dalla lingua dello studente sono di due tipi, e solo uno è un fallback. Misurato il 2026-10-20.** ① **Dodici scritti nel codice, mostrati DOPO che i file sono arrivati** — cinque nomi dei temi in `app/config.js`, sette nel markup senza `data-testo`: «Non sei tu? Cambia nome», i quattro di «Come ti chiami», i due della scelta del tema. Non sono un fallback: `accendi()` parte solo quando struttura e testi condivisi ci sono tutti e due. Si chiudono col pattern che esiste già — «Tus episodios»: il markup tiene il ripiego, il file condiviso lo sostituisce. Aspettano per R1: le celle e il cablaggio del markup nascono nello stesso commit, e quel commit tocca le schermate del profilo, da toccare una volta sola col pannello utente. ⚠️ Non sono bloccati dal selettore di lingua — l'app la lingua la sa già — ma dal fatto che quelle schermate si toccano una volta sola. ② **Sette davvero PRIMA del caricamento** — «Sto preparando il corso…» e le sei frasi di ultima istanza della schermata d'errore (`LOAD_ERROR_LAST_RESORT`, regola 35), tutte in italiano. Questo è il fallback vero, e aspetta il selettore di lingua. ⚠️ La formulazione del 19/10 trattava i dodici come fallback: la misura del 20/10 l'ha smentita. *Testo di chi guida il progetto, copiato il 2026-10-20: la riga parla di `app/` e del markup, che sono uno per tutte e tre le edizioni, quindi vive qui e non nel file di un'edizione — la loro copia è diventata un rimando a questa. Le altre due voci segnate il 19/10 sono chiuse: la riga `**Versione:**` di `es-istruzioni-moduli.md` (20261019a) e «SEI titoli» di `spagnolo/it`, che dice SETTE dalla versione 20261020a promossa in `8bf5975`.* | ① **col pannello utente**, quando si toccano le schermate del profilo (R1) · ② **col selettore di lingua**. *Non urgente: oggi nessuno studente arriva a `italiano/es`, l'edizione la decide `CONFIG.edizione`* | questa riga |
 | **Lo spagnolo** | **Quello che nessun file di contenuto può sistemare — misurato il 2026-09-30 sul primo episodio consegnato (`spagnolo-it-gate`).** Ordine deciso da chi guida il progetto, **un passo di codice alla volta** (regola 45): ① ~~le chiavi del JSON e i suffissi dei segnaposto diventano RUOLI, `target`/`native`~~ **fatto il 2026-09-30** — *la mattina c'era un passo ① diverso, «`:es` ricavato dalla voce», rifatto lo stesso giorno per decisione* · ② ~~l'elenco degli episodi dalla struttura~~ **fatto il 2026-09-30** (`popolaEpisodi`) · → ~~si trascrive lo spagnolo~~ **fatto il 2026-09-30**: due episodi, `gate` e `aircraft-door`; si raggiunge dal Pannello Admin · ③ ~~la voce~~ **fatta il 2026-10-01**: preferite per lingua, varietà esatta prima del ripiego, mai un'altra lingua, e il Pannello Admin dice quale voce sta parlando. `es` delle preferite **vuoto apposta**: si riempie dopo averle ascoltate su tre dispositivi · ④ ~~i testi dell'app che erano nel codice, dai file~~ **fatto il 2026-10-01**: la direzione e il nome del corso dalla §9 «I NOMI A SCHERMO» della struttura (`nomiASchermo`), «Regola generale» e «Un consiglio» da due celle del file dei testi condivisi (178), il nome dell'app — APPLINGUE, di lavoro — da `nomeApp` in `app/config.js`; la classe `general-rule` è diventata `note-box` nello stesso commit · ~~il `3` dei distrattori~~ **fatto il 2026-10-01**: `CONFIG.sceltaMultipla.distrattori`, UNA chiave per Match e Speed Match, e **il trascrittore si ferma** su un grado che un modulo a scelta multipla legge e che ha meno di `distrattori + 1` voci — *deciso da chi guida il progetto: niente ripiego silenzioso, niente errore allo studente* · ⑤ ~~la tendina dell'edizione~~ **fatta il 2026-10-02**: `data/edizioni.json` lo scrive il trascrittore, il Pannello Admin mostra un menu delle edizioni che esistono al posto delle due caselle, ed è l'uscita anche dall'app murata · ~~il lettore di `non con`~~ **fatto il 2026-10-07**: colonna ultima in A, B, C, campo `nonCon`, fermi di forma su ogni file, bacino per voce sugli episodi veri, il modello trascritto da un test | **adesso**: la catena 1.12, ② `it/spagnolo` — il contenuto lo scrive chi guida il progetto | `docs/correzioni.md` per ①-④; qui per il resto |
-| **1.10** | **Il giro dei buchi** | **per definizione ULTIMO** — si fa quando la lista smette di cambiare | qui sotto |
+| **1.10** | **Il giro dei buchi** — ✅ **fatto il 2026-10-21**: sedici buchi in tre famiglie. **Restano aperte le decisioni, una per buco**: nessuna riga è stata chiusa o spostata dal giro | **chi guida il progetto decide riga per riga** | qui sotto, «IL GIRO DEI BUCHI» |
 | **1.18** | **Le asserzioni che cadono sotto contesa.** ⚠️ **Non è più una scheda da aprire: è un GIRO che si ripete.** Otto asserzioni chiuse fra il 24 e il 26 settembre, **con otto cause diverse** — e il nome della scheda («la famiglia che corre contro timer corti») era sbagliato per almeno quattro di loro. Lo strumento c'è: `tests/tools/stress.sh <giri> [parallelismo]`, e **a 40 in parallelo il difetto si compra a comando** (a 20 dà zero, che non vuol dire niente)  ⚠️ **La nona il 2026-10-07, e con la causa misurata:** `test_listener_una_volta` contava i listener 250 ms dopo il tocco della riga (`openModule` di `map-driver.js`), mentre l'apertura aspetta un `Promise.all` di file — **corretto** con `apriModulo`, che aspetta la vista del modulo. ⚠️ **Gli stessi 250 ms, delimitati — misurato il 2026-10-07:** `map-driver` lo usano **34 file**, con **140 chiamate** a `openModule`; in **43 chiamate, in 14 file**, la riga di codice dopo non è un'attesa (`test_batch15` 9 · `test_batch19` 9 · `test_batch17` 4 · `test_batch18` 4 · `test_batch2` 4 · `test_batch16` 2 · `test_dialogo_extra` 2 · `test_new_features` 2 · `test_uscita_dal_modulo` 2 · `test_batch20` 1 · `test_batch4` 1 · `test_batch5` 1 · `test_moduli_registrati` 1 · `test_pulizie_registrate` 1). *È un tetto, non il conto dei difetti: fra le 43 ci sono anche dei `click`, che Playwright fa aspettare da sé.* ⭐ **E la lezione, scritta da chi guida il progetto:** *un'attesa di 250 ms fissi non è «quasi giusta». È verde sul container e rossa sul runner con lo stesso codice — quindi finché passava non diceva che il listener c'era, diceva che la macchina era abbastanza rapida.* | **quando si vuole comprarne una**, o quando la CI va rossa senza spiegazione — *e il giro su `map-driver` è il candidato naturale del prossimo* | la scheda intera è nello storico |
 | **F.3** | **Il giro di design sulla mastery**, tre voci: ① i **due colori** che si chiamano tutti e due «colore» · ② la **media di Voice Practice** che nessuno mostra · ③ **report VERDE e mappa ROSSA**, tutti e due corretti | **è una DECISIONE di chi guida il progetto**, non un passo da prendere | qui sotto, «i fuori catena» |
 | **F.7** | **I due episodi sono protetti in modo diverso, e nessuno l'aveva deciso** — sei controlli su uno e non sull'altro | **alla revisione di design di fine episodio 5** — aspetta un catalogo vero invece di due episodi | qui sotto, «i fuori catena» |
@@ -80,6 +80,52 @@ questo file, o nello storico — e la colonna «dove» dice dove.*
 ⚠️ **E QUELLO CHE NON È IN QUESTA TABELLA È CHIUSO.** *Un elenco che porta anche
 il chiuso non si legge per decidere: si legge per ricordare, ed è un altro
 mestiere e un altro file.*
+
+## ⚠️ IL GIRO DEI BUCHI (1.10) — 2026-10-21
+
+*«Non è un riassunto: è una ricerca di buchi.» Partito quando chi guida il
+progetto ha detto che la lista aveva smesso di cambiare. **Il giro ha solo
+trovato: non ha chiuso, spostato o riscritto nessuna riga** — ogni buco qui
+sotto aspetta una decisione.* Tre famiglie, perché sono tre modi diversi in cui
+una lista sbaglia.
+
+**① LA LISTA DICE APERTO, IL REPOSITORY DICE CHIUSO** — *la forma di «SEI
+titoli», trovata il 20/10 solo perché un file arrivava*
+
+| # | Riga | Cosa dice | Cosa è vero, misurato |
+|---|---|---|---|
+| 1 | «I due paragrafi scaduti» | due frasi false nel modello e in `aircraft-door` | **non esistono più**: i due file portano i soli dati, e né «prima riga» né le età di `gate` vi compaiono |
+| 2 | «Le righe gemelle stato/storico» | si chiude «quando la scheda si chiude» | è la scheda della riga 1 |
+| 3 | «Lo spagnolo» | condizione «**adesso**: ② `it/spagnolo`» | `italiano/es` c'è dal 19/10, e tutte le voci della riga sono barrate |
+| 4 | 1.20, la terza parte | «scegliere QUALE EDIZIONE si sta modificando» | la tendina dell'edizione del Pannello c'è dal 02/10 — **da confermare** che sia la stessa cosa |
+| 5 | 1.12 | condizione «chi guida il progetto sta scrivendo i due episodi di spagnolo» | scritti, e anche quelli di `italiano/es` |
+| 6 | «I testi che lo studente legge» | condizione «i **141**: quando li ha riletti» | sono 132, e riletti 107 su 132 (riga «I testi di esito da rileggere») |
+
+**② APERTO, MA FUORI DALLA TABELLA** — *la tabella dice di sé «quello che non è
+in questa tabella è chiuso», quindi questi per lei non esistono*
+
+| # | Dove sta | Cosa | La sua condizione |
+|---|---|---|---|
+| 7 | sezione «NESSUNA GUARDIA DICE CHE UNA CARTELLA CHIUSA…» | nessun test vede un file in più in una cartella chiusa | con Supabase |
+| 8 | sezione «DUE COSE APERTE SUI TESTI CONDIVISI» | «Non mostrarmi più questa schermata» dal **primo** passaggio | chi guida il progetto |
+| 9 | sezione «SU PAGES `speechstart` E `speechend` NON ARRIVANO» | parcheggiata | quando si torna sul microfono |
+| 10 | sezione «IL PACCHETTO 1» | la copia all'apertura e il mix · la definizione del report | al 3.3 · al 4.3 |
+
+**③ IN NESSUNA LISTA**
+
+| # | Cosa | Misurato |
+|---|---|---|
+| 11 | **le voci preferite non hanno `it`** | `speech.preferredVoiceNames` ha `en` pieno ed `es` vuoto apposta — e quel «vuoto apposta, si riempie dopo averle ascoltate su tre dispositivi» vive **dentro una voce barrata** della riga «Lo spagnolo». **`it` non c'è affatto, e dal 19/10 `italiano/es` parla italiano** |
+| 12 | **i commenti scaduti di `app/*.js`** | il passo 1.2 ha fatto `index.html` e `stile/` il 20/09; `app/` è nato dopo e un giro suo non c'è. Esempio: la testa di `app/spazio.js` dice «QUESTO OGGETTO NON HA ANCORA UTENTI… il primo arriva al passo 21-bis» — lo usano `dialogo.js`, `flashcard.js` e `mappa.js` |
+| 13 | **28 test senza `// PROTEGGE:` in testa** (regola 32) | tutti i `test_batch*`, `test_hidden_guard`, `test_new_features`, `test_story_modules`, `test_voicecoach`. La riga in `tests/README.md` c'è: manca la metà dentro il file |
+| 14 | `tests/tools/stress.sh` | nessuna riga in `tests/tools/README.md` |
+| 15 | **il badge ROSSO allo zero** | `it-messaggi-feedback.md` lo affida al «giro di design sulla mastery», cioè F.3 — **e F.3 elenca tre voci, non questa** |
+| 16 | **«i nove testi si rileggono quando il mix è fatto»** | condizione scritta in `it-messaggi-feedback.md`; la riga del mix non la nomina |
+
+**Cosa il giro NON ha guardato, perché non resti creduto:** i LIMITI dichiarati
+in testa ai test, uno per uno, contro le liste; le condizioni dello storico una
+per una; i due file condivisi `es` contro quelli `it` frase per frase. *Un giro
+dei buchi che non dice i suoi buchi è un riassunto.*
 
 ## ⚠️ NESSUNA GUARDIA DICE CHE UNA CARTELLA CHIUSA NON HA FILE IN PIÙ — trovato il 2026-09-29, rimandato
 
