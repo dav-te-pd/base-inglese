@@ -93,7 +93,9 @@ async function run() {
       }, bubbleIds2);
       log('[Job2b] Only the LAST tapped line ends up active after a rapid chain of switches', finalState[0] === false && finalState[1] === false && finalState[2] === true);
     } else {
-      log('[Job2b] Only the LAST tapped line ends up active after a rapid chain of switches', true);
+      // ⚠️ Qui c'era `log(..., true)`: corretto il 2026-10-22 (regola 49).
+      console.log('    -> servono tre bolle, trovate ' + bubbleIds2.length + ': la prova non si e\' potuta fare');
+      log('[Job2b] Only the LAST tapped line ends up active after a rapid chain of switches', false);
     }
     log('[Job2b] No JS errors', errors.length === 0);
     await page.close();
@@ -183,8 +185,10 @@ async function run() {
       log('[Job1c] Tapping a different listen button REPLACES the audio (still speaking, not stopped)', speaking === true);
       log('[Job1c] The NEW button is the one marked as speaking', secondHasSpeaking === true);
     } else {
-      log('[Job1c] Tapping a different listen button REPLACES the audio (still speaking, not stopped)', true);
-      log('[Job1c] The NEW button is the one marked as speaking', true);
+      // ⚠️ Qui c'erano due `log(..., true)`: corretto il 2026-10-22 (regola 49).
+      console.log('    -> servono due pulsanti di ascolto, trovati ' + listenBtns.length + ': la prova non si e\' potuta fare');
+      log('[Job1c] Tapping a different listen button REPLACES the audio (still speaking, not stopped)', false);
+      log('[Job1c] The NEW button is the one marked as speaking', false);
     }
     log('[Job1c] No JS errors', errors.length === 0);
     await page.close();
@@ -209,7 +213,9 @@ async function run() {
       const speaking = await page.evaluate(() => window.speechSynthesis.speaking);
       log('[Job1d] Switching between two mini-listen options replaces audio (still speaking)', speaking === true);
     } else {
-      log('[Job1d] Switching between two mini-listen options replaces audio (still speaking)', true);
+      // ⚠️ Qui c'era `log(..., true)`: corretto il 2026-10-22 (regola 49).
+      console.log('    -> servono due mini-ascolti, trovati ' + miniListenBtns.length + ': la prova non si e\' potuta fare');
+      log('[Job1d] Switching between two mini-listen options replaces audio (still speaking)', false);
     }
     log('[Job1d] No JS errors', errors.length === 0);
     await page.close();

@@ -35,10 +35,10 @@
 // (`magScriviTesto`, `magCancella`). Visto fallire togliendo il `try` da
 // `magScriviTesto`: **1 rossa**, e nomina la riga.
 //
-// ⚠️ `[C]` («ogni chiave comincia per "baseinglese:"») e' vera per
-// costruzione: raccoglie solo le stringhe che cominciano gia' per
-// `'baseinglese:` e poi controlla che comincino cosi'. Una chiave nuda non
-// la farebbe cadere — trovato leggendo il codice il 2026-10-21.
+// ⚠️ `[C]` («ogni chiave comincia per "baseinglese:"») era vera per
+// costruzione fino al 2026-10-22: raccoglieva dal codice solo le stringhe che
+// cominciavano gia' per `'baseinglese:` e poi controllava che cominciassero
+// cosi'. Adesso guida l'app e registra ogni `setItem` che passa.
 //
 // LIMITE DICHIARATO: guarda che il magazzino sia uno e che ingoi. **Non**
 // verifica che i dati salvati siano giusti — quello lo fanno i test dei
@@ -142,20 +142,55 @@ async function run() {
     await page.close();
   }
 
-  // ── [C] LE TRE FAMIGLIE DI CHIAVI ──────────────────────────────────
+  // ── [C] OGNI CHIAVE CHE L'APP SCRIVE DAVVERO COMINCIA PER "baseinglese:"
+  //
+  // ⚠️ RISCRITTO IL 2026-10-22. La forma di prima raccoglieva dal CODICE solo
+  // le stringhe che cominciavano gia' per `'baseinglese:` e poi controllava
+  // che cominciassero cosi': vera per costruzione, e una chiave nuda — o una
+  // composta a pezzi — non la faceva cadere. Adesso si guida l'app come uno
+  // studente (nome, mappa, Personalizza completata: identita', episodio,
+  // progressi, slot) e si registra OGNI `setItem` che passa: la domanda e'
+  // «cosa finisce nel magazzino», e la risposta la da' il magazzino.
   {
-    const chiavi = [];
-    fs.readdirSync(repoPath('app')).filter(function (f) { return /\.js$/.test(f); }).forEach(function (f) {
-      righeDiCodiceDi('app', f).forEach(function (r) {
-        const m = r.match(/'(baseinglese:[^']*)'/g);
-        if (m) m.forEach(function (x) { chiavi.push(x.replace(/'/g, '')); });
-      });
+    const page = await browser.newPage();
+    await bloccaFontEsterni(page);
+    const errori = [];
+    page.on('pageerror', function (e) { errori.push(e.message); });
+    await page.addInitScript(function () {
+      window.__chiaviScritte = [];
+      const vero = Storage.prototype.setItem;
+      Storage.prototype.setItem = function (k, v) { window.__chiaviScritte.push(String(k)); return vero.call(this, k, v); };
     });
-    const distinte = chiavi.filter(function (c, i) { return chiavi.indexOf(c) === i; });
-    log('[C] Ogni chiave salvata comincia per "baseinglese:" (nessun nome nudo nel magazzino di qualcun altro)',
-      distinte.length > 0 && distinte.every(function (c) { return c.indexOf('baseinglese:') === 0; }),
-      distinte.join(', '));
-    console.log('    chiavi distinte: ' + distinte.length);
+    await page.goto(APP_URL);
+    await page.evaluate(function () { localStorage.clear(); window.__chiaviScritte = []; });
+    await page.reload();
+    await attendiPrimaSchermata(page);
+    await page.fill('#name-input', 'Magazzino');
+    await page.click('#onboarding-form button[type=submit]');
+    await page.waitForSelector('#go-episode', { state: 'visible', timeout: 15000 });
+    await page.click('#go-episode');
+    // Uno studente nuovo trova prima l'introduzione della mappa, e la chiude.
+    await page.waitForSelector('#map-intro-start-btn', { state: 'visible', timeout: 15000 });
+    await page.click('#map-intro-start-btn');
+    await page.waitForSelector('[data-module="personalizzazione"]', { state: 'visible', timeout: 15000 });
+    await page.click('[data-module="personalizzazione"]');
+    // ...e poi quella di Personalizza.
+    await page.waitForSelector('#customize-intro-start-btn', { state: 'visible', timeout: 15000 });
+    await page.click('#customize-intro-start-btn');
+    await page.waitForFunction(function () { const g = document.getElementById('slot-grid'); return g && g.children.length > 0; }, null, { timeout: 15000 });
+    await page.click('#start-episode');
+    // L'ultimo effetto del gesto: la mappa di nuovo attiva (regola 44).
+    await page.waitForSelector('#view-map.is-active', { timeout: 15000 });
+    const scritte = await page.evaluate(function () { return window.__chiaviScritte.slice(); });
+    const distinte = scritte.filter(function (c, i) { return scritte.indexOf(c) === i; });
+    const nude = distinte.filter(function (c) { return c.indexOf('baseinglese:') !== 0; });
+    console.log('    chiavi scritte guidando l\'app: ' + distinte.length);
+    log('[C] Guidando l\'app si scrive davvero nel magazzino (almeno tre chiavi: senza, la riga sotto non direbbe niente)',
+      distinte.length >= 3, distinte.join(', '));
+    log('[C] Ogni chiave scritta comincia per "baseinglese:" (nessun nome nudo nel magazzino di qualcun altro)',
+      nude.length === 0, nude.join(', '));
+    log('[C] ...e il giro non lascia errori JS', errori.length === 0, errori.join(' | '));
+    await page.close();
   }
 
   await browser.close();

@@ -422,9 +422,22 @@ async function run() {
     const data10 = await page.evaluate(() => fetch(window.BI.FEEDBACK_MESSAGES_FILE).then(r => r.json()));
     log('[Job10] With zero explanations, summary falls back to studioCompleteMessages (neutral, not scored)', data10.studioCompleteMessages.default.indexOf(subtitle) !== -1);
     await page.click('#story-cards-complete-btn');
-    await page.waitForTimeout(150); // ATTESA-LEGITTIMA: verifica che una cosa NON accada: un non-evento non si aspetta, il tempo E' la misura — la riga della mappa NON deve prendere nessuna classe outcome-*
-    const rowClass10 = await page.evaluate(() => document.querySelector('[data-module="whyWeSayIt"]').className);
-    log('[Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato)', !/outcome-(verde|giallo|rosso)/.test(rowClass10));
+    // ⚠️ QUI SI LEGGEVA LA RIGA DI `whyWeSayIt` — un modulo mai completato in
+    // questo giro, quindi senza colore per costruzione. Corretto il
+    // 2026-10-22: la riga e' quella del modulo appena finito, e prima di
+    // dire «senza colore» si verifica che sia COMPLETATA, altrimenti la riga
+    // passerebbe anche se il gesto non avesse salvato niente. L'attesa e'
+    // sulla mappa tornata attiva, l'ultimo effetto del gesto (regola 44).
+    await attendiClasse(page, '#view-map', 'is-active');
+    const riga10 = await page.evaluate(() => {
+      const r = document.querySelector('[data-module="meetTheStory"]');
+      return r ? { classi: r.className, stato: r.getAttribute('data-status') } : null;
+    });
+    console.log('    -> riga di Meet the Story: ' + JSON.stringify(riga10));
+    log('[Job10] La riga di Meet the Story risulta COMPLETATA (senza, «senza colore» non direbbe niente)',
+      !!riga10 && /completed/.test(riga10.classi + ' ' + riga10.stato));
+    log('[Job10] With zero explanations, map row does NOT carry any outcome-* class (falls back to plain Completato)',
+      !!riga10 && !/outcome-(verde|giallo|rosso)/.test(riga10.classi));
     log('[Job10] No JS errors', errors.length === 0);
     await page.close();
   }

@@ -23,11 +23,12 @@
 // niente. Nessuna copertura si perde perche' non ce n'era. Al suo posto la
 // cosa affermabile sul dato (JOB 2-bis).
 //
-// LIMITI: il titolo della valvola in Match Practice passa con qualunque testo
-// piu' lungo di tre caratteri, non solo con la famiglia «Tranquillo»; il
-// numero esatto di tentativi dopo cui la valvola si apre non e' guardato; e
-// su Flash Card la variante «riuscita» della valvola non si vede mai — il
-// giro risponde «Sì, la so» a ogni carta (vedi il commento accanto al blocco).
+// LIMITE: il numero esatto di tentativi dopo cui la valvola si apre in Match
+// Practice non e' guardato. *Fino al 2026-10-22 ce n'erano altri due, e sono
+// stati CORRETTI: il titolo della valvola passava con qualunque testo di piu'
+// di tre caratteri — ora si confronta col file — e su Flash Card la variante
+// «riuscita» non si vedeva mai, perche' il giro rispondeva «Sì, la so» a ogni
+// carta — ora il giro ci arriva.*
 
 const { launchBrowser, APP_URL, attendiPrimaSchermata, fileCondiviso } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
@@ -226,7 +227,12 @@ async function run() {
       await page.waitForTimeout(100); // ATTESA-LEGITTIMA: e' l'ultima attesa di un CICLO che guida il modulo, e l'asserzione dopo il ciclo ne riassume l'esito. Non c'e' uno stato finale da attendere: il ciclo finisce quando finisce, e questo tempo e' il passo del ciclo, non una guardia
     }
     log('[Job3/4] Match Practice: safety-valve popup opens after repeated wrong/dontknow on same item', popupSeen);
-    log('[Job3/4] Match Practice: popup uses the "nonRiuscita" title ("Tranquillo, capita!" family)', popupTitle && (popupTitle.indexOf('Tranquillo') !== -1 || popupTitle.length > 3));
+    // ⚠️ Qui c'era `popupTitle.indexOf('Tranquillo') !== -1 || popupTitle.length > 3`:
+    // passava con QUALUNQUE titolo di piu' di tre caratteri, compreso quello
+    // della variante sbagliata. Corretto il 2026-10-22: il titolo si confronta
+    // con quello del file, e la variante e' QUELLA.
+    log('[Job3/4] Match Practice: popup uses the "nonRiuscita" title, letto dal file', popupTitle === MESSAGGI.valvolaSicurezzaMessages.nonRiuscita.title,
+      'letto «' + popupTitle + '», atteso «' + MESSAGGI.valvolaSicurezzaMessages.nonRiuscita.title + '»');
     console.log('    -> popup title: "' + popupTitle + '"');
     log('[Job3/4] Match Practice: "Riprova ancora" button is HIDDEN (no immediate re-ask in this module)', popupHasRetryBtn === true);
     log('[Job3/4] No JS errors', errors.length === 0);
@@ -252,8 +258,16 @@ async function run() {
     for (const sel of ['#fc-intro-start-btn', '#fc-start-btn']) {
       if (await page.isVisible(sel).catch(() => false)) { await page.click(sel); await page.waitForTimeout(150); break; }
     }
-    let popupSeen = false, popupTitle = null, carteRisposte = 0;
-    for (let i = 0; i < 20 && !popupSeen; i++) {
+    // ⚠️ IL GIRO CHE ARRIVA DAVVERO ALLA VARIANTE «RIUSCITA», dal 2026-10-22.
+    // Prima rispondeva «Sì, la so» a ogni carta, e la valvola — che si apre al
+    // tentativo `attemptsReminderThreshold` sulla STESSA carta — non poteva
+    // aprirsi mai: il blocco portava il nome della variante e non la vedeva.
+    // Adesso: «Non ancora» a tutto finche' i ripassi cominciati sono meno di
+    // `soglia - 1`, poi «Sì, la so». La prima carta del giro buono e' al suo
+    // tentativo numero `soglia`, risposto GIUSTO: e' esattamente la «riuscita».
+    const soglia = await page.evaluate(() => window.APP_CONFIG.retryQueue.attemptsReminderThreshold);
+    let popupSeen = false, popupTitle = null, carteRisposte = 0, ripassi = 0;
+    for (let i = 0; i < 200 && !popupSeen; i++) {
       const isOpen = await page.evaluate(() => document.getElementById('attempt-popup').classList.contains('is-open'));
       if (isOpen) {
         popupSeen = true;
@@ -264,11 +278,12 @@ async function run() {
       if (cardVisible) {
         await page.click('#fc-card').catch(() => {}); // flip
         await page.waitForTimeout(100);
-        const knowBtnVisible = await page.isVisible('#fc-know-it-btn').catch(() => false);
-        if (knowBtnVisible) { await page.click('#fc-know-it-btn'); carteRisposte++; await page.waitForTimeout(500); continue; }
+        const bottone = ripassi >= soglia - 1 ? '#fc-know-it-btn' : '#fc-not-yet-btn';
+        const visibile = await page.isVisible(bottone).catch(() => false);
+        if (visibile) { await page.click(bottone); carteRisposte++; await page.waitForTimeout(150); continue; }
       }
       const retryContinueVisible = await page.isVisible('#fc-retry-continue-btn').catch(() => false);
-      if (retryContinueVisible) { await page.click('#fc-retry-continue-btn'); await page.waitForTimeout(150); continue; }
+      if (retryContinueVisible) { ripassi++; await page.click('#fc-retry-continue-btn'); await page.waitForTimeout(150); continue; }
       await page.waitForTimeout(150);
     }
     // ⚠️ QUESTA RIGA ERA `log(..., true)`: PASSAVA SEMPRE (regola 37). E non
@@ -290,6 +305,9 @@ async function run() {
     }));
     console.log('    -> carte risposte: ' + carteRisposte + ' | stato finale: ' + JSON.stringify(statoFinale));
     log('[Job3/4] Flash Card: il giro e\' stato percorso davvero (almeno una carta risposta)', carteRisposte > 0);
+    log('[Job3/4] Flash Card: la valvola si apre con il titolo della variante «riuscita», letto dal file',
+      popupSeen && popupTitle === MESSAGGI.valvolaSicurezzaMessages.riuscita.title,
+      'aperta: ' + popupSeen + ', letto «' + popupTitle + '», atteso «' + MESSAGGI.valvolaSicurezzaMessages.riuscita.title + '»');
     log('[Job3/4] Flash Card: il giro arriva a uno stato NOTO (riepilogo, ripasso o valvola), non resta fermo su una carta',
       statoFinale.riepilogo || statoFinale.ripasso || statoFinale.popup);
     log('[Job3/4] Flash Card: No JS errors', errors.length === 0);

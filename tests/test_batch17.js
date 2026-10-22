@@ -10,17 +10,13 @@
 // (countdown) Spiegazione si blocca, e ritoccare la bolla che parla non fa
 // nascere un secondo countdown.
 //
-// ⚠️ LIMITE, trovato leggendo il codice il 2026-10-21: il blocco JOB 2
-// («"← Mappa" a sinistra, "Help" a destra quando Spiegazione e' nascosta»,
-// sulla Schermata Finale di Flash Card) NON misura piu' le posizioni. Dal
-// 2026-09-20 `barraAzioniFinale` nasconde l'intera `.header-actions-row`
-// sulla Schermata Finale (regola 10): riga e pulsanti hanno rettangoli a
-// zero, e le due righe di posizione sono vere per costruzione (0 − 0 < 2).
-// Restano vere «arriva alla Schermata Finale» e «Spiegazione nascosta».
-//
-// ⚠️ E in JOB 1a-bis e JOB 1e, se il pulsante cercato non c'e' (una sola
-// bolla, nessun ascolto della domanda), le righe passano con `true` invece
-// di cadere: lo dice il ramo `else`, non un'asserzione.
+// ⚠️ DUE VERDI FALSI, trovati il 2026-10-21 e CORRETTI il 2026-10-22: il
+// blocco JOB 2 misurava le posizioni di «← Mappa» e «Help» su una riga che la
+// regola 10 nasconde intera (rettangoli a zero: vere per costruzione), e in
+// JOB 1a-bis e JOB 1e il ramo `else` scriveva OK con `true` quando il
+// pulsante cercato non c'era. Adesso JOB 2 prova che la riga sparisce, e i
+// due `else` sono rossi e dicono perche'. Visti cadere: vedi la riga in
+// `docs/correzioni.md`.
 
 const { launchBrowser, APP_URL, attendiPrimaSchermata } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
@@ -136,7 +132,10 @@ async function run() {
       const secondIsActive = await attendiClasse(page, '.dg-bubble[data-line-id="' + bubbleIds[1] + '"]', 'is-active');
       log('[Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it)', secondIsActive === true);
     } else {
-      log('[Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it)', true);
+      // ⚠️ Qui c'era `log(..., true)`: con meno di due bolle la riga passava
+      // senza aver provato niente. Corretto il 2026-10-22 (regola 49).
+      log('[Job1a-bis] Tapping a different line while one plays is allowed (frees switches to it)', false,
+        'servono almeno due bolle, ne ho trovate ' + bubbleIds.length + ': la prova non si e\' potuta fare');
     }
     log('[Job1a-bis] No JS errors', errors.length === 0);
     await page.close();
@@ -279,9 +278,13 @@ async function run() {
       log('[Job1e] Prompt audio really was playing before answering', speakingBefore === true);
       log('[Job1e] Answering stops the prompt audio on touch', speakingAfter === false);
     } else {
-      log('[Job1e] Answer options stay enabled while the prompt plays', true);
-      log('[Job1e] Prompt audio really was playing before answering', true);
-      log('[Job1e] Answering stops the prompt audio on touch', true);
+      // ⚠️ Qui c'erano tre `log(..., true)`: senza il pulsante di ascolto della
+      // domanda le tre righe passavano senza aver provato niente. Corretto il
+      // 2026-10-22 (regola 49).
+      const motivo = 'nessun pulsante di ascolto in #qm-prompt-audio: la prova non si e\' potuta fare';
+      log('[Job1e] Answer options stay enabled while the prompt plays', false, motivo);
+      log('[Job1e] Prompt audio really was playing before answering', false, motivo);
+      log('[Job1e] Answering stops the prompt audio on touch', false, motivo);
     }
     log('[Job1e] No JS errors', errors.length === 0);
     await page.close();
@@ -397,7 +400,17 @@ async function run() {
     await page.close();
   }
 
-  // ============ JOB 2: Header on Schermata Finale — Help stays right, not center, when Spiegazione is hidden ============
+  // ============ JOB 2: Header on Schermata Finale — la riga delle azioni sparisce INTERA (regola 10) ============
+  //
+  // ⚠️ RISCRITTO IL 2026-10-22. Fino a quel giorno questo blocco misurava che
+  // «← Mappa» restasse a sinistra e «Help» a destra quando Spiegazione e'
+  // nascosta. Ma dal 2026-09-20 `barraAzioniFinale` nasconde la riga INTERA
+  // sulla Schermata Finale (regola 10): riga e pulsanti avevano rettangoli a
+  // zero, e le due righe di posizione erano vere per costruzione (0 - 0 < 2).
+  // Adesso si prova quello che sulla Schermata Finale e' vero: la riga non si
+  // vede, e con lei nessuno dei due pulsanti. *Che i tre pulsanti restino nelle
+  // loro colonne quando uno sparisce — regola 9, dove la riga c'e' — lo prova
+  // «le tre colonne dell'intestazione» di test_batch16.*
   {
     const page = await browser.newPage({ viewport: { width: 700, height: 900 } });
     const errors = [];
@@ -428,15 +441,20 @@ async function run() {
     log('[Job2] Reached the Schermata Finale', onSummary);
     const spiegazioneHidden = await page.evaluate(() => document.getElementById('flashcard-watch-btn').hidden);
     log('[Job2] Spiegazione is hidden on the Schermata Finale (rule 10)', spiegazioneHidden === true);
-    const rects = await page.evaluate(() => {
-      var row = document.querySelector('#view-flashcard .header-actions-row');
-      var mappa = document.getElementById('flashcard-back-map').getBoundingClientRect();
-      var help = document.getElementById('flashcard-help-btn').getBoundingClientRect();
-      var rowRect = row.getBoundingClientRect();
-      return { rowLeft: rowRect.left, rowRight: rowRect.right, mappaLeft: mappa.left, helpLeft: help.left, helpRight: help.right };
+    const visibili = await page.evaluate(() => {
+      // Si guarda il RETTANGOLO, non l'attributo: «nascosto» e' quello che lo
+      // studente non vede, qualunque sia la strada con cui ci si arriva.
+      const si = (el) => { if (!el) return null; const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0; };
+      return {
+        riga: si(document.querySelector('#view-flashcard .header-actions-row')),
+        mappa: si(document.getElementById('flashcard-back-map')),
+        help: si(document.getElementById('flashcard-help-btn'))
+      };
     });
-    log('[Job2] "← Mappa" still at the row\'s left edge', Math.abs(rects.mappaLeft - rects.rowLeft) < 2);
-    log('[Job2] "Help" still at the row\'s right edge (not pulled to center)', Math.abs(rects.helpRight - rects.rowRight) < 2);
+    log('[Job2] La riga delle azioni NON si vede sulla Schermata Finale (regola 10): «← Mappa» qui butterebbe l\'esercizio',
+      visibili.riga === false && visibili.mappa === false, JSON.stringify(visibili));
+    log('[Job2] ...e nemmeno «Help»: a esercizio finito non c\'e\' piu\' niente da spiegare',
+      visibili.help === false, JSON.stringify(visibili));
     log('[Job2] No JS errors', errors.length === 0);
     await page.close();
   }
