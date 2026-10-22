@@ -255,9 +255,10 @@ async function run() {
 
   // ── [C] IL CASO PIÙ DIVERSO: lo stesso modulo aperto tre volte ───────
   //
-  // Misurato il 2026-09-16: apri → mappa → riapri chiama `open` TRE volte. Oggi
-  // è innocuo perché i listener non stanno lì dentro; dopo il 21-quater è *il*
-  // guasto, e senza una guardia ogni riapertura ne aggiunge una copia.
+  // Misurato il 2026-09-16: apri → mappa → riapri chiama `open` TRE volte.
+  // Prima del 21-quater era innocuo, perché i listener non stavano lì dentro;
+  // dal 21-quater è *il* guasto, e senza una guardia ogni riapertura ne
+  // aggiunge una copia.
   {
     // ⚠️ TUTTE LE FAMIGLIE CON UN RITORNO ALLA MAPPA, non un campione di tre —
     // corretto il 2026-09-16 falsificando il giro ④.

@@ -208,7 +208,9 @@ async function run() {
     await page.close();
   }
 
-  // ── [C] I 162 LETTORI DENTRO LE FUNZIONI, visti da uno che conta ─────
+  // ── [C] I LETTORI DENTRO LE FUNZIONI, visti da uno che conta ─────────
+  // *(Qui c'era «I 162 LETTORI»: il 2026-10-22 le righe di `app/` con
+  // `CONFIG.` sono 198. Il numero non si scrive: `grep -c "CONFIG\." app/*.js`.)*
   //
   // Non si contano: si guida un gesto che ne usa uno e si guarda che risponda.
   // Il pannello Admin è il più adatto perché enumera APP_CONFIG invece di

@@ -64,7 +64,7 @@ async function run() {
     // in fondo alla pagina, dove l'IIFE non lo vedrebbe piu'.
     log('[A] ...e PRIMA dello script principale, che ne fa l\'alias',
       tag < scriptPrincipale && scriptPrincipale > 0, 'tag ' + tag + ', script ' + scriptPrincipale);
-    log('[A] ...e NON e\' in <head> con gli altri nove', tag > headStrati + 1000,
+    log('[A] ...e NON e\' in <head> con gli strati che stanno li\'', tag > headStrati + 1000,
       'tag ' + tag + ', primo strato di head ' + headStrati);
   }
 

@@ -401,11 +401,11 @@ async function run() {
   // danno la stessa risposta, cioè sarebbero vere per costruzione (regola 44).
   //
   // Gli unici due che divergono sono `figliaEta` (def `16`, prima riga `12`) e
-  // `figlioEta` (def `8`, prima riga `4`) — **e sono anche il caso più diverso
-  // della regola 42: la riga NUDA**, l'unica opzione dell'app a cui manca la
-  // riga intera invece di un campo. Il caso che distingue e il caso più
-  // diverso sono lo stesso, e non è una fortuna: le età sono l'unica famiglia
-  // che non passa dal magazzino condiviso.
+  // `figlioEta` (def `8`, prima riga `4`). *Qui c'era «e sono anche il caso
+  // più diverso della regola 42: la riga NUDA… le età sono l'unica famiglia
+  // che non passa dal magazzino condiviso»: falso dal 2026-09-24 (passo
+  // 1.8-bis ③), quando le età sono entrate nel magazzino. Il caso più diverso
+  // di oggi è una tabella senza il campo, e lo guida la [P].*
   {
     const page = await browser.newPage();
     const errori = [];
@@ -507,10 +507,9 @@ async function run() {
     // desse per scontato `picked[campo]` lascerebbe `undefined` a schermo:
     // **un buco non si vede nei test e si vede allo studente.**
     //
-    // I due casi qui sotto sono diversi fra loro, ed e' voluto: `papa` e' una
-    // riga vera a cui manca una colonna; l'eta' e' una riga che **non esiste
-    // affatto** nel magazzino — e' un numero nudo che `slotOptions` trasforma
-    // in oggetto. E' l'unica famiglia dell'app a cui manca la riga intera.
+    // `papa` e' una riga vera a cui manca una colonna. *Qui c'era anche «l'eta'
+    // e' una riga che non esiste affatto nel magazzino … l'unica famiglia a
+    // cui manca la riga intera»: falso dal 2026-09-24, vedi la nota qui sotto.*
     log('[P] Un campo che la riga non ha torna la riga, non «undefined»',
       esito.papaConCampo === 'Marco', esito.papaConCampo);
     // ⚠️ QUI C'ERA «una riga NUDA, che nel magazzino non c'e'», ED E' STATA

@@ -91,9 +91,11 @@ const mockInit = () => {
 
   class FakeUtterance { constructor(text) { this.text = text; } }
   // ⚠️ IL FINTO SINTETIZZATORE DEVE AVERE `speaking`, E NON È UN DETTAGLIO.
-  // `fermaLaVoce()` cancella SOLO se `synth.speaking` è vero. Nessuno dei finti
-  // già nel repository dichiara quella proprietà: su di loro `staParlando()`
-  // risponde `false` per sempre, quindi `cancel()` non viene chiamato MAI e
+  // `fermaLaVoce()` cancella SOLO se `synth.speaking` è vero. Quando questo
+  // file è nato, nessuno dei finti nel repository dichiarava quella proprietà
+  // *(dal passo F.4 la dichiara il finto condiviso, `tests/mock-browser.js`)*:
+  // su di loro `staParlando()` rispondeva `false` per sempre, quindi `cancel()`
+  // non veniva chiamato MAI e
   // tutto ciò che dipende dall'interruzione — il secondo tocco che ferma la
   // voce, la Regola Azione Critica — passa senza essere provato. È la stessa
   // forma dello `stop() {}` vuoto del finto microfono: *un mock che semplifica
