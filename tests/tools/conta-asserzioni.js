@@ -1,4 +1,7 @@
-// PROTEGGE: che un verde continui a provare quello che provava ieri.
+// PROTEGGE: che un verde continui a provare quello che provava ieri — e che,
+// quando il confronto non si puo' fare, lo strumento esca 3 e non 0:
+// QUALUNQUE ragione per cui non puo' confrontare e' un rosso (dal 2026-10-22,
+// `percheNonConfronto`).
 //
 // La suite dice "tutto verde" guardando il codice di uscita di ogni file. Ma un
 // file che ne esegue DIECI ANZICHE' QUARANTA esce comunque con zero, e il verde
@@ -65,14 +68,59 @@ function contaFile(nomeJs) {
   return testo.split('\n').filter((r) => RIGA_ASSERZIONE.test(r)).length;
 }
 
+// Il baseline com'e' sul disco: le righe che il confronto sa usare, e quelle
+// che non sa leggere. NON decide se si puo' confrontare: lo decide
+// `percheNonConfronto`, che e' il solo posto dove quella domanda ha risposta.
 function leggiBaseline() {
-  if (!fs.existsSync(BASELINE)) return null;
+  if (!fs.existsSync(BASELINE)) return { esiste: false, atteso: {}, illeggibili: [] };
   const atteso = {};
-  fs.readFileSync(BASELINE, 'utf8').split('\n').forEach((riga) => {
+  const illeggibili = [];
+  fs.readFileSync(BASELINE, 'utf8').split('\n').forEach((riga, i) => {
+    if (!riga.trim() || /^#/.test(riga)) return;
     const m = riga.match(/^([A-Za-z0-9_.-]+\.js)\s+(\d+)$/);
     if (m) atteso[m[1]] = Number(m[2]);
+    else illeggibili.push('riga ' + (i + 1) + ': «' + riga.slice(0, 60) + '»');
   });
-  return Object.keys(atteso).length ? atteso : null;
+  return { esiste: true, atteso, illeggibili };
+}
+
+// ⚠️ QUALUNQUE RAGIONE PER CUI NON PUO' CONFRONTARE → USCITA DIVERSA DA ZERO.
+// 2026-10-22, deciso da chi guida il progetto, e non e' la riparazione di un
+// caso: e' la regola 49 portata dentro lo strumento che quella regola e' nata
+// a difendere.
+//
+// I casi riparati uno per volta erano due, a un mese di distanza, e avevano
+// la stessa forma: **il 28/09 la chiave che non c'era** (righe
+// `test_x.result.txt 17` che il lettore non riconosce: «Nessun baseline
+// registrato», uscita 0, due corse complete senza confronto) — e **il baseline
+// mancante**, che stampava la stessa riga ed usciva 0, con un'asserzione del
+// suo test che lo PRETENDEVA. *Il primo e' stato riparato normalizzando le
+// chiavi, cioe' il caso: il secondo e' rimasto aperto, perche' la domanda
+// «posso confrontare?» non aveva un posto suo.*
+//
+// Adesso ce l'ha, ed e' questo. Le ragioni sono tutte quelle per cui un file
+// della corsa non trova il suo numero da confrontare, o il numero non c'e':
+// il baseline che manca, il baseline senza nessuna riga leggibile, una riga
+// che non si legge (quel file passerebbe per «nuovo»), un file senza il suo
+// `.result.txt`, nessun file contato. **Chi ne aggiunge una la aggiunge qui**:
+// un `return 0` scritto altrove davanti a un dato assente e' il difetto che
+// questa funzione esiste per togliere.
+function percheNonConfronto(base, conteggi, mancanti) {
+  const ragioni = [];
+  if (!base.esiste) ragioni.push('il baseline non esiste: ' + BASELINE);
+  else if (!Object.keys(base.atteso).length) {
+    ragioni.push('il baseline non ha NESSUNA riga `nome.js numero` che si legga: ' + BASELINE);
+  }
+  if (base.illeggibili.length) {
+    ragioni.push(base.illeggibili.length + ' righe del baseline non si leggono, e i loro file passerebbero per nuovi: ' +
+      base.illeggibili.slice(0, 3).join(', ') + (base.illeggibili.length > 3 ? ', …' : ''));
+  }
+  if (mancanti.length) {
+    ragioni.push(mancanti.length + ' file senza il loro .result.txt, cioe\' non eseguiti: ' +
+      mancanti.slice(0, 5).join(', ') + (mancanti.length > 5 ? ', …' : ''));
+  }
+  if (!Object.keys(conteggi).length) ragioni.push('nessun file della corsa ha un risultato da contare');
+  return ragioni;
 }
 
 // ⚠️ QUELLO CHE SCRIVI QUI DENTRO SOPRAVVIVE; QUELLO CHE SCRIVI NEL BASELINE NO.
@@ -224,24 +272,33 @@ function main(argv) {
     console.log('SENZA RISULTATO (non eseguiti): ' + mancanti.join(', '));
   }
 
-  const atteso = leggiBaseline();
-  if (!atteso) {
-    console.log('Nessun baseline registrato (' + BASELINE + ').');
-    console.log('Per registrarlo, dopo una corsa completa e verde:');
+  const base = leggiBaseline();
+  const ragioni = percheNonConfronto(base, conteggi, mancanti);
+  if (ragioni.length) {
+    console.log('');
+    console.log('=== NON POSSO CONFRONTARE, E QUESTO E\' UN ROSSO (regola 49) ===');
+    ragioni.forEach((r) => console.log('  - ' + r));
+    console.log('');
+    console.log('«Niente da confrontare» non e\' un esito buono: e\' un esito assente.');
+    console.log('Se il baseline va registrato, dopo una corsa completa e verde:');
     // ⚠️ Il comando che si insegna e' quello che funziona, dal 2026-10-16:
     // qui c'era `--scrivi $FILES`, e fuori dallo script della suite `$FILES`
     // non esiste piu'. Le tre righe che lo insegnano — questa, quella del
     // rifiuto qui sopra e l'intestazione del baseline — dicono lo stesso.
     console.log('  cd tests && node tools/conta-asserzioni.js --scrivi $(node tools/file-della-suite.js)');
-    return 0;
+    // 3 e non 1: 1 e' «un calo», cioe' un confronto fatto. Questo e' un
+    // confronto che non c'e' stato, e chi legge l'uscita deve poterli
+    // distinguere senza leggere il testo.
+    return 3;
   }
+  const atteso = base.atteso;
 
   const totaleAtteso = Object.keys(atteso).reduce((s, f) => s + atteso[f], 0);
   const calati = Object.keys(conteggi)
     .filter((f) => atteso[f] !== undefined && conteggi[f] < atteso[f])
     .map((f) => '  ' + f + ': ' + conteggi[f] + ' invece di ' + atteso[f] +
       ' (' + (conteggi[f] - atteso[f]) + ')');
-  const persi = Object.keys(atteso).filter((f) => conteggi[f] === undefined && mancanti.indexOf(f) === -1);
+  const persi = Object.keys(atteso).filter((f) => conteggi[f] === undefined);
 
   if (calati.length || persi.length) {
     console.log('');

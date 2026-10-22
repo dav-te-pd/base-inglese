@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261021a**
+**Versione: 20261022a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -1184,6 +1184,17 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
     *Le altre tre cose riparate quel giorno difendevano una schermata. Questa
     difendeva la suite — cioè tutte le altre difese insieme.*
+
+    ⚠️ **E LA FORMA CHE CHIUDE LA FAMIGLIA, decisa il 2026-10-22: QUALUNQUE
+    RAGIONE PER CUI UN CONTROLLO NON PUÒ CONFRONTARE → USCITA DIVERSA DA ZERO.**
+    *Non si ripara il caso, si ripara la regola.* Il 28/09 si era riparata la
+    chiave sbagliata, e il baseline **mancante** è rimasto un mese a uscire 0 —
+    con un'asserzione del suo test che lo pretendeva. Dal 22/10
+    `conta-asserzioni.js` ha **un posto solo** dove si risponde a «posso
+    confrontare?» (`percheNonConfronto`), raccoglie lì tutte le ragioni ed esce
+    **3** se ce n'è anche una; chi ne trova una nuova la aggiunge lì, non
+    scrive un altro `return 0`. *Visto cadere: con lo strumento di prima, cinque
+    righe del suo test diventano rosse, tutte con «codice 0».*
 
     **In pratica, le tre forme in cui questa regola si applica:**
 

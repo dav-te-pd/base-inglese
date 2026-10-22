@@ -155,6 +155,8 @@ rm -rf "$(dirname "$ESITI")"
 # asserzioni invece di quaranta esce comunque con zero.
 # Un calo rende la suite rossa come un fallimento, perche' e' peggio: un test
 # che fallisce lo sai, uno che non parte no.
+# E dal 2026-10-22 anche un confronto che NON SI PUO' FARE (uscita 3: baseline
+# mancante o illeggibile, un file senza risultato) — regola 49.
 # ⚠️ LE MISURE DELLE CATENE — passo 1.18, 2026-09-24.
 #
 # `misura()` (tests/attese.js) stampa «MISURA <nome>: N ms» dentro l'output del

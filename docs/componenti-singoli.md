@@ -298,3 +298,14 @@ quel passo ha dovuto capire riga per riga (regola 46).*
 |---|---|---|---|
 | `classifica_commit` | **Dal 2026-10-19.** Dice se la mancanza di una corsa è spiegata da `paths-ignore`: legge il filtro **dal workflow** (regola 48) e i file cambiati dal commit. | `WORKFLOW`, `SHA` e `ATTENDI_CI_RADICE` (o la radice di git) → una riga: `FILTRATI <file…>`, `FUORI <file…>` o `INDECIDIBILE <motivo>` | ⚠️ **Che la si chiami solo DOPO l'attesa piena**: GitHub filtra sui file di tutta la spinta, lei vede solo quelli del commit. **Sa confrontare due forme sole** — un percorso esatto e `cartella/**`; un glob diverso, un `!negato` o un `paths:` positivo danno INDECIDIBILE, mai un'ipotesi. Un commit con più genitori, o che git non conosce, idem. E che i nomi dei file non abbiano spazi: la lista viaggia separata da spazi |
 | `ultima_su_main` | **Dal 2026-10-19.** Accompagna il 5: stampa l'ultima corsa del workflow su `main` — sha, data, quanto tempo fa, esito — perché il 5 dice che *questo commit* non doveva far partire la CI, non che la CI sia viva. | `REPO`, `WORKFLOW`, `FETCH` → una riga, sempre | ⚠️ **Che una riga ci sia SEMPRE**: nessuna corsa su `main` e API illeggibile hanno la loro frase, «il 5 NON è confermato», invece del silenzio (regola 49). Non cambia il codice d'uscita. *E che «vecchia» lo giudichi chi legge*: non c'è una soglia, c'è la data |
+
+## `tests/tools/conta-asserzioni.js` — si può confrontare?
+
+*Scritta il 2026-10-22, col passo che ha portato la regola 49 dentro lo
+strumento: letto per intero.*
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `leggiBaseline()` | il baseline com'è sul disco, **senza decidere niente**. *Fino al 2026-10-22 tornava `null` sia per il file mancante sia per un file senza righe leggibili, e chi lo chiamava usciva 0 in tutti e due i casi.* | *niente* (legge `BASELINE`) → `{ esiste, atteso: { file: numero }, illeggibili: [«riga N: …»] }` | che una riga valida sia `nome.js numero`, e che commenti (`#`) e righe vuote non contino. **Una riga diversa è illeggibile, non ignorata** |
+| `percheNonConfronto(base, conteggi, mancanti)` | **il solo posto dove si risponde a «posso confrontare?»**: raccoglie TUTTE le ragioni per cui no — baseline che manca, baseline senza righe leggibili, righe illeggibili, file senza `.result.txt`, nessun file contato | quello che `main` ha già letto → un elenco di frasi, vuoto se si può confrontare. `main` esce **3** se non è vuoto | ⚠️ **che chi aggiunge una ragione la aggiunga qui**: un `return 0` scritto altrove davanti a un dato assente è il difetto che questa funzione esiste per togliere |
+

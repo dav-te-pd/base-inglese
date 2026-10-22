@@ -18,7 +18,7 @@ servono, raggruppati per domanda.
 
 | Strumento | A cosa risponde |
 |---|---|
-| `conta-asserzioni.js` | *un verde prova ancora quello che provava ieri?* Confronta con `tests/BASELINE-ASSERZIONI.txt`: il numero può salire, non calare. Con `--scrivi` riscrive il baseline |
+| `conta-asserzioni.js` | *un verde prova ancora quello che provava ieri?* Confronta con `tests/BASELINE-ASSERZIONI.txt`: il numero può salire, non calare. Con `--scrivi` riscrive il baseline. ⚠️ **Esce 3 — «non posso confrontare» — per QUALUNQUE ragione per cui il confronto non si fa**: baseline mancante o senza righe leggibili, una riga illeggibile, un file senza `.result.txt`, nessun file contato (dal 2026-10-22, `percheNonConfronto`; regola 49). 1 resta «un calo», cioè un confronto fatto |
 | `versione-salita.js` | *il `?v=` è salito?* La CI lo lancia **prima** della suite: un push che tocca `index.html`, `app/*.js` o `stile/*.css` senza alzarlo viene fermato |
 | `conta-attese.js` | *il censimento delle attese a tempo dice ancora il vero?* Tiene onesto `tests/ATTESE-FISSE.md` |
 | `file-della-suite.js` | *quali file lancia la suite completa?* **Ogni `tests/test_*.js`, tranne quelli scritti in `tests/esclusi-dalla-suite.txt` col loro perché** — dal 2026-10-16; prima era un elenco scritto a mano, e un file dimenticato fuori non girava senza che niente lo dicesse. **Un posto solo:** lo leggono `run_full_regression.sh`, `conta-attese.js` e [G] di `test_conta_asserzioni.js`. Senza il file degli esclusi si ferma (regola 49) |

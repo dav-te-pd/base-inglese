@@ -11,7 +11,12 @@
 // fuori dalla suite in silenzio: ogni `test_*.js` sul disco gira o e' escluso
 // in `esclusi-dalla-suite.txt` con il suo perche', ogni escluso esiste, lo
 // script non torna a un `FILES="…"` scritto a mano, e senza il file degli
-// esclusi lo strumento si FERMA invece di lanciare tutto in silenzio.
+// esclusi lo strumento si FERMA invece di lanciare tutto in silenzio. E,
+// dal 2026-10-22, che QUALUNQUE ragione per cui il contatore non puo'
+// confrontare — il baseline che manca, il baseline senza una riga leggibile
+// (la chiave sbagliata del 28/09), una riga che non si legge, un file senza
+// il suo `.result.txt`, nessun file contato — esca 3, mai 0: «niente da
+// confrontare» non e' un esito buono ([A], [E], [H]; regola 49).
 //
 // Perche' un test per una funzione che conta righe: la stessa ragione di
 // test_attendi.js. Una rete che nessuno esercita si sfilaccia in silenzio, e
@@ -121,8 +126,11 @@ function esegui(args, env) {
     let r = await esegui([A, B], env);
     log('[A] Conta le asserzioni delle tre forme e ignora il rumore',
       /Asserzioni eseguite: 12 in 2 file/.test(r.out), r.out.split('\n')[0]);
-    log('[A] Senza baseline non fallisce, e dice come registrarlo',
-      r.code === 0 && /Nessun baseline registrato/.test(r.out));
+    // ⚠️ QUI C'ERA «Senza baseline non fallisce» (r.code === 0): la riga
+    // PRETENDEVA l'esito che la regola 49 vieta. Ribaltata il 2026-10-22.
+    log('[A] ⚠️ Senza baseline NON passa: esce 3, «non posso confrontare»',
+      r.code === 3 && /NON POSSO CONFRONTARE/.test(r.out) && /il baseline non esiste/.test(r.out), 'codice ' + r.code);
+    log('[A] ...e dice come registrarlo', /--scrivi \$\(node tools\/file-della-suite\.js\)/.test(r.out));
 
     // ---- [B] scrive il baseline, e da li' il confronto e' uguale ----
     r = await esegui(['--scrivi', A, B], env);
@@ -155,6 +163,10 @@ function esegui(args, env) {
       /SENZA RISULTATO \(non eseguiti\): zz_finto_a\.js/.test(r.out), r.out);
     log('[E] ...e non viene scambiato per un calo di tutte le sue asserzioni',
       !/zz_finto_a\.js: 0 invece di/.test(r.out));
+    // ⚠️ Fino al 2026-10-22 questo caso usciva 0 — «ASSERZIONI OK, come il
+    // baseline» col file mancante nominato sopra: la riga lo diceva, l'uscita
+    // no, e la suite guarda l'uscita.
+    log('[E] ⚠️ ...ed esce 3: quel file non si puo\' confrontare', r.code === 3, 'codice ' + r.code);
 
     // ---- [F] --scrivi SI RIFIUTA SU UNA CORSA PARZIALE ----
     //
@@ -185,6 +197,36 @@ function esegui(args, env) {
     log('[F] Zero file con risultato non scrive un baseline vuoto',
       r.code === 2 && fs.readFileSync(baseline, 'utf8') === primaDelRifiuto,
       'codice ' + r.code);
+
+    // ---- [H] OGNI ALTRA RAGIONE PER CUI NON PUO' CONFRONTARE: uscita 3 ----
+    //
+    // ⚠️ IL PRIMO E' IL CASO VERO DEL 2026-09-28: il baseline scritto con le
+    // chiavi `.result.txt`, che il lettore non riconosce. Quel giorno usciva 0
+    // con «Nessun baseline registrato», per due corse complete.
+    fs.writeFileSync(fileA, risultatoFinto(7));
+    fs.writeFileSync(fileB, risultatoFinto(5));
+    const buono = fs.readFileSync(baseline, 'utf8');
+    fs.writeFileSync(baseline, '# chiavi sbagliate\nzz_finto_a.result.txt 7\nzz_finto_b.result.txt 5\n');
+    r = await esegui([A, B], env);
+    log('[H] ⚠️ Il baseline del 28/09 — chiavi `.result.txt`, nessuna riga leggibile — esce 3',
+      r.code === 3 && /NESSUNA riga/.test(r.out), 'codice ' + r.code);
+    // Una riga sola illeggibile in mezzo a righe buone: il suo file passerebbe
+    // per «nuovo», cioe' per un aumento, e un suo calo non si vedrebbe mai.
+    fs.writeFileSync(baseline, buono + 'zz_finto_c.js sette\n');
+    r = await esegui([A, B], env);
+    log('[H] Una riga illeggibile fra righe buone esce 3, e nomina la riga',
+      r.code === 3 && /non si leggono/.test(r.out) && /zz_finto_c\.js sette/.test(r.out), 'codice ' + r.code);
+    fs.writeFileSync(baseline, buono);
+    pulisci();
+    r = await esegui([A, B], env);
+    log('[H] Nessun file con un risultato esce 3, e lo dice',
+      r.code === 3 && /nessun file della corsa ha un risultato/.test(r.out), 'codice ' + r.code);
+    // E il rovescio: la porta non scatta a vuoto. Baseline buono e risultati
+    // al loro posto → si confronta, ed e' uguale.
+    fs.writeFileSync(fileA, risultatoFinto(7));
+    fs.writeFileSync(fileB, risultatoFinto(5));
+    r = await esegui([A, B], env);
+    log('[H] ...e con tutto al suo posto confronta, ed esce 0', r.code === 0 && /come il baseline/.test(r.out), 'codice ' + r.code);
   } finally {
     pulisci();
     try { fs.rmSync(tmp, { recursive: true, force: true }); } catch (e) {}
