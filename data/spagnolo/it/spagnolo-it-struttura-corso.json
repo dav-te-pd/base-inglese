@@ -197,7 +197,7 @@
   },
   "episodeSequence": "corso-spagnolo-a1",
   "episodioCorrente": "gate",
-  "episodiSpenti": [],
+  "episodiSpenti": {},
   "episodes": {
     "gate": {
       "nome": "Al gate",

@@ -194,7 +194,7 @@ window.BI = window.BI || {};
   // scrive `undefined` su una chiave assente, quindi **un valore di partenza
   // scritto in `app/config.js` NON sopravvive all'arrivo della struttura.**
   //
-  // E' la ragione per cui `episodiSpenti` sta nel file dell'edizione con `[]`
+  // E' la ragione per cui `episodiSpenti` sta nel file dell'edizione con `{}`
   // dentro benche' sia una manopola del Pannello Admin e non contenuto: senza
   // quella riga nel file, l'unico modo di dargli un valore di partenza
   // sarebbe... nessuno. *Gli override del pannello tornano sopra due righe

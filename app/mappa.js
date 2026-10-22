@@ -1172,9 +1172,11 @@
     return nominati.concat(inCoda);
   }
 
+  // La lista la sceglie `episodiSpentiDelCorso` (app/catalogo.js): una sola
+  // risposta a «quali sono spenti in QUESTO corso», per la lista dello
+  // studente e per l'occhio del Pannello.
   function episodioSpento(id) {
-    var spenti = window.APP_CONFIG.episodiSpenti;
-    return Array.isArray(spenti) && spenti.indexOf(id) !== -1;
+    return BI.episodiSpentiDelCorso().indexOf(id) !== -1;
   }
 
   function renderEpisodeOrderRows(list) {
@@ -1757,11 +1759,15 @@
     var epOnOff = e.target.closest('[data-episode-onoff]');
     if (epOnOff) {
       var epId = epOnOff.getAttribute('data-episode-onoff');
-      // `episodiSpenti` puo' non esistere ancora in un'edizione vecchia: si
-      // crea qui invece di pretenderla nel file (la stessa cortesia che
-      // `resolveEpisodeOrder` usa leggendola).
-      if (!Array.isArray(window.APP_CONFIG.episodiSpenti)) window.APP_CONFIG.episodiSpenti = [];
-      var spenti = window.APP_CONFIG.episodiSpenti;
+      // Si scrive sotto il nome della sequenza degli episodi di QUESTO corso
+      // — la forma di `episodeSequences`, vedi `episodiSpentiDelCorso` in
+      // app/catalogo.js. Se manca, o e' ancora la lista di prima del
+      // 2026-10-22, si crea qui invece di pretenderla nel file.
+      var tutti = window.APP_CONFIG.episodiSpenti;
+      if (!tutti || typeof tutti !== 'object' || Array.isArray(tutti)) tutti = window.APP_CONFIG.episodiSpenti = {};
+      var corso = window.APP_CONFIG.episodeSequence;
+      if (!Array.isArray(tutti[corso])) tutti[corso] = [];
+      var spenti = tutti[corso];
       var dove = spenti.indexOf(epId);
       if (dove === -1) spenti.push(epId); else spenti.splice(dove, 1);
       persistConfigSection('episodiSpenti');

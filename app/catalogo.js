@@ -380,6 +380,29 @@
   // console e si ripiega sull'ordine in cui le chiavi stanno scritte in
   // `episodes` — che e' esattamente quello che l'app faceva prima di questo
   // passo, cioe' il ripiego non peggiora niente rispetto a ieri.
+  // ⚠️ GLI SPENTI SONO DEL CORSO, NON DELL'APP — 2026-10-22.
+  //
+  // `CONFIG.episodiSpenti` e' `{ <nome della sequenza degli episodi>: [id] }`:
+  // **la stessa forma di `episodeSequences`**, e per la stessa ragione. Gli
+  // override del Pannello sono UNO per tutte le edizioni, e le tre edizioni
+  // hanno gli STESSI id (`gate`, `aircraft-door`, per decisione): con una
+  // lista sola, spegnere `aircraft-door` in inglese/it lo spegneva anche in
+  // spagnolo/it e in italiano/es — misurato col gesto vero il 2026-10-21.
+  // Il nome della sequenza invece e' dell'edizione (`corso-inglese-a1`…), e
+  // l'ordine degli episodi, salvato sotto quel nome, non aveva il problema.
+  // *Gli id non si rendono unici: il contenitore e' gia' per edizione.*
+  //
+  // ⚠️ UNA LISTA (la forma di prima del 22/10) NON APPARTIENE A NESSUN CORSO,
+  // e si IGNORA invece di indovinare a quale darla: l'avrebbe presa la prima
+  // edizione aperta, cioe' una a caso. Vive solo nel browser di chi
+  // amministra, e il prossimo tocco dell'occhio la riscrive nella forma nuova.
+  function episodiSpentiDelCorso() {
+    var tutti = CONFIG.episodiSpenti;
+    if (!tutti || typeof tutti !== 'object' || Array.isArray(tutti)) return [];
+    var lista = tutti[CONFIG.episodeSequence];
+    return Array.isArray(lista) ? lista : [];
+  }
+
   function resolveEpisodeOrder() {
     var esistenti = Object.keys(EPISODES);
     var nome = CONFIG.episodeSequence;
@@ -431,7 +454,7 @@
     // di chi spegne un episodio e poi lo rinomina. *Un avviso li' direbbe
     // «hai spento una cosa che non c'e'», che non e' un guasto e non ha una
     // riparazione.*
-    var spenti = Array.isArray(CONFIG.episodiSpenti) ? CONFIG.episodiSpenti : [];
+    var spenti = episodiSpentiDelCorso();
     var accesi = tutti.filter(function (id) { return spenti.indexOf(id) === -1; });
 
     // ⚠️ SPEGNERLI TUTTI NON LASCIA L'APP SENZA EPISODI IN SILENZIO: si dice,
@@ -556,6 +579,7 @@
   BI.moduleStepId = moduleStepId;
   BI.resolveModuleOrder = resolveModuleOrder;
   BI.resolveEpisodeOrder = resolveEpisodeOrder;
+  BI.episodiSpentiDelCorso = episodiSpentiDelCorso;
   BI.episodiInOrdine = episodiInOrdine;
   BI.costruisciPassi = costruisciPassi;
 })(window.BI);

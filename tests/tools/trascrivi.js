@@ -1147,7 +1147,9 @@ function main() {
       // passo 1.13-ter, scritta a mano nel JSON; il trascrittore non l'ha mai
       // saputa. Nessun rosso: il JSON sarebbe restato valido, e l'occhio del
       // pannello avrebbe smesso di partire da \u00abnessuno spento\u00bb.*
-      episodiSpenti: [],
+      // \u26a0\ufe0f E dal 2026-10-22 e' un OGGETTO, `{ <sequenza di episodi>: [id] }`:
+      // gli spenti sono del corso, come l'ordine (`episodiSpentiDelCorso`).
+      episodiSpenti: {},
       episodes: s.episodes,
       nomiASchermo: s.nomiASchermo
     };

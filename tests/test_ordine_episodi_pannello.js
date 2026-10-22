@@ -11,7 +11,9 @@
 // magazzino e tornano quando lo si riaccende — l'unica parte di questo passo
 // che, se cade, cade sui dati di qualcuno. E che spegnerli TUTTI non lasci la
 // lista dello studente vuota in silenzio: `resolveEpisodeOrder` li tiene tutti
-// e lo dice in console.
+// e lo dice in console. E, dal 2026-10-22, che lo spegnimento sia DEL CORSO:
+// un episodio spento in un'edizione resta acceso nelle altre, anche se ha lo
+// stesso id ([E]).
 //
 // IL REQUISITO CHE HA DECISO LA FORMA DELLA LISTA (2026-09-26): chi non e'
 // nominato dall'ordine compare in coda. Se un giorno tornasse la textarea
@@ -131,6 +133,9 @@ async function run() {
   const browser = await launchBrowser();
   const struttura = strutturaCorso();
   const esistenti = Object.keys(struttura.episodes);
+  // Il nome della sequenza degli episodi di questo corso: la chiave sotto cui
+  // stanno i suoi spenti, dal 2026-10-22.
+  const corso = struttura.episodeSequence;
   const nomeSeq = struttura.episodeSequence;
 
   // ======== [A] La lista mostra tutti gli episodi, e non si scrive ========
@@ -244,8 +249,10 @@ async function run() {
       !!riga && riga.premuto === 'false', riga ? riga.premuto : 'niente riga');
 
     const ov = await overrideNelMagazzino(page);
-    log('[C] `episodiSpenti` negli override nomina proprio quell\'episodio',
-      ov && Array.isArray(ov.episodiSpenti) && ov.episodiSpenti.join(',') === bersaglio,
+    // Dal 2026-10-22 la lista sta sotto il nome della sequenza degli episodi
+    // del corso (la forma di `episodeSequences`), non a livello dell'app.
+    log('[C] `episodiSpenti` negli override nomina proprio quell\'episodio, sotto il nome del corso',
+      ov && ov.episodiSpenti && Array.isArray(ov.episodiSpenti[corso]) && ov.episodiSpenti[corso].join(',') === bersaglio,
       JSON.stringify(ov && ov.episodiSpenti));
 
     await page.reload();
@@ -264,8 +271,8 @@ async function run() {
     await apriPannello(page);
     await page.click('.config-episode-order-list [data-episode-onoff="' + bersaglio + '"]');
     const ov2 = await overrideNelMagazzino(page);
-    log('[C] Il secondo tocco lo riaccende, e `episodiSpenti` resta vuota',
-      ov2 && Array.isArray(ov2.episodiSpenti) && ov2.episodiSpenti.length === 0,
+    log('[C] Il secondo tocco lo riaccende, e la lista del corso resta vuota',
+      ov2 && ov2.episodiSpenti && Array.isArray(ov2.episodiSpenti[corso]) && ov2.episodiSpenti[corso].length === 0,
       JSON.stringify(ov2 && ov2.episodiSpenti));
 
     await page.reload();
@@ -289,7 +296,8 @@ async function run() {
     page.on('pageerror', e => errori.push(e.message));
     page.on('console', m => { if (m.type() === 'error') avvisi.push(m.text()); });
 
-    await apri(page, 'PannelloD', { override: { episodiSpenti: esistenti.slice() } });
+    const tuttiSpenti = {}; tuttiSpenti[corso] = esistenti.slice();
+    await apri(page, 'PannelloD', { override: { episodiSpenti: tuttiSpenti } });
     const studente = await righeStudente(page);
     log('[D] Con tutti spenti la lista NON e\' vuota',
       studente.length === esistenti.length, String(studente.length));
@@ -302,6 +310,78 @@ async function run() {
       avvisi.some(t => t.indexOf('spenti TUTTI') !== -1), avvisi.join(' | '));
 
     log('[D] Nessun errore di pagina', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ======== [E] ⚠️ LO SPEGNIMENTO E' DEL CORSO, NON DELL'APP ========
+  //
+  // Il caso piu' diverso (regola 42), e il difetto da cui nasce: le tre
+  // edizioni hanno gli STESSI id di episodio, e gli override del Pannello
+  // sono uno per tutte. Fino al 2026-10-22 spegnere `aircraft-door` in
+  // inglese/it lo spegneva anche in spagnolo/it e in italiano/es — misurato
+  // col gesto vero il giorno prima. Si spegne col gesto vero, si cambia
+  // edizione con lo stesso magazzino, e si guarda cosa vede lo studente.
+  {
+    const fs = require('fs');
+    const { repoPath } = require('./test-env');
+    const edizioni = JSON.parse(fs.readFileSync(repoPath('data', 'edizioni.json'), 'utf8')).edizioni;
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(e.message));
+    const bersaglio = esistenti[1];
+    await apri(page, 'PannelloE');
+    const aperto = await apriPannello(page);
+    log('[E] La lista degli episodi esiste nel pannello', aperto);
+    if (aperto) {
+      await page.click('.config-episode-order-list [data-episode-onoff="' + bersaglio + '"]');
+      const ov = await overrideNelMagazzino(page);
+      log('[E] Lo spento sta SOLO sotto il nome di questo corso (' + corso + ')',
+        ov && ov.episodiSpenti && Object.keys(ov.episodiSpenti).join(',') === corso, JSON.stringify(ov && ov.episodiSpenti));
+      // L'edizione di partenza e' quella del file che il test legge.
+      const altre = edizioni.filter(e => {
+        const s = JSON.parse(fs.readFileSync(repoPath('data', e.lingua, e.studente,
+          e.lingua + '-' + e.studente + '-struttura-corso.json'), 'utf8'));
+        return s.episodeSequence !== corso;
+      });
+      log('[E] Ci sono altre edizioni da guardare (il caso esiste)', altre.length > 0, String(altre.length));
+      const cambia = async (ed) => {
+        await page.evaluate(([k, e]) => {
+          const o = JSON.parse(localStorage.getItem(k) || '{}');
+          if (e) o.edizione = e; else delete o.edizione;
+          localStorage.setItem(k, JSON.stringify(o));
+        }, [CHIAVE_OVERRIDE, ed]);
+        await page.reload();
+        await attendiPrimaSchermata(page);
+        await page.waitForSelector('#go-episodes-list', { state: 'visible', timeout: 15000 });
+        return righeStudente(page);
+      };
+      for (const ed of altre) {
+        const righe = await cambia({ lingua: ed.lingua, studente: ed.studente });
+        log('[E] ⚠️ In ' + ed.lingua + '/' + ed.studente + ' `' + bersaglio + '` resta ACCESO',
+          righe.some(r => r.id === bersaglio), righe.map(r => r.id).join(','));
+      }
+      const tornato = await cambia(null);
+      log('[E] ...e tornando al corso di partenza e\' ancora spento', tornato.every(r => r.id !== bersaglio),
+        tornato.map(r => r.id).join(','));
+    }
+    log('[E] Nessun errore di pagina', errori.length === 0, errori.join(' | '));
+    await page.close();
+  }
+
+  // ======== [F] La lista di prima del 2026-10-22 si IGNORA ========
+  //
+  // Una lista sola non dice di quale corso e': darla alla prima edizione
+  // aperta sarebbe darla a una a caso. Si ignora, e il prossimo tocco
+  // dell'occhio la riscrive nella forma nuova (`episodiSpentiDelCorso`).
+  {
+    const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
+    const errori = [];
+    page.on('pageerror', e => errori.push(e.message));
+    await apri(page, 'PannelloF', { override: { episodiSpenti: [esistenti[1]] } });
+    const righe = await righeStudente(page);
+    log('[F] Una lista di prima (senza corso) non spegne niente', righe.length === esistenti.length,
+      righe.map(r => r.id).join(','));
+    log('[F] Nessun errore di pagina', errori.length === 0, errori.join(' | '));
     await page.close();
   }
 
