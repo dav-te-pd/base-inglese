@@ -197,7 +197,7 @@
   },
   "episodeSequence": "corso-italiano-a1",
   "episodioCorrente": "gate",
-  "episodiSpenti": {},
+  "episodiSpenti": [],
   "episodes": {
     "gate": {
       "nome": "En la puerta de embarque",

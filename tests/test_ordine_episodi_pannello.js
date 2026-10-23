@@ -47,7 +47,7 @@
 // episodi. Che l'ordine regga un rimescolamento completo di dieci episodi non
 // e' verificato qui — diventera' misurabile col terzo e col quarto.
 
-const { launchBrowser, APP_URL, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, dividiOverride } = require('./test-env');
 
 const BASE = APP_URL;
 const CHIAVE_OVERRIDE = 'baseinglese:configOverrides';
@@ -65,11 +65,15 @@ const log = (msg, ok, dettaglio) => {
 async function apri(page, utente, opzioni) {
   const o = opzioni || {};
   await page.goto(BASE);
+  // Dal 2026-10-23 `dividiOverride` manda le sezioni del corso nella sua
+  // chiave; `o.comune` scrive invece TUTTO nella chiave comune, cioe' la
+  // forma di prima di quel giorno — serve a [F].
+  const voci = o.comune ? { [CHIAVE_OVERRIDE]: JSON.stringify(o.comune) } : dividiOverride(o.override);
   await page.evaluate((dati) => {
     localStorage.clear();
-    if (dati.override) localStorage.setItem('baseinglese:configOverrides', JSON.stringify(dati.override));
+    Object.keys(dati.voci).forEach((k) => localStorage.setItem(k, dati.voci[k]));
     (dati.progressi || []).forEach(([k, v]) => localStorage.setItem(k, v));
-  }, { override: o.override || null, progressi: o.progressi || [] });
+  }, { voci, progressi: o.progressi || [] });
   await page.reload();
   await attendiPrimaSchermata(page);
   await page.fill('#name-input', utente);
@@ -123,10 +127,12 @@ async function righeStudente(page) {
     })));
 }
 
+// Gli override DEL CORSO aperto: ordine e spegnimento degli episodi stanno
+// li', dal 2026-10-23.
 function overrideNelMagazzino(page) {
-  return page.evaluate((k) => {
-    try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; }
-  }, CHIAVE_OVERRIDE);
+  return page.evaluate(() => {
+    try { return JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || 'null'); } catch (e) { return null; }
+  });
 }
 
 async function run() {
@@ -251,8 +257,8 @@ async function run() {
     const ov = await overrideNelMagazzino(page);
     // Dal 2026-10-22 la lista sta sotto il nome della sequenza degli episodi
     // del corso (la forma di `episodeSequences`), non a livello dell'app.
-    log('[C] `episodiSpenti` negli override nomina proprio quell\'episodio, sotto il nome del corso',
-      ov && ov.episodiSpenti && Array.isArray(ov.episodiSpenti[corso]) && ov.episodiSpenti[corso].join(',') === bersaglio,
+    log('[C] `episodiSpenti` negli override del corso nomina proprio quell\'episodio',
+      ov && Array.isArray(ov.episodiSpenti) && ov.episodiSpenti.join(',') === bersaglio,
       JSON.stringify(ov && ov.episodiSpenti));
 
     await page.reload();
@@ -272,7 +278,7 @@ async function run() {
     await page.click('.config-episode-order-list [data-episode-onoff="' + bersaglio + '"]');
     const ov2 = await overrideNelMagazzino(page);
     log('[C] Il secondo tocco lo riaccende, e la lista del corso resta vuota',
-      ov2 && ov2.episodiSpenti && Array.isArray(ov2.episodiSpenti[corso]) && ov2.episodiSpenti[corso].length === 0,
+      ov2 && Array.isArray(ov2.episodiSpenti) && ov2.episodiSpenti.length === 0,
       JSON.stringify(ov2 && ov2.episodiSpenti));
 
     await page.reload();
@@ -296,8 +302,7 @@ async function run() {
     page.on('pageerror', e => errori.push(e.message));
     page.on('console', m => { if (m.type() === 'error') avvisi.push(m.text()); });
 
-    const tuttiSpenti = {}; tuttiSpenti[corso] = esistenti.slice();
-    await apri(page, 'PannelloD', { override: { episodiSpenti: tuttiSpenti } });
+    await apri(page, 'PannelloD', { override: { episodiSpenti: esistenti.slice() } });
     const studente = await righeStudente(page);
     log('[D] Con tutti spenti la lista NON e\' vuota',
       studente.length === esistenti.length, String(studente.length));
@@ -335,8 +340,13 @@ async function run() {
     if (aperto) {
       await page.click('.config-episode-order-list [data-episode-onoff="' + bersaglio + '"]');
       const ov = await overrideNelMagazzino(page);
-      log('[E] Lo spento sta SOLO sotto il nome di questo corso (' + corso + ')',
-        ov && ov.episodiSpenti && Object.keys(ov.episodiSpenti).join(',') === corso, JSON.stringify(ov && ov.episodiSpenti));
+      const chiavi = await page.evaluate(() => ({
+        corso: window.BI.OVERRIDE_CORSO_KEY,
+        comune: JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}')
+      }));
+      log('[E] Lo spento sta nella chiave di QUESTO corso (' + chiavi.corso + ')',
+        ov && Array.isArray(ov.episodiSpenti) && ov.episodiSpenti.join(',') === bersaglio, JSON.stringify(ov && ov.episodiSpenti));
+      log('[E] ...e non nella chiave comune', !('episodiSpenti' in chiavi.comune), JSON.stringify(chiavi.comune));
       // L'edizione di partenza e' quella del file che il test legge.
       const altre = edizioni.filter(e => {
         const s = JSON.parse(fs.readFileSync(repoPath('data', e.lingua, e.studente,
@@ -368,18 +378,19 @@ async function run() {
     await page.close();
   }
 
-  // ======== [F] La lista di prima del 2026-10-22 si IGNORA ========
+  // ======== [F] Uno spegnimento nella chiave COMUNE si IGNORA ========
   //
-  // Una lista sola non dice di quale corso e': darla alla prima edizione
-  // aperta sarebbe darla a una a caso. Si ignora, e il prossimo tocco
-  // dell'occhio la riscrive nella forma nuova (`episodiSpentiDelCorso`).
+  // E' la forma di prima del 2026-10-23 (e del 22/10, sotto il nome della
+  // sequenza): non dice di quale corso e', e darlo alla prima edizione
+  // aperta sarebbe darlo a una a caso. Si ignora, e il prossimo tocco
+  // dell'occhio scrive nella chiave del corso.
   {
     const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
     const errori = [];
     page.on('pageerror', e => errori.push(e.message));
-    await apri(page, 'PannelloF', { override: { episodiSpenti: [esistenti[1]] } });
+    await apri(page, 'PannelloF', { comune: { episodiSpenti: [esistenti[1]] } });
     const righe = await righeStudente(page);
-    log('[F] Una lista di prima (senza corso) non spegne niente', righe.length === esistenti.length,
+    log('[F] Uno spegnimento nella chiave comune (senza corso) non spegne niente', righe.length === esistenti.length,
       righe.map(r => r.id).join(','));
     log('[F] Nessun errore di pagina', errori.length === 0, errori.join(' | '));
     await page.close();

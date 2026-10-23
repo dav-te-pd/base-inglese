@@ -124,6 +124,15 @@
   // Con la sostituzione, un override salvato prima di cambiare edizione
   // cancellava le lingue della nuova **senza dirlo**. Con la fusione no.
   //
+  // ⚠️ E DAL 2026-10-23 QUESTA CHIAVE PORTA SOLO L'APP. Le sezioni che
+  // vengono dai file di un'edizione — la struttura del corso, le tabelle dei
+  // nomi, le due lingue di `speech` — il Pannello le salva in una chiave PER
+  // CORSO, e le rimette sopra il file `app/dati.js` (`applicaOverrideDelCorso`).
+  // Qui possono ancora trovarsi copie salvate prima di quel giorno: si
+  // applicano a tempo di parsing e il file del corso le copre all'arrivo,
+  // cioe' si IGNORANO — *un valore che non dice di quale corso e' non si
+  // applica a uno a caso.*
+  //
   // ⚠️ E COSA SI PERDE, dichiarato invece che scoperto dopo: **non si puo'
   // piu' TOGLIERE una chiave con un override**, si puo' solo cambiarne il
   // valore. Oggi nessun punto dell'app lo fa — il pannello sa cambiare,
@@ -168,3 +177,9 @@
 window.BI = window.BI || {};
 window.BI.CONFIG_OVERRIDES_KEY = CONFIG_OVERRIDES_KEY;
 window.BI.applyConfigOverrides = applyConfigOverrides;
+// La regola di fusione, una sola: la usa anche il blocco del corso in
+// `app/dati.js` (regola 13).
+window.BI.fondiOverride = function (dalFile, dalFoglietto) {
+  return (eOggettoSemplice(dalFile) && eOggettoSemplice(dalFoglietto))
+    ? Object.assign({}, dalFile, dalFoglietto) : dalFoglietto;
+};

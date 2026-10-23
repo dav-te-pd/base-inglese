@@ -77,7 +77,7 @@
 // non è arrivato.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe, globDati } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, sorgenteChe, globDati, dividiOverride } = require('./test-env');
 const { openModule } = require('./map-driver');
 
 let passed = 0, failed = 0;
@@ -94,11 +94,10 @@ const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F' });
 const FILE_TABELLE = 'data/inglese/it/inglese-it-tabelle-personalizzazione.json';
 
 async function apriMappa(page, utente, episodio) {
-  await page.addInitScript(function (d) {
-    if (d.ep) {
-      try { localStorage.setItem('baseinglese:configOverrides', JSON.stringify({ episodioCorrente: d.ep })); } catch (e) {}
-    }
-  }, { ep: episodio });
+  // `episodioCorrente` e' del corso: dal 2026-10-23 va nella sua chiave.
+  await page.addInitScript(function (voci) {
+    Object.keys(voci).forEach(function (k) { try { localStorage.setItem(k, voci[k]); } catch (e) {} });
+  }, episodio ? dividiOverride({ episodioCorrente: episodio }) : {});
   await page.addInitScript(mockInit);
   await page.goto(APP_URL);
   await page.fill('#name-input', utente);
@@ -339,15 +338,20 @@ async function run() {
     // `native`/`target` — e lo e' apposta: e' quella che un browser vero ha
     // salvato. Da quel giorno questo blocco prova anche `righeCoiRuoli`
     // (app/dati.js): senza la conversione la tendina mostrerebbe `undefined`.
-    await page.addInitScript(() => {
-      localStorage.setItem('baseinglese:configOverrides', JSON.stringify({
-        people: {
-          papa: [{ value: 'zzz', it: 'Zenone', en: 'Zeno', traducibile: false }],
-          mamma: [], figlia: [], figlio: [], cognome: []
-        },
-        places: { departures: [], destinations: [] }
-      }));
-    });
+    // ⚠️ Dal 2026-10-23 le tabelle sono del corso, e l'override va nella sua
+    // chiave. *Una tabella `it`/`en` salvata DAVVERO prima del 30/09 stava
+    // nella chiave comune, che oggi si ignora: `righeCoiRuoli` resta provata
+    // qui, ma un caso reale da convertire non ce l'ha piu' — scritto in
+    // docs/decisioni-stato.md.*
+    await page.addInitScript((voci) => {
+      Object.keys(voci).forEach((k) => localStorage.setItem(k, voci[k]));
+    }, dividiOverride({
+      people: {
+        papa: [{ value: 'zzz', it: 'Zenone', en: 'Zeno', traducibile: false }],
+        mamma: [], figlia: [], figlio: [], cognome: []
+      },
+      places: { departures: [], destinations: [] }
+    }));
     await apriMappa(page, 'TabOver', null);
     await openModule(page, 'personalizzazione');
     await page.waitForFunction(() => document.querySelectorAll('#view-customize select').length > 0, { timeout: 15000 });

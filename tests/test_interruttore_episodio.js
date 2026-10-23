@@ -53,7 +53,7 @@
 // dell'episodio, e un descrittore sbagliato su un solo modulo passerebbe.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, strutturaCorso, attendiPrimaSchermata , fileEdizione } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, strutturaCorso, attendiPrimaSchermata , fileEdizione, dividiOverride } = require('./test-env');
 
 const BASE = APP_URL;
 let passed = 0, failed = 0;
@@ -84,10 +84,12 @@ function primaBattuta(episodeId) {
 // quindi il test prova il meccanismo vero, non una scorciatoia sua.
 async function apri(page, utente, override) {
   await page.goto(BASE);
-  await page.evaluate((ov) => {
+  // Dal 2026-10-23 le sezioni del corso vanno nella chiave del corso:
+  // `dividiOverride` le smista con la stessa regola dell'app.
+  await page.evaluate((voci) => {
     localStorage.clear();
-    if (ov) localStorage.setItem('baseinglese:configOverrides', JSON.stringify(ov));
-  }, override || null);
+    Object.keys(voci).forEach((k) => localStorage.setItem(k, voci[k]));
+  }, dividiOverride(override));
   await page.reload();
   await page.waitForSelector('#name-input', { state: 'visible' });
   await page.fill('#name-input', utente);
@@ -276,7 +278,7 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
       'la scelta e\' rimasta solo in memoria: senza ricarica la mappa resta quella di prima');
     if (ripartita) {
       const salvato = await page.evaluate(() => {
-        const ov = localStorage.getItem('baseinglese:configOverrides');
+        const ov = localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY);
         return ov ? JSON.parse(ov).episodioCorrente : null;
       });
       log('[B] La scelta e\' salvata negli override, non solo in memoria', salvato === secondo, String(salvato));
@@ -366,8 +368,8 @@ async function battuteDiMeetTheStory(page, episodeId, utente) {
     page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
     await page.goto(BASE);
     await page.evaluate(() => localStorage.clear());
-    await page.evaluate(() => localStorage.setItem('baseinglese:configOverrides',
-      JSON.stringify({ episodioCorrente: 'episodio-che-non-esiste' })));
+    await page.evaluate((voci) => Object.keys(voci).forEach((k) => localStorage.setItem(k, voci[k])),
+      dividiOverride({ episodioCorrente: 'episodio-che-non-esiste' }));
     await page.reload();
     await page.waitForSelector('#name-input', { state: 'visible', timeout: 10000 });
     await page.fill('#name-input', 'InterruttoreD');

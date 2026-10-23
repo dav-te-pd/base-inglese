@@ -380,27 +380,23 @@
   // console e si ripiega sull'ordine in cui le chiavi stanno scritte in
   // `episodes` — che e' esattamente quello che l'app faceva prima di questo
   // passo, cioe' il ripiego non peggiora niente rispetto a ieri.
-  // ⚠️ GLI SPENTI SONO DEL CORSO, NON DELL'APP — 2026-10-22.
+  // ⚠️ GLI SPENTI SONO DEL CORSO, NON DELL'APP — 2026-10-22, e dal
+  // 2026-10-23 per la strada generale.
   //
-  // `CONFIG.episodiSpenti` e' `{ <nome della sequenza degli episodi>: [id] }`:
-  // **la stessa forma di `episodeSequences`**, e per la stessa ragione. Gli
-  // override del Pannello sono UNO per tutte le edizioni, e le tre edizioni
-  // hanno gli STESSI id (`gate`, `aircraft-door`, per decisione): con una
-  // lista sola, spegnere `aircraft-door` in inglese/it lo spegneva anche in
-  // spagnolo/it e in italiano/es — misurato col gesto vero il 2026-10-21.
-  // Il nome della sequenza invece e' dell'edizione (`corso-inglese-a1`…), e
-  // l'ordine degli episodi, salvato sotto quel nome, non aveva il problema.
-  // *Gli id non si rendono unici: il contenitore e' gia' per edizione.*
+  // Le tre edizioni hanno gli STESSI id (`gate`, `aircraft-door`, per
+  // decisione), e fino al 22/10 lo spegnimento stava in una lista sola per
+  // tutte: spegnere `aircraft-door` in inglese/it lo spegneva anche nelle
+  // altre due. *Gli id non si rendono unici: il contenitore e' gia' per
+  // edizione.*
   //
-  // ⚠️ UNA LISTA (la forma di prima del 22/10) NON APPARTIENE A NESSUN CORSO,
-  // e si IGNORA invece di indovinare a quale darla: l'avrebbe presa la prima
-  // edizione aperta, cioe' una a caso. Vive solo nel browser di chi
-  // amministra, e il prossimo tocco dell'occhio la riscrive nella forma nuova.
+  // Il 22/10 la lista era passata sotto il nome della sequenza degli episodi
+  // (`{ corso-inglese-a1: [id] }`). Dal 23/10 non serve piu': gli override
+  // del Pannello hanno una chiave PER CORSO (`salvaSezioneDelPannello` in
+  // app/dati.js), e una chiave interna avrebbe fatto lo stesso lavoro una
+  // seconda volta. Torna una lista, e la forma del 22/10 — un oggetto — si
+  // ignora come ogni valore che non dice di quale corso e'.
   function episodiSpentiDelCorso() {
-    var tutti = CONFIG.episodiSpenti;
-    if (!tutti || typeof tutti !== 'object' || Array.isArray(tutti)) return [];
-    var lista = tutti[CONFIG.episodeSequence];
-    return Array.isArray(lista) ? lista : [];
+    return Array.isArray(CONFIG.episodiSpenti) ? CONFIG.episodiSpenti : [];
   }
 
   function resolveEpisodeOrder() {

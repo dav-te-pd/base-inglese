@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261022a**
+**Versione: 20261023a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -90,7 +90,7 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
 
 2. **Nessun colore fisso nel codice dei componenti.** Usare sempre le variabili del sistema di temi già esistente (blocco `:root` e i selettori `[data-theme="..."]` in cima a `index.html`). Un elemento nuovo deve rispondere correttamente a tutti i temi selezionabili (Viaggio, Notte, Mediterraneo, Moderno, Natura), senza colori hardcoded nel markup o nelle regole dei singoli componenti.
 
-3. **Nessun valore modificabile scritto fisso nel codice** — soglie numeriche, tempi, liste, percentuali. Tutto questo vive in `window.APP_CONFIG`, che sta in **`app/config.js`** — un tag `<script>` bloccante, il primo di tutti, quindi già in memoria quando parte tutto il resto. *Qui c'era scritto «in cima a `index.html`», ed è stato vero fino al 2026-09-19.* Aggiungere un nuovo parametro tunabile significa aggiungere una chiave lì, non un numero sparso nel codice. `APP_CONFIG` è la base dati del **Pannello Admin (config)**, che esiste già: si apre digitando `config` fuori da un campo di testo (o con `?config` nell'indirizzo), mostra un gruppo per ogni chiave di primo livello e scrive le modifiche negli override in `localStorage`. Aggiungere un parametro lì significa vederlo comparire nel pannello senza scrivere altro.
+3. **Nessun valore modificabile scritto fisso nel codice** — soglie numeriche, tempi, liste, percentuali. Tutto questo vive in `window.APP_CONFIG`, che sta in **`app/config.js`** — un tag `<script>` bloccante, il primo di tutti, quindi già in memoria quando parte tutto il resto. *Qui c'era scritto «in cima a `index.html`», ed è stato vero fino al 2026-09-19.* Aggiungere un nuovo parametro tunabile significa aggiungere una chiave lì, non un numero sparso nel codice. `APP_CONFIG` è la base dati del **Pannello Admin (config)**, che esiste già: si apre digitando `config` fuori da un campo di testo (o con `?config` nell'indirizzo), mostra un gruppo per ogni chiave di primo livello e scrive le modifiche negli override in `localStorage` — **dal 2026-10-23 in due posti**: le sezioni che vengono dai file di un'edizione (la struttura del corso, le tabelle dei nomi, le due lingue della voce) in una chiave **per corso**, tutto il resto — e `edizione`, che sceglie il corso — in quella dell'app. *Un override è un banco di prova sopra un file: se il file è per edizione, l'override è per edizione.* L'unico scrittore è `salvaSezioneDelPannello` (`app/dati.js`). Aggiungere un parametro lì significa vederlo comparire nel pannello senza scrivere altro.
 
 4. **Il contenuto didattico non va scritto dentro il codice dei componenti** — parole, frasi, traduzioni, spiegazioni. Va letto da file di dati esterni.
 

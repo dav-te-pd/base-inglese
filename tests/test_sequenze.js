@@ -43,7 +43,7 @@
 // rivelato solo l'iniezione del guasto. Adesso confronta la riga come si vede
 // — id più categoria.
 
-const { launchBrowser, APP_URL } = require('./test-env');
+const { launchBrowser, APP_URL, dividiOverride } = require('./test-env');
 const { stepIds } = require('./module-order');
 
 const BASE = APP_URL;
@@ -57,7 +57,8 @@ async function boot(page, utente, overrides) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   if (overrides) {
-    await page.evaluate(o => localStorage.setItem('baseinglese:configOverrides', JSON.stringify(o)), overrides);
+    // Dal 2026-10-23 le sezioni del corso vanno nella sua chiave.
+    await page.evaluate(voci => Object.keys(voci).forEach(k => localStorage.setItem(k, voci[k])), dividiOverride(overrides));
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
   }

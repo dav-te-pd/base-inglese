@@ -100,7 +100,7 @@ async function run() {
     // esattamente cio' che l'asserzione legge (CLAUDE.md regola 44).
     const newOrder = await page.evaluate(() => window.APP_CONFIG.sequences['narrativo-standard'].slice());
     log('[1] Clicking "down" swaps the first two entries live in APP_CONFIG', newOrder[0].module === globalOrder[1].module && newOrder[1].module === globalOrder[0].module);
-    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}'));
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}'));
     log('[1] Reorder persists to the config overrides in localStorage', JSON.stringify(stored.sequences['narrativo-standard']) === JSON.stringify(newOrder));
 
     // Il grado si modifica dalla stessa riga, con un tocco solo: il
@@ -125,7 +125,7 @@ async function run() {
       var before = window.APP_CONFIG.sequences['narrativo-standard'][i].grade;
       rows[i].querySelector('[data-order-grade]').click();
       var after = window.APP_CONFIG.sequences['narrativo-standard'][i].grade;
-      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      var overrides = JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}');
       return {
         index: i,
         before: before,
@@ -148,7 +148,7 @@ async function run() {
       var order = window.APP_CONFIG.sequences['narrativo-standard'];
       var prima = order.length;
       righe[1].querySelector('[data-order-onoff]').click();
-      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      var overrides = JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}');
       return {
         prima: prima,
         off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off,
@@ -164,7 +164,7 @@ async function run() {
     const riacceso = await page.evaluate(() => {
       var righe = Array.from(document.querySelectorAll('.config-module-order-list .config-module-order-row'));
       righe[1].querySelector('[data-order-onoff]').click();
-      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      var overrides = JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}');
       return { off: !!window.APP_CONFIG.sequences['narrativo-standard'][1].off, salvato: !!overrides.sequences['narrativo-standard'][1].off };
     });
     log('[1] Un secondo tocco lo riaccende', riacceso.off === false && riacceso.salvato === false);
@@ -188,10 +188,11 @@ async function run() {
       var order = window.APP_CONFIG.sequences['narrativo-standard'].map(function (p) {
         return p.module === 'repeatAloud' ? Object.assign({}, p, { off: true }) : p;
       });
-      var overrides = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      var overrides = JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}');
       overrides.sequences = overrides.sequences || {};
       overrides.sequences['narrativo-standard'] = order;
-      localStorage.setItem('baseinglese:configOverrides', JSON.stringify(overrides));
+      // Le sequenze sono del corso: dal 2026-10-23 vanno nella sua chiave.
+      localStorage.setItem(window.BI.OVERRIDE_CORSO_KEY, JSON.stringify(overrides));
       return {
         totale: window.APP_CONFIG.sequences['narrativo-standard'].length,
         spenti: order.filter(function (p) { return p.off; }).length

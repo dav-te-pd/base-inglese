@@ -68,7 +68,7 @@
 // terza.
 
 const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, strutturaCorso } = require('./test-env');
+const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, strutturaCorso, dividiOverride } = require('./test-env');
 
 let passed = 0, failed = 0;
 function log(nome, ok, extra) {
@@ -76,7 +76,6 @@ function log(nome, ok, extra) {
   else { failed++; console.log('FAIL - ' + nome + (extra ? '  -> ' + extra : '')); }
 }
 
-const CHIAVE_OVERRIDE = 'baseinglese:configOverrides';
 
 // Il finto del browser sta in un posto solo dal 2026-09-24 (passo F.4):
 // stesso nucleo di prima, stessi parametri. Vedi tests/mock-browser.js.
@@ -84,9 +83,11 @@ const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F' });
 
 async function apri(page, utente, override) {
-  await page.addInitScript(function (d) {
-    if (d.ov) { try { localStorage.setItem(d.chiave, JSON.stringify(d.ov)); } catch (e) {} }
-  }, { ov: override || null, chiave: CHIAVE_OVERRIDE });
+  // Dal 2026-10-23 le sezioni del corso vanno nella sua chiave:
+  // `dividiOverride` le smista con la stessa regola dell'app.
+  await page.addInitScript(function (voci) {
+    Object.keys(voci).forEach(function (k) { try { localStorage.setItem(k, voci[k]); } catch (e) {} });
+  }, dividiOverride(override));
   await page.addInitScript(mockInit);
   await page.goto(APP_URL);
   await page.fill('#name-input', utente);
@@ -264,7 +265,7 @@ async function run() {
     await page.click('.config-module-order-list .config-module-order-row:nth-child(2) [data-order-move="up"]');
 
     const esito = await page.evaluate(function (d) {
-      const ov = JSON.parse(localStorage.getItem('baseinglese:configOverrides') || '{}');
+      const ov = JSON.parse(localStorage.getItem(window.BI.OVERRIDE_CORSO_KEY) || '{}');
       return {
         altraPrimo: window.APP_CONFIG.sequences[d.altra][0].module,
         narrativoPrimo: window.APP_CONFIG.sequences['narrativo-standard'][0].module,

@@ -112,9 +112,26 @@ window.BI = window.BI || {};
     try { localStorage.removeItem(chiave); } catch (e) {}
   }
 
+  // Le chiavi che cominciano con un prefisso. Serve al ripristino del Pannello
+  // Admin, dal 2026-10-23: gli override sono uno per l'app e uno per CORSO
+  // (`baseinglese:configOverrides:<lingua>/<studente>`), e «ripristina i
+  // valori di partenza» deve toglierli tutti — anche quelli di un corso che non
+  // e' quello aperto adesso.
+  function magChiaviConPrefisso(prefisso) {
+    var fuori = [];
+    try {
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(prefisso) === 0) fuori.push(k);
+      }
+    } catch (e) {}
+    return fuori;
+  }
+
   BI.magLeggiJson = magLeggiJson;
   BI.magScriviJson = magScriviJson;
   BI.magLeggiTesto = magLeggiTesto;
   BI.magScriviTesto = magScriviTesto;
   BI.magCancella = magCancella;
+  BI.magChiaviConPrefisso = magChiaviConPrefisso;
 })(window.BI);

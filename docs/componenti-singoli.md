@@ -245,6 +245,12 @@ per spostare la fonte del sottotitolo.*
 | `scriviTestiHome()` | Scrive il saluto e il pulsante della schermata iniziale leggendoli dal file dei testi, col nome dello studente e quello dell'episodio dentro. | — → niente | ⚠️ **Che il markup abbia già qualcosa di sensato da dire.** Non scrive se il testo è vuoto: i testi possono non essere ancora arrivati, e svuotare «Ciao!» e «Inizia» sarebbe peggio di lasciarli. |
 | `goHome()` | Porta alla schermata iniziale: scrive i testi, e **li riscrive quando arrivano** se lo studente è ancora lì. | — → niente | Che `views.home` dica se vale ancora la pena scrivere. *Senza quel controllo si scriverebbe su una schermata già lasciata — invisibile, ma è la forma da cui nascono i guasti di ordine.* |
 
+## `app/mappa.js` — il ripristino degli override
+
+| Pezzo | Cosa fa | Cosa gli passi → cosa torna | Cosa dà per scontato |
+|---|---|---|---|
+| `chiaviDegliOverride()` | **tutte le chiavi degli override del Pannello**, dal 2026-10-23: quella dell'app se c'è, e quelle di ogni corso (`<chiave>:<lingua>/<studente>`) | *niente* → array di chiavi | una risposta sola per due domande uguali: «cosa tolgo ripristinando» (`ripristinaValoriDiPartenza`) e «c'è qualcosa da ripristinare» (il pulsante della schermata d'errore). ⚠️ *Il file dichiara `CONFIG_OVERRIDES_KEY` due volte, alle righe 51 e 2032 della stessa chiusura: c'era già, segnalato e non corretto (regola 11)* |
+
 ## `app/mappa.js` — il Pannello Admin, la lista degli EPISODI
 
 *Catalogati il 2026-09-26 col passo che li ha scritti (regola 46). Sono i

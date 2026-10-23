@@ -47,7 +47,8 @@ async function apriConOrdine(page, utente, ordine, extra) {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode', { state: 'visible' });
   await page.evaluate(({ ordine, extra, utente }) => {
-    localStorage.setItem('baseinglese:configOverrides',
+    // `episodes` e' del corso: dal 2026-10-23 va nella sua chiave.
+    localStorage.setItem(window.BI.OVERRIDE_CORSO_KEY,
       // Dal 2026-09-08 non esiste piu' un ordine globale: la forma sbagliata
       // si costruisce dando all'episodio un moduleOrder proprio, che e' una
       // delle due strade ammesse (l'altra e' dichiarare una sequenza).

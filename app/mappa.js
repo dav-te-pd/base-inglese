@@ -49,6 +49,13 @@
 
   var CONFIG = window.APP_CONFIG;
   var CONFIG_OVERRIDES_KEY = BI.CONFIG_OVERRIDES_KEY;
+  // Tutte le chiavi degli override del Pannello: quella dell'app e quelle dei
+  // corsi (`<chiave>:<lingua>/<studente>`, app/dati.js). Una sola risposta per
+  // il ripristino e per «c'e' qualcosa da ripristinare?».
+  function chiaviDegliOverride() {
+    var app = BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return null; }) ? [CONFIG_OVERRIDES_KEY] : [];
+    return app.concat(BI.magChiaviConPrefisso(CONFIG_OVERRIDES_KEY + ':'));
+  }
   var loadStoryCardsExplanationStats = BI.loadStoryCardsExplanationStats;
   var LOAD_ERROR_LAST_RESORT = BI.LOAD_ERROR_LAST_RESORT;
   var fermaLaVoce = BI.fermaLaVoce;
@@ -229,7 +236,7 @@
     // cancella la chiave e ricarica — e riusa quella riga invece di
     // riscriverla (regola 13).
     var resetBtn = document.getElementById('load-error-reset');
-    if (resetBtn) resetBtn.hidden = !BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return null; });
+    if (resetBtn) resetBtn.hidden = chiaviDegliOverride().length === 0;
 
     var testi = istruzioniInMemoria();
     var inMemoria = testi && testi.erroreCaricamento;
@@ -1759,15 +1766,11 @@
     var epOnOff = e.target.closest('[data-episode-onoff]');
     if (epOnOff) {
       var epId = epOnOff.getAttribute('data-episode-onoff');
-      // Si scrive sotto il nome della sequenza degli episodi di QUESTO corso
-      // — la forma di `episodeSequences`, vedi `episodiSpentiDelCorso` in
-      // app/catalogo.js. Se manca, o e' ancora la lista di prima del
-      // 2026-10-22, si crea qui invece di pretenderla nel file.
-      var tutti = window.APP_CONFIG.episodiSpenti;
-      if (!tutti || typeof tutti !== 'object' || Array.isArray(tutti)) tutti = window.APP_CONFIG.episodiSpenti = {};
-      var corso = window.APP_CONFIG.episodeSequence;
-      if (!Array.isArray(tutti[corso])) tutti[corso] = [];
-      var spenti = tutti[corso];
+      // Una lista semplice: dal 2026-10-23 e' gia' DEL CORSO perche' finisce
+      // nella chiave del corso (`salvaSezioneDelPannello`). Se manca, o e'
+      // ancora la forma per nome di sequenza del 22/10, si crea qui.
+      if (!Array.isArray(window.APP_CONFIG.episodiSpenti)) window.APP_CONFIG.episodiSpenti = [];
+      var spenti = window.APP_CONFIG.episodiSpenti;
       var dove = spenti.indexOf(epId);
       if (dove === -1) spenti.push(epId); else spenti.splice(dove, 1);
       persistConfigSection('episodiSpenti');
@@ -1962,11 +1965,13 @@
     obj[path[path.length - 1]] = value;
   }
 
+  // ⚠️ DAL 2026-10-23 LA CHIAVE LA SCEGLIE `salvaSezioneDelPannello`
+  // (app/dati.js): le sezioni del corso vanno nella chiave del corso, quelle
+  // dell'app nella sua, e `speech` si divide fra le due. Qui c'era la
+  // scrittura diretta in `CONFIG_OVERRIDES_KEY`, cioe' una chiave sola per
+  // tutte le edizioni.
   function persistConfigSection(sectionKey) {
-    var overrides = {};
-    overrides = BI.magLeggiJson(CONFIG_OVERRIDES_KEY, function () { return {}; });
-    overrides[sectionKey] = window.APP_CONFIG[sectionKey];
-    BI.magScriviJson(CONFIG_OVERRIDES_KEY, overrides);
+    BI.salvaSezioneDelPannello(sectionKey);
   }
 
   // Il grado successivo nel giro CONFIG.grades (A → B → C → D → A). Un
@@ -2113,8 +2118,14 @@
   // Il punto unico del ripristino: due pulsanti, una riga. Quello del pannello
   // e quello della schermata d'errore fanno la stessa identica cosa, e la
   // fanno con lo stesso codice (regola 13).
+  // ⚠️ DAL 2026-10-23 LE CHIAVI SONO PIU' D'UNA: quella dell'app e una per
+  // ogni corso toccato. Ripristinare le toglie TUTTE, anche quelle dei corsi
+  // che non sono aperti adesso — «i valori di partenza» non sono quelli di un
+  // corso solo. E la schermata d'errore conta su questo: un override rotto nel
+  // blocco del corso (un `episodeSequence` che non esiste) e' proprio il muro
+  // da cui questo pulsante fa uscire.
   function ripristinaValoriDiPartenza() {
-    BI.magCancella(CONFIG_OVERRIDES_KEY);
+    chiaviDegliOverride().forEach(function (k) { BI.magCancella(k); });
     location.reload();
   }
   document.getElementById('config-panel-reset-btn').addEventListener('click', ripristinaValoriDiPartenza);

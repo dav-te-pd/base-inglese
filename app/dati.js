@@ -1,4 +1,4 @@
-// DIPENDE DA: apertura.js [chiamata], avvio.js [chiamata], magazzino.js [chiamata], ui-condivisa.js [chiamata]
+// DIPENDE DA: apertura.js [chiamata], avvio.js [parsing], magazzino.js [chiamata], ui-condivisa.js [chiamata]
 // ⚠️ L'ordine del tag in index.html DIPENDE da questa riga. Verificata da
 // tests/test_dipendenze_dichiarate.js, che la confronta col codice vero: se
 // una delle due invecchia, la suite diventa rossa invece di lasciarlo scoprire
@@ -189,12 +189,97 @@ window.BI = window.BI || {};
 
   var strutturaPromise = null;
 
+  // ══ GLI OVERRIDE DEL CORSO — 2026-10-23 ═══════════════════════════════
+  //
+  // ⚠️ UN OVERRIDE E' UN BANCO DI PROVA SOPRA UN FILE: se il file e' di
+  // un'edizione, l'override e' di quell'edizione. Deciso da chi guida il
+  // progetto il 2026-10-23, dopo la misura del giorno prima: il Pannello
+  // salvava tutto in UNA chiave, `baseinglese:configOverrides`, e tredici
+  // sezioni che vengono dai file di un'edizione passavano a quella aperta
+  // dopo — toccare la velocita' della voce in inglese/it faceva parlare
+  // inglese a italiano/es, perche' le due lingue viaggiavano dentro `speech`.
+  //
+  // Quindi le sezioni del corso stanno in una chiave PER CORSO, una sola per
+  // tutto il blocco: `baseinglese:configOverrides:<lingua>/<studente>`. Le
+  // altre restano nella chiave dell'app, con `edizione`, che sceglie il corso
+  // e non si puo' leggere dentro il blocco di un corso che non si sa ancora
+  // quale e'.
+  //
+  // ⚠️ QUALI SONO, E NON E' UN ELENCO SCRITTO QUI: le chiavi di
+  // `CHIAVI_STRUTTURA`, quelle che il file di struttura mette dentro `speech`
+  // (oggi le due lingue) e le famiglie del file delle tabelle (`people`,
+  // `places`). *Un elenco a mano sarebbe la terza copia della stessa cosa.*
+  //
+  // ⚠️ `speech` E' L'UNICA SEZIONE DIVISA: le due lingue sono del corso, il
+  // resto — la velocita' e' di chi ascolta, le voci preferite sono del
+  // dispositivo — e' dell'app. Si divide e si ricompone QUI, e solo qui:
+  // `applicaOverrideDelCorso` la rimette insieme, `salvaSezioneDelPannello`
+  // la spezza. *Due letture della stessa sezione in due punti divergono.*
+  //
+  // ⚠️ E UN VALORE DEL CORSO TROVATO NELLA CHIAVE DELL'APP (salvato prima di
+  // oggi) SI IGNORA: non dice di quale corso e', e applicarlo sarebbe
+  // indovinare. Lo copre il file all'arrivo; la prossima volta che il Pannello
+  // salva quella sezione, la chiave dell'app la perde.
+  var OVERRIDE_CORSO_KEY = BI.CONFIG_OVERRIDES_KEY + ':' + CONFIG.edizione.lingua + '/' + CONFIG.edizione.studente;
+  // Riempite all'arrivo dei due file: senza file non c'e' niente del corso.
+  var chiaviSpeechDelCorso = [];
+  var chiaviTabelleDelCorso = [];
+
+  function overrideDelCorso() {
+    return BI.magLeggiJson(OVERRIDE_CORSO_KEY, function () { return {}; });
+  }
+
+  function sezioneDelCorso(k) {
+    return CHIAVI_STRUTTURA.indexOf(k) !== -1 || chiaviTabelleDelCorso.indexOf(k) !== -1;
+  }
+
+  // Il blocco del corso SOPRA il file, con la stessa fusione degli override
+  // dell'app (`BI.fondiOverride`): la ricomposizione di `speech` sta qui.
+  function applicaOverrideDelCorso() {
+    var o = overrideDelCorso();
+    CHIAVI_STRUTTURA.forEach(function (k) {
+      if (Object.prototype.hasOwnProperty.call(o, k)) CONFIG[k] = BI.fondiOverride(CONFIG[k], o[k]);
+    });
+    if (o.speech) {
+      chiaviSpeechDelCorso.forEach(function (k) {
+        if (Object.prototype.hasOwnProperty.call(o.speech, k)) CONFIG.speech[k] = o.speech[k];
+      });
+    }
+  }
+
+  // L'UNICO scrittore degli override del Pannello: decide la chiave dalla
+  // sezione. `speech` va in due, il resto in una.
+  function salvaSezioneDelPannello(k) {
+    var valore = CONFIG[k];
+    var app = BI.magLeggiJson(BI.CONFIG_OVERRIDES_KEY, function () { return {}; });
+    var corso = overrideDelCorso();
+    if (k === 'speech') {
+      var delCorso = {};
+      var dellApp = {};
+      Object.keys(valore || {}).forEach(function (c) {
+        if (chiaviSpeechDelCorso.indexOf(c) !== -1) delCorso[c] = valore[c]; else dellApp[c] = valore[c];
+      });
+      corso.speech = delCorso;
+      app.speech = dellApp;
+      BI.magScriviJson(OVERRIDE_CORSO_KEY, corso);
+      BI.magScriviJson(BI.CONFIG_OVERRIDES_KEY, app);
+      return;
+    }
+    if (sezioneDelCorso(k)) {
+      corso[k] = valore;
+      BI.magScriviJson(OVERRIDE_CORSO_KEY, corso);
+    } else {
+      app[k] = valore;
+      BI.magScriviJson(BI.CONFIG_OVERRIDES_KEY, app);
+    }
+  }
+
   // ⚠️ QUESTO CICLO ASSEGNA ANCHE QUANDO IL FILE NON HA LA CHIAVE, e il fatto
   // serve a chi aggiunge una voce all'elenco qui sopra: `CONFIG[k] = dati[k]`
   // scrive `undefined` su una chiave assente, quindi **un valore di partenza
   // scritto in `app/config.js` NON sopravvive all'arrivo della struttura.**
   //
-  // E' la ragione per cui `episodiSpenti` sta nel file dell'edizione con `{}`
+  // E' la ragione per cui `episodiSpenti` sta nel file dell'edizione con `[]`
   // dentro benche' sia una manopola del Pannello Admin e non contenuto: senza
   // quella riga nel file, l'unico modo di dargli un valore di partenza
   // sarebbe... nessuno. *Gli override del pannello tornano sopra due righe
@@ -206,17 +291,15 @@ window.BI = window.BI || {};
     // Le due lingue sono le uniche che entrano DENTRO una sezione invece di
     // esserlo: `speech` resta di `app/config.js` (velocita', voci preferite,
     // alternative) e il corso ne riempie due chiavi.
-    if (dati.speech) {
-      CONFIG.speech.recognitionLang = dati.speech.recognitionLang;
-      CONFIG.speech.synthesisLang = dati.speech.synthesisLang;
-    }
+    // Le chiavi che il file mette dentro `speech` sono quelle del corso: lette
+    // dal file, non elencate (vedi «GLI OVERRIDE DEL CORSO» qui sopra).
+    chiaviSpeechDelCorso = Object.keys(dati.speech || {});
+    chiaviSpeechDelCorso.forEach(function (k) { CONFIG.speech[k] = dati.speech[k]; });
     // ⚠️ E GLI OVERRIDE DEL PANNELLO ADMIN VANNO SOPRA IL FILE, altrimenti
     // questo `fetch` cancella in silenzio la sequenza appena riordinata a
-    // mano: `applyConfigOverrides` gira a tempo di parsing, cioe' PRIMA che
-    // il file arrivi. Non e' una regola nuova — e' la stessa che
-    // `loadPersonalizationTables` applica gia' alle tabelle dei nomi — e si
-    // riusa la funzione invece di riscriverne una seconda (regola 13).
-    BI.applyConfigOverrides();
+    // mano. *Dal 2026-10-23 sono quelli DEL CORSO: quelli dell'app si sono
+    // applicati a tempo di parsing e questo file non li tocca.*
+    applicaOverrideDelCorso();
   }
 
   function caricaStrutturaCorso() {
@@ -326,10 +409,14 @@ window.BI = window.BI || {};
         //
         // Le chiavi che cominciano con `_` restano fuori: sono le note che il
         // file porta per chi lo legge, non tabelle.
-        var overrides = BI.magLeggiJson(BI.CONFIG_OVERRIDES_KEY, function () { return {}; });
+        // ⚠️ Dal 2026-10-23 gli override delle tabelle sono DEL CORSO: una
+        // tabella di nomi per italiani non e' quella di un corso per spagnoli.
+        var overrides = overrideDelCorso();
         var tabelle = {};
+        chiaviTabelleDelCorso = [];
         Object.keys(data || {}).forEach(function (k) {
           if (k.charAt(0) === '_') return;
+          chiaviTabelleDelCorso.push(k);
           tabelle[k] = righeCoiRuoli(overrides[k]) || data[k] || {};
         });
         return tabelle;
@@ -583,6 +670,8 @@ window.BI = window.BI || {};
   BI.loadModuleInstructions = loadModuleInstructions;
   BI.loadFeedbackMessages = loadFeedbackMessages;
   BI.loadPersonalizationTables = loadPersonalizationTables;
+  BI.OVERRIDE_CORSO_KEY = OVERRIDE_CORSO_KEY;
+  BI.salvaSezioneDelPannello = salvaSezioneDelPannello;
   BI.loadPersonalizationMigrations = loadPersonalizationMigrations;
   BI.episodeDataFile = episodeDataFile;
   BI.episodeDataCache = episodeDataCache;

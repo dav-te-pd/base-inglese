@@ -309,4 +309,54 @@ function strutturaCorso() {
   return JSON.parse(require('fs').readFileSync(fileEdizione('struttura-corso.json'), 'utf8'));
 }
 
-module.exports = { chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, fileCondiviso, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, globDati, globCondivisi };
+// ⚠️ GLI OVERRIDE DEL PANNELLO SONO DUE CHIAVI, DAL 2026-10-23: quella
+// dell'app (`baseinglese:configOverrides`, con `edizione`) e una per corso
+// (`baseinglese:configOverrides:<lingua>/<studente>`), che porta le sezioni
+// venute dai file dell'edizione. Un test che scrive «un override» senza
+// pensarci finirebbe nella chiave comune, e le sezioni del corso verrebbero
+// IGNORATE — com'e' giusto per l'app, e muto per il test.
+//
+// Questo aiutante prende l'override scritto tutto insieme e lo divide con la
+// stessa regola dell'app, ricavata dai FILE dell'edizione e non da un elenco:
+// le chiavi della struttura (tranne `speech`), le famiglie delle tabelle, e
+// dentro `speech` le chiavi che la struttura ci mette. Torna
+// `{ <chiave>: <testo JSON> }`, pronto per `localStorage.setItem` dentro una
+// pagina. *La regola dell'app sta in `app/dati.js` (`salvaSezioneDelPannello`);
+// test_override_per_edizione.js verifica che le due dicano la stessa cosa.*
+const CHIAVE_OVERRIDE = 'baseinglese:configOverrides';
+function sezioniDelCorso(ed) {
+  const fs = require('fs');
+  const pref = prefissoEdizione(ed);
+  const struttura = JSON.parse(fs.readFileSync(repoPath('data', ed.lingua, ed.studente, pref + 'struttura-corso.json'), 'utf8'));
+  const tabelle = JSON.parse(fs.readFileSync(repoPath('data', ed.lingua, ed.studente, pref + 'tabelle-personalizzazione.json'), 'utf8'));
+  return {
+    intere: Object.keys(struttura).filter((k) => k !== 'speech').concat(Object.keys(tabelle).filter((k) => k.charAt(0) !== '_')),
+    voce: Object.keys(struttura.speech || {})
+  };
+}
+function chiaveOverrideCorso(ed) {
+  const e = ed || configApp().edizione;
+  return CHIAVE_OVERRIDE + ':' + e.lingua + '/' + e.studente;
+}
+function dividiOverride(override) {
+  const ed = (override && override.edizione) || configApp().edizione;
+  const corsoSez = sezioniDelCorso(ed);
+  const app = {};
+  const corso = {};
+  Object.keys(override || {}).forEach((k) => {
+    if (k === 'speech') {
+      Object.keys(override.speech).forEach((c) => {
+        const dove = corsoSez.voce.indexOf(c) !== -1 ? corso : app;
+        dove.speech = dove.speech || {};
+        dove.speech[c] = override.speech[c];
+      });
+    } else if (corsoSez.intere.indexOf(k) !== -1) corso[k] = override[k];
+    else app[k] = override[k];
+  });
+  const fuori = {};
+  if (Object.keys(app).length) fuori[CHIAVE_OVERRIDE] = JSON.stringify(app);
+  if (Object.keys(corso).length) fuori[chiaveOverrideCorso(ed)] = JSON.stringify(corso);
+  return fuori;
+}
+
+module.exports = { CHIAVE_OVERRIDE, chiaveOverrideCorso, dividiOverride, chromium, launchBrowser, bloccaFontEsterni, APP_URL, APP_PORT, REPO_ROOT, repoPath, outputPath, righeDiCodiceDi, sorgenteChe, configApp, fileEdizione, fileCondiviso, chiaveMagazzino, strutturaCorso, attendiPrimaSchermata, globDati, globCondivisi };

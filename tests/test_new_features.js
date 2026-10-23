@@ -18,7 +18,7 @@
 // scambio per davvero; gli id attesi si ricalcolano con la regola di
 // `moduleStepId` invece di essere scritti a mano.
 //
-const { launchBrowser, APP_URL, strutturaCorso, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, strutturaCorso, attendiPrimaSchermata, dividiOverride } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { spiaToni } = require('./mock-browser');
 const { attendiClasse, attendiVisibile } = require('./attese');
@@ -81,10 +81,11 @@ async function run() {
     // adesso verifica lo scambio per davvero.
     const ordineScambiato = strutturaCorso().sequences['narrativo-standard'].slice();
     const tmp = ordineScambiato[0]; ordineScambiato[0] = ordineScambiato[1]; ordineScambiato[1] = tmp;
-    await page.addInitScript(function (ordine) {
-      localStorage.setItem('baseinglese:configOverrides',
-        JSON.stringify({ sequences: { 'narrativo-standard': ordine } }));
-    }, ordineScambiato);
+    // Le sequenze sono del corso: `dividiOverride` le mette nella sua chiave
+    // (dal 2026-10-23), con la stessa regola dell'app.
+    await page.addInitScript(function (voci) {
+      Object.keys(voci).forEach(function (k) { localStorage.setItem(k, voci[k]); });
+    }, dividiOverride({ sequences: { 'narrativo-standard': ordineScambiato } }));
     await page.goto(BASE);
     await attendiPrimaSchermata(page);
     var onboardingVisible = await page.isVisible('#name-input').catch(() => false);
