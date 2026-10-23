@@ -213,13 +213,28 @@ async function run() {
     // qui sotto si aspettano (dialogo che cammina).
     await page.waitForFunction(() => window.speechSynthesis.speaking === false,
       { timeout: 10000 }).then(function () {}, function () {});
-    // Wait for the countdown to actually start (audio ends) -> Pausa should now be enabled.
-    await page.waitForFunction(() => {
-      var btn = document.getElementById('dg-pause-btn');
-      return btn && !btn.disabled;
-    }, { timeout: 6000 }).catch(() => {});
-    const pauseEnabledDuringCountdown = await page.$eval('#dg-pause-btn', el => el.disabled).catch(() => null);
-    log('[Job2] Pausa becomes enabled once the per-line countdown is running', pauseEnabledDuringCountdown === false);
+    // ⚠️ RISCRITTA IL 2026-10-23, e non e' una rinomina. Qui si aspettava che
+    // Pausa fosse ACCESO e la riga si chiamava «Pausa becomes enabled once the
+    // per-line countdown is running»: un resto di prima del 2026-09-25, quando
+    // Pausa era spento mentre la battuta parlava. Da quel giorno e' acceso
+    // anche allora, quindi l'attesa tornava SUBITO e la riga era vera a
+    // prescindere dal countdown — una riga che non poteva fallire.
+    //
+    // Adesso si aspetta il COUNTDOWN vero, cioe' la bolla col timer: un effetto
+    // che la riga non legge (regola 44). E si guarda Pausa in quell'istante.
+    // Vista cadere togliendo `!isCountingDown` dalla condizione di
+    // `dgUpdateToolbarButtonState` (Pausa spento proprio durante il countdown):
+    // rossa; la forma di prima restava verde, perche' aspettava la battuta dopo.
+    const countdownPartito = await page.waitForSelector('.dg-bubble.dg-bubble-timer', { timeout: 10000 })
+      .then(function () { return true; }, function () { return false; });
+    const nelCountdown = await page.evaluate(() => ({
+      timer: !!document.querySelector('.dg-bubble.dg-bubble-timer'),
+      disabled: document.getElementById('dg-pause-btn').disabled
+    }));
+    log('[Job2] Il countdown della battuta parte davvero (senza, la riga sotto non direbbe niente)',
+      countdownPartito && nelCountdown.timer === true, JSON.stringify(nelCountdown));
+    log('[Job2] Pausa e\' ACCESO mentre il countdown della battuta scorre', nelCountdown.disabled === false,
+      JSON.stringify(nelCountdown));
     // Now actually pause it -> Riprendi should stay enabled (not get stuck disabled).
     await page.click('#dg-pause-btn');
     await page.waitForTimeout(150); // ATTESA-LEGITTIMA: misto e nessuna delle due meta' e' convertibile: il TESTO del pulsante non ha una forma condivisa (e' la famiglia «un testo che si riempie»), e lo stato abilitato era gia' vero prima della pausa
