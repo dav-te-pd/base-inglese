@@ -5,9 +5,9 @@
 // viene nemmeno chiesto alla rete prima del login; gli slot di ogni episodio
 // si risolvono dal file senza restare vuoti, anche con la rete lenta; il
 // Pannello Admin si apre col magazzino in ritardo e i suoi gruppi arrivano
-// dopo, aggiunti e non ridisegnati; e l'override salvato dal Pannello Admin —
-// anche nella forma di prima del 2026-09-30, `it`/`en` — sopravvive allo
-// spostamento, invece di restare scritto in un magazzino che nessuno legge.
+// dopo, aggiunti e non ridisegnati; e l'override salvato dal Pannello Admin
+// nella chiave del corso sopravvive allo spostamento, invece di restare
+// scritto in un magazzino che nessuno legge.
 //
 // COSA SI PERDE SENZA QUESTO FILE. Fino al 2026-09-15 `people` e `places`
 // stavano dentro `APP_CONFIG`, cioè erano lì per costruzione: chiunque poteva
@@ -65,10 +65,12 @@
 // nudo su entrambi i file e in più vieta che il percorso dell'edizione torni
 // scritto a mano lì dentro.
 //
-// ⚠️ DAL 2026-09-30 `[E]` PROVA ANCHE LA CONVERSIONE `righeCoiRuoli`
-// (app/dati.js): l'override che inietta è nella forma di prima, quella che un
-// browser vero ha salvato. Visto fallire togliendo la conversione: la tendina
-// mostra `undefined`.
+// ⚠️ DAL 2026-09-30 AL 2026-10-23 `[E]` HA PROVATO ANCHE LA CONVERSIONE
+// `righeCoiRuoli` (app/dati.js), con un override nella forma di prima
+// (`it`/`en`). Tolta quel giorno, con la conversione: da quando le sezioni del
+// corso trovate nella chiave comune si ignorano, nessun dato le arrivava — e
+// lo prova `[D]` di test_override_per_edizione.js, non questo file. Qui resta
+// la metà che ha un ingresso: l'override delle tabelle si applica.
 //
 // ⚠️ LA TERZA DIFFERENZA È CHIUSA dal 2026-09-20 (passo 1.8): la
 // traducibilità non è più dedotta dalla tabella, la dichiara la riga. A
@@ -334,20 +336,15 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
-    // ⚠️ L'OVERRIDE E' NELLA FORMA DI PRIMA DEL 2026-09-30 — `it`/`en` e non
-    // `native`/`target` — e lo e' apposta: e' quella che un browser vero ha
-    // salvato. Da quel giorno questo blocco prova anche `righeCoiRuoli`
-    // (app/dati.js): senza la conversione la tendina mostrerebbe `undefined`.
-    // ⚠️ Dal 2026-10-23 le tabelle sono del corso, e l'override va nella sua
-    // chiave. *Una tabella `it`/`en` salvata DAVVERO prima del 30/09 stava
-    // nella chiave comune, che oggi si ignora: `righeCoiRuoli` resta provata
-    // qui, ma un caso reale da convertire non ce l'ha piu' — scritto in
-    // docs/decisioni-stato.md.*
+    // Dal 2026-10-23 le tabelle sono del corso, e l'override va nella sua
+    // chiave, coi RUOLI — la forma che il Pannello scrive. *Qui c'era la forma
+    // di prima del 30/09 (`it`/`en`), che provava la conversione
+    // `righeCoiRuoli`: tolta insieme a lei, vedi la testata.*
     await page.addInitScript((voci) => {
       Object.keys(voci).forEach((k) => localStorage.setItem(k, voci[k]));
     }, dividiOverride({
       people: {
-        papa: [{ value: 'zzz', it: 'Zenone', en: 'Zeno', traducibile: false }],
+        papa: [{ value: 'zzz', native: 'Zenone', target: 'Zeno', traducibile: false }],
         mamma: [], figlia: [], figlio: [], cognome: []
       },
       places: { departures: [], destinations: [] }

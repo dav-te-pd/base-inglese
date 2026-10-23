@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261023a**
+**Versione: 20261023b**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -1211,6 +1211,37 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
     guarda** (`if ! node tools/conta-asserzioni.js $FILES`): con un baseline
     alterato a mano esce **1** e nomina il calo; prima della riparazione usciva
     **0** in entrambi i casi.
+
+50. **UN CONVERTITORE VIVE FINCHÉ ESISTE UN DATO CHE LO RAGGIUNGE.** Quando
+    si cambia la chiave dove quel dato era salvato, o il convertitore **si
+    sposta con la chiave**, o **muore con lei** — e lo si cerca **NELLO STESSO
+    COMMIT che cambia la chiave**, non sei mesi dopo per caso.
+
+    *Deciso da chi guida il progetto il 2026-10-23.* Un convertitore è il
+    codice che legge un dato salvato nella forma di prima e lo porta in quella
+    di oggi: esiste per un dato che sta **da qualche parte**, e quel «da
+    qualche parte» è una chiave.
+
+    ⚠️ **IL CASO CHE L'HA SCRITTA:** `righeCoiRuoli` (`app/dati.js`) convertiva
+    le tabelle dei nomi salvate dal Pannello prima del 2026-09-30 (`it`/`en`
+    → `native`/`target`). Quelle tabelle stavano nella chiave comune degli
+    override; il commit che ha portato gli override per edizione (`023f03d`)
+    ha cominciato a **ignorare** le sezioni del corso trovate lì — e da quel
+    momento al convertitore non arrivava più niente. **È rimasto lì a girare
+    su dati che non esistevano**, e un test lo «provava» mettendogli davanti
+    un caso che nessun browser vero poteva più dargli. *L'ha visto la
+    registrazione dello stesso giorno, non il commit: il commit cambiava la
+    chiave e non cercava chi la leggeva per convertire.*
+
+    **E la cancellazione non si fa per ragionamento: si appoggia a una riga
+    verde** — quella che prova che il dato non arriva più. Qui è `[D]` di
+    `tests/test_override_per_edizione.js`. *Se il test del convertitore copre
+    anche una strada viva, muore solo la metà senza ingresso.*
+
+    ⚠️ **SCATTA TUTTA INTERA A SUPABASE.** Spostare i dati dello studente su
+    un server è **il cambio di chiave più grande del progetto**: ogni
+    convertitore che oggi legge il magazzino locale va guardato in quel passo
+    — e si porta di là, o muore lì.
 
 ## Riferimenti operativi
 
