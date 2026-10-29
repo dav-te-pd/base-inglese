@@ -103,9 +103,12 @@ const sonda = () => {
     await page.click('#onboarding-form button[type=submit]');
     await page.waitForSelector('#go-episode');
     await page.evaluate(function (p) {
-      localStorage.setItem('baseinglese:modules:gate:Finestra', JSON.stringify({ completed: p }));
+      // Le chiavi dai costruttori dell'app (`BI.*Key`), mai scritte a mano: dal
+      // 2026-09-22 portano l'edizione, e quelle scritte qui erano rimaste alla
+      // forma di prima — il modulo restava spento, e lo strumento in timeout.
+      localStorage.setItem(BI.moduleProgressKey('gate', 'Finestra'), JSON.stringify({ completed: p }));
       ['mappaEpisodio', 'personalizzazione', 'voicePractice', 'voiceCoach']
-        .forEach(function (k) { localStorage.setItem('baseinglese:introDismissed:' + k + ':Finestra', '1'); });
+        .forEach(function (k) { localStorage.setItem(BI.introDismissedKey(k, 'Finestra'), '1'); });
     }, stepsBefore('voiceCoach'));
     await page.click('#go-episode');
     await page.waitForFunction(function () { return document.querySelectorAll('#module-list [data-module]').length > 0; });

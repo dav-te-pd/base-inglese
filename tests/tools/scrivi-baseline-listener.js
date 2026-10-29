@@ -66,9 +66,12 @@ async function misura() {
     await page.click('#onboarding-form button[type=submit]');
     await page.waitForSelector('#view-home.is-active', { timeout: 15000 });
     await page.evaluate(function (d) {
-      localStorage.setItem('baseinglese:gate:customizeSeen:' + d.u, '1');
-      localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + d.u, '1');
-      localStorage.setItem('baseinglese:modules:gate:' + d.u, JSON.stringify({ completed: d.f }));
+      // Le chiavi dai costruttori dell'app (`BI.*Key`), mai scritte a mano: dal
+      // 2026-09-22 portano l'edizione, e quelle scritte qui erano rimaste alla
+      // forma di prima — il modulo restava spento, e lo strumento in timeout.
+      localStorage.setItem(BI.customizeSeenKey('gate', d.u), '1');
+      localStorage.setItem(BI.introDismissedKey('mappaEpisodio', d.u), '1');
+      localStorage.setItem(BI.moduleProgressKey('gate', d.u), JSON.stringify({ completed: d.f }));
     }, { u: u, f: stepsBefore(passo) });
     await page.click('#go-episode');
     await page.waitForSelector('#view-map.is-active', { timeout: 15000 });

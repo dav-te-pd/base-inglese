@@ -59,10 +59,13 @@ const mockVoce = () => {
   await page.click('#onboarding-form button[type=submit]');
   await page.waitForSelector('#go-episode');
   await page.evaluate(function (a) {
-    localStorage.setItem('baseinglese:modules:gate:' + a.utente, JSON.stringify({ completed: a.prima }));
+    // Le chiavi dai costruttori dell'app (`BI.*Key`), mai scritte a mano: dal
+    // 2026-09-22 portano l'edizione, e quelle scritte qui erano rimaste alla
+    // forma di prima — il modulo restava spento, e lo strumento in timeout.
+    localStorage.setItem(BI.moduleProgressKey('gate', a.utente), JSON.stringify({ completed: a.prima }));
     // Le schermate di spiegazione a tutto schermo si saltano: qui interessa
     // il modulo, non la sua introduzione.
-    a.kinds.forEach(function (k) { localStorage.setItem('baseinglese:introDismissed:' + k + ':' + a.utente, '1'); });
+    a.kinds.forEach(function (k) { localStorage.setItem(BI.introDismissedKey(k, a.utente), '1'); });
   }, { utente: utente, prima: stepsBefore(moduleId), kinds: ['mappaEpisodio'].concat(stepIds().map(function (id) { return id.replace(/-\d+$/, ''); })) });
   await page.click('#go-episode');
   await page.waitForFunction(function () { return document.querySelectorAll('#module-list [data-module]').length > 0; });
