@@ -1,6 +1,6 @@
 # base-inglese
 
-**Versione: 20261023b**
+**Versione: 20261029a**
 
 > ⚠️ **Non fondare decisioni su questo file senza verifica in chat.**
 > Regole, dati e funzioni scritti qui vanno riletti e validati prima di essere
@@ -111,6 +111,13 @@ Queste regole valgono per ogni sessione futura su questo progetto, anche quando 
      **Il nome ripete le due lingue del percorso, ed è voluto:** il file esce dal repository — cartella Download, poi una chat — e lì il percorso si perde. `gate.json` da solo non dice niente.
 
      **Il livello NON sta nel nome, e non è per accorciare:** il livello non è una proprietà dell'episodio, è un'etichetta su un tratto di sequenza. Un episodio non «è» A1.2: sta in un tratto che si chiama così, e se lo si sposta cambia gruppo. Metterlo nel nome, o in una cartella, congelerebbe una posizione — lo stesso errore di `episode1`. **L'id invece non cambia mai:** `gate`, `aircraft-door` — descrittivo, in inglese, congelato. I gradi sono condivisi tra più moduli e devono restare un'unica fonte di verità: ogni modulo legge il proprio grado dallo stesso file episodio, non ne duplica il contenuto in un file suo. I moduli che oggi ci leggono dentro sono Meet the Story, Why We Say It, Repeat Aloud, Voice Practice, Voice Check, Match Practice (en→it, it→en), Speed Match (en→it, it→en), Flash Card (en→it, it→en) e i tre Dialogue (Listen & Repeat, Repeat in Time, Real Dialogue). **Previsti ma non ancora costruiti**: Scrittura e il Test di verifica finale — non esistono nel codice, quindi non cercarli.
+
+     **Gli id delle VOCI seguono la stessa regola degli id degli episodi, e in più non si spostano.** Una voce di un grado — una parola, un'espressione, una frase, una battuta — è riconosciuta dalla coppia **id + testo**, non dal solo id: gli id sono le chiavi con cui si salvano la mastery e le risposte di chi studia. Quindi:
+
+     - **una scena nuova prende id nuovi** — una battuta o una frase inserita in mezzo ha un id suo, e quelle intorno tengono il loro;
+     - **nessuno rinumera, mai** — rinumerare vuol dire che un id esistente passa a un altro testo, e i dati salvati sotto quell'id passano alla voce sbagliata senza un errore.
+
+     *Deciso da chi guida il progetto il 2026-10-29. Gli id di A e B sono descrittivi dal 2026-09-24, quelli di C lo diventano prima della tappa ③; quelli di D restano `d-N`, perché sono la chiave con cui il progetto cita le battute (le skill, la colonna `da` del grado C, i tabelloni di chi guida il progetto). Un test che congela la coppia id + testo di ogni voce nasce dentro la tappa ③, quando nascono i dati veri che difende (`docs/decisioni-stato.md`, riga «Gli id posizionali»).*
    - **Le tabelle di personalizzazione** (nomi, città, paesi) restano separate dai file episodio: un file episodio vi fa riferimento (es. "usa la tabella nomi-papà"), non le duplica al suo interno. Sono condivise fra tutti gli episodi **della stessa edizione**, non fra edizioni: i nomi propri plausibili sono quelli di chi studia, e un'edizione tedesca vuole i suoi. ⚠️ **Sono USCITE da `APP_CONFIG` il 2026-09-15** e stanno in `data/{lingua-che-si-impara}/{lingua-studente}/tabelle-personalizzazione.json`, come tutto il resto dell'edizione. *Questa riga diceva «lavoro previsto, non ancora fatto».*
 
    - **Il contenuto di un episodio è organizzato in gradi**, non in sezioni per modulo: `levels.A` parole singole, `levels.B` espressioni (blocchi il cui significato non si ricava dalle singole parole), `levels.C` frasi, `levels.D` battute intere. Ogni grado ha `label` e `items`.
