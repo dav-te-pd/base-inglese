@@ -580,7 +580,16 @@ async function run() {
     await bloccaFontEsterni(page);
     // Il seme è un'età salvata col formato VECCHIO: prova insieme la
     // migrazione e la tabella nuova.
+    // ⚠️ Dal 2026-10-30 la mappa del repository è vuota (vedi [M2]): la riga
+    // dell'età arriva da una mappa sintetica, come in [M1]. *Questo blocco
+    // muore col passo che toglie le età dagli slot.*
+    let servitaEta = false;
+    await page.route(globDati('migrazioni-personalizzazione.json'), function (route) {
+      servitaEta = true;
+      route.fulfill({ contentType: 'application/json', body: JSON.stringify({ slot: { figliaEta: { '14': 'eta-14' } } }) });
+    });
     await apriMappa(page, 'TradEta', { figliaEta: '14' });
+    log('[E] La mappa sintetica è stata servita al posto del file', servitaEta);
 
     const esito = await page.evaluate(async function () {
       const ep = window.BI.episodioCorrente();
