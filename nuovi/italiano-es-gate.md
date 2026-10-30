@@ -33,9 +33,9 @@
 | `c-sono-di-partenza` | Sono di {{partenza}}, {{partenza.paese:target}}. | Soy de {{partenza}}, {{partenza.paese}}. | `d-4` | · |
 | `c-sono-mamma` | Sono {{mamma}}. | Soy {{mamma}}. | `d-6` | `c-sono-papa` · `c-sono-figlia` |
 | `c-sono-figlia` | Sono {{figliaNome}}. | Soy {{figliaNome}}. | `d-7` | `c-sono-papa` · `c-sono-mamma` |
-| `c-ho-sedici-anni` | Ho sedici anni. | Tengo 16 años. | `d-7` | ⭐ **·** |
+| `c-ho-sedici-anni` | Ho sedici anni. | Tengo 16 años. | `d-7` | · |
 | `c-io-sono-figlio` | Io sono {{figlioNome}}. | Yo soy {{figlioNome}}. | `d-8` | · |
-| `c-ho-otto-anni` | Ho otto anni. | Tengo 8 años. | `d-8` | ⭐ **·** |
+| `c-ho-otto-anni` | Ho otto anni. | Tengo 8 años. | `d-8` | · |
 | `c-siamo-la-famiglia` | Siamo la famiglia {{cognome}}! | ¡Somos la familia {{cognome}}! | `d-9` | · |
 
 ### Grado B — le espressioni

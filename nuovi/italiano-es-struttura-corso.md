@@ -180,6 +180,11 @@ il modulo non lavora su un grado).*
 
 ⚠️ **L'ordine delle righe di ogni sequenza è l'ordine dei suoi passi.**
 
+⭐ **E dal 30/10 ce n'è una seconda, `narrativo-seguito`: gli stessi passi meno il primo.**
+*Dal secondo episodio in avanti non c'è piu' niente da scegliere — i valori degli slot sono del
+CORSO, non dell'episodio — quindi il modulo `personalizzazione` non ha nulla da mostrare.*
+🔴 **Ventuno passi, non ventidue, e la differenza è solo quel primo.**
+
 **I ventidue passi sono identici alle altre due edizioni: sono il metodo, non la lingua.**
 
 | Sequenza | Modulo | Grado |
@@ -206,6 +211,27 @@ il modulo non lavora su un grado).*
 | `narrativo-standard` | `speedMatchTargetNative` | C |
 | `narrativo-standard` | `speedMatchNativeTarget` | C |
 | `narrativo-standard` | `voiceCoach` | C |
+| `narrativo-seguito` | `meetTheStory` | D |
+| `narrativo-seguito` | `repeatAloud` | A |
+| `narrativo-seguito` | `matchTargetNative` | A |
+| `narrativo-seguito` | `matchNativeTarget` | A |
+| `narrativo-seguito` | `flashcardATargetNative` | A |
+| `narrativo-seguito` | `flashcardANativeTarget` | A |
+| `narrativo-seguito` | `repeatAloud` | B |
+| `narrativo-seguito` | `matchTargetNative` | B |
+| `narrativo-seguito` | `matchNativeTarget` | B |
+| `narrativo-seguito` | `flashcardATargetNative` | B |
+| `narrativo-seguito` | `voicePractice` | B |
+| `narrativo-seguito` | `whyWeSayIt` | D |
+| `narrativo-seguito` | `matchTargetNative` | C |
+| `narrativo-seguito` | `matchNativeTarget` | C |
+| `narrativo-seguito` | `voicePractice` | C |
+| `narrativo-seguito` | `dialogoAscoltaRipeti` | D |
+| `narrativo-seguito` | `dialogoRipetiATempo` | D |
+| `narrativo-seguito` | `dialogoContinuo` | D |
+| `narrativo-seguito` | `speedMatchTargetNative` | C |
+| `narrativo-seguito` | `speedMatchNativeTarget` | C |
+| `narrativo-seguito` | `voiceCoach` | C |
 | `prova-corta` | `personalizzazione` | |
 | `prova-corta` | `meetTheStory` | D |
 | `prova-corta` | `repeatAloud` | A |
@@ -228,18 +254,18 @@ questa posizione.*
 | Id | Nome | Categoria | Sequenza dei moduli |
 |---|---|---|---|
 | `gate` | En la puerta de embarque | `historia` | `narrativo-standard` |
-| `aircraft-door` | En la puerta del avión | `historia` | `narrativo-standard` |
+| `aircraft-door` | En la puerta del avión | `historia` | `narrativo-seguito` |
 
 ⚠️ **Gli id sono gli stessi di tutte le edizioni** — *le scene sono le stesse, e l'id è il nome della
 scena, non del suo contenuto.* 🔴 **Il contenuto didattico invece è tutto nuovo:** *le parole, le
 espressioni e le frasi italiane non hanno niente a che vedere con quelle spagnole o inglesi.*
 
+🔴 **E dal 30/10 anche la CATEGORIA è in spagnolo — `historia`:** *`app/mappa.js` riga 1579 la
+stampa grezza, senza passare da `uiText`, quindi è un'etichetta e non un id.* ⚠️ **Nelle altre due resta
+`storia`, perché là l'italiano è la lingua dello studente.**
+
 ⭐ **I nomi sono in SPAGNOLO**, *come «Al gate» è in italiano nelle altre due: il nome dell'episodio lo
 legge lo studente.*
-
-🔴 **E dal 30/10 anche la CATEGORIA è in spagnolo — `historia`, non `storia`.** *`app/mappa.js` riga
-1579 la stampa grezza, senza passare da `uiText`, quindi è un'etichetta e non un id.* ⚠️ **Nelle altre due
-edizioni resta `storia`, perché là l'italiano è la lingua dello studente.**
 
 ⚠️ **E il debito delle schede va scritto nel tabellone dell'edizione, non qui** — *come righe rosse, dove
 le altre due edizioni mettono le loro.*
