@@ -170,7 +170,8 @@ async function run() {
     // Il passo ③ ha aggiunto un quarto argomento (`righe`, il sottoinsieme di
     // una tabella) e la riga è diventata rossa **senza che l'invariante fosse
     // cambiato di una virgola**: il magazzino arriva ancora come argomento, e
-    // non da `CONFIG`.
+    // non da `CONFIG`. *(Il quarto argomento è uscito il 2026-10-30, con le
+    // età: la riga qui sotto regge lo stesso, ed è la prova che era giusta.)*
     //
     // ⚠️ E LA CORREZIONE NON È TOGLIERE LA PARENTESI E BASTA: così la riga
     // direbbe solo «i primi tre si chiamano così», che è una forma, non un
@@ -245,9 +246,17 @@ async function run() {
 
   // ── [C] IL CASO PIÙ DIVERSO: aircraft-door, zero tabelle places ──────
   {
+    // ⚠️ I NUMERI SI LEGGONO DAI FILE, dal 2026-10-30: qui c'erano `slot: 8` e
+    // `slot: 1` scritti a mano, e il giorno che l'eta' e' uscita dagli slot
+    // (8 → 6) la riga e' diventata rossa senza che l'app sbagliasse niente.
+    const sloti = function (ep) {
+      return JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-' + ep + '.json'), 'utf8'))
+        .personalizationTablesUsed.length;
+    };
+    log('[C] Gli episodi dichiarano degli slot da guardare', sloti('gate') > 0 && sloti('aircraft-door') > 0);
     for (const caso of [
-      { ep: 'gate', utente: 'TabGate', slot: 8, primaOpz: 8 },
-      { ep: 'aircraft-door', utente: 'TabDoor', slot: 1, primaOpz: 6 }
+      { ep: 'gate', utente: 'TabGate', slot: sloti('gate') },
+      { ep: 'aircraft-door', utente: 'TabDoor', slot: sloti('aircraft-door') }
     ]) {
       const page = await browser.newPage();
       const errori = [];
@@ -391,7 +400,9 @@ async function run() {
       return { n: s.length, vuoti: s.filter(x => x.options.length === 0).length };
     });
     log('[F] Con la rete lenta gli slot NON arrivano vuoti', r.vuoti === 0, JSON.stringify(r));
-    log('[F] ...e sono comunque tutti e otto', r.n === 8, JSON.stringify(r));
+    // Qui c'era «tutti e otto»: il numero viene dal file dal 2026-10-30.
+    const attesiF = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-gate.json'), 'utf8')).personalizationTablesUsed.length;
+    log('[F] ...e sono comunque tutti quelli che gate dichiara (' + attesiF + ')', r.n === attesiF, JSON.stringify(r));
     log('[F] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }

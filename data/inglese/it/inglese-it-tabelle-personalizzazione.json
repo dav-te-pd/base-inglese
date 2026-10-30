@@ -4,7 +4,7 @@
       {
         "value": "papa-marco",
         "native": "Marco",
-        "target": "Mark",
+        "target": "Marco",
         "traducibile": false
       },
       {
@@ -14,51 +14,9 @@
         "traducibile": false
       },
       {
-        "value": "papa-francesco",
-        "native": "Francesco",
-        "target": "Francis",
-        "traducibile": false
-      },
-      {
-        "value": "papa-andrea",
-        "native": "Andrea",
-        "target": "Andrew",
-        "traducibile": false
-      },
-      {
-        "value": "papa-luca",
-        "native": "Luca",
-        "target": "Luke",
-        "traducibile": false
-      },
-      {
-        "value": "papa-paolo",
-        "native": "Paolo",
-        "target": "Paul",
-        "traducibile": false
-      },
-      {
-        "value": "papa-stefano",
-        "native": "Stefano",
-        "target": "Stephen",
-        "traducibile": false
-      },
-      {
-        "value": "papa-davide",
-        "native": "Davide",
-        "target": "David",
-        "traducibile": false
-      },
-      {
-        "value": "papa-claudio",
-        "native": "Claudio",
-        "target": "Claude",
-        "traducibile": false
-      },
-      {
         "value": "papa-federico",
         "native": "Federico",
-        "target": "Frederick",
+        "target": "Federico",
         "traducibile": false
       }
     ],
@@ -66,49 +24,19 @@
       {
         "value": "mamma-giulia",
         "native": "Giulia",
-        "target": "Julia",
+        "target": "Giulia",
         "traducibile": false
       },
       {
         "value": "mamma-anna",
         "native": "Anna",
-        "target": "Ann",
-        "traducibile": false
-      },
-      {
-        "value": "mamma-chiara",
-        "native": "Chiara",
-        "target": "Clare",
+        "target": "Anna",
         "traducibile": false
       },
       {
         "value": "mamma-nicoletta",
         "native": "Nicoletta",
-        "target": "Nicole",
-        "traducibile": false
-      },
-      {
-        "value": "mamma-laura",
-        "native": "Laura",
-        "target": "Laura",
-        "traducibile": false
-      },
-      {
-        "value": "mamma-elena",
-        "native": "Elena",
-        "target": "Helen",
-        "traducibile": false
-      },
-      {
-        "value": "mamma-silvia",
-        "native": "Silvia",
-        "target": "Sylvia",
-        "traducibile": false
-      },
-      {
-        "value": "mamma-francesca",
-        "native": "Francesca",
-        "target": "Frances",
+        "target": "Nicoletta",
         "traducibile": false
       }
     ],
@@ -122,7 +50,7 @@
       {
         "value": "figlia-sofia",
         "native": "Sofia",
-        "target": "Sophie",
+        "target": "Sofia",
         "traducibile": false
       },
       {
@@ -130,43 +58,13 @@
         "native": "Alice",
         "target": "Alice",
         "traducibile": false
-      },
-      {
-        "value": "figlia-giorgia",
-        "native": "Giorgia",
-        "target": "Georgia",
-        "traducibile": false
-      },
-      {
-        "value": "figlia-martina",
-        "native": "Martina",
-        "target": "Martina",
-        "traducibile": false
-      },
-      {
-        "value": "figlia-sara",
-        "native": "Sara",
-        "target": "Sarah",
-        "traducibile": false
-      },
-      {
-        "value": "figlia-chiara",
-        "native": "Chiara",
-        "target": "Clare",
-        "traducibile": false
-      },
-      {
-        "value": "figlia-beatrice",
-        "native": "Beatrice",
-        "target": "Beatrice",
-        "traducibile": false
       }
     ],
     "figlio": [
       {
         "value": "figlio-tommaso",
         "native": "Tommaso",
-        "target": "Thomas",
+        "target": "Tommaso",
         "traducibile": false
       },
       {
@@ -176,83 +74,17 @@
         "traducibile": false
       },
       {
-        "value": "figlio-marco",
-        "native": "Marco",
-        "target": "Mark",
-        "traducibile": false
-      },
-      {
         "value": "figlio-giorgio",
         "native": "Giorgio",
-        "target": "George",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-matteo",
-        "native": "Matteo",
-        "target": "Matthew",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-lorenzo",
-        "native": "Lorenzo",
-        "target": "Lawrence",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-simone",
-        "native": "Simone",
-        "target": "Simon",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-filippo",
-        "native": "Filippo",
-        "target": "Philip",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-claudio",
-        "native": "Claudio",
-        "target": "Claude",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-federico",
-        "native": "Federico",
-        "target": "Frederick",
-        "traducibile": false
-      },
-      {
-        "value": "figlio-paolo",
-        "native": "Paolo",
-        "target": "Paul",
+        "target": "Giorgio",
         "traducibile": false
       }
     ],
     "cognome": [
       {
-        "value": "cognome-costa",
-        "native": "Costa",
-        "target": "Costa",
-        "traducibile": false
-      },
-      {
         "value": "cognome-rossi",
         "native": "Rossi",
         "target": "Rossi",
-        "traducibile": false
-      },
-      {
-        "value": "cognome-bianchi",
-        "native": "Bianchi",
-        "target": "Bianchi",
-        "traducibile": false
-      },
-      {
-        "value": "cognome-ferrari",
-        "native": "Ferrari",
-        "target": "Ferrari",
         "traducibile": false
       },
       {
@@ -262,27 +94,9 @@
         "traducibile": false
       },
       {
-        "value": "cognome-russo",
-        "native": "Russo",
-        "target": "Russo",
-        "traducibile": false
-      },
-      {
-        "value": "cognome-marino",
-        "native": "Marino",
-        "target": "Marino",
-        "traducibile": false
-      },
-      {
         "value": "cognome-barberis",
         "native": "Barberis",
         "target": "Barberis",
-        "traducibile": false
-      },
-      {
-        "value": "cognome-ambruosi",
-        "native": "Ambruosi",
-        "target": "Ambruosi",
         "traducibile": false
       }
     ]
@@ -310,46 +124,6 @@
         }
       },
       {
-        "value": "orig-milano",
-        "native": "Milano",
-        "target": "Milan",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      },
-      {
-        "value": "orig-roma",
-        "native": "Roma",
-        "target": "Rome",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      },
-      {
-        "value": "orig-napoli",
-        "native": "Napoli",
-        "target": "Naples",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      },
-      {
-        "value": "orig-palermo",
-        "native": "Palermo",
-        "target": "Palermo",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      },
-      {
         "value": "orig-lugano",
         "native": "Lugano",
         "target": "Lugano",
@@ -358,124 +132,6 @@
           "native": "Svizzera",
           "target": "Switzerland"
         }
-      },
-      {
-        "value": "orig-nizza",
-        "native": "Nizza",
-        "target": "Nice",
-        "traducibile": true,
-        "paese": {
-          "native": "Francia",
-          "target": "France"
-        }
-      },
-      {
-        "value": "orig-firenze",
-        "native": "Firenze",
-        "target": "Florence",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      },
-      {
-        "value": "orig-venezia",
-        "native": "Venezia",
-        "target": "Venice",
-        "traducibile": true,
-        "paese": {
-          "native": "Italia",
-          "target": "Italy"
-        }
-      }
-    ]
-  },
-  "ages": {
-    "anni": [
-      {
-        "value": "eta-4",
-        "native": "4",
-        "target": "four",
-        "traducibile": true
-      },
-      {
-        "value": "eta-5",
-        "native": "5",
-        "target": "five",
-        "traducibile": true
-      },
-      {
-        "value": "eta-6",
-        "native": "6",
-        "target": "six",
-        "traducibile": true
-      },
-      {
-        "value": "eta-7",
-        "native": "7",
-        "target": "seven",
-        "traducibile": true
-      },
-      {
-        "value": "eta-8",
-        "native": "8",
-        "target": "eight",
-        "traducibile": true
-      },
-      {
-        "value": "eta-9",
-        "native": "9",
-        "target": "nine",
-        "traducibile": true
-      },
-      {
-        "value": "eta-10",
-        "native": "10",
-        "target": "ten",
-        "traducibile": true
-      },
-      {
-        "value": "eta-11",
-        "native": "11",
-        "target": "eleven",
-        "traducibile": true
-      },
-      {
-        "value": "eta-12",
-        "native": "12",
-        "target": "twelve",
-        "traducibile": true
-      },
-      {
-        "value": "eta-13",
-        "native": "13",
-        "target": "thirteen",
-        "traducibile": true
-      },
-      {
-        "value": "eta-14",
-        "native": "14",
-        "target": "fourteen",
-        "traducibile": true
-      },
-      {
-        "value": "eta-15",
-        "native": "15",
-        "target": "fifteen",
-        "traducibile": true
-      },
-      {
-        "value": "eta-16",
-        "native": "16",
-        "target": "sixteen",
-        "traducibile": true
-      },
-      {
-        "value": "eta-17",
-        "native": "17",
-        "target": "seventeen",
-        "traducibile": true
       }
     ]
   }

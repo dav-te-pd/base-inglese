@@ -7,11 +7,7 @@
 // dentro la sua tabella ([A2]); che una personalizzazione salvata non sparisca
 // quando un id viene rinominato, che la mappa delle migrazioni resti
 // append-only e che un id mai esistito cada sul PREDEFINITO dello slot e non
-// sulla prima riga ([M1], [M2], [M3]); che le eta' escano in PAROLE nella
-// battuta inglese e in CIFRE in italiano e nella tendina, che un'eta' salvata
-// col formato vecchio venga migrata, che uno slot possa prendere un pezzo di
-// una tabella condivisa, e che la skill citi una battuta con la STESSA frase
-// inglese della battuta ([C], [E]); che un campo che la riga non ha non
+// sulla prima riga ([M1], [M2], [M3]); che un campo che la riga non ha non
 // diventi «undefined» ([P]); e che il suffisso di un segnaposto sia un RUOLO
 // (`:target`, `:native`), con un suffisso vecchio che resta segnaposto
 // visibile e mai «undefined» ([S]).
@@ -23,16 +19,12 @@
 // la mappa resti append-only ([M2]): una riga tolta da li' non rompe niente
 // qui e rompe il profilo di chi l'aveva scelta, la prossima volta che lo apre.
 //
-// PROTEGGE ANCHE, dal 2026-09-24 (passo 1.8-bis (3)): che le eta' escano in
-// PAROLE nella battuta inglese e in CIFRE nella tendina e in italiano ([C],
-// [E]) - due colonne per due mestieri, che qualcuno prima o poi vorra'
-// uniformare; che uno slot possa prendere un PEZZO di una tabella condivisa
-// ([E]); e che la skill che cita una battuta dica la STESSA frase inglese
-// della battuta. ⚠️ Quest'ultima e' l'asserzione che vale piu' del passo:
-// senza il suffisso di lingua nella citazione, sulla stessa schermata si
-// leggerebbe la battuta «I'm fourteen years old» e, due righe sotto, la
-// spiegazione «La figlia dice "I'm 14 years old"». Nessun rosso, e due frasi
-// inglesi diverse.
+// ⚠️ DAL 2026-10-30 I BLOCCHI [C] ED [E] NON CI SONO PIU': il loro soggetto era
+// l'eta' come SLOT — le due colonne di `ages.anni` (la cifra si sceglie, la
+// parola si sente), il pezzo di tabella preso con la colonna «righe», la skill
+// che citava l'eta' col suffisso giusto. L'eta' adesso e' scritta nella
+// battuta, e `ages.anni` e la colonna «righe» sono uscite (regola 50). La
+// citazione col suffisso di ruolo resta provata da [S].
 //
 // PROTEGGE ANCHE, dal 2026-09-30 ([S]): che il suffisso di un segnaposto sia
 // un RUOLO — `:target` (la lingua che si impara), `:native` (quella dello
@@ -263,48 +255,6 @@ async function run() {
     await page.close();
   }
 
-  // ── [C] LE ETÀ: DUE COLONNE PER DUE MESTIERI ────────────────────────
-  //
-  // ⚠️ QUESTO BLOCCO SI CHIAMAVA «IL CASO PIÙ DIVERSO: la riga che non esiste»
-  // E IL SUO SOGGETTO È SPARITO IL 2026-09-24.
-  //
-  // Le età erano numeri NUDI dentro il file dell'episodio: niente riga, niente
-  // colonne, `it` ed `en` uguali per costruzione. Il passo ③ le ha portate nel
-  // magazzino, quindi **in nessun episodio esiste più un'opzione nuda** — e il
-  // blocco avrebbe continuato a dichiarare guardato un caso che non c'è.
-  //
-  // Quello che protegge adesso è la ragione per cui le due colonne esistono, e
-  // vale la pena difenderla perché la tentazione di uniformarle tornerà: la
-  // **stessa riga** è letta da due parti dell'app per due mestieri — la cifra
-  // si SCEGLIE in Personalizza, la parola si SENTE nella battuta.
-  {
-    const page = await browser.newPage();
-    const errori = [];
-    page.on('pageerror', function (e) { errori.push(e.message); });
-    await bloccaFontEsterni(page);
-    await apriMappa(page, 'TradNuda');
-
-    const esito = await page.evaluate(function () {
-      const ep = window.BI.episodioCorrente();
-      const campo = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
-      return {
-        en: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'target'),
-        it: window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'native'),
-        // la tendina di Personalizza mostra `o.it`: è la cifra che si scorre
-        tendina: Array.prototype.map.call(
-          document.querySelectorAll('#view-customize select[data-slot="figliaEta"] option'),
-          function (o) { return o.textContent; }).join(',')
-      };
-    });
-
-    log('[C] La stessa riga dà la PAROLA in inglese', esito.en === 'fourteen', JSON.stringify(esito));
-    log('[C] ...e la CIFRA in italiano', esito.it === '14', JSON.stringify(esito));
-    log('[C] La tendina di Personalizza mostra le cifre, non le parole',
-      esito.tendina === '12,13,14,15,16,17', esito.tendina);
-    log('[C] Nessun errore JS', errori.length === 0, errori[0]);
-    await page.close();
-  }
-
   // ── [M] LE MIGRAZIONI E IL RIPIEGO — passo 1.8-bis ④ ─────────────────
   //
   // Due metà di un difetto solo, e ognuna ha la sua asserzione **perché il
@@ -433,50 +383,46 @@ async function run() {
 
   // ── [M3] ⓑ UN ID CHE NON È MAI ESISTITO CADE SUL PREDEFINITO ─────────
   //
-  // ⚠️ SI MISURA SU UN'ETÀ, E NON PER COMODITÀ: È L'UNICO POSTO DOVE SI VEDE.
+  // ⚠️ IL CASO SI DEVE COSTRUIRE: nei dati veri non c'e' piu'. Il predefinito
+  // di uno slot coincide quasi sempre con la prima riga della sua tabella, e
+  // su quegli slot «cade sul predefinito» e «cade sulla prima riga» danno la
+  // stessa risposta — vera per costruzione (regola 44). Fino al 2026-10-30 i
+  // due che divergevano erano le eta' (`figliaEta` def `16`, prima riga `12`),
+  // uscite dagli slot quel giorno. *Dal 2026-10-30 nessuno slot diverge.*
   //
-  // Misurato sui nove slot dei due episodi: il predefinito coincide con la
-  // prima riga **su sette**. `papa` → `papa-marco` è sia def sia `opts[0]`;
-  // idem `partenza` e `cognome`, in tutti e due gli episodi (dal 2026-10-20
-  // `aircraft-door` ha `cognome` al posto di `destinazione`, uscita dal
-  // magazzino: i sette restano sette). Su quei sette le due forme
-  // danno la stessa risposta, cioè sarebbero vere per costruzione (regola 44).
-  //
-  // Gli unici due che divergono sono `figliaEta` (def `16`, prima riga `12`) e
-  // `figlioEta` (def `8`, prima riga `4`). *Qui c'era «e sono anche il caso
-  // più diverso della regola 42: la riga NUDA… le età sono l'unica famiglia
-  // che non passa dal magazzino condiviso»: falso dal 2026-09-24 (passo
-  // 1.8-bis ③), quando le età sono entrate nel magazzino. Il caso più diverso
-  // di oggi è una tabella senza il campo, e lo guida la [P].*
+  // Quindi si serve al posto del file delle tabelle una copia col COGNOME
+  // rovesciato: il predefinito finisce in fondo, e la prima riga e' un'altra.
+  // Che la copia sia stata servita e' un'asserzione (regola 49).
   {
     const page = await browser.newPage();
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
+    let rovesciata = false;
+    await page.route(globDati('tabelle-personalizzazione.json'), async function (route) {
+      const risposta = await route.fetch();
+      const t = await risposta.json();
+      t.people.cognome = t.people.cognome.slice().reverse();
+      rovesciata = true;
+      await route.fulfill({ response: risposta, body: JSON.stringify(t) });
+    });
     await apriMappa(page, 'TradRipiego');
 
     const esito = await page.evaluate(function () {
       const ep = window.BI.episodioCorrente();
-      const campo = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
-      // ⚠️ DAL 2026-09-24 IL PREDEFINITO E' UN ID (`eta-16`), NON IL VALORE
-      // MOSTRATO (`16`): prima coincidevano perche' l'eta' era un numero nudo,
-      // e l'asserzione poteva confrontare il reso con `campo.def`. Adesso si
-      // confronta il reso col RESO del predefinito — che e' la cosa che
-      // l'asserzione voleva dire fin dall'inizio.
+      const campo = ep.slotFields.find(function (f) { return f.key === 'cognome'; });
       return {
-        sconosciuto: window.BI.resolveSlotValue(ep, 'figliaEta', 'non-esiste-piu', 'native'),
-        resoDelDef: window.BI.resolveSlotValue(ep, 'figliaEta', campo.def, 'native'),
-        resoDellaPrima: window.BI.resolveSlotValue(ep, 'figliaEta', campo.options[0].value, 'native'),
-        figlio: window.BI.resolveSlotValue(ep, 'figlioEta', 'non-esiste-piu', 'native')
+        sconosciuto: window.BI.resolveSlotValue(ep, 'cognome', 'non-esiste-piu', 'native'),
+        resoDelDef: window.BI.resolveSlotValue(ep, 'cognome', campo.def, 'native'),
+        resoDellaPrima: window.BI.resolveSlotValue(ep, 'cognome', campo.options[0].value, 'native')
       };
     });
 
+    log('[M3] La tabella col cognome rovesciato è stata servita al posto del file', rovesciata);
     log('[M3] Il caso distingue davvero: predefinito e prima riga sono diversi',
       esito.resoDelDef !== esito.resoDellaPrima, JSON.stringify(esito));
     log('[M3] Un id sconosciuto cade sul PREDEFINITO dello slot, non sulla prima riga',
       esito.sconosciuto === esito.resoDelDef, JSON.stringify(esito));
-    log('[M3] ...e vale anche per il secondo slot che diverge',
-      esito.figlio === '8', JSON.stringify(esito));
     log('[M3] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }
@@ -522,10 +468,13 @@ async function run() {
           try { return window.BI.resolveSlotValue(ep, 'papa', 'papa-marco', 'target', 'paese'); }
           catch (e) { return 'ALZA: ' + e.message; }
         })(),
+        // Qui c'era l'eta' (`figliaEta`), uscita dagli slot il 2026-10-30: il
+        // cognome e' l'altra tabella senza `paese`.
         etaConCampo: (function () {
-          try { return window.BI.resolveSlotValue(ep, 'figliaEta', 'eta-14', 'target', 'paese'); }
+          try { return window.BI.resolveSlotValue(ep, 'cognome', ep.slotFields.find(function (f) { return f.key === 'cognome'; }).def, 'target', 'paese'); }
           catch (e) { return 'ALZA: ' + e.message; }
-        })()
+        })(),
+        cognomeSenzaCampo: window.BI.resolveSlotValue(ep, 'cognome', ep.slotFields.find(function (f) { return f.key === 'cognome'; }).def, 'target')
       };
     });
 
@@ -561,101 +510,12 @@ async function run() {
     // riga che manca»: e' «una tabella diversa». *Il caso piu' diverso della
     // regola 42 e' cambiato sotto, e lasciare la vecchia frase avrebbe
     // dichiarato guardato un caso che non c'e' piu'.*
-    log('[P] ...e vale anche per una tabella che non ha quel campo (le età)',
-      esito.etaConCampo === 'fourteen', esito.etaConCampo);
+    // ⚠️ Dal 2026-10-30 la tabella senza campo e' il COGNOME: le eta' sono
+    // uscite dagli slot. Il cognome non si traduce, quindi la riga torna col
+    // valore dello studente — quello che la tendina mostra.
+    log('[P] ...e vale anche per una tabella che non ha quel campo (il cognome)',
+      esito.etaConCampo === esito.cognomeSenzaCampo && !!esito.cognomeSenzaCampo, esito.etaConCampo + ' | ' + esito.cognomeSenzaCampo);
     log('[P] Nessun errore JS', errori.length === 0, errori[0]);
-    await page.close();
-  }
-
-  // ── [E] LE ETÀ IN PAROLE, E IL SOTTOINSIEME — passo 1.8-bis ③ ────────
-  //
-  // Le età sono USCITE dal file dell'episodio e sono entrate nel magazzino:
-  // `ages.anni` ha quattordici righe, e i due slot ne prendono un pezzo. Prima
-  // erano due liste separate dentro `gate`, con `it` ed `en` UGUALI — ed è il
-  // motivo per cui si leggeva «I'm 16 years old» invece di «I'm sixteen».
-  {
-    const page = await browser.newPage();
-    const errori = [];
-    page.on('pageerror', function (e) { errori.push(e.message); });
-    await bloccaFontEsterni(page);
-    // Il seme è un'età salvata col formato VECCHIO: prova insieme la
-    // migrazione e la tabella nuova.
-    // ⚠️ Dal 2026-10-30 la mappa del repository è vuota (vedi [M2]): la riga
-    // dell'età arriva da una mappa sintetica, come in [M1]. *Questo blocco
-    // muore col passo che toglie le età dagli slot.*
-    let servitaEta = false;
-    await page.route(globDati('migrazioni-personalizzazione.json'), function (route) {
-      servitaEta = true;
-      route.fulfill({ contentType: 'application/json', body: JSON.stringify({ slot: { figliaEta: { '14': 'eta-14' } } }) });
-    });
-    await apriMappa(page, 'TradEta', { figliaEta: '14' });
-    log('[E] La mappa sintetica è stata servita al posto del file', servitaEta);
-
-    const esito = await page.evaluate(async function () {
-      const ep = window.BI.episodioCorrente();
-      const v = window.BI.valoriCorrenti();
-      const dati = await window.BI.loadEpisodeData({ dataFile: window.BI.episodeDataFile(ep.id) });
-      // ⚠️ `d-7` E' LA BATTUTA DELLA FIGLIA, `d-8` QUELLA DEL FIGLIO. Le prime
-      // due asserzioni guardavano `d-8` credendo fosse la figlia: leggevano
-      // «I'm eight» e cercavano «fourteen». *Il seme era giusto, il soggetto no.*
-      const figliaLinea = dati.levels.D.items.find(function (i) { return i.id === 'd-7'; });
-      const d8 = dati.levels.D.items.find(function (i) { return i.id === 'd-8'; });
-      // ⚠️ LA SKILL DELL'ETA' SI CERCA, NON SI INDOVINA LA POSIZIONE — dal
-      // 2026-10-20. Qui c'era `d8.whatYouLearn[0]`, che fino a quel giorno
-      // citava l'eta' della FIGLIA; da allora `d-8` porta due skill, l'eta'
-      // sta nella seconda e cita quella del FIGLIO. Si prende la skill che
-      // cita un segnaposto d'eta', e la battuta del figlio con cui confrontarla.
-      const skillEta = d8.whatYouLearn.find(function (s) { return /\{\{figli[oa]Eta/.test(s.body); });
-      const figlia = ep.slotFields.find(function (f) { return f.key === 'figliaEta'; });
-      const figlio = ep.slotFields.find(function (f) { return f.key === 'figlioEta'; });
-      const partenza = ep.slotFields.find(function (f) { return f.key === 'partenza'; });
-      return {
-        salvata: v.figliaEta,
-        quanteFiglia: figlia.options.length,
-        quanteFiglio: figlio.options.length,
-        primaFiglia: figlia.options[0].value,
-        // ⚠️ IL CASO PIÙ DIVERSO (regola 42): l'unico slot senza elenco di
-        // righe. Se il filtro si applicasse sempre, resterebbe senza opzioni.
-        quantePartenza: partenza.options.length,
-        battutaEn: window.BI.fillTemplate(figliaLinea.target, ep, v, 'target'),
-        battutaIt: window.BI.fillTemplate(figliaLinea.native, ep, v, 'native'),
-        // La skill è prosa ITALIANA che cita la battuta INGLESE: senza
-        // `:target` direbbe «I'm 8 years old» mentre la battuta dice «eight».
-        skill: skillEta ? window.BI.fillTemplate(skillEta.body, ep, v, 'native') : '',
-        battutaFiglio: window.BI.fillTemplate(d8.target, ep, v, 'target'),
-        etaFiglioParola: window.BI.fillTemplate('{{figlioEta:target}}', ep, v, 'native'),
-        etaFiglioCifra: window.BI.fillTemplate('{{figlioEta}}', ep, v, 'native')
-      };
-    });
-
-    log('[E] Un\'età salvata col formato vecchio viene migrata',
-      esito.salvata === 'eta-14', JSON.stringify(esito.salvata));
-    log('[E] La battuta inglese dice la PAROLA, non la cifra',
-      esito.battutaEn.indexOf('fourteen') !== -1 && esito.battutaEn.indexOf('14') === -1,
-      esito.battutaEn);
-    log('[E] ...e quella italiana dice la CIFRA',
-      esito.battutaIt.indexOf('14') !== -1, esito.battutaIt);
-
-    // ⚠️ L'ASSERZIONE CHE VALE PIÙ DEL PASSO: la skill cita la battuta, e le
-    // due devono dire la STESSA frase inglese. Senza `:en` nella citazione
-    // sarebbero due frasi diverse nella stessa schermata, e nessun rosso.
-    log('[E] La skill cita la battuta con la STESSA parola inglese (l\'eta\' del figlio, «' + esito.etaFiglioParola + '»)',
-      !!esito.skill && /^[a-z]+$/.test(esito.etaFiglioParola) &&
-      esito.battutaFiglio.indexOf(esito.etaFiglioParola) !== -1 &&
-      esito.skill.indexOf("I'm " + esito.etaFiglioParola) !== -1 &&
-      esito.skill.indexOf("I'm " + esito.etaFiglioCifra) === -1,
-      JSON.stringify({ parola: esito.etaFiglioParola, cifra: esito.etaFiglioCifra, battuta: esito.battutaFiglio, skill: esito.skill.slice(0, 120) }));
-
-    log('[E] La figlia vede solo il suo pezzo di tabella',
-      esito.quanteFiglia === 6 && esito.primaFiglia === 'eta-12',
-      JSON.stringify({ n: esito.quanteFiglia, prima: esito.primaFiglia }));
-    log('[E] ...e il figlio il suo', esito.quanteFiglio === 8, String(esito.quanteFiglio));
-    // Il numero si legge dal magazzino, non si scrive qui: era `8` fino al
-    // 2026-10-20, quando le partenze sono diventate dieci (Firenze e Venezia).
-    const partenzeNelFile = JSON.parse(fs.readFileSync(repoPath(FILE_TABELLE), 'utf8')).places.departures.length;
-    log('[E] Uno slot SENZA elenco vede la tabella intera (' + partenzeNelFile + ' righe nel file)',
-      partenzeNelFile > 0 && esito.quantePartenza === partenzeNelFile, String(esito.quantePartenza));
-    log('[E] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }
 
@@ -671,7 +531,7 @@ async function run() {
     const errori = [];
     page.on('pageerror', function (e) { errori.push(e.message); });
     await bloccaFontEsterni(page);
-    await apriMappa(page, 'TradSuffisso', { partenza: 'orig-torino', figliaEta: 'eta-14' });
+    await apriMappa(page, 'TradSuffisso', { partenza: 'orig-torino' });
 
     const esito = await page.evaluate(function () {
       const ep = window.BI.episodioCorrente();
@@ -680,7 +540,6 @@ async function run() {
       return {
         skill: ft('"I am from {{partenza:target}}" vuol dire "vengo da {{partenza:native}}"', 'native'),
         paese: ft('{{partenza.paese:target}}', 'native'),
-        eta: ft('{{figliaEta:target}} | {{figliaEta:native}}', 'native'),
         // Un nome proprio non si traduce: anche chiesto come `target` resta
         // quello dello studente.
         nome: ft('{{papa:target}}', 'native'),
@@ -700,8 +559,6 @@ async function run() {
     log('[S] `:target` e `:native` danno le due colonne della stessa riga',
       esito.skill === '"I am from Turin" vuol dire "vengo da Torino"', esito.skill);
     log('[S] ...anche sul sotto-campo', esito.paese === 'Italy', esito.paese);
-    log('[S] ...e sull\'eta\', che ha la parola in una colonna e la cifra nell\'altra',
-      esito.eta === 'fourteen | 14', esito.eta);
     log('[S] Un nome proprio resta dello studente anche chiesto come `target`',
       esito.nome === esito.nomeNative && esito.nome.length > 0, esito.nome + ' | ' + esito.nomeNative);
     log('[S] Un suffisso vecchio (`:en`) resta un segnaposto visibile, mai «undefined»',

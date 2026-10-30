@@ -17,8 +17,7 @@
 // file lo verificava (male: leggeva durante il 3-2-1 di avvio). Da quel giorno
 // e' acceso — il racconto e' accanto al blocco [Job2].
 
-const fs = require('fs');
-const { launchBrowser, APP_URL, repoPath, attendiPrimaSchermata } = require('./test-env');
+const { launchBrowser, APP_URL, attendiPrimaSchermata, globDati } = require('./test-env');
 const { bootUtente, INTRO_DI_TUTTI } = require('./boot');
 const { mockBrowser, componi, spiaToni } = require('./mock-browser');
 const { attendiCheParla, attendiClasse, attendiTono } = require('./attese');
@@ -45,10 +44,28 @@ async function run() {
   const log = (msg, ok) => { results.push({ msg, ok }); console.log((ok ? 'OK  ' : 'FAIL') + ' - ' + msg); };
 
   // ============ JOB 1: person names never translated in dialogue ============
+  //
+  // ⚠️ DAL 2026-10-30 L'ESCA SI SERVE, NON SI TROVA. Le tabelle di quel giorno
+  // hanno nella colonna della lingua insegnata il valore dello studente dove la
+  // riga non si traduce (`Marco` / `Marco`), e `papa-francesco` è uscita: nei
+  // dati veri non c'è più un nome con un inglese DIVERSO da tradire. Senza
+  // esca la riga qui sotto («non contiene Francis») sarebbe vera per
+  // costruzione (regola 44): si aggiunge al file servito una riga
+  // `papa-francesco` Francesco/Francis non traducibile, e che sia stata
+  // servita e scelta sono asserzioni (regola 49).
+  const ESCA = { value: 'papa-francesco', native: 'Francesco', target: 'Francis', traducibile: false };
+  let escaServita = false;
   {
     const page = await browser.newPage({ viewport: { width: 400, height: 900 } });
     const errors = [];
     page.on('pageerror', e => errors.push(e.message));
+    await page.route(globDati('tabelle-personalizzazione.json'), async function (route) {
+      const risposta = await route.fetch();
+      const t = await risposta.json();
+      t.people.papa = t.people.papa.concat([ESCA]);
+      escaServita = true;
+      await route.fulfill({ response: risposta, body: JSON.stringify(t) });
+    });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T16Job1', ALL_BEFORE_DG);
     await openModule(page, 'personalizzazione');
@@ -59,6 +76,8 @@ async function run() {
     if (hasSelect) {
       await page.selectOption('select[data-slot="papa"]', 'papa-francesco').catch(() => {});
     }
+    log('[Job1] The bait row was served and chosen', escaServita &&
+      await page.evaluate(() => (document.querySelector('select[data-slot="papa"]') || {}).value === 'papa-francesco'));
     await page.waitForTimeout(150);
     await page.click('#customize-back-home');
     await page.waitForTimeout(150);
@@ -74,6 +93,7 @@ async function run() {
     if (dgStartVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); } // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che il dialogo NON contenga "Francis" — un non-evento non si aspetta, il tempo E' la misura. E allungarlo rafforza la prova invece di indebolirla: piu' battute passano, piu' e' vero che quel nome non compare
     const dialogueText = await page.evaluate(() => document.getElementById('dg-list').textContent);
     log('[Job1] Dialogue text does NOT contain the translated "Francis"', dialogueText.indexOf('Francis') === -1);
+    log('[Job1] ...and it does contain the student\'s "Francesco" (the dialogue is not empty)', dialogueText.indexOf('Francesco') !== -1);
     log('[Job1] No JS errors', errors.length === 0);
     await page.close();
   }
@@ -95,8 +115,9 @@ async function run() {
     // PERSONALIZATION_TABLES_FILE, quindi l'esca si legge dal FILE e non
     // dalla pagina. Leggerla da `window.APP_CONFIG.people` darebbe undefined
     // — cioe' un rosso che parla del posto sbagliato.
-    const magazzino = JSON.parse(fs.readFileSync(repoPath('data/inglese/it/inglese-it-tabelle-personalizzazione.json'), 'utf8'));
-    const papaOpt = magazzino.people.papa.find(function (o) { return o.value === 'papa-francesco'; });
+    // ⚠️ Dal 2026-10-30 l'esca è quella servita in JOB 1 (vedi lì), non una
+    // riga del file: qui si controlla che abbia davvero un inglese diverso.
+    const papaOpt = ESCA;
     // ⚠️ E QUI C'ERANO DUE RIGHE MORTE, tolte il 2026-09-15.
     //
     // Cercavano `cfg.places.partenza`. La tabella si chiama `departures`:

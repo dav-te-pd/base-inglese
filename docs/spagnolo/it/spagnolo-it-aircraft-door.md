@@ -28,11 +28,11 @@
 
 | id | es | it | da | non con |
 |---|---|---|---|---|
-| `c-1` | Los billetes, por favor. | I biglietti, per favore. | `d-2` | · |
-| `c-2` | Ella es mi esposa. | Lei è mia moglie. | `d-4` | · |
-| `c-3` | Ella es mi hija. | Lei è mia figlia. | `d-5` | · |
-| `c-4` | Él es mi hijo. | Lui è mio figlio. | `d-5` | · |
-| `c-5` | ¿La familia {{cognome}}? Por aquí, por favor. | La famiglia {{cognome}}? Da questa parte, prego. | `d-7` | · |
+| `c-los-billetes-por-favor` | Los billetes, por favor. | I biglietti, per favore. | `d-2` | · |
+| `c-ella-es-mi-esposa` | Ella es mi esposa. | Lei è mia moglie. | `d-4` | · |
+| `c-ella-es-mi-hija` | Ella es mi hija. | Lei è mia figlia. | `d-5` | · |
+| `c-el-es-mi-hijo` | Él es mi hijo. | Lui è mio figlio. | `d-5` | · |
+| `c-la-familia-por-aqui` | ¿La familia {{cognome}}? Por aquí, por favor. | La famiglia {{cognome}}? Da questa parte, prego. | `d-7` | · |
 
 ### Grado B — le espressioni
 
@@ -83,8 +83,8 @@
 
 ## 7 — GLI SLOT
 
-| chiave | etichetta | tipo | tabella | righe | predefinito |
-|---|---|---|---|---|---|
-| `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-costa` |
+| chiave | etichetta | tipo | tabella | predefinito |
+|---|---|---|---|---|
+| `cognome` | Cognome della famiglia | `select` | `people.cognome` | `cognome-rossi` |
 
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO

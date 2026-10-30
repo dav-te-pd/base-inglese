@@ -6,7 +6,7 @@
 
 | Testo |
 |---|
-| La **gl** davanti a *i* non è una «g» più una «l»: è un suono solo, la **ll** della Spagna. Fi-**gli**-a, fi-**gli**-o, mo-**gli**-e. |
+| La **gl** delante de *i* no es una «g» más una «l»: es un solo sonido, la **ll** de España. Fi-**gli**-a, fi-**gli**-o, mo-**glie**. |
 
 ## 4 — LA MATRICE
 
@@ -28,11 +28,11 @@
 
 | id | it | es | da | non con |
 |---|---|---|---|---|
-| `c-1` | I biglietti, per favore. | Los billetes, por favor. | `d-2` | · |
-| `c-2` | Lei è mia moglie. | Ella es mi esposa. | `d-4` | · |
-| `c-3` | Lei è mia figlia. | Ella es mi hija. | `d-5` | · |
-| `c-4` | Lui è mio figlio. | Él es mi hijo. | `d-5` | · |
-| `c-5` | La famiglia {{cognome}}? Da questa parte, prego. | ¿La familia {{cognome}}? Por aquí, por favor. | `d-7` | · |
+| `c-i-biglietti-per-favore` | I biglietti, per favore. | Los billetes, por favor. | `d-2` | · |
+| `c-lei-e-mia-moglie` | Lei è mia moglie. | Ella es mi esposa. | `d-4` | · |
+| `c-lei-e-mia-figlia` | Lei è mia figlia. | Ella es mi hija. | `d-5` | · |
+| `c-lui-e-mio-figlio` | Lui è mio figlio. | Él es mi hijo. | `d-5` | · |
+| `c-la-famiglia-da-questa-parte` | La famiglia {{cognome}}? Da questa parte, prego. | ¿La familia {{cognome}}? Por aquí, por favor. | `d-7` | · |
 
 ### Grado B — le espressioni
 
@@ -49,18 +49,18 @@
 | id | it | es | pronuncia | categoria | non con |
 |---|---|---|---|---|---|
 | `a-benvenuti` | benvenuti | bienvenidos | ben-ve-NU-ti | formula | · |
-| `a-biglietti` | biglietti | billetes | bi-GLIET-ti — ⚠️ **«gl» è un suono solo, la «ll» della Spagna** | sostantivo plurale | · |
+| `a-biglietti` | biglietti | billetes | bi-GLIET-ti — ⚠️ **«gl» es un solo sonido, la «ll» de España** | sostantivo plurale | · |
 | `a-i` | i | los | i | articolo plurale | · |
-| `a-per` | per | por / para | per — ⚠️ *una sola preposizione dove lo spagnolo ne ha due* | preposizione | · |
+| `a-per` | per | por / para | per — ⚠️ *una sola preposición donde el español tiene dos* | preposizione | · |
 | `a-prego` | prego | pase, adelante | PRE-go | formula di cortesia | · |
 | `a-da` | da | de, desde | da | preposizione | · |
 | `a-ecco` | ecco | aquí está, he aquí | EC-co | avverbio presentativo | · |
-| `a-grazie` | grazie | gracias | GRA-tsie — ⚠️ **la «z» italiana è «ts», non «th»** | formula | · |
+| `a-grazie` | grazie | gracias | GRA-tsie — ⚠️ **la «z» italiana es «ts», no «th»** | formula | · |
 | `a-mia` | mia | mi | MI-a | possessivo femminile | `a-mio` |
 | `a-mio` | mio | mi | MI-o | possessivo maschile | `a-mia` |
-| `a-lei` | lei | ella | LEI — ⚠️ **minuscolo è «ella»; con la maiuscola, «Lei», è «usted»** | pronome soggetto | · |
+| `a-lei` | lei | ella | LEI — ⚠️ **en minúscula es «ella»; con mayúscula, «Lei», es «usted»** | pronome soggetto | · |
 | `a-lui` | lui | él | LU-i | pronome soggetto | · |
-| `a-moglie` | moglie | esposa | MO-glie — ⚠️ *«gl» come in `figlia`* | sostantivo | · |
+| `a-moglie` | moglie | esposa | MO-glie — ⚠️ *«gl» como en `figlia`* | sostantivo | · |
 | `a-figlia` | figlia | hija | FI-glia | sostantivo | · |
 | `a-figlio` | figlio | hijo | FI-glio | sostantivo | · |
 | `a-volo` | volo | vuelo | VO-lo | sostantivo | · |
@@ -69,26 +69,26 @@
 
 | battuta | # | titolo | corpo |
 |---|---|---|---|
-| `d-1` | 1 | Benvenuti, e perché finisce in «-i» | "Benvenuti" vuol dire "bienvenidos", e la fine cambia con chi stai salutando: a un gruppo <strong>benvenuti</strong>, a una sola donna <strong>benvenuta</strong>, a un uomo <strong>benvenuto</strong>.<br>È la stessa cosa che fa la tua lingua: "bienvenido, bienvenida, bienvenidos".<br>Qui l'hostess parla a quattro persone, quindi dice "benvenuti".<br>Non devi impararle tutte adesso: quando arriveranno gli aggettivi, questa sarà già una faccia conosciuta. |
-| `d-2` | 1 | Biglietti, e il plurale che cambia la vocale | "I biglietti" sono "los billetes".<br>E guarda la fine: uno è un <strong>biglietto</strong>, due sono <strong>biglietti</strong>. L'italiano non aggiunge una "s": cambia l'ultima vocale, come hai visto con "anno" e "anni".<br>Anche l'articolo cambia: <strong>il</strong> biglietto, <strong>i</strong> biglietti.<br>La "gl" di "biglietti" è un suono solo, come la "ll" spagnola di "calle": <strong>bi-GLIET-ti</strong>. |
-| `d-3` | 1 | Ecco a Lei | Vuol dire "aquí tiene", ed è quello che si dice porgendo qualcosa a qualcuno.<br>Non ha senso tradotta a pezzi: <strong>funziona tutta insieme</strong>.<br>"Lei" qui è il "Lei" di cortesia che hai visto al gate — il papà dà del Lei all'hostess.<br>A un amico diresti "Ecco a te". |
-| `d-4` | 1 | «lei» e «Lei»: la stessa parola, due significati | Attenzione, perché questa è importante: in italiano <strong>"lei" vuol dire "ella", e "Lei" vuol dire "usted"</strong>. È la stessa parola.<br>A voce non c'è nessuna differenza: le distingue solo la frase.<br>Qui il papà dice "<strong>Lei</strong> è mia moglie" indicando la moglie: è "ella es mi esposa". Al gate l'hostess chiedeva "E <strong>Lei</strong>?": lì era "¿y usted?".<br>Scritto, il "Lei" di cortesia prende la <strong>maiuscola</strong>, e quello è l'unico segno che hai.<br>Non è una cosa da imparare a memoria: quando parli di qualcuno è "ella", quando parli <em>a</em> qualcuno è "usted". |
-| `d-4` | 2 | Mia e mio: due forme dove tu ne hai una | "Mia moglie", "mia figlia", "mio figlio": <strong>in italiano il possessivo cambia col genere</strong> della persona.<br>Tu dici "mi" per tutti. Qui devi scegliere: <strong>mia</strong> davanti a una parola femminile, <strong>mio</strong> davanti a una maschile.<br>E una cosa che ti farà comodo: con i nomi di famiglia al singolare <strong>non si mette l'articolo</strong>. Si dice "mia moglie", non "la mia moglie".<br>Con le altre parole invece l'articolo ci vuole: "la mia casa", "il mio volo". Per adesso ti basta la famiglia. |
-| `d-5` | 1 | Quando si dice «lei» e «lui» | Come "io", anche "lei" e "lui" <strong>si possono saltare</strong>: "è mia figlia" da solo si capisce.<br>Il papà li mette perché sta <strong>indicando due persone diverse</strong>: prima una, poi l'altro. Senza i pronomi, l'hostess non saprebbe chi è chi.<br>Quindi la regola è sempre quella: il pronome si mette quando serve a distinguere o a insistere.<br>Funziona esattamente come "ella" e "él" nella tua lingua. |
-| `d-9` | 1 | Buon volo, e la parola che si accorcia | "Buon volo!" è "¡buen vuelo!", e funziona come da te: <strong>"buono" diventa "buon"</strong> davanti a un nome maschile.<br>Lo spagnolo fa la stessa identica cosa: "bueno" diventa "buen".<br>Lo sentirai spesso: "buon viaggio", "buon giorno", "buon appetito".<br>E chi la riceve sorride e passa: <strong>non serve rispondere "altrettanto"</strong>. |
+| `d-1` | 1 | Benvenuti, y por qué termina en «-i» | "Benvenuti" quiere decir "bienvenidos", y el final cambia según a quién saludas: a un grupo <strong>benvenuti</strong>, a una sola mujer <strong>benvenuta</strong>, a un hombre <strong>benvenuto</strong>.<br>Es lo mismo que hace tu lengua: "bienvenido, bienvenida, bienvenidos".<br>Aquí la azafata habla a cuatro personas, así que dice "benvenuti".<br>No tienes que aprenderlas todas ahora: cuando lleguen los adjetivos, esta ya será una cara conocida. |
+| `d-2` | 1 | Biglietti, y el plural que cambia la vocal | "I biglietti" son "los billetes".<br>Y mira el final: uno es un <strong>biglietto</strong>, dos son <strong>biglietti</strong>. El italiano no añade una "s": cambia la última vocal, como has visto con "anno" y "anni".<br>También cambia el artículo: <strong>il</strong> biglietto, <strong>i</strong> biglietti.<br>La "gl" de "biglietti" es un solo sonido, como la "ll" española de "calle": <strong>bi-GLIET-ti</strong>. |
+| `d-3` | 1 | Ecco a Lei | Quiere decir "aquí tiene", y es lo que se dice al entregar algo a alguien.<br>No tiene sentido traducida por partes: <strong>funciona toda junta</strong>.<br>"Lei" aquí es el "Lei" de cortesía que viste en el episodio anterior — el papá trata de Lei a la azafata.<br>A un amigo le dirías "Ecco a te". |
+| `d-4` | 1 | «lei» y «Lei»: la misma palabra, dos significados | Atención, porque esto es importante: en italiano <strong>"lei" quiere decir "ella", y "Lei" quiere decir "usted"</strong>. Es la misma palabra.<br>Al hablar no hay ninguna diferencia: las distingue solo la frase.<br>Aquí el papá dice "<strong>Lei</strong> è mia moglie" señalando a su mujer: es "ella es mi esposa". En el episodio anterior la azafata preguntaba "E <strong>Lei</strong>?": ahí era "¿y usted?".<br>Escrito, el "Lei" de cortesía lleva <strong>mayúscula</strong>, y esa es la única señal que tienes.<br>No es algo que haya que aprender de memoria: cuando hablas <em>de</em> alguien es "ella", cuando hablas <em>a</em> alguien es "usted". |
+| `d-4` | 2 | Mia y mio: dos formas donde tú tienes una | "Mia moglie", "mia figlia", "mio figlio": <strong>en italiano el posesivo cambia con el género</strong> de la persona.<br>Tú dices "mi" para todos. Aquí tienes que elegir: <strong>mia</strong> delante de una palabra femenina, <strong>mio</strong> delante de una masculina.<br>Y algo que te va a venir bien: con los nombres de familia en singular <strong>no se pone el artículo</strong>. Se dice "mia moglie", no "la mia moglie".<br>Con las demás palabras sí hace falta: "la mia casa", "il mio volo". Por ahora te basta la familia. |
+| `d-5` | 1 | Cuándo se dice «lei» y «lui» | Como "io", también "lei" y "lui" <strong>se pueden omitir</strong>: "è mia figlia" solo ya se entiende.<br>El papá los pone porque está <strong>señalando a dos personas distintas</strong>: primero una, luego el otro. Sin los pronombres, la azafata no sabría quién es quién.<br>Así que la regla es siempre la misma: el pronombre se pone cuando sirve para distinguir o para insistir.<br>Funciona exactamente como "ella" y "él" en tu lengua. |
+| `d-9` | 1 | Buon volo, y la palabra que se acorta | "Buon volo!" es "¡buen vuelo!", y funciona como en tu lengua: <strong>"buono" se vuelve "buon"</strong> delante de un nombre masculino.<br>El español hace exactamente lo mismo: "bueno" se vuelve "buen".<br>Lo vas a oír a menudo: "buon viaggio", "buon giorno", "buon appetito".<br>Y quien lo recibe sonríe y pasa: <strong>no hace falta responder "altrettanto"</strong>. |
 
 ## 6 — PERSONAGGI ED ETICHETTE
 
 | chiave | etichetta a schermo |
 |---|---|
-| `hostess-porta` | Hostess alla porta |
-| `papa` | Papà |
-| `tutti` | Tutti |
+| `hostess-porta` | Azafata de la puerta |
+| `papa` | Papá |
+| `tutti` | Todos |
 
 ## 7 — GLI SLOT
 
-| chiave | etichetta | tipo | tabella | righe | predefinito |
-|---|---|---|---|---|---|
-| `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-garcia` |
+| chiave | etichetta | tipo | tabella | predefinito |
+|---|---|---|---|---|
+| `cognome` | Apellido de la familia | `select` | `people.cognome` | `cognome-garcia` |
 
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO

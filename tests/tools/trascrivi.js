@@ -706,7 +706,7 @@ function messaggi(st, testo) {
 //
 // La cella porta id fra apici inversi separati da `·`; un `·` da solo vuol
 // dire «nessuna esclusione». Nel JSON il campo `nonCon` c'e' SOLO quando la
-// lista non e' vuota, come `rows` degli slot: assente vuol dire nessuna.
+// lista non e' vuota: assente vuol dire nessuna. *(Qui c'era «come `rows` degli slot»: la colonna è uscita il 2026-10-30.)*
 function conNonCon(voce, cella) {
   const ids = String(cella == null ? '' : cella).split('·').map((v) => nb(v)).filter(Boolean);
   if (ids.length) voce.nonCon = ids;
@@ -772,25 +772,21 @@ function episodio(ed, id, gradeNames, testo) {
   fuori.speakerLabels = {};
   pers.forEach((r) => { fuori.speakerLabels[nb(r[0])] = r[1].trim(); });
 
-  // ⚠️ SEI COLONNE DAL 2026-09-24 (passo 1.8-bis (3)): fra `tabella` e
-  // `predefinito` e' nata `righe`, che prende un PEZZO di una tabella
-  // condivisa. Un punto vuol dire «tutta la tabella».
-  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true, null, true), 6, 'slot');
+  // ⚠️ CINQUE COLONNE DAL 2026-10-30 — `righe` e' uscita, autorizzato da chi
+  // guida il progetto. Era nata il 2026-09-24 (passo 1.8-bis (3)) perche' uno
+  // slot potesse offrire un SOTTOINSIEME di una tabella condivisa — sei eta'
+  // su quattordici — e l'unico che la usava era l'eta', che non e' piu' uno
+  // slot (regola 50). Il giorno che servira' di nuovo: `decisioni-stato.md`,
+  // riga «La colonna «righe» degli slot».
+  const slot = colonne(tabellaSotto(t, '## 7 — GLI SLOT', true, null, true), 5, 'slot');
   // Il segnaposto e la chiave dello slot hanno lo stesso nome: la mappa esiste
   // perche' POSSANO divergere, non perche' divergano.
   fuori.placeholderMap = {};
   slot.forEach((r) => { fuori.placeholderMap[nb(r[0])] = nb(r[0]); });
   fuori.personalizationTablesUsed = slot.map((r) => {
     const voce = {
-      key: nb(r[0]), label: r[1].trim(), type: nb(r[2]), table: nb(r[3]), default: nb(r[5])
+      key: nb(r[0]), label: r[1].trim(), type: nb(r[2]), table: nb(r[3]), default: nb(r[4])
     };
-    // ⚠️ `rows` ESISTE SOLO QUANDO SERVE, e non e' pigrizia: una chiave che c'e'
-    // sempre — vuota per sette slot su otto — chiederebbe a chi legge il JSON di
-    // distinguere «tutte le righe» da «nessuna riga», che e' proprio la
-    // distinzione che il codice non deve indovinare. Assente vuol dire «tutta
-    // la tabella», e lo dice l'assenza.
-    const righe = r[4].split('·').map((v) => nb(v)).filter(Boolean);
-    if (righe.length) voce.rows = righe;
     return voce;
   });
 

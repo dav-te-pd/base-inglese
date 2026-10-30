@@ -599,7 +599,9 @@
   // `{{figliaEta.paese}}` scritto per sbaglio deve dare l'eta', non un buco.
   // *Un buco a schermo non si vede nei test e si vede allo studente.* (Qui
   // c'era `places.destinations` come esempio: e' uscita dal magazzino il
-  // 2026-10-20.)
+  // 2026-10-20. E `ages.anni` col suo `figliaEta` sono usciti il 2026-10-30:
+  // l'esempio resta, perche' la forma del caso e' la stessa con qualunque
+  // tabella senza `paese`.)
   function resolveSlotValue(episode, key, rawValue, lang, campo) {
     var field = slotField(episode, key);
     if (field && field.type === 'select') {

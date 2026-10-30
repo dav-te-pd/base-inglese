@@ -15,7 +15,7 @@
       "label": "Cognome della famiglia",
       "type": "select",
       "table": "people.cognome",
-      "default": "cognome-costa"
+      "default": "cognome-rossi"
     }
   ],
   "levels": {
@@ -159,31 +159,31 @@
       "label": "Frasi",
       "items": [
         {
-          "id": "c-1",
+          "id": "c-los-billetes-por-favor",
           "target": "Los billetes, por favor.",
           "native": "I biglietti, per favore.",
           "fromLine": "d-2"
         },
         {
-          "id": "c-2",
+          "id": "c-ella-es-mi-esposa",
           "target": "Ella es mi esposa.",
           "native": "Lei è mia moglie.",
           "fromLine": "d-4"
         },
         {
-          "id": "c-3",
+          "id": "c-ella-es-mi-hija",
           "target": "Ella es mi hija.",
           "native": "Lei è mia figlia.",
           "fromLine": "d-5"
         },
         {
-          "id": "c-4",
+          "id": "c-el-es-mi-hijo",
           "target": "Él es mi hijo.",
           "native": "Lui è mio figlio.",
           "fromLine": "d-5"
         },
         {
-          "id": "c-5",
+          "id": "c-la-familia-por-aqui",
           "target": "¿La familia {{cognome}}? Por aquí, por favor.",
           "native": "La famiglia {{cognome}}? Da questa parte, prego.",
           "fromLine": "d-7"

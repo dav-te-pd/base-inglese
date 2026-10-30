@@ -13,9 +13,7 @@
     "papa": "papa",
     "mamma": "mamma",
     "figliaNome": "figliaNome",
-    "figliaEta": "figliaEta",
     "figlioNome": "figlioNome",
-    "figlioEta": "figlioEta",
     "cognome": "cognome",
     "partenza": "partenza"
   },
@@ -42,21 +40,6 @@
       "default": "figlia-emma"
     },
     {
-      "key": "figliaEta",
-      "label": "Età della figlia",
-      "type": "select",
-      "table": "ages.anni",
-      "default": "eta-16",
-      "rows": [
-        "eta-12",
-        "eta-13",
-        "eta-14",
-        "eta-15",
-        "eta-16",
-        "eta-17"
-      ]
-    },
-    {
       "key": "figlioNome",
       "label": "Nome del figlio",
       "type": "select",
@@ -64,28 +47,11 @@
       "default": "figlio-tommaso"
     },
     {
-      "key": "figlioEta",
-      "label": "Età del figlio",
-      "type": "select",
-      "table": "ages.anni",
-      "default": "eta-8",
-      "rows": [
-        "eta-4",
-        "eta-5",
-        "eta-6",
-        "eta-7",
-        "eta-8",
-        "eta-9",
-        "eta-10",
-        "eta-11"
-      ]
-    },
-    {
       "key": "cognome",
       "label": "Cognome della famiglia",
       "type": "select",
       "table": "people.cognome",
-      "default": "cognome-costa"
+      "default": "cognome-rossi"
     },
     {
       "key": "partenza",
@@ -250,73 +216,67 @@
       "label": "Frasi",
       "items": [
         {
-          "id": "c-1",
+          "id": "c-soy-papa",
           "target": "Soy {{papa}}.",
           "native": "Sono {{papa}}.",
           "fromLine": "d-2",
           "nonCon": [
-            "c-4",
-            "c-5"
+            "c-soy-mamma",
+            "c-soy-figlia"
           ]
         },
         {
-          "id": "c-2",
+          "id": "c-de-donde-es",
           "target": "¿De dónde es?",
           "native": "Di dov'è?",
           "fromLine": "d-3"
         },
         {
-          "id": "c-3",
+          "id": "c-soy-de-partenza",
           "target": "Soy de {{partenza}}, {{partenza.paese:target}}.",
           "native": "Sono di {{partenza}}, {{partenza.paese}}.",
           "fromLine": "d-4"
         },
         {
-          "id": "c-4",
+          "id": "c-soy-mamma",
           "target": "Soy {{mamma}}.",
           "native": "Sono {{mamma}}.",
           "fromLine": "d-6",
           "nonCon": [
-            "c-1",
-            "c-5"
+            "c-soy-papa",
+            "c-soy-figlia"
           ]
         },
         {
-          "id": "c-5",
+          "id": "c-soy-figlia",
           "target": "Soy {{figliaNome}}.",
           "native": "Sono {{figliaNome}}.",
           "fromLine": "d-7",
           "nonCon": [
-            "c-1",
-            "c-4"
+            "c-soy-papa",
+            "c-soy-mamma"
           ]
         },
         {
-          "id": "c-6",
-          "target": "Tengo {{figliaEta}} años.",
-          "native": "Ho {{figliaEta}} anni.",
-          "fromLine": "d-7",
-          "nonCon": [
-            "c-8"
-          ]
+          "id": "c-tengo-dieciseis-anos",
+          "target": "Tengo dieciséis años.",
+          "native": "Ho 16 anni.",
+          "fromLine": "d-7"
         },
         {
-          "id": "c-7",
+          "id": "c-yo-soy-figlio",
           "target": "Yo soy {{figlioNome}}.",
           "native": "Io sono {{figlioNome}}.",
           "fromLine": "d-8"
         },
         {
-          "id": "c-8",
-          "target": "Tengo {{figlioEta}} años.",
-          "native": "Ho {{figlioEta}} anni.",
-          "fromLine": "d-8",
-          "nonCon": [
-            "c-6"
-          ]
+          "id": "c-tengo-ocho-anos",
+          "target": "Tengo ocho años.",
+          "native": "Ho 8 anni.",
+          "fromLine": "d-8"
         },
         {
-          "id": "c-9",
+          "id": "c-somos-la-familia",
           "target": "¡Somos la familia {{cognome}}!",
           "native": "Siamo la famiglia {{cognome}}!",
           "fromLine": "d-9"
@@ -381,7 +341,7 @@
           "speaker": "hostess-gate",
           "role": "staff",
           "target": "¿Y usted?",
-          "native": "E lei?",
+          "native": "E Lei?",
           "whatYouLearn": [
             {
               "title": "¿Y usted?",
@@ -400,12 +360,12 @@
           "id": "d-7",
           "speaker": "figlia",
           "role": "family",
-          "target": "¡Hola! Soy {{figliaNome}}. Tengo {{figliaEta}} años.",
-          "native": "Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni.",
+          "target": "¡Hola! Soy {{figliaNome}}. Tengo dieciséis años.",
+          "native": "Ciao! Sono {{figliaNome}}. Ho 16 anni.",
           "whatYouLearn": [
             {
               "title": "Dire quanti anni hai",
-              "body": "\"Tengo {{figliaEta:target}} años\" vuol dire \"ho {{figliaEta:native}} anni\": <strong>uguale all'italiano</strong>, anche il verbo.<br>Una cosa da ricordare: <strong>\"años\" non si può togliere</strong>. \"Tengo dieciséis\" da solo non si dice, mentre in italiano \"ho sedici\" si capirebbe.<br>\"Tener\" è il verbo avere, e lo ritroverai ovunque: \"tengo hambre\", \"tengo un hermano\"."
+              "body": "\"Tengo dieciséis años\" vuol dire \"ho 16 anni\": <strong>uguale all'italiano</strong>, anche il verbo.<br>Una cosa da ricordare: <strong>\"años\" non si può togliere</strong>. \"Tengo dieciséis\" da solo non si dice, mentre in italiano \"ho sedici\" si capirebbe.<br>\"Tener\" è il verbo avere, e lo ritroverai ovunque: \"tengo hambre\", \"tengo un hermano\"."
             }
           ]
         },
@@ -413,8 +373,8 @@
           "id": "d-8",
           "speaker": "figlio",
           "role": "family",
-          "target": "¡Hola! Yo soy {{figlioNome}}. ¡Tengo {{figlioEta}} años!",
-          "native": "Ciao! Io sono {{figlioNome}}. Ho {{figlioEta}} anni!",
+          "target": "¡Hola! Yo soy {{figlioNome}}. ¡Tengo ocho años!",
+          "native": "Ciao! Io sono {{figlioNome}}. Ho 8 anni!",
           "whatYouLearn": [
             {
               "title": "Quando si mette «yo»",

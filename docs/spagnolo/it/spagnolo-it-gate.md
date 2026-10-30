@@ -1,6 +1,6 @@
 ## 2 — I NUMERI ATTESI
 
-**Numeri attesi nel JSON:** 16 voci in A, 4 in B, 9 in C, 9 battute in D, 7 skill, 8 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
+**Numeri attesi nel JSON:** 16 voci in A, 4 in B, 9 in C, 9 battute in D, 7 skill, 6 slot. ⚠️ **Se i conti non tornano, fermarsi e segnalarlo.**
 
 ## 3 — LA REGOLA GENERALE
 
@@ -18,25 +18,25 @@
 | `d-2` | `papa` | `family` | ¡Buenos días! Soy {{papa}}. | Buongiorno! Sono {{papa}}. |
 | `d-3` | `hostess-gate` | `staff` | ¿De dónde es, {{papa}}? | Di dov'è, {{papa}}? |
 | `d-4` | `papa` | `family` | Soy de {{partenza}}, {{partenza.paese:target}}. | Sono di {{partenza}}, {{partenza.paese}}. |
-| `d-5` | `hostess-gate` | `staff` | ¿Y usted? | E lei? |
+| `d-5` | `hostess-gate` | `staff` | ¿Y usted? | E Lei? |
 | `d-6` | `mamma` | `family` | ¡Buenos días! Soy {{mamma}}. | Buongiorno! Sono {{mamma}}. |
-| `d-7` | `figlia` | `family` | ¡Hola! Soy {{figliaNome}}. Tengo {{figliaEta}} años. | Ciao! Sono {{figliaNome}}. Ho {{figliaEta}} anni. |
-| `d-8` | `figlio` | `family` | ¡Hola! Yo soy {{figlioNome}}. ¡Tengo {{figlioEta}} años! | Ciao! Io sono {{figlioNome}}. Ho {{figlioEta}} anni! |
+| `d-7` | `figlia` | `family` | ¡Hola! Soy {{figliaNome}}. Tengo dieciséis años. | Ciao! Sono {{figliaNome}}. Ho 16 anni. |
+| `d-8` | `figlio` | `family` | ¡Hola! Yo soy {{figlioNome}}. ¡Tengo ocho años! | Ciao! Io sono {{figlioNome}}. Ho 8 anni! |
 | `d-9` | `tutti` | `family` | ¡Somos la familia {{cognome}}! | Siamo la famiglia {{cognome}}! |
 
 ### Grado C — le frasi
 
 | id | es | it | da | non con |
 |---|---|---|---|---|
-| `c-1` | Soy {{papa}}. | Sono {{papa}}. | `d-2` | `c-4` · `c-5` |
-| `c-2` | ¿De dónde es? | Di dov'è? | `d-3` | · |
-| `c-3` | Soy de {{partenza}}, {{partenza.paese:target}}. | Sono di {{partenza}}, {{partenza.paese}}. | `d-4` | · |
-| `c-4` | Soy {{mamma}}. | Sono {{mamma}}. | `d-6` | `c-1` · `c-5` |
-| `c-5` | Soy {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` | `c-1` · `c-4` |
-| `c-6` | Tengo {{figliaEta}} años. | Ho {{figliaEta}} anni. | `d-7` | `c-8` |
-| `c-7` | Yo soy {{figlioNome}}. | Io sono {{figlioNome}}. | `d-8` | · |
-| `c-8` | Tengo {{figlioEta}} años. | Ho {{figlioEta}} anni. | `d-8` | `c-6` |
-| `c-9` | ¡Somos la familia {{cognome}}! | Siamo la famiglia {{cognome}}! | `d-9` | · |
+| `c-soy-papa` | Soy {{papa}}. | Sono {{papa}}. | `d-2` | `c-soy-mamma` · `c-soy-figlia` |
+| `c-de-donde-es` | ¿De dónde es? | Di dov'è? | `d-3` | · |
+| `c-soy-de-partenza` | Soy de {{partenza}}, {{partenza.paese:target}}. | Sono di {{partenza}}, {{partenza.paese}}. | `d-4` | · |
+| `c-soy-mamma` | Soy {{mamma}}. | Sono {{mamma}}. | `d-6` | `c-soy-papa` · `c-soy-figlia` |
+| `c-soy-figlia` | Soy {{figliaNome}}. | Sono {{figliaNome}}. | `d-7` | `c-soy-papa` · `c-soy-mamma` |
+| `c-tengo-dieciseis-anos` | Tengo dieciséis años. | Ho 16 anni. | `d-7` | · |
+| `c-yo-soy-figlio` | Yo soy {{figlioNome}}. | Io sono {{figlioNome}}. | `d-8` | · |
+| `c-tengo-ocho-anos` | Tengo ocho años. | Ho 8 anni. | `d-8` | · |
+| `c-somos-la-familia` | ¡Somos la familia {{cognome}}! | Siamo la famiglia {{cognome}}! | `d-9` | · |
 
 ### Grado B — le espressioni
 
@@ -77,7 +77,7 @@
 | `d-3` | 1 | Dare del «lei»: usted | Per dare del "lei" si usa <strong>usted</strong>, e il verbo va alla terza persona — <strong>esattamente come in italiano</strong>.<br>"¿De dónde es {{papa:target}}?" è "Lei di dov'è?". A un amico l'hostess direbbe "¿De dónde eres?", cioè "Di dove sei?".<br>Quindi qui non c'è un meccanismo nuovo da imparare: c'è una parola nuova, "usted".<br>Si dà del "usted" a chi lavora, a chi non conosci, a chi è più grande di te. Fra amici e in famiglia, "tú".<br>E al plurale ce ne sono <strong>due</strong>: "vosotros" fra amici, "ustedes" quando dai del lei a più persone.<br>In italiano diciamo "voi" in tutti e due i casi: <strong>è un punto in cui lo spagnolo ha una parola in più di noi</strong>. |
 | `d-4` | 1 | Dire da dove vieni | "Soy de {{partenza:target}}" vuol dire "sono di {{partenza:native}}": <strong>identico all'italiano</strong>, anche il verbo.<br>"De" significa "di, da". La userai tantissimo.<br>Domanda e risposta hanno le stesse parole: "¿De dónde es?" → "Soy de…". Se impari una, hai già l'altra.<br>Una cosa che noterai: il tuo nome resta il tuo — Marco è Marco anche in spagnolo. La tua città a volte cambia un accento: Torino diventa <strong>Turín</strong>. Su questo torniamo per bene più avanti. |
 | `d-5` | 1 | ¿Y usted? | Vuol dire "e lei?", e serve a rimandare la stessa domanda a un'altra persona senza ripeterla tutta.<br>Nel dialogo l'hostess l'ha appena chiesta al papà, e con "¿Y usted?" la gira alla mamma.<br>Funziona con qualsiasi domanda, ed è utilissima: la sentirai continuamente.<br>Con un amico diventa "¿Y tú?". |
-| `d-7` | 1 | Dire quanti anni hai | "Tengo {{figliaEta:target}} años" vuol dire "ho {{figliaEta:native}} anni": <strong>uguale all'italiano</strong>, anche il verbo.<br>Una cosa da ricordare: <strong>"años" non si può togliere</strong>. "Tengo dieciséis" da solo non si dice, mentre in italiano "ho sedici" si capirebbe.<br>"Tener" è il verbo avere, e lo ritroverai ovunque: "tengo hambre", "tengo un hermano". |
+| `d-7` | 1 | Dire quanti anni hai | "Tengo dieciséis años" vuol dire "ho 16 anni": <strong>uguale all'italiano</strong>, anche il verbo.<br>Una cosa da ricordare: <strong>"años" non si può togliere</strong>. "Tengo dieciséis" da solo non si dice, mentre in italiano "ho sedici" si capirebbe.<br>"Tener" è il verbo avere, e lo ritroverai ovunque: "tengo hambre", "tengo un hermano". |
 | `d-8` | 1 | Quando si mette «yo» | In spagnolo "io, tu, lui" <strong>si saltano</strong>, come in italiano — e quando ci sono, servono a insistere.<br>La figlia dice "Soy {{figliaNome:target}}". Il figlio dice "<strong>Yo</strong> soy {{figlioNome:target}}": sono tutti due giusti.<br>Il figlio ci mette "yo" perché vuole farsi notare — come quando un bambino dice "<strong>IO</strong> sono {{figlioNome:native}}!".<br>Quindi, se non hai un motivo per insistere, lascialo fuori: "soy" basta. |
 
 ## 6 — PERSONAGGI ED ETICHETTE
@@ -93,15 +93,13 @@
 
 ## 7 — GLI SLOT
 
-| chiave | etichetta | tipo | tabella | righe | predefinito |
-|---|---|---|---|---|---|
-| `papa` | Nome del papà | `select` | `people.papa` | · | `papa-marco` |
-| `mamma` | Nome della mamma | `select` | `people.mamma` | · | `mamma-giulia` |
-| `figliaNome` | Nome della figlia | `select` | `people.figlia` | · | `figlia-emma` |
-| `figliaEta` | Età della figlia | `select` | `ages.anni` | `eta-12` · `eta-13` · `eta-14` · `eta-15` · `eta-16` · `eta-17` | `eta-16` |
-| `figlioNome` | Nome del figlio | `select` | `people.figlio` | · | `figlio-tommaso` |
-| `figlioEta` | Età del figlio | `select` | `ages.anni` | `eta-4` · `eta-5` · `eta-6` · `eta-7` · `eta-8` · `eta-9` · `eta-10` · `eta-11` | `eta-8` |
-| `cognome` | Cognome della famiglia | `select` | `people.cognome` | · | `cognome-costa` |
-| `partenza` | Città di partenza | `select` | `places.departures` | · | `orig-mondovi` |
+| chiave | etichetta | tipo | tabella | predefinito |
+|---|---|---|---|---|
+| `papa` | Nome del papà | `select` | `people.papa` | `papa-marco` |
+| `mamma` | Nome della mamma | `select` | `people.mamma` | `mamma-giulia` |
+| `figliaNome` | Nome della figlia | `select` | `people.figlia` | `figlia-emma` |
+| `figlioNome` | Nome del figlio | `select` | `people.figlio` | `figlio-tommaso` |
+| `cognome` | Cognome della famiglia | `select` | `people.cognome` | `cognome-rossi` |
+| `partenza` | Città di partenza | `select` | `places.departures` | `orig-mondovi` |
 
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO

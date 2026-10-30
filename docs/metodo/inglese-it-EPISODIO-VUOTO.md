@@ -75,9 +75,9 @@
 
 ## 7 — GLI SLOT
 
-| chiave | etichetta | tipo | tabella | righe | predefinito |
-|---|---|---|---|---|---|
-| `chiave` | Etichetta che legge lo studente | `select` | `gruppo.tabella` | · | `valore-predefinito` |
+| chiave | etichetta | tipo | tabella | predefinito |
+|---|---|---|---|---|
+| `chiave` | Etichetta che legge lo studente | `select` | `gruppo.tabella` | `valore-predefinito` |
 
 ## 8 — LE TABELLE INTERNE ALL'EPISODIO
 

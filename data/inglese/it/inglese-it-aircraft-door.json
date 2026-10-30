@@ -15,7 +15,7 @@
       "label": "Cognome della famiglia",
       "type": "select",
       "table": "people.cognome",
-      "default": "cognome-costa"
+      "default": "cognome-rossi"
     }
   ],
   "levels": {
@@ -145,31 +145,31 @@
       "label": "Frasi",
       "items": [
         {
-          "id": "c-1",
+          "id": "c-your-tickets-please",
           "target": "Your tickets, please.",
           "native": "I biglietti, per favore.",
           "fromLine": "d-2"
         },
         {
-          "id": "c-2",
+          "id": "c-she-is-my-wife",
           "target": "She is my wife.",
           "native": "Lei è mia moglie.",
           "fromLine": "d-4"
         },
         {
-          "id": "c-3",
+          "id": "c-she-is-my-daughter",
           "target": "She is my daughter.",
           "native": "Lei è mia figlia.",
           "fromLine": "d-5"
         },
         {
-          "id": "c-4",
+          "id": "c-he-is-my-son",
           "target": "He is my son.",
           "native": "Lui è mio figlio.",
           "fromLine": "d-5"
         },
         {
-          "id": "c-5",
+          "id": "c-the-family-this-way",
           "target": "The {{cognome}} family? This way, please.",
           "native": "La famiglia {{cognome}}? Da questa parte, prego.",
           "fromLine": "d-7"
@@ -214,10 +214,10 @@
           "speaker": "papa",
           "role": "family",
           "target": "Here they are.",
-          "native": "Eccoli.",
+          "native": "Ecco a Lei.",
           "whatYouLearn": [
             {
-              "title": "Eccoli",
+              "title": "Ecco a Lei",
               "body": "Si dice quando dai qualcosa a qualcuno, o quando la cosa che cercavi salta fuori.<br>Se è una cosa sola: \"Here it is\". Se sono più d'una: \"Here they are\".<br>I biglietti sono quattro, quindi \"they\"."
             }
           ]

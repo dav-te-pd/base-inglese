@@ -84,7 +84,9 @@ storia.*
 | `people.figlio` | i nomi del figlio |
 | `people.cognome` | i cognomi della famiglia |
 | `places.departures` | le città di partenza |
-| `ages.anni` | le età, da 4 a 17 |
+
+
+⚠️ **DAL 2026-10-30 `ages.anni` NON C'È PIÙ** — tolta con l'autorizzazione di chi guida il progetto, insieme alla colonna «righe» degli slot: l'età non è più uno slot, è scritta nella battuta (la figlia ha sedici anni, il figlio otto), e la tabella era rimasta senza lettore (regola 50). *Le righe di questa sezione che ne parlano sono storia.*
 
 ---
 
@@ -111,72 +113,41 @@ modo di esistere.*
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `papa-marco` | Marco | Mark | no |
+| `papa-marco` | Marco | Marco | no |
 | `papa-giancarlo` | Giancarlo | Giancarlo | no |
-| `papa-francesco` | Francesco | Francis | no |
-| `papa-andrea` | Andrea | Andrew | no |
-| `papa-luca` | Luca | Luke | no |
-| `papa-paolo` | Paolo | Paul | no |
-| `papa-stefano` | Stefano | Stephen | no |
-| `papa-davide` | Davide | David | no |
-| `papa-claudio` | Claudio | Claude | no |
-| `papa-federico` | Federico | Frederick | no |
+| `papa-federico` | Federico | Federico | no |
 
 ### `people.mamma`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `mamma-giulia` | Giulia | Julia | no |
-| `mamma-anna` | Anna | Ann | no |
-| `mamma-chiara` | Chiara | Clare | no |
-| `mamma-nicoletta` | Nicoletta | Nicole | no |
-| `mamma-laura` | Laura | Laura | no |
-| `mamma-elena` | Elena | Helen | no |
-| `mamma-silvia` | Silvia | Sylvia | no |
-| `mamma-francesca` | Francesca | Frances | no |
+| `mamma-giulia` | Giulia | Giulia | no |
+| `mamma-anna` | Anna | Anna | no |
+| `mamma-nicoletta` | Nicoletta | Nicoletta | no |
 
 ### `people.figlia`
 
 | id | it | en | traducibile |
 |---|---|---|---|
 | `figlia-emma` | Emma | Emma | no |
-| `figlia-sofia` | Sofia | Sophie | no |
+| `figlia-sofia` | Sofia | Sofia | no |
 | `figlia-alice` | Alice | Alice | no |
-| `figlia-giorgia` | Giorgia | Georgia | no |
-| `figlia-martina` | Martina | Martina | no |
-| `figlia-sara` | Sara | Sarah | no |
-| `figlia-chiara` | Chiara | Clare | no |
-| `figlia-beatrice` | Beatrice | Beatrice | no |
 
 ### `people.figlio`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `figlio-tommaso` | Tommaso | Thomas | no |
+| `figlio-tommaso` | Tommaso | Tommaso | no |
 | `figlio-leo` | Leo | Leo | no |
-| `figlio-marco` | Marco | Mark | no |
-| `figlio-giorgio` | Giorgio | George | no |
-| `figlio-matteo` | Matteo | Matthew | no |
-| `figlio-lorenzo` | Lorenzo | Lawrence | no |
-| `figlio-simone` | Simone | Simon | no |
-| `figlio-filippo` | Filippo | Philip | no |
-| `figlio-claudio` | Claudio | Claude | no |
-| `figlio-federico` | Federico | Frederick | no |
-| `figlio-paolo` | Paolo | Paul | no |
+| `figlio-giorgio` | Giorgio | Giorgio | no |
 
 ### `people.cognome`
 
 | id | it | en | traducibile |
 |---|---|---|---|
-| `cognome-costa` | Costa | Costa | no |
 | `cognome-rossi` | Rossi | Rossi | no |
-| `cognome-bianchi` | Bianchi | Bianchi | no |
-| `cognome-ferrari` | Ferrari | Ferrari | no |
 | `cognome-ferrario` | Ferrario | Ferrario | no |
-| `cognome-russo` | Russo | Russo | no |
-| `cognome-marino` | Marino | Marino | no |
 | `cognome-barberis` | Barberis | Barberis | no |
-| `cognome-ambruosi` | Ambruosi | Ambruosi | no |
 
 ### `places.departures`
 
@@ -184,14 +155,7 @@ modo di esistere.*
 |---|---|---|---|---|---|
 | `orig-mondovi` | Mondovì | Mondovì | Italia | Italy | sì |
 | `orig-torino` | Torino | Turin | Italia | Italy | sì |
-| `orig-milano` | Milano | Milan | Italia | Italy | sì |
-| `orig-roma` | Roma | Rome | Italia | Italy | sì |
-| `orig-napoli` | Napoli | Naples | Italia | Italy | sì |
-| `orig-palermo` | Palermo | Palermo | Italia | Italy | sì |
 | `orig-lugano` | Lugano | Lugano | Svizzera | Switzerland | sì |
-| `orig-nizza` | Nizza | Nice | Francia | France | sì |
-| `orig-firenze` | Firenze | Florence | Italia | Italy | sì |
-| `orig-venezia` | Venezia | Venice | Italia | Italy | sì |
 
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, E LE ALTRE RESTANO A QUATTRO.**
 `trascrivi.js` le accetta tutt'e due e **rifiuta ogni altro numero nominando la
@@ -214,7 +178,7 @@ prudenziale:** la battuta `d-4` di `gate` scriveva **`Italy` a mano** — `I am 
 {{partenza}}, Italy.` — perché una riga a quattro colonne porta **un valore
 solo**, e il paese non aveva modo di arrivare alla frase. Con Lugano lo studente
 avrebbe letto **«I am from Lugano, Italy»**, e in italiano **«Vengo da Lugano, in
-Italia»**: due frasi false su otto opzioni.
+Italia»**: due frasi false sulle otto opzioni **di allora**.
 
 ⚠️ **E nessun test le avrebbe viste:** nessuno sceglie Lugano, quindi la suite
 sarebbe restata verde. *È il difetto che vive dentro un'opzione che nessuno
@@ -233,48 +197,6 @@ parte degli studenti incontra nella storia non è una parola dell'episodio, e
 **`Italy` torna come voce quando ci sarà l'episodio dei nomi propri** (R.1, parte
 3.6 di `inglese-it-edizione.md`) — lì i toponimi sono il contenuto, non un
 contorno.
-
-### `ages.anni`
-
-⚠️ **DUE COLONNE, E LA CIFRA RESTA IN `it`. Deciso il 2026-09-24, e la ragione
-va letta prima di «uniformare»:**
-
-> **Le due colonne servono due mestieri diversi, e la stessa riga è usata da due
-> parti dell'app.**
->
-> - **`it` = `16`** è quello che lo studente **SCEGLIE** in Personalizza:
->   scorrere 12·13·14 è più veloce che leggere dodici·tredici·quattordici.
-> - **`en` = `sixteen`** è quello che si **SENTE e si PRONUNCIA** nella battuta,
->   e che Voice Practice deve riconoscere.
->
-> **Non è un'incoerenza: è la stessa riga letta da due mestieri.**
-
-⚠️ **`traducibile` VALE `sì` SU OGNI RIGA, ED È SCRITTO ANCHE SE L'ASSENZA LO
-VARREBBE.** Con `no`, `resolveSlotValue` restituisce **`it` anche in inglese** —
-si tornerebbe a `I'm 16 years old` **senza nessun errore e senza nessun rosso**.
-*Un valore che se sbagliato non fa rumore non si lascia all'impostazione
-predefinita.*
-
-**Quattordici righe, una tabella sola: i due slot ne prendono un pezzo** con la
-colonna «righe» della sezione «GLI SLOT» del file episodio — la figlia
-`eta-12`…`eta-17`, il figlio `eta-4`…`eta-11`.
-
-| id | it | en | traducibile |
-|---|---|---|---|
-| `eta-4` | 4 | four | sì |
-| `eta-5` | 5 | five | sì |
-| `eta-6` | 6 | six | sì |
-| `eta-7` | 7 | seven | sì |
-| `eta-8` | 8 | eight | sì |
-| `eta-9` | 9 | nine | sì |
-| `eta-10` | 10 | ten | sì |
-| `eta-11` | 11 | eleven | sì |
-| `eta-12` | 12 | twelve | sì |
-| `eta-13` | 13 | thirteen | sì |
-| `eta-14` | 14 | fourteen | sì |
-| `eta-15` | 15 | fifteen | sì |
-| `eta-16` | 16 | sixteen | sì |
-| `eta-17` | 17 | seventeen | sì |
 
 ---
 

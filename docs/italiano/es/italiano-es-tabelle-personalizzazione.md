@@ -82,7 +82,6 @@ nomi propri** — *vedi la sezione 5.*
 | `people.figlio` | i nomi del figlio |
 | `people.cognome` | i cognomi della famiglia |
 | `places.departures` | le città di partenza |
-| `ages.anni` | le età, da 4 a 17 |
 
 ⚠️ **`places.destinations` NON ESISTE, e non è una dimenticanza.** *La destinazione non è
 personalizzabile: è dell'edizione, e si scrive dentro la battuta.* **Se ogni studente scegliesse una
@@ -95,6 +94,9 @@ scelta sta nel tabellone dell'edizione, non qui.**
 ⚠️ **E i nomi delle tabelle NON si traducono:** *resta `ages.anni`, non `ages.anos`.* **Il nome di una
 tabella è un id e lo studente non lo legge: tradurlo per edizione vorrebbe dire che `trascrivi.js` deve
 sapere come si chiama in ogni lingua.**
+
+
+⚠️ **DAL 2026-10-30 `ages.anni` NON C'È PIÙ** — tolta con l'autorizzazione di chi guida il progetto, insieme alla colonna «righe» degli slot: l'età non è più uno slot, è scritta nella battuta (la figlia ha sedici anni, il figlio otto), e la tabella era rimasta senza lettore (regola 50). *Le righe di questa sezione che ne parlano sono storia.*
 
 ---
 
@@ -144,55 +146,30 @@ stessa chiave, ruolo opposto secondo il file.*
 
 | id | es | it | traducibile |
 |---|---|---|---|
-| `papa-carlos` | Carlos | Carlo | no |
-| `papa-juan` | Juan | Giovanni | no |
-| `papa-jose` | José | Giuseppe | no |
-| `papa-antonio` | Antonio | Antonio | no |
-| `papa-manuel` | Manuel | Emanuele | no |
-| `papa-francisco` | Francisco | Francesco | no |
-| `papa-jorge` | Jorge | Giorgio | no |
-| `papa-miguel` | Miguel | Michele | no |
-| `papa-david` | David | Davide | no |
-| `papa-pablo` | Pablo | Paolo | no |
+| `papa-carlos` | Carlos | Carlos | no |
+| `papa-juan` | Juan | Juan | no |
+| `papa-jose` | José | José | no |
 ### `people.mamma`
 
 | id | es | it | traducibile |
 |---|---|---|---|
-| `mamma-maria` | María | Maria | no |
+| `mamma-maria` | María | María | no |
 | `mamma-carmen` | Carmen | Carmen | no |
-| `mamma-ana` | Ana | Anna | no |
-| `mamma-isabel` | Isabel | Isabella | no |
-| `mamma-lucia` | Lucía | Lucia | no |
-| `mamma-laura` | Laura | Laura | no |
-| `mamma-marta` | Marta | Marta | no |
-| `mamma-clara` | Clara | Chiara | no |
+| `mamma-ana` | Ana | Ana | no |
 ### `people.figlia`
 
 | id | es | it | traducibile |
 |---|---|---|---|
-| `figlia-sofia` | Sofía | Sofia | no |
+| `figlia-sofia` | Sofía | Sofía | no |
 | `figlia-valentina` | Valentina | Valentina | no |
-| `figlia-camila` | Camila | Camilla | no |
-| `figlia-lucia` | Lucía | Lucia | no |
-| `figlia-martina` | Martina | Martina | no |
-| `figlia-daniela` | Daniela | Daniela | no |
-| `figlia-paula` | Paula | Paola | no |
-| `figlia-julia` | Julia | Giulia | no |
+| `figlia-camila` | Camila | Camila | no |
 ### `people.figlio`
 
 | id | es | it | traducibile |
 |---|---|---|---|
-| `figlio-mateo` | Mateo | Matteo | no |
-| `figlio-santiago` | Santiago | Giacomo | no |
+| `figlio-mateo` | Mateo | Mateo | no |
+| `figlio-santiago` | Santiago | Santiago | no |
 | `figlio-diego` | Diego | Diego | no |
-| `figlio-lucas` | Lucas | Luca | no |
-| `figlio-daniel` | Daniel | Daniele | no |
-| `figlio-sebastian` | Sebastián | Sebastiano | no |
-| `figlio-nicolas` | Nicolás | Nicola | no |
-| `figlio-tomas` | Tomás | Tommaso | no |
-| `figlio-alejandro` | Alejandro | Alessandro | no |
-| `figlio-pablo` | Pablo | Paolo | no |
-| `figlio-hugo` | Hugo | Ugo | no |
 ### `people.cognome`
 
 | id | es | it | traducibile |
@@ -200,12 +177,6 @@ stessa chiave, ruolo opposto secondo il file.*
 | `cognome-garcia` | García | García | no |
 | `cognome-rodriguez` | Rodríguez | Rodríguez | no |
 | `cognome-gonzalez` | González | González | no |
-| `cognome-fernandez` | Fernández | Fernández | no |
-| `cognome-lopez` | López | López | no |
-| `cognome-martinez` | Martínez | Martínez | no |
-| `cognome-perez` | Pérez | Pérez | no |
-| `cognome-gomez` | Gómez | Gómez | no |
-| `cognome-silva` | Silva | Silva | no |
 
 ⚠️ **Le due colonne sono IDENTICHE su tutti e nove, e non è un errore:** *un cognome non ha una forma
 italiana.* 🔴 **E `traducibile` è `no`, quindi l'app userebbe comunque la colonna dello studente: la
@@ -216,12 +187,7 @@ colonna `it` è qui perché la tabella ha quattro colonne, non perché serva.**
 |---|---|---|---|---|---|
 | `orig-mexico` | Ciudad de México | Città del Messico | México | Messico | sì |
 | `orig-bogota` | Bogotá | Bogotá | Colombia | Colombia | sì |
-| `orig-lima` | Lima | Lima | Perú | Perù | sì |
-| `orig-santiago` | Santiago | Santiago del Cile | Chile | Cile | sì |
 | `orig-buenos-aires` | Buenos Aires | Buenos Aires | Argentina | Argentina | sì |
-| `orig-montevideo` | Montevideo | Montevideo | Uruguay | Uruguay | sì |
-| `orig-caracas` | Caracas | Caracas | Venezuela | Venezuela | sì |
-| `orig-quito` | Quito | Quito | Ecuador | Ecuador | sì |
 
 🔴 **LA FAMIGLIA PARTE DALL'AMERICA LATINA, E NON È UNA SCELTA DI COLORE: È LA REGOLA DEL LUNGO RAGGIO.**
 
@@ -242,14 +208,19 @@ varietà è lingua: due decisioni, non una.*
 ⚠️ **QUESTA È L'UNICA TABELLA A SEI COLONNE, e le altre restano a quattro.** *`trascrivi.js` le accetta
 tutte due e rifiuta ogni altro numero nominando la tabella.*
 
-⭐ **E qui le colonne `paese` LAVORANO davvero: otto città, otto paesi diversi.** ⚠️ **Nelle altre due
-sono quasi costanti** — *di dieci righe, otto dicono Italia* — **e il meccanismo del 24/09, città e paese
-sulla stessa riga, regge grazie a `orig-lugano` e `orig-nizza`: le due righe che portano un paese
-diverso.**
+⭐ **E qui le colonne `paese` LAVORANO davvero: tre città, tre paesi diversi.** ⚠️ **Nelle altre due,
+dal 30/10, sono tre righe di cui due dicono Italia** — **e il meccanismo del 24/09, città e paese sulla
+stessa riga, regge grazie a `orig-lugano`: la riga che porta un paese diverso.**
 
-🔴 **Il 2026-10-20 abbiamo valutato di toglierle e abbiamo deciso di NO.** *Entrano Firenze e Venezia e
-le dieci righe restano dieci: la lista delle partenze è aperta per progetto — lo studente può proporre
-quello che non trova — quindi non è un insieme da curare, è un insieme che cresce.* ⭐ **E così la ragione
+🔴 **E quello è il motivo per cui Lugano è una delle tre:** *senza di lei la colonna `paese` non avrebbe
+un caso vivo in quelle due edizioni, e un difetto su di lei tornerebbe invisibile — esattamente come il
+2026-10-20.* ⚠️ **La constatazione che a Lugano si parla italiano è nostra e di oggi, non una regola.**
+
+🔴 **Il 2026-10-20 abbiamo valutato di toglierle e abbiamo deciso di NO; il 30/10 le righe sono scese a
+TRE, e per una ragione diversa: il costo delle registrazioni.** *La lista resta **aperta per progetto** —
+lo studente può proporre quello che non trova — quindi non è un insieme da curare, è un insieme che
+cresce. Cambia da quante parte, non la sua natura.* ⭐ **E una riga nuova costa UN file audio: `partenza`
+compare in un testo solo.** ⭐ **E così la ragione
 del 24/09 — «uno studente di Lugano non deve dichiarare un paese che non è il suo» — resta viva.**
 
 ⚠️ **E il paese arriva alla frase con un segnaposto suo** — `{{partenza.paese:target}}` — *non composto
@@ -263,40 +234,6 @@ Cile.* ⚠️ **Sui paesi cambia solo il Perù** *(`Perú` → `Perù`: l'accent
 otto cambiavano forma.* 🔴 **E non è aggiustabile scegliendo altre città: i toponimi americani sono gli
 stessi in italiano, perché in italiano sono arrivati dallo spagnolo.** *Vale saperlo prima di cercare un
 difetto che non c'è.*
-
-### `ages.anni`
-
-⚠️ **DUE COLONNE, E LA CIFRA RESTA NELLA COLONNA DELLO STUDENTE.** *Le due servono due mestieri diversi:*
-
-> - **`es` = `16`** è quello che lo studente **SCEGLIE** in Personalizza: *scorrere 12·13·14 è più veloce
->   che leggere dodici·tredici·quattordici.*
-> - **`it` = `sedici`** è quello che si **SENTE e si PRONUNCIA** nella battuta, e che Voice Practice deve
->   riconoscere.
->
-> **Non è un'incoerenza: è la stessa riga letta da due mestieri.**
-
-⭐ **Gli id sono gli UNICI identici alle altre due edizioni** — *`eta-4`…`eta-17`* — **perché un'età non
-porta un nome: porta un numero, e il numero non cambia con la lingua.**
-
-| id | es | it | traducibile |
-|---|---|---|---|
-| `eta-4` | 4 | quattro | sì |
-| `eta-5` | 5 | cinque | sì |
-| `eta-6` | 6 | sei | sì |
-| `eta-7` | 7 | sette | sì |
-| `eta-8` | 8 | otto | sì |
-| `eta-9` | 9 | nove | sì |
-| `eta-10` | 10 | dieci | sì |
-| `eta-11` | 11 | undici | sì |
-| `eta-12` | 12 | dodici | sì |
-| `eta-13` | 13 | tredici | sì |
-| `eta-14` | 14 | quattordici | sì |
-| `eta-15` | 15 | quindici | sì |
-| `eta-16` | 16 | sedici | sì |
-| `eta-17` | 17 | diciassette | sì |
-
-⚠️ **`traducibile` vale `sì` su ogni riga, ed è scritto anche se l'assenza lo varrebbe.** *Con `no` la
-battuta italiana direbbe la cifra invece della parola.*
 
 ---
 

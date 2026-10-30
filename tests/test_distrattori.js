@@ -76,7 +76,7 @@ async function run() {
   // troppo piccolo nomina OGNI sua voce, una riga ciascuna — e i moduli che lo
   // leggono stanno nella riga, non in righe ripetute per modulo.
   log('[B] Un grado C con ' + sm.distrattori + ' voci (una meno del necessario): ogni sua voce nominata, una riga ciascuna',
-    rC.length === sm.distrattori && rC.every(r => /grado C, voce c-\d+: bacino 2 \(3 voci − 1 − 0 esclusi\)/.test(r)), rC.join(' | '));
+    rC.length === sm.distrattori && rC.every(r => /grado C, voce c-[a-z0-9-]+: bacino 2 \(3 voci − 1 − 0 esclusi\)/.test(r)), rC.join(' | '));
 
   const soloD = JSON.parse(JSON.stringify(gate));
   soloD.levels.D.items = soloD.levels.D.items.slice(0, 1);
