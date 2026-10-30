@@ -60,7 +60,7 @@ e la ragione scritta accanto — «è la tua famiglia che parte» — lo diceva 
 
 | Colonna | Cosa succede qui |
 |---|---|
-| **id** | 🔴 **NON identici alle altre edizioni** — *gli id dei nomi contengono il nome (`papa-carlos`), e i nomi sono cambiati.* ⭐ **Solo `ages.anni` li tiene identici: `eta-4`…`eta-17`** |
+| **id** | 🔴 **NON identici alle altre edizioni** — *gli id dei nomi contengono il nome (`papa-carlos`), e i nomi sono cambiati.* 🔴 **E dal 30/10 nessuna tabella li tiene più identici: `ages.anni`, che era l'unica, non c'è più** |
 | **es** *(studente)* | 🔴 **tutta nuova**: *i nomi che sceglie chi parla spagnolo* |
 | **it** *(insegnata)* | 🔴 **tutta nuova**: *la forma italiana dello stesso nome* |
 | **traducibile** | ✅ **stessa logica**: `no` sui nomi propri, `sì` su città ed età |
@@ -91,7 +91,7 @@ città, le città si brucerebbero e gli episodi dovrebbero restare neutri in tut
 la lingua insegnata — Ciudad de México per lo spagnolo.* ⚠️ **Qui deve essere una città italiana, e la
 scelta sta nel tabellone dell'edizione, non qui.**
 
-⚠️ **E i nomi delle tabelle NON si traducono:** *resta `ages.anni`, non `ages.anos`.* **Il nome di una
+⚠️ **E i nomi delle tabelle NON si traducono.** *L'esempio era `ages.anni`, non `ages.anos`;* 🔴 **quella tabella è uscita il 30/10, ma la regola vale per `people.cognome`, che infatti non è `people.apellido`.** **Il nome di una
 tabella è un id e lo studente non lo legge: tradurlo per edizione vorrebbe dire che `trascrivi.js` deve
 sapere come si chiama in ogni lingua.**
 

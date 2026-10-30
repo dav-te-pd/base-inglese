@@ -54,7 +54,7 @@ diversi.*
 
 | Diceva | |
 |---|---|
-| «la riga città + paese e le età in parole sono **decise ma non trascrivibili**» | ⭐ **fatte tutte e due il 24/09**: *`places.departures` ha sei colonne qui sotto, e `ages.anni` è una tabella vera* |
+| «la riga città + paese e le età in parole sono **decise ma non trascrivibili**» | ⭐ **fatte tutte e due il 24/09**: *`places.departures` ha sei colonne qui sotto.* 🔴 **E `ages.anni` era una tabella vera fino al 30/10, quando l'età è uscita dagli slot** |
 | «il trascrittore le **RIFIUTEREBBE**: chiede esattamente quattro colonne» | 🔴 **ne accetta quattro o sei** — *e lo dice questo file, cinquanta righe più in basso* |
 
 ⚠️ **Erano false da diciassette giorni, e nessuno le aveva scritte sbagliate:** *sono diventate false il

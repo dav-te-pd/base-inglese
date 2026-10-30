@@ -96,7 +96,7 @@ non è personalizzabile: è dell'edizione — **Ciudad de México** — e si scr
 studente scegliesse una città, le città si brucerebbero e gli episodi dovrebbero restare neutri in
 tutte.**
 
-⚠️ **E il nome della tabella delle età resta `ages.anni`, non `ages.anios`.** *Il nome di una tabella è
+⚠️ **E i nomi delle tabelle NON si traducono.** *L'esempio era la tabella delle età, `ages.anni` e non `ages.anios`;* 🔴 **quella tabella è uscita il 30/10, ma la regola vale per `people.cognome`, che infatti non è `people.apellido`.** *Il nome di una tabella è
 un id e lo studente non lo legge: tradurlo per edizione vorrebbe dire che `trascrivi.js` deve sapere come
 si chiama in ogni lingua.*
 

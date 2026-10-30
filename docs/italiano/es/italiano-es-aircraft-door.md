@@ -58,7 +58,7 @@
 | `a-grazie` | grazie | gracias | GRA-tsie — ⚠️ **la «z» italiana es «ts», no «th»** | formula | · |
 | `a-mia` | mia | mi | MI-a | possessivo femminile | `a-mio` |
 | `a-mio` | mio | mi | MI-o | possessivo maschile | `a-mia` |
-| `a-lei` | lei | ella | LEI — ⚠️ **en minúscula es «ella»; con mayúscula, «Lei», es «usted»** | pronome soggetto | · |
+| `a-lei-soggetto` | lei | ella | LEI — ⚠️ **en minúscula es «ella»; con mayúscula, «Lei», es «usted»** | pronome soggetto | · |
 | `a-lui` | lui | él | LU-i | pronome soggetto | · |
 | `a-moglie` | moglie | esposa | MO-glie — ⚠️ *«gl» como en `figlia`* | sostantivo | · |
 | `a-figlia` | figlia | hija | FI-glia | sostantivo | · |
