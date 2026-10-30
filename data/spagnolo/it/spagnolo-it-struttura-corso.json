@@ -167,6 +167,92 @@
         "grade": "C"
       }
     ],
+    "narrativo-seguito": [
+      {
+        "module": "meetTheStory",
+        "grade": "D"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "A"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "A"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardATargetNative",
+        "grade": "A"
+      },
+      {
+        "module": "flashcardANativeTarget",
+        "grade": "A"
+      },
+      {
+        "module": "repeatAloud",
+        "grade": "B"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "B"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "B"
+      },
+      {
+        "module": "flashcardATargetNative",
+        "grade": "B"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "B"
+      },
+      {
+        "module": "whyWeSayIt",
+        "grade": "D"
+      },
+      {
+        "module": "matchTargetNative",
+        "grade": "C"
+      },
+      {
+        "module": "matchNativeTarget",
+        "grade": "C"
+      },
+      {
+        "module": "voicePractice",
+        "grade": "C"
+      },
+      {
+        "module": "dialogoAscoltaRipeti",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoRipetiATempo",
+        "grade": "D"
+      },
+      {
+        "module": "dialogoContinuo",
+        "grade": "D"
+      },
+      {
+        "module": "speedMatchTargetNative",
+        "grade": "C"
+      },
+      {
+        "module": "speedMatchNativeTarget",
+        "grade": "C"
+      },
+      {
+        "module": "voiceCoach",
+        "grade": "C"
+      }
+    ],
     "prova-corta": [
       {
         "module": "personalizzazione"
@@ -207,7 +293,7 @@
     "aircraft-door": {
       "nome": "Sulla porta dell'aereo",
       "categoria": "storia",
-      "sequence": "narrativo-standard"
+      "sequence": "narrativo-seguito"
     }
   },
   "nomiASchermo": {

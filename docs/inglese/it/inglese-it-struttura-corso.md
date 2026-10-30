@@ -268,6 +268,11 @@ il modulo non lavora su un grado).*
 
 ⚠️ **L'ordine delle righe di ogni sequenza è l'ordine dei suoi passi.**
 
+⭐ **E dal 30/10 ce n'è una seconda, `narrativo-seguito`: gli stessi passi meno il primo.**
+*Dal secondo episodio in avanti non c'è piu' niente da scegliere — i valori degli slot sono del
+CORSO, non dell'episodio — quindi il modulo `personalizzazione` non ha nulla da mostrare.*
+🔴 **Ventuno passi, non ventidue, e la differenza è solo quel primo.**
+
 ⚠️ **Questa sezione nasce il 2026-09-23, e cambia una decisione del 21.** *Allora i 22 passi restavano
 solo nel JSON perché «il pannello Admin li modifica». **La misura ha detto che il pannello scrive solo in
 `localStorage`** — quel browser soltanto: l'unico scrittore del JSON è Claude Code, come per tutti gli
@@ -297,6 +302,27 @@ altri dati. Erano l'ultimo dato senza fonte.*
 | `narrativo-standard` | `speedMatchTargetNative` | C |
 | `narrativo-standard` | `speedMatchNativeTarget` | C |
 | `narrativo-standard` | `voiceCoach` | C |
+| `narrativo-seguito` | `meetTheStory` | D |
+| `narrativo-seguito` | `repeatAloud` | A |
+| `narrativo-seguito` | `matchTargetNative` | A |
+| `narrativo-seguito` | `matchNativeTarget` | A |
+| `narrativo-seguito` | `flashcardATargetNative` | A |
+| `narrativo-seguito` | `flashcardANativeTarget` | A |
+| `narrativo-seguito` | `repeatAloud` | B |
+| `narrativo-seguito` | `matchTargetNative` | B |
+| `narrativo-seguito` | `matchNativeTarget` | B |
+| `narrativo-seguito` | `flashcardATargetNative` | B |
+| `narrativo-seguito` | `voicePractice` | B |
+| `narrativo-seguito` | `whyWeSayIt` | D |
+| `narrativo-seguito` | `matchTargetNative` | C |
+| `narrativo-seguito` | `matchNativeTarget` | C |
+| `narrativo-seguito` | `voicePractice` | C |
+| `narrativo-seguito` | `dialogoAscoltaRipeti` | D |
+| `narrativo-seguito` | `dialogoRipetiATempo` | D |
+| `narrativo-seguito` | `dialogoContinuo` | D |
+| `narrativo-seguito` | `speedMatchTargetNative` | C |
+| `narrativo-seguito` | `speedMatchNativeTarget` | C |
+| `narrativo-seguito` | `voiceCoach` | C |
 | `prova-corta` | `personalizzazione` | |
 | `prova-corta` | `meetTheStory` | D |
 | `prova-corta` | `repeatAloud` | A |
@@ -328,7 +354,7 @@ nome in due sezioni diverse — vanno lette con la sezione in mano.**
 | Id | Nome | Categoria | Sequenza dei moduli |
 |---|---|---|---|
 | `gate` | Al gate | `storia` | `narrativo-standard` |
-| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
+| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-seguito` |
 
 🔴 **L'episodio 3 non è qui, e la ragione è scritta:** *la regola §3.2 dice che senza il mix 40/30/20/10
 non si pubblicano altri episodi. Il mix legge la copia del file dello studente, che si definisce dopo

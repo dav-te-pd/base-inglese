@@ -223,6 +223,11 @@ il modulo non lavora su un grado).*
 
 ⚠️ **L'ordine delle righe di ogni sequenza è l'ordine dei suoi passi.**
 
+⭐ **E dal 30/10 ce n'è una seconda, `narrativo-seguito`: gli stessi passi meno il primo.**
+*Dal secondo episodio in avanti non c'è piu' niente da scegliere — i valori degli slot sono del
+CORSO, non dell'episodio — quindi il modulo `personalizzazione` non ha nulla da mostrare.*
+🔴 **Ventuno passi, non ventidue, e la differenza è solo quel primo.**
+
 **I ventidue passi sono identici all'inglese: sono il metodo, non la lingua.**
 
 | Sequenza | Modulo | Grado |
@@ -249,6 +254,27 @@ il modulo non lavora su un grado).*
 | `narrativo-standard` | `speedMatchTargetNative` | C |
 | `narrativo-standard` | `speedMatchNativeTarget` | C |
 | `narrativo-standard` | `voiceCoach` | C |
+| `narrativo-seguito` | `meetTheStory` | D |
+| `narrativo-seguito` | `repeatAloud` | A |
+| `narrativo-seguito` | `matchTargetNative` | A |
+| `narrativo-seguito` | `matchNativeTarget` | A |
+| `narrativo-seguito` | `flashcardATargetNative` | A |
+| `narrativo-seguito` | `flashcardANativeTarget` | A |
+| `narrativo-seguito` | `repeatAloud` | B |
+| `narrativo-seguito` | `matchTargetNative` | B |
+| `narrativo-seguito` | `matchNativeTarget` | B |
+| `narrativo-seguito` | `flashcardATargetNative` | B |
+| `narrativo-seguito` | `voicePractice` | B |
+| `narrativo-seguito` | `whyWeSayIt` | D |
+| `narrativo-seguito` | `matchTargetNative` | C |
+| `narrativo-seguito` | `matchNativeTarget` | C |
+| `narrativo-seguito` | `voicePractice` | C |
+| `narrativo-seguito` | `dialogoAscoltaRipeti` | D |
+| `narrativo-seguito` | `dialogoRipetiATempo` | D |
+| `narrativo-seguito` | `dialogoContinuo` | D |
+| `narrativo-seguito` | `speedMatchTargetNative` | C |
+| `narrativo-seguito` | `speedMatchNativeTarget` | C |
+| `narrativo-seguito` | `voiceCoach` | C |
 | `prova-corta` | `personalizzazione` | |
 | `prova-corta` | `meetTheStory` | D |
 | `prova-corta` | `repeatAloud` | A |
@@ -271,7 +297,7 @@ questa posizione.*
 | Id | Nome | Categoria | Sequenza dei moduli |
 |---|---|---|---|
 | `gate` | Al gate | `storia` | `narrativo-standard` |
-| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-standard` |
+| `aircraft-door` | Sulla porta dell'aereo | `storia` | `narrativo-seguito` |
 
 ⚠️ **DUE RIGHE DAL 30/09**, *e l'ordine è quello: `gate` prima, `aircraft-door` dopo.* ⭐ **Lo dice anche
 il contenuto:** *a `d-7` l'hostess legge il cognome che la famiglia aveva gridato alla fine di `gate`.*
