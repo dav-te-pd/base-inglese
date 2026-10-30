@@ -68,21 +68,18 @@ async function run() {
     });
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'T16Job1', ALL_BEFORE_DG);
-    await openModule(page, 'personalizzazione');
-    await page.waitForTimeout(200);
-    // Pick "papa-francesco" for papa (whose en column is "Francis") via the select.
-    // ⚠️ L'id porta il prefisso della tabella dal 2026-09-23.
-    const hasSelect = await page.evaluate(() => !!document.querySelector('select[data-slot="papa"]'));
-    if (hasSelect) {
-      await page.selectOption('select[data-slot="papa"]', 'papa-francesco').catch(() => {});
-    }
-    log('[Job1] The bait row was served and chosen', escaServita &&
-      await page.evaluate(() => (document.querySelector('select[data-slot="papa"]') || {}).value === 'papa-francesco'));
-    await page.waitForTimeout(150);
-    await page.click('#customize-back-home');
-    await page.waitForTimeout(150);
-    await page.click('#go-episode');
-    await page.waitForTimeout(150);
+    // ⚠️ IL NOME SI SEMINA NEL MAGAZZINO, NON SI SCEGLIE IN PERSONALIZZA — dal
+    // 2026-10-30. Qui il test apriva Personalizza e sceglieva dalla tendina
+    // con un `.catch(() => {})`: ma con i moduli prima del dialogo gia'
+    // completati Personalizza mostra L'AVVISO A META' EPISODIO, e la griglia
+    // delle tendine resta nascosta. **La scelta non e' mai riuscita**, il
+    // `.catch` la ingoiava, papa' restava Marco, e «non contiene Francis» era
+    // vera per costruzione (regola 44). L'hanno visto le due righe nuove qui
+    // sotto al primo giro. Quello che conta qui e' il DIALOGO, non la tendina:
+    // la tendina la guidano test_tabelle_personalizzazione e test_valori_del_corso.
+    await page.evaluate((u) => {
+      localStorage.setItem(window.BI.customValuesKey(u), JSON.stringify({ papa: 'papa-francesco' }));
+    }, 'T16Job1');
     await openModule(page, 'dialogoAscoltaRipeti');
     // L'approdo serve a `isVisible`, che NON aspetta niente: se la vista non e'
     // ancora attiva torna false, il dialogo non parte e #dg-list resta vuoto —
@@ -92,6 +89,8 @@ async function run() {
     const dgStartVisible = await page.isVisible('#dg-start-btn').catch(() => false);
     if (dgStartVisible) { await page.click('#dg-start-btn'); await page.waitForTimeout(150); } // ATTESA-LEGITTIMA: l'asserzione qui sotto verifica che il dialogo NON contenga "Francis" — un non-evento non si aspetta, il tempo E' la misura. E allungarlo rafforza la prova invece di indebolirla: piu' battute passano, piu' e' vero che quel nome non compare
     const dialogueText = await page.evaluate(() => document.getElementById('dg-list').textContent);
+    log('[Job1] The bait row was served and is the chosen papa', escaServita &&
+      await page.evaluate(() => window.BI.valoriCorrenti().papa === 'papa-francesco'));
     log('[Job1] Dialogue text does NOT contain the translated "Francis"', dialogueText.indexOf('Francis') === -1);
     log('[Job1] ...and it does contain the student\'s "Francesco" (the dialogue is not empty)', dialogueText.indexOf('Francesco') !== -1);
     log('[Job1] No JS errors', errors.length === 0);
