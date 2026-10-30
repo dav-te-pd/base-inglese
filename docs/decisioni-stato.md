@@ -1274,15 +1274,11 @@ collaudo fatto a metà pulizia si rifà.*
 del collaudo c'è. **Prima il collaudo, poi Supabase** — deciso da chi guida il
 progetto il 2026-10-29.
 
-**Le cose che entrano nel collaudo**, dal censimento dello storico e
-dalla tabella dell'aperto — si vedono solo su un dispositivo vero:
-
-| | Cosa | Come si vede |
-|---|---|---|
-| ① | **Mentre un modulo carica non compare nessun segno, e la riga della mappa si può toccare di nuovo** (`app/apertura.js`) | su rete lenta: toccare una riga e ritoccarla prima che il modulo si apra |
-| ② | **Il badge di Voice Check segna 0% su una registrazione muta** al primo tentativo: i colori sono protetti (`recognizedWords.length > 0`), il badge no (`app/voice.js`) | registrare senza parlare, e guardare il badge in mappa |
-
-*Qui c'erano anche ③ le voci senza `it` e ④ `speechstart`/`speechend`: misurate il 2026-10-29 sul dispositivo di chi guida il progetto, e rimandate da lui a dopo la tappa ③ (riga «La voce e il microfono in `italiano/es`»).*
+✅ **IL CONTENUTO È CHIUSO DAL 2026-10-30** (riga «Il contenuto si chiude PRIMA del
+collaudo»). ⭐ **Le voci del collaudo stanno in [`collaudo.md`](collaudo.md), e solo
+lì** (regola 48): quelle misurate in questo registro — il caricamento senza segno, il
+badge di Voice Check su una registrazione muta — e quelle che vengono dal lato di chi
+guida il progetto. *Qui c'era la tabella delle prime due: spostata, non copiata.*
 
 ## ③ LA MESSA IN SICUREZZA — Supabase, repo privato, Cloudflare
 

@@ -195,8 +195,15 @@ romperebbe i controlli che cercano i titoli carattere per carattere.*
 ⭐ **E quello che gli manca è UNA cosa, misurata il 16/10: una voce deve portarsi dietro l'episodio da
 cui viene, fino al salvataggio.** *Oggi `recordPendingMastery` legge lo stato dalla mastery
 dell'episodio **corrente**, e il salvataggio al gesto scrive tutto là.* 🔴 **E gli id si ripetono fra
-episodi — 14 in comune fra `gate` e `aircraft-door` — quindi una `c-1` rossa di `gate` mostrata dentro
-`aircraft-door` leggerebbe e scriverebbe quella dell'episodio sbagliato, senza nessun errore.**
+episodi — nel grado D i nove `d-1`…`d-9`, che sono le chiavi delle risposte di «Perché si dice così» —
+quindi una battuta rossa di `gate` mostrata dentro `aircraft-door` leggerebbe e scriverebbe quella
+dell'episodio sbagliato, senza nessun errore.**
+
+⚠️ **E fin qui questa riga diceva «14 in comune, e una `c-1` rossa di `gate`»: era vero fino al 30/10.**
+⭐ **Dal 30/10 gli id in comune nei gradi A, B e C sono ZERO** — *gli id del grado C sono descrittivi e
+per lingua, `c-1` non esiste più, e `a-lei` di `aircraft-door` è diventato `a-lei-soggetto`.*
+🔴 **Il problema non è sparito: si è ristretto al grado D, dove gli id in comune sono VOLUTI** — *l'id di
+una battuta è dell'episodio, non del testo.*
 
 ⚠️ **La chiave per episodio invece va bene come è**, *e le voci rosse degli episodi prima si leggono già.*
 🔴 **Fino al 16/10 questa sezione diceva il contrario: «la ragione è che la mastery è salvata per
