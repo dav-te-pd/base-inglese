@@ -263,13 +263,16 @@ async function run() {
       page.on('pageerror', function (e) { errori.push(e.message); });
       await bloccaFontEsterni(page);
       await apriMappa(page, caso.utente, caso.ep);
-      await openModule(page, 'personalizzazione');
-      await page.waitForFunction(() => document.querySelectorAll('#view-customize select').length > 0, { timeout: 15000 });
-      const r = await page.evaluate(() => {
-        const s = Array.from(document.querySelectorAll('#view-customize select'));
-        return { n: s.length, prima: s[0] ? s[0].options.length : 0, vuoti: s.filter(x => x.options.length === 0).length };
+      // ⚠️ DAL 2026-10-30 `aircraft-door` NON HA PERSONALIZZA (`narrativo-seguito`):
+      // gli slot non si leggono piu' dalle tendine di quella schermata ma da
+      // `ensureEpisodeSlotFields`, la stessa che la mappa chiama prima di ogni
+      // modulo — ed e' cio' che questo blocco voleva dire fin dall'inizio:
+      // «gli slot si risolvono dal file». Le tendine di `gate` le guidano [D] e [F].
+      const r = await page.evaluate(async () => {
+        const campi = await window.BI.ensureEpisodeSlotFields(window.BI.episodioCorrente());
+        return { n: campi.length, vuoti: campi.filter(function (f) { return f.type === 'select' && (!f.options || f.options.length === 0); }).length };
       });
-      log('[C] ' + caso.ep + ': gli slot si risolvono dal file (' + caso.slot + ' select)',
+      log('[C] ' + caso.ep + ': gli slot si risolvono dal file (' + caso.slot + ')',
         r.n === caso.slot, JSON.stringify(r));
       log('[C] ' + caso.ep + ': nessuno slot resta senza opzioni', r.vuoti === 0, JSON.stringify(r));
       log('[C] ' + caso.ep + ': nessun errore JS', errori.length === 0, errori[0]);

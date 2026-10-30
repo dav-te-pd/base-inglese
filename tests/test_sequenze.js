@@ -5,8 +5,10 @@
 // `moduleOrderDefault` da ereditare — e, la cosa che pesa di più, che passare
 // alle sequenze NON abbia mosso nessun id di passo: se un id si muove ogni
 // studente riparte da zero senza che niente si rompa a schermo. E, dal
-// 2026-09-09 (passo 8), che i due episodi mostrino gli STESSI passi con la
-// stessa categoria: i descrittori di `modulesById` sono uno solo e ogni
+// 2026-09-09 (passo 8), che i passi IN COMUNE fra i due episodi si mostrino
+// uguali, con la stessa categoria, e che ognuno abbia i passi della SUA
+// sequenza (dal 2026-10-30 `aircraft-door` dichiara `narrativo-seguito`, senza
+// Personalizza): i descrittori di `modulesById` sono uno solo e ogni
 // episodio ne riceve una copia, e se un episodio ne perdesse uno l'app non si
 // romperebbe — mostrerebbe una riga senza categoria, e nessuno saprebbe quale
 // dei due episodi è quello giusto.
@@ -43,7 +45,7 @@
 // rivelato solo l'iniezione del guasto. Adesso confronta la riga come si vede
 // — id più categoria.
 
-const { launchBrowser, APP_URL, dividiOverride } = require('./test-env');
+const { launchBrowser, APP_URL, dividiOverride, strutturaCorso } = require('./test-env');
 const { stepIds } = require('./module-order');
 
 const BASE = APP_URL;
@@ -136,16 +138,25 @@ async function run() {
     };
     const primo = await righeDi('gate');
     const secondo = await righeDi('aircraft-door');
-    const uguali = JSON.stringify(primo) === JSON.stringify(secondo);
-    log('[A2] I due episodi mostrano ESATTAMENTE gli stessi passi, con la stessa categoria',
-        primo.length > 0 && uguali);
-    if (!uguali) {
-      primo.forEach(function (r, i) {
-        if (r !== secondo[i]) console.log('  riga ' + i + ':  gate "' + r + '"  vs  aircraft-door "' + secondo[i] + '"');
-      });
-      if (primo.length !== secondo.length) console.log('  righe: ' + primo.length + ' vs ' + secondo.length);
-    }
-    log('[A2] E sono i ventidue della sequenza', primo.length === stepIds().length);
+    // ⚠️ DAL 2026-10-30 I DUE EPISODI NON HANNO PIU' GLI STESSI PASSI, per
+    // decisione di chi guida il progetto: `aircraft-door` dichiara
+    // `narrativo-seguito`, la standard senza Personalizza. Qui c'era «mostrano
+    // ESATTAMENTE gli stessi passi». L'invariante che la riga difendeva — UN
+    // descrittore per modulo, uguale in ogni episodio — resta, e si guarda
+    // cosi': ogni passo che i due episodi hanno IN COMUNE si mostra uguale, e
+    // ognuno ha esattamente i passi della SUA sequenza.
+    const struttura = strutturaCorso();
+    const passiDi = function (ep) { return struttura.sequences[struttura.episodes[ep].sequence].length; };
+    const perId = {};
+    primo.forEach(function (r) { perId[r.split(' | ')[0]] = r; });
+    const diversi = secondo.filter(function (r) { return perId[r.split(' | ')[0]] !== r; });
+    log('[A2] Ogni passo che i due episodi hanno in comune si mostra UGUALE, con la stessa categoria',
+        primo.length > 0 && secondo.length > 0 && diversi.length === 0,
+        diversi.map(function (r) { return 'aircraft-door "' + r + '" vs gate "' + perId[r.split(' | ')[0]] + '"'; }).join(' · '));
+    log('[A2] E ognuno ha i passi della SUA sequenza (gate ' + passiDi('gate') + ', aircraft-door ' + passiDi('aircraft-door') + ')',
+        primo.length === passiDi('gate') && secondo.length === passiDi('aircraft-door'), primo.length + ' / ' + secondo.length);
+    log('[A2] ...e le due sequenze sono davvero diverse (il caso c\'è)',
+        struttura.episodes.gate.sequence !== struttura.episodes['aircraft-door'].sequence);
     // Il confronto qui sopra vede una divergenza FRA i due episodi. Se lo
     // stesso descrittore mancasse a TUTTI E DUE, resterebbe verde: questa
     // riga chiude quel caso.

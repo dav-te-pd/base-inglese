@@ -45,7 +45,6 @@
 
 const fs = require('fs');
 const { launchBrowser, APP_URL, repoPath, bloccaFontEsterni, attendiPrimaSchermata } = require('./test-env');
-const { openModule } = require('./map-driver');
 const { mockBrowser } = require('./mock-browser');
 const mockInit = mockBrowser({ fineVoceMs: 10, nomeVoce: 'F' });
 
@@ -129,13 +128,15 @@ async function run() {
     const intro = await page.$('#map-intro-start-btn');
     if (intro) await intro.click().catch(() => {});
     await page.waitForSelector('#module-list .module-row', { state: 'visible', timeout: 15000 });
-    // Personalizza costruisce gli slot: senza, `fillTemplate` non ha le opzioni.
-    await openModule(page, 'personalizzazione');
-    await page.waitForFunction(() => document.querySelectorAll('#view-customize select, #view-customize input').length > 0,
-      { timeout: 15000 });
+    // ⚠️ GLI SLOT SI CHIEDONO, NON SI FANNO COSTRUIRE APRENDO PERSONALIZZA —
+    // dal 2026-10-30: `aircraft-door` dichiara `narrativo-seguito` e
+    // Personalizza non ce l'ha piu'. Li costruisce `ensureEpisodeSlotFields`
+    // (la stessa che la mappa chiama prima di ogni modulo), e i valori sono
+    // quelli del corso (`loadCustomValues`).
     const testi = await page.evaluate(async function () {
       const ep = window.BI.episodioCorrente();
-      const v = window.BI.valoriCorrenti();
+      await window.BI.ensureEpisodeSlotFields(ep);
+      const v = window.BI.loadCustomValues(ep, window.BI.getUserName(), await window.BI.loadPersonalizationMigrations());
       const dati = await window.BI.loadEpisodeData({ dataFile: ep.dataFile });
       const fuori = [];
       ['A', 'B', 'C', 'D'].forEach(function (g) {
