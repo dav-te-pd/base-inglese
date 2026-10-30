@@ -451,6 +451,15 @@ async function run() {
       window.APP_CONFIG.speedMatch.countdownStepMs = 30;
     });
     await openModule(page, 'speedMatchNativeTarget');
+    // ⚠️ SI ASPETTA LA VISTA DEL MODULO — dal 2026-10-30, rossa in CI su
+    // `ac80eff` e verde in locale (regola 19). `openModule` aspetta 250 ms
+    // fissi, mentre l'apertura aspetta i file del modulo: sul runner la
+    // lettura qui sotto arrivava PRIMA, e trovava i due pulsanti ancora col
+    // `hidden` del markup. `openSpeedMatch` e' sincrona — `showView` e la
+    // schermata iniziale (che toglie `hidden` ai pulsanti) cambiano nello
+    // stesso tick — quindi la vista attiva basta, e non e' l'effetto che le
+    // asserzioni leggono (regola 44).
+    await page.waitForSelector('#view-speed-match.is-active', { timeout: 15000 });
     // Buttons should be visible+enabled on the start screen (before the countdown/timer ever runs).
     const startState = await page.evaluate(() => {
       var w = document.getElementById('speed-match-watch-btn');
