@@ -36,7 +36,7 @@
 # ##########################################################################
 #
 # Ultimo aggiornamento: 2026-10-30
-# Totale: 2303
+# Totale: 2305
 test_attendi.js 17
 test_attendi_ci.js 55
 test_attese_condivise.js 25
@@ -111,12 +111,12 @@ test_scala_colori.js 24
 test_scala_unica.js 7
 test_schermata_attesa.js 10
 test_selettori_sequenza.js 23
-test_sequenze.js 14
+test_sequenze.js 15
 test_spazio_nomi.js 15
 test_stile_estratto.js 16
 test_story_modules.js 95
 test_stringhe_markup.js 15
-test_struttura_corso.js 19
+test_struttura_corso.js 20
 test_suoni_estratto.js 13
 test_tabella_protegge.js 15
 test_tabelle_personalizzazione.js 26
