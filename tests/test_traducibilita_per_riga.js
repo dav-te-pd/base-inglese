@@ -121,7 +121,7 @@ async function apriMappa(page, utente, seme) {
   await page.evaluate(function (a) {
     localStorage.setItem('baseinglese:introDismissed:mappaEpisodio:' + a.u, '1');
     if (a.seme) {
-      localStorage.setItem(window.BI.customValuesKey('gate', a.u), JSON.stringify(a.seme));
+      localStorage.setItem(window.BI.customValuesKey(a.u), JSON.stringify(a.seme));
     }
   }, { u: utente, seme: seme || null });
   await page.click('#go-episode');
@@ -330,7 +330,26 @@ async function run() {
       return !perSlot || !Object.prototype.hasOwnProperty.call(perSlot, parti[1]);
     });
 
-    log('[M2] Il baseline delle migrazioni non è vuoto', baseline.length > 0, String(baseline.length));
+    // ⚠️ DAL 2026-10-30 LA MAPPA E IL BASELINE SONO VUOTI, di proposito: i
+    // valori degli slot sono passati alla chiave del CORSO e gli id vecchi
+    // stavano sotto quella per episodio (regola 50). Qui c'era «il baseline non
+    // è vuoto». Con due elenchi vuoti la guardia non confronta niente, quindi
+    // (regola 49) si prova che SA cadere su una copia sintetica, e si pretende
+    // che mappa e baseline siano vuoti o pieni INSIEME: un baseline svuotato
+    // con la mappa piena sarebbe la guardia spenta in silenzio.
+    const spariteSintetiche = (function () {
+      const finta = { slot: { papa: { vecchio: 'papa-marco' } } };
+      return ['papa vecchio', 'papa tolto'].filter(function (riga) {
+        const parti = riga.split(/\s+/);
+        const perSlot = finta.slot[parti[0]];
+        return !perSlot || !Object.prototype.hasOwnProperty.call(perSlot, parti[1]);
+      });
+    })();
+    log('[M2] La guardia append-only SA cadere: su una mappa sintetica nomina la riga tolta',
+      spariteSintetiche.join(',') === 'papa tolto', spariteSintetiche.join(','));
+    const righeMappa = Object.keys(mappa.slot).reduce(function (n, s) { return n + Object.keys(mappa.slot[s]).length; }, 0);
+    log('[M2] Mappa e baseline sono vuoti o pieni INSIEME',
+      (righeMappa === 0) === (baseline.length === 0), 'mappa ' + righeMappa + ', baseline ' + baseline.length);
     log('[M2] Nessun id coperto è sparito dalla mappa (append-only)',
       spariti.length === 0, spariti.join(', '));
 
@@ -353,14 +372,23 @@ async function run() {
         (tabelle[fam][k] || []).forEach(function (r) { tuttiId.push(r.value); });
       });
     });
-    const arrivoMorto = [];
-    Object.keys(mappa.slot).forEach(function (s) {
-      Object.keys(mappa.slot[s]).forEach(function (v) {
-        if (tuttiId.indexOf(mappa.slot[s][v]) === -1) arrivoMorto.push(s + ': ' + v + ' → ' + mappa.slot[s][v]);
+    const arriviMorti = function (m) {
+      const fuori = [];
+      Object.keys(m.slot).forEach(function (s) {
+        Object.keys(m.slot[s]).forEach(function (v) {
+          if (tuttiId.indexOf(m.slot[s][v]) === -1) fuori.push(s + ': ' + v + ' → ' + m.slot[s][v]);
+        });
       });
-    });
+      return fuori;
+    };
+    const arrivoMorto = arriviMorti(mappa);
     log('[M2] Ogni id di arrivo esiste nel magazzino di oggi',
       arrivoMorto.length === 0, arrivoMorto.join(', '));
+    // Il rovescio sintetico, per la stessa ragione: con la mappa vuota la riga
+    // qui sopra non guarda niente, quindi si prova che un arrivo morto lo vede.
+    const sintetici = arriviMorti({ slot: { papa: { a: 'papa-marco', b: 'papa-inesistente' } } });
+    log('[M2] La guardia degli arrivi SA cadere: su una mappa sintetica nomina solo l\'arrivo inesistente',
+      sintetici.join(',') === 'papa: b → papa-inesistente', sintetici.join(','));
   }
 
   // ── [M1] ⓐ UN PROFILO SALVATO COL NOME VECCHIO TORNA QUELLO GIUSTO ───
@@ -374,17 +402,31 @@ async function run() {
     // `luca` e `torino` non sono i predefiniti: se la migrazione non gira, il
     // valore non corrisponde a niente e si finisce sul predefinito — cioè
     // `papa-marco` e `orig-mondovi`, che è proprio il danno da misurare.
-    await apriMappa(page, 'TradMigra', { papa: 'luca', partenza: 'torino', cognome: 'ferrari' });
+    // ⚠️ DAL 2026-10-30 LA MAPPA DEL REPOSITORY È VUOTA (vedi [M2]): il
+    // meccanismo si prova con una mappa SINTETICA servita al posto del file, e
+    // che la sostituzione sia avvenuta è un'asserzione (regola 49). Gli id di
+    // arrivo esistono nelle tabelle di prima e in quelle di oggi, e nessuno è
+    // il predefinito del suo slot.
+    let servita = false;
+    await page.route(globDati('migrazioni-personalizzazione.json'), function (route) {
+      servita = true;
+      route.fulfill({ contentType: 'application/json', body: JSON.stringify({ slot: {
+        papa: { 'papa-vecchio': 'papa-giancarlo' },
+        partenza: { 'partenza-vecchia': 'orig-torino' },
+        cognome: { 'cognome-vecchio': 'cognome-ferrario' } } }) });
+    });
+    await apriMappa(page, 'TradMigra', { papa: 'papa-vecchio', partenza: 'partenza-vecchia', cognome: 'cognome-vecchio' });
 
     const esito = await page.evaluate(function () {
       const v = window.BI.valoriCorrenti();
       return { papa: v.papa, partenza: v.partenza, cognome: v.cognome };
     });
 
+    log('[M1] La mappa sintetica è stata servita al posto del file', servita);
     log('[M1] Un nome salvato con l\'id vecchio torna il suo, non il predefinito',
-      esito.papa === 'papa-luca', JSON.stringify(esito));
+      esito.papa === 'papa-giancarlo', JSON.stringify(esito));
     log('[M1] ...e vale anche per una città', esito.partenza === 'orig-torino', JSON.stringify(esito));
-    log('[M1] ...e per un cognome', esito.cognome === 'cognome-ferrari', JSON.stringify(esito));
+    log('[M1] ...e per un cognome', esito.cognome === 'cognome-ferrario', JSON.stringify(esito));
     log('[M1] Nessun errore JS', errori.length === 0, errori[0]);
     await page.close();
   }

@@ -260,8 +260,14 @@ window.BI = window.BI || {};
     return stats;
   }
 
-  function customValuesKey(episodeId, userName) {
-    return prefissoMagazzino() + episodeId + ':custom:' + userName;
+  // ⚠️ I VALORI DEGLI SLOT SONO DEL CORSO, NON DELL'EPISODIO — dal 2026-10-30,
+  // deciso da chi guida il progetto: *«la famiglia è della STORIA, non
+  // dell'episodio»*. Qui c'era `prefissoMagazzino() + episodeId + ':custom:'`:
+  // lo studente sceglieva il cognome in `gate`, apriva `aircraft-door` e ci
+  // trovava il predefinito — la famiglia cambiava nome fra un episodio e
+  // l'altro. Il modello e' `helpRequestsKey`, che l'episodio non lo porta.
+  function customValuesKey(userName) {
+    return prefissoMagazzino() + 'custom:' + userName;
   }
 
   // ⚠️ `migrazioni` E' UN PARAMETRO E NON UN VALORE GLOBALE, DI PROPOSITO —
@@ -278,7 +284,7 @@ window.BI = window.BI || {};
   // produzione — i due chiamanti veri la passano sempre, dentro il `.then`
   // che l'ha aspettata.
   function loadCustomValues(episode, userName, migrazioni) {
-    var stored = leggiMagazzino(customValuesKey(episode.id, userName), function () { return {}; });
+    var stored = leggiMagazzino(customValuesKey(userName), function () { return {}; });
     var values = {};
     episode.slotFields.forEach(function (f) {
       var raw = (stored[f.key] !== undefined && stored[f.key] !== '') ? stored[f.key] : f.def;
@@ -300,8 +306,13 @@ window.BI = window.BI || {};
     return Object.prototype.hasOwnProperty.call(perSlot, raw) ? perSlot[raw] : raw;
   }
 
-  function saveCustomValues(episode, userName, values) {
-    scriviMagazzino(customValuesKey(episode.id, userName), values);
+  // ⚠️ FONDE, NON SOSTITUISCE — e con la chiave del corso non e' un dettaglio.
+  // `values` porta solo gli slot dell'episodio aperto: salvato cosi' com'e', il
+  // cognome scelto in `aircraft-door` (l'unico slot che ha) cancellerebbe
+  // papa, mamma, figli e partenza scelti in `gate`. In silenzio.
+  function saveCustomValues(userName, values) {
+    var stored = leggiMagazzino(customValuesKey(userName), function () { return {}; });
+    scriviMagazzino(customValuesKey(userName), Object.assign({}, stored, values));
   }
 
   // Read-only survivor of the old "Customize seen" flag (Personalizza
@@ -342,6 +353,9 @@ window.BI = window.BI || {};
   // ⚠️ IL COMPORTAMENTO NON CAMBIA DI UNA VIRGOLA: si azzerano le stesse tre
   // di ieri. *Quello che cambia e' che adesso le altre sei portano scritto
   // PERCHE' sopravvivono, invece di sopravvivere per assenza.*
+  // ⚠️ DAL 2026-10-30 LE ALTRE SONO CINQUE: `custom` e' uscita, perche' i
+  // valori degli slot sono del CORSO e la sua chiave non porta piu' l'episodio
+  // (`customValuesKey`, qui sopra). Il wipe non la toccava neanche prima.
   var CHIAVI_EPISODIO = [
     { nome: 'modules', chiave: moduleProgressKey, azzera: true,
       perche: 'i moduli completati: e\' esattamente il progresso che la ripersonalizzazione invalida' },
@@ -357,8 +371,6 @@ window.BI = window.BI || {};
       perche: '⚠️ DOMANDA APERTA, non una scelta: sono risposte dello studente, quindi somigliano a progresso. Vedi 1.16 in decisioni-stato.md' },
     { nome: 'storyCardsDeclarations', chiave: storyCardsDeclarationsKey, azzera: false,
       perche: '⚠️ DOMANDA APERTA, ed e\' la piu\' visibile: regge lo Sblocco Sequenziale di Why We Say It, quindi dopo un wipe il modulo si ri-blocca in mappa MA RIAPRE le card gia\' dichiarate' },
-    { nome: 'custom', chiave: customValuesKey, azzera: false,
-      perche: 'e\' la personalizzazione stessa: e\' quello che lo studente sta per cambiare, cancellarla sarebbe assurdo' },
     { nome: 'customizeSeen', chiave: customizeSeenKey, azzera: false,
       perche: 'superstite in sola lettura del vecchio flag: nessuno la scrive piu\'' }
   ];

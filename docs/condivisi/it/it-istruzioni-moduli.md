@@ -252,7 +252,7 @@ ciascuna. *Ricopiarlo in ogni riga vorrebbe dire dodici copie da tenere allineat
 
 | # | kind | Passi | Corpo | Consiglio | Video |
 |---|---|---|---|---|---|
-| 1 | `personalizzazione` | 1 | <p>Qui scegli i nomi dei personaggi della storia — o lasci quelli proposti: nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo.</p><p><b>Queste scelte valgono per questo episodio.</b> Se vuoi cambiarle dopo averlo iniziato, l'episodio si rifà da capo.</p><p>Quando sei pronto, premi «Inizia l'episodio».</p> | — | · |
+| 1 | `personalizzazione` | 1 | <p>Qui scegli i nomi dei personaggi della storia — o lasci quelli proposti: nessuna scelta è obbligatoria.</p><p>Tocca un campo per cambiarlo.</p><p><b>Queste scelte valgono per tutta la storia.</b> Se vuoi cambiarle dopo aver iniziato un episodio, quell'episodio si rifà da capo.</p><p>Quando sei pronto, premi «Inizia l'episodio».</p> | — | · |
 | 2 | `meetTheStory` | 1 | <p>È il tuo primo incontro con la storia: qui si ascolta, non si studia.</p><p>Tocca 🔊 su ogni battuta per sentirla. La traduzione è già sotto, sempre visibile — non hai ancora studiato niente, quindi non ha senso nasconderla.</p><p>Ascolta quante volte vuoi. <b>Non devi ricordare niente adesso:</b> le parole, le frasi e le regole arrivano dopo.</p><p>Quando ti sei fatto un'idea della storia, premi «Ho finito».</p> | — | · |
 | 3 | `repeatAloud` | 2 | <p>Ascolta ogni parola con 🔊, leggi la traduzione e il suggerimento di pronuncia.</p><p>Ripeti ad alta voce finché non ti sembra uguale. <b>Se ti sembra diverso è normale:</b> più avanti ci sono esercizi che ti dicono se la pronuncia è giusta.</p><p>Quando hai ripassato tutte le parole, premi «Ho finito, torna alla mappa».</p> | `consiglio-scrivere` | · |
 | 4 | `matchTargetNative` | 3 | <p>Vedi una parola e più traduzioni — tocca quella giusta.</p><p><b>Qui non c'è tempo limite:</b> prenditi il momento che ti serve per ragionarci.</p><p>Le parole che sbagli tornano a fine esercizio, finché non sono tutte giuste.</p> | `consiglio-scrivere` | · |
@@ -285,7 +285,7 @@ quando l'app si ferma da sola, perché un pulsante è spento.* **Le due righe ch
 
 | # | kind | Corpo |
 |---|---|---|
-| 1 | `personalizzazione` | <p>Tocca un campo per personalizzarlo, o lascialo com'è. «Reset» torna ai valori di partenza.</p><p>Le scelte valgono per questo episodio: per cambiarle dopo averlo iniziato, l'episodio si rifà da capo.</p><p>In fondo alla pagina puoi suggerirci nomi o parole che non trovi nelle liste.</p> |
+| 1 | `personalizzazione` | <p>Tocca un campo per personalizzarlo, o lascialo com'è. «Reset» torna ai valori di partenza.</p><p>Le scelte valgono per tutta la storia: per cambiarle dopo aver iniziato un episodio, quell'episodio si rifà da capo.</p><p>In fondo alla pagina puoi suggerirci nomi o parole che non trovi nelle liste.</p> |
 | 2 | `meetTheStory` | <p>Ascolta le battute con 🔊, alla velocità che preferisci (100/75/50%). La traduzione è sempre visibile: qui serve capire la storia, non indovinarla.</p><p>Quando ti basta, premi «Ho finito».</p> |
 | 3 | `repeatAloud` | <p>Premi 🔊 per ascoltare ogni parola (velocità 100/75/50%), poi ripetila ad alta voce. Leggi la traduzione e il suggerimento di pronuncia se ti serve.</p><p>Quando hai fatto tutta la lista, premi «Ho finito, torna alla mappa». Se non vuoi farlo adesso, tocca «Mappa».</p> |
 | 4 | `matchTargetNative` | <p>Vedi la parola, tocca la traduzione corretta fra quelle proposte. Nessun tempo limite.</p><p>Le domande sbagliate tornano a fine esercizio, finché non sono tutte corrette.</p> |

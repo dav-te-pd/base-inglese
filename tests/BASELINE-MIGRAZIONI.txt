@@ -12,60 +12,9 @@
 # Quando sale di proposito si aggiungono le righe nuove a mano, in fondo.
 # Non si rigenera: un file che si rigenera da solo non e' una guardia, e'
 # una fotografia di quello che c'e' adesso.
-cognome ambruosi
-cognome barberis
-cognome bianchi
-cognome costa
-cognome ferrari
-cognome marino
-cognome rossi
-cognome russo
-figliaEta 12
-figliaEta 13
-figliaEta 14
-figliaEta 15
-figliaEta 16
-figliaEta 17
-figliaNome alice
-figliaNome beatrice
-figliaNome chiara
-figliaNome emma
-figliaNome giorgia
-figliaNome martina
-figliaNome sara
-figliaNome sofia
-figlioEta 10
-figlioEta 11
-figlioEta 4
-figlioEta 5
-figlioEta 6
-figlioEta 7
-figlioEta 8
-figlioEta 9
-figlioNome filippo
-figlioNome giorgio
-figlioNome leo
-figlioNome lorenzo
-figlioNome marco
-figlioNome matteo
-figlioNome simone
-figlioNome tommaso
-mamma anna
-mamma chiara
-mamma elena
-mamma francesca
-mamma giulia
-mamma laura
-mamma nicoletta
-mamma silvia
-papa andrea
-papa davide
-papa francesco
-papa giancarlo
-papa luca
-papa marco
-papa paolo
-papa stefano
-partenza milano
-partenza mondovi
-partenza torino
+#
+# ⚠️ SVUOTATO il 2026-10-30 insieme alla mappa, deciso da chi guida il progetto:
+# i valori degli slot sono passati alla chiave del CORSO, e gli id vecchi
+# coperti qui stavano sotto quella per episodio, che l'app non legge piu'
+# (regola 50). Le 57 righe di prima stanno nella storia di git. Da qui si
+# riparte ad aggiungere il primo giorno che si rinomina un id.

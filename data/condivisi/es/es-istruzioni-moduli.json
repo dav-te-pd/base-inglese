@@ -1,10 +1,10 @@
 {
   "personalizzazione": {
     "howItWorks": {
-      "body": "<p>Aquí eliges los nombres de los personajes de la historia — o dejas los que te proponemos: ninguna elección es obligatoria.</p><p>Toca un campo para cambiarlo.</p><p><b>Estas elecciones valen para este episodio.</b> Si quieres cambiarlas después de haberlo empezado, el episodio se repite desde el principio.</p><p>Cuando estés listo, pulsa «Empieza el episodio».</p>"
+      "body": "<p>Aquí eliges los nombres de los personajes de la historia — o dejas los que te proponemos: ninguna elección es obligatoria.</p><p>Toca un campo para cambiarlo.</p><p><b>Estas elecciones valen para toda la historia.</b> Si quieres cambiarlas después de haber empezado un episodio, ese episodio se repite desde el principio.</p><p>Cuando estés listo, pulsa «Empieza el episodio».</p>"
     },
     "helpReminder": {
-      "body": "<p>Toca un campo para personalizarlo, o déjalo como está. «Reset» vuelve a los valores de partida.</p><p>Las elecciones valen para este episodio: para cambiarlas después de haberlo empezado, el episodio se repite desde el principio.</p><p>Al final de la página puedes sugerirnos nombres o palabras que no encuentres en las listas.</p>"
+      "body": "<p>Toca un campo para personalizarlo, o déjalo como está. «Reset» vuelve a los valores de partida.</p><p>Las elecciones valen para toda la historia: para cambiarlas después de haber empezado un episodio, ese episodio se repite desde el principio.</p><p>Al final de la página puedes sugerirnos nombres o palabras que no encuentres en las listas.</p>"
     },
     "pageDescription": "Personaliza los episodios con las palabras, los nombres y los lugares de tu vida real — cuanto más cerca estén de ti, mejor los recordarás. Elige entre las opciones propuestas, o deja los valores por defecto.",
     "requestBoxLabel": "¿No encuentras el nombre, la ciudad o la palabra que necesitas?",

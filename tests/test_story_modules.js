@@ -647,7 +647,7 @@ async function run() {
 
     // Un nome scelto e ben riconoscibile: se riaffiorasse come etichetta si
     // vedrebbe subito, e non si confonderebbe con nessuna parola del dialogo.
-    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Etichette'),
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('Story_Etichette'),
       JSON.stringify({ papa: 'papa-giancarlo', mamma: 'mamma-nicoletta' })));
     await page.reload();
     await page.waitForSelector('#go-episode', { state: 'visible' });
@@ -749,7 +749,7 @@ async function run() {
     page.on('pageerror', e => errors.push(e.message));
     await page.addInitScript(mockInit);
     await bootAsUser(page, 'Story_Lingue', 'whyWeSayIt');
-    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('gate', 'Story_Lingue'), JSON.stringify({ partenza: 'orig-torino' })));
+    await page.evaluate(() => localStorage.setItem(BI.customValuesKey('Story_Lingue'), JSON.stringify({ partenza: 'orig-torino' })));
     await page.reload();
     await page.waitForSelector('#go-episode');
     await page.click('#go-episode');

@@ -126,7 +126,7 @@
     var key = e.target.getAttribute('data-slot');
     if (!key) return;
     BI.valoriCorrenti()[key] = e.target.value;
-    saveCustomValues(BI.episodioCorrente(), getUserName(), BI.valoriCorrenti());
+    saveCustomValues(getUserName(), BI.valoriCorrenti());
   }
 
   // ---- Request Box: one small free-text field per personalization group
@@ -333,7 +333,7 @@
           if (control) control.value = f.def;
         }
       });
-      saveCustomValues(BI.episodioCorrente(), getUserName(), BI.valoriCorrenti());
+      saveCustomValues(getUserName(), BI.valoriCorrenti());
     });
 
     document.getElementById('request-fields').addEventListener('click', function (e) {
